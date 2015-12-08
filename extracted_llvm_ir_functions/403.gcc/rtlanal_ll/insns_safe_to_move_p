@@ -1,0 +1,81 @@
+define i32 @insns_safe_to_move_p(%struct.rtx_def* %from, %struct.rtx_def* %to, %struct.rtx_def** %new_to) #1 {
+entry:
+  %tobool = icmp ne %struct.rtx_def** %new_to, null
+  br i1 %tobool, label %if.then, label %while.cond.preheader
+
+if.then:                                          ; preds = %entry
+  store %struct.rtx_def* %to, %struct.rtx_def** %new_to, align 8, !tbaa !0
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.then, %entry
+  %tobool142 = icmp eq %struct.rtx_def* %from, null
+  br i1 %tobool142, label %return, label %while.body
+
+while.body:                                       ; preds = %while.cond.preheader, %if.end22
+  %r.045 = phi %struct.rtx_def* [ %2, %if.end22 ], [ %from, %while.cond.preheader ]
+  %past_to_p.044 = phi i32 [ %past_to_p.0.mux, %if.end22 ], [ 0, %while.cond.preheader ]
+  %eh_region_count.043 = phi i32 [ %eh_region_count.1, %if.end22 ], [ 0, %while.cond.preheader ]
+  %0 = bitcast %struct.rtx_def* %r.045 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 37
+  br i1 %cmp, label %if.then2, label %if.else
+
+if.then2:                                         ; preds = %while.body
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %r.045, i64 0, i32 1, i64 4
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtint, align 4, !tbaa !3
+  switch i32 %1, label %if.end10 [
+    i32 -86, label %sw.bb
+    i32 -85, label %sw.bb3
+  ]
+
+sw.bb:                                            ; preds = %if.then2
+  %inc = add nsw i32 %eh_region_count.043, 1
+  br label %if.end10
+
+sw.bb3:                                           ; preds = %if.then2
+  %cmp4 = icmp eq i32 %eh_region_count.043, 0
+  br i1 %cmp4, label %return, label %if.end6
+
+if.end6:                                          ; preds = %sw.bb3
+  %dec = add nsw i32 %eh_region_count.043, -1
+  br label %if.end10
+
+if.else:                                          ; preds = %while.body
+  %tobool7 = icmp eq i32 %past_to_p.044, 0
+  br i1 %tobool7, label %if.end10, label %return
+
+if.end10:                                         ; preds = %if.else, %sw.bb, %if.end6, %if.then2
+  %eh_region_count.1 = phi i32 [ %eh_region_count.043, %if.then2 ], [ %dec, %if.end6 ], [ %inc, %sw.bb ], [ %eh_region_count.043, %if.else ]
+  %cmp11.not = icmp ne %struct.rtx_def* %r.045, %to
+  %brmerge = or i1 %cmp11.not, %tobool
+  %past_to_p.0.mux = select i1 %cmp11.not, i32 %past_to_p.044, i32 1
+  br i1 %brmerge, label %if.end17, label %if.then14
+
+if.then14:                                        ; preds = %if.end10
+  %cmp15 = icmp eq i32 %eh_region_count.1, 0
+  %conv = zext i1 %cmp15 to i32
+  br label %return
+
+if.end17:                                         ; preds = %if.end10
+  %tobool18 = icmp ne i32 %past_to_p.0.mux, 0
+  %cmp19 = icmp eq i32 %eh_region_count.1, 0
+  %or.cond = and i1 %tobool18, %cmp19
+  br i1 %or.cond, label %if.then21, label %if.end22
+
+if.then21:                                        ; preds = %if.end17
+  store %struct.rtx_def* %r.045, %struct.rtx_def** %new_to, align 8, !tbaa !0
+  br label %return
+
+if.end22:                                         ; preds = %if.end17
+  %arrayidx24 = getelementptr inbounds %struct.rtx_def* %r.045, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx24 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %tobool1 = icmp eq %struct.rtx_def* %2, null
+  br i1 %tobool1, label %return, label %while.body
+
+return:                                           ; preds = %while.cond.preheader, %if.else, %sw.bb3, %if.end22, %if.then21, %if.then14
+  %retval.0 = phi i32 [ 1, %if.then21 ], [ %conv, %if.then14 ], [ 0, %if.end22 ], [ 0, %sw.bb3 ], [ 0, %if.else ], [ 0, %while.cond.preheader ]
+  ret i32 %retval.0
+}

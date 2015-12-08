@@ -1,0 +1,77 @@
+define noalias %struct.QCDheader* @qcdhdr_get_hdr(%struct._IO_FILE* nocapture %in) #0 {
+entry:
+  %line = alloca [1024 x i8], align 16
+  %0 = getelementptr inbounds [1024 x i8]* %line, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 1024, i8* %0) #5
+  %call = call i8* @fgets(i8* %0, i32 1024, %struct._IO_FILE* %in) #9
+  %call1 = call noalias i8* @calloc(i64 512, i64 8) #9
+  %1 = bitcast i8* %call1 to i8**
+  %call2 = call noalias i8* @calloc(i64 512, i64 8) #9
+  %2 = bitcast i8* %call2 to i8**
+  %call3 = call noalias i8* @calloc(i64 1, i64 24) #9
+  %3 = bitcast i8* %call3 to %struct.QCDheader*
+  %token = getelementptr inbounds i8* %call3, i64 8
+  %4 = bitcast i8* %token to i8***
+  store i8** %1, i8*** %4, align 8, !tbaa !3
+  %value = getelementptr inbounds i8* %call3, i64 16
+  %5 = bitcast i8* %value to i8***
+  store i8** %2, i8*** %5, align 8, !tbaa !3
+  %puts = call i32 @puts(i8* getelementptr inbounds ([24 x i8]* @str, i64 0, i64 0))
+  %call653 = call i8* @fgets(i8* %0, i32 1024, %struct._IO_FILE* %in) #9
+  %call854 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0), i8* %0) #9
+  %call1055 = call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([12 x i8]* @.str6, i64 0, i64 0)) #7
+  %cmp56 = icmp eq i32 %call1055, 0
+  br i1 %cmp56, label %while.end, label %if.end.lr.ph
+
+if.end.lr.ph:                                     ; preds = %entry
+  %6 = ptrtoint [1024 x i8]* %line to i64
+  %7 = trunc i64 %6 to i32
+  %.neg = sub i32 0, %7
+  %sub58 = or i32 %.neg, 1
+  br label %if.end
+
+if.end:                                           ; preds = %if.end.lr.ph, %if.end
+  %indvars.iv = phi i64 [ 0, %if.end.lr.ph ], [ %indvars.iv.next, %if.end ]
+  %n.057 = phi i32 [ 0, %if.end.lr.ph ], [ %inc, %if.end ]
+  %call12 = call i8* @strchr(i8* %0, i32 32) #7
+  store i8 0, i8* %call12, align 1, !tbaa !1
+  %8 = ptrtoint i8* %call12 to i64
+  %9 = trunc i64 %8 to i32
+  %add = add i32 %sub58, %9
+  %div = sdiv i32 %add, 8
+  %add14 = add nsw i32 %div, 1
+  %conv = sext i32 %add14 to i64
+  %call15 = call noalias i8* @calloc(i64 %conv, i64 8) #9
+  %arrayidx = getelementptr inbounds i8** %1, i64 %indvars.iv
+  store i8* %call15, i8** %arrayidx, align 8, !tbaa !3
+  %call18 = call i8* @strcpy(i8* %call15, i8* %0) #9
+  %incdec.ptr = getelementptr inbounds i8* %call12, i64 1
+  %call19 = call i8* @strchr(i8* %incdec.ptr, i32 61) #7
+  %incdec.ptr20 = getelementptr inbounds i8* %call19, i64 1
+  %call21 = call i64 @strlen(i8* %incdec.ptr20) #7
+  %sub23 = shl i64 %call21, 32
+  %sext = add i64 %sub23, -4294967296
+  %idxprom24 = ashr exact i64 %sext, 32
+  %incdec.ptr20.sum = add i64 %idxprom24, 1
+  %arrayidx25 = getelementptr inbounds i8* %call19, i64 %incdec.ptr20.sum
+  store i8 0, i8* %arrayidx25, align 1, !tbaa !1
+  %conv26 = ashr exact i64 %sub23, 32
+  %call27 = call noalias i8* @calloc(i64 %conv26, i64 1) #9
+  %arrayidx30 = getelementptr inbounds i8** %2, i64 %indvars.iv
+  store i8* %call27, i8** %arrayidx30, align 8, !tbaa !3
+  %call31 = call i8* @strcpy(i8* %call27, i8* %incdec.ptr20) #9
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %n.057, 1
+  %call6 = call i8* @fgets(i8* %0, i32 1024, %struct._IO_FILE* %in) #9
+  %call8 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0), i8* %0) #9
+  %call10 = call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([12 x i8]* @.str6, i64 0, i64 0)) #7
+  %cmp = icmp eq i32 %call10, 0
+  br i1 %cmp, label %while.end, label %if.end
+
+while.end:                                        ; preds = %if.end, %entry
+  %n.0.lcssa = phi i32 [ 0, %entry ], [ %inc, %if.end ]
+  %ntoken = bitcast i8* %call3 to i32*
+  store i32 %n.0.lcssa, i32* %ntoken, align 4, !tbaa !0
+  call void @llvm.lifetime.end(i64 1024, i8* %0) #5
+  ret %struct.QCDheader* %3
+}

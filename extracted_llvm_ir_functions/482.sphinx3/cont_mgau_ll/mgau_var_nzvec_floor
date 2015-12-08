@@ -1,0 +1,91 @@
+define i32 @mgau_var_nzvec_floor(%struct.mgau_model_t* nocapture %g, double %floor) #0 {
+entry:
+  tail call void @_E__pr_info_header(i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), i64 437, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #5
+  tail call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0)) #5
+  %veclen = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 2
+  %0 = load i32* %veclen, align 4, !tbaa !0
+  %n_mgau = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 0
+  %1 = load i32* %n_mgau, align 4, !tbaa !0
+  %cmp54 = icmp sgt i32 %1, 0
+  br i1 %cmp54, label %for.cond1.preheader.lr.ph, label %for.end28
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %mgau = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 3
+  %conv18 = fptrunc double %floor to float
+  %.pre = load %struct.mgau_t** %mgau, align 8, !tbaa !3
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.cond1.preheader.lr.ph, %for.inc26
+  %2 = phi i32 [ %1, %for.cond1.preheader.lr.ph ], [ %12, %for.inc26 ]
+  %3 = phi %struct.mgau_t* [ %.pre, %for.cond1.preheader.lr.ph ], [ %13, %for.inc26 ]
+  %indvars.iv60 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next61, %for.inc26 ]
+  %n.055 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %n.1.lcssa, %for.inc26 ]
+  %n_comp49 = getelementptr inbounds %struct.mgau_t* %3, i64 %indvars.iv60, i32 0
+  %4 = load i32* %n_comp49, align 4, !tbaa !0
+  %cmp250 = icmp sgt i32 %4, 0
+  br i1 %cmp250, label %for.body3, label %for.inc26
+
+for.body3:                                        ; preds = %for.cond1.preheader, %for.inc23
+  %indvars.iv58 = phi i64 [ %indvars.iv.next59, %for.inc23 ], [ 0, %for.cond1.preheader ]
+  %5 = phi %struct.mgau_t* [ %9, %for.inc23 ], [ %3, %for.cond1.preheader ]
+  %n.151 = phi i32 [ %n.4, %for.inc23 ], [ %n.055, %for.cond1.preheader ]
+  %var8 = getelementptr inbounds %struct.mgau_t* %5, i64 %indvars.iv60, i32 2
+  %6 = load float*** %var8, align 8, !tbaa !3
+  %arrayidx9 = getelementptr inbounds float** %6, i64 %indvars.iv58
+  %7 = load float** %arrayidx9, align 8, !tbaa !3
+  %call = tail call i32 @vector_is_zero(float* %7, i32 %0) #5
+  %tobool.not = icmp ne i32 %call, 0
+  %cmp1146.not = icmp slt i32 %0, 1
+  %brmerge = or i1 %tobool.not, %cmp1146.not
+  br i1 %brmerge, label %for.inc23, label %for.body12
+
+for.body12:                                       ; preds = %for.body3, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.body3 ]
+  %n.248 = phi i32 [ %n.3, %for.inc ], [ %n.151, %for.body3 ]
+  %arrayidx14 = getelementptr inbounds float* %7, i64 %indvars.iv
+  %8 = load float* %arrayidx14, align 4, !tbaa !4
+  %conv = fpext float %8 to double
+  %cmp15 = fcmp olt double %conv, %floor
+  br i1 %cmp15, label %if.then17, label %for.inc
+
+if.then17:                                        ; preds = %for.body12
+  store float %conv18, float* %arrayidx14, align 4, !tbaa !4
+  %inc = add nsw i32 %n.248, 1
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body12, %if.then17
+  %n.3 = phi i32 [ %inc, %if.then17 ], [ %n.248, %for.body12 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %0
+  br i1 %exitcond, label %for.inc23, label %for.body12
+
+for.inc23:                                        ; preds = %for.body3, %for.inc
+  %n.4 = phi i32 [ %n.151, %for.body3 ], [ %n.3, %for.inc ]
+  %indvars.iv.next59 = add i64 %indvars.iv58, 1
+  %9 = load %struct.mgau_t** %mgau, align 8, !tbaa !3
+  %n_comp = getelementptr inbounds %struct.mgau_t* %9, i64 %indvars.iv60, i32 0
+  %10 = load i32* %n_comp, align 4, !tbaa !0
+  %11 = trunc i64 %indvars.iv.next59 to i32
+  %cmp2 = icmp slt i32 %11, %10
+  br i1 %cmp2, label %for.body3, label %for.cond1.for.inc26_crit_edge
+
+for.cond1.for.inc26_crit_edge:                    ; preds = %for.inc23
+  %.pre62 = load i32* %n_mgau, align 4, !tbaa !0
+  br label %for.inc26
+
+for.inc26:                                        ; preds = %for.cond1.for.inc26_crit_edge, %for.cond1.preheader
+  %12 = phi i32 [ %.pre62, %for.cond1.for.inc26_crit_edge ], [ %2, %for.cond1.preheader ]
+  %13 = phi %struct.mgau_t* [ %9, %for.cond1.for.inc26_crit_edge ], [ %3, %for.cond1.preheader ]
+  %n.1.lcssa = phi i32 [ %n.4, %for.cond1.for.inc26_crit_edge ], [ %n.055, %for.cond1.preheader ]
+  %indvars.iv.next61 = add i64 %indvars.iv60, 1
+  %14 = trunc i64 %indvars.iv.next61 to i32
+  %cmp = icmp slt i32 %14, %12
+  br i1 %cmp, label %for.cond1.preheader, label %for.end28
+
+for.end28:                                        ; preds = %for.inc26, %entry
+  %n.0.lcssa = phi i32 [ 0, %entry ], [ %n.1.lcssa, %for.inc26 ]
+  tail call void @_E__pr_info_header(i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), i64 457, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #5
+  tail call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([28 x i8]* @.str3, i64 0, i64 0), i32 %n.0.lcssa) #5
+  ret i32 %n.0.lcssa
+}

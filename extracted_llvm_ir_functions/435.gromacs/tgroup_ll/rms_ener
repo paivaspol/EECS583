@@ -1,0 +1,27 @@
+define float @rms_ener(%struct.t_energy* nocapture %e, i32 %nsteps) #0 {
+entry:
+  %e2sum = getelementptr inbounds %struct.t_energy* %e, i64 0, i32 3
+  %0 = load float* %e2sum, align 4, !tbaa !4
+  %conv = sitofp i32 %nsteps to float
+  %mul = fmul float %conv, %0
+  %conv1 = fpext float %mul to double
+  %esum = getelementptr inbounds %struct.t_energy* %e, i64 0, i32 2
+  %1 = load double* %esum, align 8, !tbaa !6
+  %mul3 = fmul double %1, %1
+  %sub = fsub double %conv1, %mul3
+  %conv4 = fptrunc double %sub to float
+  %cmp = fcmp ugt float %conv4, 0.000000e+00
+  br i1 %cmp, label %if.else, label %return
+
+if.else:                                          ; preds = %entry
+  %conv6 = fpext float %conv4 to double
+  %call = tail call double @sqrt(double %conv6) #4
+  %conv7 = sitofp i32 %nsteps to double
+  %div = fdiv double %call, %conv7
+  %conv8 = fptrunc double %div to float
+  br label %return
+
+return:                                           ; preds = %entry, %if.else
+  %retval.0 = phi float [ %conv8, %if.else ], [ 0.000000e+00, %entry ]
+  ret float %retval.0
+}

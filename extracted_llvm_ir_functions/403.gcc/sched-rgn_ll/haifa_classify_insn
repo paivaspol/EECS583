@@ -1,0 +1,130 @@
+define internal fastcc i32 @haifa_classify_insn(%struct.rtx_def* nocapture %insn) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.end94 [
+    i32 39, label %if.then
+    i32 49, label %sw.bb65
+    i32 47, label %sw.bb70
+    i32 38, label %sw.bb91
+    i32 52, label %sw.bb91
+  ]
+
+if.then:                                          ; preds = %entry
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtvec = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtvec_def**
+  %2 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %2, i64 0, i32 0
+  %3 = load i32* %num_elem, align 4, !tbaa !3
+  %4 = sext i32 %3 to i64
+  br label %for.cond
+
+for.cond:                                         ; preds = %sw.epilog, %if.then
+  %indvars.iv = phi i64 [ %indvars.iv.next, %sw.epilog ], [ %4, %if.then ]
+  %insn_class.0 = phi i32 [ %cond58, %sw.epilog ], [ 0, %if.then ]
+  %tmp_class.0 = phi i32 [ %tmp_class.1, %sw.epilog ], [ 0, %if.then ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %5 = trunc i64 %indvars.iv to i32
+  %cmp3 = icmp sgt i32 %5, 0
+  br i1 %cmp3, label %for.body, label %if.end94
+
+for.body:                                         ; preds = %for.cond
+  %6 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %arrayidx7 = getelementptr inbounds %struct.rtvec_def* %6, i64 0, i32 1, i64 %indvars.iv.next
+  %7 = load %struct.rtx_def** %arrayidx7, align 8, !tbaa !0
+  %8 = bitcast %struct.rtx_def* %7 to i32*
+  %bf.load8 = load i32* %8, align 8
+  %bf.clear9 = and i32 %bf.load8, 65535
+  switch i32 %bf.clear9, label %sw.epilog [
+    i32 49, label %sw.bb
+    i32 47, label %sw.bb19
+    i32 38, label %sw.bb53
+    i32 52, label %sw.bb53
+  ]
+
+sw.bb:                                            ; preds = %for.body
+  %arrayidx17 = getelementptr inbounds %struct.rtx_def* %7, i64 0, i32 1, i64 0
+  %rtx18 = bitcast %union.rtunion_def* %arrayidx17 to %struct.rtx_def**
+  %9 = load %struct.rtx_def** %rtx18, align 8, !tbaa !0
+  %call = tail call fastcc i32 @may_trap_exp(%struct.rtx_def* %9, i32 1) #9
+  br label %sw.epilog
+
+sw.bb19:                                          ; preds = %for.body
+  %arrayidx27 = getelementptr inbounds %struct.rtx_def* %7, i64 0, i32 1, i64 0
+  %rtx28 = bitcast %union.rtunion_def* %arrayidx27 to %struct.rtx_def**
+  %10 = load %struct.rtx_def** %rtx28, align 8, !tbaa !0
+  %call29 = tail call fastcc i32 @may_trap_exp(%struct.rtx_def* %10, i32 1) #9
+  %cmp30 = icmp eq i32 %call29, 5
+  br i1 %cmp30, label %sw.epilog, label %if.end
+
+if.end:                                           ; preds = %sw.bb19
+  %11 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %arrayidx37 = getelementptr inbounds %struct.rtvec_def* %11, i64 0, i32 1, i64 %indvars.iv.next
+  %12 = load %struct.rtx_def** %arrayidx37, align 8, !tbaa !0
+  %arrayidx39 = getelementptr inbounds %struct.rtx_def* %12, i64 0, i32 1, i64 1
+  %rtx40 = bitcast %union.rtunion_def* %arrayidx39 to %struct.rtx_def**
+  %13 = load %struct.rtx_def** %rtx40, align 8, !tbaa !0
+  %call41 = tail call fastcc i32 @may_trap_exp(%struct.rtx_def* %13, i32 0) #9
+  %cmp42 = icmp sgt i32 %call29, %call41
+  br i1 %cmp42, label %sw.epilog, label %cond.false
+
+cond.false:                                       ; preds = %if.end
+  %14 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %arrayidx48 = getelementptr inbounds %struct.rtvec_def* %14, i64 0, i32 1, i64 %indvars.iv.next
+  %15 = load %struct.rtx_def** %arrayidx48, align 8, !tbaa !0
+  %arrayidx50 = getelementptr inbounds %struct.rtx_def* %15, i64 0, i32 1, i64 1
+  %rtx51 = bitcast %union.rtunion_def* %arrayidx50 to %struct.rtx_def**
+  %16 = load %struct.rtx_def** %rtx51, align 8, !tbaa !0
+  %call52 = tail call fastcc i32 @may_trap_exp(%struct.rtx_def* %16, i32 0) #9
+  br label %sw.epilog
+
+sw.bb53:                                          ; preds = %for.body, %for.body
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %cond.false, %if.end, %for.body, %sw.bb19, %sw.bb53, %sw.bb
+  %tmp_class.1 = phi i32 [ %tmp_class.0, %for.body ], [ 5, %sw.bb53 ], [ 5, %sw.bb19 ], [ %call, %sw.bb ], [ %call52, %cond.false ], [ %call29, %if.end ]
+  %cmp54 = icmp sgt i32 %insn_class.0, %tmp_class.1
+  %cond58 = select i1 %cmp54, i32 %insn_class.0, i32 %tmp_class.1
+  %17 = and i32 %cond58, -2
+  %18 = icmp eq i32 %17, 4
+  br i1 %18, label %if.end94, label %for.cond
+
+sw.bb65:                                          ; preds = %entry
+  %arrayidx67 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtx68 = bitcast %union.rtunion_def* %arrayidx67 to %struct.rtx_def**
+  %19 = load %struct.rtx_def** %rtx68, align 8, !tbaa !0
+  %call69 = tail call fastcc i32 @may_trap_exp(%struct.rtx_def* %19, i32 1) #9
+  br label %if.end94
+
+sw.bb70:                                          ; preds = %entry
+  %fld71 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1
+  %rtx73 = bitcast [1 x %union.rtunion_def]* %fld71 to %struct.rtx_def**
+  %20 = load %struct.rtx_def** %rtx73, align 8, !tbaa !0
+  %call74 = tail call fastcc i32 @may_trap_exp(%struct.rtx_def* %20, i32 1) #9
+  %cmp75 = icmp eq i32 %call74, 5
+  br i1 %cmp75, label %if.end94, label %if.end77
+
+if.end77:                                         ; preds = %sw.bb70
+  %arrayidx79 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 1
+  %rtx80 = bitcast %union.rtunion_def* %arrayidx79 to %struct.rtx_def**
+  %21 = load %struct.rtx_def** %rtx80, align 8, !tbaa !0
+  %call81 = tail call fastcc i32 @may_trap_exp(%struct.rtx_def* %21, i32 0) #9
+  %cmp82 = icmp sgt i32 %call74, %call81
+  br i1 %cmp82, label %if.end94, label %cond.false84
+
+cond.false84:                                     ; preds = %if.end77
+  %22 = load %struct.rtx_def** %rtx80, align 8, !tbaa !0
+  %call88 = tail call fastcc i32 @may_trap_exp(%struct.rtx_def* %22, i32 0) #9
+  br label %if.end94
+
+sw.bb91:                                          ; preds = %entry, %entry
+  br label %if.end94
+
+if.end94:                                         ; preds = %for.cond, %sw.epilog, %sw.bb65, %sw.bb91, %sw.bb70, %entry, %if.end77, %cond.false84
+  %insn_class.1 = phi i32 [ 5, %sw.bb91 ], [ 5, %sw.bb70 ], [ %call69, %sw.bb65 ], [ 0, %entry ], [ %call88, %cond.false84 ], [ %call74, %if.end77 ], [ %insn_class.0, %for.cond ], [ %cond58, %sw.epilog ]
+  ret i32 %insn_class.1
+}

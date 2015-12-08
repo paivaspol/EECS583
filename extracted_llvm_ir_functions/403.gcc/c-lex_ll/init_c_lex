@@ -1,0 +1,68 @@
+define i8* @init_c_lex(i8* %filename) #0 {
+entry:
+  %call = tail call %struct.splay_tree_s* @splay_tree_new(i32 (i64, i64)* bitcast (i32 (i8*, i8*)* @strcmp to i32 (i64, i64)*), void (i64)* null, void (i64)* bitcast (void (i8*)* @free to void (i64)*)) #7
+  store %struct.splay_tree_s* %call, %struct.splay_tree_s** @file_info_tree, align 8, !tbaa !0
+  %call1 = tail call %struct.c_fileinfo* @get_fileinfo(i8* getelementptr inbounds ([12 x i8]* @.str, i64 0, i64 0)) #8
+  %0 = load i32* @flag_detailed_statistics, align 4, !tbaa !3
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  store i32 0, i32* @header_time, align 4, !tbaa !3
+  %call2 = tail call i64 @get_run_time() #7
+  %conv = trunc i64 %call2 to i32
+  store i32 %conv, i32* @body_time, align 4, !tbaa !3
+  %time = getelementptr inbounds %struct.c_fileinfo* %call1, i64 0, i32 0
+  store i32 %conv, i32* %time, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %1 = load %struct.cpp_reader** @parse_in, align 8, !tbaa !0
+  %call3 = tail call %struct.cpp_callbacks* @cpp_get_callbacks(%struct.cpp_reader* %1) #7
+  %line_change = getelementptr inbounds %struct.cpp_callbacks* %call3, i64 0, i32 0
+  store void (%struct.cpp_reader*, %struct.cpp_token*, i32)* @cb_line_change, void (%struct.cpp_reader*, %struct.cpp_token*, i32)** %line_change, align 8, !tbaa !0
+  %ident = getelementptr inbounds %struct.cpp_callbacks* %call3, i64 0, i32 5
+  store void (%struct.cpp_reader*, i32, %struct.cpp_string*)* @cb_ident, void (%struct.cpp_reader*, i32, %struct.cpp_string*)** %ident, align 8, !tbaa !0
+  %file_change = getelementptr inbounds %struct.cpp_callbacks* %call3, i64 0, i32 1
+  store void (%struct.cpp_reader*, %struct.line_map*)* @cb_file_change, void (%struct.cpp_reader*, %struct.line_map*)** %file_change, align 8, !tbaa !0
+  %def_pragma = getelementptr inbounds %struct.cpp_callbacks* %call3, i64 0, i32 6
+  store void (%struct.cpp_reader*, i32)* @cb_def_pragma, void (%struct.cpp_reader*, i32)** %def_pragma, align 8, !tbaa !0
+  %2 = load i32* @debug_info_level, align 4, !tbaa !4
+  %cmp = icmp eq i32 %2, 3
+  br i1 %cmp, label %land.lhs.true, label %if.end13
+
+land.lhs.true:                                    ; preds = %if.end
+  %3 = load i32* @write_symbols, align 4, !tbaa !5
+  %.off = add i32 %3, -3
+  %4 = icmp ult i32 %.off, 2
+  %cmp10 = icmp eq i32 %3, 7
+  %or.cond22 = or i1 %4, %cmp10
+  br i1 %or.cond22, label %if.then12, label %if.end13
+
+if.then12:                                        ; preds = %land.lhs.true
+  %define = getelementptr inbounds %struct.cpp_callbacks* %call3, i64 0, i32 3
+  store void (%struct.cpp_reader*, i32, %struct.cpp_hashnode*)* @cb_define, void (%struct.cpp_reader*, i32, %struct.cpp_hashnode*)** %define, align 8, !tbaa !0
+  %undef = getelementptr inbounds %struct.cpp_callbacks* %call3, i64 0, i32 4
+  store void (%struct.cpp_reader*, i32, %struct.cpp_hashnode*)* @cb_undef, void (%struct.cpp_reader*, i32, %struct.cpp_hashnode*)** %undef, align 8, !tbaa !0
+  br label %if.end13
+
+if.end13:                                         ; preds = %land.lhs.true, %if.then12, %if.end
+  store i32 0, i32* @lineno, align 4, !tbaa !3
+  %cmp14 = icmp eq i8* %filename, null
+  br i1 %cmp14, label %if.then19, label %lor.lhs.false16
+
+lor.lhs.false16:                                  ; preds = %if.end13
+  %call17 = tail call i32 @strcmp(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0)) #9
+  %tobool18 = icmp eq i32 %call17, 0
+  br i1 %tobool18, label %if.then19, label %if.end20
+
+if.then19:                                        ; preds = %lor.lhs.false16, %if.end13
+  br label %if.end20
+
+if.end20:                                         ; preds = %lor.lhs.false16, %if.then19
+  %filename.addr.0 = phi i8* [ getelementptr inbounds ([1 x i8]* @.str2, i64 0, i64 0), %if.then19 ], [ %filename, %lor.lhs.false16 ]
+  %5 = load %struct.cpp_reader** @parse_in, align 8, !tbaa !0
+  %6 = load %struct.ht** @ident_hash, align 8, !tbaa !0
+  %call21 = tail call i8* @cpp_read_main_file(%struct.cpp_reader* %5, i8* %filename.addr.0, %struct.ht* %6) #7
+  ret i8* %call21
+}

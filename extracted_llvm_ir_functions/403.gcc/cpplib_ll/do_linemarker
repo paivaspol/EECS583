@@ -1,0 +1,121 @@
+define internal void @do_linemarker(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %map = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 3
+  %0 = load %struct.line_map** %map, align 8, !tbaa !3
+  %to_file = getelementptr inbounds %struct.line_map* %0, i64 0, i32 0
+  %1 = load i8** %to_file, align 8, !tbaa !3
+  %sysp = getelementptr inbounds %struct.line_map* %0, i64 0, i32 5
+  %2 = load i8* %sysp, align 1, !tbaa !0
+  %conv = zext i8 %2 to i32
+  tail call void @_cpp_backup_tokens(%struct.cpp_reader* %pfile, i32 1) #8
+  %call = tail call %struct.cpp_token* @cpp_get_token(%struct.cpp_reader* %pfile) #8
+  %type = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2
+  %bf.load = load i8* %type, align 2
+  %cmp = icmp eq i8 %bf.load, 57
+  br i1 %cmp, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %entry
+  %len = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4, i32 0, i32 0
+  %3 = load i32* %len, align 4, !tbaa !2
+  %tobool11.i = icmp eq i32 %3, 0
+  br i1 %tobool11.i, label %if.end, label %while.body.i.preheader
+
+while.body.i.preheader:                           ; preds = %lor.lhs.false
+  %text = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4, i32 0, i32 1
+  %4 = load i8** %text, align 8, !tbaa !3
+  br label %while.body.i
+
+while.body.i:                                     ; preds = %while.body.i.preheader, %if.end.i
+  %dec14.in.i = phi i32 [ %dec14.i, %if.end.i ], [ %3, %while.body.i.preheader ]
+  %reg.013.i = phi i64 [ %add.i, %if.end.i ], [ 0, %while.body.i.preheader ]
+  %str.addr.012.i = phi i8* [ %incdec.ptr.i, %if.end.i ], [ %4, %while.body.i.preheader ]
+  %dec14.i = add i32 %dec14.in.i, -1
+  %5 = load i8* %str.addr.012.i, align 1, !tbaa !0
+  %idxprom.i = zext i8 %5 to i64
+  %arrayidx.i = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom.i
+  %6 = load i16* %arrayidx.i, align 2, !tbaa !7
+  %and2.i = and i16 %6, 4
+  %tobool3.i = icmp eq i16 %and2.i, 0
+  br i1 %tobool3.i, label %if.then, label %if.end.i
+
+if.end.i:                                         ; preds = %while.body.i
+  %incdec.ptr.i = getelementptr inbounds i8* %str.addr.012.i, i64 1
+  %mul.i = mul i64 %reg.013.i, 10
+  %sub.i = add i64 %mul.i, -48
+  %add.i = add i64 %sub.i, %idxprom.i
+  %tobool.i = icmp eq i32 %dec14.i, 0
+  br i1 %tobool.i, label %if.end.loopexit, label %while.body.i
+
+if.then:                                          ; preds = %while.body.i, %entry
+  %call6 = tail call i8* @cpp_token_as_text(%struct.cpp_reader* %pfile, %struct.cpp_token* %call) #8
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([39 x i8]* @.str35, i64 0, i64 0), i8* %call6) #8
+  br label %return
+
+if.end.loopexit:                                  ; preds = %if.end.i
+  %phitmp = trunc i64 %add.i to i32
+  br label %if.end
+
+if.end:                                           ; preds = %if.end.loopexit, %lor.lhs.false
+  %reg.0.lcssa.i84.ph = phi i32 [ 0, %lor.lhs.false ], [ %phitmp, %if.end.loopexit ]
+  %call7 = tail call %struct.cpp_token* @cpp_get_token(%struct.cpp_reader* %pfile) #8
+  %type8 = getelementptr inbounds %struct.cpp_token* %call7, i64 0, i32 2
+  %bf.load9 = load i8* %type8, align 2
+  switch i8 %bf.load9, label %if.then47 [
+    i8 61, label %if.then13
+    i8 67, label %if.end50
+  ]
+
+if.then13:                                        ; preds = %if.end
+  %text16 = getelementptr inbounds %struct.cpp_token* %call7, i64 0, i32 4, i32 0, i32 1
+  %7 = load i8** %text16, align 8, !tbaa !3
+  %len19 = getelementptr inbounds %struct.cpp_token* %call7, i64 0, i32 4, i32 0, i32 0
+  %8 = load i32* %len19, align 4, !tbaa !2
+  %call20 = tail call fastcc i8* @dequote_string(%struct.cpp_reader* %pfile, i8* %7, i32 %8) #9
+  %call21 = tail call fastcc i32 @read_flag(%struct.cpp_reader* %pfile, i32 0) #9
+  switch i32 %call21, label %if.end31 [
+    i32 1, label %if.then24
+    i32 2, label %if.then28
+  ]
+
+if.then24:                                        ; preds = %if.then13
+  tail call void @_cpp_fake_include(%struct.cpp_reader* %pfile, i8* %call20) #8
+  %call25 = tail call fastcc i32 @read_flag(%struct.cpp_reader* %pfile, i32 1) #9
+  br label %if.end31
+
+if.then28:                                        ; preds = %if.then13
+  %call29 = tail call fastcc i32 @read_flag(%struct.cpp_reader* %pfile, i32 2) #9
+  br label %if.end31
+
+if.end31:                                         ; preds = %if.then13, %if.then28, %if.then24
+  %reason.0 = phi i32 [ 0, %if.then24 ], [ 1, %if.then28 ], [ 2, %if.then13 ]
+  %flag.0 = phi i32 [ %call25, %if.then24 ], [ %call29, %if.then28 ], [ %call21, %if.then13 ]
+  %cmp32 = icmp eq i32 %flag.0, 3
+  br i1 %cmp32, label %if.then34, label %if.end40
+
+if.then34:                                        ; preds = %if.end31
+  %call35 = tail call fastcc i32 @read_flag(%struct.cpp_reader* %pfile, i32 3) #9
+  %cmp36 = icmp eq i32 %call35, 4
+  %. = select i1 %cmp36, i32 2, i32 1
+  br label %if.end40
+
+if.end40:                                         ; preds = %if.then34, %if.end31
+  %new_sysp.0 = phi i32 [ 0, %if.end31 ], [ %., %if.then34 ]
+  tail call fastcc void @check_eol(%struct.cpp_reader* %pfile) #9
+  br label %if.end50
+
+if.then47:                                        ; preds = %if.end
+  %call48 = tail call i8* @cpp_token_as_text(%struct.cpp_reader* %pfile, %struct.cpp_token* %call7) #8
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([29 x i8]* @.str36, i64 0, i64 0), i8* %call48) #8
+  br label %return
+
+if.end50:                                         ; preds = %if.end, %if.end40
+  %new_file.0 = phi i8* [ %call20, %if.end40 ], [ %1, %if.end ]
+  %new_sysp.1 = phi i32 [ %new_sysp.0, %if.end40 ], [ %conv, %if.end ]
+  %reason.1 = phi i32 [ %reason.0, %if.end40 ], [ 2, %if.end ]
+  tail call fastcc void @skip_rest_of_line(%struct.cpp_reader* %pfile) #9
+  tail call void @_cpp_do_file_change(%struct.cpp_reader* %pfile, i32 %reason.1, i8* %new_file.0, i32 %reg.0.lcssa.i84.ph, i32 %new_sysp.1) #9
+  br label %return
+
+return:                                           ; preds = %if.end50, %if.then47, %if.then
+  ret void
+}

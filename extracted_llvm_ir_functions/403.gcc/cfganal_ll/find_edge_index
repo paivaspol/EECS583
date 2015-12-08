@@ -1,0 +1,39 @@
+define i32 @find_edge_index(%struct.edge_list* nocapture %edge_list, %struct.basic_block_def* %pred, %struct.basic_block_def* %succ) #3 {
+entry:
+  %num_edges = getelementptr inbounds %struct.edge_list* %edge_list, i64 0, i32 1
+  %0 = load i32* %num_edges, align 4, !tbaa !3
+  %cmp12 = icmp sgt i32 %0, 0
+  br i1 %cmp12, label %for.body.lr.ph, label %return
+
+for.body.lr.ph:                                   ; preds = %entry
+  %index_to_edge = getelementptr inbounds %struct.edge_list* %edge_list, i64 0, i32 2
+  %1 = load %struct.edge_def*** %index_to_edge, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %x.013 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %arrayidx = getelementptr inbounds %struct.edge_def** %1, i64 %indvars.iv
+  %2 = load %struct.edge_def** %arrayidx, align 8, !tbaa !0
+  %src = getelementptr inbounds %struct.edge_def* %2, i64 0, i32 2
+  %3 = load %struct.basic_block_def** %src, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct.basic_block_def* %3, %pred
+  br i1 %cmp1, label %land.lhs.true, label %for.inc
+
+land.lhs.true:                                    ; preds = %for.body
+  %dest = getelementptr inbounds %struct.edge_def* %2, i64 0, i32 3
+  %4 = load %struct.basic_block_def** %dest, align 8, !tbaa !0
+  %cmp5 = icmp eq %struct.basic_block_def* %4, %succ
+  br i1 %cmp5, label %return, label %for.inc
+
+for.inc:                                          ; preds = %for.body, %land.lhs.true
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %x.013, 1
+  %5 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %5, %0
+  br i1 %cmp, label %for.body, label %return
+
+return:                                           ; preds = %for.inc, %land.lhs.true, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %x.013, %land.lhs.true ], [ -1, %for.inc ]
+  ret i32 %retval.0
+}

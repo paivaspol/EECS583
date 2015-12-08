@@ -1,0 +1,32 @@
+define double @vector_maha_precomp(float* nocapture %var, i32 %len) #0 {
+entry:
+  %cmp21 = icmp sgt i32 %len, 0
+  br i1 %cmp21, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %det.022 = phi double [ %sub, %for.body ], [ 0.000000e+00, %entry ]
+  %arrayidx = getelementptr inbounds float* %var, i64 %indvars.iv
+  %0 = load float* %arrayidx, align 4, !tbaa !0
+  %conv = fpext float %0 to double
+  %call = tail call double @log(double %conv) #5
+  %sub = fsub double %det.022, %call
+  %1 = load float* %arrayidx, align 4, !tbaa !0
+  %conv3 = fpext float %1 to double
+  %mul = fmul double %conv3, 2.000000e+00
+  %div = fdiv double 1.000000e+00, %mul
+  %conv4 = fptrunc double %div to float
+  store float %conv4, float* %arrayidx, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %len
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %det.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %sub, %for.body ]
+  %conv8 = sitofp i32 %len to double
+  %mul9 = fmul double %conv8, 0x3FFD67F1C864BEB4
+  %sub10 = fsub double %det.0.lcssa, %mul9
+  %mul11 = fmul double %sub10, 5.000000e-01
+  ret double %mul11
+}

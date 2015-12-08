@@ -1,0 +1,24 @@
+define internal fastcc %struct.rtx_def* @enqueue_insn(%struct.rtx_def* %var, %struct.rtx_def* %body) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %var to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %1 = load %struct.function** @cfun, align 8, !tbaa !0
+  %expr = getelementptr inbounds %struct.function* %1, i64 0, i32 2
+  %2 = load %struct.expr_status** %expr, align 8, !tbaa !0
+  %x_pending_chain = getelementptr inbounds %struct.expr_status* %2, i64 0, i32 6
+  %3 = load %struct.rtx_def** %x_pending_chain, align 8, !tbaa !0
+  %call = tail call %struct.rtx_def* @gen_rtx_fmt_eeeee(i32 71, i32 %bf.clear, %struct.rtx_def* %var, %struct.rtx_def* null, %struct.rtx_def* null, %struct.rtx_def* %body, %struct.rtx_def* %3) #8
+  %4 = load %struct.function** @cfun, align 8, !tbaa !0
+  %expr1 = getelementptr inbounds %struct.function* %4, i64 0, i32 2
+  %5 = load %struct.expr_status** %expr1, align 8, !tbaa !0
+  %x_pending_chain2 = getelementptr inbounds %struct.expr_status* %5, i64 0, i32 6
+  store %struct.rtx_def* %call, %struct.rtx_def** %x_pending_chain2, align 8, !tbaa !0
+  %6 = load %struct.function** @cfun, align 8, !tbaa !0
+  %expr3 = getelementptr inbounds %struct.function* %6, i64 0, i32 2
+  %7 = load %struct.expr_status** %expr3, align 8, !tbaa !0
+  %x_pending_chain4 = getelementptr inbounds %struct.expr_status* %7, i64 0, i32 6
+  %8 = load %struct.rtx_def** %x_pending_chain4, align 8, !tbaa !0
+  ret %struct.rtx_def* %8
+}

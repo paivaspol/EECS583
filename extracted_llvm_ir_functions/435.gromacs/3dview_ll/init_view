@@ -1,0 +1,32 @@
+define %struct.t_3dview* @init_view([3 x float]* nocapture %box) #0 {
+entry:
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str7, i64 0, i64 0), i32 305, i32 1, i32 204) #4
+  %box8 = bitcast i8* %call to [3 x [3 x float]]*
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc11, %entry
+  %indvars.iv24 = phi i64 [ 0, %entry ], [ %indvars.iv.next25, %for.inc11 ]
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %arrayidx5 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv24, i64 %indvars.iv
+  %0 = load float* %arrayidx5, align 4, !tbaa !0
+  %arrayidx10 = getelementptr inbounds [3 x [3 x float]]* %box8, i64 0, i64 %indvars.iv24, i64 %indvars.iv
+  store float %0, float* %arrayidx10, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc11, label %for.body3
+
+for.inc11:                                        ; preds = %for.body3
+  %indvars.iv.next25 = add i64 %indvars.iv24, 1
+  %lftr.wideiv26 = trunc i64 %indvars.iv.next25 to i32
+  %exitcond27 = icmp eq i32 %lftr.wideiv26, 3
+  br i1 %exitcond27, label %for.end13, label %for.cond1.preheader
+
+for.end13:                                        ; preds = %for.inc11
+  %1 = bitcast i8* %call to %struct.t_3dview*
+  tail call void @reset_view(%struct.t_3dview* %1) #5
+  ret %struct.t_3dview* %1
+}

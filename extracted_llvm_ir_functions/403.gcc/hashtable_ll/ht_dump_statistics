@@ -1,0 +1,134 @@
+define void @ht_dump_statistics(%struct.ht* %table) #0 {
+entry:
+  %entries = getelementptr inbounds %struct.ht* %table, i64 0, i32 1
+  %0 = load %struct.ht_identifier*** %entries, align 8, !tbaa !3
+  %nslots = getelementptr inbounds %struct.ht* %table, i64 0, i32 3
+  %1 = load i32* %nslots, align 4, !tbaa !0
+  %idx.ext = zext i32 %1 to i64
+  %add.ptr = getelementptr inbounds %struct.ht_identifier** %0, i64 %idx.ext
+  br label %do.body
+
+do.body:                                          ; preds = %do.cond, %entry
+  %sum_of_squares.0 = phi i64 [ 0, %entry ], [ %sum_of_squares.1, %do.cond ]
+  %longest.0 = phi i64 [ 0, %entry ], [ %longest.2, %do.cond ]
+  %p.0 = phi %struct.ht_identifier** [ %0, %entry ], [ %incdec.ptr, %do.cond ]
+  %total_bytes.0 = phi i64 [ 0, %entry ], [ %total_bytes.1, %do.cond ]
+  %nids.0 = phi i64 [ 0, %entry ], [ %nids.1, %do.cond ]
+  %2 = load %struct.ht_identifier** %p.0, align 8, !tbaa !3
+  %tobool = icmp eq %struct.ht_identifier* %2, null
+  br i1 %tobool, label %do.cond, label %if.then
+
+if.then:                                          ; preds = %do.body
+  %len = getelementptr inbounds %struct.ht_identifier* %2, i64 0, i32 0
+  %3 = load i32* %len, align 4, !tbaa !0
+  %conv = zext i32 %3 to i64
+  %add = add i64 %conv, %total_bytes.0
+  %mul = mul i64 %conv, %conv
+  %add1 = add i64 %mul, %sum_of_squares.0
+  %cmp = icmp ugt i64 %conv, %longest.0
+  %conv.longest.0 = select i1 %cmp, i64 %conv, i64 %longest.0
+  %inc = add i64 %nids.0, 1
+  br label %do.cond
+
+do.cond:                                          ; preds = %do.body, %if.then
+  %sum_of_squares.1 = phi i64 [ %add1, %if.then ], [ %sum_of_squares.0, %do.body ]
+  %longest.2 = phi i64 [ %conv.longest.0, %if.then ], [ %longest.0, %do.body ]
+  %total_bytes.1 = phi i64 [ %add, %if.then ], [ %total_bytes.0, %do.body ]
+  %nids.1 = phi i64 [ %inc, %if.then ], [ %nids.0, %do.body ]
+  %incdec.ptr = getelementptr inbounds %struct.ht_identifier** %p.0, i64 1
+  %cmp5 = icmp ult %struct.ht_identifier** %incdec.ptr, %add.ptr
+  br i1 %cmp5, label %do.body, label %do.end
+
+do.end:                                           ; preds = %do.cond
+  %nelements = getelementptr inbounds %struct.ht* %table, i64 0, i32 4
+  %4 = load i32* %nelements, align 4, !tbaa !0
+  %conv7 = zext i32 %4 to i64
+  %stack = getelementptr inbounds %struct.ht* %table, i64 0, i32 0
+  %call = tail call i32 @_obstack_memory_used(%struct.obstack* %stack) #6
+  %conv8 = sext i32 %call to i64
+  %sub = sub i64 %conv8, %total_bytes.1
+  %5 = load i32* %nslots, align 4, !tbaa !0
+  %conv10 = zext i32 %5 to i64
+  %mul11 = shl nuw nsw i64 %conv10, 3
+  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call12 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([27 x i8]* @.str, i64 0, i64 0), i64 %conv7) #6
+  %7 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %conv13 = uitofp i64 %nids.1 to double
+  %mul14 = fmul double %conv13, 1.000000e+02
+  %conv15 = uitofp i32 %4 to double
+  %div = fdiv double %mul14, %conv15
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0), i64 %nids.1, double %div) #6
+  %8 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %9 = load i32* %nslots, align 4, !tbaa !0
+  %conv18 = zext i32 %9 to i64
+  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %8, i8* getelementptr inbounds ([12 x i8]* @.str2, i64 0, i64 0), i64 %conv18) #6
+  %10 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %cmp20 = icmp ult i64 %total_bytes.1, 10240
+  br i1 %cmp20, label %cond.end37, label %cond.false
+
+cond.false:                                       ; preds = %do.end
+  %cmp22 = icmp ult i64 %total_bytes.1, 10485760
+  %cond29149.v = select i1 %cmp22, i64 10, i64 20
+  %cond29149 = lshr i64 %total_bytes.1, %cond29149.v
+  %cond36 = select i1 %cmp22, i32 107, i32 77
+  br label %cond.end37
+
+cond.end37:                                       ; preds = %do.end, %cond.false
+  %cond29147 = phi i64 [ %cond29149, %cond.false ], [ %total_bytes.1, %do.end ]
+  %cond38 = phi i32 [ %cond36, %cond.false ], [ 32, %do.end ]
+  %cmp39 = icmp ult i64 %sub, 10240
+  br i1 %cmp39, label %cond.end60, label %cond.false42
+
+cond.false42:                                     ; preds = %cond.end37
+  %cmp43 = icmp ult i64 %sub, 10485760
+  %cond52152.v = select i1 %cmp43, i64 10, i64 20
+  %cond52152 = lshr i64 %sub, %cond52152.v
+  %cond59 = select i1 %cmp43, i32 107, i32 77
+  br label %cond.end60
+
+cond.end60:                                       ; preds = %cond.end37, %cond.false42
+  %cond52150 = phi i64 [ %cond52152, %cond.false42 ], [ %sub, %cond.end37 ]
+  %cond61 = phi i32 [ %cond59, %cond.false42 ], [ 32, %cond.end37 ]
+  %call62 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %10, i8* getelementptr inbounds ([31 x i8]* @.str3, i64 0, i64 0), i64 %cond29147, i32 %cond38, i64 %cond52150, i32 %cond61) #6
+  %11 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %cmp63 = icmp ult i64 %mul11, 10240
+  br i1 %cmp63, label %cond.end84, label %cond.false66
+
+cond.false66:                                     ; preds = %cond.end60
+  %cmp67 = icmp ult i64 %mul11, 10485760
+  %cond76155.v = select i1 %cmp67, i64 7, i64 17
+  %cond76155 = lshr i64 %conv10, %cond76155.v
+  %cond83 = select i1 %cmp67, i32 107, i32 77
+  br label %cond.end84
+
+cond.end84:                                       ; preds = %cond.end60, %cond.false66
+  %cond76153 = phi i64 [ %cond76155, %cond.false66 ], [ %mul11, %cond.end60 ]
+  %cond85 = phi i32 [ %cond83, %cond.false66 ], [ 32, %cond.end60 ]
+  %call86 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %11, i8* getelementptr inbounds ([18 x i8]* @.str4, i64 0, i64 0), i64 %cond76153, i32 %cond85) #6
+  %conv87 = uitofp i64 %total_bytes.1 to double
+  %div89 = fdiv double %conv87, %conv15
+  %mul90 = fmul double %div89, %div89
+  %conv91 = uitofp i64 %sum_of_squares.1 to double
+  %div93 = fdiv double %conv91, %conv15
+  %12 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %collisions = getelementptr inbounds %struct.ht* %table, i64 0, i32 7
+  %13 = load i32* %collisions, align 4, !tbaa !0
+  %conv94 = uitofp i32 %13 to double
+  %searches = getelementptr inbounds %struct.ht* %table, i64 0, i32 6
+  %14 = load i32* %searches, align 4, !tbaa !0
+  %conv95 = uitofp i32 %14 to double
+  %div96 = fdiv double %conv94, %conv95
+  %call97 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %12, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0), double %div96) #6
+  %15 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %16 = load i32* %searches, align 4, !tbaa !0
+  %conv100 = uitofp i32 %16 to double
+  %div101 = fdiv double %conv15, %conv100
+  %call102 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %15, i8* getelementptr inbounds ([17 x i8]* @.str6, i64 0, i64 0), double %div101) #6
+  %17 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %sub103 = fsub double %div93, %mul90
+  %call104 = tail call double @approx_sqrt(double %sub103) #8
+  %call105 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %17, i8* getelementptr inbounds ([34 x i8]* @.str7, i64 0, i64 0), double %div89, double %call104) #6
+  %18 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call106 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %18, i8* getelementptr inbounds ([19 x i8]* @.str8, i64 0, i64 0), i64 %longest.2) #6
+  ret void
+}

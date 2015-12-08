@@ -1,0 +1,50 @@
+define void @rotate_vec(i32 %nr, [3 x float]* nocapture %x, [3 x float]* nocapture %rotmat) #0 {
+entry:
+  %xdum = alloca [3 x float], align 4
+  %xdum58 = bitcast [3 x float]* %xdum to i8*
+  %cmp56 = icmp sgt i32 %nr, 0
+  br i1 %cmp56, label %for.cond1.preheader, label %for.end36
+
+for.cond1.preheader:                              ; preds = %entry, %for.inc34
+  %indvars.iv66 = phi i64 [ %indvars.iv.next67, %for.inc34 ], [ 0, %entry ]
+  %scevgep = getelementptr [3 x float]* %x, i64 %indvars.iv66, i64 0
+  %scevgep59 = bitcast float* %scevgep to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %xdum58, i8* %scevgep59, i64 12, i32 4, i1 false)
+  br label %for.body10
+
+for.body10:                                       ; preds = %for.inc31, %for.cond1.preheader
+  %indvars.iv60 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next61, %for.inc31 ]
+  %arrayidx14 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv66, i64 %indvars.iv60
+  store float 0.000000e+00, float* %arrayidx14, align 4, !tbaa !4
+  br label %for.body17
+
+for.body17:                                       ; preds = %for.body17, %for.body10
+  %0 = phi float [ 0.000000e+00, %for.body10 ], [ %add, %for.body17 ]
+  %indvars.iv = phi i64 [ 0, %for.body10 ], [ %indvars.iv.next, %for.body17 ]
+  %arrayidx21 = getelementptr inbounds [3 x float]* %rotmat, i64 %indvars.iv, i64 %indvars.iv60
+  %1 = load float* %arrayidx21, align 4, !tbaa !4
+  %arrayidx23 = getelementptr inbounds [3 x float]* %xdum, i64 0, i64 %indvars.iv
+  %2 = load float* %arrayidx23, align 4, !tbaa !4
+  %mul = fmul float %1, %2
+  %add = fadd float %0, %mul
+  store float %add, float* %arrayidx14, align 4, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc31, label %for.body17
+
+for.inc31:                                        ; preds = %for.body17
+  %indvars.iv.next61 = add i64 %indvars.iv60, 1
+  %lftr.wideiv62 = trunc i64 %indvars.iv.next61 to i32
+  %exitcond63 = icmp eq i32 %lftr.wideiv62, 3
+  br i1 %exitcond63, label %for.inc34, label %for.body10
+
+for.inc34:                                        ; preds = %for.inc31
+  %indvars.iv.next67 = add i64 %indvars.iv66, 1
+  %lftr.wideiv68 = trunc i64 %indvars.iv.next67 to i32
+  %exitcond69 = icmp eq i32 %lftr.wideiv68, %nr
+  br i1 %exitcond69, label %for.end36, label %for.cond1.preheader
+
+for.end36:                                        ; preds = %for.inc34, %entry
+  ret void
+}

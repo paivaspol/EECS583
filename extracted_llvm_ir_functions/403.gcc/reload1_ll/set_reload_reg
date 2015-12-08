@@ -1,0 +1,101 @@
+define internal fastcc i32 @set_reload_reg(i32 %i, i32 %r) #0 {
+entry:
+  %idxprom = sext i32 %i to i64
+  %arrayidx = getelementptr inbounds [53 x %struct.rtx_def*]* @spill_reg_rtx, i64 0, i64 %idxprom
+  %0 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !3
+  %cmp = icmp eq %struct.rtx_def* %0, null
+  br i1 %cmp, label %entry.if.then_crit_edge, label %lor.lhs.false
+
+entry.if.then_crit_edge:                          ; preds = %entry
+  %idxprom4.phi.trans.insert = sext i32 %r to i64
+  %mode6.phi.trans.insert = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom4.phi.trans.insert, i32 5
+  %.pre = load i32* %mode6.phi.trans.insert, align 4, !tbaa !8
+  br label %if.then
+
+lor.lhs.false:                                    ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %idxprom1 = sext i32 %r to i64
+  %mode = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom1, i32 5
+  %2 = load i32* %mode, align 4, !tbaa !8
+  %cmp3 = icmp eq i32 %bf.clear, %2
+  br i1 %cmp3, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry.if.then_crit_edge, %lor.lhs.false
+  %3 = phi i32 [ %.pre, %entry.if.then_crit_edge ], [ %2, %lor.lhs.false ]
+  %arrayidx8 = getelementptr inbounds [53 x i16]* @spill_regs, i64 0, i64 %idxprom
+  %4 = load i16* %arrayidx8, align 2, !tbaa !5
+  %conv = sext i16 %4 to i32
+  %call = tail call %struct.rtx_def* @gen_rtx_REG(i32 %3, i32 %conv) #7
+  store %struct.rtx_def* %call, %struct.rtx_def** %arrayidx, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false, %if.then
+  %reg.0 = phi %struct.rtx_def* [ %call, %if.then ], [ %0, %lor.lhs.false ]
+  %call11 = tail call i32 @true_regnum(%struct.rtx_def* %reg.0) #7
+  %idxprom12 = sext i32 %r to i64
+  %mode14 = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom12, i32 5
+  %5 = load i32* %mode14, align 4, !tbaa !8
+  %call15 = tail call i32 @ix86_hard_regno_mode_ok(i32 %call11, i32 %5) #7
+  %tobool = icmp eq i32 %call15, 0
+  br i1 %tobool, label %return, label %if.then16
+
+if.then16:                                        ; preds = %if.end
+  %in = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom12, i32 0
+  %6 = load %struct.rtx_def** %in, align 8, !tbaa !3
+  %tobool19 = icmp eq %struct.rtx_def* %6, null
+  br i1 %tobool19, label %if.then38, label %if.end27
+
+if.end27:                                         ; preds = %if.then16
+  %7 = bitcast %struct.rtx_def* %6 to i32*
+  %bf.load24 = load i32* %7, align 8
+  %bf.lshr25 = lshr i32 %bf.load24, 16
+  %bf.clear26 = and i32 %bf.lshr25, 255
+  %cmp33 = icmp eq i32 %bf.clear26, 0
+  br i1 %cmp33, label %if.then38, label %land.lhs.true35
+
+land.lhs.true35:                                  ; preds = %if.end27
+  %call36 = tail call i32 @ix86_hard_regno_mode_ok(i32 %call11, i32 %bf.clear26) #7
+  %tobool37 = icmp eq i32 %call36, 0
+  br i1 %tobool37, label %return, label %if.then38
+
+if.then38:                                        ; preds = %if.then16, %land.lhs.true35, %if.end27
+  %out = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom12, i32 1
+  %8 = load %struct.rtx_def** %out, align 8, !tbaa !3
+  %cmp41 = icmp eq %struct.rtx_def* %8, null
+  br i1 %cmp41, label %if.then52, label %land.lhs.true43
+
+land.lhs.true43:                                  ; preds = %if.then38
+  %9 = bitcast %struct.rtx_def* %8 to i32*
+  %bf.load47 = load i32* %9, align 8
+  %bf.lshr48 = lshr i32 %bf.load47, 16
+  %bf.clear49 = and i32 %bf.lshr48, 255
+  %call50 = tail call i32 @ix86_hard_regno_mode_ok(i32 %call11, i32 %bf.clear49) #7
+  %tobool51 = icmp eq i32 %call50, 0
+  br i1 %tobool51, label %return, label %if.then52
+
+if.then52:                                        ; preds = %land.lhs.true43, %if.then38
+  store i32 %i, i32* @last_spill_reg, align 4, !tbaa !0
+  %arrayidx54 = getelementptr inbounds [53 x i16]* @spill_regs, i64 0, i64 %idxprom
+  %10 = load i16* %arrayidx54, align 2, !tbaa !5
+  %conv55 = sext i16 %10 to i32
+  %opnum = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom12, i32 12
+  %11 = load i32* %opnum, align 8, !tbaa !0
+  %when_needed = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom12, i32 17
+  %12 = load i32* %when_needed, align 4, !tbaa !9
+  %13 = load i32* %mode14, align 4, !tbaa !8
+  tail call fastcc void @mark_reload_reg_in_use(i32 %conv55, i32 %11, i32 %12, i32 %13) #9
+  %reg_rtx = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom12, i32 11
+  store %struct.rtx_def* %reg.0, %struct.rtx_def** %reg_rtx, align 8, !tbaa !3
+  %14 = load i16* %arrayidx54, align 2, !tbaa !5
+  %conv67 = sext i16 %14 to i32
+  %arrayidx69 = getelementptr inbounds [180 x i32]* @reload_spill_index, i64 0, i64 %idxprom12
+  store i32 %conv67, i32* %arrayidx69, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end, %land.lhs.true43, %land.lhs.true35, %if.then52
+  %retval.0 = phi i32 [ 1, %if.then52 ], [ 0, %land.lhs.true35 ], [ 0, %land.lhs.true43 ], [ 0, %if.end ]
+  ret i32 %retval.0
+}

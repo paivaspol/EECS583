@@ -1,0 +1,65 @@
+define internal fastcc void @set_factor_matrix(i32 %ntypes, float* nocapture %f, float %fmult, i32 %ati, i32 %atj) #0 {
+entry:
+  %conv = fpext float %fmult to double
+  %cmp = fcmp olt double %conv, 9.500000e-01
+  br i1 %cmp, label %cond.end15, label %cond.false
+
+cond.false:                                       ; preds = %entry
+  %phitmp = fcmp ogt double %conv, 1.050000e+00
+  %.mux.fmult = select i1 %phitmp, float 0x3FF0CCCCC0000000, float %fmult
+  br label %cond.end15
+
+cond.end15:                                       ; preds = %cond.false, %entry
+  %cond16 = phi float [ 0x3FEE666660000000, %entry ], [ %.mux.fmult, %cond.false ]
+  %cmp18 = icmp eq i32 %atj, -1
+  br i1 %cmp18, label %for.cond.preheader, label %if.then
+
+for.cond.preheader:                               ; preds = %cond.end15
+  %cmp2661 = icmp sgt i32 %ntypes, 0
+  br i1 %cmp2661, label %for.body.lr.ph, label %if.end
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %mul28 = mul nsw i32 %ati, %ntypes
+  %0 = sext i32 %mul28 to i64
+  br label %for.body
+
+if.then:                                          ; preds = %cond.end15
+  %mul = mul nsw i32 %ati, %ntypes
+  %add = add nsw i32 %mul, %atj
+  %idxprom = sext i32 %add to i64
+  %arrayidx = getelementptr inbounds float* %f, i64 %idxprom
+  %1 = load float* %arrayidx, align 4, !tbaa !4
+  %mul20 = fmul float %cond16, %1
+  store float %mul20, float* %arrayidx, align 4, !tbaa !4
+  %mul21 = mul nsw i32 %atj, %ntypes
+  %add22 = add nsw i32 %mul21, %ati
+  %idxprom23 = sext i32 %add22 to i64
+  %arrayidx24 = getelementptr inbounds float* %f, i64 %idxprom23
+  %2 = load float* %arrayidx24, align 4, !tbaa !4
+  %mul25 = fmul float %cond16, %2
+  store float %mul25, float* %arrayidx24, align 4, !tbaa !4
+  br label %if.end
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %3 = add nsw i64 %indvars.iv, %0
+  %arrayidx31 = getelementptr inbounds float* %f, i64 %3
+  %4 = load float* %arrayidx31, align 4, !tbaa !4
+  %mul32 = fmul float %cond16, %4
+  store float %mul32, float* %arrayidx31, align 4, !tbaa !4
+  %5 = trunc i64 %indvars.iv to i32
+  %mul33 = mul nsw i32 %5, %ntypes
+  %add34 = add nsw i32 %mul33, %ati
+  %idxprom35 = sext i32 %add34 to i64
+  %arrayidx36 = getelementptr inbounds float* %f, i64 %idxprom35
+  %6 = load float* %arrayidx36, align 4, !tbaa !4
+  %mul37 = fmul float %cond16, %6
+  store float %mul37, float* %arrayidx36, align 4, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %ntypes
+  br i1 %exitcond, label %if.end, label %for.body
+
+if.end:                                           ; preds = %for.cond.preheader, %for.body, %if.then
+  ret void
+}

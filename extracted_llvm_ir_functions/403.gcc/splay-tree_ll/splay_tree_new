@@ -1,0 +1,26 @@
+define noalias %struct.splay_tree_s* @splay_tree_new(i32 (i64, i64)* %compare_fn, void (i64)* %delete_key_fn, void (i64)* %delete_value_fn) #0 {
+entry:
+  %call.i1 = tail call noalias i8* @xmalloc(i64 56) #6
+  %0 = bitcast i8* %call.i1 to %struct.splay_tree_s*
+  %root.i = bitcast i8* %call.i1 to %struct.splay_tree_node_s**
+  store %struct.splay_tree_node_s* null, %struct.splay_tree_node_s** %root.i, align 8, !tbaa !0
+  %comp.i = getelementptr inbounds i8* %call.i1, i64 8
+  %1 = bitcast i8* %comp.i to i32 (i64, i64)**
+  store i32 (i64, i64)* %compare_fn, i32 (i64, i64)** %1, align 8, !tbaa !0
+  %delete_key.i = getelementptr inbounds i8* %call.i1, i64 16
+  %2 = bitcast i8* %delete_key.i to void (i64)**
+  store void (i64)* %delete_key_fn, void (i64)** %2, align 8, !tbaa !0
+  %delete_value.i = getelementptr inbounds i8* %call.i1, i64 24
+  %3 = bitcast i8* %delete_value.i to void (i64)**
+  store void (i64)* %delete_value_fn, void (i64)** %3, align 8, !tbaa !0
+  %allocate.i = getelementptr inbounds i8* %call.i1, i64 32
+  %4 = bitcast i8* %allocate.i to i8* (i32, i8*)**
+  store i8* (i32, i8*)* @splay_tree_xmalloc_allocate, i8* (i32, i8*)** %4, align 8, !tbaa !0
+  %deallocate.i = getelementptr inbounds i8* %call.i1, i64 40
+  %5 = bitcast i8* %deallocate.i to void (i8*, i8*)**
+  store void (i8*, i8*)* @splay_tree_xmalloc_deallocate, void (i8*, i8*)** %5, align 8, !tbaa !0
+  %allocate_data1.i = getelementptr inbounds i8* %call.i1, i64 48
+  %6 = bitcast i8* %allocate_data1.i to i8**
+  store i8* null, i8** %6, align 8, !tbaa !0
+  ret %struct.splay_tree_s* %0
+}

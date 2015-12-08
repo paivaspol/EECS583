@@ -1,0 +1,16 @@
+define internal i32 @schedule_more_p() #5 {
+entry:
+  %.b = load i1* @last_was_jump, align 1
+  br i1 %.b, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %entry
+  %0 = load i32* @sched_target_n_insns, align 4, !tbaa !3
+  %1 = load i32* @target_n_insns, align 4, !tbaa !3
+  %cmp = icmp slt i32 %0, %1
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %entry
+  %2 = phi i1 [ false, %entry ], [ %cmp, %land.rhs ]
+  %land.ext = zext i1 %2 to i32
+  ret i32 %land.ext
+}

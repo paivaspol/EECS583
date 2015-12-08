@@ -1,0 +1,95 @@
+define internal fastcc i32 @rtx_equal_for_field_assignment_p(%struct.rtx_def* %x, %struct.rtx_def* %y) #0 {
+entry:
+  %cmp = icmp eq %struct.rtx_def* %x, %y
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %x, %struct.rtx_def* %y) #6
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %lor.lhs.false
+  %cmp1 = icmp eq %struct.rtx_def* %x, null
+  %cmp3 = icmp eq %struct.rtx_def* %y, null
+  %or.cond = or i1 %cmp1, %cmp3
+  br i1 %or.cond, label %return, label %lor.lhs.false4
+
+lor.lhs.false4:                                   ; preds = %if.end
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %1 = bitcast %struct.rtx_def* %y to i32*
+  %bf.load5 = load i32* %1, align 8
+  %bf.lshr83 = xor i32 %bf.load5, %bf.load
+  %2 = and i32 %bf.lshr83, 16711680
+  %cmp8 = icmp eq i32 %2, 0
+  br i1 %cmp8, label %if.end10, label %return
+
+if.end10:                                         ; preds = %lor.lhs.false4
+  %bf.clear12 = and i32 %bf.load, 65535
+  %cmp13 = icmp eq i32 %bf.clear12, 66
+  br i1 %cmp13, label %land.lhs.true, label %if.end35
+
+land.lhs.true:                                    ; preds = %if.end10
+  %bf.clear15 = and i32 %bf.load5, 65535
+  %cmp16 = icmp eq i32 %bf.clear15, 63
+  br i1 %cmp16, label %land.lhs.true17, label %if.end35
+
+land.lhs.true17:                                  ; preds = %land.lhs.true
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %y, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load18 = load i32* %4, align 8
+  %bf.clear19 = and i32 %bf.load18, 65535
+  %cmp20 = icmp eq i32 %bf.clear19, 66
+  br i1 %cmp20, label %land.lhs.true21, label %if.end35
+
+land.lhs.true21:                                  ; preds = %land.lhs.true17
+  %bf.lshr29 = lshr i32 %bf.load18, 16
+  %bf.clear30 = and i32 %bf.lshr29, 255
+  %call31 = tail call fastcc %struct.rtx_def* @gen_lowpart_for_combine(i32 %bf.clear30, %struct.rtx_def* %x) #7
+  %call32 = tail call i32 @rtx_equal_p(%struct.rtx_def* %3, %struct.rtx_def* %call31) #6
+  %tobool33 = icmp eq i32 %call32, 0
+  br i1 %tobool33, label %land.lhs.true21.if.end35_crit_edge, label %return
+
+land.lhs.true21.if.end35_crit_edge:               ; preds = %land.lhs.true21
+  %bf.load36.pre = load i32* %1, align 8
+  br label %if.end35
+
+if.end35:                                         ; preds = %land.lhs.true21.if.end35_crit_edge, %land.lhs.true17, %land.lhs.true, %if.end10
+  %bf.load36 = phi i32 [ %bf.load36.pre, %land.lhs.true21.if.end35_crit_edge ], [ %bf.load5, %land.lhs.true17 ], [ %bf.load5, %land.lhs.true ], [ %bf.load5, %if.end10 ]
+  %bf.clear37 = and i32 %bf.load36, 65535
+  %cmp38 = icmp eq i32 %bf.clear37, 66
+  br i1 %cmp38, label %land.lhs.true39, label %if.end64
+
+land.lhs.true39:                                  ; preds = %if.end35
+  %bf.load40 = load i32* %0, align 8
+  %bf.clear41 = and i32 %bf.load40, 65535
+  %cmp42 = icmp eq i32 %bf.clear41, 63
+  br i1 %cmp42, label %land.lhs.true43, label %if.end64
+
+land.lhs.true43:                                  ; preds = %land.lhs.true39
+  %arrayidx45 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx46 = bitcast %union.rtunion_def* %arrayidx45 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx46, align 8, !tbaa !3
+  %6 = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load47 = load i32* %6, align 8
+  %bf.clear48 = and i32 %bf.load47, 65535
+  %cmp49 = icmp eq i32 %bf.clear48, 66
+  br i1 %cmp49, label %land.lhs.true50, label %if.end64
+
+land.lhs.true50:                                  ; preds = %land.lhs.true43
+  %bf.lshr58 = lshr i32 %bf.load47, 16
+  %bf.clear59 = and i32 %bf.lshr58, 255
+  %call60 = tail call fastcc %struct.rtx_def* @gen_lowpart_for_combine(i32 %bf.clear59, %struct.rtx_def* %y) #7
+  %call61 = tail call i32 @rtx_equal_p(%struct.rtx_def* %5, %struct.rtx_def* %call60) #6
+  %tobool62 = icmp eq i32 %call61, 0
+  br i1 %tobool62, label %if.end64, label %return
+
+if.end64:                                         ; preds = %land.lhs.true50, %land.lhs.true43, %land.lhs.true39, %if.end35
+  br label %return
+
+return:                                           ; preds = %land.lhs.true50, %land.lhs.true21, %if.end, %lor.lhs.false4, %entry, %lor.lhs.false, %if.end64
+  %retval.0 = phi i32 [ 0, %if.end64 ], [ 1, %lor.lhs.false ], [ 1, %entry ], [ 0, %lor.lhs.false4 ], [ 0, %if.end ], [ 1, %land.lhs.true21 ], [ 1, %land.lhs.true50 ]
+  ret i32 %retval.0
+}

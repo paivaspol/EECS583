@@ -1,0 +1,107 @@
+define internal fastcc void @add_gbond(%struct.t_graph* nocapture %g, i32* nocapture %ia, i32 %np) #0 {
+entry:
+  %cmp82 = icmp sgt i32 %np, 0
+  br i1 %cmp82, label %for.body.lr.ph, label %for.end48
+
+for.body.lr.ph:                                   ; preds = %entry
+  %start = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 3
+  %nedge = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 5
+  %maxbond = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 0
+  %edge38 = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 6
+  br label %for.body3.lr.ph
+
+for.body3.lr.ph:                                  ; preds = %for.body.lr.ph, %for.inc46
+  %indvars.iv88 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next89, %for.inc46 ]
+  %arrayidx = getelementptr inbounds i32* %ia, i64 %indvars.iv88
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %1 = load i32* %start, align 4, !tbaa !0
+  %sub = sub nsw i32 %0, %1
+  %idxprom6 = sext i32 %sub to i64
+  %add = add nsw i32 %0, 1
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.inc43, %for.body3.lr.ph
+  %indvars.iv86 = phi i64 [ 0, %for.body3.lr.ph ], [ %indvars.iv.next87, %for.inc43 ]
+  %2 = trunc i64 %indvars.iv86 to i32
+  %3 = trunc i64 %indvars.iv88 to i32
+  %cmp4 = icmp eq i32 %3, %2
+  br i1 %cmp4, label %for.inc43, label %for.cond5.preheader
+
+for.cond5.preheader:                              ; preds = %for.body3
+  %4 = load i32** %nedge, align 8, !tbaa !3
+  %arrayidx775 = getelementptr inbounds i32* %4, i64 %idxprom6
+  %5 = load i32* %arrayidx775, align 4, !tbaa !0
+  %cmp876 = icmp sgt i32 %5, 0
+  br i1 %cmp876, label %for.body9.lr.ph, label %for.end
+
+for.body9.lr.ph:                                  ; preds = %for.cond5.preheader
+  %6 = load i32*** %edge38, align 8, !tbaa !3
+  %arrayidx12 = getelementptr inbounds i32** %6, i64 %idxprom6
+  %7 = load i32** %arrayidx12, align 8, !tbaa !3
+  %arrayidx15 = getelementptr inbounds i32* %ia, i64 %indvars.iv86
+  %8 = load i32* %arrayidx15, align 4, !tbaa !0
+  br label %for.body9
+
+for.cond5:                                        ; preds = %for.body9
+  %9 = trunc i64 %indvars.iv.next to i32
+  %cmp8 = icmp slt i32 %9, %5
+  br i1 %cmp8, label %for.body9, label %for.end
+
+for.body9:                                        ; preds = %for.body9.lr.ph, %for.cond5
+  %indvars.iv = phi i64 [ 0, %for.body9.lr.ph ], [ %indvars.iv.next, %for.cond5 ]
+  %l.077 = phi i32 [ 0, %for.body9.lr.ph ], [ %inc, %for.cond5 ]
+  %arrayidx13 = getelementptr inbounds i32* %7, i64 %indvars.iv
+  %10 = load i32* %arrayidx13, align 4, !tbaa !0
+  %cmp16 = icmp eq i32 %10, %8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %l.077, 1
+  br i1 %cmp16, label %for.end, label %for.cond5
+
+for.end:                                          ; preds = %for.cond5, %for.body9, %for.cond5.preheader
+  %l.0.lcssa = phi i32 [ 0, %for.cond5.preheader ], [ %l.077, %for.body9 ], [ %inc, %for.cond5 ]
+  %cmp21 = icmp eq i32 %l.0.lcssa, %5
+  br i1 %cmp21, label %if.then22, label %for.inc43
+
+if.then22:                                        ; preds = %for.end
+  %11 = load i32* %maxbond, align 4, !tbaa !0
+  %cmp26 = icmp eq i32 %5, %11
+  br i1 %cmp26, label %if.then27, label %if.end29
+
+if.then27:                                        ; preds = %if.then22
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([39 x i8]* @.str22, i64 0, i64 0), i32 %5, i32 %add) #4
+  %.pre92 = load i32** %nedge, align 8, !tbaa !3
+  %arrayidx34.phi.trans.insert = getelementptr inbounds i32* %.pre92, i64 %idxprom6
+  %.pre93 = load i32* %arrayidx34.phi.trans.insert, align 4, !tbaa !0
+  br label %if.end29
+
+if.end29:                                         ; preds = %if.then22, %if.then27
+  %12 = phi i32 [ %.pre93, %if.then27 ], [ %5, %if.then22 ]
+  %13 = phi i32* [ %.pre92, %if.then27 ], [ %4, %if.then22 ]
+  %arrayidx31 = getelementptr inbounds i32* %ia, i64 %indvars.iv86
+  %14 = load i32* %arrayidx31, align 4, !tbaa !0
+  %arrayidx34 = getelementptr inbounds i32* %13, i64 %idxprom6
+  %inc35 = add nsw i32 %12, 1
+  store i32 %inc35, i32* %arrayidx34, align 4, !tbaa !0
+  %idxprom36 = sext i32 %12 to i64
+  %15 = load i32*** %edge38, align 8, !tbaa !3
+  %arrayidx39 = getelementptr inbounds i32** %15, i64 %idxprom6
+  %16 = load i32** %arrayidx39, align 8, !tbaa !3
+  %arrayidx40 = getelementptr inbounds i32* %16, i64 %idxprom36
+  store i32 %14, i32* %arrayidx40, align 4, !tbaa !0
+  br label %for.inc43
+
+for.inc43:                                        ; preds = %for.body3, %if.end29, %for.end
+  %indvars.iv.next87 = add i64 %indvars.iv86, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next87 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %np
+  br i1 %exitcond, label %for.inc46, label %for.body3
+
+for.inc46:                                        ; preds = %for.inc43
+  %indvars.iv.next89 = add i64 %indvars.iv88, 1
+  %lftr.wideiv90 = trunc i64 %indvars.iv.next89 to i32
+  %exitcond91 = icmp eq i32 %lftr.wideiv90, %np
+  br i1 %exitcond91, label %for.end48, label %for.body3.lr.ph
+
+for.end48:                                        ; preds = %for.inc46, %entry
+  ret void
+}

@@ -1,0 +1,79 @@
+define internal fastcc %union.tree_node* @make_vector(i32 %mode, %union.tree_node* %innertype, i32 %unsignedp) #0 {
+entry:
+  %call = tail call %union.tree_node* @make_node(i32 9) #10
+  %type = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 1
+  store %union.tree_node* %innertype, %union.tree_node** %type, align 8, !tbaa !0
+  %type1 = bitcast %union.tree_node* %call to %struct.tree_type*
+  %mode2 = getelementptr inbounds %struct.tree_type* %type1, i64 0, i32 6
+  %0 = bitcast [4 x i8]* %mode2 to i32*
+  %bf.load = load i32* %0, align 4
+  %bf.value = shl i32 %mode, 9
+  %bf.shl = and i32 %bf.value, 65024
+  %bf.clear = and i32 %bf.load, -65025
+  %bf.set = or i32 %bf.clear, %bf.shl
+  store i32 %bf.set, i32* %0, align 4
+  %unsigned_flag = getelementptr inbounds %union.tree_node* %innertype, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %unsigned_flag to i32*
+  %bf.load6 = load i32* %1, align 8
+  %bf.value7 = shl i32 %unsignedp, 13
+  %bf.shl8 = and i32 %bf.value7, 8192
+  %bf.clear9 = and i32 %bf.load6, -8193
+  %bf.set10 = or i32 %bf.clear9, %bf.shl8
+  store i32 %bf.set10, i32* %1, align 8
+  tail call void @layout_type(%union.tree_node* %call) #9
+  %bf.load.i = load i32* %0, align 4
+  %bf.lshr.i = lshr i32 %bf.load.i, 9
+  %bf.clear.i = and i32 %bf.lshr.i, 127
+  %idxprom44.i = zext i32 %bf.clear.i to i64
+  %arrayidx.i = getelementptr inbounds [59 x i8]* @mode_unit_size, i64 0, i64 %idxprom44.i
+  %2 = load i8* %arrayidx.i, align 1, !tbaa !1
+  %cmp.i = icmp eq i8 %2, 0
+  br i1 %cmp.i, label %finish_vector_type.exit, label %cond.false.i
+
+cond.false.i:                                     ; preds = %entry
+  %arrayidx8.i = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom44.i
+  %3 = load i8* %arrayidx8.i, align 1, !tbaa !1
+  %div45.i = udiv i8 %3, %2
+  %div.i = zext i8 %div45.i to i64
+  %phitmp.i = add i64 %div.i, -1
+  br label %finish_vector_type.exit
+
+finish_vector_type.exit:                          ; preds = %entry, %cond.false.i
+  %cond.i = phi i64 [ %phitmp.i, %cond.false.i ], [ -1, %entry ]
+  %call.i.i = tail call %union.tree_node* @make_node(i32 25) #9
+  %int_cst1.i.i = getelementptr inbounds %union.tree_node* %call.i.i, i64 0, i32 0, i32 2
+  %low2.i.i = bitcast i32* %int_cst1.i.i to i64*
+  store i64 %cond.i, i64* %low2.i.i, align 8, !tbaa !3
+  %high.i.i = getelementptr inbounds i32* %int_cst1.i.i, i64 2
+  %4 = bitcast i32* %high.i.i to i64*
+  store i64 0, i64* %4, align 8, !tbaa !3
+  %5 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 5), align 8, !tbaa !0
+  %type.i.i = getelementptr inbounds %union.tree_node* %call.i.i, i64 0, i32 0, i32 0, i32 1
+  store %union.tree_node* %5, %union.tree_node** %type.i.i, align 8, !tbaa !0
+  %6 = load %union.tree_node** %type, align 8, !tbaa !0
+  %call20.i = tail call %union.tree_node* @build_index_type(%union.tree_node* %call.i.i) #9
+  %call21.i = tail call %union.tree_node* @build_array_type(%union.tree_node* %6, %union.tree_node* %call20.i) #9
+  %call22.i = tail call %union.tree_node* @make_node(i32 20) #9
+  %call23.i = tail call %union.tree_node* @get_identifier(i8* getelementptr inbounds ([2 x i8]* @.str170, i64 0, i64 0)) #9
+  %call.i47.i = tail call %union.tree_node* @make_node(i32 37) #9
+  %name1.i.i = getelementptr inbounds %union.tree_node* %call.i47.i, i64 0, i32 0, i32 8
+  store %union.tree_node* %call23.i, %union.tree_node** %name1.i.i, align 8, !tbaa !0
+  %type2.i.i = getelementptr inbounds %union.tree_node* %call.i47.i, i64 0, i32 0, i32 0, i32 1
+  store %union.tree_node* %call21.i, %union.tree_node** %type2.i.i, align 8, !tbaa !0
+  %values.i = getelementptr inbounds %union.tree_node* %call22.i, i64 0, i32 0, i32 1
+  %call24.c.i = bitcast %union.tree_node* %call.i47.i to i8*
+  store i8* %call24.c.i, i8** %values.i, align 8, !tbaa !0
+  %context.i = getelementptr inbounds %union.tree_node* %call.i47.i, i64 0, i32 0, i32 9
+  store %union.tree_node* %call22.i, %union.tree_node** %context.i, align 8, !tbaa !0
+  tail call void @layout_type(%union.tree_node* %call22.i) #9
+  %values29.i = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 1
+  %call22.c.i = bitcast %union.tree_node* %call22.i to i8*
+  store i8* %call22.c.i, i8** %values29.i, align 8, !tbaa !0
+  %uid.i = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 6
+  %7 = bitcast %union.anon* %uid.i to i32*
+  %8 = load i32* %7, align 4, !tbaa !4
+  %uid32.i = getelementptr inbounds %union.tree_node* %call22.i, i64 0, i32 0, i32 6
+  %9 = bitcast %union.anon* %uid32.i to i32*
+  store i32 %8, i32* %9, align 4, !tbaa !4
+  ret %union.tree_node* %call
+}

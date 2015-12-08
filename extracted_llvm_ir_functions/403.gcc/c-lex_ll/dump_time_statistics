@@ -1,0 +1,35 @@
+define void @dump_time_statistics() #0 {
+entry:
+  %0 = load i8** @input_filename, align 8, !tbaa !0
+  %call = tail call %struct.c_fileinfo* @get_fileinfo(i8* %0) #8
+  %call1 = tail call i64 @get_run_time() #7
+  %conv = trunc i64 %call1 to i32
+  %1 = load i32* @body_time, align 4, !tbaa !3
+  %sub = sub i32 %conv, %1
+  %time = getelementptr inbounds %struct.c_fileinfo* %call, i64 0, i32 0
+  %2 = load i32* %time, align 4, !tbaa !3
+  %add = add nsw i32 %sub, %2
+  store i32 %add, i32* %time, align 4, !tbaa !3
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str3, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %3)
+  %5 = load i32* @header_time, align 4, !tbaa !3
+  %conv3 = sext i32 %5 to i64
+  tail call void @print_time(i8* getelementptr inbounds ([21 x i8]* @.str4, i64 0, i64 0), i64 %conv3) #7
+  %6 = load i32* @body_time, align 4, !tbaa !3
+  %sub4 = sub nsw i32 %conv, %6
+  %conv5 = sext i32 %sub4 to i64
+  tail call void @print_time(i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0), i64 %conv5) #7
+  %7 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %8 = load i32* @header_time, align 4, !tbaa !3
+  %conv6 = sitofp i32 %8 to double
+  %9 = load i32* @body_time, align 4, !tbaa !3
+  %sub7 = sub nsw i32 %conv, %9
+  %conv8 = sitofp i32 %sub7 to double
+  %div = fdiv double %conv6, %conv8
+  %call9 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([16 x i8]* @.str6, i64 0, i64 0), double %div) #7
+  %10 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %11 = tail call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str3, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %10)
+  %12 = load %struct.splay_tree_s** @file_info_tree, align 8, !tbaa !0
+  %call11 = tail call i32 @splay_tree_foreach(%struct.splay_tree_s* %12, i32 (%struct.splay_tree_node_s*, i8*)* @dump_one_header, i8* null) #7
+  ret void
+}

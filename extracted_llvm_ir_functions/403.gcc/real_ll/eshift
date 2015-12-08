@@ -1,0 +1,252 @@
+define internal fastcc i32 @eshift(i16* nocapture %x, i32 %sc) #0 {
+entry:
+  %cmp = icmp eq i32 %sc, 0
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %add.ptr1 = getelementptr inbounds i16* %x, i64 8
+  %cmp2 = icmp slt i32 %sc, 0
+  br i1 %cmp2, label %if.then3, label %while.cond29.preheader
+
+while.cond29.preheader:                           ; preds = %if.end
+  %cmp30132 = icmp sgt i32 %sc, 15
+  br i1 %cmp30132, label %while.body32.lr.ph, label %while.cond35.preheader
+
+while.body32.lr.ph:                               ; preds = %while.cond29.preheader
+  %add.ptr.i89 = getelementptr inbounds i16* %x, i64 2
+  %add.ptr1.i90 = getelementptr inbounds i16* %x, i64 3
+  br label %while.body32
+
+if.then3:                                         ; preds = %if.end
+  %sub = sub nsw i32 0, %sc
+  %cmp4121 = icmp sgt i32 %sub, 15
+  br i1 %cmp4121, label %while.body.lr.ph, label %while.cond8.preheader
+
+while.body.lr.ph:                                 ; preds = %if.then3
+  %add.ptr1.i = getelementptr inbounds i16* %x, i64 9
+  %incdec.ptr3.i = getelementptr inbounds i16* %x, i64 2
+  br label %while.body
+
+while.cond.while.cond8.preheader_crit_edge:       ; preds = %eshdn6.exit
+  %0 = sub i32 0, %sc
+  %1 = and i32 %0, 15
+  br label %while.cond8.preheader
+
+while.cond8.preheader:                            ; preds = %while.cond.while.cond8.preheader_crit_edge, %if.then3
+  %lost.0.lcssa = phi i16 [ %or77, %while.cond.while.cond8.preheader_crit_edge ], [ 0, %if.then3 ]
+  %sc.addr.0.lcssa = phi i32 [ %1, %while.cond.while.cond8.preheader_crit_edge ], [ %sub, %if.then3 ]
+  %cmp9116 = icmp sgt i32 %sc.addr.0.lcssa, 7
+  br i1 %cmp9116, label %while.body11.lr.ph, label %while.cond18.preheader
+
+while.body11.lr.ph:                               ; preds = %while.cond8.preheader
+  %add.ptr.i105 = getelementptr inbounds i16* %x, i64 2
+  br label %while.body11
+
+while.body:                                       ; preds = %while.body.lr.ph, %eshdn6.exit
+  %lost.0123 = phi i16 [ 0, %while.body.lr.ph ], [ %or77, %eshdn6.exit ]
+  %sc.addr.0122 = phi i32 [ %sub, %while.body.lr.ph ], [ %sub7, %eshdn6.exit ]
+  %2 = load i16* %add.ptr1, align 2, !tbaa !0
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.body.i, %while.body
+  %p.010.i = phi i16* [ %add.ptr1.i, %while.body ], [ %incdec.ptr2.i, %for.body.i ]
+  %i.09.i = phi i32 [ 2, %while.body ], [ %inc.i, %for.body.i ]
+  %x.addr.08.i = phi i16* [ %add.ptr1, %while.body ], [ %incdec.ptr.i, %for.body.i ]
+  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.08.i, i64 -1
+  %3 = load i16* %incdec.ptr.i, align 2, !tbaa !0
+  %incdec.ptr2.i = getelementptr inbounds i16* %p.010.i, i64 -1
+  store i16 %3, i16* %incdec.ptr2.i, align 2, !tbaa !0
+  %inc.i = add nsw i32 %i.09.i, 1
+  %exitcond.i = icmp eq i32 %inc.i, 8
+  br i1 %exitcond.i, label %eshdn6.exit, label %for.body.i
+
+eshdn6.exit:                                      ; preds = %for.body.i
+  %or77 = or i16 %2, %lost.0123
+  store i16 0, i16* %incdec.ptr3.i, align 2, !tbaa !0
+  %sub7 = add nsw i32 %sc.addr.0122, -16
+  %cmp4 = icmp sgt i32 %sub7, 15
+  br i1 %cmp4, label %while.body, label %while.cond.while.cond8.preheader_crit_edge
+
+while.cond8.while.cond18.preheader_crit_edge:     ; preds = %eshdn8.exit
+  %4 = and i32 %sc.addr.0.lcssa, 7
+  br label %while.cond18.preheader
+
+while.cond18.preheader:                           ; preds = %while.cond8.while.cond18.preheader_crit_edge, %while.cond8.preheader
+  %lost.1.lcssa = phi i16 [ %or14, %while.cond8.while.cond18.preheader_crit_edge ], [ %lost.0.lcssa, %while.cond8.preheader ]
+  %sc.addr.1.lcssa = phi i32 [ %4, %while.cond8.while.cond18.preheader_crit_edge ], [ %sc.addr.0.lcssa, %while.cond8.preheader ]
+  %cmp19113 = icmp sgt i32 %sc.addr.1.lcssa, 0
+  br i1 %cmp19113, label %while.body21.lr.ph, label %if.end47
+
+while.body21.lr.ph:                               ; preds = %while.cond18.preheader
+  %add.ptr.i96 = getelementptr inbounds i16* %x, i64 2
+  br label %while.body21
+
+while.body11:                                     ; preds = %while.body11.lr.ph, %eshdn8.exit
+  %lost.1118 = phi i16 [ %lost.0.lcssa, %while.body11.lr.ph ], [ %or14, %eshdn8.exit ]
+  %sc.addr.1117 = phi i32 [ %sc.addr.0.lcssa, %while.body11.lr.ph ], [ %sub16, %eshdn8.exit ]
+  %5 = load i16* %add.ptr1, align 2, !tbaa !0
+  %and = and i16 %5, 255
+  br label %for.body.i112
+
+for.body.i112:                                    ; preds = %for.body.i112.for.body.i112_crit_edge, %while.body11
+  %i.016.i = phi i32 [ 3, %while.body11 ], [ %phitmp138, %for.body.i112.for.body.i112_crit_edge ]
+  %oldbyt.015.i = phi i16 [ 0, %while.body11 ], [ %shl.i106, %for.body.i112.for.body.i112_crit_edge ]
+  %x.addr.014.i = phi i16* [ %add.ptr.i105, %while.body11 ], [ %incdec.ptr.i109, %for.body.i112.for.body.i112_crit_edge ]
+  %6 = load i16* %x.addr.014.i, align 2, !tbaa !0
+  %shr12.i107 = lshr i16 %6, 8
+  %or13.i108 = or i16 %shr12.i107, %oldbyt.015.i
+  store i16 %or13.i108, i16* %x.addr.014.i, align 2, !tbaa !0
+  %exitcond.i111 = icmp eq i32 %i.016.i, 9
+  br i1 %exitcond.i111, label %eshdn8.exit, label %for.body.i112.for.body.i112_crit_edge
+
+for.body.i112.for.body.i112_crit_edge:            ; preds = %for.body.i112
+  %incdec.ptr.i109 = getelementptr inbounds i16* %x.addr.014.i, i64 1
+  %shl.i106 = shl i16 %6, 8
+  %phitmp138 = add i32 %i.016.i, 1
+  br label %for.body.i112
+
+eshdn8.exit:                                      ; preds = %for.body.i112
+  %or14 = or i16 %and, %lost.1118
+  %sub16 = add nsw i32 %sc.addr.1117, -8
+  %cmp9 = icmp sgt i32 %sub16, 7
+  br i1 %cmp9, label %while.body11, label %while.cond8.while.cond18.preheader_crit_edge
+
+while.body21:                                     ; preds = %while.body21.lr.ph, %eshdn1.exit
+  %lost.2115 = phi i16 [ %lost.1.lcssa, %while.body21.lr.ph ], [ %or25, %eshdn1.exit ]
+  %sc.addr.2114 = phi i32 [ %sc.addr.1.lcssa, %while.body21.lr.ph ], [ %sub27, %eshdn1.exit ]
+  %7 = load i16* %add.ptr1, align 2, !tbaa !0
+  %and23 = and i16 %7, 1
+  br label %for.body.i104
+
+for.body.i104:                                    ; preds = %for.body.i104.for.body.i104_crit_edge, %while.body21
+  %i.025.i97 = phi i32 [ 3, %while.body21 ], [ %phitmp137, %for.body.i104.for.body.i104_crit_edge ]
+  %bits.024.i98 = phi i16 [ 0, %while.body21 ], [ %shl.i100, %for.body.i104.for.body.i104_crit_edge ]
+  %x.addr.023.i99 = phi i16* [ %add.ptr.i96, %while.body21 ], [ %incdec.ptr.i101, %for.body.i104.for.body.i104_crit_edge ]
+  %8 = load i16* %x.addr.023.i99, align 2, !tbaa !0
+  %shr22.i = lshr i16 %8, 1
+  %9 = shl i16 %bits.024.i98, 14
+  %10 = or i16 %shr22.i, %9
+  store i16 %10, i16* %x.addr.023.i99, align 2, !tbaa !0
+  %exitcond.i103 = icmp eq i32 %i.025.i97, 9
+  br i1 %exitcond.i103, label %eshdn1.exit, label %for.body.i104.for.body.i104_crit_edge
+
+for.body.i104.for.body.i104_crit_edge:            ; preds = %for.body.i104
+  %and.i = and i16 %8, 1
+  %11 = or i16 %and.i, %bits.024.i98
+  %incdec.ptr.i101 = getelementptr inbounds i16* %x.addr.023.i99, i64 1
+  %shl.i100 = shl i16 %11, 1
+  %phitmp137 = add i32 %i.025.i97, 1
+  br label %for.body.i104
+
+eshdn1.exit:                                      ; preds = %for.body.i104
+  %or25 = or i16 %and23, %lost.2115
+  %sub27 = add nsw i32 %sc.addr.2114, -1
+  %cmp19 = icmp sgt i32 %sub27, 0
+  br i1 %cmp19, label %while.body21, label %if.end47
+
+while.cond29.while.cond35.preheader_crit_edge:    ; preds = %eshup6.exit
+  %12 = and i32 %sc, 15
+  br label %while.cond35.preheader
+
+while.cond35.preheader:                           ; preds = %while.cond29.while.cond35.preheader_crit_edge, %while.cond29.preheader
+  %sc.addr.3.lcssa = phi i32 [ %12, %while.cond29.while.cond35.preheader_crit_edge ], [ %sc, %while.cond29.preheader ]
+  %cmp36129 = icmp sgt i32 %sc.addr.3.lcssa, 7
+  br i1 %cmp36129, label %for.body.i88.preheader, label %while.cond41.preheader
+
+while.body32:                                     ; preds = %while.body32.lr.ph, %eshup6.exit
+  %sc.addr.3133 = phi i32 [ %sc, %while.body32.lr.ph ], [ %sub33, %eshup6.exit ]
+  br label %for.body.i95
+
+for.body.i95:                                     ; preds = %for.body.i95, %while.body32
+  %p.09.i = phi i16* [ %add.ptr.i89, %while.body32 ], [ %incdec.ptr2.i92, %for.body.i95 ]
+  %i.08.i = phi i32 [ 2, %while.body32 ], [ %inc.i93, %for.body.i95 ]
+  %x.addr.07.i = phi i16* [ %add.ptr1.i90, %while.body32 ], [ %incdec.ptr.i91, %for.body.i95 ]
+  %incdec.ptr.i91 = getelementptr inbounds i16* %x.addr.07.i, i64 1
+  %13 = load i16* %x.addr.07.i, align 2, !tbaa !0
+  %incdec.ptr2.i92 = getelementptr inbounds i16* %p.09.i, i64 1
+  store i16 %13, i16* %p.09.i, align 2, !tbaa !0
+  %inc.i93 = add nsw i32 %i.08.i, 1
+  %exitcond.i94 = icmp eq i32 %inc.i93, 8
+  br i1 %exitcond.i94, label %eshup6.exit, label %for.body.i95
+
+eshup6.exit:                                      ; preds = %for.body.i95
+  store i16 0, i16* %add.ptr1, align 2, !tbaa !0
+  %sub33 = add nsw i32 %sc.addr.3133, -16
+  %cmp30 = icmp sgt i32 %sub33, 15
+  br i1 %cmp30, label %while.body32, label %while.cond29.while.cond35.preheader_crit_edge
+
+for.body.i88.preheader:                           ; preds = %while.cond35.preheader, %eshup8.exit
+  %sc.addr.4130 = phi i32 [ %sub39, %eshup8.exit ], [ %sc.addr.3.lcssa, %while.cond35.preheader ]
+  br label %for.body.i88
+
+while.cond35.while.cond41.preheader_crit_edge:    ; preds = %eshup8.exit
+  %14 = and i32 %sc.addr.3.lcssa, 7
+  br label %while.cond41.preheader
+
+while.cond41.preheader:                           ; preds = %while.cond35.while.cond41.preheader_crit_edge, %while.cond35.preheader
+  %sc.addr.4.lcssa = phi i32 [ %14, %while.cond35.while.cond41.preheader_crit_edge ], [ %sc.addr.3.lcssa, %while.cond35.preheader ]
+  %cmp42127 = icmp sgt i32 %sc.addr.4.lcssa, 0
+  br i1 %cmp42127, label %for.body.i82.preheader, label %if.end47
+
+for.body.i88:                                     ; preds = %for.body.i88.for.body.i88_crit_edge, %for.body.i88.preheader
+  %oldbyt.016.i = phi i16 [ %shr12.i, %for.body.i88.for.body.i88_crit_edge ], [ 0, %for.body.i88.preheader ]
+  %x.addr.015.i = phi i16* [ %incdec.ptr.i85, %for.body.i88.for.body.i88_crit_edge ], [ %add.ptr1, %for.body.i88.preheader ]
+  %i.014.i = phi i32 [ %phitmp136, %for.body.i88.for.body.i88_crit_edge ], [ 3, %for.body.i88.preheader ]
+  %15 = load i16* %x.addr.015.i, align 2, !tbaa !0
+  %shl.i84 = shl i16 %15, 8
+  %or13.i = or i16 %shl.i84, %oldbyt.016.i
+  store i16 %or13.i, i16* %x.addr.015.i, align 2, !tbaa !0
+  %exitcond.i87 = icmp eq i32 %i.014.i, 9
+  br i1 %exitcond.i87, label %eshup8.exit, label %for.body.i88.for.body.i88_crit_edge
+
+for.body.i88.for.body.i88_crit_edge:              ; preds = %for.body.i88
+  %incdec.ptr.i85 = getelementptr inbounds i16* %x.addr.015.i, i64 -1
+  %shr12.i = lshr i16 %15, 8
+  %phitmp136 = add i32 %i.014.i, 1
+  br label %for.body.i88
+
+eshup8.exit:                                      ; preds = %for.body.i88
+  %sub39 = add nsw i32 %sc.addr.4130, -8
+  %cmp36 = icmp sgt i32 %sub39, 7
+  br i1 %cmp36, label %for.body.i88.preheader, label %while.cond35.while.cond41.preheader_crit_edge
+
+for.body.i82.preheader:                           ; preds = %while.cond41.preheader, %eshup1.exit
+  %sc.addr.5128 = phi i32 [ %sub45, %eshup1.exit ], [ %sc.addr.4.lcssa, %while.cond41.preheader ]
+  br label %for.body.i82
+
+for.body.i82:                                     ; preds = %for.body.i82.for.body.i82_crit_edge, %for.body.i82.preheader
+  %i.025.i = phi i32 [ %phitmp, %for.body.i82.for.body.i82_crit_edge ], [ 3, %for.body.i82.preheader ]
+  %bits.024.i = phi i16 [ %shl14.i, %for.body.i82.for.body.i82_crit_edge ], [ 0, %for.body.i82.preheader ]
+  %x.addr.023.i = phi i16* [ %incdec.ptr.i79, %for.body.i82.for.body.i82_crit_edge ], [ %add.ptr1, %for.body.i82.preheader ]
+  %16 = load i16* %x.addr.023.i, align 2, !tbaa !0
+  %shl.i = shl i16 %16, 1
+  %and6.i = lshr exact i16 %bits.024.i, 1
+  %17 = and i16 %and6.i, 1
+  %18 = or i16 %shl.i, %17
+  store i16 %18, i16* %x.addr.023.i, align 2, !tbaa !0
+  %exitcond.i81 = icmp eq i32 %i.025.i, 9
+  br i1 %exitcond.i81, label %eshup1.exit, label %for.body.i82.for.body.i82_crit_edge
+
+for.body.i82.for.body.i82_crit_edge:              ; preds = %for.body.i82
+  %.lobit.i = lshr i16 %16, 15
+  %or.bits.0.i = or i16 %.lobit.i, %bits.024.i
+  %incdec.ptr.i79 = getelementptr inbounds i16* %x.addr.023.i, i64 -1
+  %shl14.i = shl i16 %or.bits.0.i, 1
+  %phitmp = add i32 %i.025.i, 1
+  br label %for.body.i82
+
+eshup1.exit:                                      ; preds = %for.body.i82
+  %sub45 = add nsw i32 %sc.addr.5128, -1
+  %cmp42 = icmp sgt i32 %sub45, 0
+  br i1 %cmp42, label %for.body.i82.preheader, label %if.end47
+
+if.end47:                                         ; preds = %while.cond41.preheader, %eshup1.exit, %while.cond18.preheader, %eshdn1.exit
+  %lost.3 = phi i16 [ %lost.1.lcssa, %while.cond18.preheader ], [ %or25, %eshdn1.exit ], [ 0, %eshup1.exit ], [ 0, %while.cond41.preheader ]
+  %not.tobool = icmp ne i16 %lost.3, 0
+  %conv50 = zext i1 %not.tobool to i32
+  br label %return
+
+return:                                           ; preds = %entry, %if.end47
+  %retval.0 = phi i32 [ %conv50, %if.end47 ], [ 0, %entry ]
+  ret i32 %retval.0
+}

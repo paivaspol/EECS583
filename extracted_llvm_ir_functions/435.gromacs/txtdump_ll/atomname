@@ -1,0 +1,25 @@
+define i8* @atomname(%struct.t_atoms* nocapture %a, i32 %i) #0 {
+entry:
+  %buf = alloca [32 x i8], align 16
+  %idxprom = sext i32 %i to i64
+  %atom = getelementptr inbounds %struct.t_atoms* %a, i64 0, i32 1
+  %0 = load %struct.t_atom** %atom, align 8, !tbaa !5
+  %resnr1 = getelementptr inbounds %struct.t_atom* %0, i64 %idxprom, i32 7
+  %1 = load i32* %resnr1, align 4, !tbaa !0
+  %arraydecay = getelementptr inbounds [32 x i8]* %buf, i64 0, i64 0
+  %idxprom2 = sext i32 %1 to i64
+  %resname = getelementptr inbounds %struct.t_atoms* %a, i64 0, i32 6
+  %2 = load i8**** %resname, align 8, !tbaa !5
+  %arrayidx3 = getelementptr inbounds i8*** %2, i64 %idxprom2
+  %3 = load i8*** %arrayidx3, align 8, !tbaa !5
+  %4 = load i8** %3, align 8, !tbaa !5
+  %add = add nsw i32 %1, 1
+  %atomname = getelementptr inbounds %struct.t_atoms* %a, i64 0, i32 2
+  %5 = load i8**** %atomname, align 8, !tbaa !5
+  %arrayidx5 = getelementptr inbounds i8*** %5, i64 %idxprom
+  %6 = load i8*** %arrayidx5, align 8, !tbaa !5
+  %7 = load i8** %6, align 8, !tbaa !5
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([8 x i8]* @.str164, i64 0, i64 0), i8* %4, i32 %add, i8* %7) #4
+  %call7 = call i8* @gmx_strdup(i8* %arraydecay) #4
+  ret i8* %call7
+}

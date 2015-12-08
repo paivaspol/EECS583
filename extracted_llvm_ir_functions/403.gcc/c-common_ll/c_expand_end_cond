@@ -1,0 +1,26 @@
+define void @c_expand_end_cond() #0 {
+entry:
+  %0 = load i32* @if_stack_pointer, align 4, !tbaa !0
+  %dec = add nsw i32 %0, -1
+  store i32 %dec, i32* @if_stack_pointer, align 4, !tbaa !0
+  %idxprom = sext i32 %dec to i64
+  %1 = load %struct.if_elt** @if_stack, align 8, !tbaa !3
+  %needs_warning = getelementptr inbounds %struct.if_elt* %1, i64 %idxprom, i32 3
+  %2 = load i32* %needs_warning, align 4, !tbaa !0
+  %tobool = icmp eq i32 %2, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %file = getelementptr inbounds %struct.if_elt* %1, i64 %idxprom, i32 2
+  %3 = load i8** %file, align 8, !tbaa !3
+  %line = getelementptr inbounds %struct.if_elt* %1, i64 %idxprom, i32 1
+  %4 = load i32* %line, align 4, !tbaa !0
+  tail call void (i8*, i32, i8*, ...)* @warning_with_file_and_line(i8* %3, i32 %4, i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0)) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %call = tail call %struct.stmt_tree_s* @current_stmt_tree() #8
+  %x_last_expr_type = getelementptr inbounds %struct.stmt_tree_s* %call, i64 0, i32 1
+  store %union.tree_node* null, %union.tree_node** %x_last_expr_type, align 8, !tbaa !3
+  ret void
+}

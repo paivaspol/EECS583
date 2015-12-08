@@ -1,0 +1,13 @@
+define void @update_time() #0 {
+entry:
+  %call = tail call i64 @clock() #6
+  %0 = load i64* @cprev, align 8, !tbaa !4
+  %sub = sub nsw i64 %call, %0
+  %conv = sitofp i64 %sub to double
+  %div = fdiv double %conv, 1.000000e+06
+  %1 = load double* @runtime, align 8, !tbaa !6
+  %add = fadd double %div, %1
+  store double %add, double* @runtime, align 8, !tbaa !6
+  store i64 %call, i64* @cprev, align 8, !tbaa !4
+  ret void
+}

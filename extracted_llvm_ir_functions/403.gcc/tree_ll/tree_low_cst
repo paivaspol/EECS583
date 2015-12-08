@@ -1,0 +1,16 @@
+define i64 @tree_low_cst(%union.tree_node* nocapture %t, i32 %pos) #0 {
+entry:
+  %call = tail call i32 @host_integerp(%union.tree_node* %t, i32 %pos) #10
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %int_cst1 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
+  %low = bitcast i32* %int_cst1 to i64*
+  %0 = load i64* %low, align 8, !tbaa !3
+  ret i64 %0
+
+if.else:                                          ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str147, i64 0, i64 0), i32 3489, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.tree_low_cst, i64 0, i64 0)) #8
+  unreachable
+}

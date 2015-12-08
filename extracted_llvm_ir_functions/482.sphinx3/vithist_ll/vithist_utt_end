@@ -1,0 +1,145 @@
+define i32 @vithist_utt_end(%struct.vithist_t* nocapture %vh, %struct.kbcore_t* nocapture %kbc) #0 {
+entry:
+  %n_frm = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 3
+  %frame_start = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 1
+  %lm8 = getelementptr inbounds %struct.kbcore_t* %kbc, i64 0, i32 4
+  %dict9 = getelementptr inbounds %struct.kbcore_t* %kbc, i64 0, i32 2
+  %n_entry = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 2
+  %entry14 = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 0
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %if.then30, %entry
+  %0 = load i32* %n_frm, align 4, !tbaa !3
+  %1 = sext i32 %0 to i64
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.body, %tailrecurse
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ %1, %tailrecurse ]
+  %f.0.in = phi i32 [ %f.0, %for.body ], [ %0, %tailrecurse ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %f.0 = add nsw i32 %f.0.in, -1
+  %2 = trunc i64 %indvars.iv to i32
+  %cmp = icmp sgt i32 %2, 0
+  br i1 %cmp, label %for.body, label %return
+
+for.body:                                         ; preds = %for.cond
+  %3 = load i32** %frame_start, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %3, i64 %indvars.iv.next
+  %4 = load i32* %arrayidx, align 4, !tbaa !3
+  %arrayidx3 = getelementptr inbounds i32* %3, i64 %indvars.iv
+  %5 = load i32* %arrayidx3, align 4, !tbaa !3
+  %cmp4 = icmp slt i32 %4, %5
+  br i1 %cmp4, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.body
+  %cmp5 = icmp slt i32 %f.0.in, 1
+  br i1 %cmp5, label %return, label %for.body12.lr.ph
+
+for.body12.lr.ph:                                 ; preds = %for.end
+  %6 = load %struct.lm_s** %lm8, align 8, !tbaa !0
+  %finishlwid = getelementptr inbounds %struct.lm_s* %6, i64 0, i32 6
+  %7 = load i16* %finishlwid, align 2, !tbaa !4
+  %8 = load %struct.dict_t** %dict9, align 8, !tbaa !0
+  %finishwid = getelementptr inbounds %struct.dict_t* %8, i64 0, i32 12
+  br label %for.body12
+
+for.body12:                                       ; preds = %for.inc25, %for.body12.lr.ph
+  %i.0135 = phi i32 [ %4, %for.body12.lr.ph ], [ %inc, %for.inc25 ]
+  %bestve.0134 = phi %struct.vithist_entry_t* [ null, %for.body12.lr.ph ], [ %bestve.1, %for.inc25 ]
+  %bestvh.0133 = phi i32 [ -1, %for.body12.lr.ph ], [ %bestvh.1, %for.inc25 ]
+  %bestscore.0132 = phi i32 [ -2147483648, %for.body12.lr.ph ], [ %bestscore.1, %for.inc25 ]
+  %shr = ashr i32 %i.0135, 14
+  %and = and i32 %i.0135, 16383
+  %idxprom13 = sext i32 %shr to i64
+  %9 = load %struct.vithist_entry_t*** %entry14, align 8, !tbaa !0
+  %arrayidx15 = getelementptr inbounds %struct.vithist_entry_t** %9, i64 %idxprom13
+  %10 = load %struct.vithist_entry_t** %arrayidx15, align 8, !tbaa !0
+  %idx.ext126 = zext i32 %and to i64
+  %score = getelementptr inbounds %struct.vithist_entry_t* %10, i64 %idx.ext126, i32 5
+  %11 = load i32* %score, align 4, !tbaa !3
+  %arrayidx16 = getelementptr inbounds %struct.vithist_entry_t* %10, i64 %idx.ext126, i32 9, i32 0, i32 0, i64 1
+  %12 = load i16* %arrayidx16, align 2, !tbaa !4
+  %arrayidx20 = getelementptr inbounds %struct.vithist_entry_t* %10, i64 %idx.ext126, i32 9, i32 0, i32 0, i64 0
+  %13 = load i16* %arrayidx20, align 2, !tbaa !4
+  %14 = load i32* %finishwid, align 4, !tbaa !3
+  %call = tail call i32 @lm_tg_score(%struct.lm_s* %6, i16 zeroext %12, i16 zeroext %13, i16 zeroext %7, i32 %14) #6
+  %add21 = add nsw i32 %call, %11
+  %cmp22 = icmp slt i32 %bestscore.0132, %add21
+  br i1 %cmp22, label %if.then23, label %for.inc25
+
+if.then23:                                        ; preds = %for.body12
+  %add.ptr = getelementptr inbounds %struct.vithist_entry_t* %10, i64 %idx.ext126
+  br label %for.inc25
+
+for.inc25:                                        ; preds = %for.body12, %if.then23
+  %bestscore.1 = phi i32 [ %add21, %if.then23 ], [ %bestscore.0132, %for.body12 ]
+  %bestvh.1 = phi i32 [ %i.0135, %if.then23 ], [ %bestvh.0133, %for.body12 ]
+  %bestve.1 = phi %struct.vithist_entry_t* [ %add.ptr, %if.then23 ], [ %bestve.0134, %for.body12 ]
+  %inc = add nsw i32 %i.0135, 1
+  %exitcond = icmp eq i32 %inc, %5
+  br i1 %exitcond, label %for.end26, label %for.body12
+
+for.end26:                                        ; preds = %for.inc25
+  %.pre = load i32* %n_frm, align 4, !tbaa !3
+  %sub28 = add nsw i32 %.pre, -1
+  %cmp29 = icmp eq i32 %f.0, %sub28
+  br i1 %cmp29, label %if.end42, label %if.then30
+
+if.then30:                                        ; preds = %for.end26
+  store i32 %sub28, i32* %n_frm, align 4, !tbaa !3
+  %silwid = getelementptr inbounds %struct.dict_t* %8, i64 0, i32 13
+  %15 = load i32* %silwid, align 4, !tbaa !3
+  %score34 = getelementptr inbounds %struct.vithist_entry_t* %bestve.1, i64 0, i32 5
+  %16 = load i32* %score34, align 4, !tbaa !3
+  tail call void @vithist_rescore(%struct.vithist_t* %vh, %struct.kbcore_t* %kbc, i32 %15, i32 %sub28, i32 %16, i32 %bestvh.1, i32 -1) #7
+  %17 = load i32* %n_frm, align 4, !tbaa !3
+  %add36 = add nsw i32 %17, 1
+  store i32 %add36, i32* %n_frm, align 4, !tbaa !3
+  %18 = load i32* %n_entry, align 4, !tbaa !3
+  %idxprom38 = sext i32 %add36 to i64
+  %19 = load i32** %frame_start, align 8, !tbaa !0
+  %arrayidx40 = getelementptr inbounds i32* %19, i64 %idxprom38
+  store i32 %18, i32* %arrayidx40, align 4, !tbaa !3
+  br label %tailrecurse
+
+if.end42:                                         ; preds = %for.end26
+  %20 = load i32* %n_entry, align 4, !tbaa !3
+  %call44 = tail call fastcc %struct.vithist_entry_t* @vithist_entry_alloc(%struct.vithist_t* %vh) #7
+  %finishwid45 = getelementptr inbounds %struct.dict_t* %8, i64 0, i32 12
+  %21 = load i32* %finishwid45, align 4, !tbaa !3
+  %wid = getelementptr inbounds %struct.vithist_entry_t* %call44, i64 0, i32 0
+  store i32 %21, i32* %wid, align 4, !tbaa !3
+  %ef = getelementptr inbounds %struct.vithist_entry_t* %bestve.1, i64 0, i32 2
+  %22 = load i16* %ef, align 2, !tbaa !4
+  %add50 = add i16 %22, 1
+  %sf = getelementptr inbounds %struct.vithist_entry_t* %call44, i64 0, i32 1
+  store i16 %add50, i16* %sf, align 2, !tbaa !4
+  %23 = load i32* %n_frm, align 4, !tbaa !3
+  %conv53 = trunc i32 %23 to i16
+  %ef54 = getelementptr inbounds %struct.vithist_entry_t* %call44, i64 0, i32 2
+  store i16 %conv53, i16* %ef54, align 2, !tbaa !4
+  %ascr = getelementptr inbounds %struct.vithist_entry_t* %call44, i64 0, i32 3
+  store i32 0, i32* %ascr, align 4, !tbaa !3
+  %score55 = getelementptr inbounds %struct.vithist_entry_t* %bestve.1, i64 0, i32 5
+  %24 = load i32* %score55, align 4, !tbaa !3
+  %sub56 = sub nsw i32 %bestscore.1, %24
+  %lscr = getelementptr inbounds %struct.vithist_entry_t* %call44, i64 0, i32 4
+  store i32 %sub56, i32* %lscr, align 4, !tbaa !3
+  %score57 = getelementptr inbounds %struct.vithist_entry_t* %call44, i64 0, i32 5
+  store i32 %bestscore.1, i32* %score57, align 4, !tbaa !3
+  %pred = getelementptr inbounds %struct.vithist_entry_t* %call44, i64 0, i32 6
+  store i32 %bestvh.1, i32* %pred, align 4, !tbaa !3
+  %type = getelementptr inbounds %struct.vithist_entry_t* %call44, i64 0, i32 7
+  store i32 0, i32* %type, align 4, !tbaa !3
+  %valid = getelementptr inbounds %struct.vithist_entry_t* %call44, i64 0, i32 8
+  store i32 1, i32* %valid, align 4, !tbaa !3
+  %arrayidx61 = getelementptr inbounds %struct.vithist_entry_t* %call44, i64 0, i32 9, i32 0, i32 0, i64 0
+  store i16 %7, i16* %arrayidx61, align 2, !tbaa !4
+  %arrayidx69 = getelementptr inbounds %struct.vithist_entry_t* %call44, i64 0, i32 9, i32 0, i32 0, i64 1
+  store i16 %7, i16* %arrayidx69, align 2, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %for.end, %for.cond, %if.end42
+  %retval.0 = phi i32 [ %20, %if.end42 ], [ -1, %for.cond ], [ -1, %for.end ]
+  ret i32 %retval.0
+}

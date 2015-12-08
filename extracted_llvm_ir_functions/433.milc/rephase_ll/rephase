@@ -1,0 +1,89 @@
+define void @rephase(i32 %flag) #0 {
+entry:
+  %cmp = icmp eq i32 %flag, 1
+  %0 = load i32* @phases_in, align 4, !tbaa !0
+  %cmp1 = icmp eq i32 %0, 0
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.end7, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %cmp2 = icmp eq i32 %flag, 0
+  %cmp4 = icmp eq i32 %0, 1
+  %or.cond45 = and i1 %cmp2, %cmp4
+  br i1 %or.cond45, label %if.end7, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false
+  %1 = load i32* @this_node, align 4, !tbaa !0
+  %cmp5 = icmp eq i32 %1, 0
+  br i1 %cmp5, label %if.then6, label %if.end
+
+if.then6:                                         ; preds = %if.then
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([32 x i8]* @str, i64 0, i64 0))
+  br label %if.end
+
+if.end:                                           ; preds = %if.then6, %if.then
+  tail call void @terminate(i32 1) #3
+  br label %if.end7
+
+if.end7:                                          ; preds = %lor.lhs.false, %entry, %if.end
+  %2 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp867 = icmp sgt i32 %2, 0
+  br i1 %cmp867, label %for.cond9.preheader.lr.ph, label %for.end44
+
+for.cond9.preheader.lr.ph:                        ; preds = %if.end7
+  %3 = load %struct.site** @lattice, align 8, !tbaa !3
+  br label %for.cond9.preheader
+
+for.cond9.preheader:                              ; preds = %for.cond9.preheader.lr.ph, %for.inc42
+  %s.069 = phi %struct.site* [ %3, %for.cond9.preheader.lr.ph ], [ %incdec.ptr, %for.inc42 ]
+  %i.068 = phi i32 [ 0, %for.cond9.preheader.lr.ph ], [ %inc43, %for.inc42 ]
+  br label %for.cond12.preheader
+
+for.cond12.preheader:                             ; preds = %for.inc39, %for.cond9.preheader
+  %indvars.iv74 = phi i64 [ 0, %for.cond9.preheader ], [ %indvars.iv.next75, %for.inc39 ]
+  %arrayidx = getelementptr inbounds %struct.site* %s.069, i64 0, i32 10, i64 %indvars.iv74
+  br label %for.cond15.preheader
+
+for.cond15.preheader:                             ; preds = %for.inc36, %for.cond12.preheader
+  %indvars.iv70 = phi i64 [ 0, %for.cond12.preheader ], [ %indvars.iv.next71, %for.inc36 ]
+  br label %for.body17
+
+for.body17:                                       ; preds = %for.body17, %for.cond15.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond15.preheader ], [ %indvars.iv.next, %for.body17 ]
+  %4 = load double* %arrayidx, align 8, !tbaa !4
+  %real = getelementptr inbounds %struct.site* %s.069, i64 0, i32 8, i64 %indvars.iv74, i32 0, i64 %indvars.iv70, i64 %indvars.iv, i32 0
+  %5 = load double* %real, align 8, !tbaa !4
+  %mul = fmul double %4, %5
+  store double %mul, double* %real, align 8, !tbaa !4
+  %6 = load double* %arrayidx, align 8, !tbaa !4
+  %imag = getelementptr inbounds %struct.site* %s.069, i64 0, i32 8, i64 %indvars.iv74, i32 0, i64 %indvars.iv70, i64 %indvars.iv, i32 1
+  %7 = load double* %imag, align 8, !tbaa !4
+  %mul35 = fmul double %6, %7
+  store double %mul35, double* %imag, align 8, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc36, label %for.body17
+
+for.inc36:                                        ; preds = %for.body17
+  %indvars.iv.next71 = add i64 %indvars.iv70, 1
+  %lftr.wideiv72 = trunc i64 %indvars.iv.next71 to i32
+  %exitcond73 = icmp eq i32 %lftr.wideiv72, 3
+  br i1 %exitcond73, label %for.inc39, label %for.cond15.preheader
+
+for.inc39:                                        ; preds = %for.inc36
+  %indvars.iv.next75 = add i64 %indvars.iv74, 1
+  %lftr.wideiv76 = trunc i64 %indvars.iv.next75 to i32
+  %exitcond77 = icmp eq i32 %lftr.wideiv76, 4
+  br i1 %exitcond77, label %for.inc42, label %for.cond12.preheader
+
+for.inc42:                                        ; preds = %for.inc39
+  %inc43 = add nsw i32 %i.068, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %s.069, i64 1
+  %cmp8 = icmp slt i32 %inc43, %2
+  br i1 %cmp8, label %for.cond9.preheader, label %for.end44
+
+for.end44:                                        ; preds = %for.inc42, %if.end7
+  store i32 %flag, i32* @phases_in, align 4, !tbaa !0
+  ret void
+}

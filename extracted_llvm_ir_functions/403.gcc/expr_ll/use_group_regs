@@ -1,0 +1,45 @@
+define void @use_group_regs(%struct.rtx_def** nocapture %call_fusage, %struct.rtx_def* nocapture %regs) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %regs, i64 0, i32 1, i64 0
+  %rtvec = bitcast %union.rtunion_def* %arrayidx to %struct.rtvec_def**
+  %0 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem14 = getelementptr inbounds %struct.rtvec_def* %0, i64 0, i32 0
+  %1 = load i32* %num_elem14, align 4, !tbaa !3
+  %cmp15 = icmp sgt i32 %1, 0
+  br i1 %cmp15, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
+  %2 = phi %struct.rtvec_def* [ %6, %for.inc ], [ %0, %entry ]
+  %arrayidx4 = getelementptr inbounds %struct.rtvec_def* %2, i64 0, i32 1, i64 %indvars.iv
+  %3 = load %struct.rtx_def** %arrayidx4, align 8, !tbaa !0
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %cmp7 = icmp eq %struct.rtx_def* %4, null
+  br i1 %cmp7, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body
+  %5 = bitcast %struct.rtx_def* %4 to i32*
+  %bf.load = load i32* %5, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp8 = icmp eq i32 %bf.clear, 61
+  br i1 %cmp8, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @use_reg(%struct.rtx_def** %call_fusage, %struct.rtx_def* %4) #10
+  %.pre = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %land.lhs.true, %if.then
+  %6 = phi %struct.rtvec_def* [ %2, %for.body ], [ %2, %land.lhs.true ], [ %.pre, %if.then ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %6, i64 0, i32 0
+  %7 = load i32* %num_elem, align 4, !tbaa !3
+  %8 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %8, %7
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

@@ -1,0 +1,54 @@
+define i32 @insn_dependent_p(%struct.rtx_def* nocapture %x, %struct.rtx_def* nocapture %y) #1 {
+entry:
+  %tmp = alloca %struct.rtx_def*, align 8
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom31 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom31
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %1, 105
+  br i1 %cmp, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %entry
+  %2 = bitcast %struct.rtx_def* %y to i32*
+  %bf.load2 = load i32* %2, align 8
+  %bf.clear3 = and i32 %bf.load2, 65535
+  %idxprom432 = zext i32 %bf.clear3 to i64
+  %arrayidx5 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom432
+  %3 = load i8* %arrayidx5, align 1, !tbaa !1
+  %cmp7 = icmp eq i8 %3, 105
+  br i1 %cmp7, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i32 988, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.insn_dependent_p, i64 0, i64 0)) #6
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %y, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx9 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  store %struct.rtx_def* %4, %struct.rtx_def** %tmp, align 8, !tbaa !0
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 3
+  %rtx12 = bitcast %union.rtunion_def* %arrayidx11 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx12, align 8, !tbaa !0
+  %6 = bitcast %struct.rtx_def** %tmp to i8*
+  call void @note_stores(%struct.rtx_def* %5, void (%struct.rtx_def*, %struct.rtx_def*, i8*)* @insn_dependent_p_1, i8* %6) #4
+  %7 = load %struct.rtx_def** %tmp, align 8, !tbaa !0
+  %cmp13 = icmp eq %struct.rtx_def* %7, null
+  br i1 %cmp13, label %return, label %if.end16
+
+if.end16:                                         ; preds = %if.end
+  %8 = load %struct.rtx_def** %rtx12, align 8, !tbaa !0
+  store %struct.rtx_def* %8, %struct.rtx_def** %tmp, align 8, !tbaa !0
+  %9 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  call void @note_stores(%struct.rtx_def* %9, void (%struct.rtx_def*, %struct.rtx_def*, i8*)* @insn_dependent_p_1, i8* %6) #4
+  %10 = load %struct.rtx_def** %tmp, align 8, !tbaa !0
+  %cmp23 = icmp eq %struct.rtx_def* %10, null
+  %. = zext i1 %cmp23 to i32
+  br label %return
+
+return:                                           ; preds = %if.end16, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ %., %if.end16 ]
+  ret i32 %retval.0
+}

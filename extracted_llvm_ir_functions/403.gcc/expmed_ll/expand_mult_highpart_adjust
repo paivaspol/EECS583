@@ -1,0 +1,21 @@
+define %struct.rtx_def* @expand_mult_highpart_adjust(i32 %mode, %struct.rtx_def* %adj_operand, %struct.rtx_def* %op0, %struct.rtx_def* %op1, %struct.rtx_def* %target, i32 %unsignedp) #0 {
+entry:
+  %tobool = icmp ne i32 %unsignedp, 0
+  %cond = select i1 %tobool, i32 75, i32 76
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom
+  %0 = load i16* %arrayidx, align 2, !tbaa !5
+  %conv = zext i16 %0 to i64
+  %sub = add i64 %conv, -1
+  %call = tail call %union.tree_node* @build_int_2_wide(i64 %sub, i64 0) #4
+  %call2 = tail call %struct.rtx_def* @expand_shift(i32 83, i32 %mode, %struct.rtx_def* %op0, %union.tree_node* %call, %struct.rtx_def* null, i32 0) #6
+  %call3 = tail call %struct.rtx_def* @expand_and(i32 %mode, %struct.rtx_def* %call2, %struct.rtx_def* %op1, %struct.rtx_def* null) #6
+  %call4 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 %cond, i32 %mode, %struct.rtx_def* %adj_operand, %struct.rtx_def* %call3) #4
+  %call5 = tail call %struct.rtx_def* @force_operand(%struct.rtx_def* %call4, %struct.rtx_def* %adj_operand) #4
+  %call11 = tail call %union.tree_node* @build_int_2_wide(i64 %sub, i64 0) #4
+  %call12 = tail call %struct.rtx_def* @expand_shift(i32 83, i32 %mode, %struct.rtx_def* %op1, %union.tree_node* %call11, %struct.rtx_def* null, i32 0) #6
+  %call13 = tail call %struct.rtx_def* @expand_and(i32 %mode, %struct.rtx_def* %call12, %struct.rtx_def* %op0, %struct.rtx_def* null) #6
+  %call14 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 %cond, i32 %mode, %struct.rtx_def* %call5, %struct.rtx_def* %call13) #4
+  %call15 = tail call %struct.rtx_def* @force_operand(%struct.rtx_def* %call14, %struct.rtx_def* %target) #4
+  ret %struct.rtx_def* %call15
+}

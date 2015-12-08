@@ -1,0 +1,125 @@
+define i32 @decode_reg_name(i8* %asmspec) #2 {
+entry:
+  %cmp = icmp eq i8* %asmspec, null
+  br i1 %cmp, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = load i8* %asmspec, align 1, !tbaa !1
+  switch i8 %0, label %strip_reg_name.exit [
+    i8 37, label %if.then.i
+    i8 35, label %if.then.i
+  ]
+
+if.then.i:                                        ; preds = %if.then, %if.then
+  %incdec.ptr.i = getelementptr inbounds i8* %asmspec, i64 1
+  br label %strip_reg_name.exit
+
+strip_reg_name.exit:                              ; preds = %if.then, %if.then.i
+  %name.addr.0.i = phi i8* [ %incdec.ptr.i, %if.then.i ], [ %asmspec, %if.then ]
+  %call1 = tail call i64 @strlen(i8* %name.addr.0.i) #11
+  %sub = add i64 %call1, 4294967295
+  %conv = trunc i64 %sub to i32
+  %cmp299 = icmp sgt i32 %conv, -1
+  br i1 %cmp299, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %strip_reg_name.exit
+  %sext = shl i64 %sub, 32
+  %1 = ashr exact i64 %sext, 32
+  br label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %indvars.iv.next108 = add i64 %indvars.iv107, -1
+  %2 = trunc i64 %indvars.iv107 to i32
+  %cmp2 = icmp sgt i32 %2, 0
+  br i1 %cmp2, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %indvars.iv107 = phi i64 [ %1, %for.body.lr.ph ], [ %indvars.iv.next108, %for.cond ]
+  %i.0100 = phi i32 [ %conv, %for.body.lr.ph ], [ %dec, %for.cond ]
+  %arrayidx = getelementptr inbounds i8* %name.addr.0.i, i64 %indvars.iv107
+  %3 = load i8* %arrayidx, align 1, !tbaa !1
+  %idxprom5 = zext i8 %3 to i64
+  %arrayidx6 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom5
+  %4 = load i16* %arrayidx6, align 2, !tbaa !7
+  %and8 = and i16 %4, 4
+  %tobool = icmp eq i16 %and8, 0
+  %dec = add nsw i32 %i.0100, -1
+  br i1 %tobool, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.cond, %for.body, %strip_reg_name.exit
+  %i.0.lcssa = phi i32 [ %conv, %strip_reg_name.exit ], [ %i.0100, %for.body ], [ %dec, %for.cond ]
+  %5 = load i8* %name.addr.0.i, align 1, !tbaa !1
+  %cmp12 = icmp ne i8 %5, 0
+  %cmp14 = icmp slt i32 %i.0.lcssa, 0
+  %or.cond = and i1 %cmp12, %cmp14
+  br i1 %or.cond, label %if.then16, label %for.body28
+
+if.then16:                                        ; preds = %for.end
+  %call17 = tail call i32 @atoi(i8* %name.addr.0.i) #11
+  %6 = icmp ult i32 %call17, 53
+  %call17. = select i1 %6, i32 %call17, i32 -2
+  br label %return
+
+for.body28:                                       ; preds = %for.end, %for.inc42
+  %indvars.iv103 = phi i64 [ %indvars.iv.next104, %for.inc42 ], [ 0, %for.end ]
+  %i.197 = phi i32 [ %inc, %for.inc42 ], [ 0, %for.end ]
+  %arrayidx30 = getelementptr inbounds [53 x i8*]* @reg_names, i64 0, i64 %indvars.iv103
+  %7 = load i8** %arrayidx30, align 8, !tbaa !3
+  %8 = load i8* %7, align 1, !tbaa !1
+  switch i8 %8, label %strip_reg_name.exit94 [
+    i8 0, label %for.inc42
+    i8 37, label %if.then.i92
+    i8 35, label %if.then.i92
+  ]
+
+if.then.i92:                                      ; preds = %for.body28, %for.body28
+  %incdec.ptr.i91 = getelementptr inbounds i8* %7, i64 1
+  br label %strip_reg_name.exit94
+
+strip_reg_name.exit94:                            ; preds = %for.body28, %if.then.i92
+  %name.addr.0.i93 = phi i8* [ %incdec.ptr.i91, %if.then.i92 ], [ %7, %for.body28 ]
+  %call38 = tail call i32 @strcmp(i8* %name.addr.0.i, i8* %name.addr.0.i93) #11
+  %tobool39 = icmp eq i32 %call38, 0
+  br i1 %tobool39, label %return, label %for.inc42
+
+for.inc42:                                        ; preds = %for.body28, %strip_reg_name.exit94
+  %indvars.iv.next104 = add i64 %indvars.iv103, 1
+  %inc = add nsw i32 %i.197, 1
+  %9 = trunc i64 %indvars.iv.next104 to i32
+  %cmp26 = icmp slt i32 %9, 53
+  br i1 %cmp26, label %for.body28, label %for.body47
+
+for.cond44:                                       ; preds = %for.body47
+  %10 = trunc i64 %indvars.iv.next to i32
+  %cmp45 = icmp slt i32 %10, 32
+  br i1 %cmp45, label %for.body47, label %for.end58
+
+for.body47:                                       ; preds = %for.inc42, %for.cond44
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond44 ], [ 0, %for.inc42 ]
+  %name = getelementptr inbounds [32 x %struct.anon.3]* bitcast (<{ { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] } }>* @decode_reg_name.table to [32 x %struct.anon.3]*), i64 0, i64 %indvars.iv, i32 0
+  %11 = load i8** %name, align 16, !tbaa !3
+  %call50 = tail call i32 @strcmp(i8* %name.addr.0.i, i8* %11) #11
+  %tobool51 = icmp eq i32 %call50, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %tobool51, label %if.then52, label %for.cond44
+
+if.then52:                                        ; preds = %for.body47
+  %number = getelementptr inbounds [32 x %struct.anon.3]* bitcast (<{ { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] } }>* @decode_reg_name.table to [32 x %struct.anon.3]*), i64 0, i64 %indvars.iv, i32 1
+  %12 = load i32* %number, align 8, !tbaa !4
+  br label %return
+
+for.end58:                                        ; preds = %for.cond44
+  %call59 = tail call i32 @strcmp(i8* %name.addr.0.i, i8* getelementptr inbounds ([7 x i8]* @.str47, i64 0, i64 0)) #11
+  %tobool60 = icmp eq i32 %call59, 0
+  br i1 %tobool60, label %return, label %if.end62
+
+if.end62:                                         ; preds = %for.end58
+  %call63 = tail call i32 @strcmp(i8* %name.addr.0.i, i8* getelementptr inbounds ([3 x i8]* @.str48, i64 0, i64 0)) #11
+  %tobool64 = icmp eq i32 %call63, 0
+  %. = select i1 %tobool64, i32 -3, i32 -2
+  br label %return
+
+return:                                           ; preds = %strip_reg_name.exit94, %entry, %if.end62, %for.end58, %if.then16, %if.then52
+  %retval.0 = phi i32 [ %12, %if.then52 ], [ %call17., %if.then16 ], [ -4, %for.end58 ], [ %., %if.end62 ], [ -1, %entry ], [ %i.197, %strip_reg_name.exit94 ]
+  ret i32 %retval.0
+}

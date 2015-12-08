@@ -1,0 +1,14 @@
+define void @expand_computed_goto(%union.tree_node* %exp) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %exp, %struct.rtx_def* null, i32 0, i32 0) #7
+  tail call void @emit_queue() #7
+  tail call void @do_pending_stack_adjust() #7
+  tail call void @emit_indirect_jump(%struct.rtx_def* %call) #7
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %has_computed_jump = getelementptr inbounds %struct.function* %0, i64 0, i32 56
+  %1 = bitcast [4 x i8]* %has_computed_jump to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.set = or i32 %bf.load, 2048
+  store i32 %bf.set, i32* %1, align 8
+  ret void
+}

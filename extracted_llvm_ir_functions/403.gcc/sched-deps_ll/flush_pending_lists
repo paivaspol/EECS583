@@ -1,0 +1,29 @@
+define internal fastcc void @flush_pending_lists(%struct.deps* %deps, %struct.rtx_def* %insn, i32 %for_read, i32 %for_write) #1 {
+entry:
+  %tobool = icmp eq i32 %for_write, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %pending_read_insns = getelementptr inbounds %struct.deps* %deps, i64 0, i32 0
+  tail call fastcc void @add_dependence_list_and_free(%struct.rtx_def* %insn, %struct.rtx_def** %pending_read_insns, i32 14) #6
+  %pending_read_mems = getelementptr inbounds %struct.deps* %deps, i64 0, i32 1
+  tail call void @free_EXPR_LIST_list(%struct.rtx_def** %pending_read_mems) #7
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %pending_write_insns = getelementptr inbounds %struct.deps* %deps, i64 0, i32 2
+  %tobool1 = icmp ne i32 %for_read, 0
+  %cond = select i1 %tobool1, i32 14, i32 15
+  tail call fastcc void @add_dependence_list_and_free(%struct.rtx_def* %insn, %struct.rtx_def** %pending_write_insns, i32 %cond) #6
+  %pending_write_mems = getelementptr inbounds %struct.deps* %deps, i64 0, i32 3
+  tail call void @free_EXPR_LIST_list(%struct.rtx_def** %pending_write_mems) #7
+  %pending_lists_length = getelementptr inbounds %struct.deps* %deps, i64 0, i32 4
+  store i32 0, i32* %pending_lists_length, align 4, !tbaa !3
+  %last_pending_memory_flush = getelementptr inbounds %struct.deps* %deps, i64 0, i32 6
+  tail call fastcc void @add_dependence_list_and_free(%struct.rtx_def* %insn, %struct.rtx_def** %last_pending_memory_flush, i32 %cond) #6
+  %call = tail call %struct.rtx_def* @alloc_INSN_LIST(%struct.rtx_def* %insn, %struct.rtx_def* null) #7
+  store %struct.rtx_def* %call, %struct.rtx_def** %last_pending_memory_flush, align 8, !tbaa !0
+  %pending_flush_length = getelementptr inbounds %struct.deps* %deps, i64 0, i32 5
+  store i32 1, i32* %pending_flush_length, align 4, !tbaa !3
+  ret void
+}

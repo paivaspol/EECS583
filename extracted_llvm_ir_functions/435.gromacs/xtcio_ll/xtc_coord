@@ -1,0 +1,55 @@
+define internal fastcc i32 @xtc_coord(%struct.XDR* %xd, i32* %natoms, [3 x float]* %box, [3 x float]* %x, float* %prec) #0 {
+entry:
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %entry, %for.inc10
+  %indvars.iv38 = phi i64 [ 0, %entry ], [ %indvars.iv.next39, %for.inc10 ]
+  br i1 false, label %if.end, label %for.body6
+
+for.body6:                                        ; preds = %for.cond1.preheader, %xtc_check.exit
+  %indvars.iv = phi i64 [ %indvars.iv.next, %xtc_check.exit ], [ 0, %for.cond1.preheader ]
+  %arrayidx8 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv38, i64 %indvars.iv
+  %call = tail call i32 @xdr_real(%struct.XDR* %xd, float* %arrayidx8) #3
+  %tobool.i = icmp eq i32 %call, 0
+  br i1 %tobool.i, label %if.then.i, label %xtc_check.exit
+
+if.then.i:                                        ; preds = %for.body6
+  %0 = load %struct._IO_FILE** @debug, align 8, !tbaa !0
+  %tobool1.i = icmp eq %struct._IO_FILE* %0, null
+  br i1 %tobool1.i, label %if.end, label %if.then2.i
+
+if.then2.i:                                       ; preds = %if.then.i
+  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str3, i64 0, i64 0), i32 106) #3
+  br label %if.end
+
+xtc_check.exit:                                   ; preds = %for.body6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %1 = trunc i64 %indvars.iv to i32
+  %cmp2 = icmp sgt i32 %1, 1
+  br i1 %cmp2, label %for.inc10, label %for.body6
+
+for.inc10:                                        ; preds = %xtc_check.exit
+  %indvars.iv.next39 = add i64 %indvars.iv38, 1
+  %2 = trunc i64 %indvars.iv38 to i32
+  %cmp = icmp sgt i32 %2, 1
+  br i1 %cmp, label %if.then, label %for.cond1.preheader
+
+if.then:                                          ; preds = %for.inc10
+  %arraydecay = getelementptr inbounds [3 x float]* %x, i64 0, i64 0
+  %call15 = tail call i32 @xdr3drcoord(%struct.XDR* %xd, float* %arraydecay, i32* %natoms, float* %prec) #3
+  %tobool.i26 = icmp eq i32 %call15, 0
+  br i1 %tobool.i26, label %if.then.i28, label %if.end
+
+if.then.i28:                                      ; preds = %if.then
+  %3 = load %struct._IO_FILE** @debug, align 8, !tbaa !0
+  %tobool1.i27 = icmp eq %struct._IO_FILE* %3, null
+  br i1 %tobool1.i27, label %if.end, label %if.then2.i30
+
+if.then2.i30:                                     ; preds = %if.then.i28
+  %call.i29 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str3, i64 0, i64 0), i32 110) #3
+  br label %if.end
+
+if.end:                                           ; preds = %for.cond1.preheader, %if.then.i, %if.then2.i, %if.then2.i30, %if.then.i28, %if.then
+  %result.2 = phi i32 [ 0, %if.then.i28 ], [ 0, %if.then2.i30 ], [ 1, %if.then ], [ 0, %if.then2.i ], [ 0, %if.then.i ], [ 0, %for.cond1.preheader ]
+  ret i32 %result.2
+}

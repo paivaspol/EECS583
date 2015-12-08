@@ -1,0 +1,405 @@
+define %struct.rtx_def* @gen_rtx(i32 %code, i32 %mode, ...) #0 {
+entry:
+  %p = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %p to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  switch i32 %code, label %sw.default [
+    i32 54, label %sw.bb
+    i32 55, label %sw.bb3
+    i32 61, label %sw.bb29
+    i32 66, label %sw.bb43
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %gp_offset_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 0
+  %gp_offset = load i32* %gp_offset_p, align 16
+  %fits_in_gp = icmp ult i32 %gp_offset, 41
+  br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem
+
+vaarg.in_reg:                                     ; preds = %sw.bb
+  %0 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 3
+  %reg_save_area = load i8** %0, align 16
+  %1 = sext i32 %gp_offset to i64
+  %2 = getelementptr i8* %reg_save_area, i64 %1
+  %3 = add i32 %gp_offset, 8
+  store i32 %3, i32* %gp_offset_p, align 16
+  br label %vaarg.end
+
+vaarg.in_mem:                                     ; preds = %sw.bb
+  %overflow_arg_area_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 2
+  %overflow_arg_area = load i8** %overflow_arg_area_p, align 8
+  %overflow_arg_area.next = getelementptr i8* %overflow_arg_area, i64 8
+  store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p, align 8
+  br label %vaarg.end
+
+vaarg.end:                                        ; preds = %vaarg.in_mem, %vaarg.in_reg
+  %vaarg.addr.in = phi i8* [ %2, %vaarg.in_reg ], [ %overflow_arg_area, %vaarg.in_mem ]
+  %vaarg.addr = bitcast i8* %vaarg.addr.in to i64*
+  %4 = load i64* %vaarg.addr, align 8
+  %call = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 undef, i64 %4) #9
+  br label %sw.epilog174
+
+sw.bb3:                                           ; preds = %entry
+  %gp_offset_p5 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 0
+  %gp_offset6 = load i32* %gp_offset_p5, align 16
+  %fits_in_gp7 = icmp ult i32 %gp_offset6, 41
+  br i1 %fits_in_gp7, label %vaarg.end14, label %vaarg.end14.thread
+
+vaarg.end14.thread:                               ; preds = %sw.bb3
+  %overflow_arg_area_p11 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 2
+  %overflow_arg_area12 = load i8** %overflow_arg_area_p11, align 8
+  %overflow_arg_area.next13 = getelementptr i8* %overflow_arg_area12, i64 8
+  store i8* %overflow_arg_area.next13, i8** %overflow_arg_area_p11, align 8
+  %vaarg.addr15209 = bitcast i8* %overflow_arg_area12 to i64*
+  %5 = load i64* %vaarg.addr15209, align 8
+  br label %vaarg.in_mem22
+
+vaarg.end14:                                      ; preds = %sw.bb3
+  %6 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 3
+  %reg_save_area9 = load i8** %6, align 16
+  %7 = sext i32 %gp_offset6 to i64
+  %8 = getelementptr i8* %reg_save_area9, i64 %7
+  %9 = add i32 %gp_offset6, 8
+  store i32 %9, i32* %gp_offset_p5, align 16
+  %vaarg.addr15 = bitcast i8* %8 to i64*
+  %10 = load i64* %vaarg.addr15, align 8
+  %fits_in_gp19 = icmp ult i32 %9, 41
+  br i1 %fits_in_gp19, label %vaarg.in_reg20, label %vaarg.in_mem22
+
+vaarg.in_reg20:                                   ; preds = %vaarg.end14
+  %11 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 3
+  %reg_save_area21 = load i8** %11, align 16
+  %12 = sext i32 %9 to i64
+  %13 = getelementptr i8* %reg_save_area21, i64 %12
+  %14 = add i32 %gp_offset6, 16
+  store i32 %14, i32* %gp_offset_p5, align 16
+  br label %vaarg.end26
+
+vaarg.in_mem22:                                   ; preds = %vaarg.end14.thread, %vaarg.end14
+  %15 = phi i64 [ %5, %vaarg.end14.thread ], [ %10, %vaarg.end14 ]
+  %overflow_arg_area_p23 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 2
+  %overflow_arg_area24 = load i8** %overflow_arg_area_p23, align 8
+  %overflow_arg_area.next25 = getelementptr i8* %overflow_arg_area24, i64 8
+  store i8* %overflow_arg_area.next25, i8** %overflow_arg_area_p23, align 8
+  br label %vaarg.end26
+
+vaarg.end26:                                      ; preds = %vaarg.in_mem22, %vaarg.in_reg20
+  %16 = phi i64 [ %10, %vaarg.in_reg20 ], [ %15, %vaarg.in_mem22 ]
+  %vaarg.addr27.in = phi i8* [ %13, %vaarg.in_reg20 ], [ %overflow_arg_area24, %vaarg.in_mem22 ]
+  %vaarg.addr27 = bitcast i8* %vaarg.addr27.in to i64*
+  %17 = load i64* %vaarg.addr27, align 8
+  %call28 = call %struct.rtx_def* @gen_rtx_CONST_DOUBLE(i32 %mode, i64 %16, i64 %17) #9
+  br label %sw.epilog174
+
+sw.bb29:                                          ; preds = %entry
+  %gp_offset_p31 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 0
+  %gp_offset32 = load i32* %gp_offset_p31, align 16
+  %fits_in_gp33 = icmp ult i32 %gp_offset32, 41
+  br i1 %fits_in_gp33, label %vaarg.in_reg34, label %vaarg.in_mem36
+
+vaarg.in_reg34:                                   ; preds = %sw.bb29
+  %18 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 3
+  %reg_save_area35 = load i8** %18, align 16
+  %19 = sext i32 %gp_offset32 to i64
+  %20 = getelementptr i8* %reg_save_area35, i64 %19
+  %21 = add i32 %gp_offset32, 8
+  store i32 %21, i32* %gp_offset_p31, align 16
+  br label %vaarg.end40
+
+vaarg.in_mem36:                                   ; preds = %sw.bb29
+  %overflow_arg_area_p37 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 2
+  %overflow_arg_area38 = load i8** %overflow_arg_area_p37, align 8
+  %overflow_arg_area.next39 = getelementptr i8* %overflow_arg_area38, i64 8
+  store i8* %overflow_arg_area.next39, i8** %overflow_arg_area_p37, align 8
+  br label %vaarg.end40
+
+vaarg.end40:                                      ; preds = %vaarg.in_mem36, %vaarg.in_reg34
+  %vaarg.addr41.in = phi i8* [ %20, %vaarg.in_reg34 ], [ %overflow_arg_area38, %vaarg.in_mem36 ]
+  %vaarg.addr41 = bitcast i8* %vaarg.addr41.in to i32*
+  %22 = load i32* %vaarg.addr41, align 4
+  %call42 = call %struct.rtx_def* @gen_rtx_REG(i32 %mode, i32 %22) #9
+  br label %sw.epilog174
+
+sw.bb43:                                          ; preds = %entry
+  %gp_offset_p45 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 0
+  %gp_offset46 = load i32* %gp_offset_p45, align 16
+  %fits_in_gp47 = icmp ult i32 %gp_offset46, 41
+  br i1 %fits_in_gp47, label %vaarg.in_reg48, label %vaarg.in_mem50
+
+vaarg.in_reg48:                                   ; preds = %sw.bb43
+  %23 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 3
+  %reg_save_area49 = load i8** %23, align 16
+  %24 = sext i32 %gp_offset46 to i64
+  %25 = getelementptr i8* %reg_save_area49, i64 %24
+  %26 = add i32 %gp_offset46, 8
+  store i32 %26, i32* %gp_offset_p45, align 16
+  br label %vaarg.end54
+
+vaarg.in_mem50:                                   ; preds = %sw.bb43
+  %overflow_arg_area_p51 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 2
+  %overflow_arg_area52 = load i8** %overflow_arg_area_p51, align 8
+  %overflow_arg_area.next53 = getelementptr i8* %overflow_arg_area52, i64 8
+  store i8* %overflow_arg_area.next53, i8** %overflow_arg_area_p51, align 8
+  br label %vaarg.end54
+
+vaarg.end54:                                      ; preds = %vaarg.in_mem50, %vaarg.in_reg48
+  %vaarg.addr55.in = phi i8* [ %25, %vaarg.in_reg48 ], [ %overflow_arg_area52, %vaarg.in_mem50 ]
+  %vaarg.addr55 = bitcast i8* %vaarg.addr55.in to %struct.rtx_def**
+  %27 = load %struct.rtx_def** %vaarg.addr55, align 8
+  %call.i = call %struct.rtx_def* @gen_rtx_fmt_e0(i32 66, i32 %mode, %struct.rtx_def* %27) #8
+  %28 = getelementptr inbounds %struct.rtx_def* %call.i, i64 0, i32 1, i64 1, i32 0
+  store i64 0, i64* %28, align 8, !tbaa !4
+  br label %sw.epilog174
+
+sw.default:                                       ; preds = %entry
+  %call57 = call %struct.rtx_def* @rtx_alloc(i32 %code) #8
+  %29 = bitcast %struct.rtx_def* %call57 to i32*
+  %bf.load = load i32* %29, align 8
+  %bf.value = shl i32 %mode, 16
+  %bf.shl = and i32 %bf.value, 16711680
+  %bf.clear = and i32 %bf.load, -16711681
+  %bf.set = or i32 %bf.clear, %bf.shl
+  store i32 %bf.set, i32* %29, align 8
+  %idxprom = sext i32 %code to i64
+  %arrayidx59 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom
+  %30 = load i8* %arrayidx59, align 1, !tbaa !1
+  %cmp205 = icmp eq i8 %30, 0
+  br i1 %cmp205, label %sw.epilog174, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %sw.default
+  %arrayidx = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom
+  %31 = load i8** %arrayidx, align 8, !tbaa !4
+  %gp_offset_p64 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 0
+  %32 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 3
+  %overflow_arg_area_p70 = getelementptr inbounds [1 x %struct.__va_list_tag]* %p, i64 0, i64 0, i32 2
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %fmt.0206 = phi i8* [ %31, %for.body.lr.ph ], [ %incdec.ptr, %for.inc ]
+  %incdec.ptr = getelementptr inbounds i8* %fmt.0206, i64 1
+  %33 = load i8* %fmt.0206, align 1, !tbaa !1
+  %conv61 = sext i8 %33 to i32
+  switch i32 %conv61, label %sw.default173 [
+    i32 48, label %for.inc
+    i32 105, label %sw.bb62
+    i32 119, label %sw.bb77
+    i32 115, label %sw.bb93
+    i32 101, label %sw.bb109
+    i32 117, label %sw.bb109
+    i32 69, label %sw.bb125
+    i32 98, label %sw.bb141
+    i32 116, label %sw.bb157
+  ]
+
+sw.bb62:                                          ; preds = %for.body
+  %gp_offset65 = load i32* %gp_offset_p64, align 16
+  %fits_in_gp66 = icmp ult i32 %gp_offset65, 41
+  br i1 %fits_in_gp66, label %vaarg.in_reg67, label %vaarg.in_mem69
+
+vaarg.in_reg67:                                   ; preds = %sw.bb62
+  %reg_save_area68 = load i8** %32, align 16
+  %34 = sext i32 %gp_offset65 to i64
+  %35 = getelementptr i8* %reg_save_area68, i64 %34
+  %36 = add i32 %gp_offset65, 8
+  store i32 %36, i32* %gp_offset_p64, align 16
+  br label %vaarg.end73
+
+vaarg.in_mem69:                                   ; preds = %sw.bb62
+  %overflow_arg_area71 = load i8** %overflow_arg_area_p70, align 8
+  %overflow_arg_area.next72 = getelementptr i8* %overflow_arg_area71, i64 8
+  store i8* %overflow_arg_area.next72, i8** %overflow_arg_area_p70, align 8
+  br label %vaarg.end73
+
+vaarg.end73:                                      ; preds = %vaarg.in_mem69, %vaarg.in_reg67
+  %vaarg.addr74.in = phi i8* [ %35, %vaarg.in_reg67 ], [ %overflow_arg_area71, %vaarg.in_mem69 ]
+  %vaarg.addr74 = bitcast i8* %vaarg.addr74.in to i32*
+  %37 = load i32* %vaarg.addr74, align 4
+  %arrayidx76 = getelementptr inbounds %struct.rtx_def* %call57, i64 0, i32 1, i64 %indvars.iv
+  %rtint = bitcast %union.rtunion_def* %arrayidx76 to i32*
+  store i32 %37, i32* %rtint, align 4, !tbaa !0
+  br label %for.inc
+
+sw.bb77:                                          ; preds = %for.body
+  %gp_offset80 = load i32* %gp_offset_p64, align 16
+  %fits_in_gp81 = icmp ult i32 %gp_offset80, 41
+  br i1 %fits_in_gp81, label %vaarg.in_reg82, label %vaarg.in_mem84
+
+vaarg.in_reg82:                                   ; preds = %sw.bb77
+  %reg_save_area83 = load i8** %32, align 16
+  %38 = sext i32 %gp_offset80 to i64
+  %39 = getelementptr i8* %reg_save_area83, i64 %38
+  %40 = add i32 %gp_offset80, 8
+  store i32 %40, i32* %gp_offset_p64, align 16
+  br label %vaarg.end88
+
+vaarg.in_mem84:                                   ; preds = %sw.bb77
+  %overflow_arg_area86 = load i8** %overflow_arg_area_p70, align 8
+  %overflow_arg_area.next87 = getelementptr i8* %overflow_arg_area86, i64 8
+  store i8* %overflow_arg_area.next87, i8** %overflow_arg_area_p70, align 8
+  br label %vaarg.end88
+
+vaarg.end88:                                      ; preds = %vaarg.in_mem84, %vaarg.in_reg82
+  %vaarg.addr89.in = phi i8* [ %39, %vaarg.in_reg82 ], [ %overflow_arg_area86, %vaarg.in_mem84 ]
+  %vaarg.addr89 = bitcast i8* %vaarg.addr89.in to i64*
+  %41 = load i64* %vaarg.addr89, align 8
+  %rtwint = getelementptr inbounds %struct.rtx_def* %call57, i64 0, i32 1, i64 %indvars.iv, i32 0
+  store i64 %41, i64* %rtwint, align 8, !tbaa !3
+  br label %for.inc
+
+sw.bb93:                                          ; preds = %for.body
+  %gp_offset96 = load i32* %gp_offset_p64, align 16
+  %fits_in_gp97 = icmp ult i32 %gp_offset96, 41
+  br i1 %fits_in_gp97, label %vaarg.in_reg98, label %vaarg.in_mem100
+
+vaarg.in_reg98:                                   ; preds = %sw.bb93
+  %reg_save_area99 = load i8** %32, align 16
+  %42 = sext i32 %gp_offset96 to i64
+  %43 = getelementptr i8* %reg_save_area99, i64 %42
+  %44 = add i32 %gp_offset96, 8
+  store i32 %44, i32* %gp_offset_p64, align 16
+  br label %vaarg.end104
+
+vaarg.in_mem100:                                  ; preds = %sw.bb93
+  %overflow_arg_area102 = load i8** %overflow_arg_area_p70, align 8
+  %overflow_arg_area.next103 = getelementptr i8* %overflow_arg_area102, i64 8
+  store i8* %overflow_arg_area.next103, i8** %overflow_arg_area_p70, align 8
+  br label %vaarg.end104
+
+vaarg.end104:                                     ; preds = %vaarg.in_mem100, %vaarg.in_reg98
+  %vaarg.addr105.in = phi i8* [ %43, %vaarg.in_reg98 ], [ %overflow_arg_area102, %vaarg.in_mem100 ]
+  %vaarg.addr105 = bitcast i8* %vaarg.addr105.in to i8**
+  %45 = load i8** %vaarg.addr105, align 8
+  %46 = getelementptr inbounds %struct.rtx_def* %call57, i64 0, i32 1, i64 %indvars.iv, i32 0
+  %.c203 = ptrtoint i8* %45 to i64
+  store i64 %.c203, i64* %46, align 8, !tbaa !4
+  br label %for.inc
+
+sw.bb109:                                         ; preds = %for.body, %for.body
+  %gp_offset112 = load i32* %gp_offset_p64, align 16
+  %fits_in_gp113 = icmp ult i32 %gp_offset112, 41
+  br i1 %fits_in_gp113, label %vaarg.in_reg114, label %vaarg.in_mem116
+
+vaarg.in_reg114:                                  ; preds = %sw.bb109
+  %reg_save_area115 = load i8** %32, align 16
+  %47 = sext i32 %gp_offset112 to i64
+  %48 = getelementptr i8* %reg_save_area115, i64 %47
+  %49 = add i32 %gp_offset112, 8
+  store i32 %49, i32* %gp_offset_p64, align 16
+  br label %vaarg.end120
+
+vaarg.in_mem116:                                  ; preds = %sw.bb109
+  %overflow_arg_area118 = load i8** %overflow_arg_area_p70, align 8
+  %overflow_arg_area.next119 = getelementptr i8* %overflow_arg_area118, i64 8
+  store i8* %overflow_arg_area.next119, i8** %overflow_arg_area_p70, align 8
+  br label %vaarg.end120
+
+vaarg.end120:                                     ; preds = %vaarg.in_mem116, %vaarg.in_reg114
+  %vaarg.addr121.in = phi i8* [ %48, %vaarg.in_reg114 ], [ %overflow_arg_area118, %vaarg.in_mem116 ]
+  %vaarg.addr121 = bitcast i8* %vaarg.addr121.in to %struct.rtx_def**
+  %50 = load %struct.rtx_def** %vaarg.addr121, align 8
+  %51 = getelementptr inbounds %struct.rtx_def* %call57, i64 0, i32 1, i64 %indvars.iv, i32 0
+  %.c202 = ptrtoint %struct.rtx_def* %50 to i64
+  store i64 %.c202, i64* %51, align 8, !tbaa !4
+  br label %for.inc
+
+sw.bb125:                                         ; preds = %for.body
+  %gp_offset128 = load i32* %gp_offset_p64, align 16
+  %fits_in_gp129 = icmp ult i32 %gp_offset128, 41
+  br i1 %fits_in_gp129, label %vaarg.in_reg130, label %vaarg.in_mem132
+
+vaarg.in_reg130:                                  ; preds = %sw.bb125
+  %reg_save_area131 = load i8** %32, align 16
+  %52 = sext i32 %gp_offset128 to i64
+  %53 = getelementptr i8* %reg_save_area131, i64 %52
+  %54 = add i32 %gp_offset128, 8
+  store i32 %54, i32* %gp_offset_p64, align 16
+  br label %vaarg.end136
+
+vaarg.in_mem132:                                  ; preds = %sw.bb125
+  %overflow_arg_area134 = load i8** %overflow_arg_area_p70, align 8
+  %overflow_arg_area.next135 = getelementptr i8* %overflow_arg_area134, i64 8
+  store i8* %overflow_arg_area.next135, i8** %overflow_arg_area_p70, align 8
+  br label %vaarg.end136
+
+vaarg.end136:                                     ; preds = %vaarg.in_mem132, %vaarg.in_reg130
+  %vaarg.addr137.in = phi i8* [ %53, %vaarg.in_reg130 ], [ %overflow_arg_area134, %vaarg.in_mem132 ]
+  %vaarg.addr137 = bitcast i8* %vaarg.addr137.in to %struct.rtvec_def**
+  %55 = load %struct.rtvec_def** %vaarg.addr137, align 8
+  %56 = getelementptr inbounds %struct.rtx_def* %call57, i64 0, i32 1, i64 %indvars.iv, i32 0
+  %.c201 = ptrtoint %struct.rtvec_def* %55 to i64
+  store i64 %.c201, i64* %56, align 8, !tbaa !4
+  br label %for.inc
+
+sw.bb141:                                         ; preds = %for.body
+  %gp_offset144 = load i32* %gp_offset_p64, align 16
+  %fits_in_gp145 = icmp ult i32 %gp_offset144, 41
+  br i1 %fits_in_gp145, label %vaarg.in_reg146, label %vaarg.in_mem148
+
+vaarg.in_reg146:                                  ; preds = %sw.bb141
+  %reg_save_area147 = load i8** %32, align 16
+  %57 = sext i32 %gp_offset144 to i64
+  %58 = getelementptr i8* %reg_save_area147, i64 %57
+  %59 = add i32 %gp_offset144, 8
+  store i32 %59, i32* %gp_offset_p64, align 16
+  br label %vaarg.end152
+
+vaarg.in_mem148:                                  ; preds = %sw.bb141
+  %overflow_arg_area150 = load i8** %overflow_arg_area_p70, align 8
+  %overflow_arg_area.next151 = getelementptr i8* %overflow_arg_area150, i64 8
+  store i8* %overflow_arg_area.next151, i8** %overflow_arg_area_p70, align 8
+  br label %vaarg.end152
+
+vaarg.end152:                                     ; preds = %vaarg.in_mem148, %vaarg.in_reg146
+  %vaarg.addr153.in = phi i8* [ %58, %vaarg.in_reg146 ], [ %overflow_arg_area150, %vaarg.in_mem148 ]
+  %vaarg.addr153 = bitcast i8* %vaarg.addr153.in to %struct.bitmap_head_def**
+  %60 = load %struct.bitmap_head_def** %vaarg.addr153, align 8
+  %61 = getelementptr inbounds %struct.rtx_def* %call57, i64 0, i32 1, i64 %indvars.iv, i32 0
+  %.c200 = ptrtoint %struct.bitmap_head_def* %60 to i64
+  store i64 %.c200, i64* %61, align 8, !tbaa !4
+  br label %for.inc
+
+sw.bb157:                                         ; preds = %for.body
+  %gp_offset160 = load i32* %gp_offset_p64, align 16
+  %fits_in_gp161 = icmp ult i32 %gp_offset160, 41
+  br i1 %fits_in_gp161, label %vaarg.in_reg162, label %vaarg.in_mem164
+
+vaarg.in_reg162:                                  ; preds = %sw.bb157
+  %reg_save_area163 = load i8** %32, align 16
+  %62 = sext i32 %gp_offset160 to i64
+  %63 = getelementptr i8* %reg_save_area163, i64 %62
+  %64 = add i32 %gp_offset160, 8
+  store i32 %64, i32* %gp_offset_p64, align 16
+  br label %vaarg.end168
+
+vaarg.in_mem164:                                  ; preds = %sw.bb157
+  %overflow_arg_area166 = load i8** %overflow_arg_area_p70, align 8
+  %overflow_arg_area.next167 = getelementptr i8* %overflow_arg_area166, i64 8
+  store i8* %overflow_arg_area.next167, i8** %overflow_arg_area_p70, align 8
+  br label %vaarg.end168
+
+vaarg.end168:                                     ; preds = %vaarg.in_mem164, %vaarg.in_reg162
+  %vaarg.addr169.in = phi i8* [ %63, %vaarg.in_reg162 ], [ %overflow_arg_area166, %vaarg.in_mem164 ]
+  %vaarg.addr169 = bitcast i8* %vaarg.addr169.in to %union.tree_node**
+  %65 = load %union.tree_node** %vaarg.addr169, align 8
+  %66 = getelementptr inbounds %struct.rtx_def* %call57, i64 0, i32 1, i64 %indvars.iv, i32 0
+  %.c = ptrtoint %union.tree_node* %65 to i64
+  store i64 %.c, i64* %66, align 8, !tbaa !4
+  br label %for.inc
+
+sw.default173:                                    ; preds = %for.body
+  call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 589, i8* getelementptr inbounds ([8 x i8]* @__FUNCTION__.gen_rtx, i64 0, i64 0)) #10
+  unreachable
+
+for.inc:                                          ; preds = %for.body, %vaarg.end73, %vaarg.end88, %vaarg.end104, %vaarg.end120, %vaarg.end136, %vaarg.end152, %vaarg.end168
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %conv = zext i8 %30 to i32
+  %67 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %67, %conv
+  br i1 %cmp, label %for.body, label %sw.epilog174
+
+sw.epilog174:                                     ; preds = %sw.default, %for.inc, %vaarg.end54, %vaarg.end40, %vaarg.end26, %vaarg.end
+  %rt_val.0 = phi %struct.rtx_def* [ %call.i, %vaarg.end54 ], [ %call42, %vaarg.end40 ], [ %call28, %vaarg.end26 ], [ %call, %vaarg.end ], [ %call57, %for.inc ], [ %call57, %sw.default ]
+  call void @llvm.va_end(i8* %arraydecay1)
+  ret %struct.rtx_def* %rt_val.0
+}

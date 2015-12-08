@@ -1,0 +1,23 @@
+define %struct.rtx_def* @gen_rtx_fmt_iss(i32 %code, i32 %mode, i32 %arg0, i8* %arg1, i8* %arg2) #0 {
+entry:
+  %call = tail call i8* @ggc_alloc(i64 32) #3
+  %0 = bitcast i8* %call to %struct.rtx_def*
+  %1 = bitcast i8* %call to i64*
+  store i64 0, i64* %1, align 8
+  %2 = bitcast i8* %call to i32*
+  %bf.value = and i32 %code, 65535
+  %bf.value2 = shl i32 %mode, 16
+  %bf.shl = and i32 %bf.value2, 16711680
+  %bf.set = or i32 %bf.shl, %bf.value
+  store i32 %bf.set, i32* %2, align 8
+  %fld = getelementptr inbounds i8* %call, i64 8
+  %rtint = bitcast i8* %fld to i32*
+  store i32 %arg0, i32* %rtint, align 4, !tbaa !3
+  %arrayidx6 = getelementptr inbounds i8* %call, i64 16
+  %rtstr = bitcast i8* %arrayidx6 to i8**
+  store i8* %arg1, i8** %rtstr, align 8, !tbaa !0
+  %arrayidx8 = getelementptr inbounds i8* %call, i64 24
+  %rtstr9 = bitcast i8* %arrayidx8 to i8**
+  store i8* %arg2, i8** %rtstr9, align 8, !tbaa !0
+  ret %struct.rtx_def* %0
+}

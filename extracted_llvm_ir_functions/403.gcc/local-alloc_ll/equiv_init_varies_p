@@ -1,0 +1,132 @@
+define internal fastcc i32 @equiv_init_varies_p(%struct.rtx_def* %x) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.epilog [
+    i32 66, label %sw.bb
+    i32 71, label %return
+    i32 58, label %sw.bb5
+    i32 54, label %sw.bb5
+    i32 55, label %sw.bb5
+    i32 56, label %sw.bb5
+    i32 68, label %sw.bb5
+    i32 67, label %sw.bb5
+    i32 61, label %sw.bb6
+    i32 41, label %sw.bb13
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %bf.clear2 = and i32 %bf.load, 67108864
+  %tobool = icmp eq i32 %bf.clear2, 0
+  br i1 %tobool, label %lor.end, label %lor.rhs
+
+lor.rhs:                                          ; preds = %sw.bb
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %call = tail call fastcc i32 @equiv_init_varies_p(%struct.rtx_def* %1) #8
+  %tobool3 = icmp ne i32 %call, 0
+  br label %lor.end
+
+lor.end:                                          ; preds = %sw.bb, %lor.rhs
+  %2 = phi i1 [ true, %sw.bb ], [ %tobool3, %lor.rhs ]
+  %lor.ext = zext i1 %2 to i32
+  br label %return
+
+sw.bb5:                                           ; preds = %entry, %entry, %entry, %entry, %entry, %entry
+  br label %return
+
+sw.bb6:                                           ; preds = %entry
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx8 to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !0
+  %idxprom = zext i32 %3 to i64
+  %4 = load %struct.equivalence** @reg_equiv, align 8, !tbaa !3
+  %replace = getelementptr inbounds %struct.equivalence* %4, i64 %idxprom, i32 0
+  %5 = load i8* %replace, align 1, !tbaa !1
+  %cmp = icmp eq i8 %5, 0
+  br i1 %cmp, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %sw.bb6
+  %call11 = tail call i32 @rtx_varies_p(%struct.rtx_def* %x, i32 0) #6
+  %tobool12 = icmp ne i32 %call11, 0
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %sw.bb6
+  %6 = phi i1 [ false, %sw.bb6 ], [ %tobool12, %land.rhs ]
+  %land.ext = zext i1 %6 to i32
+  br label %return
+
+sw.bb13:                                          ; preds = %entry
+  %bf.clear16 = and i32 %bf.load, 134217728
+  %tobool17 = icmp eq i32 %bf.clear16, 0
+  br i1 %tobool17, label %sw.epilog, label %return
+
+sw.epilog:                                        ; preds = %sw.bb13, %entry
+  %idxprom1884 = zext i32 %bf.clear to i64
+  %arrayidx19 = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom1884
+  %7 = load i8** %arrayidx19, align 8, !tbaa !3
+  %arrayidx21 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom1884
+  %8 = load i8* %arrayidx21, align 1, !tbaa !1
+  %cmp2390 = icmp eq i8 %8, 0
+  br i1 %cmp2390, label %return, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %sw.epilog
+  %9 = zext i8 %8 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %indvars.iv92 = phi i64 [ %9, %for.body.lr.ph ], [ %indvars.iv.next93, %for.cond.backedge ]
+  %indvars.iv.next93 = add i64 %indvars.iv92, -1
+  %arrayidx26 = getelementptr inbounds i8* %7, i64 %indvars.iv.next93
+  %10 = load i8* %arrayidx26, align 1, !tbaa !1
+  switch i8 %10, label %for.cond.backedge [
+    i8 101, label %if.then30
+    i8 69, label %for.cond45.preheader
+  ]
+
+for.cond.backedge:                                ; preds = %for.cond45.preheader, %for.cond45, %for.body, %if.then30
+  %11 = trunc i64 %indvars.iv.next93 to i32
+  %cmp23 = icmp sgt i32 %11, 0
+  br i1 %cmp23, label %for.body, label %return
+
+for.cond45.preheader:                             ; preds = %for.body
+  %arrayidx48 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next93
+  %rtvec = bitcast %union.rtunion_def* %arrayidx48 to %struct.rtvec_def**
+  %12 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !3
+  %num_elem85 = getelementptr inbounds %struct.rtvec_def* %12, i64 0, i32 0
+  %13 = load i32* %num_elem85, align 4, !tbaa !0
+  %cmp4986 = icmp sgt i32 %13, 0
+  br i1 %cmp4986, label %for.body51, label %for.cond.backedge
+
+if.then30:                                        ; preds = %for.body
+  %arrayidx33 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next93
+  %rtx34 = bitcast %union.rtunion_def* %arrayidx33 to %struct.rtx_def**
+  %14 = load %struct.rtx_def** %rtx34, align 8, !tbaa !3
+  %call35 = tail call fastcc i32 @equiv_init_varies_p(%struct.rtx_def* %14) #8
+  %tobool36 = icmp eq i32 %call35, 0
+  br i1 %tobool36, label %for.cond.backedge, label %return
+
+for.cond45:                                       ; preds = %for.body51
+  %15 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !3
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %15, i64 0, i32 0
+  %16 = load i32* %num_elem, align 4, !tbaa !0
+  %17 = trunc i64 %indvars.iv.next to i32
+  %cmp49 = icmp slt i32 %17, %16
+  br i1 %cmp49, label %for.body51, label %for.cond.backedge
+
+for.body51:                                       ; preds = %for.cond45.preheader, %for.cond45
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond45 ], [ 0, %for.cond45.preheader ]
+  %18 = phi %struct.rtvec_def* [ %15, %for.cond45 ], [ %12, %for.cond45.preheader ]
+  %arrayidx57 = getelementptr inbounds %struct.rtvec_def* %18, i64 0, i32 1, i64 %indvars.iv
+  %19 = load %struct.rtx_def** %arrayidx57, align 8, !tbaa !3
+  %call58 = tail call fastcc i32 @equiv_init_varies_p(%struct.rtx_def* %19) #8
+  %tobool59 = icmp eq i32 %call58, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %tobool59, label %for.cond45, label %return
+
+return:                                           ; preds = %sw.epilog, %if.then30, %for.cond.backedge, %for.body51, %sw.bb13, %entry, %land.end, %sw.bb5, %lor.end
+  %retval.0 = phi i32 [ %land.ext, %land.end ], [ 0, %sw.bb5 ], [ %lor.ext, %lor.end ], [ 1, %entry ], [ 1, %sw.bb13 ], [ 1, %for.body51 ], [ 0, %sw.epilog ], [ 1, %if.then30 ], [ 0, %for.cond.backedge ]
+  ret i32 %retval.0
+}

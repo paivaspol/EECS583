@@ -1,0 +1,118 @@
+define %struct.rtx_def* @final_biv_value(%struct.loop* %loop, %struct.iv_class* nocapture %bl) #0 {
+entry:
+  %aux = getelementptr inbounds %struct.loop* %loop, i64 0, i32 22
+  %0 = load i8** %aux, align 8, !tbaa !0
+  %n_iterations1 = getelementptr inbounds i8* %0, i64 96
+  %1 = bitcast i8* %n_iterations1 to i64*
+  %2 = load i64* %1, align 8, !tbaa !4
+  %biv = getelementptr inbounds %struct.iv_class* %bl, i64 0, i32 2
+  %3 = load %struct.induction** %biv, align 8, !tbaa !0
+  %mode = getelementptr inbounds %struct.induction* %3, i64 0, i32 6
+  %4 = load i32* %mode, align 4, !tbaa !6
+  %idxprom = sext i32 %4 to i64
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom
+  %5 = load i32* %arrayidx, align 4, !tbaa !8
+  %cmp = icmp eq i32 %5, 1
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %reversed = getelementptr inbounds %struct.iv_class* %bl, i64 0, i32 12
+  %bf.load = load i8* %reversed, align 8
+  %bf.clear = and i8 %bf.load, 8
+  %tobool = icmp eq i8 %bf.clear, 0
+  br i1 %tobool, label %if.end6, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %6 = load %struct._IO_FILE** @loop_dump_stream, align 8, !tbaa !0
+  %tobool3 = icmp eq %struct._IO_FILE* %6, null
+  br i1 %tobool3, label %if.end5, label %if.then4
+
+if.then4:                                         ; preds = %if.then2
+  %regno = getelementptr inbounds %struct.iv_class* %bl, i64 0, i32 0
+  %7 = load i32* %regno, align 4, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([39 x i8]* @.str30, i64 0, i64 0), i32 %7) #6
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.then2, %if.then4
+  %8 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
+  br label %return
+
+if.end6:                                          ; preds = %if.end
+  %cmp7 = icmp eq i64 %2, 0
+  br i1 %cmp7, label %if.end32, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end6
+  %exit_count = getelementptr inbounds %struct.loop* %loop, i64 0, i32 32
+  %9 = load i32* %exit_count, align 4, !tbaa !3
+  %tobool8 = icmp eq i32 %9, 0
+  br i1 %tobool8, label %land.lhs.true9, label %if.end32
+
+land.lhs.true9:                                   ; preds = %land.lhs.true
+  %initial_value = getelementptr inbounds %struct.iv_class* %bl, i64 0, i32 6
+  %10 = load %struct.rtx_def** %initial_value, align 8, !tbaa !0
+  %call10 = tail call i32 @loop_invariant_p(%struct.loop* %loop, %struct.rtx_def* %10) #6
+  %tobool11 = icmp eq i32 %call10, 0
+  br i1 %tobool11, label %if.end32, label %if.then12
+
+if.then12:                                        ; preds = %land.lhs.true9
+  %call13 = tail call %struct.rtx_def* @biv_total_increment(%struct.iv_class* %bl) #8
+  %tobool14 = icmp eq %struct.rtx_def* %call13, null
+  br i1 %tobool14, label %if.end32, label %land.lhs.true15
+
+land.lhs.true15:                                  ; preds = %if.then12
+  %call16 = tail call i32 @loop_invariant_p(%struct.loop* %loop, %struct.rtx_def* %call13) #6
+  %tobool17 = icmp eq i32 %call16, 0
+  br i1 %tobool17, label %if.end32, label %if.then18
+
+if.then18:                                        ; preds = %land.lhs.true15
+  %11 = load %struct.induction** %biv, align 8, !tbaa !0
+  %mode20 = getelementptr inbounds %struct.induction* %11, i64 0, i32 6
+  %12 = load i32* %mode20, align 4, !tbaa !6
+  %call21 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %12) #6
+  %arrayidx22 = getelementptr inbounds %struct.rtx_def* %call21, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx22 to i32*
+  %13 = load i32* %rtuint, align 4, !tbaa !3
+  %14 = load %struct.induction** %biv, align 8, !tbaa !0
+  %add_val = getelementptr inbounds %struct.induction* %14, i64 0, i32 9
+  %15 = load %struct.rtx_def** %add_val, align 8, !tbaa !0
+  tail call void @record_base_value(i32 %13, %struct.rtx_def* %15, i32 0) #6
+  %call24 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %2) #6
+  %16 = load %struct.rtx_def** %initial_value, align 8, !tbaa !0
+  tail call void @loop_iv_add_mult_sink(%struct.loop* %loop, %struct.rtx_def* %call13, %struct.rtx_def* %call24, %struct.rtx_def* %16, %struct.rtx_def* %call21) #6
+  %17 = load %struct._IO_FILE** @loop_dump_stream, align 8, !tbaa !0
+  %tobool26 = icmp eq %struct._IO_FILE* %17, null
+  br i1 %tobool26, label %return, label %if.then27
+
+if.then27:                                        ; preds = %if.then18
+  %regno28 = getelementptr inbounds %struct.iv_class* %bl, i64 0, i32 0
+  %18 = load i32* %regno28, align 4, !tbaa !3
+  %call29 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %17, i8* getelementptr inbounds ([37 x i8]* @.str31, i64 0, i64 0), i32 %18) #6
+  br label %return
+
+if.end32:                                         ; preds = %land.lhs.true15, %if.then12, %land.lhs.true9, %land.lhs.true, %if.end6
+  %19 = load %struct.induction** %biv, align 8, !tbaa !0
+  %src_reg = getelementptr inbounds %struct.induction* %19, i64 0, i32 2
+  %20 = load %struct.rtx_def** %src_reg, align 8, !tbaa !0
+  %call34 = tail call fastcc i32 @reg_dead_after_loop(%struct.loop* %loop, %struct.rtx_def* %20) #8
+  %tobool35 = icmp eq i32 %call34, 0
+  br i1 %tobool35, label %return, label %if.then36
+
+if.then36:                                        ; preds = %if.end32
+  %21 = load %struct._IO_FILE** @loop_dump_stream, align 8, !tbaa !0
+  %tobool37 = icmp eq %struct._IO_FILE* %21, null
+  br i1 %tobool37, label %if.end41, label %if.then38
+
+if.then38:                                        ; preds = %if.then36
+  %regno39 = getelementptr inbounds %struct.iv_class* %bl, i64 0, i32 0
+  %22 = load i32* %regno39, align 4, !tbaa !3
+  %call40 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %21, i8* getelementptr inbounds ([51 x i8]* @.str32, i64 0, i64 0), i32 %22) #6
+  br label %if.end41
+
+if.end41:                                         ; preds = %if.then36, %if.then38
+  %23 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end32, %if.then27, %if.then18, %entry, %if.end41, %if.end5
+  %retval.0 = phi %struct.rtx_def* [ %8, %if.end5 ], [ %23, %if.end41 ], [ null, %entry ], [ %call21, %if.then18 ], [ %call21, %if.then27 ], [ null, %if.end32 ]
+  ret %struct.rtx_def* %retval.0
+}

@@ -1,0 +1,51 @@
+define internal i8* @output_45(%struct.rtx_def** nocapture %operands, %struct.rtx_def* %insn) #1 {
+entry:
+  %call = tail call i32 @get_attr_type(%struct.rtx_def* %insn) #6
+  switch i32 %call, label %sw.default [
+    i32 33, label %sw.bb
+    i32 34, label %sw.bb2
+    i32 9, label %return
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %call1 = tail call i32 @get_attr_mode(%struct.rtx_def* %insn) #6
+  %cmp = icmp eq i32 %call1, 6
+  %. = select i1 %cmp, i8* getelementptr inbounds ([23 x i8]* @.str1813, i64 0, i64 0), i8* getelementptr inbounds ([21 x i8]* @.str1808, i64 0, i64 0)
+  br label %return
+
+sw.bb2:                                           ; preds = %entry
+  %call3 = tail call i32 @get_attr_mode(%struct.rtx_def* %insn) #6
+  %cmp4 = icmp eq i32 %call3, 5
+  %.29 = select i1 %cmp4, i8* getelementptr inbounds ([21 x i8]* @.str852, i64 0, i64 0), i8* getelementptr inbounds ([21 x i8]* @.str1808, i64 0, i64 0)
+  br label %return
+
+sw.default:                                       ; preds = %entry
+  %0 = load i32* @flag_pic, align 4, !tbaa !3
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %sw.default
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %operands, i64 1
+  %1 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %return [
+    i32 68, label %if.then22
+    i32 67, label %if.then22
+    i32 58, label %land.lhs.true18
+  ]
+
+land.lhs.true18:                                  ; preds = %land.lhs.true
+  %call20 = tail call i32 @symbolic_reference_mentioned_p(%struct.rtx_def* %1) #6
+  %tobool21 = icmp eq i32 %call20, 0
+  br i1 %tobool21, label %return, label %if.then22
+
+if.then22:                                        ; preds = %land.lhs.true, %land.lhs.true, %land.lhs.true18
+  tail call void @fancy_abort(i8* getelementptr inbounds ([55 x i8]* @.str1644, i64 0, i64 0), i32 259, i8* getelementptr inbounds ([10 x i8]* @__FUNCTION__.output_45, i64 0, i64 0)) #7
+  unreachable
+
+return:                                           ; preds = %sw.default, %land.lhs.true18, %land.lhs.true, %entry, %sw.bb2, %sw.bb
+  %retval.0 = phi i8* [ %., %sw.bb ], [ %.29, %sw.bb2 ], [ getelementptr inbounds ([23 x i8]* @.str1840, i64 0, i64 0), %entry ], [ getelementptr inbounds ([23 x i8]* @.str1664, i64 0, i64 0), %land.lhs.true ], [ getelementptr inbounds ([23 x i8]* @.str1664, i64 0, i64 0), %land.lhs.true18 ], [ getelementptr inbounds ([23 x i8]* @.str1664, i64 0, i64 0), %sw.default ]
+  ret i8* %retval.0
+}

@@ -1,0 +1,15 @@
+define i32 @pr_indent(%struct._IO_FILE* nocapture %fp, i32 %n) #0 {
+entry:
+  %cmp3 = icmp sgt i32 %n, 0
+  br i1 %cmp3, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %i.04 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %fputc = tail call i32 @fputc(i32 32, %struct._IO_FILE* %fp)
+  %inc = add nsw i32 %i.04, 1
+  %exitcond = icmp eq i32 %inc, %n
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret i32 %n
+}

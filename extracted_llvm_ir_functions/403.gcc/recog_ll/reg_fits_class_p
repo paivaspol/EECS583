@@ -1,0 +1,102 @@
+define i32 @reg_fits_class_p(%struct.rtx_def* nocapture %operand, i32 %class, i32 %offset, i32 %mode) #2 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %operand, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp = icmp slt i32 %0, 53
+  br i1 %cmp, label %land.lhs.true, label %return
+
+land.lhs.true:                                    ; preds = %entry
+  %idxprom = sext i32 %class to i64
+  %arrayidx1 = getelementptr inbounds [25 x i64]* @reg_class_contents, i64 0, i64 %idxprom
+  %1 = load i64* %arrayidx1, align 8, !tbaa !7
+  %add = add nsw i32 %0, %offset
+  %sh_prom = zext i32 %add to i64
+  %shl = shl i64 1, %sh_prom
+  %and = and i64 %1, %shl
+  %tobool = icmp eq i64 %and, 0
+  br i1 %tobool, label %return, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %add.off = add i32 %add, -8
+  %2 = icmp ult i32 %add.off, 8
+  %add.off86 = add i32 %add, -21
+  %3 = icmp ult i32 %add.off86, 8
+  %or.cond = or i1 %2, %3
+  %add.off87 = add i32 %add, -45
+  %4 = icmp ult i32 %add.off87, 8
+  %or.cond91 = or i1 %or.cond, %4
+  %add.off88 = add i32 %add, -29
+  %5 = icmp ult i32 %add.off88, 8
+  %or.cond93 = or i1 %or.cond91, %5
+  br i1 %or.cond93, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %if.then
+  %idxprom17 = sext i32 %mode to i64
+  %arrayidx18 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom17
+  %6 = load i32* %arrayidx18, align 4, !tbaa !8
+  %cmp19 = icmp eq i32 %6, 5
+  br i1 %cmp19, label %for.cond, label %lor.rhs
+
+lor.rhs:                                          ; preds = %cond.true
+  %cmp22 = icmp eq i32 %6, 6
+  %phitmp = select i1 %cmp22, i32 2, i32 1
+  br label %for.cond
+
+cond.false:                                       ; preds = %if.then
+  switch i32 %mode, label %cond.false34 [
+    i32 18, label %cond.true24
+    i32 24, label %cond.true30
+  ]
+
+cond.true24:                                      ; preds = %cond.false
+  %7 = load i32* @target_flags, align 4, !tbaa !0
+  %and25 = lshr i32 %7, 25
+  %8 = and i32 %and25, 1
+  %9 = xor i32 %8, 3
+  br label %for.cond
+
+cond.true30:                                      ; preds = %cond.false
+  %10 = load i32* @target_flags, align 4, !tbaa !0
+  %and31 = lshr i32 %10, 24
+  %11 = and i32 %and31, 2
+  %12 = xor i32 %11, 6
+  br label %for.cond
+
+cond.false34:                                     ; preds = %cond.false
+  %idxprom35 = sext i32 %mode to i64
+  %arrayidx36 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom35
+  %13 = load i8* %arrayidx36, align 1, !tbaa !1
+  %conv = zext i8 %13 to i32
+  %14 = load i32* @target_flags, align 4, !tbaa !0
+  %and37 = lshr i32 %14, 23
+  %15 = and i32 %and37, 4
+  %16 = add i32 %15, 4
+  %add40 = add i32 %conv, -1
+  %sub = add i32 %add40, %16
+  %div = sdiv i32 %sub, %16
+  br label %for.cond
+
+for.cond:                                         ; preds = %cond.true30, %cond.false34, %cond.true24, %lor.rhs, %cond.true, %for.body
+  %sr.0.in = phi i32 [ %sr.0, %for.body ], [ %12, %cond.true30 ], [ %div, %cond.false34 ], [ %9, %cond.true24 ], [ %phitmp, %lor.rhs ], [ 2, %cond.true ]
+  %sr.0 = add nsw i32 %sr.0.in, -1
+  %cmp50 = icmp sgt i32 %sr.0, 0
+  br i1 %cmp50, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond
+  %add54 = add nsw i32 %sr.0, %add
+  %sh_prom55 = zext i32 %add54 to i64
+  %shl56 = shl i64 1, %sh_prom55
+  %and57 = and i64 %1, %shl56
+  %tobool58 = icmp eq i64 %and57, 0
+  br i1 %tobool58, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.body, %for.cond
+  %cmp60 = icmp eq i32 %sr.0, 0
+  %conv61 = zext i1 %cmp60 to i32
+  br label %return
+
+return:                                           ; preds = %entry, %land.lhs.true, %for.end
+  %retval.0 = phi i32 [ %conv61, %for.end ], [ 0, %land.lhs.true ], [ 0, %entry ]
+  ret i32 %retval.0
+}

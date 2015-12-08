@@ -1,0 +1,50 @@
+define void @maybe_set_unchanging(%struct.rtx_def* nocapture %ref, %union.tree_node* nocapture %t) #1 {
+entry:
+  %readonly_flag = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %readonly_flag to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 4096
+  %tobool = icmp eq i32 %bf.clear, 0
+  %bf.clear26.pre = and i32 %bf.load, 255
+  %idxprom2739.pre = zext i32 %bf.clear26.pre to i64
+  %arrayidx28.pre = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom2739.pre
+  br i1 %tobool, label %lor.lhs.false22, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %1 = load i8* %arrayidx28.pre, align 1, !tbaa !1
+  %cmp = icmp eq i8 %1, 100
+  br i1 %cmp, label %land.lhs.true5, label %lor.lhs.false22
+
+land.lhs.true5:                                   ; preds = %land.lhs.true
+  %cmp10 = icmp eq i32 %bf.clear26.pre, 35
+  br i1 %cmp10, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true5
+  %initial = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 12
+  %2 = load %union.tree_node** %initial, align 8, !tbaa !3
+  %cmp12 = icmp eq %union.tree_node* %2, null
+  br i1 %cmp12, label %if.then, label %lor.lhs.false14
+
+lor.lhs.false14:                                  ; preds = %lor.lhs.false
+  %constant_flag = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %constant_flag to i32*
+  %bf.load18 = load i32* %3, align 8
+  %bf.clear20 = and i32 %bf.load18, 512
+  %tobool21 = icmp eq i32 %bf.clear20, 0
+  br i1 %tobool21, label %lor.lhs.false22, label %if.then
+
+lor.lhs.false22:                                  ; preds = %entry, %lor.lhs.false14, %land.lhs.true
+  %4 = load i8* %arrayidx28.pre, align 1, !tbaa !1
+  %cmp30 = icmp eq i8 %4, 99
+  br i1 %cmp30, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false14, %lor.lhs.false22, %lor.lhs.false, %land.lhs.true5
+  %5 = bitcast %struct.rtx_def* %ref to i32*
+  %bf.load32 = load i32* %5, align 8
+  %bf.set = or i32 %bf.load32, 67108864
+  store i32 %bf.set, i32* %5, align 8
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %lor.lhs.false22
+  ret void
+}

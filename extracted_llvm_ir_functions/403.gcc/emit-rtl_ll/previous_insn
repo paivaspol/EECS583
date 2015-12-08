@@ -1,0 +1,45 @@
+define %struct.rtx_def* @previous_insn(%struct.rtx_def* %insn) #5 {
+entry:
+  %tobool = icmp eq %struct.rtx_def* %insn, null
+  br i1 %tobool, label %if.end22, label %if.then
+
+if.then:                                          ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 1
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %tobool1 = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool1, label %if.end22, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 32
+  br i1 %cmp, label %land.lhs.true2, label %if.end22
+
+land.lhs.true2:                                   ; preds = %land.lhs.true
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 3
+  %rtx5 = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx5, align 8, !tbaa !4
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load6 = load i32* %3, align 8
+  %bf.clear7 = and i32 %bf.load6, 65535
+  %cmp8 = icmp eq i32 %bf.clear7, 24
+  br i1 %cmp8, label %if.then9, label %if.end22
+
+if.then9:                                         ; preds = %land.lhs.true2
+  %arrayidx14 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtvec = bitcast %union.rtunion_def* %arrayidx14 to %struct.rtvec_def**
+  %4 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %4, i64 0, i32 0
+  %5 = load i32* %num_elem, align 4, !tbaa !0
+  %sub = add nsw i32 %5, -1
+  %idxprom = sext i32 %sub to i64
+  %arrayidx21 = getelementptr inbounds %struct.rtvec_def* %4, i64 0, i32 1, i64 %idxprom
+  %6 = load %struct.rtx_def** %arrayidx21, align 8, !tbaa !4
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.then, %entry, %land.lhs.true, %land.lhs.true2, %if.then9
+  %insn.addr.0 = phi %struct.rtx_def* [ %6, %if.then9 ], [ %0, %land.lhs.true2 ], [ %0, %land.lhs.true ], [ null, %if.then ], [ null, %entry ]
+  ret %struct.rtx_def* %insn.addr.0
+}

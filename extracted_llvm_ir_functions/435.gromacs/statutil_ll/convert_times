@@ -1,0 +1,31 @@
+define void @convert_times(i32 %n, float* nocapture %time) #2 {
+entry:
+  tail call fastcc void @init_time_factor() #12
+  %0 = load float* @timefactor, align 4, !tbaa !3
+  %sub = fadd float %0, -1.000000e+00
+  %fabsf = tail call float @fabsf(float %sub) #5
+  %1 = fpext float %fabsf to double
+  %cmp = fcmp ogt double %1, 1.200000e-38
+  %cmp26 = icmp sgt i32 %n, 0
+  %or.cond = and i1 %cmp, %cmp26
+  br i1 %or.cond, label %for.body, label %if.end
+
+for.body:                                         ; preds = %entry, %for.body.for.body_crit_edge
+  %2 = phi float [ %.pre, %for.body.for.body_crit_edge ], [ %0, %entry ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body.for.body_crit_edge ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %time, i64 %indvars.iv
+  %3 = load float* %arrayidx, align 4, !tbaa !3
+  %mul = fmul float %2, %3
+  store float %mul, float* %arrayidx, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %if.end, label %for.body.for.body_crit_edge
+
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %.pre = load float* @timefactor, align 4, !tbaa !3
+  br label %for.body
+
+if.end:                                           ; preds = %for.body, %entry
+  ret void
+}

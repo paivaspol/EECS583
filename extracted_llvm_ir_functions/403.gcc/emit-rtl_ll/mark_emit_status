@@ -1,0 +1,213 @@
+define void @mark_emit_status(%struct.emit_status* %es) #0 {
+entry:
+  %cmp = icmp eq %struct.emit_status* %es, null
+  br i1 %cmp, label %do.end54, label %if.end
+
+if.end:                                           ; preds = %entry
+  %regno_pointer_align_length = getelementptr inbounds %struct.emit_status* %es, i64 0, i32 9
+  %0 = load i32* %regno_pointer_align_length, align 4, !tbaa !0
+  %cmp172 = icmp sgt i32 %0, 0
+  br i1 %cmp172, label %do.body.lr.ph, label %for.end
+
+do.body.lr.ph:                                    ; preds = %if.end
+  %regno_decl = getelementptr inbounds %struct.emit_status* %es, i64 0, i32 11
+  %x_regno_reg_rtx = getelementptr inbounds %struct.emit_status* %es, i64 0, i32 12
+  %1 = load %union.tree_node*** %regno_decl, align 8, !tbaa !4
+  %2 = load %struct.rtx_def*** %x_regno_reg_rtx, align 8, !tbaa !4
+  br label %do.body
+
+do.body:                                          ; preds = %do.body.lr.ph, %for.inc
+  %r.075 = phi %struct.rtx_def** [ %2, %do.body.lr.ph ], [ %incdec.ptr, %for.inc ]
+  %t.074 = phi %union.tree_node** [ %1, %do.body.lr.ph ], [ %incdec.ptr21, %for.inc ]
+  %i.073 = phi i32 [ %0, %do.body.lr.ph ], [ %dec, %for.inc ]
+  %3 = load %struct.rtx_def** %r.075, align 8, !tbaa !4
+  %cmp2 = icmp eq %struct.rtx_def* %3, null
+  br i1 %cmp2, label %do.body5, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %do.body
+  %4 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 0, i64 0
+  %call = tail call i32 @ggc_set_mark(i8* %4) #8
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then3, label %do.body5
+
+if.then3:                                         ; preds = %land.lhs.true
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %3) #8
+  br label %do.body5
+
+do.body5:                                         ; preds = %land.lhs.true, %do.body, %if.then3
+  %5 = load %union.tree_node** %t.074, align 8, !tbaa !4
+  %cmp6 = icmp eq %union.tree_node* %5, null
+  br i1 %cmp6, label %for.inc, label %land.lhs.true7
+
+land.lhs.true7:                                   ; preds = %do.body5
+  %6 = bitcast %union.tree_node* %5 to i8*
+  %call8 = tail call i32 @ggc_set_mark(i8* %6) #8
+  %tobool9 = icmp eq i32 %call8, 0
+  br i1 %tobool9, label %do.body11, label %for.inc
+
+do.body11:                                        ; preds = %land.lhs.true7
+  %7 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !4
+  %elements_used = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 1
+  %8 = load i64* %elements_used, align 8, !tbaa !3
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 0
+  %9 = load i64* %num_elements, align 8, !tbaa !3
+  %cmp12 = icmp ult i64 %8, %9
+  br i1 %cmp12, label %if.end16, label %if.then13
+
+if.then13:                                        ; preds = %do.body11
+  %mul = shl i64 %9, 1
+  %call15 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %7, i64 %mul) #8
+  store %struct.varray_head_tag* %call15, %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !4
+  %elements_used17.phi.trans.insert = getelementptr inbounds %struct.varray_head_tag* %call15, i64 0, i32 1
+  %.pre76 = load i64* %elements_used17.phi.trans.insert, align 8, !tbaa !3
+  br label %if.end16
+
+if.end16:                                         ; preds = %do.body11, %if.then13
+  %10 = phi i64 [ %8, %do.body11 ], [ %.pre76, %if.then13 ]
+  %11 = phi %struct.varray_head_tag* [ %7, %do.body11 ], [ %call15, %if.then13 ]
+  %elements_used17 = getelementptr inbounds %struct.varray_head_tag* %11, i64 0, i32 1
+  %inc = add i64 %10, 1
+  store i64 %inc, i64* %elements_used17, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %11, i64 0, i32 4
+  %tree = bitcast %union.varray_data_tag* %data to [1 x %union.tree_node*]*
+  %arrayidx = getelementptr inbounds [1 x %union.tree_node*]* %tree, i64 0, i64 %10
+  store %union.tree_node* %5, %union.tree_node** %arrayidx, align 8, !tbaa !4
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true7, %do.body5, %if.end16
+  %dec = add nsw i32 %i.073, -1
+  %incdec.ptr = getelementptr inbounds %struct.rtx_def** %r.075, i64 1
+  %incdec.ptr21 = getelementptr inbounds %union.tree_node** %t.074, i64 1
+  %cmp1 = icmp sgt i32 %dec, 0
+  br i1 %cmp1, label %do.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %if.end
+  %sequence_stack = getelementptr inbounds %struct.emit_status* %es, i64 0, i32 5
+  %12 = load %struct.sequence_stack** %sequence_stack, align 8, !tbaa !4
+  %tobool25.i = icmp eq %struct.sequence_stack* %12, null
+  br i1 %tobool25.i, label %mark_sequence_stack.exit, label %do.body.i
+
+do.body.i:                                        ; preds = %for.end, %do.end17.i
+  %ss.addr.026.i = phi %struct.sequence_stack* [ %22, %do.end17.i ], [ %12, %for.end ]
+  %first.i = getelementptr inbounds %struct.sequence_stack* %ss.addr.026.i, i64 0, i32 0
+  %13 = load %struct.rtx_def** %first.i, align 8, !tbaa !4
+  %cmp.i = icmp eq %struct.rtx_def* %13, null
+  br i1 %cmp.i, label %do.body2.i, label %land.lhs.true.i
+
+land.lhs.true.i:                                  ; preds = %do.body.i
+  %14 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 0, i64 0
+  %call.i = tail call i32 @ggc_set_mark(i8* %14) #8
+  %tobool1.i = icmp eq i32 %call.i, 0
+  br i1 %tobool1.i, label %if.then.i, label %do.body2.i
+
+if.then.i:                                        ; preds = %land.lhs.true.i
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %13) #8
+  br label %do.body2.i
+
+do.body2.i:                                       ; preds = %if.then.i, %land.lhs.true.i, %do.body.i
+  %sequence_rtl_expr.i = getelementptr inbounds %struct.sequence_stack* %ss.addr.026.i, i64 0, i32 2
+  %15 = load %union.tree_node** %sequence_rtl_expr.i, align 8, !tbaa !4
+  %cmp3.i = icmp eq %union.tree_node* %15, null
+  br i1 %cmp3.i, label %do.end17.i, label %land.lhs.true4.i
+
+land.lhs.true4.i:                                 ; preds = %do.body2.i
+  %16 = bitcast %union.tree_node* %15 to i8*
+  %call5.i = tail call i32 @ggc_set_mark(i8* %16) #8
+  %tobool6.i = icmp eq i32 %call5.i, 0
+  br i1 %tobool6.i, label %do.body8.i, label %do.end17.i
+
+do.body8.i:                                       ; preds = %land.lhs.true4.i
+  %17 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !4
+  %elements_used.i = getelementptr inbounds %struct.varray_head_tag* %17, i64 0, i32 1
+  %18 = load i64* %elements_used.i, align 8, !tbaa !3
+  %num_elements.i = getelementptr inbounds %struct.varray_head_tag* %17, i64 0, i32 0
+  %19 = load i64* %num_elements.i, align 8, !tbaa !3
+  %cmp9.i = icmp ult i64 %18, %19
+  br i1 %cmp9.i, label %if.end13.i, label %if.then10.i
+
+if.then10.i:                                      ; preds = %do.body8.i
+  %mul.i = shl i64 %19, 1
+  %call12.i = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %17, i64 %mul.i) #8
+  store %struct.varray_head_tag* %call12.i, %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !4
+  %elements_used14.phi.trans.insert.i = getelementptr inbounds %struct.varray_head_tag* %call12.i, i64 0, i32 1
+  %.pre.i = load i64* %elements_used14.phi.trans.insert.i, align 8, !tbaa !3
+  br label %if.end13.i
+
+if.end13.i:                                       ; preds = %if.then10.i, %do.body8.i
+  %20 = phi i64 [ %18, %do.body8.i ], [ %.pre.i, %if.then10.i ]
+  %21 = phi %struct.varray_head_tag* [ %17, %do.body8.i ], [ %call12.i, %if.then10.i ]
+  %elements_used14.i = getelementptr inbounds %struct.varray_head_tag* %21, i64 0, i32 1
+  %inc.i = add i64 %20, 1
+  store i64 %inc.i, i64* %elements_used14.i, align 8, !tbaa !3
+  %data.i = getelementptr inbounds %struct.varray_head_tag* %21, i64 0, i32 4
+  %tree.i = bitcast %union.varray_data_tag* %data.i to [1 x %union.tree_node*]*
+  %arrayidx.i = getelementptr inbounds [1 x %union.tree_node*]* %tree.i, i64 0, i64 %20
+  store %union.tree_node* %15, %union.tree_node** %arrayidx.i, align 8, !tbaa !4
+  br label %do.end17.i
+
+do.end17.i:                                       ; preds = %if.end13.i, %land.lhs.true4.i, %do.body2.i
+  %next.i = getelementptr inbounds %struct.sequence_stack* %ss.addr.026.i, i64 0, i32 3
+  %22 = load %struct.sequence_stack** %next.i, align 8, !tbaa !4
+  %tobool.i = icmp eq %struct.sequence_stack* %22, null
+  br i1 %tobool.i, label %mark_sequence_stack.exit, label %do.body.i
+
+mark_sequence_stack.exit:                         ; preds = %do.end17.i, %for.end
+  %sequence_rtl_expr = getelementptr inbounds %struct.emit_status* %es, i64 0, i32 4
+  %23 = load %union.tree_node** %sequence_rtl_expr, align 8, !tbaa !4
+  %cmp24 = icmp eq %union.tree_node* %23, null
+  br i1 %cmp24, label %do.body46, label %land.lhs.true25
+
+land.lhs.true25:                                  ; preds = %mark_sequence_stack.exit
+  %24 = bitcast %union.tree_node* %23 to i8*
+  %call26 = tail call i32 @ggc_set_mark(i8* %24) #8
+  %tobool27 = icmp eq i32 %call26, 0
+  br i1 %tobool27, label %do.body29, label %do.body46
+
+do.body29:                                        ; preds = %land.lhs.true25
+  %25 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !4
+  %elements_used30 = getelementptr inbounds %struct.varray_head_tag* %25, i64 0, i32 1
+  %26 = load i64* %elements_used30, align 8, !tbaa !3
+  %num_elements31 = getelementptr inbounds %struct.varray_head_tag* %25, i64 0, i32 0
+  %27 = load i64* %num_elements31, align 8, !tbaa !3
+  %cmp32 = icmp ult i64 %26, %27
+  br i1 %cmp32, label %if.end37, label %if.then33
+
+if.then33:                                        ; preds = %do.body29
+  %mul35 = shl i64 %27, 1
+  %call36 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %25, i64 %mul35) #8
+  store %struct.varray_head_tag* %call36, %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !4
+  %elements_used38.phi.trans.insert = getelementptr inbounds %struct.varray_head_tag* %call36, i64 0, i32 1
+  %.pre = load i64* %elements_used38.phi.trans.insert, align 8, !tbaa !3
+  br label %if.end37
+
+if.end37:                                         ; preds = %do.body29, %if.then33
+  %28 = phi i64 [ %26, %do.body29 ], [ %.pre, %if.then33 ]
+  %29 = phi %struct.varray_head_tag* [ %25, %do.body29 ], [ %call36, %if.then33 ]
+  %elements_used38 = getelementptr inbounds %struct.varray_head_tag* %29, i64 0, i32 1
+  %inc39 = add i64 %28, 1
+  store i64 %inc39, i64* %elements_used38, align 8, !tbaa !3
+  %data40 = getelementptr inbounds %struct.varray_head_tag* %29, i64 0, i32 4
+  %tree41 = bitcast %union.varray_data_tag* %data40 to [1 x %union.tree_node*]*
+  %arrayidx42 = getelementptr inbounds [1 x %union.tree_node*]* %tree41, i64 0, i64 %28
+  store %union.tree_node* %23, %union.tree_node** %arrayidx42, align 8, !tbaa !4
+  br label %do.body46
+
+do.body46:                                        ; preds = %land.lhs.true25, %mark_sequence_stack.exit, %if.end37
+  %x_first_insn = getelementptr inbounds %struct.emit_status* %es, i64 0, i32 2
+  %30 = load %struct.rtx_def** %x_first_insn, align 8, !tbaa !4
+  %cmp48 = icmp eq %struct.rtx_def* %30, null
+  br i1 %cmp48, label %do.end54, label %land.lhs.true49
+
+land.lhs.true49:                                  ; preds = %do.body46
+  %31 = getelementptr inbounds %struct.rtx_def* %30, i64 0, i32 0, i64 0
+  %call50 = tail call i32 @ggc_set_mark(i8* %31) #8
+  %tobool51 = icmp eq i32 %call50, 0
+  br i1 %tobool51, label %if.then52, label %do.end54
+
+if.then52:                                        ; preds = %land.lhs.true49
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %30) #8
+  br label %do.end54
+
+do.end54:                                         ; preds = %land.lhs.true49, %do.body46, %if.then52, %entry
+  ret void
+}

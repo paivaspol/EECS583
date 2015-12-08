@@ -1,0 +1,54 @@
+define i32 @any_pending_cleanups(i32 %this_contour) #3 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %cmp = icmp eq %struct.function* %0, null
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %stmt = getelementptr inbounds %struct.function* %0, i64 0, i32 1
+  %1 = load %struct.stmt_status** %stmt, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct.stmt_status* %1, null
+  br i1 %cmp1, label %return, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %lor.lhs.false
+  %x_block_stack = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 0
+  %2 = load %struct.nesting** %x_block_stack, align 8, !tbaa !0
+  %cmp4 = icmp eq %struct.nesting* %2, null
+  br i1 %cmp4, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %tobool = icmp eq i32 %this_contour, 0
+  %cleanups15.phi.trans.insert = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 4
+  %.pre = load %union.tree_node** %cleanups15.phi.trans.insert, align 8, !tbaa !0
+  %phitmp = icmp eq %union.tree_node* %.pre, null
+  br i1 %tobool, label %if.end10, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  br i1 %phitmp, label %land.lhs.true17, label %return
+
+if.end10:                                         ; preds = %if.end
+  br i1 %phitmp, label %land.lhs.true17, label %for.cond
+
+land.lhs.true17:                                  ; preds = %land.lhs.true, %if.end10
+  %outer_cleanups = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 5
+  %3 = load %union.tree_node** %outer_cleanups, align 8, !tbaa !0
+  %cmp22 = icmp eq %union.tree_node* %3, null
+  br i1 %cmp22, label %return, label %for.cond
+
+for.cond:                                         ; preds = %if.end10, %land.lhs.true17, %for.body
+  %.pn = phi %struct.nesting* [ %block.0, %for.body ], [ %2, %land.lhs.true17 ], [ %2, %if.end10 ]
+  %block.0.in = getelementptr inbounds %struct.nesting* %.pn, i64 0, i32 1
+  %block.0 = load %struct.nesting** %block.0.in, align 8
+  %tobool27 = icmp eq %struct.nesting* %block.0, null
+  br i1 %tobool27, label %return, label %for.body
+
+for.body:                                         ; preds = %for.cond
+  %cleanups30 = getelementptr inbounds %struct.nesting* %block.0, i64 0, i32 4, i32 0, i32 4
+  %4 = load %union.tree_node** %cleanups30, align 8, !tbaa !0
+  %cmp31 = icmp eq %union.tree_node* %4, null
+  br i1 %cmp31, label %for.cond, label %return
+
+return:                                           ; preds = %for.cond, %for.body, %land.lhs.true17, %land.lhs.true, %entry, %lor.lhs.false, %lor.lhs.false2
+  %retval.0 = phi i32 [ 0, %lor.lhs.false2 ], [ 0, %lor.lhs.false ], [ 0, %entry ], [ 1, %land.lhs.true ], [ 0, %land.lhs.true17 ], [ 0, %for.cond ], [ 1, %for.body ]
+  ret i32 %retval.0
+}

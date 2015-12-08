@@ -1,0 +1,105 @@
+define i32 @lm_ug_wordprob(%struct.lm_s* nocapture %lm, %struct.dict_t* nocapture %dict, i32 %th, %struct.wordprob_t* nocapture %wp) #2 {
+entry:
+  %n_ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 0
+  %0 = load i32* %n_ug, align 4, !tbaa !3
+  %cmp88 = icmp sgt i32 %0, 0
+  br i1 %cmp88, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 9
+  %lmclass15 = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 40
+  %word = getelementptr inbounds %struct.dict_t* %dict, i64 0, i32 4
+  %inclass_ugscore = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 42
+  %.pre = load %struct.ug_t** %ug, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %j.089 = phi i32 [ 0, %for.body.lr.ph ], [ %j.3, %for.inc ]
+  %dictwid = getelementptr inbounds %struct.ug_t* %.pre, i64 %indvars.iv, i32 0
+  %1 = load i32* %dictwid, align 4, !tbaa !3
+  %cmp1 = icmp sgt i32 %1, -1
+  br i1 %cmp1, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body
+  %cmp2 = icmp slt i32 %1, 16777216
+  br i1 %cmp2, label %if.then3, label %if.else
+
+if.then3:                                         ; preds = %if.then
+  %prob = getelementptr inbounds %struct.ug_t* %.pre, i64 %indvars.iv, i32 1
+  %l = bitcast %union.lmlog_t* %prob to i32*
+  %2 = load i32* %l, align 4, !tbaa !3
+  %cmp7 = icmp slt i32 %2, %th
+  br i1 %cmp7, label %for.inc, label %if.then8
+
+if.then8:                                         ; preds = %if.then3
+  %idxprom9 = sext i32 %j.089 to i64
+  %wid = getelementptr inbounds %struct.wordprob_t* %wp, i64 %idxprom9, i32 0
+  store i32 %1, i32* %wid, align 4, !tbaa !3
+  %prob13 = getelementptr inbounds %struct.wordprob_t* %wp, i64 %idxprom9, i32 1
+  store i32 %2, i32* %prob13, align 4, !tbaa !3
+  %inc = add nsw i32 %j.089, 1
+  br label %for.inc
+
+if.else:                                          ; preds = %if.then
+  %sub = add nsw i32 %1, -16777216
+  %idxprom14 = sext i32 %sub to i64
+  %3 = load %struct.lmclass_s*** %lmclass15, align 8, !tbaa !0
+  %arrayidx16 = getelementptr inbounds %struct.lmclass_s** %3, i64 %idxprom14
+  %4 = load %struct.lmclass_s** %arrayidx16, align 8, !tbaa !0
+  %wordlist = getelementptr inbounds %struct.lmclass_s* %4, i64 0, i32 1
+  %lm_cw.084 = load %struct.lmclass_word_s** %wordlist, align 8
+  %cmp1785 = icmp eq %struct.lmclass_word_s* %lm_cw.084, null
+  br i1 %cmp1785, label %for.inc, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %if.else
+  %.pre92 = load %struct.dictword_t** %word, align 8, !tbaa !0
+  %.pre93 = load i32** %inclass_ugscore, align 8, !tbaa !0
+  br label %while.body
+
+while.body:                                       ; preds = %if.end49, %while.body.lr.ph
+  %lm_cw.087 = phi %struct.lmclass_word_s* [ %lm_cw.084, %while.body.lr.ph ], [ %lm_cw.0, %if.end49 ]
+  %j.186 = phi i32 [ %j.089, %while.body.lr.ph ], [ %j.2, %if.end49 ]
+  %dictwid18 = getelementptr inbounds %struct.lmclass_word_s* %lm_cw.087, i64 0, i32 1
+  %5 = load i32* %dictwid18, align 4, !tbaa !3
+  %idxprom19 = sext i32 %5 to i64
+  %basewid = getelementptr inbounds %struct.dictword_t* %.pre92, i64 %idxprom19, i32 4
+  %6 = load i32* %basewid, align 4, !tbaa !3
+  %prob31 = getelementptr inbounds %struct.ug_t* %.pre, i64 %indvars.iv, i32 1
+  %l32 = bitcast %union.lmlog_t* %prob31 to i32*
+  %7 = load i32* %l32, align 4, !tbaa !3
+  %idxprom33 = sext i32 %6 to i64
+  %arrayidx34 = getelementptr inbounds i32* %.pre93, i64 %idxprom33
+  %8 = load i32* %arrayidx34, align 4, !tbaa !3
+  %add = add nsw i32 %8, %7
+  %cmp35 = icmp slt i32 %add, %th
+  br i1 %cmp35, label %if.end49, label %if.then36
+
+if.then36:                                        ; preds = %while.body
+  %idxprom37 = sext i32 %j.186 to i64
+  %wid39 = getelementptr inbounds %struct.wordprob_t* %wp, i64 %idxprom37, i32 0
+  store i32 %6, i32* %wid39, align 4, !tbaa !3
+  %9 = load i32* %l32, align 4, !tbaa !3
+  %prob47 = getelementptr inbounds %struct.wordprob_t* %wp, i64 %idxprom37, i32 1
+  store i32 %9, i32* %prob47, align 4, !tbaa !3
+  %inc48 = add nsw i32 %j.186, 1
+  br label %if.end49
+
+if.end49:                                         ; preds = %while.body, %if.then36
+  %j.2 = phi i32 [ %inc48, %if.then36 ], [ %j.186, %while.body ]
+  %next = getelementptr inbounds %struct.lmclass_word_s* %lm_cw.087, i64 0, i32 3
+  %lm_cw.0 = load %struct.lmclass_word_s** %next, align 8
+  %cmp17 = icmp eq %struct.lmclass_word_s* %lm_cw.0, null
+  br i1 %cmp17, label %for.inc, label %while.body
+
+for.inc:                                          ; preds = %if.else, %if.end49, %if.then3, %for.body, %if.then8
+  %j.3 = phi i32 [ %inc, %if.then8 ], [ %j.089, %if.then3 ], [ %j.089, %for.body ], [ %j.089, %if.else ], [ %j.2, %if.end49 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %0
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  %j.0.lcssa = phi i32 [ 0, %entry ], [ %j.3, %for.inc ]
+  ret i32 %j.0.lcssa
+}

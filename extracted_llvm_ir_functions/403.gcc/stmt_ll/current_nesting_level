@@ -1,0 +1,17 @@
+define %struct.nesting* @current_nesting_level() #3 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %tobool = icmp eq %struct.function* %0, null
+  br i1 %tobool, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %stmt = getelementptr inbounds %struct.function* %0, i64 0, i32 1
+  %1 = load %struct.stmt_status** %stmt, align 8, !tbaa !0
+  %x_block_stack = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 0
+  %2 = load %struct.nesting** %x_block_stack, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi %struct.nesting* [ %2, %cond.true ], [ null, %entry ]
+  ret %struct.nesting* %cond
+}

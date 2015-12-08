@@ -1,0 +1,60 @@
+define i32 @get_attr_prefix_rep(%struct.rtx_def* %insn) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !0
+  %cmp = icmp sgt i32 %0, -1
+  br i1 %cmp, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %entry
+  %call = tail call i32 @recog_memoized_1(%struct.rtx_def* %insn) #3
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi i32 [ %call, %cond.false ], [ %0, %entry ]
+  switch i32 %cond, label %sw.default [
+    i32 590, label %return
+    i32 591, label %return
+    i32 592, label %return
+    i32 593, label %return
+    i32 594, label %return
+    i32 602, label %return
+    i32 603, label %return
+    i32 604, label %return
+    i32 605, label %return
+    i32 606, label %return
+    i32 607, label %return
+    i32 608, label %return
+    i32 609, label %return
+    i32 610, label %return
+    i32 611, label %return
+    i32 612, label %return
+    i32 -1, label %sw.bb4
+  ]
+
+sw.bb4:                                           ; preds = %cond.end
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp7 = icmp eq i32 %bf.clear, 40
+  br i1 %cmp7, label %sw.default, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %sw.bb4
+  %call11 = tail call i32 @asm_noperands(%struct.rtx_def* %1) #3
+  %cmp12 = icmp slt i32 %call11, 0
+  br i1 %cmp12, label %if.then, label %sw.default
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @_fatal_insn_not_found(%struct.rtx_def* %insn, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 20358, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.get_attr_prefix_rep, i64 0, i64 0)) #4
+  unreachable
+
+sw.default:                                       ; preds = %sw.bb4, %land.lhs.true, %cond.end
+  br label %return
+
+return:                                           ; preds = %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %sw.default
+  %retval.0 = phi i32 [ 0, %sw.default ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ], [ 1, %cond.end ]
+  ret i32 %retval.0
+}

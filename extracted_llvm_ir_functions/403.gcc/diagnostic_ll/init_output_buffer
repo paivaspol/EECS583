@@ -1,0 +1,29 @@
+define void @init_output_buffer(%struct.output_buffer* %buffer, i8* %prefix, i32 %maximum_length) #2 {
+entry:
+  %0 = bitcast %struct.output_buffer* %buffer to i8*
+  tail call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 320, i32 8, i1 false)
+  %obstack = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 2
+  %call = tail call i32 @_obstack_begin(%struct.obstack* %obstack, i32 0, i32 0, i8* (i64)* @xmalloc, void (i8*)* @free) #10
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %stream = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 1
+  store %struct._IO_FILE* %1, %struct._IO_FILE** %stream, align 8, !tbaa !3
+  %ideal_maximum_length = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 2
+  store i32 %maximum_length, i32* %ideal_maximum_length, align 4, !tbaa !0
+  %2 = load %struct.diagnostic_context** @global_dc, align 8, !tbaa !3
+  %prefixing_rule = getelementptr inbounds %struct.diagnostic_context* %2, i64 0, i32 0, i32 0, i32 6
+  %3 = load i32* %prefixing_rule, align 4, !tbaa !1
+  %prefixing_rule3 = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 6
+  store i32 %3, i32* %prefixing_rule3, align 4, !tbaa !1
+  %prefix1.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 0
+  store i8* %prefix, i8** %prefix1.i, align 8, !tbaa !3
+  tail call fastcc void @set_real_maximum_length(%struct.output_buffer* %buffer) #10
+  %indent_skip.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 3
+  %line_length = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 3
+  store i32 0, i32* %line_length, align 4, !tbaa !0
+  %cursor.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 7
+  %4 = bitcast i8** %cursor.i to i8*
+  tail call void @llvm.memset.p0i8.i64(i8* %4, i8 0, i64 16, i32 8, i1 false) #3
+  %5 = bitcast i32* %indent_skip.i to i8*
+  call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 5, i32 4, i1 false)
+  ret void
+}

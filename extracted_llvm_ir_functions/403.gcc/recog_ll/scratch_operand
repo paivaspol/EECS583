@@ -1,0 +1,36 @@
+define i32 @scratch_operand(%struct.rtx_def* nocapture %op, i32 %mode) #2 {
+entry:
+  %0 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %cmp = icmp ne i32 %bf.clear, %mode
+  %cmp1 = icmp ne i32 %mode, 0
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %bf.clear3 = and i32 %bf.load, 65535
+  %cmp4 = icmp eq i32 %bf.clear3, 62
+  br i1 %cmp4, label %lor.end, label %lor.rhs
+
+lor.rhs:                                          ; preds = %if.end
+  %cmp7 = icmp eq i32 %bf.clear3, 61
+  br i1 %cmp7, label %land.rhs, label %lor.end
+
+land.rhs:                                         ; preds = %lor.rhs
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp8 = icmp ult i32 %1, 53
+  br label %lor.end
+
+lor.end:                                          ; preds = %lor.rhs, %land.rhs, %if.end
+  %2 = phi i1 [ true, %if.end ], [ false, %lor.rhs ], [ %cmp8, %land.rhs ]
+  %lor.ext = zext i1 %2 to i32
+  br label %return
+
+return:                                           ; preds = %entry, %lor.end
+  %retval.0 = phi i32 [ %lor.ext, %lor.end ], [ 0, %entry ]
+  ret i32 %retval.0
+}

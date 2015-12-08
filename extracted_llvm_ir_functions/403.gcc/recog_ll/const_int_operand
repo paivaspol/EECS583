@@ -1,0 +1,27 @@
+define i32 @const_int_operand(%struct.rtx_def* nocapture %op, i32 %mode) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 54
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp eq i32 %mode, 0
+  br i1 %cmp1, label %if.end7, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %rtwint = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, i32 0
+  %1 = load i64* %rtwint, align 8, !tbaa !7
+  %call = tail call i64 @trunc_int_for_mode(i64 %1, i32 %mode) #6
+  %2 = load i64* %rtwint, align 8, !tbaa !7
+  %cmp5 = icmp eq i64 %call, %2
+  br i1 %cmp5, label %if.end7, label %return
+
+if.end7:                                          ; preds = %land.lhs.true, %if.end
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %entry, %if.end7
+  %retval.0 = phi i32 [ 1, %if.end7 ], [ 0, %entry ], [ 0, %land.lhs.true ]
+  ret i32 %retval.0
+}

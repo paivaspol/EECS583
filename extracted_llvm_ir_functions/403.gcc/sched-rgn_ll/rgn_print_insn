@@ -1,0 +1,60 @@
+define internal i8* @rgn_print_insn(%struct.rtx_def* nocapture %insn, i32 %aligned) #0 {
+entry:
+  %tobool = icmp eq i32 %aligned, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !3
+  %idxprom = sext i32 %0 to i64
+  %1 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx1 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom
+  %2 = load %struct.basic_block_def** %arrayidx1, align 8, !tbaa !0
+  %index = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 11
+  %3 = load i32* %index, align 4, !tbaa !3
+  %idxprom2 = sext i32 %3 to i64
+  %4 = load i32** @block_to_bb, align 8, !tbaa !0
+  %arrayidx3 = getelementptr inbounds i32* %4, i64 %idxprom2
+  %5 = load i32* %arrayidx3, align 4, !tbaa !3
+  %call = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([80 x i8]* @rgn_print_insn.tmp, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str40, i64 0, i64 0), i32 %5, i32 %0) #7
+  br label %if.end40
+
+if.else:                                          ; preds = %entry
+  %6 = load i32* @current_nr_blocks, align 4, !tbaa !3
+  %cmp = icmp sgt i32 %6, 1
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
+  %rtint9 = bitcast %union.rtunion_def* %arrayidx8 to i32*
+  %7 = load i32* %rtint9, align 4, !tbaa !3
+  br i1 %cmp, label %land.lhs.true, label %if.else35
+
+land.lhs.true:                                    ; preds = %if.else
+  %idxprom10 = sext i32 %7 to i64
+  %8 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !0
+  %data11 = getelementptr inbounds %struct.varray_head_tag* %8, i64 0, i32 4
+  %bb12 = bitcast %union.varray_data_tag* %data11 to [1 x %struct.basic_block_def*]*
+  %arrayidx13 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb12, i64 0, i64 %idxprom10
+  %9 = load %struct.basic_block_def** %arrayidx13, align 8, !tbaa !0
+  %index14 = getelementptr inbounds %struct.basic_block_def* %9, i64 0, i32 11
+  %10 = load i32* %index14, align 4, !tbaa !3
+  %idxprom16 = sext i32 %10 to i64
+  %11 = load i32** @block_to_bb, align 8, !tbaa !0
+  %arrayidx17 = getelementptr inbounds i32* %11, i64 %idxprom16
+  %12 = load i32* %arrayidx17, align 4, !tbaa !3
+  %13 = load i32* @target_bb, align 4, !tbaa !3
+  %cmp18 = icmp eq i32 %12, %13
+  br i1 %cmp18, label %if.else35, label %if.then19
+
+if.then19:                                        ; preds = %land.lhs.true
+  %call34 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([80 x i8]* @rgn_print_insn.tmp, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str41, i64 0, i64 0), i32 %7, i32 %12) #7
+  br label %if.end40
+
+if.else35:                                        ; preds = %if.else, %land.lhs.true
+  %call39 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([80 x i8]* @rgn_print_insn.tmp, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str42, i64 0, i64 0), i32 %7) #7
+  br label %if.end40
+
+if.end40:                                         ; preds = %if.then19, %if.else35, %if.then
+  ret i8* getelementptr inbounds ([80 x i8]* @rgn_print_insn.tmp, i64 0, i64 0)
+}

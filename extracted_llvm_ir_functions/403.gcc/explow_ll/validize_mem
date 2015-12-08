@@ -1,0 +1,50 @@
+define %struct.rtx_def* @validize_mem(%struct.rtx_def* %ref) #1 {
+entry:
+  %0 = bitcast %struct.rtx_def* %ref to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %1 = load i32* @flag_force_addr, align 4, !tbaa !5
+  %tobool = icmp eq i32 %1, 0
+  %arrayidx35.phi.trans.insert = getelementptr inbounds %struct.rtx_def* %ref, i64 0, i32 1, i64 0
+  %rtx36.phi.trans.insert = bitcast %union.rtunion_def* %arrayidx35.phi.trans.insert to %struct.rtx_def**
+  %.pre = load %struct.rtx_def** %rtx36.phi.trans.insert, align 8, !tbaa !3
+  br i1 %tobool, label %land.lhs.true31, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %2 = bitcast %struct.rtx_def* %.pre to i32*
+  %bf.load1 = load i32* %2, align 8
+  %bf.clear2 = and i32 %bf.load1, 65535
+  switch i32 %bf.clear2, label %land.lhs.true31 [
+    i32 67, label %if.end39
+    i32 68, label %if.end39
+    i32 54, label %if.end39
+    i32 58, label %if.end39
+    i32 55, label %if.end39
+  ]
+
+land.lhs.true31:                                  ; preds = %if.end, %land.lhs.true
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear33 = and i32 %bf.lshr, 255
+  %call = tail call i32 @memory_address_p(i32 %bf.clear33, %struct.rtx_def* %.pre) #4
+  %tobool37 = icmp eq i32 %call, 0
+  br i1 %tobool37, label %land.lhs.true31.if.end39_crit_edge, label %return
+
+land.lhs.true31.if.end39_crit_edge:               ; preds = %land.lhs.true31
+  %arrayidx35 = getelementptr inbounds %struct.rtx_def* %ref, i64 0, i32 1, i64 0
+  %rtx36 = bitcast %union.rtunion_def* %arrayidx35 to %struct.rtx_def**
+  %.pre55 = load %struct.rtx_def** %rtx36, align 8, !tbaa !3
+  br label %if.end39
+
+if.end39:                                         ; preds = %land.lhs.true31.if.end39_crit_edge, %land.lhs.true, %land.lhs.true, %land.lhs.true, %land.lhs.true, %land.lhs.true
+  %3 = phi %struct.rtx_def* [ %.pre55, %land.lhs.true31.if.end39_crit_edge ], [ %.pre, %land.lhs.true ], [ %.pre, %land.lhs.true ], [ %.pre, %land.lhs.true ], [ %.pre, %land.lhs.true ], [ %.pre, %land.lhs.true ]
+  %call43 = tail call %struct.rtx_def* @replace_equiv_address(%struct.rtx_def* %ref, %struct.rtx_def* %3) #4
+  br label %return
+
+return:                                           ; preds = %land.lhs.true31, %entry, %if.end39
+  %retval.0 = phi %struct.rtx_def* [ %call43, %if.end39 ], [ %ref, %entry ], [ %ref, %land.lhs.true31 ]
+  ret %struct.rtx_def* %retval.0
+}

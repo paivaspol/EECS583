@@ -1,0 +1,28 @@
+define %struct.rtx_def* @gen_cmpqi(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %0 = bitcast %struct.rtx_def* %operand0 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %operand1 to i32*
+  %bf.load4 = load i32* %1, align 8
+  %bf.clear5 = and i32 %bf.load4, 65535
+  %cmp6 = icmp eq i32 %bf.clear5, 66
+  br i1 %cmp6, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true
+  %call = tail call %struct.rtx_def* @force_reg(i32 2, %struct.rtx_def* %operand0) #4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %land.lhs.true, %entry
+  %operands.sroa.0.0 = phi %struct.rtx_def* [ %call, %if.then ], [ %operand0, %land.lhs.true ], [ %operand0, %entry ]
+  store %struct.rtx_def* %operands.sroa.0.0, %struct.rtx_def** @ix86_compare_op0, align 8, !tbaa !0
+  store %struct.rtx_def* %operand1, %struct.rtx_def** @ix86_compare_op1, align 8, !tbaa !0
+  %call11 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  ret %struct.rtx_def* %call11
+}

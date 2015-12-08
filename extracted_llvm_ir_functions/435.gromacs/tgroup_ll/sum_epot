@@ -1,0 +1,190 @@
+define void @sum_epot(%struct.t_grpopts* nocapture %opts, %struct.t_groups* nocapture %grps, float* nocapture %epot) #0 {
+entry:
+  %nn = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 0
+  %0 = load i32* %nn, align 4, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 0
+  %1 = load float** %arrayidx, align 8, !tbaa !3
+  %cmp3.i = icmp sgt i32 %0, 0
+  br i1 %cmp3.i, label %for.body.i, label %sum_v.exit.thread
+
+sum_v.exit.thread:                                ; preds = %entry
+  %arrayidx2159 = getelementptr inbounds float* %epot, i64 17
+  store float 0.000000e+00, float* %arrayidx2159, align 4, !tbaa !4
+  br label %sum_v.exit144.thread
+
+for.body.i:                                       ; preds = %entry, %for.body.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %entry ]
+  %t.04.i = phi float [ %add.i, %for.body.i ], [ 0.000000e+00, %entry ]
+  %arrayidx.i = getelementptr inbounds float* %1, i64 %indvars.iv.i
+  %2 = load float* %arrayidx.i, align 4, !tbaa !4
+  %add.i = fadd float %t.04.i, %2
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv157 = trunc i64 %indvars.iv.next.i to i32
+  %exitcond158 = icmp eq i32 %lftr.wideiv157, %0
+  br i1 %exitcond158, label %sum_v.exit, label %for.body.i
+
+sum_v.exit:                                       ; preds = %for.body.i
+  %arrayidx2 = getelementptr inbounds float* %epot, i64 17
+  store float %add.i, float* %arrayidx2, align 4, !tbaa !4
+  %arrayidx7 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 1
+  %3 = load float** %arrayidx7, align 8, !tbaa !3
+  br i1 %cmp3.i, label %for.body.i142, label %sum_v.exit144.thread
+
+for.body.i142:                                    ; preds = %sum_v.exit, %for.body.i142
+  %indvars.iv.i135 = phi i64 [ %indvars.iv.next.i139, %for.body.i142 ], [ 0, %sum_v.exit ]
+  %t.04.i136 = phi float [ %add.i138, %for.body.i142 ], [ 0.000000e+00, %sum_v.exit ]
+  %arrayidx.i137 = getelementptr inbounds float* %3, i64 %indvars.iv.i135
+  %4 = load float* %arrayidx.i137, align 4, !tbaa !4
+  %add.i138 = fadd float %t.04.i136, %4
+  %indvars.iv.next.i139 = add i64 %indvars.iv.i135, 1
+  %lftr.wideiv155 = trunc i64 %indvars.iv.next.i139 to i32
+  %exitcond156 = icmp eq i32 %lftr.wideiv155, %0
+  br i1 %exitcond156, label %sum_v.exit144, label %for.body.i142
+
+sum_v.exit144.thread:                             ; preds = %sum_v.exit.thread, %sum_v.exit
+  %arrayidx9161 = getelementptr inbounds float* %epot, i64 13
+  store float 0.000000e+00, float* %arrayidx9161, align 4, !tbaa !4
+  br label %sum_v.exit133
+
+sum_v.exit144:                                    ; preds = %for.body.i142
+  %arrayidx9 = getelementptr inbounds float* %epot, i64 13
+  store float %add.i138, float* %arrayidx9, align 4, !tbaa !4
+  %arrayidx14 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 6
+  %5 = load float** %arrayidx14, align 8, !tbaa !3
+  br i1 %cmp3.i, label %for.body.i131, label %sum_v.exit133.thread
+
+sum_v.exit133.thread:                             ; preds = %sum_v.exit144
+  %arrayidx16163 = getelementptr inbounds float* %epot, i64 11
+  store float 0.000000e+00, float* %arrayidx16163, align 4, !tbaa !4
+  br label %sum_v.exit122.thread
+
+for.body.i131:                                    ; preds = %sum_v.exit144, %for.body.i131
+  %indvars.iv.i124 = phi i64 [ %indvars.iv.next.i128, %for.body.i131 ], [ 0, %sum_v.exit144 ]
+  %t.04.i125 = phi float [ %add.i127, %for.body.i131 ], [ 0.000000e+00, %sum_v.exit144 ]
+  %arrayidx.i126 = getelementptr inbounds float* %5, i64 %indvars.iv.i124
+  %6 = load float* %arrayidx.i126, align 4, !tbaa !4
+  %add.i127 = fadd float %t.04.i125, %6
+  %indvars.iv.next.i128 = add i64 %indvars.iv.i124, 1
+  %lftr.wideiv153 = trunc i64 %indvars.iv.next.i128 to i32
+  %exitcond154 = icmp eq i32 %lftr.wideiv153, %0
+  br i1 %exitcond154, label %sum_v.exit133, label %for.body.i131
+
+sum_v.exit133:                                    ; preds = %for.body.i131, %sum_v.exit144.thread
+  %t.0.lcssa.i132 = phi float [ 0.000000e+00, %sum_v.exit144.thread ], [ %add.i127, %for.body.i131 ]
+  %arrayidx16 = getelementptr inbounds float* %epot, i64 11
+  store float %t.0.lcssa.i132, float* %arrayidx16, align 4, !tbaa !4
+  %arrayidx21 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 5
+  %7 = load float** %arrayidx21, align 8, !tbaa !3
+  br i1 %cmp3.i, label %for.body.i120, label %sum_v.exit122.thread
+
+for.body.i120:                                    ; preds = %sum_v.exit133, %for.body.i120
+  %indvars.iv.i113 = phi i64 [ %indvars.iv.next.i117, %for.body.i120 ], [ 0, %sum_v.exit133 ]
+  %t.04.i114 = phi float [ %add.i116, %for.body.i120 ], [ 0.000000e+00, %sum_v.exit133 ]
+  %arrayidx.i115 = getelementptr inbounds float* %7, i64 %indvars.iv.i113
+  %8 = load float* %arrayidx.i115, align 4, !tbaa !4
+  %add.i116 = fadd float %t.04.i114, %8
+  %indvars.iv.next.i117 = add i64 %indvars.iv.i113, 1
+  %lftr.wideiv151 = trunc i64 %indvars.iv.next.i117 to i32
+  %exitcond152 = icmp eq i32 %lftr.wideiv151, %0
+  br i1 %exitcond152, label %sum_v.exit122, label %for.body.i120
+
+sum_v.exit122.thread:                             ; preds = %sum_v.exit133.thread, %sum_v.exit133
+  %arrayidx23165 = getelementptr inbounds float* %epot, i64 12
+  store float 0.000000e+00, float* %arrayidx23165, align 4, !tbaa !4
+  br label %sum_v.exit111
+
+sum_v.exit122:                                    ; preds = %for.body.i120
+  %arrayidx23 = getelementptr inbounds float* %epot, i64 12
+  store float %add.i116, float* %arrayidx23, align 4, !tbaa !4
+  %arrayidx28 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 3
+  %9 = load float** %arrayidx28, align 8, !tbaa !3
+  br i1 %cmp3.i, label %for.body.i109, label %sum_v.exit111.thread
+
+sum_v.exit111.thread:                             ; preds = %sum_v.exit122
+  %arrayidx30167 = getelementptr inbounds float* %epot, i64 18
+  %10 = load float* %arrayidx30167, align 4, !tbaa !4
+  %add168 = fadd float %10, 0.000000e+00
+  store float %add168, float* %arrayidx30167, align 4, !tbaa !4
+  br label %sum_v.exit100.thread
+
+for.body.i109:                                    ; preds = %sum_v.exit122, %for.body.i109
+  %indvars.iv.i102 = phi i64 [ %indvars.iv.next.i106, %for.body.i109 ], [ 0, %sum_v.exit122 ]
+  %t.04.i103 = phi float [ %add.i105, %for.body.i109 ], [ 0.000000e+00, %sum_v.exit122 ]
+  %arrayidx.i104 = getelementptr inbounds float* %9, i64 %indvars.iv.i102
+  %11 = load float* %arrayidx.i104, align 4, !tbaa !4
+  %add.i105 = fadd float %t.04.i103, %11
+  %indvars.iv.next.i106 = add i64 %indvars.iv.i102, 1
+  %lftr.wideiv149 = trunc i64 %indvars.iv.next.i106 to i32
+  %exitcond150 = icmp eq i32 %lftr.wideiv149, %0
+  br i1 %exitcond150, label %sum_v.exit111, label %for.body.i109
+
+sum_v.exit111:                                    ; preds = %for.body.i109, %sum_v.exit122.thread
+  %t.0.lcssa.i110 = phi float [ 0.000000e+00, %sum_v.exit122.thread ], [ %add.i105, %for.body.i109 ]
+  %arrayidx30 = getelementptr inbounds float* %epot, i64 18
+  %12 = load float* %arrayidx30, align 4, !tbaa !4
+  %add = fadd float %t.0.lcssa.i110, %12
+  store float %add, float* %arrayidx30, align 4, !tbaa !4
+  %arrayidx35 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 4
+  %13 = load float** %arrayidx35, align 8, !tbaa !3
+  br i1 %cmp3.i, label %for.body.i98, label %sum_v.exit100.thread
+
+for.body.i98:                                     ; preds = %sum_v.exit111, %for.body.i98
+  %indvars.iv.i91 = phi i64 [ %indvars.iv.next.i95, %for.body.i98 ], [ 0, %sum_v.exit111 ]
+  %t.04.i92 = phi float [ %add.i94, %for.body.i98 ], [ 0.000000e+00, %sum_v.exit111 ]
+  %arrayidx.i93 = getelementptr inbounds float* %13, i64 %indvars.iv.i91
+  %14 = load float* %arrayidx.i93, align 4, !tbaa !4
+  %add.i94 = fadd float %t.04.i92, %14
+  %indvars.iv.next.i95 = add i64 %indvars.iv.i91, 1
+  %lftr.wideiv147 = trunc i64 %indvars.iv.next.i95 to i32
+  %exitcond148 = icmp eq i32 %lftr.wideiv147, %0
+  br i1 %exitcond148, label %sum_v.exit100, label %for.body.i98
+
+sum_v.exit100.thread:                             ; preds = %sum_v.exit111.thread, %sum_v.exit111
+  %arrayidx37170 = getelementptr inbounds float* %epot, i64 15
+  %15 = load float* %arrayidx37170, align 4, !tbaa !4
+  %add38171 = fadd float %15, 0.000000e+00
+  store float %add38171, float* %arrayidx37170, align 4, !tbaa !4
+  br label %sum_v.exit89
+
+sum_v.exit100:                                    ; preds = %for.body.i98
+  %arrayidx37 = getelementptr inbounds float* %epot, i64 15
+  %16 = load float* %arrayidx37, align 4, !tbaa !4
+  %add38 = fadd float %add.i94, %16
+  store float %add38, float* %arrayidx37, align 4, !tbaa !4
+  %arrayidx43 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 2
+  %17 = load float** %arrayidx43, align 8, !tbaa !3
+  br i1 %cmp3.i, label %for.body.i87, label %sum_v.exit89
+
+for.body.i87:                                     ; preds = %sum_v.exit100, %for.body.i87
+  %indvars.iv.i80 = phi i64 [ %indvars.iv.next.i84, %for.body.i87 ], [ 0, %sum_v.exit100 ]
+  %t.04.i81 = phi float [ %add.i83, %for.body.i87 ], [ 0.000000e+00, %sum_v.exit100 ]
+  %arrayidx.i82 = getelementptr inbounds float* %17, i64 %indvars.iv.i80
+  %18 = load float* %arrayidx.i82, align 4, !tbaa !4
+  %add.i83 = fadd float %t.04.i81, %18
+  %indvars.iv.next.i84 = add i64 %indvars.iv.i80, 1
+  %lftr.wideiv145 = trunc i64 %indvars.iv.next.i84 to i32
+  %exitcond146 = icmp eq i32 %lftr.wideiv145, %0
+  br i1 %exitcond146, label %sum_v.exit89, label %for.body.i87
+
+sum_v.exit89:                                     ; preds = %for.body.i87, %sum_v.exit100.thread, %sum_v.exit100
+  %t.0.lcssa.i88 = phi float [ 0.000000e+00, %sum_v.exit100 ], [ 0.000000e+00, %sum_v.exit100.thread ], [ %add.i83, %for.body.i87 ]
+  %arrayidx45 = getelementptr inbounds float* %epot, i64 14
+  store float %t.0.lcssa.i88, float* %arrayidx45, align 4, !tbaa !4
+  br label %for.body.i76
+
+for.body.i76:                                     ; preds = %for.body.i76, %sum_v.exit89
+  %indvars.iv.i69 = phi i64 [ %indvars.iv.next.i73, %for.body.i76 ], [ 0, %sum_v.exit89 ]
+  %t.04.i70 = phi float [ %add.i72, %for.body.i76 ], [ 0.000000e+00, %sum_v.exit89 ]
+  %arrayidx.i71 = getelementptr inbounds float* %epot, i64 %indvars.iv.i69
+  %19 = load float* %arrayidx.i71, align 4, !tbaa !4
+  %add.i72 = fadd float %t.04.i70, %19
+  %indvars.iv.next.i73 = add i64 %indvars.iv.i69, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i73 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 37
+  br i1 %exitcond, label %sum_v.exit78, label %for.body.i76
+
+sum_v.exit78:                                     ; preds = %for.body.i76
+  %arrayidx47 = getelementptr inbounds float* %epot, i64 37
+  store float %add.i72, float* %arrayidx47, align 4, !tbaa !4
+  ret void
+}

@@ -1,0 +1,119 @@
+define i32 @objects_must_conflict_p(%union.tree_node* %t1, %union.tree_node* %t2) #0 {
+entry:
+  %cmp = icmp eq %union.tree_node* %t1, null
+  %cmp1 = icmp eq %union.tree_node* %t2, null
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %cmp2 = icmp ne %union.tree_node* %t1, null
+  br i1 %cmp2, label %land.lhs.true3, label %lor.lhs.false
+
+land.lhs.true3:                                   ; preds = %if.end
+  %call = tail call i32 @readonly_fields_p(%union.tree_node* %t1) #8
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %lor.lhs.false, label %return
+
+lor.lhs.false:                                    ; preds = %land.lhs.true3, %if.end
+  %cmp4 = icmp ne %union.tree_node* %t2, null
+  br i1 %cmp4, label %land.lhs.true5, label %lor.lhs.false8
+
+land.lhs.true5:                                   ; preds = %lor.lhs.false
+  %call6 = tail call i32 @readonly_fields_p(%union.tree_node* %t2) #8
+  %tobool7 = icmp eq i32 %call6, 0
+  br i1 %tobool7, label %lor.lhs.false8, label %return
+
+lor.lhs.false8:                                   ; preds = %land.lhs.true5, %lor.lhs.false
+  br i1 %cmp2, label %land.lhs.true10, label %lor.lhs.false12
+
+land.lhs.true10:                                  ; preds = %lor.lhs.false8
+  %readonly_flag = getelementptr inbounds %union.tree_node* %t1, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %readonly_flag to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 4096
+  %tobool11 = icmp eq i32 %bf.clear, 0
+  br i1 %tobool11, label %lor.lhs.false12, label %return
+
+lor.lhs.false12:                                  ; preds = %land.lhs.true10, %lor.lhs.false8
+  br i1 %cmp4, label %land.lhs.true14, label %if.end22
+
+land.lhs.true14:                                  ; preds = %lor.lhs.false12
+  %readonly_flag16 = getelementptr inbounds %union.tree_node* %t2, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %readonly_flag16 to i32*
+  %bf.load17 = load i32* %1, align 8
+  %bf.clear19 = and i32 %bf.load17, 4096
+  %tobool20 = icmp eq i32 %bf.clear19, 0
+  br i1 %tobool20, label %if.end22, label %return
+
+if.end22:                                         ; preds = %land.lhs.true14, %lor.lhs.false12
+  %cmp23 = icmp eq %union.tree_node* %t1, %t2
+  br i1 %cmp23, label %return, label %lor.lhs.false24
+
+lor.lhs.false24:                                  ; preds = %if.end22
+  br i1 %cmp2, label %land.lhs.true26, label %land.end
+
+land.lhs.true26:                                  ; preds = %lor.lhs.false24
+  %volatile_flag = getelementptr inbounds %union.tree_node* %t1, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %volatile_flag to i32*
+  %bf.load28 = load i32* %2, align 8
+  %bf.clear30 = and i32 %bf.load28, 2048
+  %tobool31 = icmp eq i32 %bf.clear30, 0
+  %cmp4.not = xor i1 %cmp4, true
+  %brmerge = or i1 %tobool31, %cmp4.not
+  br i1 %brmerge, label %land.rhs, label %land.lhs.true34
+
+land.lhs.true34:                                  ; preds = %land.lhs.true26
+  %volatile_flag36 = getelementptr inbounds %union.tree_node* %t2, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %volatile_flag36 to i32*
+  %bf.load37 = load i32* %3, align 8
+  %bf.clear39 = and i32 %bf.load37, 2048
+  %tobool40 = icmp eq i32 %bf.clear39, 0
+  br i1 %tobool40, label %land.rhs, label %return
+
+land.rhs:                                         ; preds = %land.lhs.true34, %land.lhs.true26
+  %bf.clear46 = and i32 %bf.load28, 255
+  %switch.tableidx = add i32 %bf.clear46, -18
+  %4 = icmp ult i32 %switch.tableidx, 5
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %lor.lhs.false24
+  %5 = phi i1 [ false, %lor.lhs.false24 ], [ %4, %land.rhs ]
+  br i1 %cmp4, label %land.end103, label %land.end.land.end103_crit_edge
+
+land.end.land.end103_crit_edge:                   ; preds = %land.end
+  br i1 %5, label %return, label %if.end107
+
+land.end103:                                      ; preds = %land.end
+  %code74 = getelementptr inbounds %union.tree_node* %t2, i64 0, i32 0, i32 0, i32 2
+  %6 = bitcast [4 x i8]* %code74 to i32*
+  %bf.load75 = load i32* %6, align 8
+  %bf.clear76 = and i32 %bf.load75, 255
+  %switch.tableidx148 = add i32 %bf.clear76, -18
+  %7 = icmp ult i32 %switch.tableidx148, 5
+  %cmp105 = xor i1 %5, %7
+  br i1 %cmp105, label %return, label %if.end107
+
+if.end107:                                        ; preds = %land.end.land.end103_crit_edge, %land.end103
+  br i1 %cmp2, label %cond.true, label %cond.end
+
+cond.true:                                        ; preds = %if.end107
+  %call109 = tail call i64 @get_alias_set(%union.tree_node* %t1) #8
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.end107, %cond.true
+  %cond = phi i64 [ %call109, %cond.true ], [ 0, %if.end107 ]
+  br i1 %cmp4, label %cond.true111, label %cond.end114
+
+cond.true111:                                     ; preds = %cond.end
+  %call112 = tail call i64 @get_alias_set(%union.tree_node* %t2) #8
+  br label %cond.end114
+
+cond.end114:                                      ; preds = %cond.end, %cond.true111
+  %cond115 = phi i64 [ %call112, %cond.true111 ], [ 0, %cond.end ]
+  %call116 = tail call i32 @alias_sets_conflict_p(i64 %cond, i64 %cond115) #8
+  br label %return
+
+return:                                           ; preds = %land.end.land.end103_crit_edge, %land.end103, %if.end22, %land.lhs.true34, %land.lhs.true14, %land.lhs.true10, %land.lhs.true5, %land.lhs.true3, %entry, %cond.end114
+  %retval.0 = phi i32 [ %call116, %cond.end114 ], [ 0, %entry ], [ 0, %land.lhs.true3 ], [ 0, %land.lhs.true5 ], [ 0, %land.lhs.true10 ], [ 0, %land.lhs.true14 ], [ 1, %land.lhs.true34 ], [ 1, %if.end22 ], [ 0, %land.end103 ], [ 0, %land.end.land.end103_crit_edge ]
+  ret i32 %retval.0
+}

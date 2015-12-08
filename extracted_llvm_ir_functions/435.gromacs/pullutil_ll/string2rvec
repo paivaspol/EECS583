@@ -1,0 +1,24 @@
+define void @string2rvec(i8* %buf, float* nocapture %nums) #0 {
+entry:
+  %a = alloca float, align 4
+  %b = alloca float, align 4
+  %c = alloca float, align 4
+  %call = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %buf, i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), float* %a, float* %b, float* %c) #5
+  %cmp = icmp eq i32 %call, 3
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([40 x i8]* @.str4, i64 0, i64 0), i8* %buf) #5
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %0 = load float* %a, align 4, !tbaa !0
+  store float %0, float* %nums, align 4, !tbaa !0
+  %1 = load float* %b, align 4, !tbaa !0
+  %arrayidx1 = getelementptr inbounds float* %nums, i64 1
+  store float %1, float* %arrayidx1, align 4, !tbaa !0
+  %2 = load float* %c, align 4, !tbaa !0
+  %arrayidx2 = getelementptr inbounds float* %nums, i64 2
+  store float %2, float* %arrayidx2, align 4, !tbaa !0
+  ret void
+}

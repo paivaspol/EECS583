@@ -1,0 +1,9 @@
+define i32 @gs_free(%struct.gs_s* nocapture %gs) #0 {
+entry:
+  %fp = getelementptr inbounds %struct.gs_s* %gs, i64 0, i32 8
+  %0 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
+  %call = tail call i32 @fclose(%struct._IO_FILE* %0) #5
+  %1 = bitcast %struct.gs_s* %gs to i8*
+  tail call void @free(i8* %1) #5
+  ret i32 1
+}

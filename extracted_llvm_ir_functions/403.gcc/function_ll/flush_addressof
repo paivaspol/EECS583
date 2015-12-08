@@ -1,0 +1,57 @@
+define void @flush_addressof(%union.tree_node* %decl) #0 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %bf.clear.off = add i32 %bf.clear, -34
+  %switch = icmp ult i32 %bf.clear.off, 2
+  br i1 %switch, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %rtl = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 17
+  %1 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %1, null
+  br i1 %tobool, label %cond.end, label %cond.end22
+
+cond.end:                                         ; preds = %land.lhs.true
+  tail call void @make_decl_rtl(%union.tree_node* %decl, i8* null) #10
+  %2 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %cmp11 = icmp eq %struct.rtx_def* %2, null
+  br i1 %cmp11, label %if.end, label %cond.end22
+
+cond.end22:                                       ; preds = %land.lhs.true, %cond.end
+  %3 = phi %struct.rtx_def* [ %2, %cond.end ], [ %1, %land.lhs.true ]
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load24 = load i32* %4, align 8
+  %bf.clear25 = and i32 %bf.load24, 65535
+  %cmp26 = icmp eq i32 %bf.clear25, 66
+  br i1 %cmp26, label %cond.end37, label %if.end
+
+cond.end37:                                       ; preds = %cond.end22
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %6 = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load39 = load i32* %6, align 8
+  %bf.clear40 = and i32 %bf.load39, 65535
+  %cmp41 = icmp eq i32 %bf.clear40, 70
+  br i1 %cmp41, label %cond.end52, label %if.end
+
+cond.end52:                                       ; preds = %cond.end37
+  %arrayidx58 = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 0
+  %rtx59 = bitcast %union.rtunion_def* %arrayidx58 to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %rtx59, align 8, !tbaa !0
+  %8 = bitcast %struct.rtx_def* %7 to i32*
+  %bf.load60 = load i32* %8, align 8
+  %bf.clear61 = and i32 %bf.load60, 65535
+  %cmp62 = icmp eq i32 %bf.clear61, 61
+  br i1 %cmp62, label %cond.end72, label %if.end
+
+cond.end72:                                       ; preds = %cond.end52
+  tail call fastcc void @put_addressof_into_stack(%struct.rtx_def* %5, %struct.hash_table* null) #9
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %cond.end, %cond.end72, %cond.end52, %cond.end37, %cond.end22
+  ret void
+}

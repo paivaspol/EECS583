@@ -1,0 +1,269 @@
+define i32 @lm_tg_score(%struct.lm_s* nocapture %lm, i16 zeroext %lw1, i16 zeroext %lw2, i16 zeroext %lw3, i32 %w3) #2 {
+entry:
+  %n_tg = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 2
+  %0 = load i32* %n_tg, align 4, !tbaa !3
+  %cmp = icmp eq i32 %0, 0
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %conv = zext i16 %lw1 to i32
+  %cmp1 = icmp eq i16 %lw1, -1
+  br i1 %cmp1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %call = tail call i32 @lm_bg_score(%struct.lm_s* %lm, i16 zeroext %lw2, i16 zeroext %lw3, i32 %w3) #9
+  br label %return
+
+if.end:                                           ; preds = %lor.lhs.false
+  %n_tg_score = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 34
+  %1 = load i32* %n_tg_score, align 4, !tbaa !3
+  %inc = add nsw i32 %1, 1
+  store i32 %inc, i32* %n_tg_score, align 4, !tbaa !3
+  %n_ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 0
+  %2 = load i32* %n_ug, align 4, !tbaa !3
+  %cmp8 = icmp slt i32 %conv, %2
+  br i1 %cmp8, label %if.end12, label %if.then10
+
+if.then10:                                        ; preds = %if.end
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 1241, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #8
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([38 x i8]* @.str29, i64 0, i64 0), i32 %conv) #8
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end, %if.then10
+  %conv13 = zext i16 %lw2 to i32
+  %cmp14 = icmp eq i16 %lw2, -1
+  br i1 %cmp14, label %if.then21, label %lor.lhs.false16
+
+lor.lhs.false16:                                  ; preds = %if.end12
+  %3 = load i32* %n_ug, align 4, !tbaa !3
+  %cmp19 = icmp slt i32 %conv13, %3
+  br i1 %cmp19, label %if.end23, label %if.then21
+
+if.then21:                                        ; preds = %lor.lhs.false16, %if.end12
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 1243, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #8
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([38 x i8]* @.str30, i64 0, i64 0), i32 %conv13) #8
+  br label %if.end23
+
+if.end23:                                         ; preds = %lor.lhs.false16, %if.then21
+  %conv24 = zext i16 %lw3 to i32
+  %cmp25 = icmp eq i16 %lw3, -1
+  br i1 %cmp25, label %if.then32, label %lor.lhs.false27
+
+lor.lhs.false27:                                  ; preds = %if.end23
+  %4 = load i32* %n_ug, align 4, !tbaa !3
+  %cmp30 = icmp slt i32 %conv24, %4
+  br i1 %cmp30, label %if.end34, label %if.then32
+
+if.then32:                                        ; preds = %lor.lhs.false27, %if.end23
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 1245, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #8
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([38 x i8]* @.str31, i64 0, i64 0), i32 %conv24) #8
+  br label %if.end34
+
+if.end34:                                         ; preds = %lor.lhs.false27, %if.then32
+  %and = shl i32 %conv, 21
+  %shl = and i32 %and, 2145386496
+  %and37 = shl nuw nsw i32 %conv13, 11
+  %shl38 = and i32 %and37, 2095104
+  %add = or i32 %shl38, %shl
+  %and40 = and i32 %conv24, 2047
+  %add41 = or i32 %add, %and40
+  %rem = urem i32 %add41, 100003
+  %idxprom218 = zext i32 %rem to i64
+  %tgcache = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 27
+  %5 = load %struct.lm_tgcache_entry_t** %tgcache, align 8, !tbaa !0
+  %arrayidx42 = getelementptr inbounds %struct.lm_tgcache_entry_t* %5, i64 %idxprom218, i32 0, i64 0
+  %6 = load i16* %arrayidx42, align 2, !tbaa !5
+  %cmp45 = icmp eq i16 %6, %lw1
+  br i1 %cmp45, label %land.lhs.true, label %if.end71
+
+land.lhs.true:                                    ; preds = %if.end34
+  %arrayidx51 = getelementptr inbounds %struct.lm_tgcache_entry_t* %5, i64 %idxprom218, i32 0, i64 1
+  %7 = load i16* %arrayidx51, align 2, !tbaa !5
+  %cmp54 = icmp eq i16 %7, %lw2
+  br i1 %cmp54, label %land.lhs.true56, label %if.end71
+
+land.lhs.true56:                                  ; preds = %land.lhs.true
+  %arrayidx61 = getelementptr inbounds %struct.lm_tgcache_entry_t* %5, i64 %idxprom218, i32 0, i64 2
+  %8 = load i16* %arrayidx61, align 2, !tbaa !5
+  %cmp64 = icmp eq i16 %8, %lw3
+  br i1 %cmp64, label %if.then66, label %if.end71
+
+if.then66:                                        ; preds = %land.lhs.true56
+  %n_tgcache_hit = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 36
+  %9 = load i32* %n_tgcache_hit, align 4, !tbaa !3
+  %inc67 = add nsw i32 %9, 1
+  store i32 %inc67, i32* %n_tgcache_hit, align 4, !tbaa !3
+  %lscr = getelementptr inbounds %struct.lm_tgcache_entry_t* %5, i64 %idxprom218, i32 1
+  %10 = load i32* %lscr, align 4, !tbaa !3
+  br label %return
+
+if.end71:                                         ; preds = %land.lhs.true56, %land.lhs.true, %if.end34
+  %idxprom72 = zext i16 %lw2 to i64
+  %tginfo73 = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 13
+  %11 = load %struct.tginfo_s*** %tginfo73, align 8, !tbaa !0
+  %arrayidx74 = getelementptr inbounds %struct.tginfo_s** %11, i64 %idxprom72
+  %tginfo.0228 = load %struct.tginfo_s** %arrayidx74, align 8
+  %tobool229 = icmp eq %struct.tginfo_s* %tginfo.0228, null
+  br i1 %tobool229, label %if.then82, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %next = getelementptr inbounds %struct.tginfo_s* %tginfo.0231, i64 0, i32 5
+  %tginfo.0 = load %struct.tginfo_s** %next, align 8
+  %tobool = icmp eq %struct.tginfo_s* %tginfo.0, null
+  br i1 %tobool, label %if.then82, label %for.body
+
+for.body:                                         ; preds = %if.end71, %for.cond
+  %tginfo.0231 = phi %struct.tginfo_s* [ %tginfo.0, %for.cond ], [ %tginfo.0228, %if.end71 ]
+  %prev_tginfo.0230 = phi %struct.tginfo_s* [ %tginfo.0231, %for.cond ], [ null, %if.end71 ]
+  %w1 = getelementptr inbounds %struct.tginfo_s* %tginfo.0231, i64 0, i32 0
+  %12 = load i16* %w1, align 2, !tbaa !5
+  %cmp77 = icmp eq i16 %12, %lw1
+  br i1 %cmp77, label %if.else, label %for.cond
+
+if.then82:                                        ; preds = %for.cond, %if.end71
+  tail call fastcc void @load_tg(%struct.lm_s* %lm, i16 zeroext %lw1, i16 zeroext %lw2) #9
+  %13 = load %struct.tginfo_s*** %tginfo73, align 8, !tbaa !0
+  %arrayidx85 = getelementptr inbounds %struct.tginfo_s** %13, i64 %idxprom72
+  %14 = load %struct.tginfo_s** %arrayidx85, align 8, !tbaa !0
+  br label %if.end98
+
+if.else:                                          ; preds = %for.body
+  %tobool86 = icmp eq %struct.tginfo_s* %prev_tginfo.0230, null
+  br i1 %tobool86, label %if.end98, label %if.then87
+
+if.then87:                                        ; preds = %if.else
+  %next88 = getelementptr inbounds %struct.tginfo_s* %tginfo.0231, i64 0, i32 5
+  %15 = load %struct.tginfo_s** %next88, align 8, !tbaa !0
+  %next89 = getelementptr inbounds %struct.tginfo_s* %prev_tginfo.0230, i64 0, i32 5
+  store %struct.tginfo_s* %15, %struct.tginfo_s** %next89, align 8, !tbaa !0
+  %16 = load %struct.tginfo_s*** %tginfo73, align 8, !tbaa !0
+  %arrayidx92 = getelementptr inbounds %struct.tginfo_s** %16, i64 %idxprom72
+  %17 = load %struct.tginfo_s** %arrayidx92, align 8, !tbaa !0
+  store %struct.tginfo_s* %17, %struct.tginfo_s** %next88, align 8, !tbaa !0
+  %18 = load %struct.tginfo_s*** %tginfo73, align 8, !tbaa !0
+  %arrayidx96 = getelementptr inbounds %struct.tginfo_s** %18, i64 %idxprom72
+  store %struct.tginfo_s* %tginfo.0231, %struct.tginfo_s** %arrayidx96, align 8, !tbaa !0
+  br label %if.end98
+
+if.end98:                                         ; preds = %if.else, %if.then87, %if.then82
+  %tginfo.1 = phi %struct.tginfo_s* [ %tginfo.0231, %if.then87 ], [ %tginfo.0231, %if.else ], [ %14, %if.then82 ]
+  %used = getelementptr inbounds %struct.tginfo_s* %tginfo.1, i64 0, i32 4
+  store i32 1, i32* %used, align 4, !tbaa !3
+  %n_tg99 = getelementptr inbounds %struct.tginfo_s* %tginfo.1, i64 0, i32 1
+  %19 = load i32* %n_tg99, align 4, !tbaa !3
+  %tg100 = getelementptr inbounds %struct.tginfo_s* %tginfo.1, i64 0, i32 2
+  %20 = load %struct.tg_t** %tg100, align 8, !tbaa !0
+  br label %while.cond.outer.i
+
+while.cond.outer.i:                               ; preds = %if.then.i, %if.end98
+  %b.0.ph.i = phi i32 [ 0, %if.end98 ], [ %add4.i, %if.then.i ]
+  %e.0.ph.i = phi i32 [ %19, %if.end98 ], [ %e.0.i, %if.then.i ]
+  br label %while.cond.i
+
+while.cond.i:                                     ; preds = %if.else.i, %while.cond.outer.i
+  %e.0.i = phi i32 [ %shr.i, %if.else.i ], [ %e.0.ph.i, %while.cond.outer.i ]
+  %sub.i = sub nsw i32 %e.0.i, %b.0.ph.i
+  %cmp.i = icmp sgt i32 %sub.i, 16
+  br i1 %cmp.i, label %while.body.i, label %for.cond.preheader.i
+
+for.cond.preheader.i:                             ; preds = %while.cond.i
+  %cmp1541.i = icmp slt i32 %b.0.ph.i, %e.0.i
+  br i1 %cmp1541.i, label %land.rhs.lr.ph.i, label %if.else116
+
+land.rhs.lr.ph.i:                                 ; preds = %for.cond.preheader.i
+  %21 = sext i32 %b.0.ph.i to i64
+  br label %land.rhs.i
+
+while.body.i:                                     ; preds = %while.cond.i
+  %add.i = add nsw i32 %e.0.i, %b.0.ph.i
+  %shr.i = ashr i32 %add.i, 1
+  %idxprom.i = sext i32 %shr.i to i64
+  %wid.i = getelementptr inbounds %struct.tg_t* %20, i64 %idxprom.i, i32 0
+  %22 = load i16* %wid.i, align 2, !tbaa !5
+  %cmp2.i = icmp ult i16 %22, %lw3
+  br i1 %cmp2.i, label %if.then.i, label %if.else.i
+
+if.then.i:                                        ; preds = %while.body.i
+  %add4.i = add nsw i32 %shr.i, 1
+  br label %while.cond.outer.i
+
+if.else.i:                                        ; preds = %while.body.i
+  %cmp10.i = icmp ugt i16 %22, %lw3
+  br i1 %cmp10.i, label %while.cond.i, label %find_tg.exit
+
+for.cond.i:                                       ; preds = %land.rhs.i
+  %inc.i = add nsw i32 %i.042.i, 1
+  %23 = trunc i64 %indvars.iv.next.i to i32
+  %cmp15.i = icmp slt i32 %23, %e.0.i
+  br i1 %cmp15.i, label %land.rhs.i, label %if.else116
+
+land.rhs.i:                                       ; preds = %for.cond.i, %land.rhs.lr.ph.i
+  %indvars.iv.i = phi i64 [ %21, %land.rhs.lr.ph.i ], [ %indvars.iv.next.i, %for.cond.i ]
+  %i.042.i = phi i32 [ %b.0.ph.i, %land.rhs.lr.ph.i ], [ %inc.i, %for.cond.i ]
+  %wid19.i = getelementptr inbounds %struct.tg_t* %20, i64 %indvars.iv.i, i32 0
+  %24 = load i16* %wid19.i, align 2, !tbaa !5
+  %cmp22.i = icmp eq i16 %24, %lw3
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  br i1 %cmp22.i, label %find_tg.exit, label %for.cond.i
+
+find_tg.exit:                                     ; preds = %if.else.i, %land.rhs.i
+  %retval.0.i = phi i32 [ %i.042.i, %land.rhs.i ], [ %shr.i, %if.else.i ]
+  %cmp102 = icmp sgt i32 %retval.0.i, -1
+  br i1 %cmp102, label %if.then104, label %if.else116
+
+if.then104:                                       ; preds = %find_tg.exit
+  %idxprom105 = sext i32 %retval.0.i to i64
+  %probid = getelementptr inbounds %struct.tg_t* %20, i64 %idxprom105, i32 1
+  %25 = load i16* %probid, align 2, !tbaa !5
+  %idxprom107 = zext i16 %25 to i64
+  %tgprob = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 15
+  %26 = load %union.lmlog_t** %tgprob, align 8, !tbaa !0
+  %arrayidx108 = getelementptr inbounds %union.lmlog_t* %26, i64 %idxprom107
+  %l = bitcast %union.lmlog_t* %arrayidx108 to i32*
+  %27 = load i32* %l, align 4, !tbaa !3
+  %inclass_ugscore = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 42
+  %28 = load i32** %inclass_ugscore, align 8, !tbaa !0
+  %tobool109 = icmp eq i32* %28, null
+  br i1 %tobool109, label %if.end115, label %if.then110
+
+if.then110:                                       ; preds = %if.then104
+  %idxprom111 = sext i32 %w3 to i64
+  %arrayidx113 = getelementptr inbounds i32* %28, i64 %idxprom111
+  %29 = load i32* %arrayidx113, align 4, !tbaa !3
+  %add114 = add nsw i32 %29, %27
+  br label %if.end115
+
+if.end115:                                        ; preds = %if.then104, %if.then110
+  %score.0 = phi i32 [ %add114, %if.then110 ], [ %27, %if.then104 ]
+  %access_type = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 37
+  store i32 3, i32* %access_type, align 4, !tbaa !3
+  br label %if.end120
+
+if.else116:                                       ; preds = %for.cond.i, %for.cond.preheader.i, %find_tg.exit
+  %n_tg_bo = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 35
+  %30 = load i32* %n_tg_bo, align 4, !tbaa !3
+  %inc117 = add nsw i32 %30, 1
+  store i32 %inc117, i32* %n_tg_bo, align 4, !tbaa !3
+  %bowt = getelementptr inbounds %struct.tginfo_s* %tginfo.1, i64 0, i32 3
+  %31 = load i32* %bowt, align 4, !tbaa !3
+  %call118 = tail call i32 @lm_bg_score(%struct.lm_s* %lm, i16 zeroext %lw2, i16 zeroext %lw3, i32 %w3) #9
+  %add119 = add nsw i32 %call118, %31
+  br label %if.end120
+
+if.end120:                                        ; preds = %if.else116, %if.end115
+  %score.1 = phi i32 [ %score.0, %if.end115 ], [ %add119, %if.else116 ]
+  %32 = load %struct.lm_tgcache_entry_t** %tgcache, align 8, !tbaa !0
+  %arrayidx125 = getelementptr inbounds %struct.lm_tgcache_entry_t* %32, i64 %idxprom218, i32 0, i64 0
+  store i16 %lw1, i16* %arrayidx125, align 2, !tbaa !5
+  %arrayidx130 = getelementptr inbounds %struct.lm_tgcache_entry_t* %32, i64 %idxprom218, i32 0, i64 1
+  store i16 %lw2, i16* %arrayidx130, align 2, !tbaa !5
+  %arrayidx135 = getelementptr inbounds %struct.lm_tgcache_entry_t* %32, i64 %idxprom218, i32 0, i64 2
+  store i16 %lw3, i16* %arrayidx135, align 2, !tbaa !5
+  %lscr139 = getelementptr inbounds %struct.lm_tgcache_entry_t* %32, i64 %idxprom218, i32 1
+  store i32 %score.1, i32* %lscr139, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.end120, %if.then66, %if.then
+  %retval.0 = phi i32 [ %call, %if.then ], [ %10, %if.then66 ], [ %score.1, %if.end120 ]
+  ret i32 %retval.0
+}

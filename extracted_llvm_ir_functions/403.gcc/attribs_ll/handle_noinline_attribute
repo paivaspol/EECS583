@@ -1,0 +1,29 @@
+define internal noalias %union.tree_node* @handle_noinline_attribute(%union.tree_node** nocapture %node, %union.tree_node* nocapture %name, %union.tree_node* nocapture %args, i32 %flags, i8* nocapture %no_add_attrs) #0 {
+entry:
+  %0 = load %union.tree_node** %node, align 8, !tbaa !0
+  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 30
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %uninlinable = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 5
+  %2 = bitcast [8 x i8]* %uninlinable to i64*
+  %bf.load1 = load i64* %2, align 8
+  %bf.set = or i64 %bf.load1, 68719476736
+  store i64 %bf.set, i64* %2, align 8
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %id = getelementptr inbounds %union.tree_node* %name, i64 0, i32 0, i32 1
+  %3 = getelementptr inbounds i8** %id, i64 1
+  %4 = load i8** %3, align 8, !tbaa !0
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([23 x i8]* @.str4, i64 0, i64 0), i8* %4) #4
+  store i8 1, i8* %no_add_attrs, align 1, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret %union.tree_node* null
+}

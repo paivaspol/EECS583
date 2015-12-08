@@ -1,0 +1,31 @@
+define i32 @read_first_xtc(i32 %fp, i32* %natoms, i32* %step, float* %time, [3 x float]* %box, [3 x float]** nocapture %x, float* %prec, i32* nocapture %bOK) #0 {
+entry:
+  %magic = alloca i32, align 4
+  store i32 1, i32* %bOK, align 4, !tbaa !3
+  %call = call %struct.XDR* @gmx_fio_getxdr(i32 %fp) #3
+  %call1 = call fastcc i32 @xtc_header(%struct.XDR* %call, i32* %magic, i32* %natoms, i32* %step, float* %time, i32* %bOK) #4
+  %tobool = icmp eq i32 %call1, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %0 = load i32* %magic, align 4, !tbaa !3
+  %cmp.i = icmp eq i32 %0, 1995
+  br i1 %cmp.i, label %check_xtc_magic.exit, label %if.then.i
+
+if.then.i:                                        ; preds = %if.end
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([55 x i8]* @.str5, i64 0, i64 0), i32 %0, i32 1995) #3
+  br label %check_xtc_magic.exit
+
+check_xtc_magic.exit:                             ; preds = %if.end, %if.then.i
+  %1 = load i32* %natoms, align 4, !tbaa !3
+  %call2 = call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str3, i64 0, i64 0), i32 157, i32 %1, i32 12) #3
+  %2 = bitcast i8* %call2 to [3 x float]*
+  store [3 x float]* %2, [3 x float]** %x, align 8, !tbaa !0
+  %call3 = call fastcc i32 @xtc_coord(%struct.XDR* %call, i32* %natoms, [3 x float]* %box, [3 x float]* %2, float* %prec) #4
+  store i32 %call3, i32* %bOK, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %entry, %check_xtc_magic.exit
+  %retval.0 = phi i32 [ %call3, %check_xtc_magic.exit ], [ 0, %entry ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,19 @@
+define void @loop_iv_add_mult_hoist(%struct.loop* nocapture %loop, %struct.rtx_def* %b, %struct.rtx_def* %m, %struct.rtx_def* %a, %struct.rtx_def* %reg) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %b) #8
+  %call1 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %m) #8
+  %call2 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %a) #8
+  %call3 = tail call fastcc %struct.rtx_def* @gen_add_mult(%struct.rtx_def* %call, %struct.rtx_def* %call1, %struct.rtx_def* %call2, %struct.rtx_def* %reg) #10
+  %start.i = getelementptr inbounds %struct.loop* %loop, i64 0, i32 26
+  %0 = load %struct.rtx_def** %start.i, align 8, !tbaa !4
+  %tobool4.i = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool4.i, label %if.then.i, label %loop_insn_emit_before.exit
+
+if.then.i:                                        ; preds = %entry, %if.then.i
+  br label %if.then.i
+
+loop_insn_emit_before.exit:                       ; preds = %entry
+  %call1.i = tail call %struct.rtx_def* @emit_insn_before(%struct.rtx_def* %call3, %struct.rtx_def* %0) #8
+  tail call fastcc void @loop_regs_update(%struct.rtx_def* %call3) #10
+  ret void
+}

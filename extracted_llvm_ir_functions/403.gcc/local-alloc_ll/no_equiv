@@ -1,0 +1,55 @@
+define internal void @no_equiv(%struct.rtx_def* nocapture %reg, %struct.rtx_def* nocapture %store, i8* nocapture %data) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %reg to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 61
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !0
+  %idxprom = sext i32 %1 to i64
+  %2 = load %struct.equivalence** @reg_equiv, align 8, !tbaa !3
+  %init_insns = getelementptr inbounds %struct.equivalence* %2, i64 %idxprom, i32 4
+  %3 = load %struct.rtx_def** %init_insns, align 8, !tbaa !3
+  %4 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !3
+  %cmp2 = icmp eq %struct.rtx_def* %3, %4
+  br i1 %cmp2, label %return, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.end
+  %tobool22 = icmp eq %struct.rtx_def* %3, null
+  br i1 %tobool22, label %for.end, label %for.body
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %list.023 = phi %struct.rtx_def* [ %6, %for.body ], [ %3, %for.cond.preheader ]
+  %fld5 = getelementptr inbounds %struct.rtx_def* %list.023, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld5 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %5, i32 3, %struct.rtx_def* null) #6
+  tail call void @remove_note(%struct.rtx_def* %5, %struct.rtx_def* %call) #6
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %list.023, i64 0, i32 1, i64 1
+  %rtx9 = bitcast %union.rtunion_def* %arrayidx8 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx9, align 8, !tbaa !3
+  %tobool = icmp eq %struct.rtx_def* %6, null
+  br i1 %tobool, label %for.cond.for.end_crit_edge, label %for.body
+
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %.pre = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !3
+  %.pre24 = load %struct.equivalence** @reg_equiv, align 8, !tbaa !3
+  br label %for.end
+
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %for.cond.preheader
+  %7 = phi %struct.equivalence* [ %.pre24, %for.cond.for.end_crit_edge ], [ %2, %for.cond.preheader ]
+  %8 = phi %struct.rtx_def* [ %.pre, %for.cond.for.end_crit_edge ], [ %4, %for.cond.preheader ]
+  %init_insns12 = getelementptr inbounds %struct.equivalence* %7, i64 %idxprom, i32 4
+  store %struct.rtx_def* %8, %struct.rtx_def** %init_insns12, align 8, !tbaa !3
+  %9 = load %struct.equivalence** @reg_equiv, align 8, !tbaa !3
+  %replacement = getelementptr inbounds %struct.equivalence* %9, i64 %idxprom, i32 1
+  store %struct.rtx_def* null, %struct.rtx_def** %replacement, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %entry, %if.end, %for.end
+  ret void
+}

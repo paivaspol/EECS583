@@ -1,0 +1,57 @@
+define void @clear_PSgrid(%struct.t_PSgrid* nocapture %grid) #0 {
+entry:
+  %nx1.i = getelementptr inbounds %struct.t_PSgrid* %grid, i64 0, i32 0
+  %0 = load i32* %nx1.i, align 4, !tbaa !0
+  %ny2.i = getelementptr inbounds %struct.t_PSgrid* %grid, i64 0, i32 1
+  %1 = load i32* %ny2.i, align 4, !tbaa !0
+  %nz3.i = getelementptr inbounds %struct.t_PSgrid* %grid, i64 0, i32 2
+  %2 = load i32* %nz3.i, align 4, !tbaa !0
+  %ptr4.i = getelementptr inbounds %struct.t_PSgrid* %grid, i64 0, i32 3
+  %3 = load float**** %ptr4.i, align 8, !tbaa !3
+  %cmp27 = icmp sgt i32 %0, 0
+  br i1 %cmp27, label %for.cond1.preheader.lr.ph, label %for.end16
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %cmp225 = icmp sgt i32 %1, 0
+  %cmp523 = icmp sgt i32 %2, 0
+  %4 = add i32 %2, -1
+  %5 = zext i32 %4 to i64
+  %6 = shl nuw nsw i64 %5, 2
+  %7 = add i64 %6, 4
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc14, %for.cond1.preheader.lr.ph
+  %indvars.iv29 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next30, %for.inc14 ]
+  br i1 %cmp225, label %for.cond4.preheader.lr.ph, label %for.inc14
+
+for.cond4.preheader.lr.ph:                        ; preds = %for.cond1.preheader
+  %arrayidx = getelementptr inbounds float*** %3, i64 %indvars.iv29
+  br label %for.cond4.preheader
+
+for.cond4.preheader:                              ; preds = %for.inc11, %for.cond4.preheader.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.cond4.preheader.lr.ph ], [ %indvars.iv.next, %for.inc11 ]
+  br i1 %cmp523, label %for.body6.lr.ph, label %for.inc11
+
+for.body6.lr.ph:                                  ; preds = %for.cond4.preheader
+  %8 = load float*** %arrayidx, align 8, !tbaa !3
+  %arrayidx9 = getelementptr inbounds float** %8, i64 %indvars.iv
+  %9 = load float** %arrayidx9, align 8, !tbaa !3
+  %10 = bitcast float* %9 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %10, i8 0, i64 %7, i32 4, i1 false)
+  br label %for.inc11
+
+for.inc11:                                        ; preds = %for.body6.lr.ph, %for.cond4.preheader
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %1
+  br i1 %exitcond, label %for.inc14, label %for.cond4.preheader
+
+for.inc14:                                        ; preds = %for.inc11, %for.cond1.preheader
+  %indvars.iv.next30 = add i64 %indvars.iv29, 1
+  %lftr.wideiv31 = trunc i64 %indvars.iv.next30 to i32
+  %exitcond32 = icmp eq i32 %lftr.wideiv31, %0
+  br i1 %exitcond32, label %for.end16, label %for.cond1.preheader
+
+for.end16:                                        ; preds = %for.inc14, %entry
+  ret void
+}

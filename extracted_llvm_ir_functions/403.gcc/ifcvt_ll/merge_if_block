@@ -1,0 +1,191 @@
+define internal fastcc void @merge_if_block(%struct.basic_block_def* %test_bb, %struct.basic_block_def* %then_bb, %struct.basic_block_def* %else_bb, %struct.basic_block_def* %join_bb) #0 {
+entry:
+  %tobool = icmp eq %struct.basic_block_def* %then_bb, null
+  br i1 %tobool, label %if.end4, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = load i8* @life_data_ok, align 1, !tbaa !3, !range !5
+  %tobool1 = icmp eq i8 %0, 0
+  br i1 %tobool1, label %if.end, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %global_live_at_end = getelementptr inbounds %struct.basic_block_def* %test_bb, i64 0, i32 9
+  %1 = load %struct.bitmap_head_def** %global_live_at_end, align 8, !tbaa !4
+  %global_live_at_end3 = getelementptr inbounds %struct.basic_block_def* %then_bb, i64 0, i32 9
+  %2 = load %struct.bitmap_head_def** %global_live_at_end3, align 8, !tbaa !4
+  tail call void @bitmap_copy(%struct.bitmap_head_def* %1, %struct.bitmap_head_def* %2) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then2
+  tail call void @merge_blocks_nomove(%struct.basic_block_def* %test_bb, %struct.basic_block_def* %then_bb) #6
+  %3 = load i32* @num_removed_blocks, align 4, !tbaa !0
+  %inc = add nsw i32 %3, 1
+  store i32 %inc, i32* @num_removed_blocks, align 4, !tbaa !0
+  br label %if.end4
+
+if.end4:                                          ; preds = %entry, %if.end
+  %tobool5 = icmp eq %struct.basic_block_def* %else_bb, null
+  br i1 %tobool5, label %if.end8, label %if.then6
+
+if.then6:                                         ; preds = %if.end4
+  tail call void @merge_blocks_nomove(%struct.basic_block_def* %test_bb, %struct.basic_block_def* %else_bb) #6
+  %4 = load i32* @num_removed_blocks, align 4, !tbaa !0
+  %inc7 = add nsw i32 %4, 1
+  store i32 %inc7, i32* @num_removed_blocks, align 4, !tbaa !0
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.end4, %if.then6
+  %tobool9 = icmp eq %struct.basic_block_def* %join_bb, null
+  br i1 %tobool9, label %if.then10, label %if.else58
+
+if.then10:                                        ; preds = %if.end8
+  %end = getelementptr inbounds %struct.basic_block_def* %test_bb, i64 0, i32 1
+  %5 = load %struct.rtx_def** %end, align 8, !tbaa !4
+  %succ = getelementptr inbounds %struct.basic_block_def* %test_bb, i64 0, i32 5
+  %6 = load %struct.edge_def** %succ, align 8, !tbaa !4
+  %cmp = icmp eq %struct.edge_def* %6, null
+  br i1 %cmp, label %if.then11, label %if.else30
+
+if.then11:                                        ; preds = %if.then10
+  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %5, i32 26, %struct.rtx_def* null) #6
+  %tobool12 = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool12, label %if.else, label %if.end85
+
+if.else:                                          ; preds = %if.then11
+  %7 = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load = load i32* %7, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp14 = icmp eq i32 %bf.clear, 32
+  br i1 %cmp14, label %land.lhs.true, label %if.else27
+
+land.lhs.true:                                    ; preds = %if.else
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %9 = bitcast %struct.rtx_def* %8 to i32*
+  %bf.load15 = load i32* %9, align 8
+  %bf.clear16 = and i32 %bf.load15, 65535
+  %cmp17 = icmp eq i32 %bf.clear16, 52
+  br i1 %cmp17, label %land.lhs.true18, label %if.else27
+
+land.lhs.true18:                                  ; preds = %land.lhs.true
+  %arrayidx23 = getelementptr inbounds %struct.rtx_def* %8, i64 0, i32 1, i64 0
+  %rtx24 = bitcast %union.rtunion_def* %arrayidx23 to %struct.rtx_def**
+  %10 = load %struct.rtx_def** %rtx24, align 8, !tbaa !4
+  %11 = load %struct.rtx_def** @const_true_rtx, align 8, !tbaa !4
+  %cmp25 = icmp eq %struct.rtx_def* %10, %11
+  br i1 %cmp25, label %if.end85, label %if.else27
+
+if.else27:                                        ; preds = %land.lhs.true18, %land.lhs.true, %if.else
+  tail call void @fancy_abort(i8* getelementptr inbounds ([49 x i8]* @.str7, i64 0, i64 0), i32 1913, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.merge_if_block, i64 0, i64 0)) #8
+  unreachable
+
+if.else30:                                        ; preds = %if.then10
+  %12 = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load31 = load i32* %12, align 8
+  %bf.clear32 = and i32 %bf.load31, 65535
+  %cmp33 = icmp eq i32 %bf.clear32, 33
+  br i1 %cmp33, label %if.end85, label %if.else35
+
+if.else35:                                        ; preds = %if.else30
+  %dest = getelementptr inbounds %struct.edge_def* %6, i64 0, i32 3
+  %13 = load %struct.basic_block_def** %dest, align 8, !tbaa !4
+  %notlhs = icmp ne %struct.basic_block_def* %13, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1)
+  %notrhs = icmp ne i32 %bf.clear32, 34
+  %or.cond.not = or i1 %notrhs, %notlhs
+  %bf.clear44 = and i32 %bf.load31, 16777216
+  %tobool45 = icmp eq i32 %bf.clear44, 0
+  %or.cond119 = or i1 %or.cond.not, %tobool45
+  br i1 %or.cond119, label %if.else47, label %if.end85
+
+if.else47:                                        ; preds = %if.else35
+  %flags = getelementptr inbounds %struct.edge_def* %6, i64 0, i32 6
+  %14 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %14, 8
+  %tobool49 = icmp eq i32 %and, 0
+  br i1 %tobool49, label %if.else53, label %land.lhs.true50
+
+land.lhs.true50:                                  ; preds = %if.else47
+  %call51 = tail call zeroext i1 @can_throw_internal(%struct.rtx_def* %5) #6
+  br i1 %call51, label %if.end85, label %if.else53
+
+if.else53:                                        ; preds = %if.else47, %land.lhs.true50
+  tail call void @fancy_abort(i8* getelementptr inbounds ([49 x i8]* @.str7, i64 0, i64 0), i32 1928, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.merge_if_block, i64 0, i64 0)) #8
+  unreachable
+
+if.else58:                                        ; preds = %if.end8
+  %pred = getelementptr inbounds %struct.basic_block_def* %join_bb, i64 0, i32 4
+  %15 = load %struct.edge_def** %pred, align 8, !tbaa !4
+  %cmp59 = icmp eq %struct.edge_def* %15, null
+  br i1 %cmp59, label %land.lhs.true62, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.else58
+  %pred_next = getelementptr inbounds %struct.edge_def* %15, i64 0, i32 0
+  %16 = load %struct.edge_def** %pred_next, align 8, !tbaa !4
+  %cmp61 = icmp ne %struct.edge_def* %16, null
+  %cmp63 = icmp eq %struct.basic_block_def* %join_bb, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1)
+  %or.cond120 = or i1 %cmp61, %cmp63
+  br i1 %or.cond120, label %if.else71, label %if.then64
+
+land.lhs.true62:                                  ; preds = %if.else58
+  %cmp63.old = icmp eq %struct.basic_block_def* %join_bb, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1)
+  br i1 %cmp63.old, label %if.else71, label %if.then64
+
+if.then64:                                        ; preds = %lor.lhs.false, %land.lhs.true62
+  %17 = load i8* @life_data_ok, align 1, !tbaa !3, !range !5
+  %tobool65 = icmp eq i8 %17, 0
+  br i1 %tobool65, label %if.end69, label %if.then66
+
+if.then66:                                        ; preds = %if.then64
+  %global_live_at_end67 = getelementptr inbounds %struct.basic_block_def* %test_bb, i64 0, i32 9
+  %18 = load %struct.bitmap_head_def** %global_live_at_end67, align 8, !tbaa !4
+  %global_live_at_end68 = getelementptr inbounds %struct.basic_block_def* %join_bb, i64 0, i32 9
+  %19 = load %struct.bitmap_head_def** %global_live_at_end68, align 8, !tbaa !4
+  tail call void @bitmap_copy(%struct.bitmap_head_def* %18, %struct.bitmap_head_def* %19) #6
+  br label %if.end69
+
+if.end69:                                         ; preds = %if.then64, %if.then66
+  tail call void @merge_blocks_nomove(%struct.basic_block_def* %test_bb, %struct.basic_block_def* %join_bb) #6
+  %20 = load i32* @num_removed_blocks, align 4, !tbaa !0
+  %inc70 = add nsw i32 %20, 1
+  store i32 %inc70, i32* @num_removed_blocks, align 4, !tbaa !0
+  br label %if.end85
+
+if.else71:                                        ; preds = %lor.lhs.false, %land.lhs.true62
+  %succ72 = getelementptr inbounds %struct.basic_block_def* %test_bb, i64 0, i32 5
+  %21 = load %struct.edge_def** %succ72, align 8, !tbaa !4
+  %succ_next = getelementptr inbounds %struct.edge_def* %21, i64 0, i32 1
+  %22 = load %struct.edge_def** %succ_next, align 8, !tbaa !4
+  %cmp73 = icmp eq %struct.edge_def* %22, null
+  br i1 %cmp73, label %lor.lhs.false74, label %if.then78
+
+lor.lhs.false74:                                  ; preds = %if.else71
+  %dest76 = getelementptr inbounds %struct.edge_def* %21, i64 0, i32 3
+  %23 = load %struct.basic_block_def** %dest76, align 8, !tbaa !4
+  %cmp77 = icmp eq %struct.basic_block_def* %23, %join_bb
+  br i1 %cmp77, label %if.end79, label %if.then78
+
+if.then78:                                        ; preds = %lor.lhs.false74, %if.else71
+  tail call void @fancy_abort(i8* getelementptr inbounds ([49 x i8]* @.str7, i64 0, i64 0), i32 1956, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.merge_if_block, i64 0, i64 0)) #8
+  unreachable
+
+if.end79:                                         ; preds = %lor.lhs.false74
+  %cmp80 = icmp eq %struct.basic_block_def* %join_bb, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1)
+  br i1 %cmp80, label %if.end85, label %if.then81
+
+if.then81:                                        ; preds = %if.end79
+  tail call void @tidy_fallthru_edge(%struct.edge_def* %21, %struct.basic_block_def* %test_bb, %struct.basic_block_def* %join_bb) #6
+  br label %if.end85
+
+if.end85:                                         ; preds = %if.else35, %if.end79, %if.then11, %if.end69, %if.then81, %land.lhs.true18, %land.lhs.true50, %if.else30
+  %aux = getelementptr inbounds %struct.basic_block_def* %test_bb, i64 0, i32 10
+  %24 = load i8** %aux, align 8, !tbaa !4
+  %25 = ptrtoint i8* %24 to i64
+  %or = or i64 %25, 1
+  %26 = inttoptr i64 %or to i8*
+  store i8* %26, i8** %aux, align 8, !tbaa !4
+  %27 = load i32* @num_updated_if_blocks, align 4, !tbaa !0
+  %inc87 = add nsw i32 %27, 1
+  store i32 %inc87, i32* @num_updated_if_blocks, align 4, !tbaa !0
+  ret void
+}

@@ -1,0 +1,82 @@
+define internal fastcc i32 @no_conflict_p(%struct.rtx_def* %insn, %struct.rtx_def* %r1) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn, i32 7, %struct.rtx_def* null) #6
+  %cmp = icmp eq %struct.rtx_def* %call, null
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %0 = bitcast %struct.rtx_def* %r1 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.end [
+    i32 61, label %land.lhs.true
+    i32 63, label %land.lhs.true7
+  ]
+
+land.lhs.true:                                    ; preds = %lor.lhs.false
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %r1, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp2 = icmp ult i32 %1, 53
+  br i1 %cmp2, label %return, label %if.end
+
+land.lhs.true7:                                   ; preds = %lor.lhs.false
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %r1, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx9 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load10 = load i32* %3, align 8
+  %bf.clear11 = and i32 %bf.load10, 65535
+  %cmp12 = icmp eq i32 %bf.clear11, 61
+  br i1 %cmp12, label %land.lhs.true13, label %if.end
+
+land.lhs.true13:                                  ; preds = %land.lhs.true7
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtuint19 = bitcast %union.rtunion_def* %arrayidx18 to i32*
+  %4 = load i32* %rtuint19, align 4, !tbaa !0
+  %cmp20 = icmp ult i32 %4, 53
+  br i1 %cmp20, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false, %land.lhs.true, %land.lhs.true13, %land.lhs.true7
+  %arrayidx22 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0
+  %rtx23 = bitcast %union.rtunion_def* %arrayidx22 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx23, align 8, !tbaa !3
+  br label %for.cond.outer
+
+for.cond.outer:                                   ; preds = %if.then33, %if.end
+  %ok.0.ph = phi i32 [ 0, %if.end ], [ %ok.0., %if.then33 ]
+  %insn.pn.ph = phi %struct.rtx_def* [ %insn, %if.end ], [ %p.0, %if.then33 ]
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond.outer, %for.body
+  %insn.pn = phi %struct.rtx_def* [ %p.0, %for.body ], [ %insn.pn.ph, %for.cond.outer ]
+  %p.0.in.in = getelementptr inbounds %struct.rtx_def* %insn.pn, i64 0, i32 1, i64 2
+  %p.0.in = bitcast %union.rtunion_def* %p.0.in.in to %struct.rtx_def**
+  %p.0 = load %struct.rtx_def** %p.0.in, align 8
+  %tobool = icmp eq %struct.rtx_def* %p.0, null
+  %cmp27 = icmp eq %struct.rtx_def* %p.0, %5
+  %or.cond = or i1 %tobool, %cmp27
+  br i1 %or.cond, label %return, label %for.body
+
+for.body:                                         ; preds = %for.cond
+  %6 = bitcast %struct.rtx_def* %p.0 to i32*
+  %bf.load28 = load i32* %6, align 8
+  %bf.clear29 = and i32 %bf.load28, 65535
+  %idxprom1 = zext i32 %bf.clear29 to i64
+  %arrayidx30 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom1
+  %7 = load i8* %arrayidx30, align 1, !tbaa !1
+  %cmp31 = icmp eq i8 %7, 105
+  br i1 %cmp31, label %if.then33, label %for.cond
+
+if.then33:                                        ; preds = %for.body
+  %call34 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %p.0, i32 1, %struct.rtx_def* %r1) #6
+  %tobool35 = icmp eq %struct.rtx_def* %call34, null
+  %ok.0. = select i1 %tobool35, i32 %ok.0.ph, i32 1
+  %call38 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %p.0, i32 9, %struct.rtx_def* %r1) #6
+  %tobool39 = icmp eq %struct.rtx_def* %call38, null
+  br i1 %tobool39, label %return, label %for.cond.outer
+
+return:                                           ; preds = %for.cond, %if.then33, %entry, %land.lhs.true, %land.lhs.true13
+  %retval.0 = phi i32 [ 0, %land.lhs.true13 ], [ 0, %land.lhs.true ], [ 0, %entry ], [ %ok.0.ph, %for.cond ], [ 0, %if.then33 ]
+  ret i32 %retval.0
+}

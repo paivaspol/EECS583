@@ -1,0 +1,82 @@
+define void @dict2pid_comsseq2sen_active(%struct.dict2pid_t* nocapture %d2p, %struct.mdef_t* nocapture %mdef, i32* nocapture %comssid, i32* nocapture %sen) #0 {
+entry:
+  %n_comsseq = getelementptr inbounds %struct.dict2pid_t* %d2p, i64 0, i32 7
+  %0 = load i32* %n_comsseq, align 4, !tbaa !0
+  %cmp42 = icmp sgt i32 %0, 0
+  br i1 %cmp42, label %for.body.lr.ph, label %for.end26
+
+for.body.lr.ph:                                   ; preds = %entry
+  %comsseq = getelementptr inbounds %struct.dict2pid_t* %d2p, i64 0, i32 4
+  %n_emit_state = getelementptr inbounds %struct.mdef_t* %mdef, i64 0, i32 2
+  %comstate = getelementptr inbounds %struct.dict2pid_t* %d2p, i64 0, i32 3
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc24
+  %1 = phi i32 [ %0, %for.body.lr.ph ], [ %15, %for.inc24 ]
+  %indvars.iv46 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next47, %for.inc24 ]
+  %arrayidx = getelementptr inbounds i32* %comssid, i64 %indvars.iv46
+  %2 = load i32* %arrayidx, align 4, !tbaa !0
+  %tobool = icmp eq i32 %2, 0
+  br i1 %tobool, label %for.inc24, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %3 = load i16*** %comsseq, align 8, !tbaa !3
+  %arrayidx2 = getelementptr inbounds i16** %3, i64 %indvars.iv46
+  %4 = load i16** %arrayidx2, align 8, !tbaa !3
+  %5 = load i32* %n_emit_state, align 4, !tbaa !0
+  %cmp440 = icmp sgt i32 %5, 0
+  br i1 %cmp440, label %for.body5.lr.ph, label %for.inc24
+
+for.body5.lr.ph:                                  ; preds = %if.then
+  %6 = load i16*** %comstate, align 8, !tbaa !3
+  br label %for.body5
+
+for.body5:                                        ; preds = %for.body5.lr.ph, %for.inc21
+  %7 = phi i32 [ %5, %for.body5.lr.ph ], [ %13, %for.inc21 ]
+  %indvars.iv44 = phi i64 [ 0, %for.body5.lr.ph ], [ %indvars.iv.next45, %for.inc21 ]
+  %arrayidx7 = getelementptr inbounds i16* %4, i64 %indvars.iv44
+  %8 = load i16* %arrayidx7, align 2, !tbaa !4
+  %idxprom8 = sext i16 %8 to i64
+  %arrayidx9 = getelementptr inbounds i16** %6, i64 %idxprom8
+  %9 = load i16** %arrayidx9, align 8, !tbaa !3
+  %10 = load i16* %9, align 2, !tbaa !4
+  %cmp1438 = icmp sgt i16 %10, -1
+  br i1 %cmp1438, label %for.body16, label %for.inc21
+
+for.body16:                                       ; preds = %for.body5, %for.body16
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body16 ], [ 0, %for.body5 ]
+  %11 = phi i16 [ %12, %for.body16 ], [ %10, %for.body5 ]
+  %idxprom19 = sext i16 %11 to i64
+  %arrayidx20 = getelementptr inbounds i32* %sen, i64 %idxprom19
+  store i32 1, i32* %arrayidx20, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %arrayidx12 = getelementptr inbounds i16* %9, i64 %indvars.iv.next
+  %12 = load i16* %arrayidx12, align 2, !tbaa !4
+  %cmp14 = icmp sgt i16 %12, -1
+  br i1 %cmp14, label %for.body16, label %for.cond10.for.inc21_crit_edge
+
+for.cond10.for.inc21_crit_edge:                   ; preds = %for.body16
+  %.pre49 = load i32* %n_emit_state, align 4, !tbaa !0
+  br label %for.inc21
+
+for.inc21:                                        ; preds = %for.cond10.for.inc21_crit_edge, %for.body5
+  %13 = phi i32 [ %.pre49, %for.cond10.for.inc21_crit_edge ], [ %7, %for.body5 ]
+  %indvars.iv.next45 = add i64 %indvars.iv44, 1
+  %14 = trunc i64 %indvars.iv.next45 to i32
+  %cmp4 = icmp slt i32 %14, %13
+  br i1 %cmp4, label %for.body5, label %for.cond3.for.inc24.loopexit_crit_edge
+
+for.cond3.for.inc24.loopexit_crit_edge:           ; preds = %for.inc21
+  %.pre.pre = load i32* %n_comsseq, align 4, !tbaa !0
+  br label %for.inc24
+
+for.inc24:                                        ; preds = %if.then, %for.cond3.for.inc24.loopexit_crit_edge, %for.body
+  %15 = phi i32 [ %1, %for.body ], [ %.pre.pre, %for.cond3.for.inc24.loopexit_crit_edge ], [ %1, %if.then ]
+  %indvars.iv.next47 = add i64 %indvars.iv46, 1
+  %16 = trunc i64 %indvars.iv.next47 to i32
+  %cmp = icmp slt i32 %16, %15
+  br i1 %cmp, label %for.body, label %for.end26
+
+for.end26:                                        ; preds = %for.inc24, %entry
+  ret void
+}

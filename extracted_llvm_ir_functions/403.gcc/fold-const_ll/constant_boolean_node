@@ -1,0 +1,40 @@
+define internal fastcc %union.tree_node* @constant_boolean_node(i32 %value, %union.tree_node* %type) #0 {
+entry:
+  %0 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 5), align 8, !tbaa !3
+  %cmp = icmp eq %union.tree_node* %0, %type
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %tobool = icmp ne i32 %value, 0
+  %1 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 12), align 8, !tbaa !3
+  %2 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 11), align 8, !tbaa !3
+  %cond = select i1 %tobool, %union.tree_node* %1, %union.tree_node* %2
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %code = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp1 = icmp eq i32 %bf.clear, 11
+  br i1 %cmp1, label %if.then2, label %if.else8
+
+if.then2:                                         ; preds = %if.else
+  %tobool3 = icmp ne i32 %value, 0
+  %4 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 12), align 8, !tbaa !3
+  %5 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 11), align 8, !tbaa !3
+  %cond7 = select i1 %tobool3, %union.tree_node* %4, %union.tree_node* %5
+  %call = tail call %union.tree_node* @truthvalue_conversion(%union.tree_node* %cond7) #9
+  br label %return
+
+if.else8:                                         ; preds = %if.else
+  %conv = sext i32 %value to i64
+  %call9 = tail call %union.tree_node* @build_int_2_wide(i64 %conv, i64 0) #9
+  %type11 = getelementptr inbounds %union.tree_node* %call9, i64 0, i32 0, i32 0, i32 1
+  store %union.tree_node* %type, %union.tree_node** %type11, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.else8, %if.then2, %if.then
+  %retval.0 = phi %union.tree_node* [ %cond, %if.then ], [ %call, %if.then2 ], [ %call9, %if.else8 ]
+  ret %union.tree_node* %retval.0
+}

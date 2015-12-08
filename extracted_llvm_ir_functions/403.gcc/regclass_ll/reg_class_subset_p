@@ -1,0 +1,23 @@
+define i32 @reg_class_subset_p(i32 %c1, i32 %c2) #3 {
+entry:
+  %cmp = icmp eq i32 %c1, %c2
+  %cmp1 = icmp eq i32 %c2, 24
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %return, label %if.end3
+
+if.end3:                                          ; preds = %entry
+  %idxprom = sext i32 %c1 to i64
+  %arrayidx = getelementptr inbounds [25 x i64]* @reg_class_contents, i64 0, i64 %idxprom
+  %0 = load i64* %arrayidx, align 8, !tbaa !0
+  %idxprom4 = sext i32 %c2 to i64
+  %arrayidx5 = getelementptr inbounds [25 x i64]* @reg_class_contents, i64 0, i64 %idxprom4
+  %1 = load i64* %arrayidx5, align 8, !tbaa !0
+  %neg = xor i64 %1, -1
+  %and = and i64 %0, %neg
+  %cmp6 = icmp eq i64 %and, 0
+  %. = zext i1 %cmp6 to i32
+  ret i32 %.
+
+return:                                           ; preds = %entry
+  ret i32 1
+}

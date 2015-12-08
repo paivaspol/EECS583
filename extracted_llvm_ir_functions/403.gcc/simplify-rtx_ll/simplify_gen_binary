@@ -1,0 +1,40 @@
+define %struct.rtx_def* @simplify_gen_binary(i32 %code, i32 %mode, %struct.rtx_def* %op0, %struct.rtx_def* %op1) #0 {
+entry:
+  %idxprom = sext i32 %code to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom
+  %0 = load i8* %arrayidx, align 1, !tbaa !0
+  %cmp = icmp eq i8 %0, 99
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %call = tail call i32 @swap_commutative_operands_p(%struct.rtx_def* %op0, %struct.rtx_def* %op1) #4
+  %tobool = icmp eq i32 %call, 0
+  %op0.op1 = select i1 %tobool, %struct.rtx_def* %op0, %struct.rtx_def* %op1
+  %op1.op0 = select i1 %tobool, %struct.rtx_def* %op1, %struct.rtx_def* %op0
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %entry
+  %op0.addr.0 = phi %struct.rtx_def* [ %op0, %entry ], [ %op0.op1, %land.lhs.true ]
+  %op1.addr.0 = phi %struct.rtx_def* [ %op1, %entry ], [ %op1.op0, %land.lhs.true ]
+  %call2 = tail call %struct.rtx_def* @simplify_binary_operation(i32 %code, i32 %mode, %struct.rtx_def* %op0.addr.0, %struct.rtx_def* %op1.addr.0) #5
+  %tobool3 = icmp eq %struct.rtx_def* %call2, null
+  br i1 %tobool3, label %if.end5, label %return
+
+if.end5:                                          ; preds = %if.end
+  %code.off = add i32 %code, -75
+  %1 = icmp ult i32 %code.off, 2
+  br i1 %1, label %if.then10, label %if.end15
+
+if.then10:                                        ; preds = %if.end5
+  %call11 = tail call fastcc %struct.rtx_def* @simplify_plus_minus(i32 %code, i32 %mode, %struct.rtx_def* %op0.addr.0, %struct.rtx_def* %op1.addr.0, i32 1) #5
+  %tobool12 = icmp eq %struct.rtx_def* %call11, null
+  br i1 %tobool12, label %if.end15, label %return
+
+if.end15:                                         ; preds = %if.then10, %if.end5
+  %call16 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 %code, i32 %mode, %struct.rtx_def* %op0.addr.0, %struct.rtx_def* %op1.addr.0) #4
+  br label %return
+
+return:                                           ; preds = %if.then10, %if.end, %if.end15
+  %retval.0 = phi %struct.rtx_def* [ %call16, %if.end15 ], [ %call2, %if.end ], [ %call11, %if.then10 ]
+  ret %struct.rtx_def* %retval.0
+}

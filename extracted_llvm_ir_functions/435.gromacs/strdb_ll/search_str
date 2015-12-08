@@ -1,0 +1,25 @@
+define i32 @search_str(i32 %nstr, i8** nocapture %str, i8* %key) #0 {
+entry:
+  %cmp4 = icmp sgt i32 %nstr, 0
+  br i1 %cmp4, label %for.body, label %return
+
+for.cond:                                         ; preds = %for.body
+  %inc = add nsw i32 %i.05, 1
+  %0 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %0, %nstr
+  br i1 %cmp, label %for.body, label %return
+
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
+  %i.05 = phi i32 [ %inc, %for.cond ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i8** %str, i64 %indvars.iv
+  %1 = load i8** %arrayidx, align 8, !tbaa !3
+  %call = tail call i32 @gmx_strcasecmp(i8* %1, i8* %key) #5
+  %cmp1 = icmp eq i32 %call, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp1, label %return, label %for.cond
+
+return:                                           ; preds = %for.cond, %for.body, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %i.05, %for.body ], [ -1, %for.cond ]
+  ret i32 %retval.0
+}

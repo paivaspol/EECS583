@@ -1,0 +1,997 @@
+define internal fastcc void @visit_expression(%struct.rtx_def* %insn, %struct.basic_block_def* nocapture %block) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %insn to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 34
+  br i1 %cmp, label %land.lhs.true, label %if.end14
+
+land.lhs.true:                                    ; preds = %entry
+  %end = getelementptr inbounds %struct.basic_block_def* %block, i64 0, i32 1
+  %1 = load %struct.rtx_def** %end, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct.rtx_def* %1, %insn
+  br i1 %cmp1, label %if.then, label %if.end14
+
+if.then:                                          ; preds = %land.lhs.true
+  %succ = getelementptr inbounds %struct.basic_block_def* %block, i64 0, i32 5
+  %curredge.01053 = load %struct.edge_def** %succ, align 8
+  %tobool1054 = icmp eq %struct.edge_def* %curredge.01053, null
+  br i1 %tobool1054, label %if.end14, label %for.body
+
+for.body:                                         ; preds = %if.then, %for.inc
+  %curredge.01055 = phi %struct.edge_def* [ %curredge.0, %for.inc ], [ %curredge.01053, %if.then ]
+  %2 = load %struct.edge_list** @edges, align 8, !tbaa !0
+  %src2 = getelementptr inbounds %struct.edge_def* %curredge.01055, i64 0, i32 2
+  %3 = load %struct.basic_block_def** %src2, align 8, !tbaa !0
+  %dest3 = getelementptr inbounds %struct.edge_def* %curredge.01055, i64 0, i32 3
+  %4 = load %struct.basic_block_def** %dest3, align 8, !tbaa !0
+  %call = tail call i32 @find_edge_index(%struct.edge_list* %2, %struct.basic_block_def* %3, %struct.basic_block_def* %4) #3
+  %div = lshr i32 %call, 6
+  %idxprom = zext i32 %div to i64
+  %5 = load %struct.simple_bitmap_def** @executable_edges, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def* %5, i64 0, i32 3, i64 %idxprom
+  %6 = load i64* %arrayidx, align 8, !tbaa !3
+  %rem = and i32 %call, 63
+  %sh_prom = zext i32 %rem to i64
+  %7 = shl i64 1, %sh_prom
+  %and1038 = and i64 %7, %6
+  %tobool4 = icmp eq i64 %and1038, 0
+  br i1 %tobool4, label %if.end, label %for.inc
+
+if.end:                                           ; preds = %for.body
+  %or = or i64 %7, %6
+  store i64 %or, i64* %arrayidx, align 8, !tbaa !3
+  %8 = load %struct.edge_def** @flow_edges, align 8, !tbaa !0
+  %idxprom12 = sext i32 %call to i64
+  %9 = load %struct.edge_def*** @edge_info, align 8, !tbaa !0
+  %arrayidx13 = getelementptr inbounds %struct.edge_def** %9, i64 %idxprom12
+  store %struct.edge_def* %8, %struct.edge_def** %arrayidx13, align 8, !tbaa !0
+  store %struct.edge_def* %curredge.01055, %struct.edge_def** @flow_edges, align 8, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.end
+  %succ_next = getelementptr inbounds %struct.edge_def* %curredge.01055, i64 0, i32 1
+  %curredge.0 = load %struct.edge_def** %succ_next, align 8
+  %tobool = icmp eq %struct.edge_def* %curredge.0, null
+  br i1 %tobool, label %for.cond.if.end14.loopexit_crit_edge, label %for.body
+
+for.cond.if.end14.loopexit_crit_edge:             ; preds = %for.inc
+  %bf.load15.pre.pre = load i32* %0, align 8
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.then, %for.cond.if.end14.loopexit_crit_edge, %land.lhs.true, %entry
+  %bf.load15 = phi i32 [ %bf.load, %land.lhs.true ], [ %bf.load, %entry ], [ %bf.load15.pre.pre, %for.cond.if.end14.loopexit_crit_edge ], [ %bf.load, %if.then ]
+  %bf.clear16 = and i32 %bf.load15, 65535
+  %idxprom171033 = zext i32 %bf.clear16 to i64
+  %arrayidx18 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom171033
+  %10 = load i8* %arrayidx18, align 1, !tbaa !1
+  %cmp19 = icmp eq i8 %10, 105
+  br i1 %cmp19, label %cond.true, label %if.then38
+
+cond.true:                                        ; preds = %if.end14
+  %arrayidx21 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx21 to %struct.rtx_def**
+  %11 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %12 = bitcast %struct.rtx_def* %11 to i32*
+  %bf.load22 = load i32* %12, align 8
+  %bf.clear23 = and i32 %bf.load22, 65535
+  %cmp24 = icmp eq i32 %bf.clear23, 47
+  br i1 %cmp24, label %cond.end35, label %cond.false
+
+cond.false:                                       ; preds = %cond.true
+  %call33 = tail call %struct.rtx_def* @single_set_2(%struct.rtx_def* %insn, %struct.rtx_def* %11) #3
+  br label %cond.end35
+
+cond.end35:                                       ; preds = %cond.true, %cond.false
+  %cond36 = phi %struct.rtx_def* [ %call33, %cond.false ], [ %11, %cond.true ]
+  %tobool37 = icmp eq %struct.rtx_def* %cond36, null
+  br i1 %tobool37, label %if.then38, label %if.end39
+
+if.then38:                                        ; preds = %if.end14, %cond.end35
+  tail call fastcc void @defs_to_varying(%struct.rtx_def* %insn) #4
+  br label %if.end857
+
+if.end39:                                         ; preds = %cond.end35
+  %arrayidx41 = getelementptr inbounds %struct.rtx_def* %cond36, i64 0, i32 1, i64 1
+  %rtx42 = bitcast %union.rtunion_def* %arrayidx41 to %struct.rtx_def**
+  %13 = load %struct.rtx_def** %rtx42, align 8, !tbaa !0
+  %arrayidx44 = getelementptr inbounds %struct.rtx_def* %cond36, i64 0, i32 1, i64 0
+  %rtx45 = bitcast %union.rtunion_def* %arrayidx44 to %struct.rtx_def**
+  %14 = load %struct.rtx_def** %rtx45, align 8, !tbaa !0
+  %15 = bitcast %struct.rtx_def* %14 to i32*
+  %bf.load46 = load i32* %15, align 8
+  %bf.clear47 = and i32 %bf.load46, 65535
+  %cmp48 = icmp eq i32 %bf.clear47, 61
+  %16 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !0
+  %cmp51 = icmp eq %struct.rtx_def* %14, %16
+  %or.cond = or i1 %cmp48, %cmp51
+  br i1 %or.cond, label %if.end54, label %if.then53
+
+if.then53:                                        ; preds = %if.end39
+  tail call fastcc void @defs_to_varying(%struct.rtx_def* %insn) #4
+  br label %if.end857
+
+if.end54:                                         ; preds = %if.end39
+  br i1 %cmp48, label %land.lhs.true59, label %if.end65
+
+land.lhs.true59:                                  ; preds = %if.end54
+  %arrayidx61 = getelementptr inbounds %struct.rtx_def* %14, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx61 to i32*
+  %17 = load i32* %rtuint, align 4, !tbaa !4
+  %cmp62 = icmp ult i32 %17, 53
+  br i1 %cmp62, label %if.then64, label %if.end65
+
+if.then64:                                        ; preds = %land.lhs.true59
+  tail call fastcc void @defs_to_varying(%struct.rtx_def* %insn) #4
+  br label %if.end857
+
+if.end65:                                         ; preds = %land.lhs.true59, %if.end54
+  %18 = bitcast %struct.rtx_def* %13 to i32*
+  %bf.load66 = load i32* %18, align 8
+  %bf.clear67 = and i32 %bf.load66, 65535
+  switch i32 %bf.clear67, label %if.else148 [
+    i32 54, label %land.lhs.true70
+    i32 61, label %land.lhs.true101
+  ]
+
+land.lhs.true70:                                  ; preds = %if.end65
+  %bf.load71 = load i32* %0, align 8
+  %bf.clear72 = and i32 %bf.load71, 65535
+  %cmp73 = icmp eq i32 %bf.clear72, 32
+  br i1 %cmp73, label %if.then75, label %if.else148
+
+if.then75:                                        ; preds = %land.lhs.true70
+  %arrayidx77 = getelementptr inbounds %struct.rtx_def* %14, i64 0, i32 1, i64 0
+  %rtuint78 = bitcast %union.rtunion_def* %arrayidx77 to i32*
+  %19 = load i32* %rtuint78, align 4, !tbaa !4
+  %idxprom79 = zext i32 %19 to i64
+  %20 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val = getelementptr inbounds %struct.value* %20, i64 %idxprom79, i32 0
+  store i32 1, i32* %lattice_val, align 4, !tbaa !1
+  %21 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %arrayidx85 = getelementptr inbounds %struct.rtx_def* %21, i64 0, i32 1, i64 1
+  %rtx86 = bitcast %union.rtunion_def* %arrayidx85 to %struct.rtx_def**
+  %22 = load %struct.rtx_def** %rtx86, align 8, !tbaa !0
+  %23 = load %struct.value** @values, align 8, !tbaa !0
+  %const_value = getelementptr inbounds %struct.value* %23, i64 %idxprom79, i32 1
+  store %struct.rtx_def* %22, %struct.rtx_def** %const_value, align 8, !tbaa !0
+  %rem89 = and i32 %19, 63
+  %sh_prom90 = zext i32 %rem89 to i64
+  %shl91 = shl i64 1, %sh_prom90
+  %div92 = lshr i32 %19, 6
+  %idxprom93 = zext i32 %div92 to i64
+  %24 = load %struct.simple_bitmap_def** @ssa_edges, align 8, !tbaa !0
+  %arrayidx95 = getelementptr inbounds %struct.simple_bitmap_def* %24, i64 0, i32 3, i64 %idxprom93
+  %25 = load i64* %arrayidx95, align 8, !tbaa !3
+  %or96 = or i64 %25, %shl91
+  store i64 %or96, i64* %arrayidx95, align 8, !tbaa !3
+  br label %if.end857
+
+land.lhs.true101:                                 ; preds = %if.end65
+  br i1 %cmp48, label %if.then106, label %if.else148
+
+if.then106:                                       ; preds = %land.lhs.true101
+  %arrayidx108 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1, i64 0
+  %rtuint109 = bitcast %union.rtunion_def* %arrayidx108 to i32*
+  %26 = load i32* %rtuint109, align 4, !tbaa !4
+  %idxprom110 = zext i32 %26 to i64
+  %27 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val112 = getelementptr inbounds %struct.value* %27, i64 %idxprom110, i32 0
+  %28 = load i32* %lattice_val112, align 4, !tbaa !1
+  %arrayidx114 = getelementptr inbounds %struct.rtx_def* %14, i64 0, i32 1, i64 0
+  %rtuint115 = bitcast %union.rtunion_def* %arrayidx114 to i32*
+  %29 = load i32* %rtuint115, align 4, !tbaa !4
+  %idxprom116 = zext i32 %29 to i64
+  %lattice_val118 = getelementptr inbounds %struct.value* %27, i64 %idxprom116, i32 0
+  %30 = load i32* %lattice_val118, align 4, !tbaa !1
+  %cmp119 = icmp eq i32 %30, %28
+  br i1 %cmp119, label %lor.lhs.false, label %if.then129
+
+lor.lhs.false:                                    ; preds = %if.then106
+  %const_value123 = getelementptr inbounds %struct.value* %27, i64 %idxprom116, i32 1
+  %31 = load %struct.rtx_def** %const_value123, align 8, !tbaa !0
+  %const_value126 = getelementptr inbounds %struct.value* %27, i64 %idxprom110, i32 1
+  %32 = load %struct.rtx_def** %const_value126, align 8, !tbaa !0
+  %cmp127 = icmp eq %struct.rtx_def* %31, %32
+  br i1 %cmp127, label %if.end138, label %if.then129
+
+if.then129:                                       ; preds = %lor.lhs.false, %if.then106
+  %rem130 = and i32 %29, 63
+  %sh_prom131 = zext i32 %rem130 to i64
+  %shl132 = shl i64 1, %sh_prom131
+  %div133 = lshr i32 %29, 6
+  %idxprom134 = zext i32 %div133 to i64
+  %33 = load %struct.simple_bitmap_def** @ssa_edges, align 8, !tbaa !0
+  %arrayidx136 = getelementptr inbounds %struct.simple_bitmap_def* %33, i64 0, i32 3, i64 %idxprom134
+  %34 = load i64* %arrayidx136, align 8, !tbaa !3
+  %or137 = or i64 %34, %shl132
+  store i64 %or137, i64* %arrayidx136, align 8, !tbaa !3
+  br label %if.end138
+
+if.end138:                                        ; preds = %lor.lhs.false, %if.then129
+  store i32 %28, i32* %lattice_val118, align 4, !tbaa !1
+  %35 = load %struct.value** @values, align 8, !tbaa !0
+  %const_value144 = getelementptr inbounds %struct.value* %35, i64 %idxprom110, i32 1
+  %36 = load %struct.rtx_def** %const_value144, align 8, !tbaa !0
+  %const_value147 = getelementptr inbounds %struct.value* %35, i64 %idxprom116, i32 1
+  store %struct.rtx_def* %36, %struct.rtx_def** %const_value147, align 8, !tbaa !0
+  br label %if.end857
+
+if.else148:                                       ; preds = %if.end65, %land.lhs.true70, %land.lhs.true101
+  %bf.load149 = load i32* %0, align 8
+  %bf.clear150 = and i32 %bf.load149, 65535
+  %cmp151 = icmp eq i32 %bf.clear150, 33
+  br i1 %cmp151, label %if.then153, label %if.else414
+
+if.then153:                                       ; preds = %if.else148
+  %call154 = tail call %struct.rtx_def* @pc_set(%struct.rtx_def* %insn) #3
+  %bf.load155 = load i32* %18, align 8
+  %bf.clear156 = and i32 %bf.load155, 65535
+  %cmp157 = icmp eq i32 %bf.clear156, 72
+  br i1 %cmp157, label %if.else193, label %if.then159
+
+if.then159:                                       ; preds = %if.then153
+  %succ161 = getelementptr inbounds %struct.basic_block_def* %block, i64 0, i32 5
+  %curredge160.01050 = load %struct.edge_def** %succ161, align 8
+  %tobool1631051 = icmp eq %struct.edge_def* %curredge160.01050, null
+  br i1 %tobool1631051, label %if.end857, label %for.body164
+
+for.body164:                                      ; preds = %if.then159, %for.inc190
+  %curredge160.01052 = phi %struct.edge_def* [ %curredge160.0, %for.inc190 ], [ %curredge160.01050, %if.then159 ]
+  %37 = load %struct.edge_list** @edges, align 8, !tbaa !0
+  %src166 = getelementptr inbounds %struct.edge_def* %curredge160.01052, i64 0, i32 2
+  %38 = load %struct.basic_block_def** %src166, align 8, !tbaa !0
+  %dest167 = getelementptr inbounds %struct.edge_def* %curredge160.01052, i64 0, i32 3
+  %39 = load %struct.basic_block_def** %dest167, align 8, !tbaa !0
+  %call168 = tail call i32 @find_edge_index(%struct.edge_list* %37, %struct.basic_block_def* %38, %struct.basic_block_def* %39) #3
+  %div169 = lshr i32 %call168, 6
+  %idxprom170 = zext i32 %div169 to i64
+  %40 = load %struct.simple_bitmap_def** @executable_edges, align 8, !tbaa !0
+  %arrayidx172 = getelementptr inbounds %struct.simple_bitmap_def* %40, i64 0, i32 3, i64 %idxprom170
+  %41 = load i64* %arrayidx172, align 8, !tbaa !3
+  %rem173 = and i32 %call168, 63
+  %sh_prom174 = zext i32 %rem173 to i64
+  %42 = shl i64 1, %sh_prom174
+  %and1761037 = and i64 %42, %41
+  %tobool177 = icmp eq i64 %and1761037, 0
+  br i1 %tobool177, label %if.end179, label %for.inc190
+
+if.end179:                                        ; preds = %for.body164
+  %or187 = or i64 %42, %41
+  store i64 %or187, i64* %arrayidx172, align 8, !tbaa !3
+  %43 = load %struct.edge_def** @flow_edges, align 8, !tbaa !0
+  %idxprom188 = sext i32 %call168 to i64
+  %44 = load %struct.edge_def*** @edge_info, align 8, !tbaa !0
+  %arrayidx189 = getelementptr inbounds %struct.edge_def** %44, i64 %idxprom188
+  store %struct.edge_def* %43, %struct.edge_def** %arrayidx189, align 8, !tbaa !0
+  store %struct.edge_def* %curredge160.01052, %struct.edge_def** @flow_edges, align 8, !tbaa !0
+  br label %for.inc190
+
+for.inc190:                                       ; preds = %for.body164, %if.end179
+  %succ_next191 = getelementptr inbounds %struct.edge_def* %curredge160.01052, i64 0, i32 1
+  %curredge160.0 = load %struct.edge_def** %succ_next191, align 8
+  %tobool163 = icmp eq %struct.edge_def* %curredge160.0, null
+  br i1 %tobool163, label %if.end857, label %for.body164
+
+if.else193:                                       ; preds = %if.then153
+  %fld195 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1
+  %rtx197 = bitcast [1 x %union.rtunion_def]* %fld195 to %struct.rtx_def**
+  %45 = load %struct.rtx_def** %rtx197, align 8, !tbaa !0
+  %46 = bitcast %struct.rtx_def* %45 to i32*
+  %bf.load198 = load i32* %46, align 8
+  %bf.clear199 = and i32 %bf.load198, 65535
+  %fld203 = getelementptr inbounds %struct.rtx_def* %45, i64 0, i32 1
+  %rtx205 = bitcast [1 x %union.rtunion_def]* %fld203 to %struct.rtx_def**
+  %47 = load %struct.rtx_def** %rtx205, align 8, !tbaa !0
+  %arrayidx210 = getelementptr inbounds %struct.rtx_def* %45, i64 0, i32 1, i64 1
+  %rtx211 = bitcast %union.rtunion_def* %arrayidx210 to %struct.rtx_def**
+  %48 = load %struct.rtx_def** %rtx211, align 8, !tbaa !0
+  %49 = bitcast %struct.rtx_def* %47 to i32*
+  %bf.load212 = load i32* %49, align 8
+  %bf.clear213 = and i32 %bf.load212, 65535
+  %cmp214 = icmp eq i32 %bf.clear213, 61
+  br i1 %cmp214, label %land.lhs.true216, label %lor.lhs.false225
+
+land.lhs.true216:                                 ; preds = %if.else193
+  %arrayidx218 = getelementptr inbounds %struct.rtx_def* %47, i64 0, i32 1, i64 0
+  %rtuint219 = bitcast %union.rtunion_def* %arrayidx218 to i32*
+  %50 = load i32* %rtuint219, align 4, !tbaa !4
+  %idxprom220 = zext i32 %50 to i64
+  %51 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val222 = getelementptr inbounds %struct.value* %51, i64 %idxprom220, i32 0
+  %52 = load i32* %lattice_val222, align 4, !tbaa !1
+  %cmp223 = icmp eq i32 %52, 0
+  br i1 %cmp223, label %if.end857, label %lor.lhs.false225
+
+lor.lhs.false225:                                 ; preds = %land.lhs.true216, %if.else193
+  %53 = bitcast %struct.rtx_def* %48 to i32*
+  %bf.load226 = load i32* %53, align 8
+  %bf.clear227 = and i32 %bf.load226, 65535
+  %cmp228 = icmp eq i32 %bf.clear227, 61
+  br i1 %cmp228, label %land.lhs.true230, label %if.end240
+
+land.lhs.true230:                                 ; preds = %lor.lhs.false225
+  %arrayidx232 = getelementptr inbounds %struct.rtx_def* %48, i64 0, i32 1, i64 0
+  %rtuint233 = bitcast %union.rtunion_def* %arrayidx232 to i32*
+  %54 = load i32* %rtuint233, align 4, !tbaa !4
+  %idxprom234 = zext i32 %54 to i64
+  %55 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val236 = getelementptr inbounds %struct.value* %55, i64 %idxprom234, i32 0
+  %56 = load i32* %lattice_val236, align 4, !tbaa !1
+  %cmp237 = icmp eq i32 %56, 0
+  br i1 %cmp237, label %if.end857, label %if.end240
+
+if.end240:                                        ; preds = %land.lhs.true230, %lor.lhs.false225
+  br i1 %cmp214, label %land.lhs.true245, label %lor.lhs.false254
+
+land.lhs.true245:                                 ; preds = %if.end240
+  %arrayidx247 = getelementptr inbounds %struct.rtx_def* %47, i64 0, i32 1, i64 0
+  %rtuint248 = bitcast %union.rtunion_def* %arrayidx247 to i32*
+  %57 = load i32* %rtuint248, align 4, !tbaa !4
+  %idxprom249 = zext i32 %57 to i64
+  %58 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val251 = getelementptr inbounds %struct.value* %58, i64 %idxprom249, i32 0
+  %59 = load i32* %lattice_val251, align 4, !tbaa !1
+  %cmp252 = icmp eq i32 %59, 2
+  br i1 %cmp252, label %if.then268, label %lor.lhs.false254
+
+lor.lhs.false254:                                 ; preds = %land.lhs.true245, %if.end240
+  br i1 %cmp228, label %land.lhs.true259, label %if.end301
+
+land.lhs.true259:                                 ; preds = %lor.lhs.false254
+  %arrayidx261 = getelementptr inbounds %struct.rtx_def* %48, i64 0, i32 1, i64 0
+  %rtuint262 = bitcast %union.rtunion_def* %arrayidx261 to i32*
+  %60 = load i32* %rtuint262, align 4, !tbaa !4
+  %idxprom263 = zext i32 %60 to i64
+  %61 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val265 = getelementptr inbounds %struct.value* %61, i64 %idxprom263, i32 0
+  %62 = load i32* %lattice_val265, align 4, !tbaa !1
+  %cmp266 = icmp eq i32 %62, 2
+  br i1 %cmp266, label %if.then268, label %if.end301
+
+if.then268:                                       ; preds = %land.lhs.true259, %land.lhs.true245
+  %succ269 = getelementptr inbounds %struct.basic_block_def* %block, i64 0, i32 5
+  %curredge194.01042 = load %struct.edge_def** %succ269, align 8
+  %tobool2711043 = icmp eq %struct.edge_def* %curredge194.01042, null
+  br i1 %tobool2711043, label %if.end857, label %for.body272
+
+for.body272:                                      ; preds = %if.then268, %for.inc298
+  %curredge194.01044 = phi %struct.edge_def* [ %curredge194.0, %for.inc298 ], [ %curredge194.01042, %if.then268 ]
+  %63 = load %struct.edge_list** @edges, align 8, !tbaa !0
+  %src274 = getelementptr inbounds %struct.edge_def* %curredge194.01044, i64 0, i32 2
+  %64 = load %struct.basic_block_def** %src274, align 8, !tbaa !0
+  %dest275 = getelementptr inbounds %struct.edge_def* %curredge194.01044, i64 0, i32 3
+  %65 = load %struct.basic_block_def** %dest275, align 8, !tbaa !0
+  %call276 = tail call i32 @find_edge_index(%struct.edge_list* %63, %struct.basic_block_def* %64, %struct.basic_block_def* %65) #3
+  %div277 = lshr i32 %call276, 6
+  %idxprom278 = zext i32 %div277 to i64
+  %66 = load %struct.simple_bitmap_def** @executable_edges, align 8, !tbaa !0
+  %arrayidx280 = getelementptr inbounds %struct.simple_bitmap_def* %66, i64 0, i32 3, i64 %idxprom278
+  %67 = load i64* %arrayidx280, align 8, !tbaa !3
+  %rem281 = and i32 %call276, 63
+  %sh_prom282 = zext i32 %rem281 to i64
+  %68 = shl i64 1, %sh_prom282
+  %and2841036 = and i64 %68, %67
+  %tobool285 = icmp eq i64 %and2841036, 0
+  br i1 %tobool285, label %if.end287, label %for.inc298
+
+if.end287:                                        ; preds = %for.body272
+  %or295 = or i64 %68, %67
+  store i64 %or295, i64* %arrayidx280, align 8, !tbaa !3
+  %69 = load %struct.edge_def** @flow_edges, align 8, !tbaa !0
+  %idxprom296 = sext i32 %call276 to i64
+  %70 = load %struct.edge_def*** @edge_info, align 8, !tbaa !0
+  %arrayidx297 = getelementptr inbounds %struct.edge_def** %70, i64 %idxprom296
+  store %struct.edge_def* %69, %struct.edge_def** %arrayidx297, align 8, !tbaa !0
+  store %struct.edge_def* %curredge194.01044, %struct.edge_def** @flow_edges, align 8, !tbaa !0
+  br label %for.inc298
+
+for.inc298:                                       ; preds = %for.body272, %if.end287
+  %succ_next299 = getelementptr inbounds %struct.edge_def* %curredge194.01044, i64 0, i32 1
+  %curredge194.0 = load %struct.edge_def** %succ_next299, align 8
+  %tobool271 = icmp eq %struct.edge_def* %curredge194.0, null
+  br i1 %tobool271, label %if.end857, label %for.body272
+
+if.end301:                                        ; preds = %land.lhs.true259, %lor.lhs.false254
+  br i1 %cmp214, label %land.lhs.true306, label %if.end322
+
+land.lhs.true306:                                 ; preds = %if.end301
+  %arrayidx308 = getelementptr inbounds %struct.rtx_def* %47, i64 0, i32 1, i64 0
+  %rtuint309 = bitcast %union.rtunion_def* %arrayidx308 to i32*
+  %71 = load i32* %rtuint309, align 4, !tbaa !4
+  %idxprom310 = zext i32 %71 to i64
+  %72 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val312 = getelementptr inbounds %struct.value* %72, i64 %idxprom310, i32 0
+  %73 = load i32* %lattice_val312, align 4, !tbaa !1
+  %cmp313 = icmp eq i32 %73, 1
+  br i1 %cmp313, label %if.then315, label %if.end322
+
+if.then315:                                       ; preds = %land.lhs.true306
+  %const_value321 = getelementptr inbounds %struct.value* %72, i64 %idxprom310, i32 1
+  %74 = load %struct.rtx_def** %const_value321, align 8, !tbaa !0
+  br label %if.end322
+
+if.end322:                                        ; preds = %if.then315, %land.lhs.true306, %if.end301
+  %comparison_src0.0 = phi %struct.rtx_def* [ %74, %if.then315 ], [ %47, %land.lhs.true306 ], [ %47, %if.end301 ]
+  br i1 %cmp228, label %land.lhs.true327, label %if.end343
+
+land.lhs.true327:                                 ; preds = %if.end322
+  %arrayidx329 = getelementptr inbounds %struct.rtx_def* %48, i64 0, i32 1, i64 0
+  %rtuint330 = bitcast %union.rtunion_def* %arrayidx329 to i32*
+  %75 = load i32* %rtuint330, align 4, !tbaa !4
+  %idxprom331 = zext i32 %75 to i64
+  %76 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val333 = getelementptr inbounds %struct.value* %76, i64 %idxprom331, i32 0
+  %77 = load i32* %lattice_val333, align 4, !tbaa !1
+  %cmp334 = icmp eq i32 %77, 1
+  br i1 %cmp334, label %if.then336, label %if.end343
+
+if.then336:                                       ; preds = %land.lhs.true327
+  %const_value342 = getelementptr inbounds %struct.value* %76, i64 %idxprom331, i32 1
+  %78 = load %struct.rtx_def** %const_value342, align 8, !tbaa !0
+  br label %if.end343
+
+if.end343:                                        ; preds = %if.then336, %land.lhs.true327, %if.end322
+  %comparison_src1.0 = phi %struct.rtx_def* [ %78, %if.then336 ], [ %48, %land.lhs.true327 ], [ %48, %if.end322 ]
+  %bf.lshr = lshr i32 %bf.load198, 16
+  %bf.clear348 = and i32 %bf.lshr, 255
+  %call355 = tail call %struct.rtx_def* (i32, i32, ...)* @gen_rtx(i32 %bf.clear199, i32 %bf.clear348, %struct.rtx_def* %comparison_src0.0, %struct.rtx_def* %comparison_src1.0) #3
+  %arrayidx357 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1, i64 1
+  %rtx358 = bitcast %union.rtunion_def* %arrayidx357 to %struct.rtx_def**
+  %79 = load %struct.rtx_def** %rtx358, align 8, !tbaa !0
+  %arrayidx360 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1, i64 2
+  %rtx361 = bitcast %union.rtunion_def* %arrayidx360 to %struct.rtx_def**
+  %80 = load %struct.rtx_def** %rtx361, align 8, !tbaa !0
+  %call362 = tail call %struct.rtx_def* @simplify_ternary_operation(i32 72, i32 0, i32 %bf.clear348, %struct.rtx_def* %call355, %struct.rtx_def* %79, %struct.rtx_def* %80) #3
+  %succ363 = getelementptr inbounds %struct.basic_block_def* %block, i64 0, i32 5
+  %curredge194.11046 = load %struct.edge_def** %succ363, align 8
+  %tobool3651047 = icmp eq %struct.edge_def* %curredge194.11046, null
+  br i1 %tobool3651047, label %if.end857, label %for.body366.lr.ph
+
+for.body366.lr.ph:                                ; preds = %if.end343
+  %tobool382 = icmp eq %struct.rtx_def* %call362, null
+  %81 = bitcast %struct.rtx_def* %call362 to i32*
+  br label %for.body366
+
+for.body366:                                      ; preds = %for.body366.lr.ph, %for.inc410
+  %curredge194.11048 = phi %struct.edge_def* [ %curredge194.11046, %for.body366.lr.ph ], [ %curredge194.1, %for.inc410 ]
+  %82 = load %struct.edge_list** @edges, align 8, !tbaa !0
+  %src368 = getelementptr inbounds %struct.edge_def* %curredge194.11048, i64 0, i32 2
+  %83 = load %struct.basic_block_def** %src368, align 8, !tbaa !0
+  %dest369 = getelementptr inbounds %struct.edge_def* %curredge194.11048, i64 0, i32 3
+  %84 = load %struct.basic_block_def** %dest369, align 8, !tbaa !0
+  %call370 = tail call i32 @find_edge_index(%struct.edge_list* %82, %struct.basic_block_def* %83, %struct.basic_block_def* %84) #3
+  %div371 = lshr i32 %call370, 6
+  %idxprom372 = zext i32 %div371 to i64
+  %85 = load %struct.simple_bitmap_def** @executable_edges, align 8, !tbaa !0
+  %arrayidx374 = getelementptr inbounds %struct.simple_bitmap_def* %85, i64 0, i32 3, i64 %idxprom372
+  %86 = load i64* %arrayidx374, align 8, !tbaa !3
+  %rem375 = and i32 %call370, 63
+  %sh_prom376 = zext i32 %rem375 to i64
+  %87 = shl i64 1, %sh_prom376
+  %and3781035 = and i64 %87, %86
+  %tobool379 = icmp eq i64 %and3781035, 0
+  br i1 %tobool379, label %if.end381, label %for.inc410
+
+if.end381:                                        ; preds = %for.body366
+  br i1 %tobool382, label %if.then398, label %lor.lhs.false383
+
+lor.lhs.false383:                                 ; preds = %if.end381
+  %88 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !0
+  %cmp384 = icmp eq %struct.rtx_def* %call362, %88
+  br i1 %cmp384, label %land.lhs.true386, label %lor.lhs.false389
+
+land.lhs.true386:                                 ; preds = %lor.lhs.false383
+  %flags = getelementptr inbounds %struct.edge_def* %curredge194.11048, i64 0, i32 6
+  %89 = load i32* %flags, align 4, !tbaa !4
+  %and387 = and i32 %89, 1
+  %tobool388 = icmp eq i32 %and387, 0
+  br i1 %tobool388, label %lor.lhs.false389, label %if.then398
+
+lor.lhs.false389:                                 ; preds = %land.lhs.true386, %lor.lhs.false383
+  %bf.load390 = load i32* %81, align 8
+  %bf.clear391 = and i32 %bf.load390, 65535
+  %cmp392 = icmp eq i32 %bf.clear391, 67
+  br i1 %cmp392, label %land.lhs.true394, label %for.inc410
+
+land.lhs.true394:                                 ; preds = %lor.lhs.false389
+  %flags395 = getelementptr inbounds %struct.edge_def* %curredge194.11048, i64 0, i32 6
+  %90 = load i32* %flags395, align 4, !tbaa !4
+  %and396 = and i32 %90, 1
+  %tobool397 = icmp eq i32 %and396, 0
+  br i1 %tobool397, label %if.then398, label %for.inc410
+
+if.then398:                                       ; preds = %land.lhs.true386, %land.lhs.true394, %if.end381
+  %or406 = or i64 %86, %87
+  store i64 %or406, i64* %arrayidx374, align 8, !tbaa !3
+  %91 = load %struct.edge_def** @flow_edges, align 8, !tbaa !0
+  %idxprom407 = sext i32 %call370 to i64
+  %92 = load %struct.edge_def*** @edge_info, align 8, !tbaa !0
+  %arrayidx408 = getelementptr inbounds %struct.edge_def** %92, i64 %idxprom407
+  store %struct.edge_def* %91, %struct.edge_def** %arrayidx408, align 8, !tbaa !0
+  store %struct.edge_def* %curredge194.11048, %struct.edge_def** @flow_edges, align 8, !tbaa !0
+  br label %for.inc410
+
+for.inc410:                                       ; preds = %land.lhs.true394, %for.body366, %lor.lhs.false389, %if.then398
+  %succ_next411 = getelementptr inbounds %struct.edge_def* %curredge194.11048, i64 0, i32 1
+  %curredge194.1 = load %struct.edge_def** %succ_next411, align 8
+  %tobool365 = icmp eq %struct.edge_def* %curredge194.1, null
+  br i1 %tobool365, label %if.end857, label %for.body366
+
+if.else414:                                       ; preds = %if.else148
+  %tobool415 = icmp ne %struct.rtx_def* %insn, null
+  %cmp419 = icmp eq i32 %bf.clear150, 32
+  %or.cond1039 = and i1 %tobool415, %cmp419
+  br i1 %or.cond1039, label %land.lhs.true421, label %if.then440
+
+land.lhs.true421:                                 ; preds = %if.else414
+  %93 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %94 = bitcast %struct.rtx_def* %93 to i32*
+  %bf.load425 = load i32* %94, align 8
+  %bf.clear426 = and i32 %bf.load425, 65535
+  %cmp427 = icmp eq i32 %bf.clear426, 47
+  br i1 %cmp427, label %land.lhs.true429, label %if.then440
+
+land.lhs.true429:                                 ; preds = %land.lhs.true421
+  %arrayidx434 = getelementptr inbounds %struct.rtx_def* %93, i64 0, i32 1, i64 1
+  %rtx435 = bitcast %union.rtunion_def* %arrayidx434 to %struct.rtx_def**
+  %95 = load %struct.rtx_def** %rtx435, align 8, !tbaa !0
+  %96 = bitcast %struct.rtx_def* %95 to i32*
+  %bf.load436 = load i32* %96, align 8
+  %bf.clear437 = and i32 %bf.load436, 65535
+  %cmp438 = icmp eq i32 %bf.clear437, 152
+  br i1 %cmp438, label %if.end857, label %if.then440
+
+if.then440:                                       ; preds = %if.else414, %land.lhs.true429, %land.lhs.true421
+  %idxprom4431034 = zext i32 %bf.clear67 to i64
+  %arrayidx444 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom4431034
+  %97 = load i8* %arrayidx444, align 1, !tbaa !1
+  %conv445 = sext i8 %97 to i32
+  switch i32 %conv445, label %sw.default [
+    i32 60, label %sw.bb
+    i32 49, label %sw.bb536
+    i32 50, label %sw.bb586
+    i32 99, label %sw.bb586
+    i32 51, label %sw.bb672
+    i32 98, label %sw.bb672
+  ]
+
+sw.bb:                                            ; preds = %if.then440
+  %fld446 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1
+  %rtx448 = bitcast [1 x %union.rtunion_def]* %fld446 to %struct.rtx_def**
+  %98 = load %struct.rtx_def** %rtx448, align 8, !tbaa !0
+  %arrayidx450 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1, i64 1
+  %rtx451 = bitcast %union.rtunion_def* %arrayidx450 to %struct.rtx_def**
+  %99 = load %struct.rtx_def** %rtx451, align 8, !tbaa !0
+  %100 = bitcast %struct.rtx_def* %98 to i32*
+  %bf.load452 = load i32* %100, align 8
+  %bf.clear453 = and i32 %bf.load452, 65535
+  %cmp454 = icmp eq i32 %bf.clear453, 61
+  br i1 %cmp454, label %land.lhs.true456, label %lor.lhs.false465
+
+land.lhs.true456:                                 ; preds = %sw.bb
+  %arrayidx458 = getelementptr inbounds %struct.rtx_def* %98, i64 0, i32 1, i64 0
+  %rtuint459 = bitcast %union.rtunion_def* %arrayidx458 to i32*
+  %101 = load i32* %rtuint459, align 4, !tbaa !4
+  %idxprom460 = zext i32 %101 to i64
+  %102 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val462 = getelementptr inbounds %struct.value* %102, i64 %idxprom460, i32 0
+  %103 = load i32* %lattice_val462, align 4, !tbaa !1
+  %cmp463 = icmp eq i32 %103, 0
+  br i1 %cmp463, label %if.then479, label %lor.lhs.false465
+
+lor.lhs.false465:                                 ; preds = %land.lhs.true456, %sw.bb
+  %104 = bitcast %struct.rtx_def* %99 to i32*
+  %bf.load466 = load i32* %104, align 8
+  %bf.clear467 = and i32 %bf.load466, 65535
+  %cmp468 = icmp eq i32 %bf.clear467, 61
+  br i1 %cmp468, label %land.lhs.true470, label %if.end480
+
+land.lhs.true470:                                 ; preds = %lor.lhs.false465
+  %arrayidx472 = getelementptr inbounds %struct.rtx_def* %99, i64 0, i32 1, i64 0
+  %rtuint473 = bitcast %union.rtunion_def* %arrayidx472 to i32*
+  %105 = load i32* %rtuint473, align 4, !tbaa !4
+  %idxprom474 = zext i32 %105 to i64
+  %106 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val476 = getelementptr inbounds %struct.value* %106, i64 %idxprom474, i32 0
+  %107 = load i32* %lattice_val476, align 4, !tbaa !1
+  %cmp477 = icmp eq i32 %107, 0
+  br i1 %cmp477, label %if.then479, label %if.end480
+
+if.then479:                                       ; preds = %land.lhs.true470, %land.lhs.true456
+  tail call fastcc void @defs_to_undefined(%struct.rtx_def* %insn) #4
+  br label %if.else852
+
+if.end480:                                        ; preds = %land.lhs.true470, %lor.lhs.false465
+  %bf.lshr482 = lshr i32 %bf.load452, 16
+  %bf.clear483 = and i32 %bf.lshr482, 255
+  %cmp484 = icmp eq i32 %bf.clear483, 0
+  br i1 %cmp484, label %if.then486, label %if.end490
+
+if.then486:                                       ; preds = %if.end480
+  %bf.lshr488 = lshr i32 %bf.load466, 16
+  %bf.clear489 = and i32 %bf.lshr488, 255
+  br label %if.end490
+
+if.end490:                                        ; preds = %if.then486, %if.end480
+  %mode.0 = phi i32 [ %bf.clear489, %if.then486 ], [ %bf.clear483, %if.end480 ]
+  br i1 %cmp454, label %land.lhs.true495, label %if.end511
+
+land.lhs.true495:                                 ; preds = %if.end490
+  %arrayidx497 = getelementptr inbounds %struct.rtx_def* %98, i64 0, i32 1, i64 0
+  %rtuint498 = bitcast %union.rtunion_def* %arrayidx497 to i32*
+  %108 = load i32* %rtuint498, align 4, !tbaa !4
+  %idxprom499 = zext i32 %108 to i64
+  %109 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val501 = getelementptr inbounds %struct.value* %109, i64 %idxprom499, i32 0
+  %110 = load i32* %lattice_val501, align 4, !tbaa !1
+  %cmp502 = icmp eq i32 %110, 1
+  br i1 %cmp502, label %if.then504, label %if.end511
+
+if.then504:                                       ; preds = %land.lhs.true495
+  %const_value510 = getelementptr inbounds %struct.value* %109, i64 %idxprom499, i32 1
+  %111 = load %struct.rtx_def** %const_value510, align 8, !tbaa !0
+  br label %if.end511
+
+if.end511:                                        ; preds = %if.then504, %land.lhs.true495, %if.end490
+  %src0.0 = phi %struct.rtx_def* [ %111, %if.then504 ], [ %98, %land.lhs.true495 ], [ %98, %if.end490 ]
+  br i1 %cmp468, label %land.lhs.true516, label %if.end532
+
+land.lhs.true516:                                 ; preds = %if.end511
+  %arrayidx518 = getelementptr inbounds %struct.rtx_def* %99, i64 0, i32 1, i64 0
+  %rtuint519 = bitcast %union.rtunion_def* %arrayidx518 to i32*
+  %112 = load i32* %rtuint519, align 4, !tbaa !4
+  %idxprom520 = zext i32 %112 to i64
+  %113 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val522 = getelementptr inbounds %struct.value* %113, i64 %idxprom520, i32 0
+  %114 = load i32* %lattice_val522, align 4, !tbaa !1
+  %cmp523 = icmp eq i32 %114, 1
+  br i1 %cmp523, label %if.then525, label %if.end532
+
+if.then525:                                       ; preds = %land.lhs.true516
+  %const_value531 = getelementptr inbounds %struct.value* %113, i64 %idxprom520, i32 1
+  %115 = load %struct.rtx_def** %const_value531, align 8, !tbaa !0
+  br label %if.end532
+
+if.end532:                                        ; preds = %if.then525, %land.lhs.true516, %if.end511
+  %src1.0 = phi %struct.rtx_def* [ %115, %if.then525 ], [ %99, %land.lhs.true516 ], [ %99, %if.end511 ]
+  %call535 = tail call %struct.rtx_def* @simplify_relational_operation(i32 %bf.clear67, i32 %mode.0, %struct.rtx_def* %src0.0, %struct.rtx_def* %src1.0) #3
+  br label %sw.epilog
+
+sw.bb536:                                         ; preds = %if.then440
+  %arrayidx539 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1, i64 0
+  %rtx540 = bitcast %union.rtunion_def* %arrayidx539 to %struct.rtx_def**
+  %116 = load %struct.rtx_def** %rtx540, align 8, !tbaa !0
+  %117 = bitcast %struct.rtx_def* %116 to i32*
+  %bf.load541 = load i32* %117, align 8
+  %bf.lshr542 = lshr i32 %bf.load541, 16
+  %bf.clear543 = and i32 %bf.lshr542, 255
+  %bf.clear545 = and i32 %bf.load541, 65535
+  %cmp546 = icmp eq i32 %bf.clear545, 61
+  br i1 %cmp546, label %land.lhs.true548, label %if.end579
+
+land.lhs.true548:                                 ; preds = %sw.bb536
+  %arrayidx550 = getelementptr inbounds %struct.rtx_def* %116, i64 0, i32 1, i64 0
+  %rtuint551 = bitcast %union.rtunion_def* %arrayidx550 to i32*
+  %118 = load i32* %rtuint551, align 4, !tbaa !4
+  %idxprom552 = zext i32 %118 to i64
+  %119 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val554 = getelementptr inbounds %struct.value* %119, i64 %idxprom552, i32 0
+  %120 = load i32* %lattice_val554, align 4, !tbaa !1
+  %cmp555 = icmp eq i32 %120, 0
+  br i1 %cmp555, label %if.then557, label %land.lhs.true563
+
+if.then557:                                       ; preds = %land.lhs.true548
+  tail call fastcc void @defs_to_undefined(%struct.rtx_def* %insn) #4
+  br label %if.else852
+
+land.lhs.true563:                                 ; preds = %land.lhs.true548
+  %arrayidx565 = getelementptr inbounds %struct.rtx_def* %116, i64 0, i32 1, i64 0
+  %rtuint566 = bitcast %union.rtunion_def* %arrayidx565 to i32*
+  %121 = load i32* %rtuint566, align 4, !tbaa !4
+  %idxprom567 = zext i32 %121 to i64
+  %122 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val569 = getelementptr inbounds %struct.value* %122, i64 %idxprom567, i32 0
+  %123 = load i32* %lattice_val569, align 4, !tbaa !1
+  %cmp570 = icmp eq i32 %123, 1
+  br i1 %cmp570, label %if.then572, label %if.end579
+
+if.then572:                                       ; preds = %land.lhs.true563
+  %const_value578 = getelementptr inbounds %struct.value* %122, i64 %idxprom567, i32 1
+  %124 = load %struct.rtx_def** %const_value578, align 8, !tbaa !0
+  br label %if.end579
+
+if.end579:                                        ; preds = %sw.bb536, %if.then572, %land.lhs.true563
+  %src0537.0 = phi %struct.rtx_def* [ %124, %if.then572 ], [ %116, %land.lhs.true563 ], [ %116, %sw.bb536 ]
+  %bf.lshr583 = lshr i32 %bf.load66, 16
+  %bf.clear584 = and i32 %bf.lshr583, 255
+  %call585 = tail call %struct.rtx_def* @simplify_unary_operation(i32 %bf.clear67, i32 %bf.clear584, %struct.rtx_def* %src0537.0, i32 %bf.clear543) #3
+  br label %sw.epilog
+
+sw.bb586:                                         ; preds = %if.then440, %if.then440
+  %fld588 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1
+  %rtx590 = bitcast [1 x %union.rtunion_def]* %fld588 to %struct.rtx_def**
+  %125 = load %struct.rtx_def** %rtx590, align 8, !tbaa !0
+  %arrayidx593 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1, i64 1
+  %rtx594 = bitcast %union.rtunion_def* %arrayidx593 to %struct.rtx_def**
+  %126 = load %struct.rtx_def** %rtx594, align 8, !tbaa !0
+  %127 = bitcast %struct.rtx_def* %125 to i32*
+  %bf.load595 = load i32* %127, align 8
+  %bf.clear596 = and i32 %bf.load595, 65535
+  %cmp597 = icmp eq i32 %bf.clear596, 61
+  br i1 %cmp597, label %land.lhs.true599, label %lor.lhs.false608
+
+land.lhs.true599:                                 ; preds = %sw.bb586
+  %arrayidx601 = getelementptr inbounds %struct.rtx_def* %125, i64 0, i32 1, i64 0
+  %rtuint602 = bitcast %union.rtunion_def* %arrayidx601 to i32*
+  %128 = load i32* %rtuint602, align 4, !tbaa !4
+  %idxprom603 = zext i32 %128 to i64
+  %129 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val605 = getelementptr inbounds %struct.value* %129, i64 %idxprom603, i32 0
+  %130 = load i32* %lattice_val605, align 4, !tbaa !1
+  %cmp606 = icmp eq i32 %130, 0
+  br i1 %cmp606, label %if.then622, label %lor.lhs.false608
+
+lor.lhs.false608:                                 ; preds = %land.lhs.true599, %sw.bb586
+  %131 = bitcast %struct.rtx_def* %126 to i32*
+  %bf.load609 = load i32* %131, align 8
+  %bf.clear610 = and i32 %bf.load609, 65535
+  %cmp611 = icmp eq i32 %bf.clear610, 61
+  br i1 %cmp611, label %land.lhs.true613, label %if.end623
+
+land.lhs.true613:                                 ; preds = %lor.lhs.false608
+  %arrayidx615 = getelementptr inbounds %struct.rtx_def* %126, i64 0, i32 1, i64 0
+  %rtuint616 = bitcast %union.rtunion_def* %arrayidx615 to i32*
+  %132 = load i32* %rtuint616, align 4, !tbaa !4
+  %idxprom617 = zext i32 %132 to i64
+  %133 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val619 = getelementptr inbounds %struct.value* %133, i64 %idxprom617, i32 0
+  %134 = load i32* %lattice_val619, align 4, !tbaa !1
+  %cmp620 = icmp eq i32 %134, 0
+  br i1 %cmp620, label %if.then622, label %if.end623
+
+if.then622:                                       ; preds = %land.lhs.true613, %land.lhs.true599
+  tail call fastcc void @defs_to_undefined(%struct.rtx_def* %insn) #4
+  br label %if.else852
+
+if.end623:                                        ; preds = %land.lhs.true613, %lor.lhs.false608
+  br i1 %cmp597, label %land.lhs.true628, label %if.end644
+
+land.lhs.true628:                                 ; preds = %if.end623
+  %arrayidx630 = getelementptr inbounds %struct.rtx_def* %125, i64 0, i32 1, i64 0
+  %rtuint631 = bitcast %union.rtunion_def* %arrayidx630 to i32*
+  %135 = load i32* %rtuint631, align 4, !tbaa !4
+  %idxprom632 = zext i32 %135 to i64
+  %136 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val634 = getelementptr inbounds %struct.value* %136, i64 %idxprom632, i32 0
+  %137 = load i32* %lattice_val634, align 4, !tbaa !1
+  %cmp635 = icmp eq i32 %137, 1
+  br i1 %cmp635, label %if.then637, label %if.end644
+
+if.then637:                                       ; preds = %land.lhs.true628
+  %const_value643 = getelementptr inbounds %struct.value* %136, i64 %idxprom632, i32 1
+  %138 = load %struct.rtx_def** %const_value643, align 8, !tbaa !0
+  br label %if.end644
+
+if.end644:                                        ; preds = %if.then637, %land.lhs.true628, %if.end623
+  %src0587.0 = phi %struct.rtx_def* [ %138, %if.then637 ], [ %125, %land.lhs.true628 ], [ %125, %if.end623 ]
+  br i1 %cmp611, label %land.lhs.true649, label %if.end665
+
+land.lhs.true649:                                 ; preds = %if.end644
+  %arrayidx651 = getelementptr inbounds %struct.rtx_def* %126, i64 0, i32 1, i64 0
+  %rtuint652 = bitcast %union.rtunion_def* %arrayidx651 to i32*
+  %139 = load i32* %rtuint652, align 4, !tbaa !4
+  %idxprom653 = zext i32 %139 to i64
+  %140 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val655 = getelementptr inbounds %struct.value* %140, i64 %idxprom653, i32 0
+  %141 = load i32* %lattice_val655, align 4, !tbaa !1
+  %cmp656 = icmp eq i32 %141, 1
+  br i1 %cmp656, label %if.then658, label %if.end665
+
+if.then658:                                       ; preds = %land.lhs.true649
+  %const_value664 = getelementptr inbounds %struct.value* %140, i64 %idxprom653, i32 1
+  %142 = load %struct.rtx_def** %const_value664, align 8, !tbaa !0
+  br label %if.end665
+
+if.end665:                                        ; preds = %if.then658, %land.lhs.true649, %if.end644
+  %src1591.0 = phi %struct.rtx_def* [ %142, %if.then658 ], [ %126, %land.lhs.true649 ], [ %126, %if.end644 ]
+  %bf.lshr669 = lshr i32 %bf.load66, 16
+  %bf.clear670 = and i32 %bf.lshr669, 255
+  %call671 = tail call %struct.rtx_def* @simplify_binary_operation(i32 %bf.clear67, i32 %bf.clear670, %struct.rtx_def* %src0587.0, %struct.rtx_def* %src1591.0) #3
+  br label %sw.epilog
+
+sw.bb672:                                         ; preds = %if.then440, %if.then440
+  %fld674 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1
+  %rtx676 = bitcast [1 x %union.rtunion_def]* %fld674 to %struct.rtx_def**
+  %143 = load %struct.rtx_def** %rtx676, align 8, !tbaa !0
+  %arrayidx679 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1, i64 1
+  %rtx680 = bitcast %union.rtunion_def* %arrayidx679 to %struct.rtx_def**
+  %144 = load %struct.rtx_def** %rtx680, align 8, !tbaa !0
+  %arrayidx683 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1, i64 2
+  %rtx684 = bitcast %union.rtunion_def* %arrayidx683 to %struct.rtx_def**
+  %145 = load %struct.rtx_def** %rtx684, align 8, !tbaa !0
+  %146 = bitcast %struct.rtx_def* %143 to i32*
+  %bf.load685 = load i32* %146, align 8
+  %bf.clear686 = and i32 %bf.load685, 65535
+  %cmp687 = icmp eq i32 %bf.clear686, 61
+  br i1 %cmp687, label %land.lhs.true689, label %lor.lhs.false698
+
+land.lhs.true689:                                 ; preds = %sw.bb672
+  %arrayidx691 = getelementptr inbounds %struct.rtx_def* %143, i64 0, i32 1, i64 0
+  %rtuint692 = bitcast %union.rtunion_def* %arrayidx691 to i32*
+  %147 = load i32* %rtuint692, align 4, !tbaa !4
+  %idxprom693 = zext i32 %147 to i64
+  %148 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val695 = getelementptr inbounds %struct.value* %148, i64 %idxprom693, i32 0
+  %149 = load i32* %lattice_val695, align 4, !tbaa !1
+  %cmp696 = icmp eq i32 %149, 0
+  br i1 %cmp696, label %if.then726, label %lor.lhs.false698
+
+lor.lhs.false698:                                 ; preds = %land.lhs.true689, %sw.bb672
+  %150 = bitcast %struct.rtx_def* %144 to i32*
+  %bf.load699 = load i32* %150, align 8
+  %bf.clear700 = and i32 %bf.load699, 65535
+  %cmp701 = icmp eq i32 %bf.clear700, 61
+  br i1 %cmp701, label %land.lhs.true703, label %lor.lhs.false712
+
+land.lhs.true703:                                 ; preds = %lor.lhs.false698
+  %arrayidx705 = getelementptr inbounds %struct.rtx_def* %144, i64 0, i32 1, i64 0
+  %rtuint706 = bitcast %union.rtunion_def* %arrayidx705 to i32*
+  %151 = load i32* %rtuint706, align 4, !tbaa !4
+  %idxprom707 = zext i32 %151 to i64
+  %152 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val709 = getelementptr inbounds %struct.value* %152, i64 %idxprom707, i32 0
+  %153 = load i32* %lattice_val709, align 4, !tbaa !1
+  %cmp710 = icmp eq i32 %153, 0
+  br i1 %cmp710, label %if.then726, label %lor.lhs.false712
+
+lor.lhs.false712:                                 ; preds = %land.lhs.true703, %lor.lhs.false698
+  %154 = bitcast %struct.rtx_def* %145 to i32*
+  %bf.load713 = load i32* %154, align 8
+  %bf.clear714 = and i32 %bf.load713, 65535
+  %cmp715 = icmp eq i32 %bf.clear714, 61
+  br i1 %cmp715, label %land.lhs.true717, label %if.end727
+
+land.lhs.true717:                                 ; preds = %lor.lhs.false712
+  %arrayidx719 = getelementptr inbounds %struct.rtx_def* %145, i64 0, i32 1, i64 0
+  %rtuint720 = bitcast %union.rtunion_def* %arrayidx719 to i32*
+  %155 = load i32* %rtuint720, align 4, !tbaa !4
+  %idxprom721 = zext i32 %155 to i64
+  %156 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val723 = getelementptr inbounds %struct.value* %156, i64 %idxprom721, i32 0
+  %157 = load i32* %lattice_val723, align 4, !tbaa !1
+  %cmp724 = icmp eq i32 %157, 0
+  br i1 %cmp724, label %if.then726, label %if.end727
+
+if.then726:                                       ; preds = %land.lhs.true717, %land.lhs.true703, %land.lhs.true689
+  tail call fastcc void @defs_to_undefined(%struct.rtx_def* %insn) #4
+  br label %if.else852
+
+if.end727:                                        ; preds = %land.lhs.true717, %lor.lhs.false712
+  br i1 %cmp687, label %land.lhs.true732, label %if.end748
+
+land.lhs.true732:                                 ; preds = %if.end727
+  %arrayidx734 = getelementptr inbounds %struct.rtx_def* %143, i64 0, i32 1, i64 0
+  %rtuint735 = bitcast %union.rtunion_def* %arrayidx734 to i32*
+  %158 = load i32* %rtuint735, align 4, !tbaa !4
+  %idxprom736 = zext i32 %158 to i64
+  %159 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val738 = getelementptr inbounds %struct.value* %159, i64 %idxprom736, i32 0
+  %160 = load i32* %lattice_val738, align 4, !tbaa !1
+  %cmp739 = icmp eq i32 %160, 1
+  br i1 %cmp739, label %if.then741, label %if.end748
+
+if.then741:                                       ; preds = %land.lhs.true732
+  %const_value747 = getelementptr inbounds %struct.value* %159, i64 %idxprom736, i32 1
+  %161 = load %struct.rtx_def** %const_value747, align 8, !tbaa !0
+  br label %if.end748
+
+if.end748:                                        ; preds = %if.then741, %land.lhs.true732, %if.end727
+  %src0673.0 = phi %struct.rtx_def* [ %161, %if.then741 ], [ %143, %land.lhs.true732 ], [ %143, %if.end727 ]
+  br i1 %cmp701, label %land.lhs.true753, label %if.end769
+
+land.lhs.true753:                                 ; preds = %if.end748
+  %arrayidx755 = getelementptr inbounds %struct.rtx_def* %144, i64 0, i32 1, i64 0
+  %rtuint756 = bitcast %union.rtunion_def* %arrayidx755 to i32*
+  %162 = load i32* %rtuint756, align 4, !tbaa !4
+  %idxprom757 = zext i32 %162 to i64
+  %163 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val759 = getelementptr inbounds %struct.value* %163, i64 %idxprom757, i32 0
+  %164 = load i32* %lattice_val759, align 4, !tbaa !1
+  %cmp760 = icmp eq i32 %164, 1
+  br i1 %cmp760, label %if.then762, label %if.end769
+
+if.then762:                                       ; preds = %land.lhs.true753
+  %const_value768 = getelementptr inbounds %struct.value* %163, i64 %idxprom757, i32 1
+  %165 = load %struct.rtx_def** %const_value768, align 8, !tbaa !0
+  br label %if.end769
+
+if.end769:                                        ; preds = %if.then762, %land.lhs.true753, %if.end748
+  %src1677.0 = phi %struct.rtx_def* [ %165, %if.then762 ], [ %144, %land.lhs.true753 ], [ %144, %if.end748 ]
+  br i1 %cmp715, label %land.lhs.true774, label %if.end790
+
+land.lhs.true774:                                 ; preds = %if.end769
+  %arrayidx776 = getelementptr inbounds %struct.rtx_def* %145, i64 0, i32 1, i64 0
+  %rtuint777 = bitcast %union.rtunion_def* %arrayidx776 to i32*
+  %166 = load i32* %rtuint777, align 4, !tbaa !4
+  %idxprom778 = zext i32 %166 to i64
+  %167 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val780 = getelementptr inbounds %struct.value* %167, i64 %idxprom778, i32 0
+  %168 = load i32* %lattice_val780, align 4, !tbaa !1
+  %cmp781 = icmp eq i32 %168, 1
+  br i1 %cmp781, label %if.then783, label %if.end790
+
+if.then783:                                       ; preds = %land.lhs.true774
+  %const_value789 = getelementptr inbounds %struct.value* %167, i64 %idxprom778, i32 1
+  %169 = load %struct.rtx_def** %const_value789, align 8, !tbaa !0
+  br label %if.end790
+
+if.end790:                                        ; preds = %if.then783, %land.lhs.true774, %if.end769
+  %src2681.0 = phi %struct.rtx_def* [ %169, %if.then783 ], [ %145, %land.lhs.true774 ], [ %145, %if.end769 ]
+  %bf.lshr794 = lshr i32 %bf.load66, 16
+  %bf.clear795 = and i32 %bf.lshr794, 255
+  %call799 = tail call %struct.rtx_def* @simplify_ternary_operation(i32 %bf.clear67, i32 %bf.clear795, i32 %bf.clear795, %struct.rtx_def* %src0673.0, %struct.rtx_def* %src1677.0, %struct.rtx_def* %src2681.0) #3
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %if.then440
+  tail call fastcc void @defs_to_varying(%struct.rtx_def* %insn) #4
+  br label %if.else852
+
+sw.epilog:                                        ; preds = %if.end790, %if.end665, %if.end579, %if.end532
+  %simplified.0 = phi %struct.rtx_def* [ %call799, %if.end790 ], [ %call671, %if.end665 ], [ %call585, %if.end579 ], [ %call535, %if.end532 ]
+  %tobool800 = icmp eq %struct.rtx_def* %simplified.0, null
+  br i1 %tobool800, label %if.else852, label %land.lhs.true801
+
+land.lhs.true801:                                 ; preds = %sw.epilog
+  %170 = bitcast %struct.rtx_def* %simplified.0 to i32*
+  %bf.load802 = load i32* %170, align 8
+  %bf.clear803 = and i32 %bf.load802, 65535
+  %cmp804 = icmp eq i32 %bf.clear803, 54
+  br i1 %cmp804, label %if.then806, label %if.else852
+
+if.then806:                                       ; preds = %land.lhs.true801
+  %arrayidx808 = getelementptr inbounds %struct.rtx_def* %14, i64 0, i32 1, i64 0
+  %rtuint809 = bitcast %union.rtunion_def* %arrayidx808 to i32*
+  %171 = load i32* %rtuint809, align 4, !tbaa !4
+  %idxprom810 = zext i32 %171 to i64
+  %172 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val812 = getelementptr inbounds %struct.value* %172, i64 %idxprom810, i32 0
+  %173 = load i32* %lattice_val812, align 4, !tbaa !1
+  %cmp813 = icmp eq i32 %173, 1
+  br i1 %cmp813, label %lor.lhs.false815, label %if.then824
+
+lor.lhs.false815:                                 ; preds = %if.then806
+  %const_value821 = getelementptr inbounds %struct.value* %172, i64 %idxprom810, i32 1
+  %174 = load %struct.rtx_def** %const_value821, align 8, !tbaa !0
+  %cmp822 = icmp eq %struct.rtx_def* %174, %simplified.0
+  br i1 %cmp822, label %if.end839, label %if.then824
+
+if.then824:                                       ; preds = %lor.lhs.false815, %if.then806
+  %rem828 = and i32 %171, 63
+  %sh_prom829 = zext i32 %rem828 to i64
+  %shl830 = shl i64 1, %sh_prom829
+  %div834 = lshr i32 %171, 6
+  %idxprom835 = zext i32 %div834 to i64
+  %175 = load %struct.simple_bitmap_def** @ssa_edges, align 8, !tbaa !0
+  %arrayidx837 = getelementptr inbounds %struct.simple_bitmap_def* %175, i64 0, i32 3, i64 %idxprom835
+  %176 = load i64* %arrayidx837, align 8, !tbaa !3
+  %or838 = or i64 %shl830, %176
+  store i64 %or838, i64* %arrayidx837, align 8, !tbaa !3
+  br label %if.end839
+
+if.end839:                                        ; preds = %lor.lhs.false815, %if.then824
+  store i32 1, i32* %lattice_val812, align 4, !tbaa !1
+  %177 = load i32* %rtuint809, align 4, !tbaa !4
+  %idxprom849 = zext i32 %177 to i64
+  %178 = load %struct.value** @values, align 8, !tbaa !0
+  %const_value851 = getelementptr inbounds %struct.value* %178, i64 %idxprom849, i32 1
+  store %struct.rtx_def* %simplified.0, %struct.rtx_def** %const_value851, align 8, !tbaa !0
+  br label %if.end857
+
+if.else852:                                       ; preds = %if.then479, %if.then557, %if.then622, %if.then726, %sw.default, %sw.epilog, %land.lhs.true801
+  tail call fastcc void @defs_to_varying(%struct.rtx_def* %insn) #4
+  br label %if.end857
+
+if.end857:                                        ; preds = %if.then159, %for.inc190, %if.end343, %for.inc410, %if.then268, %for.inc298, %if.end138, %land.lhs.true429, %if.else852, %if.end839, %land.lhs.true216, %land.lhs.true230, %if.then38, %if.then53, %if.then64, %if.then75
+  ret void
+}

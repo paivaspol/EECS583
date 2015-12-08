@@ -1,0 +1,33 @@
+define void @solve_pppm(%struct._IO_FILE* nocapture %fp, %struct.t_commrec* %cr, %struct.t_fftgrid* %grid, float*** nocapture %ghat, float* nocapture %box, i32 %bVerbose, %struct.t_nrnb* nocapture %nrnb) #0 {
+entry:
+  tail call void @gmxfft3D(%struct.t_fftgrid* %grid, i32 -1, %struct.t_commrec* %cr) #4
+  tail call void @convolution(%struct._IO_FILE* undef, i32 undef, %struct.t_fftgrid* %grid, float*** %ghat, %struct.t_commrec* %cr) #5
+  %tobool = icmp eq i32 %bVerbose, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @gmxfft3D(%struct.t_fftgrid* %grid, i32 1, %struct.t_commrec* %cr) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %nxyz = getelementptr inbounds %struct.t_fftgrid* %grid, i64 0, i32 11
+  %0 = load i32* %nxyz, align 4, !tbaa !3
+  %conv = sitofp i32 %0 to double
+  %conv1 = sitofp i32 %0 to float
+  %conv2 = fpext float %conv1 to double
+  %call = tail call double @log(double %conv2) #4
+  %mul = fmul double %conv, %call
+  %div = fdiv double %mul, 0x3FE62E42FEFA39EF
+  %conv4 = fptosi double %div to i32
+  %mul5 = shl nsw i32 %conv4, 1
+  %conv6 = sitofp i32 %mul5 to double
+  %arrayidx = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 84
+  %1 = load double* %arrayidx, align 8, !tbaa !5
+  %add = fadd double %1, %conv6
+  store double %add, double* %arrayidx, align 8, !tbaa !5
+  %arrayidx9 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 85
+  %2 = load double* %arrayidx9, align 8, !tbaa !5
+  %add10 = fadd double %conv, %2
+  store double %add10, double* %arrayidx9, align 8, !tbaa !5
+  ret void
+}

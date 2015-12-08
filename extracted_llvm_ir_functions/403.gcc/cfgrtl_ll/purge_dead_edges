@@ -1,0 +1,339 @@
+define zeroext i1 @purge_dead_edges(%struct.basic_block_def* nocapture %bb) #0 {
+entry:
+  %end = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 1
+  %0 = load %struct.rtx_def** %end, align 8, !tbaa !0
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 32
+  br i1 %cmp, label %land.lhs.true, label %if.end12
+
+land.lhs.true:                                    ; preds = %entry
+  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %0, i32 23, %struct.rtx_def* null) #5
+  %tobool = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool, label %if.end12, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %call1 = tail call i32 @may_trap_p(%struct.rtx_def* %2) #5
+  %tobool2 = icmp eq i32 %call1, 0
+  br i1 %tobool2, label %if.then11, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.then
+  %call3 = tail call %struct.rtx_def* @find_reg_equal_equiv_note(%struct.rtx_def* %0) #5
+  %tobool4 = icmp eq %struct.rtx_def* %call3, null
+  br i1 %tobool4, label %if.end12, label %land.lhs.true5
+
+land.lhs.true5:                                   ; preds = %lor.lhs.false
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %call3, i64 0, i32 1, i64 0
+  %rtx8 = bitcast %union.rtunion_def* %arrayidx7 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx8, align 8, !tbaa !0
+  %call9 = tail call i32 @may_trap_p(%struct.rtx_def* %3) #5
+  %tobool10 = icmp eq i32 %call9, 0
+  br i1 %tobool10, label %if.then11, label %if.end12
+
+if.then11:                                        ; preds = %land.lhs.true5, %if.then
+  tail call void @remove_note(%struct.rtx_def* %0, %struct.rtx_def* %call) #5
+  br label %if.end12
+
+if.end12:                                         ; preds = %land.lhs.true5, %lor.lhs.false, %land.lhs.true, %if.then11, %entry
+  %4 = load %struct.rtx_def** %end, align 8, !tbaa !0
+  %call14 = tail call zeroext i1 @can_throw_internal(%struct.rtx_def* %4) #5
+  br i1 %call14, label %if.end20, label %if.then15
+
+if.then15:                                        ; preds = %if.end12
+  %succ = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 5
+  %5 = load %struct.edge_def** %succ, align 8, !tbaa !0
+  br label %for.cond.outer
+
+for.cond.outer:                                   ; preds = %if.then18, %if.then15
+  %purged.0.ph = phi i8 [ 0, %if.then15 ], [ 1, %if.then18 ]
+  %e.0.ph = phi %struct.edge_def* [ %5, %if.then15 ], [ %6, %if.then18 ]
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond.outer, %for.body
+  %e.0 = phi %struct.edge_def* [ %6, %for.body ], [ %e.0.ph, %for.cond.outer ]
+  %tobool16 = icmp eq %struct.edge_def* %e.0, null
+  br i1 %tobool16, label %if.end20, label %for.body
+
+for.body:                                         ; preds = %for.cond
+  %succ_next = getelementptr inbounds %struct.edge_def* %e.0, i64 0, i32 1
+  %6 = load %struct.edge_def** %succ_next, align 8, !tbaa !0
+  %flags = getelementptr inbounds %struct.edge_def* %e.0, i64 0, i32 6
+  %7 = load i32* %flags, align 4, !tbaa !3
+  %and = and i32 %7, 8
+  %tobool17 = icmp eq i32 %and, 0
+  br i1 %tobool17, label %for.cond, label %if.then18
+
+if.then18:                                        ; preds = %for.body
+  tail call void @remove_edge(%struct.edge_def* %e.0) #5
+  br label %for.cond.outer
+
+if.end20:                                         ; preds = %for.cond, %if.end12
+  %purged.2 = phi i8 [ 0, %if.end12 ], [ %purged.0.ph, %for.cond ]
+  %bf.load21 = load i32* %1, align 8
+  %bf.clear22 = and i32 %bf.load21, 65535
+  %cmp23 = icmp eq i32 %bf.clear22, 33
+  br i1 %cmp23, label %if.then24, label %if.end143
+
+if.then24:                                        ; preds = %if.end20
+  %call26 = tail call i32 @any_condjump_p(%struct.rtx_def* %0) #5
+  %tobool27 = icmp eq i32 %call26, 0
+  br i1 %tobool27, label %land.lhs.true28, label %if.end35
+
+land.lhs.true28:                                  ; preds = %if.then24
+  %call29 = tail call i32 @returnjump_p(%struct.rtx_def* %0) #5
+  %tobool30 = icmp eq i32 %call29, 0
+  br i1 %tobool30, label %land.lhs.true31, label %if.end35
+
+land.lhs.true31:                                  ; preds = %land.lhs.true28
+  %call32 = tail call i32 @simplejump_p(%struct.rtx_def* %0) #5
+  %tobool33 = icmp eq i32 %call32, 0
+  br i1 %tobool33, label %return, label %if.end35
+
+if.end35:                                         ; preds = %land.lhs.true31, %land.lhs.true28, %if.then24
+  %succ36 = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 5
+  %8 = load %struct.edge_def** %succ36, align 8, !tbaa !0
+  %tobool38260271 = icmp eq %struct.edge_def* %8, null
+  br i1 %tobool38260271, label %return, label %for.body39.lr.ph.lr.ph
+
+for.body39.lr.ph.lr.ph:                           ; preds = %if.end35
+  %arrayidx54 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 7
+  %rtx55 = bitcast %union.rtunion_def* %arrayidx54 to %struct.rtx_def**
+  br label %for.body39.lr.ph
+
+for.body39.lr.ph:                                 ; preds = %for.body39.lr.ph.lr.ph, %if.end75
+  %e.1.ph273 = phi %struct.edge_def* [ %8, %for.body39.lr.ph.lr.ph ], [ %9, %if.end75 ]
+  %purged.3.ph272 = phi i8 [ %purged.2, %for.body39.lr.ph.lr.ph ], [ 1, %if.end75 ]
+  br label %for.body39
+
+for.body39:                                       ; preds = %for.body39.lr.ph, %for.cond37.backedge
+  %e.1261 = phi %struct.edge_def* [ %e.1.ph273, %for.body39.lr.ph ], [ %9, %for.cond37.backedge ]
+  %succ_next40 = getelementptr inbounds %struct.edge_def* %e.1261, i64 0, i32 1
+  %9 = load %struct.edge_def** %succ_next40, align 8, !tbaa !0
+  %flags41 = getelementptr inbounds %struct.edge_def* %e.1261, i64 0, i32 6
+  %10 = load i32* %flags41, align 4, !tbaa !3
+  %and42 = and i32 %10, -3
+  store i32 %and42, i32* %flags41, align 4, !tbaa !3
+  %and44 = and i32 %10, 1
+  %tobool45 = icmp eq i32 %and44, 0
+  br i1 %tobool45, label %if.else, label %land.lhs.true46
+
+land.lhs.true46:                                  ; preds = %for.body39
+  %call47 = tail call i32 @any_condjump_p(%struct.rtx_def* %0) #5
+  %tobool48 = icmp eq i32 %call47, 0
+  br i1 %tobool48, label %if.else, label %for.cond37.backedge
+
+for.cond37.backedge:                              ; preds = %land.lhs.true46, %land.lhs.true61, %land.lhs.true69, %land.lhs.true51
+  %tobool38 = icmp eq %struct.edge_def* %9, null
+  br i1 %tobool38, label %for.end77, label %for.body39
+
+if.else:                                          ; preds = %land.lhs.true46, %for.body39
+  %dest = getelementptr inbounds %struct.edge_def* %e.1261, i64 0, i32 3
+  %11 = load %struct.basic_block_def** %dest, align 8, !tbaa !0
+  %cmp50 = icmp eq %struct.basic_block_def* %11, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1)
+  br i1 %cmp50, label %land.lhs.true61, label %land.lhs.true51
+
+land.lhs.true51:                                  ; preds = %if.else
+  %head = getelementptr inbounds %struct.basic_block_def* %11, i64 0, i32 0
+  %12 = load %struct.rtx_def** %head, align 8, !tbaa !0
+  %13 = load %struct.rtx_def** %rtx55, align 8, !tbaa !0
+  %cmp56 = icmp eq %struct.rtx_def* %12, %13
+  br i1 %cmp56, label %for.cond37.backedge, label %if.else65
+
+land.lhs.true61:                                  ; preds = %if.else
+  %call62 = tail call i32 @returnjump_p(%struct.rtx_def* %0) #5
+  %tobool63 = icmp eq i32 %call62, 0
+  br i1 %tobool63, label %if.else65, label %for.cond37.backedge
+
+if.else65:                                        ; preds = %land.lhs.true61, %land.lhs.true51
+  %14 = load i32* %flags41, align 4, !tbaa !3
+  %and67 = and i32 %14, 8
+  %tobool68 = icmp eq i32 %and67, 0
+  br i1 %tobool68, label %if.end75, label %land.lhs.true69
+
+land.lhs.true69:                                  ; preds = %if.else65
+  %call70 = tail call zeroext i1 @can_throw_internal(%struct.rtx_def* %0) #5
+  br i1 %call70, label %for.cond37.backedge, label %if.end75
+
+if.end75:                                         ; preds = %if.else65, %land.lhs.true69
+  tail call void @remove_edge(%struct.edge_def* %e.1261) #5
+  %tobool38260 = icmp eq %struct.edge_def* %9, null
+  br i1 %tobool38260, label %for.end77, label %for.body39.lr.ph
+
+for.end77:                                        ; preds = %if.end75, %for.cond37.backedge
+  %purged.3.ph270.ph = phi i8 [ 1, %if.end75 ], [ %purged.3.ph272, %for.cond37.backedge ]
+  %.pr = load %struct.edge_def** %succ36, align 8, !tbaa !0
+  %tobool79 = icmp eq %struct.edge_def* %.pr, null
+  br i1 %tobool79, label %return, label %lor.lhs.false80
+
+lor.lhs.false80:                                  ; preds = %for.end77
+  %15 = and i8 %purged.3.ph270.ph, 1
+  %tobool81 = icmp eq i8 %15, 0
+  br i1 %tobool81, label %return, label %if.end83
+
+if.end83:                                         ; preds = %lor.lhs.false80
+  %16 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !0
+  %tobool84 = icmp eq %struct._IO_FILE* %16, null
+  br i1 %tobool84, label %if.end87, label %if.then85
+
+if.then85:                                        ; preds = %if.end83
+  %index = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 11
+  %17 = load i32* %index, align 4, !tbaa !3
+  %call86 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %16, i8* getelementptr inbounds ([25 x i8]* @.str40, i64 0, i64 0), i32 %17) #5
+  br label %if.end87
+
+if.end87:                                         ; preds = %if.end83, %if.then85
+  %18 = load i32* @optimize, align 4, !tbaa !3
+  %tobool88 = icmp eq i32 %18, 0
+  br i1 %tobool88, label %return, label %if.end91
+
+if.end91:                                         ; preds = %if.end87
+  %19 = load %struct.edge_def** %succ36, align 8, !tbaa !0
+  %succ_next93 = getelementptr inbounds %struct.edge_def* %19, i64 0, i32 1
+  %20 = load %struct.edge_def** %succ_next93, align 8, !tbaa !0
+  %tobool94 = icmp eq %struct.edge_def* %20, null
+  br i1 %tobool94, label %if.then95, label %if.else99
+
+if.then95:                                        ; preds = %if.end91
+  %probability = getelementptr inbounds %struct.edge_def* %19, i64 0, i32 7
+  store i32 10000, i32* %probability, align 4, !tbaa !3
+  %count = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 13
+  %21 = load i64* %count, align 8, !tbaa !4
+  %count98 = getelementptr inbounds %struct.edge_def* %19, i64 0, i32 8
+  store i64 %21, i64* %count98, align 8, !tbaa !4
+  br label %return
+
+if.else99:                                        ; preds = %if.end91
+  %call100 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %0, i32 16, %struct.rtx_def* null) #5
+  %tobool101 = icmp eq %struct.rtx_def* %call100, null
+  br i1 %tobool101, label %return, label %if.end104
+
+if.end104:                                        ; preds = %if.else99
+  %22 = load %struct.edge_def** %succ36, align 8, !tbaa !0
+  %flags106 = getelementptr inbounds %struct.edge_def* %22, i64 0, i32 6
+  %23 = load i32* %flags106, align 4, !tbaa !3
+  %and107 = and i32 %23, 1
+  %tobool108 = icmp eq i32 %and107, 0
+  %succ_next120 = getelementptr inbounds %struct.edge_def* %22, i64 0, i32 1
+  %24 = load %struct.edge_def** %succ_next120, align 8, !tbaa !0
+  %. = select i1 %tobool108, %struct.edge_def* %22, %struct.edge_def* %24
+  %.284 = select i1 %tobool108, %struct.edge_def* %24, %struct.edge_def* %22
+  %arrayidx124 = getelementptr inbounds %struct.rtx_def* %call100, i64 0, i32 1, i64 0
+  %rtx125 = bitcast %union.rtunion_def* %arrayidx124 to %struct.rtx_def**
+  %25 = load %struct.rtx_def** %rtx125, align 8, !tbaa !0
+  %rtwint = getelementptr inbounds %struct.rtx_def* %25, i64 0, i32 1, i64 0, i32 0
+  %26 = load i64* %rtwint, align 8, !tbaa !4
+  %conv = trunc i64 %26 to i32
+  %probability128 = getelementptr inbounds %struct.edge_def* %., i64 0, i32 7
+  store i32 %conv, i32* %probability128, align 4, !tbaa !3
+  %sub = sub nsw i32 10000, %conv
+  %probability130 = getelementptr inbounds %struct.edge_def* %.284, i64 0, i32 7
+  store i32 %sub, i32* %probability130, align 4, !tbaa !3
+  %count131 = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 13
+  %27 = load i64* %count131, align 8, !tbaa !4
+  %28 = load i32* %probability128, align 4, !tbaa !3
+  %conv133 = sext i32 %28 to i64
+  %mul = mul nsw i64 %conv133, %27
+  %div = sdiv i64 %mul, 10000
+  %count134 = getelementptr inbounds %struct.edge_def* %., i64 0, i32 8
+  store i64 %div, i64* %count134, align 8, !tbaa !4
+  %29 = load i64* %count131, align 8, !tbaa !4
+  %conv137 = sext i32 %sub to i64
+  %mul138 = mul nsw i64 %conv137, %29
+  %div139 = sdiv i64 %mul138, 10000
+  %count140 = getelementptr inbounds %struct.edge_def* %.284, i64 0, i32 8
+  store i64 %div139, i64* %count140, align 8, !tbaa !4
+  br label %return
+
+if.end143:                                        ; preds = %if.end20
+  %succ144 = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 5
+  %e.2264 = load %struct.edge_def** %succ144, align 8
+  %tobool146265 = icmp eq %struct.edge_def* %e.2264, null
+  br i1 %tobool146265, label %if.then155, label %land.rhs
+
+for.cond145:                                      ; preds = %land.rhs
+  %succ_next152 = getelementptr inbounds %struct.edge_def* %e.2266, i64 0, i32 1
+  %e.2 = load %struct.edge_def** %succ_next152, align 8
+  %tobool146 = icmp eq %struct.edge_def* %e.2, null
+  br i1 %tobool146, label %if.then155, label %land.rhs
+
+land.rhs:                                         ; preds = %if.end143, %for.cond145
+  %e.2266 = phi %struct.edge_def* [ %e.2, %for.cond145 ], [ %e.2264, %if.end143 ]
+  %flags147 = getelementptr inbounds %struct.edge_def* %e.2266, i64 0, i32 6
+  %30 = load i32* %flags147, align 4, !tbaa !3
+  %and148 = and i32 %30, 15
+  %tobool149 = icmp eq i32 %and148, 0
+  br i1 %tobool149, label %for.cond159.outer, label %for.cond145
+
+if.then155:                                       ; preds = %for.cond145, %if.end143
+  %31 = and i8 %purged.2, 1
+  %tobool156 = icmp ne i8 %31, 0
+  br label %return
+
+for.cond159.outer:                                ; preds = %land.rhs, %if.then166
+  %purged.5.ph = phi i8 [ 1, %if.then166 ], [ %purged.2, %land.rhs ]
+  %e.3.ph = phi %struct.edge_def* [ %32, %if.then166 ], [ %e.2264, %land.rhs ]
+  br label %for.cond159
+
+for.cond159:                                      ; preds = %for.cond159.outer, %for.body161
+  %e.3 = phi %struct.edge_def* [ %32, %for.body161 ], [ %e.3.ph, %for.cond159.outer ]
+  %tobool160 = icmp eq %struct.edge_def* %e.3, null
+  br i1 %tobool160, label %for.end169, label %for.body161
+
+for.body161:                                      ; preds = %for.cond159
+  %succ_next162 = getelementptr inbounds %struct.edge_def* %e.3, i64 0, i32 1
+  %32 = load %struct.edge_def** %succ_next162, align 8, !tbaa !0
+  %flags163 = getelementptr inbounds %struct.edge_def* %e.3, i64 0, i32 6
+  %33 = load i32* %flags163, align 4, !tbaa !3
+  %and164 = and i32 %33, 1
+  %tobool165 = icmp eq i32 %and164, 0
+  br i1 %tobool165, label %if.then166, label %for.cond159
+
+if.then166:                                       ; preds = %for.body161
+  tail call void @remove_edge(%struct.edge_def* %e.3) #5
+  br label %for.cond159.outer
+
+for.end169:                                       ; preds = %for.cond159
+  %34 = load %struct.edge_def** %succ144, align 8, !tbaa !0
+  %tobool171 = icmp eq %struct.edge_def* %34, null
+  br i1 %tobool171, label %if.then176, label %lor.lhs.false172
+
+lor.lhs.false172:                                 ; preds = %for.end169
+  %succ_next174 = getelementptr inbounds %struct.edge_def* %34, i64 0, i32 1
+  %35 = load %struct.edge_def** %succ_next174, align 8, !tbaa !0
+  %tobool175 = icmp eq %struct.edge_def* %35, null
+  br i1 %tobool175, label %if.end177, label %if.then176
+
+if.then176:                                       ; preds = %lor.lhs.false172, %for.end169
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 2045, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.purge_dead_edges, i64 0, i64 0)) #6
+  unreachable
+
+if.end177:                                        ; preds = %lor.lhs.false172
+  %probability179 = getelementptr inbounds %struct.edge_def* %34, i64 0, i32 7
+  store i32 10000, i32* %probability179, align 4, !tbaa !3
+  %count180 = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 13
+  %36 = load i64* %count180, align 8, !tbaa !4
+  %count182 = getelementptr inbounds %struct.edge_def* %34, i64 0, i32 8
+  store i64 %36, i64* %count182, align 8, !tbaa !4
+  %37 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !0
+  %tobool183 = icmp eq %struct._IO_FILE* %37, null
+  br i1 %tobool183, label %if.end187, label %if.then184
+
+if.then184:                                       ; preds = %if.end177
+  %index185 = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 11
+  %38 = load i32* %index185, align 4, !tbaa !3
+  %call186 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %37, i8* getelementptr inbounds ([38 x i8]* @.str41, i64 0, i64 0), i32 %38) #5
+  br label %if.end187
+
+if.end187:                                        ; preds = %if.end177, %if.then184
+  %39 = and i8 %purged.5.ph, 1
+  %tobool188 = icmp ne i8 %39, 0
+  br label %return
+
+return:                                           ; preds = %if.end35, %lor.lhs.false80, %if.then95, %if.end104, %if.else99, %if.end87, %for.end77, %land.lhs.true31, %if.end187, %if.then155
+  %retval.0 = phi i1 [ %tobool188, %if.end187 ], [ %tobool156, %if.then155 ], [ false, %land.lhs.true31 ], [ false, %for.end77 ], [ false, %lor.lhs.false80 ], [ true, %if.end87 ], [ true, %if.else99 ], [ true, %if.end104 ], [ true, %if.then95 ], [ false, %if.end35 ]
+  ret i1 %retval.0
+}

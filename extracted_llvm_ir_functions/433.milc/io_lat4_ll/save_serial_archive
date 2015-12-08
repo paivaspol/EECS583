@@ -1,0 +1,527 @@
+define noalias %struct.gauge_file* @save_serial_archive(i8* %filename) #0 {
+entry:
+  %lbuf = alloca [4 x %struct.su3_matrix], align 16
+  %chksum = alloca i32, align 4
+  %utmp = alloca i32, align 4
+  %sums = alloca [30 x i8], align 16
+  %ssplaq = alloca double, align 8
+  %stplaq = alloca double, align 8
+  %trace = alloca double, align 8
+  %0 = bitcast [4 x %struct.su3_matrix]* %lbuf to i8*
+  call void @llvm.lifetime.start(i64 576, i8* %0) #5
+  %call1 = call %struct.gauge_file* @setup_output_gauge_file() #8
+  %header = getelementptr inbounds %struct.gauge_file* %call1, i64 0, i32 1
+  %1 = load %struct.gauge_header** %header, align 8, !tbaa !3
+  call void @d_plaquette(double* %ssplaq, double* %stplaq) #9
+  %2 = load double* %ssplaq, align 8, !tbaa !4
+  %3 = load double* %stplaq, align 8, !tbaa !4
+  %add = fadd double %2, %3
+  %div = fdiv double %add, 6.000000e+00
+  store double 0.000000e+00, double* %trace, align 8, !tbaa !4
+  store i32 0, i32* %chksum, align 4, !tbaa !0
+  %4 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp505 = icmp sgt i32 %4, 0
+  br i1 %cmp505, label %for.cond2.preheader.lr.ph, label %for.end39
+
+for.cond2.preheader.lr.ph:                        ; preds = %entry
+  %5 = load %struct.site** @lattice, align 8, !tbaa !3
+  br label %for.cond2.preheader
+
+for.cond2.preheader:                              ; preds = %for.cond2.preheader.lr.ph, %for.inc37
+  %i.0507 = phi i32 [ 0, %for.cond2.preheader.lr.ph ], [ %inc38, %for.inc37 ]
+  %s.0506 = phi %struct.site* [ %5, %for.cond2.preheader.lr.ph ], [ %incdec.ptr, %for.inc37 ]
+  br label %for.body4
+
+for.body4:                                        ; preds = %for.inc34, %for.cond2.preheader
+  %indvars.iv551 = phi i64 [ 0, %for.cond2.preheader ], [ %indvars.iv.next552, %for.inc34 ]
+  %arrayidx = getelementptr inbounds %struct.site* %s.0506, i64 0, i32 8, i64 %indvars.iv551
+  %call5 = call { double, double } @trace_su3(%struct.su3_matrix* %arrayidx) #9
+  %6 = extractvalue { double, double } %call5, 0
+  %7 = load double* %trace, align 8, !tbaa !4
+  %add6 = fadd double %7, %6
+  store double %add6, double* %trace, align 8, !tbaa !4
+  %chksum.promoted502 = load i32* %chksum, align 4, !tbaa !0
+  br label %for.cond10.preheader
+
+for.cond10.preheader:                             ; preds = %for.inc31, %for.body4
+  %indvars.iv547 = phi i64 [ 0, %for.body4 ], [ %indvars.iv.next548, %for.inc31 ]
+  %add30.lcssa503 = phi i32 [ %chksum.promoted502, %for.body4 ], [ %add30, %for.inc31 ]
+  br label %for.body12
+
+for.body12:                                       ; preds = %for.body12, %for.cond10.preheader
+  %indvars.iv543 = phi i64 [ 0, %for.cond10.preheader ], [ %indvars.iv.next544, %for.body12 ]
+  %add30500 = phi i32 [ %add30.lcssa503, %for.cond10.preheader ], [ %add30, %for.body12 ]
+  %real20 = getelementptr inbounds %struct.site* %s.0506, i64 0, i32 8, i64 %indvars.iv551, i32 0, i64 %indvars.iv547, i64 %indvars.iv543, i32 0
+  %8 = load double* %real20, align 8, !tbaa !4
+  %9 = bitcast double %8 to i64
+  %tmpflt.0.extract.trunc = trunc i64 %9 to i32
+  %add21 = add i32 %tmpflt.0.extract.trunc, %add30500
+  %imag = getelementptr inbounds %struct.site* %s.0506, i64 0, i32 8, i64 %indvars.iv551, i32 0, i64 %indvars.iv547, i64 %indvars.iv543, i32 1
+  %10 = load double* %imag, align 8, !tbaa !4
+  %11 = bitcast double %10 to i64
+  %tmpflt.0.extract.trunc460 = trunc i64 %11 to i32
+  %add30 = add i32 %tmpflt.0.extract.trunc460, %add21
+  %indvars.iv.next544 = add i64 %indvars.iv543, 1
+  %lftr.wideiv545 = trunc i64 %indvars.iv.next544 to i32
+  %exitcond546 = icmp eq i32 %lftr.wideiv545, 3
+  br i1 %exitcond546, label %for.inc31, label %for.body12
+
+for.inc31:                                        ; preds = %for.body12
+  %indvars.iv.next548 = add i64 %indvars.iv547, 1
+  %lftr.wideiv549 = trunc i64 %indvars.iv.next548 to i32
+  %exitcond550 = icmp eq i32 %lftr.wideiv549, 2
+  br i1 %exitcond550, label %for.inc34, label %for.cond10.preheader
+
+for.inc34:                                        ; preds = %for.inc31
+  store i32 %add30, i32* %chksum, align 4, !tbaa !0
+  %indvars.iv.next552 = add i64 %indvars.iv551, 1
+  %lftr.wideiv553 = trunc i64 %indvars.iv.next552 to i32
+  %exitcond554 = icmp eq i32 %lftr.wideiv553, 4
+  br i1 %exitcond554, label %for.inc37, label %for.body4
+
+for.inc37:                                        ; preds = %for.inc34
+  %inc38 = add nsw i32 %i.0507, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %s.0506, i64 1
+  %12 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp = icmp slt i32 %inc38, %12
+  br i1 %cmp, label %for.cond2.preheader, label %for.end39
+
+for.end39:                                        ; preds = %for.inc37, %entry
+  call void @g_doublesum(double* %trace) #9
+  %13 = load double* %trace, align 8, !tbaa !4
+  %14 = load i32* @volume, align 4, !tbaa !0
+  %mul = mul nsw i32 %14, 12
+  %conv = sitofp i32 %mul to double
+  %div40 = fdiv double %13, %conv
+  %call42493 = call i32 (...)* @numnodes() #9
+  %cmp43494 = icmp sgt i32 %call42493, 1
+  %15 = load i32* @this_node, align 4, !tbaa !0
+  %cmp46495 = icmp eq i32 %15, 0
+  br i1 %cmp43494, label %for.body45, label %for.end60
+
+for.body45:                                       ; preds = %for.end39, %for.inc58
+  %16 = phi i32 [ %21, %for.inc58 ], [ %15, %for.end39 ]
+  %cmp46497 = phi i1 [ %cmp46, %for.inc58 ], [ %cmp46495, %for.end39 ]
+  %j.0496 = phi i32 [ %inc59, %for.inc58 ], [ 1, %for.end39 ]
+  br i1 %cmp46497, label %if.then, label %if.end
+
+if.then:                                          ; preds = %for.body45
+  call void @send_field(i8* %0, i32 4, i32 %j.0496) #9
+  %.pre560 = load i32* @this_node, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %for.body45
+  %17 = phi i32 [ %.pre560, %if.then ], [ %16, %for.body45 ]
+  %cmp48 = icmp eq i32 %17, %j.0496
+  br i1 %cmp48, label %if.then50, label %if.end52
+
+if.then50:                                        ; preds = %if.end
+  call void @get_field(i8* %0, i32 4) #9
+  call void @send_integer(i32 0, i32* %chksum) #9
+  %.pr = load i32* @this_node, align 4, !tbaa !0
+  br label %if.end52
+
+if.end52:                                         ; preds = %if.then50, %if.end
+  %18 = phi i32 [ %.pr, %if.then50 ], [ %17, %if.end ]
+  %cmp53 = icmp eq i32 %18, 0
+  br i1 %cmp53, label %if.then55, label %for.inc58
+
+if.then55:                                        ; preds = %if.end52
+  call void @receive_integer(i32* %utmp) #9
+  %19 = load i32* %utmp, align 4, !tbaa !0
+  %20 = load i32* %chksum, align 4, !tbaa !0
+  %add56 = add i32 %20, %19
+  store i32 %add56, i32* %chksum, align 4, !tbaa !0
+  br label %for.inc58
+
+for.inc58:                                        ; preds = %if.end52, %if.then55
+  %inc59 = add nsw i32 %j.0496, 1
+  %call42 = call i32 (...)* @numnodes() #9
+  %cmp43 = icmp slt i32 %inc59, %call42
+  %21 = load i32* @this_node, align 4, !tbaa !0
+  %cmp46 = icmp eq i32 %21, 0
+  br i1 %cmp43, label %for.body45, label %for.end60
+
+for.end60:                                        ; preds = %for.inc58, %for.end39
+  %cmp46.lcssa = phi i1 [ %cmp46495, %for.end39 ], [ %cmp46, %for.inc58 ]
+  br i1 %cmp46.lcssa, label %if.then63, label %if.end110
+
+if.then63:                                        ; preds = %for.end60
+  %call64 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([12 x i8]* @.str153, i64 0, i64 0), double %div40) #9
+  %22 = load i32* %chksum, align 4, !tbaa !0
+  %call65 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([15 x i8]* @.str154, i64 0, i64 0), i32 %22) #9
+  %23 = load i32* %chksum, align 4, !tbaa !0
+  %call66 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str155, i64 0, i64 0), i32 %23) #9
+  %call67 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([16 x i8]* @.str156, i64 0, i64 0), double %div) #9
+  %call68 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([38 x i8]* @.str157, i64 0, i64 0), i8* %filename) #9
+  %call69 = call %struct._IO_FILE* @fopen(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str26, i64 0, i64 0)) #9
+  %cmp70 = icmp eq %struct._IO_FILE* %call69, null
+  br i1 %cmp70, label %if.then72, label %if.end74
+
+if.then72:                                        ; preds = %if.then63
+  %call73 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([31 x i8]* @.str158, i64 0, i64 0), i8* %filename) #9
+  call void @terminate(i32 1) #9
+  br label %if.end74
+
+if.end74:                                         ; preds = %if.then72, %if.then63
+  %24 = call i64 @fwrite(i8* getelementptr inbounds ([14 x i8]* @.str159, i64 0, i64 0), i64 13, i64 1, %struct._IO_FILE* %call69) #5
+  %25 = call i64 @fwrite(i8* getelementptr inbounds ([25 x i8]* @.str160, i64 0, i64 0), i64 24, i64 1, %struct._IO_FILE* %call69) #5
+  %26 = load i32* @nx, align 4, !tbaa !0
+  %call77 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([18 x i8]* @.str161, i64 0, i64 0), i32 %26) #9
+  %27 = load i32* @ny, align 4, !tbaa !0
+  %call78 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([18 x i8]* @.str162, i64 0, i64 0), i32 %27) #9
+  %28 = load i32* @nz, align 4, !tbaa !0
+  %call79 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([18 x i8]* @.str163, i64 0, i64 0), i32 %28) #9
+  %29 = load i32* @nt, align 4, !tbaa !0
+  %call80 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([18 x i8]* @.str164, i64 0, i64 0), i32 %29) #9
+  %30 = load i32* %chksum, align 4, !tbaa !0
+  %call81 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([15 x i8]* @.str165, i64 0, i64 0), i32 %30) #9
+  %call82 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([20 x i8]* @.str166, i64 0, i64 0), double %div40) #9
+  %call83 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([19 x i8]* @.str167, i64 0, i64 0), double %div) #9
+  %call84 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([18 x i8]* @.str168, i64 0, i64 0), i8* getelementptr inbounds ([256 x i8]* @ensemble_id, i64 0, i64 0)) #9
+  %31 = load i32* @sequence_number, align 4, !tbaa !0
+  %call85 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([22 x i8]* @.str169, i64 0, i64 0), i32 %31) #9
+  %32 = call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str170, i64 0, i64 0), i64 32, i64 1, %struct._IO_FILE* %call69) #5
+  %arraydecay87 = getelementptr inbounds %struct.gauge_header* %1, i64 0, i32 1, i64 0
+  %call88 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([11 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str28, i64 0, i64 0), i8* %arraydecay87, i32 0, i32 0) #8
+  %arraydecay89 = getelementptr inbounds [30 x i8]* %sums, i64 0, i64 0
+  %sum29 = getelementptr inbounds %struct.gauge_file* %call1, i64 0, i32 6, i32 1
+  %33 = load i32* %sum29, align 4, !tbaa !0
+  %sum31 = getelementptr inbounds %struct.gauge_file* %call1, i64 0, i32 6, i32 0
+  %34 = load i32* %sum31, align 4, !tbaa !0
+  %call91 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay89, i8* getelementptr inbounds ([6 x i8]* @.str29, i64 0, i64 0), i32 %33, i32 %34) #9
+  %call93 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str28, i64 0, i64 0), i8* %arraydecay89, i32 0, i32 0) #8
+  %call94 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([3 x i8]* @.str31, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* bitcast (i32* @nx to i8*), i32 0, i32 0) #8
+  %call95 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([3 x i8]* @.str32, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* bitcast (i32* @ny to i8*), i32 0, i32 0) #8
+  %call96 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([3 x i8]* @.str33, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* bitcast (i32* @nz to i8*), i32 0, i32 0) #8
+  %call97 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call69, i8* getelementptr inbounds ([3 x i8]* @.str34, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* bitcast (i32* @nt to i8*), i32 0, i32 0) #8
+  call void @write_appl_gauge_info(%struct._IO_FILE* %call69) #9
+  %35 = call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str171, i64 0, i64 0), i64 32, i64 1, %struct._IO_FILE* %call69) #5
+  %36 = call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str6, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %call69) #5
+  %37 = load i32* @nx, align 4, !tbaa !0
+  %38 = load i32* @ny, align 4, !tbaa !0
+  %mul100 = mul nsw i32 %38, %37
+  %39 = load i32* @nz, align 4, !tbaa !0
+  %mul101 = mul nsw i32 %mul100, %39
+  %mul102 = mul nsw i32 %mul101, 48
+  %conv103 = sext i32 %mul102 to i64
+  %call104 = call noalias i8* @calloc(i64 %conv103, i64 8) #9
+  %40 = bitcast i8* %call104 to double*
+  %cmp105 = icmp eq i8* %call104, null
+  br i1 %cmp105, label %if.then107, label %if.end110
+
+if.then107:                                       ; preds = %if.end74
+  %puts463 = call i32 @puts(i8* getelementptr inbounds ([28 x i8]* @str204, i64 0, i64 0))
+  call void @terminate(i32 1) #9
+  br label %if.end110
+
+if.end110:                                        ; preds = %if.end74, %if.then107, %for.end60
+  %outfile.0 = phi %struct._IO_FILE* [ %call69, %if.then107 ], [ %call69, %if.end74 ], [ undef, %for.end60 ]
+  %uout.0 = phi double* [ %40, %if.then107 ], [ %40, %if.end74 ], [ undef, %for.end60 ]
+  %vol3.0 = phi i32 [ %mul101, %if.then107 ], [ %mul101, %if.end74 ], [ undef, %for.end60 ]
+  call void (...)* @g_sync() #9
+  %41 = load i32* @nt, align 4, !tbaa !0
+  %cmp112490 = icmp sgt i32 %41, 0
+  br i1 %cmp112490, label %for.cond115.preheader.lr.ph, label %for.end323
+
+for.cond115.preheader.lr.ph:                      ; preds = %if.end110
+  %42 = bitcast double* %uout.0 to i32*
+  %mul308 = mul nsw i32 %vol3.0, 48
+  %43 = bitcast double* %uout.0 to i8*
+  %conv311 = sext i32 %mul308 to i64
+  %mul312 = shl nsw i64 %conv311, 3
+  br label %for.cond115.preheader
+
+for.cond115.preheader:                            ; preds = %for.inc321, %for.cond115.preheader.lr.ph
+  %currentnode.0492 = phi i32 [ 0, %for.cond115.preheader.lr.ph ], [ %currentnode.1.lcssa, %for.inc321 ]
+  %tslice.0491 = phi i32 [ 0, %for.cond115.preheader.lr.ph ], [ %inc322, %for.inc321 ]
+  %44 = load i32* @nz, align 4, !tbaa !0
+  %cmp116485 = icmp sgt i32 %44, 0
+  br i1 %cmp116485, label %for.cond119.preheader.lr.ph, label %for.end303
+
+for.cond119.preheader.lr.ph:                      ; preds = %for.cond115.preheader
+  %.pre = load i32* @ny, align 4, !tbaa !0
+  br label %for.cond119.preheader
+
+for.cond119.preheader:                            ; preds = %for.cond119.preheader.lr.ph, %for.inc301
+  %45 = phi i32 [ %44, %for.cond119.preheader.lr.ph ], [ %78, %for.inc301 ]
+  %46 = phi i32 [ %.pre, %for.cond119.preheader.lr.ph ], [ %79, %for.inc301 ]
+  %currentnode.1488 = phi i32 [ %currentnode.0492, %for.cond119.preheader.lr.ph ], [ %currentnode.2.lcssa, %for.inc301 ]
+  %j.1487 = phi i32 [ 0, %for.cond119.preheader.lr.ph ], [ %j.2.lcssa, %for.inc301 ]
+  %z.0486 = phi i32 [ 0, %for.cond119.preheader.lr.ph ], [ %inc302, %for.inc301 ]
+  %cmp120479 = icmp sgt i32 %46, 0
+  br i1 %cmp120479, label %for.cond123.preheader.lr.ph, label %for.inc301
+
+for.cond123.preheader.lr.ph:                      ; preds = %for.cond119.preheader
+  %.pre556 = load i32* @nx, align 4, !tbaa !0
+  br label %for.cond123.preheader
+
+for.cond123.preheader:                            ; preds = %for.cond123.preheader.lr.ph, %for.inc298
+  %47 = phi i32 [ %46, %for.cond123.preheader.lr.ph ], [ %76, %for.inc298 ]
+  %48 = phi i32 [ %.pre556, %for.cond123.preheader.lr.ph ], [ %77, %for.inc298 ]
+  %currentnode.2482 = phi i32 [ %currentnode.1488, %for.cond123.preheader.lr.ph ], [ %currentnode.3.lcssa, %for.inc298 ]
+  %j.2481 = phi i32 [ %j.1487, %for.cond123.preheader.lr.ph ], [ %j.3.lcssa, %for.inc298 ]
+  %y.0480 = phi i32 [ 0, %for.cond123.preheader.lr.ph ], [ %inc299, %for.inc298 ]
+  %cmp124474 = icmp sgt i32 %48, 0
+  br i1 %cmp124474, label %for.body126, label %for.inc298
+
+for.body126:                                      ; preds = %for.cond123.preheader, %for.inc295
+  %currentnode.3477 = phi i32 [ %currentnode.4, %for.inc295 ], [ %currentnode.2482, %for.cond123.preheader ]
+  %j.3476 = phi i32 [ %j.4, %for.inc295 ], [ %j.2481, %for.cond123.preheader ]
+  %x.0475 = phi i32 [ %inc296, %for.inc295 ], [ 0, %for.cond123.preheader ]
+  %call127 = call i32 @node_number(i32 %x.0475, i32 %y.0480, i32 %z.0486, i32 %tslice.0491) #9
+  %cmp128 = icmp eq i32 %call127, %currentnode.3477
+  br i1 %cmp128, label %if.end146thread-pre-split, label %if.then130
+
+if.then130:                                       ; preds = %for.body126
+  %49 = load i32* @this_node, align 4, !tbaa !0
+  %cmp131 = icmp ne i32 %49, 0
+  %cmp133 = icmp eq i32 %call127, 0
+  %or.cond464 = or i1 %cmp131, %cmp133
+  br i1 %or.cond464, label %if.end137, label %if.then135
+
+if.then135:                                       ; preds = %if.then130
+  call void @send_field(i8* %0, i32 4, i32 %call127) #9
+  %.pre559 = load i32* @this_node, align 4, !tbaa !0
+  br label %if.end137
+
+if.end137:                                        ; preds = %if.then130, %if.then135
+  %50 = phi i32 [ %49, %if.then130 ], [ %.pre559, %if.then135 ]
+  %cmp138 = icmp eq i32 %50, %call127
+  %cmp141 = icmp ne i32 %call127, 0
+  %or.cond = and i1 %cmp138, %cmp141
+  br i1 %or.cond, label %if.then143, label %if.end146
+
+if.then143:                                       ; preds = %if.end137
+  call void @get_field(i8* %0, i32 4) #9
+  br label %if.end146thread-pre-split
+
+if.end146thread-pre-split:                        ; preds = %for.body126, %if.then143
+  %currentnode.4.ph = phi i32 [ %call127, %if.then143 ], [ %currentnode.3477, %for.body126 ]
+  %.pr465 = load i32* @this_node, align 4, !tbaa !0
+  br label %if.end146
+
+if.end146:                                        ; preds = %if.end146thread-pre-split, %if.end137
+  %51 = phi i32 [ %.pr465, %if.end146thread-pre-split ], [ %50, %if.end137 ]
+  %currentnode.4 = phi i32 [ %currentnode.4.ph, %if.end146thread-pre-split ], [ %call127, %if.end137 ]
+  %cmp147 = icmp eq i32 %51, 0
+  br i1 %cmp147, label %if.then149, label %if.else273
+
+if.then149:                                       ; preds = %if.end146
+  %cmp150 = icmp eq i32 %currentnode.4, 0
+  br i1 %cmp150, label %if.then152, label %if.else
+
+if.then152:                                       ; preds = %if.then149
+  %call153 = call i32 @node_index(i32 %x.0475, i32 %y.0480, i32 %z.0486, i32 %tslice.0491) #9
+  %idxprom154 = sext i32 %call153 to i64
+  %52 = load %struct.site** @lattice, align 8, !tbaa !3
+  %mul182 = mul nsw i32 %j.3476, 48
+  br label %for.cond160.preheader
+
+for.cond160.preheader:                            ; preds = %for.inc211, %if.then152
+  %indvars.iv537 = phi i64 [ 0, %if.then152 ], [ %indvars.iv.next538, %for.inc211 ]
+  %53 = mul nsw i64 %indvars.iv537, 12
+  %54 = trunc i64 %53 to i32
+  %add181 = add i32 %54, %mul182
+  br label %for.cond164.preheader
+
+for.cond164.preheader:                            ; preds = %for.inc208, %for.cond160.preheader
+  %indvars.iv532 = phi i64 [ 0, %for.cond160.preheader ], [ %indvars.iv.next533, %for.inc208 ]
+  %55 = mul nsw i64 %indvars.iv532, 3
+  br label %for.body167
+
+for.body167:                                      ; preds = %for.body167, %for.cond164.preheader
+  %indvars.iv525 = phi i64 [ 0, %for.cond164.preheader ], [ %indvars.iv.next526, %for.body167 ]
+  %real176 = getelementptr inbounds %struct.site* %52, i64 %idxprom154, i32 8, i64 %indvars.iv537, i32 0, i64 %indvars.iv532, i64 %indvars.iv525, i32 0
+  %56 = load double* %real176, align 8, !tbaa !4
+  %57 = add nsw i64 %indvars.iv525, %55
+  %58 = shl nsw i64 %57, 1
+  %59 = trunc i64 %58 to i32
+  %add183 = add i32 %add181, %59
+  %idxprom184 = sext i32 %add183 to i64
+  %arrayidx185 = getelementptr inbounds double* %uout.0, i64 %idxprom184
+  store double %56, double* %arrayidx185, align 8, !tbaa !4
+  %imag194 = getelementptr inbounds %struct.site* %52, i64 %idxprom154, i32 8, i64 %indvars.iv537, i32 0, i64 %indvars.iv532, i64 %indvars.iv525, i32 1
+  %60 = load double* %imag194, align 8, !tbaa !4
+  %61 = or i64 %58, 1
+  %62 = trunc i64 %61 to i32
+  %add202 = add i32 %add181, %62
+  %idxprom203 = sext i32 %add202 to i64
+  %arrayidx204 = getelementptr inbounds double* %uout.0, i64 %idxprom203
+  store double %60, double* %arrayidx204, align 8, !tbaa !4
+  %indvars.iv.next526 = add i64 %indvars.iv525, 1
+  %lftr.wideiv530 = trunc i64 %indvars.iv.next526 to i32
+  %exitcond531 = icmp eq i32 %lftr.wideiv530, 3
+  br i1 %exitcond531, label %for.inc208, label %for.body167
+
+for.inc208:                                       ; preds = %for.body167
+  %indvars.iv.next533 = add i64 %indvars.iv532, 1
+  %lftr.wideiv535 = trunc i64 %indvars.iv.next533 to i32
+  %exitcond536 = icmp eq i32 %lftr.wideiv535, 2
+  br i1 %exitcond536, label %for.inc211, label %for.cond164.preheader
+
+for.inc211:                                       ; preds = %for.inc208
+  %indvars.iv.next538 = add i64 %indvars.iv537, 1
+  %lftr.wideiv540 = trunc i64 %indvars.iv.next538 to i32
+  %exitcond541 = icmp eq i32 %lftr.wideiv540, 4
+  br i1 %exitcond541, label %if.end271, label %for.cond160.preheader
+
+if.else:                                          ; preds = %if.then149
+  call void @get_field(i8* %0, i32 576) #9
+  %mul240 = mul nsw i32 %j.3476, 48
+  br label %for.cond219.preheader
+
+for.cond219.preheader:                            ; preds = %for.inc268, %if.else
+  %indvars.iv520 = phi i64 [ 0, %if.else ], [ %indvars.iv.next521, %for.inc268 ]
+  %63 = mul nsw i64 %indvars.iv520, 12
+  %64 = trunc i64 %63 to i32
+  %add239 = add i32 %64, %mul240
+  br label %for.cond223.preheader
+
+for.cond223.preheader:                            ; preds = %for.inc265, %for.cond219.preheader
+  %indvars.iv515 = phi i64 [ 0, %for.cond219.preheader ], [ %indvars.iv.next516, %for.inc265 ]
+  %65 = mul nsw i64 %indvars.iv515, 3
+  br label %for.body226
+
+for.body226:                                      ; preds = %for.body226, %for.cond223.preheader
+  %indvars.iv508 = phi i64 [ 0, %for.cond223.preheader ], [ %indvars.iv.next509, %for.body226 ]
+  %real234 = getelementptr inbounds [4 x %struct.su3_matrix]* %lbuf, i64 0, i64 %indvars.iv520, i32 0, i64 %indvars.iv515, i64 %indvars.iv508, i32 0
+  %66 = load double* %real234, align 16, !tbaa !4
+  %67 = add nsw i64 %indvars.iv508, %65
+  %68 = shl nsw i64 %67, 1
+  %69 = trunc i64 %68 to i32
+  %add241 = add i32 %add239, %69
+  %idxprom242 = sext i32 %add241 to i64
+  %arrayidx243 = getelementptr inbounds double* %uout.0, i64 %idxprom242
+  store double %66, double* %arrayidx243, align 8, !tbaa !4
+  %imag251 = getelementptr inbounds [4 x %struct.su3_matrix]* %lbuf, i64 0, i64 %indvars.iv520, i32 0, i64 %indvars.iv515, i64 %indvars.iv508, i32 1
+  %70 = load double* %imag251, align 8, !tbaa !4
+  %71 = or i64 %68, 1
+  %72 = trunc i64 %71 to i32
+  %add259 = add i32 %add239, %72
+  %idxprom260 = sext i32 %add259 to i64
+  %arrayidx261 = getelementptr inbounds double* %uout.0, i64 %idxprom260
+  store double %70, double* %arrayidx261, align 8, !tbaa !4
+  %indvars.iv.next509 = add i64 %indvars.iv508, 1
+  %lftr.wideiv513 = trunc i64 %indvars.iv.next509 to i32
+  %exitcond514 = icmp eq i32 %lftr.wideiv513, 3
+  br i1 %exitcond514, label %for.inc265, label %for.body226
+
+for.inc265:                                       ; preds = %for.body226
+  %indvars.iv.next516 = add i64 %indvars.iv515, 1
+  %lftr.wideiv518 = trunc i64 %indvars.iv.next516 to i32
+  %exitcond519 = icmp eq i32 %lftr.wideiv518, 2
+  br i1 %exitcond519, label %for.inc268, label %for.cond223.preheader
+
+for.inc268:                                       ; preds = %for.inc265
+  %indvars.iv.next521 = add i64 %indvars.iv520, 1
+  %lftr.wideiv523 = trunc i64 %indvars.iv.next521 to i32
+  %exitcond524 = icmp eq i32 %lftr.wideiv523, 4
+  br i1 %exitcond524, label %if.end271, label %for.cond219.preheader
+
+if.end271:                                        ; preds = %for.inc211, %for.inc268
+  %inc272 = add nsw i32 %j.3476, 1
+  br label %for.inc295
+
+if.else273:                                       ; preds = %if.end146
+  %cmp274 = icmp eq i32 %51, %currentnode.4
+  br i1 %cmp274, label %if.then276, label %for.inc295
+
+if.then276:                                       ; preds = %if.else273
+  %call277 = call i32 @node_index(i32 %x.0475, i32 %y.0480, i32 %z.0486, i32 %tslice.0491) #9
+  %idxprom285 = sext i32 %call277 to i64
+  %.pre558 = load %struct.site** @lattice, align 8, !tbaa !3
+  br label %for.body281
+
+for.body281:                                      ; preds = %for.body281, %if.then276
+  %indvars.iv = phi i64 [ 0, %if.then276 ], [ %indvars.iv.next, %for.body281 ]
+  %arrayidx283 = getelementptr inbounds [4 x %struct.su3_matrix]* %lbuf, i64 0, i64 %indvars.iv
+  %arrayidx288 = getelementptr inbounds %struct.site* %.pre558, i64 %idxprom285, i32 8, i64 %indvars.iv
+  %73 = bitcast %struct.su3_matrix* %arrayidx283 to i8*
+  %74 = bitcast %struct.su3_matrix* %arrayidx288 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %73, i8* %74, i64 144, i32 8, i1 false), !tbaa.struct !5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.end291, label %for.body281
+
+for.end291:                                       ; preds = %for.body281
+  call void @send_field(i8* %0, i32 576, i32 0) #9
+  br label %for.inc295
+
+for.inc295:                                       ; preds = %if.end271, %for.end291, %if.else273
+  %j.4 = phi i32 [ %inc272, %if.end271 ], [ %j.3476, %for.end291 ], [ %j.3476, %if.else273 ]
+  %inc296 = add nsw i32 %x.0475, 1
+  %75 = load i32* @nx, align 4, !tbaa !0
+  %cmp124 = icmp slt i32 %inc296, %75
+  br i1 %cmp124, label %for.body126, label %for.cond123.for.inc298_crit_edge
+
+for.cond123.for.inc298_crit_edge:                 ; preds = %for.inc295
+  %.pre557 = load i32* @ny, align 4, !tbaa !0
+  br label %for.inc298
+
+for.inc298:                                       ; preds = %for.cond123.for.inc298_crit_edge, %for.cond123.preheader
+  %76 = phi i32 [ %.pre557, %for.cond123.for.inc298_crit_edge ], [ %47, %for.cond123.preheader ]
+  %77 = phi i32 [ %75, %for.cond123.for.inc298_crit_edge ], [ %48, %for.cond123.preheader ]
+  %currentnode.3.lcssa = phi i32 [ %currentnode.4, %for.cond123.for.inc298_crit_edge ], [ %currentnode.2482, %for.cond123.preheader ]
+  %j.3.lcssa = phi i32 [ %j.4, %for.cond123.for.inc298_crit_edge ], [ %j.2481, %for.cond123.preheader ]
+  %inc299 = add nsw i32 %y.0480, 1
+  %cmp120 = icmp slt i32 %inc299, %76
+  br i1 %cmp120, label %for.cond123.preheader, label %for.cond119.for.inc301_crit_edge
+
+for.cond119.for.inc301_crit_edge:                 ; preds = %for.inc298
+  %.pre555 = load i32* @nz, align 4, !tbaa !0
+  br label %for.inc301
+
+for.inc301:                                       ; preds = %for.cond119.for.inc301_crit_edge, %for.cond119.preheader
+  %78 = phi i32 [ %.pre555, %for.cond119.for.inc301_crit_edge ], [ %45, %for.cond119.preheader ]
+  %79 = phi i32 [ %76, %for.cond119.for.inc301_crit_edge ], [ %46, %for.cond119.preheader ]
+  %currentnode.2.lcssa = phi i32 [ %currentnode.3.lcssa, %for.cond119.for.inc301_crit_edge ], [ %currentnode.1488, %for.cond119.preheader ]
+  %j.2.lcssa = phi i32 [ %j.3.lcssa, %for.cond119.for.inc301_crit_edge ], [ %j.1487, %for.cond119.preheader ]
+  %inc302 = add nsw i32 %z.0486, 1
+  %cmp116 = icmp slt i32 %inc302, %78
+  br i1 %cmp116, label %for.cond119.preheader, label %for.end303
+
+for.end303:                                       ; preds = %for.inc301, %for.cond115.preheader
+  %currentnode.1.lcssa = phi i32 [ %currentnode.0492, %for.cond115.preheader ], [ %currentnode.2.lcssa, %for.inc301 ]
+  %80 = load i32* @this_node, align 4, !tbaa !0
+  %cmp304 = icmp eq i32 %80, 0
+  br i1 %cmp304, label %if.then307, label %for.inc321
+
+if.then307:                                       ; preds = %for.end303
+  call void @byterevn(i32* %42, i32 %mul308) #9
+  %call313 = call i64 @fwrite(i8* %43, i64 %mul312, i64 1, %struct._IO_FILE* %outfile.0) #9
+  %cmp314 = icmp eq i64 %call313, 1
+  br i1 %cmp314, label %if.end318, label %if.then316
+
+if.then316:                                       ; preds = %if.then307
+  %puts = call i32 @puts(i8* getelementptr inbounds ([17 x i8]* @str203, i64 0, i64 0))
+  br label %if.end318
+
+if.end318:                                        ; preds = %if.then307, %if.then316
+  %call319 = call i32 @fflush(%struct._IO_FILE* %outfile.0) #9
+  br label %for.inc321
+
+for.inc321:                                       ; preds = %for.end303, %if.end318
+  %inc322 = add nsw i32 %tslice.0491, 1
+  %81 = load i32* @nt, align 4, !tbaa !0
+  %cmp112 = icmp slt i32 %inc322, %81
+  br i1 %cmp112, label %for.cond115.preheader, label %for.end323
+
+for.end323:                                       ; preds = %for.inc321, %if.end110
+  %82 = load i32* @this_node, align 4, !tbaa !0
+  %cmp324 = icmp eq i32 %82, 0
+  br i1 %cmp324, label %if.then326, label %if.end329
+
+if.then326:                                       ; preds = %for.end323
+  %call327 = call i32 @fclose(%struct._IO_FILE* %outfile.0) #9
+  %call328 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([29 x i8]* @.str174, i64 0, i64 0), i8* %filename) #9
+  %83 = bitcast double* %uout.0 to i8*
+  call void @free(i8* %83) #9
+  br label %if.end329
+
+if.end329:                                        ; preds = %if.then326, %for.end323
+  call void (...)* @g_sync() #9
+  call void @llvm.lifetime.end(i64 576, i8* %0) #5
+  ret %struct.gauge_file* %call1
+}

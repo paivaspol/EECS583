@@ -1,0 +1,98 @@
+define internal void @feat_s3_1x39_cep2feat(%struct.feat_s* nocapture %fcb, float** nocapture %mfc, float** nocapture %feat) #0 {
+entry:
+  %0 = load float** %feat, align 8, !tbaa !0
+  %1 = bitcast float* %0 to i8*
+  %2 = load float** %mfc, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds float* %2, i64 1
+  %3 = bitcast float* %add.ptr to i8*
+  %cepsize = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 1
+  %4 = load i32* %cepsize, align 4, !tbaa !3
+  %sub = add nsw i32 %4, -1
+  %conv = sext i32 %sub to i64
+  %mul = shl nsw i64 %conv, 2
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %1, i8* %3, i64 %mul, i32 4, i1 false)
+  %5 = load float** %feat, align 8, !tbaa !0
+  %6 = load i32* %cepsize, align 4, !tbaa !3
+  %idx.ext = sext i32 %6 to i64
+  %add.ptr4.sum = add i64 %idx.ext, -1
+  %arrayidx6 = getelementptr inbounds float** %mfc, i64 2
+  %7 = load float** %arrayidx6, align 8, !tbaa !0
+  %arrayidx8 = getelementptr inbounds float** %mfc, i64 -2
+  %8 = load float** %arrayidx8, align 8, !tbaa !0
+  %sub11118 = add nsw i32 %6, -1
+  %cmp119 = icmp sgt i32 %sub11118, 0
+  br i1 %cmp119, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv121 = phi i64 [ %add.ptr7.sum, %for.body ], [ 0, %entry ]
+  %add.ptr7.sum = add i64 %indvars.iv121, 1
+  %arrayidx13 = getelementptr inbounds float* %7, i64 %add.ptr7.sum
+  %9 = load float* %arrayidx13, align 4, !tbaa !5
+  %arrayidx15 = getelementptr inbounds float* %8, i64 %add.ptr7.sum
+  %10 = load float* %arrayidx15, align 4, !tbaa !5
+  %sub16 = fsub float %9, %10
+  %add.ptr5.sum114 = add i64 %indvars.iv121, %add.ptr4.sum
+  %arrayidx18 = getelementptr inbounds float* %5, i64 %add.ptr5.sum114
+  store float %sub16, float* %arrayidx18, align 4, !tbaa !5
+  %11 = trunc i64 %add.ptr7.sum to i32
+  %cmp = icmp slt i32 %11, %sub11118
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  %idx.ext21 = sext i32 %sub11118 to i64
+  %add.ptr5.sum = add i64 %idx.ext21, %add.ptr4.sum
+  %add.ptr22 = getelementptr inbounds float* %5, i64 %add.ptr5.sum
+  %12 = load float** %mfc, align 8, !tbaa !0
+  %13 = load float* %12, align 4, !tbaa !5
+  store float %13, float* %add.ptr22, align 4, !tbaa !5
+  %14 = load float* %7, align 4, !tbaa !5
+  %15 = load float* %8, align 4, !tbaa !5
+  %sub30 = fsub float %14, %15
+  %add.ptr22.sum = add i64 %idx.ext21, %idx.ext
+  %arrayidx31 = getelementptr inbounds float* %5, i64 %add.ptr22.sum
+  store float %sub30, float* %arrayidx31, align 4, !tbaa !5
+  %arrayidx32 = getelementptr inbounds float** %mfc, i64 3
+  %16 = load float** %arrayidx32, align 8, !tbaa !0
+  %17 = load float* %16, align 4, !tbaa !5
+  %arrayidx34 = getelementptr inbounds float** %mfc, i64 -1
+  %18 = load float** %arrayidx34, align 8, !tbaa !0
+  %19 = load float* %18, align 4, !tbaa !5
+  %sub36 = fsub float %17, %19
+  %arrayidx37 = getelementptr inbounds float** %mfc, i64 1
+  %20 = load float** %arrayidx37, align 8, !tbaa !0
+  %21 = load float* %20, align 4, !tbaa !5
+  %arrayidx39 = getelementptr inbounds float** %mfc, i64 -3
+  %22 = load float** %arrayidx39, align 8, !tbaa !0
+  %23 = load float* %22, align 4, !tbaa !5
+  %sub41 = fsub float %21, %23
+  %sub42 = fsub float %sub36, %sub41
+  %add.ptr22.sum112 = add i64 %add.ptr5.sum, 2
+  %arrayidx43 = getelementptr inbounds float* %5, i64 %add.ptr22.sum112
+  store float %sub42, float* %arrayidx43, align 4, !tbaa !5
+  %add.ptr22.sum113 = add i64 %add.ptr5.sum, 3
+  br i1 %cmp119, label %for.body58, label %for.end74
+
+for.body58:                                       ; preds = %for.end, %for.body58
+  %indvars.iv = phi i64 [ %add.ptr46.sum, %for.body58 ], [ 0, %for.end ]
+  %add.ptr46.sum = add i64 %indvars.iv, 1
+  %arrayidx60 = getelementptr inbounds float* %16, i64 %add.ptr46.sum
+  %24 = load float* %arrayidx60, align 4, !tbaa !5
+  %arrayidx62 = getelementptr inbounds float* %18, i64 %add.ptr46.sum
+  %25 = load float* %arrayidx62, align 4, !tbaa !5
+  %sub63 = fsub float %24, %25
+  %arrayidx65 = getelementptr inbounds float* %20, i64 %add.ptr46.sum
+  %26 = load float* %arrayidx65, align 4, !tbaa !5
+  %arrayidx67 = getelementptr inbounds float* %22, i64 %add.ptr46.sum
+  %27 = load float* %arrayidx67, align 4, !tbaa !5
+  %sub68 = fsub float %26, %27
+  %sub69 = fsub float %sub63, %sub68
+  %add.ptr44.sum = add i64 %add.ptr22.sum113, %indvars.iv
+  %arrayidx71 = getelementptr inbounds float* %5, i64 %add.ptr44.sum
+  store float %sub69, float* %arrayidx71, align 4, !tbaa !5
+  %28 = trunc i64 %add.ptr46.sum to i32
+  %cmp56 = icmp slt i32 %28, %sub11118
+  br i1 %cmp56, label %for.body58, label %for.end74
+
+for.end74:                                        ; preds = %for.body58, %for.end
+  ret void
+}

@@ -1,0 +1,57 @@
+define internal fastcc void @invalidate_mems_from_set(%struct.propagate_block_info* nocapture %pbi, %struct.rtx_def* %exp) #0 {
+entry:
+  %mem_set_list = getelementptr inbounds %struct.propagate_block_info* %pbi, i64 0, i32 4
+  %0 = load %struct.rtx_def** %mem_set_list, align 8, !tbaa !3
+  %tobool2224 = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool2224, label %while.end, label %while.body.lr.ph.lr.ph
+
+while.body.lr.ph.lr.ph:                           ; preds = %entry
+  %mem_set_list_len = getelementptr inbounds %struct.propagate_block_info* %pbi, i64 0, i32 7
+  br label %while.body.lr.ph
+
+while.cond.outer.loopexit:                        ; preds = %while.body
+  %tobool22 = icmp eq %struct.rtx_def* %2, null
+  br i1 %tobool22, label %while.end, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %while.body.lr.ph.lr.ph, %while.cond.outer.loopexit
+  %temp.0.ph26 = phi %struct.rtx_def* [ %0, %while.body.lr.ph.lr.ph ], [ %2, %while.cond.outer.loopexit ]
+  %prev.0.ph25 = phi %struct.rtx_def* [ null, %while.body.lr.ph.lr.ph ], [ %temp.023, %while.cond.outer.loopexit ]
+  %tobool5 = icmp eq %struct.rtx_def* %prev.0.ph25, null
+  %1 = getelementptr inbounds %struct.rtx_def* %prev.0.ph25, i64 0, i32 1, i64 1, i32 0
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end
+  %temp.023 = phi %struct.rtx_def* [ %temp.0.ph26, %while.body.lr.ph ], [ %2, %if.end ]
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %temp.023, i64 0, i32 1, i64 1
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %temp.023, i64 0, i32 1, i64 0
+  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx3, align 8, !tbaa !3
+  %call = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %exp, %struct.rtx_def* %3) #6
+  %tobool4 = icmp eq i32 %call, 0
+  br i1 %tobool4, label %while.cond.outer.loopexit, label %if.then
+
+if.then:                                          ; preds = %while.body
+  br i1 %tobool5, label %if.else, label %if.then6
+
+if.then6:                                         ; preds = %if.then
+  %.c = ptrtoint %struct.rtx_def* %2 to i64
+  store i64 %.c, i64* %1, align 8, !tbaa !3
+  br label %if.end
+
+if.else:                                          ; preds = %if.then
+  store %struct.rtx_def* %2, %struct.rtx_def** %mem_set_list, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then6
+  tail call void @free_EXPR_LIST_node(%struct.rtx_def* %temp.023) #6
+  %4 = load i32* %mem_set_list_len, align 4, !tbaa !0
+  %dec = add nsw i32 %4, -1
+  store i32 %dec, i32* %mem_set_list_len, align 4, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %2, null
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %entry, %while.cond.outer.loopexit, %if.end
+  ret void
+}

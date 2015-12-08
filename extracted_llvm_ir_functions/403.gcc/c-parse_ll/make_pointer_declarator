@@ -1,0 +1,19 @@
+define %union.tree_node* @make_pointer_declarator(%union.tree_node* %type_quals_attrs, %union.tree_node* %target) #0 {
+entry:
+  %quals = alloca %union.tree_node*, align 8
+  %attrs = alloca %union.tree_node*, align 8
+  call void @split_specs_attrs(%union.tree_node* %type_quals_attrs, %union.tree_node** %quals, %union.tree_node** %attrs) #6
+  %0 = load %union.tree_node** %attrs, align 8, !tbaa !4
+  %cmp = icmp eq %union.tree_node* %0, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = call %union.tree_node* @tree_cons(%union.tree_node* %0, %union.tree_node* %target, %union.tree_node* null) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %itarget.0 = phi %union.tree_node* [ %call, %if.then ], [ %target, %entry ]
+  %1 = load %union.tree_node** %quals, align 8, !tbaa !4
+  %call1 = call %union.tree_node* @build1(i32 41, %union.tree_node* %1, %union.tree_node* %itarget.0) #6
+  ret %union.tree_node* %call1
+}

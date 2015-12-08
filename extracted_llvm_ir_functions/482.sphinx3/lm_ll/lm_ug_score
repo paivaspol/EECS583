@@ -1,0 +1,42 @@
+define i32 @lm_ug_score(%struct.lm_s* nocapture %lm, i16 zeroext %lwid, i32 %wid) #2 {
+entry:
+  %conv = zext i16 %lwid to i32
+  %cmp = icmp eq i16 %lwid, -1
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %n_ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 0
+  %0 = load i32* %n_ug, align 4, !tbaa !3
+  %cmp2 = icmp sgt i32 %0, %wid
+  br i1 %cmp2, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 843, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #8
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([34 x i8]* @.str24, i64 0, i64 0), i32 %conv) #8
+  br label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false, %if.then
+  %access_type = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 37
+  store i32 1, i32* %access_type, align 4, !tbaa !3
+  %inclass_ugscore = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 42
+  %1 = load i32** %inclass_ugscore, align 8, !tbaa !0
+  %tobool = icmp eq i32* %1, null
+  %idxprom = zext i16 %lwid to i64
+  %ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 9
+  %2 = load %struct.ug_t** %ug, align 8, !tbaa !0
+  %prob = getelementptr inbounds %struct.ug_t* %2, i64 %idxprom, i32 1
+  %l = bitcast %union.lmlog_t* %prob to i32*
+  %3 = load i32* %l, align 4, !tbaa !3
+  br i1 %tobool, label %return, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %idxprom6 = sext i32 %wid to i64
+  %arrayidx8 = getelementptr inbounds i32* %1, i64 %idxprom6
+  %4 = load i32* %arrayidx8, align 4, !tbaa !3
+  %add = add nsw i32 %4, %3
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then5
+  %retval.0 = phi i32 [ %add, %if.then5 ], [ %3, %if.end ]
+  ret i32 %retval.0
+}

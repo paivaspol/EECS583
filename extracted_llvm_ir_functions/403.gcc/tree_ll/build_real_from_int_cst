@@ -1,0 +1,52 @@
+define %union.tree_node* @build_real_from_int_cst(%union.tree_node* %type, %union.tree_node* %i) #0 {
+entry:
+  %d.sroa.0 = alloca [3 x i64], align 8
+  %args = alloca %struct.brfic_args, align 8
+  %public_flag = getelementptr inbounds %union.tree_node* %i, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %public_flag to i32*
+  %bf.load = load i32* %0, align 8
+  %1 = bitcast %struct.brfic_args* %args to i8*
+  call void @llvm.lifetime.start(i64 40, i8* %1) #4
+  %call = call %union.tree_node* @make_node(i32 26) #10
+  %type2 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 1
+  store %union.tree_node* %type, %union.tree_node** %type2, align 8, !tbaa !0
+  %type3 = getelementptr inbounds %struct.brfic_args* %args, i64 0, i32 0
+  store %union.tree_node* %type, %union.tree_node** %type3, align 8, !tbaa !0
+  %i4 = getelementptr inbounds %struct.brfic_args* %args, i64 0, i32 1
+  store %union.tree_node* %i, %union.tree_node** %i4, align 8, !tbaa !0
+  %call5 = call i32 @do_float_handler(void (i8*)* @build_real_from_int_cst_1, i8* %1) #9
+  %tobool = icmp eq i32 %call5, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %bf.lshr = lshr i32 %bf.load, 19
+  %bf.clear = and i32 %bf.lshr, 1
+  %d.sroa.0.0.idx = getelementptr inbounds %struct.brfic_args* %args, i64 0, i32 2
+  %d.sroa.0.0.cast = bitcast %struct.realvaluetype* %d.sroa.0.0.idx to i8*
+  %d.sroa.0.0.cast18 = bitcast [3 x i64]* %d.sroa.0 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %d.sroa.0.0.cast18, i8* %d.sroa.0.0.cast, i64 24, i32 8, i1 false)
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %d.sroa.0.0.cast19 = bitcast [3 x i64]* %d.sroa.0 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %d.sroa.0.0.cast19, i8* bitcast (%struct.realvaluetype* @dconst0 to i8*), i64 24, i32 8, i1 false)
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %overflow.0 = phi i32 [ %bf.clear, %if.then ], [ 1, %if.else ]
+  %d.sroa.0.0.idx20 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 2
+  %d.sroa.0.0.cast22 = bitcast i32* %d.sroa.0.0.idx20 to i8*
+  %d.sroa.0.0.cast23 = bitcast [3 x i64]* %d.sroa.0 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %d.sroa.0.0.cast22, i8* %d.sroa.0.0.cast23, i64 24, i32 8, i1 false)
+  %static_flag = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %static_flag to i32*
+  %bf.load9 = load i32* %2, align 8
+  %bf.shl = shl nuw nsw i32 %overflow.0, 18
+  %bf.clear10 = and i32 %bf.load9, -786433
+  %bf.shl15 = shl nuw nsw i32 %overflow.0, 19
+  %bf.clear16 = or i32 %bf.shl15, %bf.shl
+  %bf.set17 = or i32 %bf.clear16, %bf.clear10
+  store i32 %bf.set17, i32* %2, align 8
+  call void @llvm.lifetime.end(i64 40, i8* %1) #4
+  ret %union.tree_node* %call
+}

@@ -1,0 +1,163 @@
+define void @fe_parse_melfb_params(%struct.param_t* nocapture %P, %struct.melfb_t* nocapture %MEL) #0 {
+entry:
+  %SAMPLING_RATE = getelementptr inbounds %struct.param_t* %P, i64 0, i32 0
+  %0 = load float* %SAMPLING_RATE, align 4, !tbaa !4
+  %cmp = fcmp une float %0, 0.000000e+00
+  %sampling_rate = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 0
+  %.123 = select i1 %cmp, float %0, float 1.600000e+04
+  store float %.123, float* %sampling_rate, align 4, !tbaa !4
+  %FFT_SIZE = getelementptr inbounds %struct.param_t* %P, i64 0, i32 6
+  %1 = load i32* %FFT_SIZE, align 4, !tbaa !0
+  %cmp3 = icmp eq i32 %1, 0
+  br i1 %cmp3, label %if.else6, label %if.then4
+
+if.then4:                                         ; preds = %entry
+  %fft_size = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 3
+  store i32 %1, i32* %fft_size, align 4, !tbaa !0
+  br label %if.end19
+
+if.else6:                                         ; preds = %entry
+  %cmp8 = fcmp oeq float %.123, 1.600000e+04
+  %fft_size10 = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 3
+  br i1 %cmp8, label %if.then9, label %if.end11
+
+if.then9:                                         ; preds = %if.else6
+  store i32 512, i32* %fft_size10, align 4, !tbaa !0
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.else6, %if.then9
+  store i32 256, i32* %fft_size10, align 4, !tbaa !0
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.end11, %if.then4
+  %NUM_CEPSTRA = getelementptr inbounds %struct.param_t* %P, i64 0, i32 4
+  %2 = load i32* %NUM_CEPSTRA, align 4, !tbaa !0
+  %cmp20 = icmp eq i32 %2, 0
+  %num_cepstra24 = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 1
+  %.124 = select i1 %cmp20, i32 13, i32 %2
+  store i32 %.124, i32* %num_cepstra24, align 4, !tbaa !0
+  %NUM_FILTERS = getelementptr inbounds %struct.param_t* %P, i64 0, i32 5
+  %3 = load i32* %NUM_FILTERS, align 4, !tbaa !0
+  %cmp26 = icmp eq i32 %3, 0
+  br i1 %cmp26, label %if.else29, label %if.then27
+
+if.then27:                                        ; preds = %if.end19
+  %num_filters = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 2
+  store i32 %3, i32* %num_filters, align 4, !tbaa !0
+  br label %if.end44
+
+if.else29:                                        ; preds = %if.end19
+  %cmp31 = fcmp oeq float %.123, 1.600000e+04
+  br i1 %cmp31, label %if.then32, label %if.else34
+
+if.then32:                                        ; preds = %if.else29
+  %num_filters33 = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 2
+  store i32 40, i32* %num_filters33, align 4, !tbaa !0
+  br label %if.end44
+
+if.else34:                                        ; preds = %if.else29
+  %cmp36 = fcmp oeq float %.123, 8.000000e+03
+  br i1 %cmp36, label %if.then37, label %if.else39
+
+if.then37:                                        ; preds = %if.else34
+  %num_filters38 = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 2
+  store i32 31, i32* %num_filters38, align 4, !tbaa !0
+  br label %if.end44
+
+if.else39:                                        ; preds = %if.else34
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([48 x i8]* @.str8, i64 0, i64 0), i64 47, i64 1, %struct._IO_FILE* %4)
+  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %7 = tail call i64 @fwrite(i8* getelementptr inbounds ([41 x i8]* @.str9, i64 0, i64 0), i64 40, i64 1, %struct._IO_FILE* %6)
+  %8 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call41 = tail call i32 @fflush(%struct._IO_FILE* %8) #5
+  tail call void @exit(i32 0) #6
+  unreachable
+
+if.end44:                                         ; preds = %if.then32, %if.then37, %if.then27
+  %UPPER_FILT_FREQ = getelementptr inbounds %struct.param_t* %P, i64 0, i32 8
+  %9 = load float* %UPPER_FILT_FREQ, align 4, !tbaa !4
+  %cmp45 = fcmp une float %9, 0.000000e+00
+  br i1 %cmp45, label %if.then46, label %if.else48
+
+if.then46:                                        ; preds = %if.end44
+  %upper_filt_freq = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 5
+  store float %9, float* %upper_filt_freq, align 4, !tbaa !4
+  br label %if.end64
+
+if.else48:                                        ; preds = %if.end44
+  %cmp50 = fcmp oeq float %.123, 1.600000e+04
+  br i1 %cmp50, label %if.then51, label %if.else53
+
+if.then51:                                        ; preds = %if.else48
+  %upper_filt_freq52 = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 5
+  store float 0x40BAC77F60000000, float* %upper_filt_freq52, align 4, !tbaa !4
+  br label %if.end64
+
+if.else53:                                        ; preds = %if.else48
+  %cmp55 = fcmp oeq float %.123, 8.000000e+03
+  br i1 %cmp55, label %if.then56, label %if.else58
+
+if.then56:                                        ; preds = %if.else53
+  %upper_filt_freq57 = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 5
+  store float 3.500000e+03, float* %upper_filt_freq57, align 4, !tbaa !4
+  br label %if.end64
+
+if.else58:                                        ; preds = %if.else53
+  %10 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %11 = tail call i64 @fwrite(i8* getelementptr inbounds ([47 x i8]* @.str10, i64 0, i64 0), i64 46, i64 1, %struct._IO_FILE* %10)
+  %12 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %13 = tail call i64 @fwrite(i8* getelementptr inbounds ([41 x i8]* @.str9, i64 0, i64 0), i64 40, i64 1, %struct._IO_FILE* %12)
+  %14 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call61 = tail call i32 @fflush(%struct._IO_FILE* %14) #5
+  tail call void @exit(i32 0) #6
+  unreachable
+
+if.end64:                                         ; preds = %if.then51, %if.then56, %if.then46
+  %LOWER_FILT_FREQ = getelementptr inbounds %struct.param_t* %P, i64 0, i32 7
+  %15 = load float* %LOWER_FILT_FREQ, align 4, !tbaa !4
+  %cmp65 = fcmp une float %15, 0.000000e+00
+  br i1 %cmp65, label %if.then66, label %if.else68
+
+if.then66:                                        ; preds = %if.end64
+  %lower_filt_freq = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 4
+  store float %15, float* %lower_filt_freq, align 4, !tbaa !4
+  br label %if.end84
+
+if.else68:                                        ; preds = %if.end64
+  %cmp70 = fcmp oeq float %.123, 1.600000e+04
+  br i1 %cmp70, label %if.then71, label %if.else73
+
+if.then71:                                        ; preds = %if.else68
+  %lower_filt_freq72 = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 4
+  store float 0x4060AAAAC0000000, float* %lower_filt_freq72, align 4, !tbaa !4
+  br label %if.end84
+
+if.else73:                                        ; preds = %if.else68
+  %cmp75 = fcmp oeq float %.123, 8.000000e+03
+  br i1 %cmp75, label %if.then76, label %if.else78
+
+if.then76:                                        ; preds = %if.else73
+  %lower_filt_freq77 = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 4
+  store float 2.000000e+02, float* %lower_filt_freq77, align 4, !tbaa !4
+  br label %if.end84
+
+if.else78:                                        ; preds = %if.else73
+  %16 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %17 = tail call i64 @fwrite(i8* getelementptr inbounds ([47 x i8]* @.str11, i64 0, i64 0), i64 46, i64 1, %struct._IO_FILE* %16)
+  %18 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %19 = tail call i64 @fwrite(i8* getelementptr inbounds ([41 x i8]* @.str9, i64 0, i64 0), i64 40, i64 1, %struct._IO_FILE* %18)
+  %20 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call81 = tail call i32 @fflush(%struct._IO_FILE* %20) #5
+  tail call void @exit(i32 0) #6
+  unreachable
+
+if.end84:                                         ; preds = %if.then71, %if.then76, %if.then66
+  %doublebw = getelementptr inbounds %struct.param_t* %P, i64 0, i32 22
+  %21 = load i32* %doublebw, align 4, !tbaa !0
+  %cmp85 = icmp eq i32 %21, 1
+  %doublewide = getelementptr inbounds %struct.melfb_t* %MEL, i64 0, i32 10
+  %. = zext i1 %cmp85 to i32
+  store i32 %., i32* %doublewide, align 4, !tbaa !0
+  ret void
+}

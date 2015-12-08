@@ -1,0 +1,18 @@
+define %union.tree_node* @get_inner_array_type(%union.tree_node* nocapture %array) #3 {
+entry:
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond, %entry
+  %array.pn = phi %union.tree_node* [ %array, %entry ], [ %type.0, %while.cond ]
+  %type.0.in = getelementptr inbounds %union.tree_node* %array.pn, i64 0, i32 0, i32 0, i32 1
+  %type.0 = load %union.tree_node** %type.0.in, align 8
+  %code = getelementptr inbounds %union.tree_node* %type.0, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 18
+  br i1 %cmp, label %while.cond, label %while.end
+
+while.end:                                        ; preds = %while.cond
+  ret %union.tree_node* %type.0
+}

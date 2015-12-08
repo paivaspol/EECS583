@@ -1,0 +1,261 @@
+define internal fastcc void @df_bitmaps_free(%struct.df* nocapture %df, i32 %flags) #0 {
+entry:
+  %n_bbs = getelementptr inbounds %struct.df* %df, i64 0, i32 15
+  %0 = load i32* %n_bbs, align 4, !tbaa !4
+  %cmp202 = icmp eq i32 %0, 0
+  br i1 %cmp202, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %bbs = getelementptr inbounds %struct.df* %df, i64 0, i32 1
+  %and = and i32 %flags, 1
+  %tobool4 = icmp eq i32 %and, 0
+  %and43 = and i32 %flags, 2
+  %tobool44 = icmp eq i32 %and43, 0
+  %and86 = and i32 %flags, 4
+  %tobool87 = icmp eq i32 %and86, 0
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %i.0203 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %idxprom = zext i32 %i.0203 to i64
+  %1 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4
+  %bb1 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb1, i64 0, i64 %idxprom
+  %2 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !3
+  %index = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 11
+  %3 = load i32* %index, align 4, !tbaa !4
+  %idxprom2 = sext i32 %3 to i64
+  %4 = load %struct.bb_info** %bbs, align 8, !tbaa !3
+  %arrayidx3 = getelementptr inbounds %struct.bb_info* %4, i64 %idxprom2
+  %tobool = icmp eq %struct.bb_info* %arrayidx3, null
+  br i1 %tobool, label %for.inc, label %if.end
+
+if.end:                                           ; preds = %for.body
+  br i1 %tobool4, label %if.end42, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %rd_in = getelementptr inbounds %struct.bb_info* %4, i64 %idxprom2, i32 2
+  %5 = load %struct.bitmap_head_def** %rd_in, align 8, !tbaa !3
+  %tobool5 = icmp eq %struct.bitmap_head_def* %5, null
+  br i1 %tobool5, label %if.end42, label %do.body
+
+do.body:                                          ; preds = %land.lhs.true
+  %rd_kill = getelementptr inbounds %struct.bb_info* %arrayidx3, i64 0, i32 0
+  %6 = load %struct.bitmap_head_def** %rd_kill, align 8, !tbaa !3
+  %tobool7 = icmp eq %struct.bitmap_head_def* %6, null
+  br i1 %tobool7, label %do.end, label %if.then8
+
+if.then8:                                         ; preds = %do.body
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %6) #8
+  %7 = load %struct.bitmap_head_def** %rd_kill, align 8, !tbaa !3
+  %8 = bitcast %struct.bitmap_head_def* %7 to i8*
+  tail call void @free(i8* %8) #8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %rd_kill, align 8, !tbaa !3
+  br label %do.end
+
+do.end:                                           ; preds = %do.body, %if.then8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %rd_kill, align 8, !tbaa !3
+  %rd_gen = getelementptr inbounds %struct.bb_info* %4, i64 %idxprom2, i32 1
+  %9 = load %struct.bitmap_head_def** %rd_gen, align 8, !tbaa !3
+  %tobool15 = icmp eq %struct.bitmap_head_def* %9, null
+  br i1 %tobool15, label %do.end21, label %if.then16
+
+if.then16:                                        ; preds = %do.end
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %9) #8
+  %10 = load %struct.bitmap_head_def** %rd_gen, align 8, !tbaa !3
+  %11 = bitcast %struct.bitmap_head_def* %10 to i8*
+  tail call void @free(i8* %11) #8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %rd_gen, align 8, !tbaa !3
+  br label %do.end21
+
+do.end21:                                         ; preds = %do.end, %if.then16
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %rd_gen, align 8, !tbaa !3
+  %12 = load %struct.bitmap_head_def** %rd_in, align 8, !tbaa !3
+  %tobool25 = icmp eq %struct.bitmap_head_def* %12, null
+  br i1 %tobool25, label %do.end31, label %if.then26
+
+if.then26:                                        ; preds = %do.end21
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %12) #8
+  %13 = load %struct.bitmap_head_def** %rd_in, align 8, !tbaa !3
+  %14 = bitcast %struct.bitmap_head_def* %13 to i8*
+  tail call void @free(i8* %14) #8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %rd_in, align 8, !tbaa !3
+  br label %do.end31
+
+do.end31:                                         ; preds = %do.end21, %if.then26
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %rd_in, align 8, !tbaa !3
+  %rd_out = getelementptr inbounds %struct.bb_info* %4, i64 %idxprom2, i32 3
+  %15 = load %struct.bitmap_head_def** %rd_out, align 8, !tbaa !3
+  %tobool34 = icmp eq %struct.bitmap_head_def* %15, null
+  br i1 %tobool34, label %do.end40, label %if.then35
+
+if.then35:                                        ; preds = %do.end31
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %15) #8
+  %16 = load %struct.bitmap_head_def** %rd_out, align 8, !tbaa !3
+  %17 = bitcast %struct.bitmap_head_def* %16 to i8*
+  tail call void @free(i8* %17) #8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %rd_out, align 8, !tbaa !3
+  br label %do.end40
+
+do.end40:                                         ; preds = %do.end31, %if.then35
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %rd_out, align 8, !tbaa !3
+  br label %if.end42
+
+if.end42:                                         ; preds = %land.lhs.true, %if.end, %do.end40
+  br i1 %tobool44, label %if.end85, label %land.lhs.true45
+
+land.lhs.true45:                                  ; preds = %if.end42
+  %ru_in = getelementptr inbounds %struct.bb_info* %4, i64 %idxprom2, i32 6
+  %18 = load %struct.bitmap_head_def** %ru_in, align 8, !tbaa !3
+  %tobool46 = icmp eq %struct.bitmap_head_def* %18, null
+  br i1 %tobool46, label %if.end85, label %do.body48
+
+do.body48:                                        ; preds = %land.lhs.true45
+  %ru_kill = getelementptr inbounds %struct.bb_info* %4, i64 %idxprom2, i32 4
+  %19 = load %struct.bitmap_head_def** %ru_kill, align 8, !tbaa !3
+  %tobool49 = icmp eq %struct.bitmap_head_def* %19, null
+  br i1 %tobool49, label %do.end55, label %if.then50
+
+if.then50:                                        ; preds = %do.body48
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %19) #8
+  %20 = load %struct.bitmap_head_def** %ru_kill, align 8, !tbaa !3
+  %21 = bitcast %struct.bitmap_head_def* %20 to i8*
+  tail call void @free(i8* %21) #8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %ru_kill, align 8, !tbaa !3
+  br label %do.end55
+
+do.end55:                                         ; preds = %do.body48, %if.then50
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %ru_kill, align 8, !tbaa !3
+  %ru_gen = getelementptr inbounds %struct.bb_info* %4, i64 %idxprom2, i32 5
+  %22 = load %struct.bitmap_head_def** %ru_gen, align 8, !tbaa !3
+  %tobool58 = icmp eq %struct.bitmap_head_def* %22, null
+  br i1 %tobool58, label %do.end64, label %if.then59
+
+if.then59:                                        ; preds = %do.end55
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %22) #8
+  %23 = load %struct.bitmap_head_def** %ru_gen, align 8, !tbaa !3
+  %24 = bitcast %struct.bitmap_head_def* %23 to i8*
+  tail call void @free(i8* %24) #8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %ru_gen, align 8, !tbaa !3
+  br label %do.end64
+
+do.end64:                                         ; preds = %do.end55, %if.then59
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %ru_gen, align 8, !tbaa !3
+  %25 = load %struct.bitmap_head_def** %ru_in, align 8, !tbaa !3
+  %tobool68 = icmp eq %struct.bitmap_head_def* %25, null
+  br i1 %tobool68, label %do.end74, label %if.then69
+
+if.then69:                                        ; preds = %do.end64
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %25) #8
+  %26 = load %struct.bitmap_head_def** %ru_in, align 8, !tbaa !3
+  %27 = bitcast %struct.bitmap_head_def* %26 to i8*
+  tail call void @free(i8* %27) #8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %ru_in, align 8, !tbaa !3
+  br label %do.end74
+
+do.end74:                                         ; preds = %do.end64, %if.then69
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %ru_in, align 8, !tbaa !3
+  %ru_out = getelementptr inbounds %struct.bb_info* %4, i64 %idxprom2, i32 7
+  %28 = load %struct.bitmap_head_def** %ru_out, align 8, !tbaa !3
+  %tobool77 = icmp eq %struct.bitmap_head_def* %28, null
+  br i1 %tobool77, label %do.end83, label %if.then78
+
+if.then78:                                        ; preds = %do.end74
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %28) #8
+  %29 = load %struct.bitmap_head_def** %ru_out, align 8, !tbaa !3
+  %30 = bitcast %struct.bitmap_head_def* %29 to i8*
+  tail call void @free(i8* %30) #8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %ru_out, align 8, !tbaa !3
+  br label %do.end83
+
+do.end83:                                         ; preds = %do.end74, %if.then78
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %ru_out, align 8, !tbaa !3
+  br label %if.end85
+
+if.end85:                                         ; preds = %land.lhs.true45, %if.end42, %do.end83
+  br i1 %tobool87, label %for.inc, label %land.lhs.true88
+
+land.lhs.true88:                                  ; preds = %if.end85
+  %lr_in = getelementptr inbounds %struct.bb_info* %4, i64 %idxprom2, i32 10
+  %31 = load %struct.bitmap_head_def** %lr_in, align 8, !tbaa !3
+  %tobool89 = icmp eq %struct.bitmap_head_def* %31, null
+  br i1 %tobool89, label %for.inc, label %do.body91
+
+do.body91:                                        ; preds = %land.lhs.true88
+  %lr_def = getelementptr inbounds %struct.bb_info* %4, i64 %idxprom2, i32 8
+  %32 = load %struct.bitmap_head_def** %lr_def, align 8, !tbaa !3
+  %tobool92 = icmp eq %struct.bitmap_head_def* %32, null
+  br i1 %tobool92, label %do.end98, label %if.then93
+
+if.then93:                                        ; preds = %do.body91
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %32) #8
+  %33 = load %struct.bitmap_head_def** %lr_def, align 8, !tbaa !3
+  %34 = bitcast %struct.bitmap_head_def* %33 to i8*
+  tail call void @free(i8* %34) #8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %lr_def, align 8, !tbaa !3
+  br label %do.end98
+
+do.end98:                                         ; preds = %do.body91, %if.then93
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %lr_def, align 8, !tbaa !3
+  %lr_use = getelementptr inbounds %struct.bb_info* %4, i64 %idxprom2, i32 9
+  %35 = load %struct.bitmap_head_def** %lr_use, align 8, !tbaa !3
+  %tobool101 = icmp eq %struct.bitmap_head_def* %35, null
+  br i1 %tobool101, label %do.end107, label %if.then102
+
+if.then102:                                       ; preds = %do.end98
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %35) #8
+  %36 = load %struct.bitmap_head_def** %lr_use, align 8, !tbaa !3
+  %37 = bitcast %struct.bitmap_head_def* %36 to i8*
+  tail call void @free(i8* %37) #8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %lr_use, align 8, !tbaa !3
+  br label %do.end107
+
+do.end107:                                        ; preds = %do.end98, %if.then102
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %lr_use, align 8, !tbaa !3
+  %38 = load %struct.bitmap_head_def** %lr_in, align 8, !tbaa !3
+  %tobool111 = icmp eq %struct.bitmap_head_def* %38, null
+  br i1 %tobool111, label %do.end117, label %if.then112
+
+if.then112:                                       ; preds = %do.end107
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %38) #8
+  %39 = load %struct.bitmap_head_def** %lr_in, align 8, !tbaa !3
+  %40 = bitcast %struct.bitmap_head_def* %39 to i8*
+  tail call void @free(i8* %40) #8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %lr_in, align 8, !tbaa !3
+  br label %do.end117
+
+do.end117:                                        ; preds = %do.end107, %if.then112
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %lr_in, align 8, !tbaa !3
+  %lr_out = getelementptr inbounds %struct.bb_info* %4, i64 %idxprom2, i32 11
+  %41 = load %struct.bitmap_head_def** %lr_out, align 8, !tbaa !3
+  %tobool120 = icmp eq %struct.bitmap_head_def* %41, null
+  br i1 %tobool120, label %do.end126, label %if.then121
+
+if.then121:                                       ; preds = %do.end117
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %41) #8
+  %42 = load %struct.bitmap_head_def** %lr_out, align 8, !tbaa !3
+  %43 = bitcast %struct.bitmap_head_def* %42 to i8*
+  tail call void @free(i8* %43) #8
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %lr_out, align 8, !tbaa !3
+  br label %do.end126
+
+do.end126:                                        ; preds = %do.end117, %if.then121
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** %lr_out, align 8, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true88, %if.end85, %for.body, %do.end126
+  %inc = add i32 %i.0203, 1
+  %44 = load i32* %n_bbs, align 4, !tbaa !4
+  %cmp = icmp ult i32 %inc, %44
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  %flags.not = or i32 %flags, -8
+  %neg = xor i32 %flags.not, 7
+  %flags130 = getelementptr inbounds %struct.df* %df, i64 0, i32 0
+  %45 = load i32* %flags130, align 4, !tbaa !4
+  %and131 = and i32 %45, %neg
+  store i32 %and131, i32* %flags130, align 4, !tbaa !4
+  ret void
+}

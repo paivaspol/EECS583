@@ -1,0 +1,71 @@
+define void @write_gms_ndx(%struct._IO_FILE* nocapture %fp, i32 %isize, i32* nocapture %index, [3 x float]* nocapture %x, [3 x float]* %box) #0 {
+entry:
+  store i32 0, i32* @n, align 4, !tbaa !0
+  %cmp48 = icmp sgt i32 %isize, 0
+  br i1 %cmp48, label %for.cond1.preheader, label %if.end19
+
+for.cond1.preheader:                              ; preds = %entry, %for.inc12
+  %indvars.iv50 = phi i64 [ %indvars.iv.next51, %for.inc12 ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i32* %index, i64 %indvars.iv50
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.inc, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.inc ]
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %idxprom5 = sext i32 %0 to i64
+  %arrayidx7 = getelementptr inbounds [3 x float]* %x, i64 %idxprom5, i64 %indvars.iv
+  %1 = load float* %arrayidx7, align 4, !tbaa !3
+  %conv = fpext float %1 to double
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([6 x i8]* @.str, i64 0, i64 0), double %conv) #3
+  %2 = load i32* @n, align 4, !tbaa !0
+  %inc = add nsw i32 %2, 1
+  store i32 %inc, i32* @n, align 4, !tbaa !0
+  %cmp8 = icmp eq i32 %inc, 10
+  br i1 %cmp8, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body3
+  %fputc46 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %fp)
+  store i32 0, i32* @n, align 4, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body3, %if.then
+  %3 = phi i32 [ %inc, %for.body3 ], [ 0, %if.then ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc12, label %for.body3
+
+for.inc12:                                        ; preds = %for.inc
+  %indvars.iv.next51 = add i64 %indvars.iv50, 1
+  %lftr.wideiv52 = trunc i64 %indvars.iv.next51 to i32
+  %exitcond53 = icmp eq i32 %lftr.wideiv52, %isize
+  br i1 %exitcond53, label %for.end14, label %for.cond1.preheader
+
+for.end14:                                        ; preds = %for.inc12
+  %cmp15 = icmp eq i32 %3, 0
+  br i1 %cmp15, label %if.end19, label %if.then17
+
+if.then17:                                        ; preds = %for.end14
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %fp)
+  br label %if.end19
+
+if.end19:                                         ; preds = %entry, %for.end14, %if.then17
+  %cmp20 = icmp eq [3 x float]* %box, null
+  br i1 %cmp20, label %if.end33, label %if.then22
+
+if.then22:                                        ; preds = %if.end19
+  %arrayidx24 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
+  %4 = load float* %arrayidx24, align 4, !tbaa !3
+  %conv25 = fpext float %4 to double
+  %arrayidx27 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
+  %5 = load float* %arrayidx27, align 4, !tbaa !3
+  %conv28 = fpext float %5 to double
+  %arrayidx30 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
+  %6 = load float* %arrayidx30, align 4, !tbaa !3
+  %conv31 = fpext float %6 to double
+  %call32 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([17 x i8]* @.str2, i64 0, i64 0), double %conv25, double %conv28, double %conv31) #3
+  br label %if.end33
+
+if.end33:                                         ; preds = %if.end19, %if.then22
+  ret void
+}

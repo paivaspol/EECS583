@@ -1,0 +1,36 @@
+define void @extract_constrain_insn_cached(%struct.rtx_def* %insn) #0 {
+entry:
+  %0 = load %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 10), align 8, !tbaa !3
+  %cmp.i = icmp eq %struct.rtx_def* %0, %insn
+  br i1 %cmp.i, label %land.lhs.true.i, label %if.end.i
+
+land.lhs.true.i:                                  ; preds = %entry
+  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4
+  %rtint.i = bitcast %union.rtunion_def* %arrayidx.i to i32*
+  %1 = load i32* %rtint.i, align 4, !tbaa !0
+  %cmp1.i = icmp sgt i32 %1, -1
+  br i1 %cmp1.i, label %extract_insn_cached.exit, label %if.end.i
+
+if.end.i:                                         ; preds = %land.lhs.true.i, %entry
+  tail call void @extract_insn(%struct.rtx_def* %insn) #6
+  store %struct.rtx_def* %insn, %struct.rtx_def** getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 10), align 8, !tbaa !3
+  br label %extract_insn_cached.exit
+
+extract_insn_cached.exit:                         ; preds = %land.lhs.true.i, %if.end.i
+  %2 = load i32* @which_alternative, align 4, !tbaa !0
+  %cmp = icmp eq i32 %2, -1
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %extract_insn_cached.exit
+  %3 = load i32* @reload_completed, align 4, !tbaa !0
+  %call = tail call i32 @constrain_operands(i32 %3) #7
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @_fatal_insn_not_found(%struct.rtx_def* %insn, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 2063, i8* getelementptr inbounds ([30 x i8]* @__FUNCTION__.extract_constrain_insn_cached, i64 0, i64 0)) #8
+  unreachable
+
+if.end:                                           ; preds = %land.lhs.true, %extract_insn_cached.exit
+  ret void
+}

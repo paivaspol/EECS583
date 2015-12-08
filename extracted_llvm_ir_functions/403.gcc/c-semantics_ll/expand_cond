@@ -1,0 +1,27 @@
+define %union.tree_node* @expand_cond(%union.tree_node* %t) #0 {
+entry:
+  %tobool = icmp eq %union.tree_node* %t, null
+  br i1 %tobool, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %code = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 2
+  br i1 %cmp, label %if.then, label %return
+
+if.then:                                          ; preds = %land.lhs.true
+  %purpose = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 1
+  %1 = load i8** %purpose, align 8
+  %2 = bitcast i8* %1 to %union.tree_node*
+  tail call void @expand_stmt(%union.tree_node* %2) #7
+  %value = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
+  %3 = bitcast i32* %value to %union.tree_node**
+  %4 = load %union.tree_node** %3, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %entry, %if.then
+  %retval.0 = phi %union.tree_node* [ %4, %if.then ], [ null, %entry ], [ %t, %land.lhs.true ]
+  ret %union.tree_node* %retval.0
+}

@@ -1,0 +1,141 @@
+define internal fastcc i32 @correct_box_elem([3 x float]* %box, i32 %v, i32 %d) #0 {
+entry:
+  %idxprom = sext i32 %d to i64
+  %idxprom1 = sext i32 %v to i64
+  %arrayidx = getelementptr inbounds [3 x float]* %box, i64 %idxprom1
+  %arrayidx2 = getelementptr inbounds [3 x float]* %box, i64 %idxprom1, i64 %idxprom
+  %0 = load float* %arrayidx2, align 4, !tbaa !4
+  %conv79 = fpext float %0 to double
+  %arrayidx5 = getelementptr inbounds [3 x float]* %box, i64 %idxprom
+  %arrayidx6 = getelementptr inbounds [3 x float]* %box, i64 %idxprom, i64 %idxprom
+  %1 = load float* %arrayidx6, align 4, !tbaa !4
+  %conv780 = fpext float %1 to double
+  %mul81 = fmul double %conv780, 5.001000e-01
+  %cmp82 = fcmp ogt double %conv79, %mul81
+  br i1 %cmp82, label %while.body.lr.ph, label %while.cond17.preheader
+
+while.body.lr.ph:                                 ; preds = %entry
+  %arraydecay = getelementptr inbounds [3 x float]* %arrayidx, i64 0, i64 0
+  %arraydecay13 = getelementptr inbounds [3 x float]* %arrayidx5, i64 0, i64 0
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %box, i64 %idxprom1, i64 1
+  %arrayidx3.i = getelementptr inbounds [3 x float]* %box, i64 %idxprom, i64 1
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %box, i64 %idxprom1, i64 2
+  %arrayidx6.i = getelementptr inbounds [3 x float]* %box, i64 %idxprom, i64 2
+  br label %while.body
+
+while.cond17.preheader:                           ; preds = %while.cond.backedge, %entry
+  %2 = phi float [ %1, %entry ], [ %15, %while.cond.backedge ]
+  %3 = phi float [ %0, %entry ], [ %14, %while.cond.backedge ]
+  %shift.0.lcssa = phi i32 [ 0, %entry ], [ %shift.083, %while.cond.backedge ]
+  %sub73 = fsub float -0.000000e+00, %3
+  %conv2274 = fpext float %sub73 to double
+  %conv2775 = fpext float %2 to double
+  %mul2876 = fmul double %conv2775, 5.001000e-01
+  %cmp2977 = fcmp ogt double %conv2274, %mul2876
+  br i1 %cmp2977, label %while.body31.lr.ph, label %while.end45
+
+while.body31.lr.ph:                               ; preds = %while.cond17.preheader
+  %arraydecay38 = getelementptr inbounds [3 x float]* %arrayidx, i64 0, i64 0
+  %arraydecay41 = getelementptr inbounds [3 x float]* %arrayidx5, i64 0, i64 0
+  %arrayidx2.i69 = getelementptr inbounds [3 x float]* %box, i64 %idxprom1, i64 1
+  %arrayidx3.i70 = getelementptr inbounds [3 x float]* %box, i64 %idxprom, i64 1
+  %arrayidx5.i71 = getelementptr inbounds [3 x float]* %box, i64 %idxprom1, i64 2
+  %arrayidx6.i72 = getelementptr inbounds [3 x float]* %box, i64 %idxprom, i64 2
+  br label %while.body31
+
+while.body:                                       ; preds = %while.cond.backedge.while.body_crit_edge, %while.body.lr.ph
+  %shift.083 = phi i32 [ -1, %while.body.lr.ph ], [ %phitmp, %while.cond.backedge.while.body_crit_edge ]
+  %4 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  %tobool = icmp eq %struct._IO_FILE* %4, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %while.body
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([25 x i8]* @.str46, i64 0, i64 0), i64 24, i64 1, %struct._IO_FILE* %4)
+  %6 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  tail call void @pr_rvecs(%struct._IO_FILE* %6, i32 0, i8* getelementptr inbounds ([8 x i8]* @.str47, i64 0, i64 0), [3 x float]* %box, i32 3) #8
+  %.pre91 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %while.body, %if.then
+  %7 = phi %struct._IO_FILE* [ %.pre91, %if.then ], [ null, %while.body ]
+  %8 = load float* %arraydecay, align 4, !tbaa !4
+  %9 = load float* %arraydecay13, align 4, !tbaa !4
+  %sub.i = fsub float %8, %9
+  %10 = load float* %arrayidx2.i, align 4, !tbaa !4
+  %11 = load float* %arrayidx3.i, align 4, !tbaa !4
+  %sub4.i = fsub float %10, %11
+  %12 = load float* %arrayidx5.i, align 4, !tbaa !4
+  %13 = load float* %arrayidx6.i, align 4, !tbaa !4
+  %sub7.i = fsub float %12, %13
+  store float %sub.i, float* %arraydecay, align 4, !tbaa !4
+  store float %sub4.i, float* %arrayidx2.i, align 4, !tbaa !4
+  store float %sub7.i, float* %arrayidx5.i, align 4, !tbaa !4
+  %tobool14 = icmp eq %struct._IO_FILE* %7, null
+  br i1 %tobool14, label %while.cond.backedge, label %if.then15
+
+if.then15:                                        ; preds = %if.end
+  tail call void @pr_rvecs(%struct._IO_FILE* %7, i32 0, i8* getelementptr inbounds ([8 x i8]* @.str48, i64 0, i64 0), [3 x float]* %box, i32 3) #8
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.then15, %if.end
+  %14 = load float* %arrayidx2, align 4, !tbaa !4
+  %conv = fpext float %14 to double
+  %15 = load float* %arrayidx6, align 4, !tbaa !4
+  %conv7 = fpext float %15 to double
+  %mul = fmul double %conv7, 5.001000e-01
+  %cmp = fcmp ogt double %conv, %mul
+  br i1 %cmp, label %while.cond.backedge.while.body_crit_edge, label %while.cond17.preheader
+
+while.cond.backedge.while.body_crit_edge:         ; preds = %while.cond.backedge
+  %phitmp = add i32 %shift.083, -1
+  br label %while.body
+
+while.body31:                                     ; preds = %while.cond17.backedge, %while.body31.lr.ph
+  %shift.178 = phi i32 [ %shift.0.lcssa, %while.body31.lr.ph ], [ %inc, %while.cond17.backedge ]
+  %16 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  %tobool32 = icmp eq %struct._IO_FILE* %16, null
+  br i1 %tobool32, label %if.end35, label %if.then33
+
+if.then33:                                        ; preds = %while.body31
+  %17 = tail call i64 @fwrite(i8* getelementptr inbounds ([25 x i8]* @.str46, i64 0, i64 0), i64 24, i64 1, %struct._IO_FILE* %16)
+  %18 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  tail call void @pr_rvecs(%struct._IO_FILE* %18, i32 0, i8* getelementptr inbounds ([8 x i8]* @.str47, i64 0, i64 0), [3 x float]* %box, i32 3) #8
+  %.pre = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  br label %if.end35
+
+if.end35:                                         ; preds = %while.body31, %if.then33
+  %19 = phi %struct._IO_FILE* [ %.pre, %if.then33 ], [ null, %while.body31 ]
+  %20 = load float* %arraydecay38, align 4, !tbaa !4
+  %21 = load float* %arraydecay41, align 4, !tbaa !4
+  %add.i = fadd float %20, %21
+  %22 = load float* %arrayidx2.i69, align 4, !tbaa !4
+  %23 = load float* %arrayidx3.i70, align 4, !tbaa !4
+  %add4.i = fadd float %22, %23
+  %24 = load float* %arrayidx5.i71, align 4, !tbaa !4
+  %25 = load float* %arrayidx6.i72, align 4, !tbaa !4
+  %add7.i = fadd float %24, %25
+  store float %add.i, float* %arraydecay38, align 4, !tbaa !4
+  store float %add4.i, float* %arrayidx2.i69, align 4, !tbaa !4
+  store float %add7.i, float* %arrayidx5.i71, align 4, !tbaa !4
+  %inc = add nsw i32 %shift.178, 1
+  %tobool42 = icmp eq %struct._IO_FILE* %19, null
+  br i1 %tobool42, label %while.cond17.backedge, label %if.then43
+
+if.then43:                                        ; preds = %if.end35
+  tail call void @pr_rvecs(%struct._IO_FILE* %19, i32 0, i8* getelementptr inbounds ([8 x i8]* @.str48, i64 0, i64 0), [3 x float]* %box, i32 3) #8
+  br label %while.cond17.backedge
+
+while.cond17.backedge:                            ; preds = %if.then43, %if.end35
+  %26 = load float* %arrayidx2, align 4, !tbaa !4
+  %sub = fsub float -0.000000e+00, %26
+  %conv22 = fpext float %sub to double
+  %27 = load float* %arrayidx6, align 4, !tbaa !4
+  %conv27 = fpext float %27 to double
+  %mul28 = fmul double %conv27, 5.001000e-01
+  %cmp29 = fcmp ogt double %conv22, %mul28
+  br i1 %cmp29, label %while.body31, label %while.end45
+
+while.end45:                                      ; preds = %while.cond17.backedge, %while.cond17.preheader
+  %shift.1.lcssa = phi i32 [ %shift.0.lcssa, %while.cond17.preheader ], [ %inc, %while.cond17.backedge ]
+  ret i32 %shift.1.lcssa
+}

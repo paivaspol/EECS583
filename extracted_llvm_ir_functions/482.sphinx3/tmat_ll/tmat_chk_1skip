@@ -1,0 +1,65 @@
+define i32 @tmat_chk_1skip(%struct.tmat_t* nocapture %tmat) #2 {
+entry:
+  %n_tmat = getelementptr inbounds %struct.tmat_t* %tmat, i64 0, i32 1
+  %0 = load i32* %n_tmat, align 4, !tbaa !0
+  %cmp34 = icmp sgt i32 %0, 0
+  br i1 %cmp34, label %for.cond1.preheader.lr.ph, label %return
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %n_state = getelementptr inbounds %struct.tmat_t* %tmat, i64 0, i32 2
+  %1 = load i32* %n_state, align 4, !tbaa !0
+  %cmp231 = icmp sgt i32 %1, 0
+  %tp = getelementptr inbounds %struct.tmat_t* %tmat, i64 0, i32 0
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.cond1.preheader.lr.ph, %for.inc16
+  %indvars.iv42 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next43, %for.inc16 ]
+  br i1 %cmp231, label %for.body3, label %for.inc16
+
+for.body3:                                        ; preds = %for.cond1.preheader, %for.inc13
+  %indvars.iv39 = phi i64 [ %indvars.iv.next40, %for.inc13 ], [ 0, %for.cond1.preheader ]
+  %indvars.iv = phi i32 [ %indvars.iv.next, %for.inc13 ], [ 3, %for.cond1.preheader ]
+  %2 = add nsw i64 %indvars.iv39, 3
+  %3 = trunc i64 %2 to i32
+  %cmp629 = icmp sgt i32 %3, %1
+  br i1 %cmp629, label %for.inc13, label %for.body7.lr.ph
+
+for.body7.lr.ph:                                  ; preds = %for.body3
+  %4 = sext i32 %indvars.iv to i64
+  %5 = load i32**** %tp, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i32*** %5, i64 %indvars.iv42
+  %6 = load i32*** %arrayidx, align 8, !tbaa !3
+  %arrayidx10 = getelementptr inbounds i32** %6, i64 %indvars.iv39
+  %7 = load i32** %arrayidx10, align 8, !tbaa !3
+  br label %for.body7
+
+for.cond4:                                        ; preds = %for.body7
+  %8 = trunc i64 %indvars.iv36 to i32
+  %cmp6 = icmp slt i32 %8, %1
+  %indvars.iv.next37 = add i64 %indvars.iv36, 1
+  br i1 %cmp6, label %for.body7, label %for.inc13
+
+for.body7:                                        ; preds = %for.cond4, %for.body7.lr.ph
+  %indvars.iv36 = phi i64 [ %indvars.iv.next37, %for.cond4 ], [ %4, %for.body7.lr.ph ]
+  %arrayidx11 = getelementptr inbounds i32* %7, i64 %indvars.iv36
+  %9 = load i32* %arrayidx11, align 4, !tbaa !0
+  %cmp12 = icmp sgt i32 %9, -939524096
+  br i1 %cmp12, label %return, label %for.cond4
+
+for.inc13:                                        ; preds = %for.cond4, %for.body3
+  %indvars.iv.next40 = add i64 %indvars.iv39, 1
+  %10 = trunc i64 %indvars.iv.next40 to i32
+  %cmp2 = icmp slt i32 %10, %1
+  %indvars.iv.next = add i32 %indvars.iv, 1
+  br i1 %cmp2, label %for.body3, label %for.inc16
+
+for.inc16:                                        ; preds = %for.inc13, %for.cond1.preheader
+  %indvars.iv.next43 = add i64 %indvars.iv42, 1
+  %11 = trunc i64 %indvars.iv.next43 to i32
+  %cmp = icmp slt i32 %11, %0
+  br i1 %cmp, label %for.cond1.preheader, label %return
+
+return:                                           ; preds = %entry, %for.inc16, %for.body7
+  %retval.0 = phi i32 [ -1, %for.body7 ], [ 0, %for.inc16 ], [ 0, %entry ]
+  ret i32 %retval.0
+}

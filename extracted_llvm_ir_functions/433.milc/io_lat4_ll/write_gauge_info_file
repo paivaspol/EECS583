@@ -1,0 +1,47 @@
+define void @write_gauge_info_file(%struct.gauge_file* nocapture %gf) #0 {
+entry:
+  %info_filename = alloca [256 x i8], align 16
+  %sums = alloca [20 x i8], align 16
+  %0 = getelementptr inbounds [256 x i8]* %info_filename, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %0) #5
+  %header = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 1
+  %1 = load %struct.gauge_header** %header, align 8, !tbaa !3
+  %filename = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 2
+  %2 = load i8** %filename, align 8, !tbaa !3
+  %call = call i8* @strcpy(i8* %0, i8* %2) #9
+  %strlen = call i64 @strlen(i8* %0)
+  %endptr = getelementptr [256 x i8]* %info_filename, i64 0, i64 %strlen
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %endptr, i8* getelementptr inbounds ([6 x i8]* @.str25, i64 0, i64 0), i64 6, i32 1, i1 false)
+  %call4 = call %struct._IO_FILE* @fopen(i8* %0, i8* getelementptr inbounds ([2 x i8]* @.str26, i64 0, i64 0)) #9
+  %cmp = icmp eq %struct._IO_FILE* %call4, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call6 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([54 x i8]* @.str27, i64 0, i64 0), i8* %0) #9
+  br label %cleanup
+
+if.end:                                           ; preds = %entry
+  %3 = bitcast %struct.gauge_header* %1 to i8*
+  %call7 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call4, i8* getelementptr inbounds ([13 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* %3, i32 0, i32 0) #8
+  %arraydecay8 = getelementptr inbounds %struct.gauge_header* %1, i64 0, i32 1, i64 0
+  %call9 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call4, i8* getelementptr inbounds ([11 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str28, i64 0, i64 0), i8* %arraydecay8, i32 0, i32 0) #8
+  %arraydecay10 = getelementptr inbounds [20 x i8]* %sums, i64 0, i64 0
+  %sum29 = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 6, i32 1
+  %4 = load i32* %sum29, align 4, !tbaa !0
+  %sum31 = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 6, i32 0
+  %5 = load i32* %sum31, align 4, !tbaa !0
+  %call12 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay10, i8* getelementptr inbounds ([6 x i8]* @.str29, i64 0, i64 0), i32 %4, i32 %5) #9
+  %call14 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call4, i8* getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str28, i64 0, i64 0), i8* %arraydecay10, i32 0, i32 0) #8
+  %call15 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call4, i8* getelementptr inbounds ([3 x i8]* @.str31, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* bitcast (i32* @nx to i8*), i32 0, i32 0) #8
+  %call16 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call4, i8* getelementptr inbounds ([3 x i8]* @.str32, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* bitcast (i32* @ny to i8*), i32 0, i32 0) #8
+  %call17 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call4, i8* getelementptr inbounds ([3 x i8]* @.str33, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* bitcast (i32* @nz to i8*), i32 0, i32 0) #8
+  %call18 = call i32 @write_gauge_info_item(%struct._IO_FILE* %call4, i8* getelementptr inbounds ([3 x i8]* @.str34, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* bitcast (i32* @nt to i8*), i32 0, i32 0) #8
+  call void @write_appl_gauge_info(%struct._IO_FILE* %call4) #9
+  %call19 = call i32 @fclose(%struct._IO_FILE* %call4) #9
+  %call21 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([20 x i8]* @.str35, i64 0, i64 0), i8* %0) #9
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.end, %if.then
+  call void @llvm.lifetime.end(i64 256, i8* %0) #5
+  ret void
+}

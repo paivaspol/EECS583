@@ -1,0 +1,48 @@
+define float** @mk_matrix(i32 %nx, i32 %ny, i32 %b1D) #0 {
+entry:
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 55, i32 %nx, i32 8) #8
+  %0 = bitcast i8* %call to float**
+  %tobool = icmp ne i32 %b1D, 0
+  br i1 %tobool, label %if.then, label %for.cond.preheader
+
+if.then:                                          ; preds = %entry
+  %mul = mul nsw i32 %ny, %nx
+  %call1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 57, i32 %mul, i32 4) #8
+  %1 = bitcast i8* %call1 to float*
+  store float* %1, float** %0, align 8, !tbaa !0
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then, %entry
+  %cmp26 = icmp sgt i32 %nx, 0
+  br i1 %cmp26, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond.preheader ]
+  br i1 %tobool, label %if.then3, label %if.else
+
+if.then3:                                         ; preds = %for.body
+  %2 = trunc i64 %indvars.iv to i32
+  %mul4 = mul nsw i32 %2, %ny
+  %idxprom = sext i32 %mul4 to i64
+  %3 = load float** %0, align 8, !tbaa !0
+  %arrayidx6 = getelementptr inbounds float* %3, i64 %idxprom
+  %arrayidx8 = getelementptr inbounds float** %0, i64 %indvars.iv
+  store float* %arrayidx6, float** %arrayidx8, align 8, !tbaa !0
+  br label %for.inc
+
+if.else:                                          ; preds = %for.body
+  %call9 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 63, i32 %ny, i32 4) #8
+  %4 = bitcast i8* %call9 to float*
+  %arrayidx11 = getelementptr inbounds float** %0, i64 %indvars.iv
+  store float* %4, float** %arrayidx11, align 8, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then3, %if.else
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nx
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  ret float** %0
+}

@@ -1,0 +1,22 @@
+define void @print_phi(i8* %fn, i32 %natoms, [3 x float]* nocapture %x, float* nocapture %phi) #0 {
+entry:
+  %call = tail call %struct._IO_FILE* @ffopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str23, i64 0, i64 0)) #6
+  %cmp5 = icmp sgt i32 %natoms, 0
+  br i1 %cmp5, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %phi, i64 %indvars.iv
+  %0 = load float* %arrayidx, align 4, !tbaa !0
+  %conv = fpext float %0 to double
+  %1 = trunc i64 %indvars.iv to i32
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call, i8* getelementptr inbounds ([14 x i8]* @.str24, i64 0, i64 0), i32 %1, double %conv) #6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %natoms
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  tail call void @ffclose(%struct._IO_FILE* %call) #6
+  ret void
+}

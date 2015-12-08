@@ -1,0 +1,38 @@
+define i32 @ix86_function_arg_boundary(i32 %mode, %union.tree_node* %type) #1 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %tobool3 = icmp eq %union.tree_node* %type, null
+  br i1 %tobool3, label %if.else, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %align6 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 7
+  %1 = bitcast %union.tree_node** %align6 to i32*
+  %2 = load i32* %1, align 4, !tbaa !0
+  br label %if.end7
+
+if.else:                                          ; preds = %if.end
+  %call = tail call i32 @get_mode_alignment(i32 %mode) #9
+  %.pre = load i32* @target_flags, align 4, !tbaa !0
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.else, %if.then4
+  %3 = phi i32 [ %0, %if.then4 ], [ %.pre, %if.else ]
+  %align.0 = phi i32 [ %2, %if.then4 ], [ %call, %if.else ]
+  %and8 = lshr i32 %3, 20
+  %4 = and i32 %and8, 32
+  %5 = add i32 %4, 32
+  %cmp = icmp slt i32 %align.0, %5
+  %.align.0 = select i1 %cmp, i32 %5, i32 %align.0
+  %cmp16 = icmp sgt i32 %.align.0, 128
+  %align.2 = select i1 %cmp16, i32 128, i32 %.align.0
+  br label %return
+
+return:                                           ; preds = %entry, %if.end7
+  %retval.0 = phi i32 [ %align.2, %if.end7 ], [ 32, %entry ]
+  ret i32 %retval.0
+}

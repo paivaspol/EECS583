@@ -1,0 +1,33 @@
+define void @gmx_fio_rewind(i32 %fio) #1 {
+entry:
+  tail call fastcc void @_gmx_fio_check(i32 %fio, i32 824) #9
+  %idxprom = sext i32 %fio to i64
+  %0 = load %struct.t_fileio** @FIO, align 8, !tbaa !3
+  %xdr = getelementptr inbounds %struct.t_fileio* %0, i64 %idxprom, i32 8
+  %1 = load %struct.XDR** %xdr, align 8, !tbaa !3
+  %tobool = icmp eq %struct.XDR* %1, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @xdrclose(%struct.XDR* %1) #7
+  %2 = load %struct.t_fileio** @FIO, align 8, !tbaa !3
+  %xdr6 = getelementptr inbounds %struct.t_fileio* %2, i64 %idxprom, i32 8
+  %3 = load %struct.XDR** %xdr6, align 8, !tbaa !3
+  %fn = getelementptr inbounds %struct.t_fileio* %2, i64 %idxprom, i32 6
+  %4 = load i8** %fn, align 8, !tbaa !3
+  %bRead = getelementptr inbounds %struct.t_fileio* %2, i64 %idxprom, i32 2
+  %5 = load i32* %bRead, align 4, !tbaa !0
+  %tobool11 = icmp ne i32 %5, 0
+  %cond = select i1 %tobool11, i8* getelementptr inbounds ([2 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str17, i64 0, i64 0)
+  %call12 = tail call i32 @xdropen(%struct.XDR* %3, i8* %4, i8* %cond) #7
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %fp = getelementptr inbounds %struct.t_fileio* %0, i64 %idxprom, i32 7
+  %6 = load %struct._IO_FILE** %fp, align 8, !tbaa !3
+  tail call void @frewind(%struct._IO_FILE* %6) #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void
+}

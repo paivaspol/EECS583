@@ -1,0 +1,89 @@
+define i32 @inequality_comparisons_p(%struct.rtx_def* nocapture %x) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.epilog [
+    i32 61, label %return
+    i32 62, label %return
+    i32 59, label %return
+    i32 69, label %return
+    i32 54, label %return
+    i32 55, label %return
+    i32 56, label %return
+    i32 58, label %return
+    i32 67, label %return
+    i32 68, label %return
+    i32 107, label %sw.bb1
+    i32 111, label %sw.bb1
+    i32 105, label %sw.bb1
+    i32 109, label %sw.bb1
+    i32 106, label %sw.bb1
+    i32 110, label %sw.bb1
+    i32 104, label %sw.bb1
+    i32 108, label %sw.bb1
+  ]
+
+sw.bb1:                                           ; preds = %entry, %entry, %entry, %entry, %entry, %entry, %entry, %entry
+  br label %return
+
+sw.epilog:                                        ; preds = %entry
+  %idxprom53 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom53
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = zext i8 %1 to i32
+  %arrayidx3 = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom53
+  %2 = load i8** %arrayidx3, align 8, !tbaa !0
+  %cmp55 = icmp eq i8 %1, 0
+  br i1 %cmp55, label %return, label %for.body
+
+for.body:                                         ; preds = %sw.epilog, %for.inc38
+  %indvars.iv57 = phi i64 [ %indvars.iv.next58, %for.inc38 ], [ 0, %sw.epilog ]
+  %arrayidx6 = getelementptr inbounds i8* %2, i64 %indvars.iv57
+  %3 = load i8* %arrayidx6, align 1, !tbaa !1
+  switch i8 %3, label %for.inc38 [
+    i8 101, label %if.then
+    i8 69, label %if.then18
+  ]
+
+if.then:                                          ; preds = %for.body
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv57
+  %rtx = bitcast %union.rtunion_def* %arrayidx11 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %call = tail call i32 @inequality_comparisons_p(%struct.rtx_def* %4) #4
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %for.inc38, label %return
+
+if.then18:                                        ; preds = %for.body
+  %arrayidx21 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv57
+  %rtvec = bitcast %union.rtunion_def* %arrayidx21 to %struct.rtvec_def**
+  %5 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %5, i64 0, i32 0
+  %6 = load i32* %num_elem, align 4, !tbaa !3
+  %7 = sext i32 %6 to i64
+  br label %for.cond22
+
+for.cond22:                                       ; preds = %for.body25, %if.then18
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body25 ], [ %7, %if.then18 ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %8 = trunc i64 %indvars.iv to i32
+  %cmp23 = icmp sgt i32 %8, 0
+  br i1 %cmp23, label %for.body25, label %for.inc38
+
+for.body25:                                       ; preds = %for.cond22
+  %arrayidx31 = getelementptr inbounds %struct.rtvec_def* %5, i64 0, i32 1, i64 %indvars.iv.next
+  %9 = load %struct.rtx_def** %arrayidx31, align 8, !tbaa !0
+  %call32 = tail call i32 @inequality_comparisons_p(%struct.rtx_def* %9) #4
+  %tobool33 = icmp eq i32 %call32, 0
+  br i1 %tobool33, label %for.cond22, label %return
+
+for.inc38:                                        ; preds = %for.cond22, %for.body, %if.then
+  %indvars.iv.next58 = add i64 %indvars.iv57, 1
+  %10 = trunc i64 %indvars.iv.next58 to i32
+  %cmp = icmp slt i32 %10, %conv
+  br i1 %cmp, label %for.body, label %return
+
+return:                                           ; preds = %sw.epilog, %if.then, %for.inc38, %for.body25, %entry, %entry, %entry, %entry, %entry, %entry, %entry, %entry, %entry, %entry, %sw.bb1
+  %retval.0 = phi i32 [ 1, %sw.bb1 ], [ 0, %entry ], [ 0, %entry ], [ 0, %entry ], [ 0, %entry ], [ 0, %entry ], [ 0, %entry ], [ 0, %entry ], [ 0, %entry ], [ 0, %entry ], [ 0, %entry ], [ 1, %for.body25 ], [ 0, %sw.epilog ], [ 1, %if.then ], [ 0, %for.inc38 ]
+  ret i32 %retval.0
+}

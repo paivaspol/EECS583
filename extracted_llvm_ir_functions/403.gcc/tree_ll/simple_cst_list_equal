@@ -1,0 +1,41 @@
+define i32 @simple_cst_list_equal(%union.tree_node* %l1, %union.tree_node* %l2) #0 {
+entry:
+  %cmp115 = icmp ne %union.tree_node* %l2, null
+  %not.cmp16 = icmp ne %union.tree_node* %l1, null
+  %.cmp117 = and i1 %cmp115, %not.cmp16
+  br i1 %.cmp117, label %while.body, label %while.end
+
+while.body:                                       ; preds = %entry, %if.end
+  %l2.addr.019 = phi %union.tree_node* [ %5, %if.end ], [ %l2, %entry ]
+  %l1.addr.018 = phi %union.tree_node* [ %4, %if.end ], [ %l1, %entry ]
+  %value = getelementptr inbounds %union.tree_node* %l1.addr.018, i64 0, i32 0, i32 2
+  %0 = bitcast i32* %value to %union.tree_node**
+  %1 = load %union.tree_node** %0, align 8, !tbaa !0
+  %value3 = getelementptr inbounds %union.tree_node* %l2.addr.019, i64 0, i32 0, i32 2
+  %2 = bitcast i32* %value3 to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %call = tail call i32 @simple_cst_equal(%union.tree_node* %1, %union.tree_node* %3) #10
+  %cmp4 = icmp eq i32 %call, 1
+  br i1 %cmp4, label %if.end, label %return
+
+if.end:                                           ; preds = %while.body
+  %chain = getelementptr inbounds %union.tree_node* %l1.addr.018, i64 0, i32 0, i32 0, i32 0
+  %4 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %chain6 = getelementptr inbounds %union.tree_node* %l2.addr.019, i64 0, i32 0, i32 0, i32 0
+  %5 = load %union.tree_node** %chain6, align 8, !tbaa !0
+  %cmp1 = icmp ne %union.tree_node* %5, null
+  %not.cmp = icmp ne %union.tree_node* %4, null
+  %.cmp1 = and i1 %cmp1, %not.cmp
+  br i1 %.cmp1, label %while.body, label %while.end
+
+while.end:                                        ; preds = %if.end, %entry
+  %l2.addr.0.lcssa = phi %union.tree_node* [ %l2, %entry ], [ %5, %if.end ]
+  %l1.addr.0.lcssa = phi %union.tree_node* [ %l1, %entry ], [ %4, %if.end ]
+  %cmp7 = icmp eq %union.tree_node* %l1.addr.0.lcssa, %l2.addr.0.lcssa
+  %conv = zext i1 %cmp7 to i32
+  br label %return
+
+return:                                           ; preds = %while.body, %while.end
+  %retval.0 = phi i32 [ %conv, %while.end ], [ 0, %while.body ]
+  ret i32 %retval.0
+}

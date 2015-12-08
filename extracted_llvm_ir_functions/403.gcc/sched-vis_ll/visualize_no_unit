@@ -1,0 +1,17 @@
+define void @visualize_no_unit(%struct.rtx_def* %insn) #0 {
+entry:
+  %0 = load i32* @n_vis_no_unit, align 4, !tbaa !3
+  %cmp = icmp slt i32 %0, 20
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %0 to i64
+  %arrayidx = getelementptr inbounds [20 x %struct.rtx_def*]* @vis_no_unit, i64 0, i64 %idxprom
+  store %struct.rtx_def* %insn, %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  %inc = add nsw i32 %0, 1
+  store i32 %inc, i32* @n_vis_no_unit, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  ret void
+}

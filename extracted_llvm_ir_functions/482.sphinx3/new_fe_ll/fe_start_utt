@@ -1,0 +1,18 @@
+define i32 @fe_start_utt(%struct.fe_t* nocapture %FE) #0 {
+entry:
+  %NUM_OVERFLOW_SAMPS = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 10
+  store i32 0, i32* %NUM_OVERFLOW_SAMPS, align 4, !tbaa !4
+  %OVERFLOW_SAMPS = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 9
+  %0 = load i16** %OVERFLOW_SAMPS, align 8, !tbaa !0
+  %1 = bitcast i16* %0 to i8*
+  %FRAME_SIZE = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 4
+  %2 = load i32* %FRAME_SIZE, align 4, !tbaa !4
+  %conv = sext i32 %2 to i64
+  %mul = shl nsw i64 %conv, 1
+  tail call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 %mul, i32 2, i1 false)
+  %START_FLAG = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 12
+  store i32 1, i32* %START_FLAG, align 4, !tbaa !4
+  %PRIOR = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 13
+  store i16 0, i16* %PRIOR, align 2, !tbaa !5
+  ret i32 0
+}

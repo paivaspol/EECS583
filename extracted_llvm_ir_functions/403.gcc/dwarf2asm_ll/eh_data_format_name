@@ -1,0 +1,19 @@
+define i8* @eh_data_format_name(i32 %format) #0 {
+entry:
+  %0 = icmp ugt i32 %format, 255
+  br i1 %0, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %idxprom = sext i32 %format to i64
+  %arrayidx = getelementptr inbounds [256 x i8*]* @eh_data_format_name.format_names, i64 0, i64 %idxprom
+  %1 = load i8** %arrayidx, align 8, !tbaa !0
+  %cmp3 = icmp eq i8* %1, null
+  br i1 %cmp3, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 494, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.eh_data_format_name, i64 0, i64 0)) #10
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  ret i8* %1
+}

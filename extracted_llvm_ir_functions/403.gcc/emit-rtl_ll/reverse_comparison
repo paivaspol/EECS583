@@ -1,0 +1,76 @@
+define void @reverse_comparison(%struct.rtx_def* nocapture %insn) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 47
+  %fld1 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1
+  br i1 %cmp, label %if.end, label %if.else
+
+if.else:                                          ; preds = %entry
+  %rtvec = bitcast [1 x %union.rtunion_def]* %fld1 to %struct.rtvec_def**
+  %2 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  %arrayidx6 = getelementptr inbounds %struct.rtvec_def* %2, i64 0, i32 1, i64 0
+  %3 = load %struct.rtx_def** %arrayidx6, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.else
+  %.pn = phi %struct.rtx_def* [ %3, %if.else ], [ %0, %entry ]
+  %comp.0.in.in = getelementptr inbounds %struct.rtx_def* %.pn, i64 0, i32 1, i64 1
+  %comp.0.in = bitcast %union.rtunion_def* %comp.0.in.in to %struct.rtx_def**
+  %comp.0 = load %struct.rtx_def** %comp.0.in, align 8
+  %4 = bitcast %struct.rtx_def* %comp.0 to i32*
+  %bf.load10 = load i32* %4, align 8
+  %bf.clear11 = and i32 %bf.load10, 65535
+  %cmp12 = icmp eq i32 %bf.clear11, 74
+  br i1 %cmp12, label %if.then13, label %if.else26
+
+if.then13:                                        ; preds = %if.end
+  %fld14 = getelementptr inbounds %struct.rtx_def* %comp.0, i64 0, i32 1
+  %rtx16 = bitcast [1 x %union.rtunion_def]* %fld14 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx16, align 8, !tbaa !4
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %comp.0, i64 0, i32 1, i64 1
+  %rtx19 = bitcast %union.rtunion_def* %arrayidx18 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx19, align 8, !tbaa !4
+  %7 = getelementptr inbounds [1 x %union.rtunion_def]* %fld14, i64 0, i64 0, i32 0
+  %.c = ptrtoint %struct.rtx_def* %6 to i64
+  store i64 %.c, i64* %7, align 8, !tbaa !4
+  %8 = getelementptr inbounds %union.rtunion_def* %arrayidx18, i64 0, i32 0
+  %.c58 = ptrtoint %struct.rtx_def* %5 to i64
+  store i64 %.c58, i64* %8, align 8, !tbaa !4
+  br label %if.end47
+
+if.else26:                                        ; preds = %if.end
+  %bf.lshr = lshr i32 %bf.load10, 16
+  %bf.clear28 = and i32 %bf.lshr, 255
+  %idxprom56 = zext i32 %bf.clear28 to i64
+  %arrayidx29 = getelementptr inbounds [3 x [59 x %struct.rtx_def*]]* @const_tiny_rtx, i64 0, i64 0, i64 %idxprom56
+  %9 = load %struct.rtx_def** %arrayidx29, align 8, !tbaa !4
+  %call = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 74, i32 0, %struct.rtx_def* %9, %struct.rtx_def* %comp.0) #8
+  %bf.load30 = load i32* %1, align 8
+  %bf.clear31 = and i32 %bf.load30, 65535
+  %cmp32 = icmp eq i32 %bf.clear31, 47
+  br i1 %cmp32, label %if.then33, label %if.else37
+
+if.then33:                                        ; preds = %if.else26
+  %10 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 1, i32 0
+  %call.c57 = ptrtoint %struct.rtx_def* %call to i64
+  store i64 %call.c57, i64* %10, align 8, !tbaa !4
+  br label %if.end47
+
+if.else37:                                        ; preds = %if.else26
+  %rtvec40 = bitcast [1 x %union.rtunion_def]* %fld1 to %struct.rtvec_def**
+  %11 = load %struct.rtvec_def** %rtvec40, align 8, !tbaa !4
+  %arrayidx42 = getelementptr inbounds %struct.rtvec_def* %11, i64 0, i32 1, i64 0
+  %12 = load %struct.rtx_def** %arrayidx42, align 8, !tbaa !4
+  %13 = getelementptr inbounds %struct.rtx_def* %12, i64 0, i32 1, i64 1, i32 0
+  %call.c = ptrtoint %struct.rtx_def* %call to i64
+  store i64 %call.c, i64* %13, align 8, !tbaa !4
+  br label %if.end47
+
+if.end47:                                         ; preds = %if.then33, %if.else37, %if.then13
+  ret void
+}

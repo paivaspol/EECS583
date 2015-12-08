@@ -1,0 +1,43 @@
+define void @mark_temp_addr_taken(%struct.rtx_def* %x) #0 {
+entry:
+  %cmp = icmp eq %struct.rtx_def* %x, null
+  br i1 %cmp, label %if.end61, label %if.end
+
+if.end:                                           ; preds = %entry
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp1 = icmp eq i32 %bf.clear, 66
+  br i1 %cmp1, label %lor.lhs.false, label %if.end61
+
+lor.lhs.false:                                    ; preds = %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load2 = load i32* %2, align 8
+  %bf.clear3 = and i32 %bf.load2, 65535
+  switch i32 %bf.clear3, label %if.end55 [
+    i32 67, label %if.end61
+    i32 68, label %if.end61
+    i32 54, label %if.end61
+    i32 55, label %if.end61
+    i32 58, label %if.end61
+    i32 134, label %if.end61
+    i32 56, label %if.end61
+    i32 140, label %if.end61
+  ]
+
+if.end55:                                         ; preds = %lor.lhs.false
+  %call = tail call fastcc %struct.temp_slot* @find_temp_slot_from_address(%struct.rtx_def* %1) #9
+  %cmp59 = icmp eq %struct.temp_slot* %call, null
+  br i1 %cmp59, label %if.end61, label %if.then60
+
+if.then60:                                        ; preds = %if.end55
+  %addr_taken = getelementptr inbounds %struct.temp_slot* %call, i64 0, i32 8
+  store i8 1, i8* %addr_taken, align 1, !tbaa !1
+  br label %if.end61
+
+if.end61:                                         ; preds = %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %if.end55, %if.end, %entry, %if.then60
+  ret void
+}

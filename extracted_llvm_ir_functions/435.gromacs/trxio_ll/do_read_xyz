@@ -1,0 +1,71 @@
+define internal fastcc i32 @do_read_xyz(%struct._IO_FILE* %status, i32 %natoms, [3 x float]* nocapture %x, [3 x float]* nocapture %box) #1 {
+entry:
+  %x0 = alloca double, align 8
+  %cmp51 = icmp sgt i32 %natoms, 0
+  br i1 %cmp51, label %for.cond1.preheader, label %for.end13
+
+for.cond1.preheader:                              ; preds = %entry, %for.inc11
+  %indvars.iv57 = phi i64 [ %indvars.iv.next58, %for.inc11 ], [ 0, %entry ]
+  %i.052 = phi i32 [ %inc12, %for.inc11 ], [ 0, %entry ]
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.cond1.preheader, %if.end8
+  %indvars.iv54 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next55, %if.end8 ]
+  %m.049 = phi i32 [ 0, %for.cond1.preheader ], [ %inc, %if.end8 ]
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %status, i8* getelementptr inbounds ([4 x i8]* @.str35, i64 0, i64 0), double* %x0) #6
+  %cmp4 = icmp eq i32 %call, 1
+  br i1 %cmp4, label %if.end8, label %if.then
+
+if.then:                                          ; preds = %for.body3
+  %0 = or i32 %m.049, %i.052
+  %1 = icmp eq i32 %0, 0
+  br i1 %1, label %return, label %if.then6
+
+if.then6:                                         ; preds = %if.then
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
+  %call7 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([37 x i8]* @.str49, i64 0, i64 0), i32 %i.052, i32 %m.049) #6
+  br label %return
+
+if.end8:                                          ; preds = %for.body3
+  %3 = load double* %x0, align 8, !tbaa !5
+  %conv = fptrunc double %3 to float
+  %arrayidx10 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv57, i64 %indvars.iv54
+  store float %conv, float* %arrayidx10, align 4, !tbaa !3
+  %indvars.iv.next55 = add i64 %indvars.iv54, 1
+  %inc = add nsw i32 %m.049, 1
+  %4 = trunc i64 %indvars.iv.next55 to i32
+  %cmp2 = icmp slt i32 %4, 3
+  br i1 %cmp2, label %for.body3, label %for.inc11
+
+for.inc11:                                        ; preds = %if.end8
+  %indvars.iv.next58 = add i64 %indvars.iv57, 1
+  %inc12 = add nsw i32 %i.052, 1
+  %5 = trunc i64 %indvars.iv.next58 to i32
+  %cmp = icmp slt i32 %5, %natoms
+  br i1 %cmp, label %for.cond1.preheader, label %for.end13
+
+for.end13:                                        ; preds = %for.inc11, %entry
+  %6 = load i32* @bReadBox, align 4, !tbaa !0
+  %tobool14 = icmp eq i32 %6, 0
+  br i1 %tobool14, label %return, label %for.body19
+
+for.body19:                                       ; preds = %for.end13, %if.end24
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end24 ], [ 0, %for.end13 ]
+  %call20 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %status, i8* getelementptr inbounds ([4 x i8]* @.str35, i64 0, i64 0), double* %x0) #6
+  %cmp21 = icmp eq i32 %call20, 1
+  br i1 %cmp21, label %if.end24, label %return
+
+if.end24:                                         ; preds = %for.body19
+  %7 = load double* %x0, align 8, !tbaa !5
+  %conv25 = fptrunc double %7 to float
+  %arrayidx29 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv, i64 %indvars.iv
+  store float %conv25, float* %arrayidx29, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %8 = trunc i64 %indvars.iv.next to i32
+  %cmp17 = icmp slt i32 %8, 3
+  br i1 %cmp17, label %for.body19, label %return
+
+return:                                           ; preds = %if.end24, %for.body19, %for.end13, %if.then6, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then6 ], [ 1, %for.end13 ], [ 1, %if.end24 ], [ 0, %for.body19 ]
+  ret i32 %retval.0
+}

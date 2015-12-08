@@ -1,0 +1,63 @@
+define void @unsave_expr_1(%union.tree_node* %expr) #0 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %sw.default [
+    i32 118, label %sw.bb
+    i32 50, label %sw.bb4
+    i32 120, label %sw.bb20
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %bf.clear3 = and i32 %bf.load, 16384
+  %tobool = icmp eq i32 %bf.clear3, 0
+  br i1 %tobool, label %if.then, label %sw.epilog
+
+if.then:                                          ; preds = %sw.bb
+  %operands = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 2
+  %arrayidx = getelementptr inbounds i32* %operands, i64 4
+  %1 = bitcast i32* %arrayidx to %struct.rtx_def**
+  store %struct.rtx_def* null, %struct.rtx_def** %1, align 8, !tbaa !0
+  br label %sw.epilog
+
+sw.bb4:                                           ; preds = %entry
+  %operands6 = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 2
+  %arrayidx7 = getelementptr inbounds i32* %operands6, i64 2
+  %2 = bitcast i32* %arrayidx7 to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %tobool8 = icmp eq %union.tree_node* %3, null
+  br i1 %tobool8, label %if.end10, label %sw.epilog
+
+if.end10:                                         ; preds = %sw.bb4
+  %arrayidx13 = getelementptr inbounds i32* %operands6, i64 6
+  %4 = bitcast i32* %arrayidx13 to %union.tree_node**
+  %5 = load %union.tree_node** %4, align 8, !tbaa !0
+  store %union.tree_node* %5, %union.tree_node** %2, align 8, !tbaa !0
+  store %union.tree_node* null, %union.tree_node** %4, align 8, !tbaa !0
+  br label %sw.epilog
+
+sw.bb20:                                          ; preds = %entry
+  %operands22 = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 2
+  %6 = bitcast i32* %operands22 to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %6, align 8, !tbaa !0
+  %cmp = icmp eq %struct.rtx_def* %7, null
+  br i1 %cmp, label %sw.epilog, label %if.then24
+
+if.then24:                                        ; preds = %sw.bb20
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str147, i64 0, i64 0), i32 1712, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.unsave_expr_1, i64 0, i64 0)) #8
+  unreachable
+
+sw.default:                                       ; preds = %entry
+  %8 = load void (%union.tree_node*)** @lang_unsave_expr_now, align 8, !tbaa !0
+  %cmp26 = icmp eq void (%union.tree_node*)* %8, null
+  br i1 %cmp26, label %sw.epilog, label %if.then27
+
+if.then27:                                        ; preds = %sw.default
+  tail call void %8(%union.tree_node* %expr) #9
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %sw.default, %sw.bb, %sw.bb4, %sw.bb20, %if.then27, %if.then, %if.end10
+  ret void
+}

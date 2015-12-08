@@ -1,0 +1,25 @@
+define %struct.lmclass_s* @lmclass_get_lmclass(%struct.lmclass_set_s* nocapture %set, i8* nocapture %name) #5 {
+entry:
+  %lmclass_list = getelementptr inbounds %struct.lmclass_set_s* %set, i64 0, i32 0
+  %cl.05 = load %struct.lmclass_s** %lmclass_list, align 8
+  %tobool6 = icmp eq %struct.lmclass_s* %cl.05, null
+  br i1 %tobool6, label %for.end, label %land.rhs
+
+for.cond:                                         ; preds = %land.rhs
+  %next = getelementptr inbounds %struct.lmclass_s* %cl.07, i64 0, i32 2
+  %cl.0 = load %struct.lmclass_s** %next, align 8
+  %tobool = icmp eq %struct.lmclass_s* %cl.0, null
+  br i1 %tobool, label %for.end, label %land.rhs
+
+land.rhs:                                         ; preds = %entry, %for.cond
+  %cl.07 = phi %struct.lmclass_s* [ %cl.0, %for.cond ], [ %cl.05, %entry ]
+  %name1 = getelementptr inbounds %struct.lmclass_s* %cl.07, i64 0, i32 0
+  %0 = load i8** %name1, align 8, !tbaa !0
+  %call = tail call i32 @strcmp(i8* %0, i8* %name) #8
+  %cmp = icmp eq i32 %call, 0
+  br i1 %cmp, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.cond, %land.rhs, %entry
+  %cl.0.lcssa = phi %struct.lmclass_s* [ null, %entry ], [ %cl.07, %land.rhs ], [ null, %for.cond ]
+  ret %struct.lmclass_s* %cl.0.lcssa
+}

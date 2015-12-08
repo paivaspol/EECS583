@@ -1,0 +1,24 @@
+define i32 @const248_operand(%struct.rtx_def* nocapture %op, i32 %mode) #2 {
+entry:
+  %0 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 54
+  br i1 %cmp, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %entry
+  %rtwint = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, i32 0
+  %1 = load i64* %rtwint, align 8, !tbaa !14
+  switch i64 %1, label %lor.rhs [
+    i64 2, label %land.end
+    i64 4, label %land.end
+    i64 8, label %land.end
+  ]
+
+lor.rhs:                                          ; preds = %land.rhs
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %land.rhs, %land.rhs, %lor.rhs, %entry
+  %2 = phi i32 [ 0, %entry ], [ 1, %land.rhs ], [ 0, %lor.rhs ], [ 1, %land.rhs ], [ 1, %land.rhs ]
+  ret i32 %2
+}

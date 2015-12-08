@@ -1,0 +1,25 @@
+define i32 @vector_maxcomp_int32(i32* nocapture %val, i32 %len) #2 {
+entry:
+  %cmp9 = icmp sgt i32 %len, 1
+  br i1 %cmp9, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %entry ]
+  %bi.011 = phi i32 [ %i.0.bi.0, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i32* %val, i64 %indvars.iv
+  %0 = load i32* %arrayidx, align 4, !tbaa !3
+  %idxprom1 = sext i32 %bi.011 to i64
+  %arrayidx2 = getelementptr inbounds i32* %val, i64 %idxprom1
+  %1 = load i32* %arrayidx2, align 4, !tbaa !3
+  %cmp3 = icmp sgt i32 %0, %1
+  %2 = trunc i64 %indvars.iv to i32
+  %i.0.bi.0 = select i1 %cmp3, i32 %2, i32 %bi.011
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %len
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %bi.0.lcssa = phi i32 [ 0, %entry ], [ %i.0.bi.0, %for.body ]
+  ret i32 %bi.0.lcssa
+}

@@ -1,0 +1,15 @@
+define i32 @sbitmap_equal(%struct.simple_bitmap_def* nocapture %a, %struct.simple_bitmap_def* nocapture %b) #3 {
+entry:
+  %arraydecay = getelementptr inbounds %struct.simple_bitmap_def* %a, i64 0, i32 3, i64 0
+  %0 = bitcast i64* %arraydecay to i8*
+  %arraydecay2 = getelementptr inbounds %struct.simple_bitmap_def* %b, i64 0, i32 3, i64 0
+  %1 = bitcast i64* %arraydecay2 to i8*
+  %size = getelementptr inbounds %struct.simple_bitmap_def* %a, i64 0, i32 1
+  %2 = load i32* %size, align 4, !tbaa !0
+  %conv = zext i32 %2 to i64
+  %mul = shl nuw nsw i64 %conv, 3
+  %call = tail call i32 @memcmp(i8* %0, i8* %1, i64 %mul) #7
+  %lnot = icmp eq i32 %call, 0
+  %lnot.ext = zext i1 %lnot to i32
+  ret i32 %lnot.ext
+}

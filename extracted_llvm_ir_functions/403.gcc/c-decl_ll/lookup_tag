@@ -1,0 +1,77 @@
+define internal fastcc %union.tree_node* @lookup_tag(i32 %code, %union.tree_node* %name, %struct.binding_level* %binding_level, i32 %thislevel_only) #0 {
+entry:
+  %tobool35 = icmp eq %struct.binding_level* %binding_level, null
+  br i1 %tobool35, label %return, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %tobool17 = icmp eq i32 %thislevel_only, 0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc21
+  %thislevel.037 = phi i32 [ 1, %for.body.lr.ph ], [ %thislevel.037.mux, %for.inc21 ]
+  %level.036 = phi %struct.binding_level* [ %binding_level, %for.body.lr.ph ], [ %9, %for.inc21 ]
+  %tags = getelementptr inbounds %struct.binding_level* %level.036, i64 0, i32 1
+  %tail.031 = load %union.tree_node** %tags, align 8
+  %tobool232 = icmp eq %union.tree_node* %tail.031, null
+  br i1 %tobool232, label %for.end, label %for.body3
+
+for.cond1:                                        ; preds = %for.body3
+  %chain = getelementptr inbounds %union.tree_node* %tail.033, i64 0, i32 0, i32 0, i32 0
+  %tail.0 = load %union.tree_node** %chain, align 8
+  %tobool2 = icmp eq %union.tree_node* %tail.0, null
+  br i1 %tobool2, label %for.end, label %for.body3
+
+for.body3:                                        ; preds = %for.body, %for.cond1
+  %tail.033 = phi %union.tree_node* [ %tail.0, %for.cond1 ], [ %tail.031, %for.body ]
+  %purpose = getelementptr inbounds %union.tree_node* %tail.033, i64 0, i32 0, i32 1
+  %0 = load i8** %purpose, align 8
+  %1 = bitcast i8* %0 to %union.tree_node*
+  %cmp = icmp eq %union.tree_node* %1, %name
+  br i1 %cmp, label %if.then, label %for.cond1
+
+if.then:                                          ; preds = %for.body3
+  %value = getelementptr inbounds %union.tree_node* %tail.033, i64 0, i32 0, i32 2
+  %2 = bitcast i32* %value to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %code5 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 0, i32 2
+  %4 = bitcast [4 x i8]* %code5 to i32*
+  %bf.load = load i32* %4, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp6 = icmp eq i32 %bf.clear, %code
+  br i1 %cmp6, label %if.end10, label %if.then7
+
+if.then7:                                         ; preds = %if.then
+  store %union.tree_node* %name, %union.tree_node** @pending_invalid_xref, align 8, !tbaa !0
+  %5 = load i8** @input_filename, align 8, !tbaa !0
+  store i8* %5, i8** @pending_invalid_xref_file, align 8, !tbaa !0
+  %6 = load i32* @lineno, align 4, !tbaa !3
+  store i32 %6, i32* @pending_invalid_xref_line, align 4, !tbaa !3
+  %tobool8 = icmp eq i32 %thislevel.037, 0
+  br i1 %tobool8, label %if.end10, label %if.then9
+
+if.then9:                                         ; preds = %if.then7
+  tail call void @pending_xref_error() #10
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.then7, %if.then, %if.then9
+  %7 = load %union.tree_node** %2, align 8, !tbaa !0
+  br label %return
+
+for.end:                                          ; preds = %for.cond1, %for.body
+  %tag_transparent = getelementptr inbounds %struct.binding_level* %level.036, i64 0, i32 7
+  %8 = load i8* %tag_transparent, align 1, !tbaa !1
+  %tobool15.not = icmp ne i8 %8, 0
+  %brmerge = or i1 %tobool15.not, %tobool17
+  br i1 %brmerge, label %for.inc21, label %return
+
+for.inc21:                                        ; preds = %for.end
+  %thislevel.037.mux = select i1 %tobool15.not, i32 %thislevel.037, i32 0
+  %level_chain = getelementptr inbounds %struct.binding_level* %level.036, i64 0, i32 5
+  %9 = load %struct.binding_level** %level_chain, align 8, !tbaa !0
+  %tobool = icmp eq %struct.binding_level* %9, null
+  br i1 %tobool, label %return, label %for.body
+
+return:                                           ; preds = %for.end, %entry, %for.inc21, %if.end10
+  %retval.0 = phi %union.tree_node* [ %7, %if.end10 ], [ null, %for.inc21 ], [ null, %entry ], [ null, %for.end ]
+  ret %union.tree_node* %retval.0
+}

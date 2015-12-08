@@ -1,0 +1,71 @@
+define void @renumber_insns(%struct._IO_FILE* %stream) #0 {
+entry:
+  %0 = load i32* @flag_renumber_insns, align 4, !tbaa !0
+  switch i32 %0, label %entry.if.end3_crit_edge [
+    i32 0, label %for.end
+    i32 1, label %land.lhs.true
+  ]
+
+entry.if.end3_crit_edge:                          ; preds = %entry
+  %.pre27 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit.phi.trans.insert = getelementptr inbounds %struct.function* %.pre27, i64 0, i32 3
+  %.pre28 = load %struct.emit_status** %emit.phi.trans.insert, align 8, !tbaa !4
+  br label %if.end3
+
+land.lhs.true:                                    ; preds = %entry
+  %1 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit.i = getelementptr inbounds %struct.function* %1, i64 0, i32 3
+  %2 = load %struct.emit_status** %emit.i, align 8, !tbaa !4
+  %x_cur_insn_uid.i = getelementptr inbounds %struct.emit_status* %2, i64 0, i32 6
+  %3 = load i32* %x_cur_insn_uid.i, align 4, !tbaa !0
+  %cmp1 = icmp slt i32 %3, 25000
+  br i1 %cmp1, label %for.end, label %if.end3
+
+if.end3:                                          ; preds = %entry.if.end3_crit_edge, %land.lhs.true
+  %4 = phi %struct.emit_status* [ %.pre28, %entry.if.end3_crit_edge ], [ %2, %land.lhs.true ]
+  %x_cur_insn_uid = getelementptr inbounds %struct.emit_status* %4, i64 0, i32 6
+  store i32 1, i32* %x_cur_insn_uid, align 4, !tbaa !0
+  %x_first_insn.i = getelementptr inbounds %struct.emit_status* %4, i64 0, i32 2
+  %insn.024 = load %struct.rtx_def** %x_first_insn.i, align 8
+  %tobool525 = icmp eq %struct.rtx_def* %insn.024, null
+  br i1 %tobool525, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.end3
+  %tobool6 = icmp eq %struct._IO_FILE* %stream, null
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end11
+  %5 = phi %struct.emit_status* [ %4, %for.body.lr.ph ], [ %8, %if.end11 ]
+  %insn.026 = phi %struct.rtx_def* [ %insn.024, %for.body.lr.ph ], [ %insn.0, %if.end11 ]
+  br i1 %tobool6, label %if.end11, label %if.then7
+
+if.then7:                                         ; preds = %for.body
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.026, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %6 = load i32* %rtint, align 4, !tbaa !0
+  %x_cur_insn_uid9 = getelementptr inbounds %struct.emit_status* %5, i64 0, i32 6
+  %7 = load i32* %x_cur_insn_uid9, align 4, !tbaa !0
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([27 x i8]* @.str2, i64 0, i64 0), i32 %6, i32 %7) #8
+  %.pre = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit12.phi.trans.insert = getelementptr inbounds %struct.function* %.pre, i64 0, i32 3
+  %.pre29 = load %struct.emit_status** %emit12.phi.trans.insert, align 8, !tbaa !4
+  br label %if.end11
+
+if.end11:                                         ; preds = %for.body, %if.then7
+  %8 = phi %struct.emit_status* [ %.pre29, %if.then7 ], [ %5, %for.body ]
+  %x_cur_insn_uid13 = getelementptr inbounds %struct.emit_status* %8, i64 0, i32 6
+  %9 = load i32* %x_cur_insn_uid13, align 4, !tbaa !0
+  %inc = add nsw i32 %9, 1
+  store i32 %inc, i32* %x_cur_insn_uid13, align 4, !tbaa !0
+  %fld14 = getelementptr inbounds %struct.rtx_def* %insn.026, i64 0, i32 1
+  %rtint16 = bitcast [1 x %union.rtunion_def]* %fld14 to i32*
+  store i32 %9, i32* %rtint16, align 4, !tbaa !0
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %insn.026, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx18 to %struct.rtx_def**
+  %insn.0 = load %struct.rtx_def** %rtx, align 8
+  %tobool5 = icmp eq %struct.rtx_def* %insn.0, null
+  br i1 %tobool5, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.end3, %if.end11, %entry, %land.lhs.true
+  ret void
+}

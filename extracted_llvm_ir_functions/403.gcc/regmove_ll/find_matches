@@ -1,0 +1,274 @@
+define internal fastcc i32 @find_matches(%struct.rtx_def* %insn, %struct.match* nocapture %matchp) #0 {
+entry:
+  %likely_spilled = alloca [30 x i32], align 16
+  %end = alloca i8*, align 8
+  %0 = bitcast [30 x i32]* %likely_spilled to i8*
+  call void @llvm.lifetime.start(i64 120, i8* %0) #2
+  call void @extract_insn(%struct.rtx_def* %insn) #5
+  %call = call i32 @constrain_operands(i32 0) #5
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %cleanup, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = load i8* getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 7), align 4, !tbaa !1
+  %cmp1503 = icmp sgt i8 %1, 0
+  br i1 %cmp1503, label %for.body.lr.ph, label %cleanup
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %2 = sext i8 %1 to i64
+  br label %for.body
+
+for.cond4.preheader:                              ; preds = %for.body
+  %.pre = load i8* getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 7), align 4, !tbaa !1
+  %cmp61498 = icmp sgt i8 %.pre, 0
+  br i1 %cmp61498, label %for.body8, label %cleanup
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv1505 = phi i64 [ %2, %for.body.lr.ph ], [ %indvars.iv.next1506, %for.body ]
+  %indvars.iv.next1506 = add i64 %indvars.iv1505, -1
+  %arrayidx = getelementptr inbounds %struct.match* %matchp, i64 0, i32 2, i64 %indvars.iv.next1506
+  store i32 -1, i32* %arrayidx, align 4, !tbaa !0
+  %arrayidx3 = getelementptr inbounds %struct.match* %matchp, i64 0, i32 0, i64 %indvars.iv.next1506
+  store i32 -1, i32* %arrayidx3, align 4, !tbaa !0
+  %3 = trunc i64 %indvars.iv.next1506 to i32
+  %cmp = icmp sgt i32 %3, 0
+  br i1 %cmp, label %for.body, label %for.cond4.preheader
+
+for.body8:                                        ; preds = %for.cond4.preheader, %for.inc1173
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc1173 ], [ 0, %for.cond4.preheader ]
+  %any_matches.01499 = phi i32 [ %any_matches.1, %for.inc1173 ], [ 0, %for.cond4.preheader ]
+  %arrayidx10 = getelementptr inbounds %struct.recog_data* @recog_data, i64 0, i32 2, i64 %indvars.iv
+  %4 = load i8** %arrayidx10, align 8, !tbaa !4
+  %arrayidx12 = getelementptr inbounds [30 x i32]* %likely_spilled, i64 0, i64 %indvars.iv
+  store i32 0, i32* %arrayidx12, align 4, !tbaa !0
+  %arrayidx14 = getelementptr inbounds %struct.match* %matchp, i64 0, i32 1, i64 %indvars.iv
+  store i32 0, i32* %arrayidx14, align 4, !tbaa !6
+  %arrayidx16 = getelementptr inbounds %struct.match* %matchp, i64 0, i32 3, i64 %indvars.iv
+  store i32 0, i32* %arrayidx16, align 4, !tbaa !0
+  %5 = load i8* %4, align 1, !tbaa !1
+  switch i8 %5, label %for.cond33.preheader [
+    i8 61, label %if.then20
+    i8 43, label %if.then27
+  ]
+
+if.then20:                                        ; preds = %for.body8
+  store i32 1, i32* %arrayidx14, align 4, !tbaa !6
+  br label %for.cond33.preheader
+
+if.then27:                                        ; preds = %for.body8
+  store i32 2, i32* %arrayidx14, align 4, !tbaa !6
+  br label %for.cond33.preheader
+
+for.cond33.preheader:                             ; preds = %if.then27, %if.then20, %for.body8
+  %6 = load i8* %4, align 1, !tbaa !1
+  %tobool351492 = icmp ne i8 %6, 0
+  %7 = load i32* @which_alternative, align 4, !tbaa !0
+  %cmp361493 = icmp sgt i32 %7, 0
+  %or.cond1494 = and i1 %tobool351492, %cmp361493
+  br i1 %or.cond1494, label %for.body38, label %while.cond.loopexit
+
+for.body38:                                       ; preds = %for.cond33.preheader, %for.body38
+  %8 = phi i8 [ %9, %for.body38 ], [ %6, %for.cond33.preheader ]
+  %i.01496 = phi i32 [ %inc.i.0, %for.body38 ], [ 0, %for.cond33.preheader ]
+  %p.01495 = phi i8* [ %incdec.ptr, %for.body38 ], [ %4, %for.cond33.preheader ]
+  %cmp40 = icmp eq i8 %8, 44
+  %inc = zext i1 %cmp40 to i32
+  %inc.i.0 = add nsw i32 %inc, %i.01496
+  %incdec.ptr = getelementptr inbounds i8* %p.01495, i64 1
+  %9 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %tobool35 = icmp ne i8 %9, 0
+  %cmp36 = icmp slt i32 %inc.i.0, %7
+  %or.cond = and i1 %tobool35, %cmp36
+  br i1 %or.cond, label %for.body38, label %while.cond.loopexit
+
+while.cond.loopexit:                              ; preds = %for.body38, %for.cond33.preheader
+  %10 = phi i8 [ %6, %for.cond33.preheader ], [ %9, %for.body38 ]
+  %p.0.lcssa = phi i8* [ %4, %for.cond33.preheader ], [ %incdec.ptr, %for.body38 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %arrayidx61 = getelementptr inbounds %struct.match* %matchp, i64 0, i32 2, i64 %indvars.iv
+  %arrayidx65 = getelementptr inbounds %struct.match* %matchp, i64 0, i32 2, i64 %indvars.iv.next
+  %arrayidx78 = getelementptr inbounds %struct.match* %matchp, i64 0, i32 0, i64 %indvars.iv
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.backedge, %while.cond.loopexit
+  %11 = phi i8 [ %10, %while.cond.loopexit ], [ %.pre1507, %while.cond.backedge ]
+  %p.1 = phi i8* [ %p.0.lcssa, %while.cond.loopexit ], [ %p.1.be, %while.cond.backedge ]
+  %any_matches.1 = phi i32 [ %any_matches.01499, %while.cond.loopexit ], [ %any_matches.1.be, %while.cond.backedge ]
+  %incdec.ptr45 = getelementptr inbounds i8* %p.1, i64 1
+  switch i8 %11, label %while.body [
+    i8 0, label %for.inc1173
+    i8 44, label %for.inc1173
+  ]
+
+while.body:                                       ; preds = %while.cond
+  %conv46 = sext i8 %11 to i32
+  switch i32 %conv46, label %while.cond.backedge [
+    i32 90, label %sw.bb92
+    i32 89, label %sw.bb92
+    i32 38, label %sw.bb
+    i32 37, label %sw.bb58
+    i32 48, label %sw.bb66
+    i32 49, label %sw.bb66
+    i32 50, label %sw.bb66
+    i32 51, label %sw.bb66
+    i32 52, label %sw.bb66
+    i32 53, label %sw.bb66
+    i32 54, label %sw.bb66
+    i32 55, label %sw.bb66
+    i32 56, label %sw.bb66
+    i32 57, label %sw.bb66
+    i32 97, label %sw.bb92
+    i32 98, label %sw.bb92
+    i32 99, label %sw.bb92
+    i32 100, label %sw.bb92
+    i32 101, label %sw.bb92
+    i32 102, label %sw.bb92
+    i32 104, label %sw.bb92
+    i32 106, label %sw.bb92
+    i32 107, label %sw.bb92
+    i32 108, label %sw.bb92
+    i32 112, label %sw.bb92
+    i32 113, label %sw.bb92
+    i32 116, label %sw.bb92
+    i32 117, label %sw.bb92
+    i32 118, label %sw.bb92
+    i32 119, label %sw.bb92
+    i32 120, label %sw.bb92
+    i32 121, label %sw.bb92
+    i32 122, label %sw.bb92
+    i32 65, label %sw.bb92
+    i32 66, label %sw.bb92
+    i32 67, label %sw.bb92
+    i32 68, label %sw.bb92
+    i32 87, label %sw.bb92
+  ]
+
+sw.bb:                                            ; preds = %while.body
+  store i32 1, i32* %arrayidx16, align 4, !tbaa !0
+  br label %while.cond.backedge
+
+sw.bb58:                                          ; preds = %while.body
+  %12 = trunc i64 %indvars.iv.next to i32
+  store i32 %12, i32* %arrayidx61, align 4, !tbaa !0
+  %13 = trunc i64 %indvars.iv to i32
+  store i32 %13, i32* %arrayidx65, align 4, !tbaa !0
+  br label %while.cond.backedge
+
+sw.bb66:                                          ; preds = %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body
+  %call67 = call i64 @strtoul(i8* %p.1, i8** %end, i32 10) #5
+  %conv68 = trunc i64 %call67 to i32
+  %14 = load i8** %end, align 8, !tbaa !4
+  %15 = trunc i64 %indvars.iv to i32
+  %cmp69 = icmp slt i32 %conv68, %15
+  br i1 %cmp69, label %land.lhs.true, label %if.end75
+
+land.lhs.true:                                    ; preds = %sw.bb66
+  %sext = shl i64 %call67, 32
+  %idxprom71 = ashr exact i64 %sext, 32
+  %arrayidx72 = getelementptr inbounds [30 x i32]* %likely_spilled, i64 0, i64 %idxprom71
+  %16 = load i32* %arrayidx72, align 4, !tbaa !0
+  %tobool73 = icmp eq i32 %16, 0
+  br i1 %tobool73, label %if.end75, label %while.cond.backedge
+
+if.end75:                                         ; preds = %land.lhs.true, %sw.bb66
+  store i32 %conv68, i32* %arrayidx78, align 4, !tbaa !0
+  %17 = load i32* %arrayidx61, align 4, !tbaa !0
+  %cmp82 = icmp sgt i32 %17, -1
+  br i1 %cmp82, label %if.then84, label %while.cond.backedge
+
+if.then84:                                        ; preds = %if.end75
+  %idxprom88 = sext i32 %17 to i64
+  %arrayidx90 = getelementptr inbounds %struct.match* %matchp, i64 0, i32 0, i64 %idxprom88
+  store i32 %conv68, i32* %arrayidx90, align 4, !tbaa !0
+  br label %while.cond.backedge
+
+sw.bb92:                                          ; preds = %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body, %while.body
+  switch i8 %11, label %cond.false244 [
+    i8 114, label %while.cond.backedge
+    i8 82, label %while.cond.backedge
+    i8 113, label %cond.false554
+    i8 81, label %while.cond.backedge
+    i8 102, label %cond.false554
+    i8 116, label %cond.false554
+    i8 117, label %cond.false554
+    i8 97, label %if.then1169
+  ]
+
+cond.false244:                                    ; preds = %sw.bb92
+  switch i8 %11, label %cond.false975 [
+    i8 82, label %while.cond.backedge
+    i8 68, label %if.then1169
+    i8 81, label %while.cond.backedge
+    i8 100, label %if.then1169
+    i8 99, label %if.then1169
+    i8 65, label %if.then1169
+    i8 97, label %while.cond.backedge
+    i8 98, label %if.then1169
+    i8 113, label %while.cond.backedge
+    i8 102, label %while.cond.backedge
+    i8 116, label %while.cond.backedge
+    i8 117, label %while.cond.backedge
+    i8 121, label %while.cond.backedge
+    i8 120, label %while.cond.backedge
+    i8 89, label %cond.true951
+  ]
+
+cond.false554:                                    ; preds = %sw.bb92, %sw.bb92, %sw.bb92, %sw.bb92
+  switch i8 %11, label %cond.false975 [
+    i8 82, label %while.cond.backedge
+    i8 113, label %while.cond.backedge
+    i8 81, label %while.cond.backedge
+    i8 102, label %while.cond.backedge
+    i8 116, label %while.cond.backedge
+    i8 117, label %while.cond.backedge
+    i8 97, label %while.cond.backedge
+    i8 98, label %if.then1169
+    i8 121, label %while.cond.backedge
+    i8 65, label %if.then1169
+    i8 99, label %while.cond.backedge
+    i8 100, label %while.cond.backedge
+    i8 120, label %while.cond.backedge
+    i8 89, label %cond.true951
+    i8 68, label %if.then1169
+  ]
+
+cond.true951:                                     ; preds = %cond.false554, %cond.false244
+  %18 = load i32* @target_flags, align 4, !tbaa !0
+  %and952 = lshr i32 %18, 14
+  %19 = and i32 %and952, 16
+  br label %cond.end1010
+
+cond.false975:                                    ; preds = %cond.false554, %cond.false244
+  %cmp977 = icmp eq i8 %11, 83
+  %cond979 = select i1 %cmp977, i32 5, i32 0
+  br label %cond.end1010
+
+cond.end1010:                                     ; preds = %cond.false975, %cond.true951
+  %cond1011 = phi i32 [ %19, %cond.true951 ], [ %cond979, %cond.false975 ]
+  %cmp1012 = icmp eq i32 %cond1011, 5
+  %cond1490 = icmp eq i8 %11, 68
+  %or.cond1510 = or i1 %cmp1012, %cond1490
+  br i1 %or.cond1510, label %if.then1169, label %while.cond.backedge
+
+if.then1169:                                      ; preds = %cond.false554, %cond.false554, %cond.false554, %cond.false244, %cond.false244, %cond.false244, %cond.false244, %cond.false244, %sw.bb92, %cond.end1010
+  store i32 1, i32* %arrayidx12, align 4, !tbaa !0
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %cond.end1010, %cond.false554, %cond.false554, %cond.false554, %cond.false554, %cond.false554, %cond.false554, %cond.false554, %cond.false554, %cond.false554, %cond.false554, %cond.false554, %cond.false244, %cond.false244, %cond.false244, %cond.false244, %cond.false244, %cond.false244, %cond.false244, %cond.false244, %cond.false244, %sw.bb92, %sw.bb92, %sw.bb92, %if.then1169, %if.end75, %if.then84, %while.body, %sw.bb58, %sw.bb, %land.lhs.true
+  %p.1.be = phi i8* [ %incdec.ptr45, %while.body ], [ %14, %land.lhs.true ], [ %14, %if.then84 ], [ %14, %if.end75 ], [ %incdec.ptr45, %sw.bb58 ], [ %incdec.ptr45, %sw.bb ], [ %incdec.ptr45, %if.then1169 ], [ %incdec.ptr45, %cond.false554 ], [ %incdec.ptr45, %sw.bb92 ], [ %incdec.ptr45, %cond.false244 ], [ %incdec.ptr45, %cond.false244 ], [ %incdec.ptr45, %cond.false244 ], [ %incdec.ptr45, %cond.false554 ], [ %incdec.ptr45, %cond.false554 ], [ %incdec.ptr45, %cond.false554 ], [ %incdec.ptr45, %cond.false554 ], [ %incdec.ptr45, %cond.false554 ], [ %incdec.ptr45, %cond.false554 ], [ %incdec.ptr45, %sw.bb92 ], [ %incdec.ptr45, %sw.bb92 ], [ %incdec.ptr45, %cond.false244 ], [ %incdec.ptr45, %cond.false244 ], [ %incdec.ptr45, %cond.false244 ], [ %incdec.ptr45, %cond.false244 ], [ %incdec.ptr45, %cond.false554 ], [ %incdec.ptr45, %cond.false554 ], [ %incdec.ptr45, %cond.false554 ], [ %incdec.ptr45, %cond.false554 ], [ %incdec.ptr45, %cond.false244 ], [ %incdec.ptr45, %cond.false244 ], [ %incdec.ptr45, %cond.end1010 ]
+  %any_matches.1.be = phi i32 [ %any_matches.1, %while.body ], [ %any_matches.1, %land.lhs.true ], [ 1, %if.then84 ], [ 1, %if.end75 ], [ %any_matches.1, %sw.bb58 ], [ %any_matches.1, %sw.bb ], [ %any_matches.1, %if.then1169 ], [ %any_matches.1, %cond.false554 ], [ %any_matches.1, %sw.bb92 ], [ %any_matches.1, %cond.false244 ], [ %any_matches.1, %cond.false244 ], [ %any_matches.1, %cond.false244 ], [ %any_matches.1, %cond.false554 ], [ %any_matches.1, %cond.false554 ], [ %any_matches.1, %cond.false554 ], [ %any_matches.1, %cond.false554 ], [ %any_matches.1, %cond.false554 ], [ %any_matches.1, %cond.false554 ], [ %any_matches.1, %sw.bb92 ], [ %any_matches.1, %sw.bb92 ], [ %any_matches.1, %cond.false244 ], [ %any_matches.1, %cond.false244 ], [ %any_matches.1, %cond.false244 ], [ %any_matches.1, %cond.false244 ], [ %any_matches.1, %cond.false554 ], [ %any_matches.1, %cond.false554 ], [ %any_matches.1, %cond.false554 ], [ %any_matches.1, %cond.false554 ], [ %any_matches.1, %cond.false244 ], [ %any_matches.1, %cond.false244 ], [ %any_matches.1, %cond.end1010 ]
+  %.pre1507 = load i8* %p.1.be, align 1, !tbaa !1
+  br label %while.cond
+
+for.inc1173:                                      ; preds = %while.cond, %while.cond
+  %20 = load i8* getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 7), align 4, !tbaa !1
+  %conv5 = sext i8 %20 to i32
+  %21 = trunc i64 %indvars.iv.next to i32
+  %cmp6 = icmp slt i32 %21, %conv5
+  br i1 %cmp6, label %for.body8, label %cleanup
+
+cleanup:                                          ; preds = %if.end, %for.cond4.preheader, %for.inc1173, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 0, %for.cond4.preheader ], [ %any_matches.1, %for.inc1173 ], [ 0, %if.end ]
+  call void @llvm.lifetime.end(i64 120, i8* %0) #2
+  ret i32 %retval.0
+}

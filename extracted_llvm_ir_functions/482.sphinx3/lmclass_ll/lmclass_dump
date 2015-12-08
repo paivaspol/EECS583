@@ -1,0 +1,28 @@
+define void @lmclass_dump(%struct.lmclass_s* nocapture %cl, %struct._IO_FILE* nocapture %fp) #0 {
+entry:
+  %name = getelementptr inbounds %struct.lmclass_s* %cl, i64 0, i32 0
+  %0 = load i8** %name, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([12 x i8]* @.str, i64 0, i64 0), i8* %0) #6
+  %wordlist = getelementptr inbounds %struct.lmclass_s* %cl, i64 0, i32 1
+  %w.012 = load %struct.lmclass_word_s** %wordlist, align 8
+  %tobool13 = icmp eq %struct.lmclass_word_s* %w.012, null
+  br i1 %tobool13, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %w.014 = phi %struct.lmclass_word_s* [ %w.0, %for.body ], [ %w.012, %entry ]
+  %word = getelementptr inbounds %struct.lmclass_word_s* %w.014, i64 0, i32 0
+  %1 = load i8** %word, align 8, !tbaa !0
+  %LOGprob = getelementptr inbounds %struct.lmclass_word_s* %w.014, i64 0, i32 2
+  %2 = load i32* %LOGprob, align 4, !tbaa !3
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([11 x i8]* @.str1, i64 0, i64 0), i8* %1, i32 %2) #6
+  %next = getelementptr inbounds %struct.lmclass_word_s* %w.014, i64 0, i32 3
+  %w.0 = load %struct.lmclass_word_s** %next, align 8
+  %tobool = icmp eq %struct.lmclass_word_s* %w.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %3 = load i8** %name, align 8, !tbaa !0
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), i8* %3) #6
+  %call4 = tail call i32 @fflush(%struct._IO_FILE* %fp) #6
+  ret void
+}

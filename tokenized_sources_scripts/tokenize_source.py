@@ -3,11 +3,10 @@ import os
 import string
 import re
 
-path = "../extracted_sources/"
+path = "../extracted_llvm_ir_functions/"
 out_path = "../tokenized_sources"
 token_dict = {}
 next_token = 1
-split_chars = ["(",")","{","}",";",".","*","->","[","]", "--","-=","++","+=", "+", "-","/", "==",">","<",">=","<=", "=", "&", "&&", "|","||","<<",">>",",","!","#"]
 sep = ","
 
 def get_token(token):
@@ -23,10 +22,6 @@ def get_token(token):
         next_token += 1
 
     return token_dict[token]
-
-def prime_dict(): 
-    for i in split_chars:
-        get_token(i)
 
 def tokenize_array(tokens, orig_string):
     token_form = []
@@ -102,25 +97,10 @@ def tokenize_funct(function):
             #right now, dealing with the damn quotes!
             if "\"" in line:
                 matches = [match.start() for match in re.finditer("\"",line)]
-#                if len(matches) > 2:
-#                    print "We don't handle multiple \"s on a line!"
-#                    print line
-#                    return -1
-#                if len(matches) < 2:
-#                    print line
-#                    print -1
-
                 line = line[:matches[0]]+line[matches[-1]+1:]
 
             if "\'" in line:
                 matches = [match.start() for match in re.finditer("\'",line)]
-#                if len(matches) > 2:
-#                    print "We don't handle multiple \'s on a line!"
-#                    print line
-#                    return -1
-#                if len(matches) < 2:
-#                    print line
-#                    print -1
                 line = line[:matches[0]]+line[matches[-1]+1:]
                 
             no_whitespace = line.split()
@@ -147,7 +127,6 @@ def tokenize_function():
                     out_file.write(funct_token)
             
 
-prime_dict() #not needed, but fine
 tokenize_function()
 
 print len(token_dict)

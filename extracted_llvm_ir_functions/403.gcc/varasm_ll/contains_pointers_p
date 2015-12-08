@@ -1,0 +1,64 @@
+define internal fastcc i32 @contains_pointers_p(%union.tree_node* nocapture %type) #2 {
+entry:
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %sw.bb11, %entry
+  %type.tr = phi %union.tree_node* [ %type, %entry ], [ %6, %sw.bb11 ]
+  %code = getelementptr inbounds %union.tree_node* %type.tr, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %return [
+    i32 13, label %return.loopexit22
+    i32 15, label %return.loopexit22
+    i32 14, label %return.loopexit22
+    i32 20, label %sw.bb1
+    i32 21, label %sw.bb1
+    i32 22, label %sw.bb1
+    i32 18, label %sw.bb11
+  ]
+
+sw.bb1:                                           ; preds = %tailrecurse, %tailrecurse, %tailrecurse
+  %values = getelementptr inbounds %union.tree_node* %type.tr, i64 0, i32 0, i32 1
+  %1 = load i8** %values, align 8
+  %tobool20 = icmp eq i8* %1, null
+  br i1 %tobool20, label %return, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %sw.bb1
+  %2 = bitcast i8* %1 to %union.tree_node*
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %fields.021 = phi %union.tree_node* [ %2, %for.body.lr.ph ], [ %5, %for.inc ]
+  %code4 = getelementptr inbounds %union.tree_node* %fields.021, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %code4 to i32*
+  %bf.load5 = load i32* %3, align 8
+  %bf.clear6 = and i32 %bf.load5, 255
+  %cmp = icmp eq i32 %bf.clear6, 37
+  br i1 %cmp, label %land.lhs.true, label %for.inc
+
+land.lhs.true:                                    ; preds = %for.body
+  %type8 = getelementptr inbounds %union.tree_node* %fields.021, i64 0, i32 0, i32 0, i32 1
+  %4 = load %union.tree_node** %type8, align 8, !tbaa !3
+  %call = tail call fastcc i32 @contains_pointers_p(%union.tree_node* %4) #10
+  %tobool9 = icmp eq i32 %call, 0
+  br i1 %tobool9, label %for.inc, label %return
+
+for.inc:                                          ; preds = %land.lhs.true, %for.body
+  %chain = getelementptr inbounds %union.tree_node* %fields.021, i64 0, i32 0, i32 0, i32 0
+  %5 = load %union.tree_node** %chain, align 8, !tbaa !3
+  %tobool = icmp eq %union.tree_node* %5, null
+  br i1 %tobool, label %return, label %for.body
+
+sw.bb11:                                          ; preds = %tailrecurse
+  %type13 = getelementptr inbounds %union.tree_node* %type.tr, i64 0, i32 0, i32 0, i32 1
+  %6 = load %union.tree_node** %type13, align 8, !tbaa !3
+  br label %tailrecurse
+
+return.loopexit22:                                ; preds = %tailrecurse, %tailrecurse, %tailrecurse
+  br label %return
+
+return:                                           ; preds = %sw.bb1, %land.lhs.true, %for.inc, %tailrecurse, %return.loopexit22
+  %retval.0 = phi i32 [ 1, %return.loopexit22 ], [ 0, %tailrecurse ], [ 0, %sw.bb1 ], [ 1, %land.lhs.true ], [ 0, %for.inc ]
+  ret i32 %retval.0
+}

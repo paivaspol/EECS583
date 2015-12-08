@@ -1,0 +1,149 @@
+define %struct.rtx_def* @fix_lexical_addr(%struct.rtx_def* %addr, %union.tree_node* %var) #0 {
+entry:
+  %call = tail call %union.tree_node* @decl_function_context(%union.tree_node* %var) #10
+  %0 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %call, %0
+  %1 = load %union.tree_node** @inline_function_decl, align 8, !tbaa !0
+  %cmp1 = icmp eq %union.tree_node* %call, %1
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call2 = tail call %struct.function* @find_function_data(%union.tree_node* %call) #9
+  %2 = bitcast %struct.rtx_def* %addr to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp3 = icmp eq i32 %bf.clear, 70
+  br i1 %cmp3, label %land.lhs.true, label %if.end14
+
+land.lhs.true:                                    ; preds = %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %addr, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load4 = load i32* %4, align 8
+  %bf.clear5 = and i32 %bf.load4, 65535
+  %cmp6 = icmp eq i32 %bf.clear5, 66
+  br i1 %cmp6, label %if.then7, label %if.end14
+
+if.then7:                                         ; preds = %land.lhs.true
+  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0
+  %rtx13 = bitcast %union.rtunion_def* %arrayidx12 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx13, align 8, !tbaa !0
+  %.phi.trans.insert = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load15.pre = load i32* %.phi.trans.insert, align 8
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.then7, %land.lhs.true, %if.end
+  %bf.load15 = phi i32 [ %bf.load15.pre, %if.then7 ], [ %bf.load, %land.lhs.true ], [ %bf.load, %if.end ]
+  %addr.addr.0 = phi %struct.rtx_def* [ %5, %if.then7 ], [ %addr, %land.lhs.true ], [ %addr, %if.end ]
+  %bf.clear16 = and i32 %bf.load15, 65535
+  switch i32 %bf.clear16, label %if.else38 [
+    i32 61, label %if.end40
+    i32 75, label %land.lhs.true22
+  ]
+
+land.lhs.true22:                                  ; preds = %if.end14
+  %arrayidx24 = getelementptr inbounds %struct.rtx_def* %addr.addr.0, i64 0, i32 1, i64 1
+  %rtx25 = bitcast %union.rtunion_def* %arrayidx24 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx25, align 8, !tbaa !0
+  %7 = bitcast %struct.rtx_def* %6 to i32*
+  %bf.load26 = load i32* %7, align 8
+  %bf.clear27 = and i32 %bf.load26, 65535
+  %cmp28 = icmp eq i32 %bf.clear27, 54
+  br i1 %cmp28, label %if.then29, label %if.else38
+
+if.then29:                                        ; preds = %land.lhs.true22
+  %arrayidx31 = getelementptr inbounds %struct.rtx_def* %addr.addr.0, i64 0, i32 1, i64 0
+  %rtx32 = bitcast %union.rtunion_def* %arrayidx31 to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %rtx32, align 8, !tbaa !0
+  %rtwint = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 0, i32 0
+  %9 = load i64* %rtwint, align 8, !tbaa !5
+  br label %if.end40
+
+if.else38:                                        ; preds = %if.end14, %land.lhs.true22
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 5645, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.fix_lexical_addr, i64 0, i64 0)) #8
+  unreachable
+
+if.end40:                                         ; preds = %if.end14, %if.then29
+  %displacement.0 = phi i64 [ %9, %if.then29 ], [ 0, %if.end14 ]
+  %basereg.0 = phi %struct.rtx_def* [ %8, %if.then29 ], [ %addr.addr.0, %if.end14 ]
+  %internal_arg_pointer = getelementptr inbounds %struct.function* %call2, i64 0, i32 15
+  %10 = load %struct.rtx_def** %internal_arg_pointer, align 8, !tbaa !0
+  %cmp41 = icmp eq %struct.rtx_def* %basereg.0, %10
+  br i1 %cmp41, label %if.then42, label %if.else56
+
+if.then42:                                        ; preds = %if.end40
+  %call44 = tail call %struct.rtx_def* @get_arg_pointer_save_area(%struct.function* %call2) #9
+  %arrayidx46 = getelementptr inbounds %struct.rtx_def* %call44, i64 0, i32 1, i64 0
+  %rtx47 = bitcast %union.rtunion_def* %arrayidx46 to %struct.rtx_def**
+  %11 = load %struct.rtx_def** %rtx47, align 8, !tbaa !0
+  %call48 = tail call %struct.rtx_def* @fix_lexical_addr(%struct.rtx_def* %11, %union.tree_node* %var) #9
+  %12 = load i32* @target_flags, align 4, !tbaa !4
+  %and = lshr i32 %12, 25
+  %13 = and i32 %and, 1
+  %14 = or i32 %13, 4
+  %call49 = tail call %struct.rtx_def* @memory_address(i32 %14, %struct.rtx_def* %call48) #10
+  %15 = load i32* @target_flags, align 4, !tbaa !4
+  %and50 = lshr i32 %15, 25
+  %16 = and i32 %and50, 1
+  %17 = or i32 %16, 4
+  %call53 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %17, %struct.rtx_def* %call49) #10
+  %call54 = tail call i64 @get_frame_alias_set() #10
+  tail call void @set_mem_alias_set(%struct.rtx_def* %call53, i64 %call54) #10
+  %call55 = tail call %struct.rtx_def* @copy_to_reg(%struct.rtx_def* %call53) #10
+  br label %if.end66
+
+if.else56:                                        ; preds = %if.end40
+  %18 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 7), align 8, !tbaa !0
+  %cmp57 = icmp eq %struct.rtx_def* %basereg.0, %18
+  br i1 %cmp57, label %if.then58, label %if.then68
+
+if.then58:                                        ; preds = %if.else56
+  %19 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_context_display = getelementptr inbounds %struct.function* %19, i64 0, i32 33
+  %link.094 = load %union.tree_node** %x_context_display, align 8
+  %tobool5995 = icmp eq %union.tree_node* %link.094, null
+  br i1 %tobool5995, label %if.then68, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %chain = getelementptr inbounds %union.tree_node* %link.096, i64 0, i32 0, i32 0, i32 0
+  %link.0 = load %union.tree_node** %chain, align 8
+  %tobool59 = icmp eq %union.tree_node* %link.0, null
+  br i1 %tobool59, label %if.then68, label %for.body
+
+for.body:                                         ; preds = %if.then58, %for.cond
+  %link.096 = phi %union.tree_node* [ %link.0, %for.cond ], [ %link.094, %if.then58 ]
+  %purpose = getelementptr inbounds %union.tree_node* %link.096, i64 0, i32 0, i32 1
+  %20 = load i8** %purpose, align 8
+  %21 = bitcast i8* %20 to %union.tree_node*
+  %cmp60 = icmp eq %union.tree_node* %21, %call
+  br i1 %cmp60, label %if.then61, label %for.cond
+
+if.then61:                                        ; preds = %for.body
+  %value = getelementptr inbounds %union.tree_node* %link.096, i64 0, i32 0, i32 2
+  %22 = bitcast i32* %value to %union.tree_node**
+  %23 = load %union.tree_node** %22, align 8, !tbaa !0
+  %operands = getelementptr inbounds %union.tree_node* %23, i64 0, i32 0, i32 2
+  %arrayidx63 = getelementptr inbounds i32* %operands, i64 2
+  %24 = bitcast i32* %arrayidx63 to %struct.rtx_def**
+  %25 = load %struct.rtx_def** %24, align 8, !tbaa !0
+  br label %if.end66
+
+if.end66:                                         ; preds = %if.then61, %if.then42
+  %base.0 = phi %struct.rtx_def* [ %call55, %if.then42 ], [ %25, %if.then61 ]
+  %cmp67 = icmp eq %struct.rtx_def* %base.0, null
+  br i1 %cmp67, label %if.then68, label %if.end69
+
+if.then68:                                        ; preds = %if.then58, %for.cond, %if.else56, %if.end66
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 5691, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.fix_lexical_addr, i64 0, i64 0)) #8
+  unreachable
+
+if.end69:                                         ; preds = %if.end66
+  %call70 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %base.0, i64 %displacement.0) #10
+  br label %return
+
+return:                                           ; preds = %entry, %if.end69
+  %retval.0 = phi %struct.rtx_def* [ %call70, %if.end69 ], [ %addr, %entry ]
+  ret %struct.rtx_def* %retval.0
+}

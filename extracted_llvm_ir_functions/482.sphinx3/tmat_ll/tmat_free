@@ -1,0 +1,24 @@
+define void @tmat_free(%struct.tmat_t* %t) #0 {
+entry:
+  %tobool = icmp eq %struct.tmat_t* %t, null
+  br i1 %tobool, label %if.end4, label %if.then
+
+if.then:                                          ; preds = %entry
+  %tp = getelementptr inbounds %struct.tmat_t* %t, i64 0, i32 0
+  %0 = load i32**** %tp, align 8, !tbaa !3
+  %tobool1 = icmp eq i32*** %0, null
+  br i1 %tobool1, label %if.end, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %1 = bitcast i32*** %0 to i8***
+  tail call void @ckd_free_3d(i8*** %1) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then2
+  %2 = bitcast %struct.tmat_t* %t to i8*
+  tail call void @ckd_free(i8* %2) #6
+  br label %if.end4
+
+if.end4:                                          ; preds = %entry, %if.end
+  ret void
+}

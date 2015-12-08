@@ -1,0 +1,69 @@
+define i32 @vector_mean(float* nocapture %mean, float** nocapture %data, i32 %n_vec, i32 %n_dim) #0 {
+entry:
+  %cmp51 = icmp sgt i32 %n_dim, 0
+  br i1 %cmp51, label %for.body.lr.ph, label %for.cond1.preheader
+
+for.body.lr.ph:                                   ; preds = %entry
+  %mean65 = bitcast float* %mean to i8*
+  %0 = add i32 %n_dim, -1
+  %1 = zext i32 %0 to i64
+  %2 = shl nuw nsw i64 %1, 2
+  %3 = add i64 %2, 4
+  call void @llvm.memset.p0i8.i64(i8* %mean65, i8 0, i64 %3, i32 4, i1 false)
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.body.lr.ph, %entry
+  %cmp249 = icmp sgt i32 %n_vec, 0
+  br i1 %cmp249, label %for.cond4.preheader, label %for.end18
+
+for.cond4.preheader:                              ; preds = %for.cond1.preheader, %for.inc16
+  %indvars.iv57 = phi i64 [ %indvars.iv.next58, %for.inc16 ], [ 0, %for.cond1.preheader ]
+  br i1 %cmp51, label %for.body6.lr.ph, label %for.inc16
+
+for.body6.lr.ph:                                  ; preds = %for.cond4.preheader
+  %arrayidx9 = getelementptr inbounds float** %data, i64 %indvars.iv57
+  %4 = load float** %arrayidx9, align 8, !tbaa !4
+  br label %for.body6
+
+for.body6:                                        ; preds = %for.body6, %for.body6.lr.ph
+  %indvars.iv53 = phi i64 [ 0, %for.body6.lr.ph ], [ %indvars.iv.next54, %for.body6 ]
+  %arrayidx10 = getelementptr inbounds float* %4, i64 %indvars.iv53
+  %5 = load float* %arrayidx10, align 4, !tbaa !0
+  %arrayidx12 = getelementptr inbounds float* %mean, i64 %indvars.iv53
+  %6 = load float* %arrayidx12, align 4, !tbaa !0
+  %add = fadd float %5, %6
+  store float %add, float* %arrayidx12, align 4, !tbaa !0
+  %indvars.iv.next54 = add i64 %indvars.iv53, 1
+  %lftr.wideiv55 = trunc i64 %indvars.iv.next54 to i32
+  %exitcond56 = icmp eq i32 %lftr.wideiv55, %n_dim
+  br i1 %exitcond56, label %for.inc16, label %for.body6
+
+for.inc16:                                        ; preds = %for.body6, %for.cond4.preheader
+  %indvars.iv.next58 = add i64 %indvars.iv57, 1
+  %lftr.wideiv59 = trunc i64 %indvars.iv.next58 to i32
+  %exitcond60 = icmp eq i32 %lftr.wideiv59, %n_vec
+  br i1 %exitcond60, label %for.end18, label %for.cond4.preheader
+
+for.end18:                                        ; preds = %for.inc16, %for.cond1.preheader
+  br i1 %cmp51, label %for.body22.lr.ph, label %for.end28
+
+for.body22.lr.ph:                                 ; preds = %for.end18
+  %conv = sitofp i32 %n_vec to double
+  %div = fdiv double 1.000000e+00, %conv
+  %conv23 = fptrunc double %div to float
+  br label %for.body22
+
+for.body22:                                       ; preds = %for.body22, %for.body22.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body22.lr.ph ], [ %indvars.iv.next, %for.body22 ]
+  %arrayidx25 = getelementptr inbounds float* %mean, i64 %indvars.iv
+  %7 = load float* %arrayidx25, align 4, !tbaa !0
+  %mul = fmul float %conv23, %7
+  store float %mul, float* %arrayidx25, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n_dim
+  br i1 %exitcond, label %for.end28, label %for.body22
+
+for.end28:                                        ; preds = %for.body22, %for.end18
+  ret i32 0
+}

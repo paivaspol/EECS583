@@ -1,0 +1,47 @@
+define internal fastcc double @pr_av(%struct._IO_FILE* nocapture %log, i32 %nprocs, double %fav, double* nocapture %ftot, i8* %title) #0 {
+entry:
+  %cmp = fcmp ogt double %fav, 0.000000e+00
+  br i1 %cmp, label %if.then, label %if.end15
+
+if.then:                                          ; preds = %entry
+  %conv = sitofp i32 %nprocs to double
+  %div = fdiv double %fav, %conv
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([7 x i8]* @.str50, i64 0, i64 0), i8* %title) #7
+  %cmp131 = icmp sgt i32 %nprocs, 0
+  br i1 %cmp131, label %for.body, label %if.else
+
+for.body:                                         ; preds = %if.then, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
+  %unb.033 = phi double [ %cond, %for.body ], [ 0.000000e+00, %if.then ]
+  %arrayidx = getelementptr inbounds double* %ftot, i64 %indvars.iv
+  %0 = load double* %arrayidx, align 8, !tbaa !0
+  %mul = fmul double %0, 1.000000e+02
+  %div3 = fdiv double %mul, %div
+  %cmp4 = fcmp ogt double %unb.033, %div3
+  %cond = select i1 %cmp4, double %unb.033, double %div3
+  %conv6 = fptosi double %div3 to i32
+  %call7 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([5 x i8]* @.str39, i64 0, i64 0), i32 %conv6) #7
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nprocs
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %cmp8 = fcmp ogt double %cond, 0.000000e+00
+  br i1 %cmp8, label %if.then10, label %if.else
+
+if.then10:                                        ; preds = %for.end
+  %div11 = fdiv double 1.000000e+04, %cond
+  %conv12 = fptosi double %div11 to i32
+  %call13 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([8 x i8]* @.str51, i64 0, i64 0), i32 %conv12) #7
+  br label %if.end15
+
+if.else:                                          ; preds = %if.then, %for.end
+  %unb.0.lcssa35 = phi double [ %cond, %for.end ], [ 0.000000e+00, %if.then ]
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str52, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %log)
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then10, %if.else, %entry
+  %unb.1 = phi double [ %cond, %if.then10 ], [ %unb.0.lcssa35, %if.else ], [ 0.000000e+00, %entry ]
+  ret double %unb.1
+}

@@ -1,0 +1,134 @@
+define double @check_unitarity() #0 {
+entry:
+  %0 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp124 = icmp sgt i32 %0, 0
+  br i1 %cmp124, label %for.cond1.preheader.lr.ph, label %for.end69.thread
+
+for.end69.thread:                                 ; preds = %entry
+  %call71149 = tail call double @sqrt(double 0x7FF8000000000000) #5
+  br label %if.end77
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %1 = load %struct.site** @lattice, align 8, !tbaa !3
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.cond1.preheader.lr.ph, %for.inc67
+  %i.0128 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %inc68, %for.inc67 ]
+  %av_deviation.0127 = phi double [ 0.000000e+00, %for.cond1.preheader.lr.ph ], [ %add, %for.inc67 ]
+  %max_deviation.0126 = phi double [ 0.000000e+00, %for.cond1.preheader.lr.ph ], [ %max_deviation.2, %for.inc67 ]
+  %s.0125 = phi %struct.site* [ %1, %for.cond1.preheader.lr.ph ], [ %incdec.ptr, %for.inc67 ]
+  br label %for.body3
+
+for.body3:                                        ; preds = %if.end, %for.cond1.preheader
+  %indvars.iv144 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next145, %if.end ]
+  %av_deviation.1123 = phi double [ %av_deviation.0127, %for.cond1.preheader ], [ %add, %if.end ]
+  %max_deviation.1122 = phi double [ %max_deviation.0126, %for.cond1.preheader ], [ %max_deviation.2, %if.end ]
+  %arrayidx = getelementptr inbounds %struct.site* %s.0125, i64 0, i32 8, i64 %indvars.iv144
+  %call = tail call double @check_su3(%struct.su3_matrix* %arrayidx) #6
+  %cmp4 = fcmp ogt double %call, 1.000000e-04
+  br i1 %cmp4, label %if.then, label %if.end
+
+if.then:                                          ; preds = %for.body3
+  %call5 = tail call i32 (...)* @mynode() #5
+  %2 = trunc i64 %indvars.iv144 to i32
+  %call6 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 %call5, i32 %i.0128, i32 %2, double %call) #5
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([12 x i8]* @str, i64 0, i64 0))
+  br label %for.cond11.preheader
+
+for.cond11.preheader:                             ; preds = %for.end, %if.then
+  %indvars.iv132 = phi i64 [ 0, %if.then ], [ %indvars.iv.next133, %for.end ]
+  br label %for.body13
+
+for.body13:                                       ; preds = %for.body13, %for.cond11.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond11.preheader ], [ %indvars.iv.next, %for.body13 ]
+  %real = getelementptr inbounds %struct.site* %s.0125, i64 0, i32 8, i64 %indvars.iv144, i32 0, i64 %indvars.iv132, i64 %indvars.iv, i32 0
+  %3 = load double* %real, align 8, !tbaa !4
+  %call18 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), double %3) #5
+  %imag = getelementptr inbounds %struct.site* %s.0125, i64 0, i32 8, i64 %indvars.iv144, i32 0, i64 %indvars.iv132, i64 %indvars.iv, i32 1
+  %4 = load double* %imag, align 8, !tbaa !4
+  %call24 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), double %4) #5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.end, label %for.body13
+
+for.end:                                          ; preds = %for.body13
+  %putchar116 = tail call i32 @putchar(i32 10) #4
+  %indvars.iv.next133 = add i64 %indvars.iv132, 1
+  %lftr.wideiv134 = trunc i64 %indvars.iv.next133 to i32
+  %exitcond135 = icmp eq i32 %lftr.wideiv134, 3
+  br i1 %exitcond135, label %for.end28, label %for.cond11.preheader
+
+for.end28:                                        ; preds = %for.end
+  %puts114 = tail call i32 @puts(i8* getelementptr inbounds ([15 x i8]* @str8, i64 0, i64 0))
+  br label %for.cond33.preheader
+
+for.cond33.preheader:                             ; preds = %for.end54, %for.end28
+  %indvars.iv140 = phi i64 [ 0, %for.end28 ], [ %indvars.iv.next141, %for.end54 ]
+  br label %for.body35
+
+for.body35:                                       ; preds = %for.body35, %for.cond33.preheader
+  %indvars.iv136 = phi i64 [ 0, %for.cond33.preheader ], [ %indvars.iv.next137, %for.body35 ]
+  %real41 = getelementptr inbounds %struct.site* %s.0125, i64 0, i32 8, i64 %indvars.iv144, i32 0, i64 %indvars.iv140, i64 %indvars.iv136, i32 0
+  %5 = load double* %real41, align 8, !tbaa !4
+  %6 = bitcast double %5 to i64
+  %ifval.sroa.0.0.extract.trunc = trunc i64 %6 to i32
+  %call42 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i32 %ifval.sroa.0.0.extract.trunc) #5
+  %imag48 = getelementptr inbounds %struct.site* %s.0125, i64 0, i32 8, i64 %indvars.iv144, i32 0, i64 %indvars.iv140, i64 %indvars.iv136, i32 1
+  %7 = load double* %imag48, align 8, !tbaa !4
+  %8 = bitcast double %7 to i64
+  %ifval.sroa.0.0.extract.trunc79 = trunc i64 %8 to i32
+  %call51 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i32 %ifval.sroa.0.0.extract.trunc79) #5
+  %indvars.iv.next137 = add i64 %indvars.iv136, 1
+  %lftr.wideiv138 = trunc i64 %indvars.iv.next137 to i32
+  %exitcond139 = icmp eq i32 %lftr.wideiv138, 3
+  br i1 %exitcond139, label %for.end54, label %for.body35
+
+for.end54:                                        ; preds = %for.body35
+  %putchar = tail call i32 @putchar(i32 10) #4
+  %indvars.iv.next141 = add i64 %indvars.iv140, 1
+  %lftr.wideiv142 = trunc i64 %indvars.iv.next141 to i32
+  %exitcond143 = icmp eq i32 %lftr.wideiv142, 3
+  br i1 %exitcond143, label %for.end58, label %for.cond33.preheader
+
+for.end58:                                        ; preds = %for.end54
+  %puts115 = tail call i32 @puts(i8* getelementptr inbounds ([5 x i8]* @str9, i64 0, i64 0))
+  %9 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call60 = tail call i32 @fflush(%struct._IO_FILE* %9) #5
+  tail call void @terminate(i32 1) #5
+  br label %if.end
+
+if.end:                                           ; preds = %for.end58, %for.body3
+  %cmp61 = fcmp olt double %max_deviation.1122, %call
+  %max_deviation.2 = select i1 %cmp61, double %call, double %max_deviation.1122
+  %mul = fmul double %call, %call
+  %add = fadd double %av_deviation.1123, %mul
+  %indvars.iv.next145 = add i64 %indvars.iv144, 1
+  %lftr.wideiv146 = trunc i64 %indvars.iv.next145 to i32
+  %exitcond147 = icmp eq i32 %lftr.wideiv146, 4
+  br i1 %exitcond147, label %for.inc67, label %for.body3
+
+for.inc67:                                        ; preds = %if.end
+  %inc68 = add nsw i32 %i.0128, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %s.0125, i64 1
+  %10 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp = icmp slt i32 %inc68, %10
+  br i1 %cmp, label %for.cond1.preheader, label %for.end69
+
+for.end69:                                        ; preds = %for.inc67
+  %phitmp = shl i32 %inc68, 2
+  %phitmp131 = sitofp i32 %phitmp to double
+  %div = fdiv double %add, %phitmp131
+  %call71 = tail call double @sqrt(double %div) #5
+  %cmp72 = fcmp ogt double %max_deviation.2, 1.000000e-04
+  br i1 %cmp72, label %if.then74, label %if.end77
+
+if.then74:                                        ; preds = %for.end69
+  %call75 = tail call i32 (...)* @mynode() #5
+  %call76 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([52 x i8]* @.str7, i64 0, i64 0), i32 %call75, double %max_deviation.2) #5
+  br label %if.end77
+
+if.end77:                                         ; preds = %for.end69.thread, %if.then74, %for.end69
+  %max_deviation.0.lcssa151 = phi double [ 0.000000e+00, %for.end69.thread ], [ %max_deviation.2, %if.then74 ], [ %max_deviation.2, %for.end69 ]
+  ret double %max_deviation.0.lcssa151
+}

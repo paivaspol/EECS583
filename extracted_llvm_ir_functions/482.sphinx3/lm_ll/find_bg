@@ -1,0 +1,59 @@
+define internal fastcc i32 @find_bg(%struct.bg_t* nocapture %bg, i32 %n, i16 zeroext %w) #0 {
+entry:
+  br label %while.cond.outer
+
+while.cond.outer:                                 ; preds = %if.then, %entry
+  %b.0.ph = phi i32 [ 0, %entry ], [ %add4, %if.then ]
+  %e.0.ph = phi i32 [ %n, %entry ], [ %e.0, %if.then ]
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.outer, %if.else
+  %e.0 = phi i32 [ %shr, %if.else ], [ %e.0.ph, %while.cond.outer ]
+  %sub = sub nsw i32 %e.0, %b.0.ph
+  %cmp = icmp sgt i32 %sub, 16
+  br i1 %cmp, label %while.body, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %while.cond
+  %cmp1541 = icmp slt i32 %b.0.ph, %e.0
+  br i1 %cmp1541, label %land.rhs.lr.ph, label %return
+
+land.rhs.lr.ph:                                   ; preds = %for.cond.preheader
+  %0 = sext i32 %b.0.ph to i64
+  br label %land.rhs
+
+while.body:                                       ; preds = %while.cond
+  %add = add nsw i32 %e.0, %b.0.ph
+  %shr = ashr i32 %add, 1
+  %idxprom = sext i32 %shr to i64
+  %wid = getelementptr inbounds %struct.bg_t* %bg, i64 %idxprom, i32 0
+  %1 = load i16* %wid, align 2, !tbaa !5
+  %cmp2 = icmp ult i16 %1, %w
+  br i1 %cmp2, label %if.then, label %if.else
+
+if.then:                                          ; preds = %while.body
+  %add4 = add nsw i32 %shr, 1
+  br label %while.cond.outer
+
+if.else:                                          ; preds = %while.body
+  %cmp10 = icmp ugt i16 %1, %w
+  br i1 %cmp10, label %while.cond, label %return
+
+for.cond:                                         ; preds = %land.rhs
+  %inc = add nsw i32 %i.042, 1
+  %2 = trunc i64 %indvars.iv.next to i32
+  %cmp15 = icmp slt i32 %2, %e.0
+  br i1 %cmp15, label %land.rhs, label %return
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ %0, %land.rhs.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %i.042 = phi i32 [ %b.0.ph, %land.rhs.lr.ph ], [ %inc, %for.cond ]
+  %wid19 = getelementptr inbounds %struct.bg_t* %bg, i64 %indvars.iv, i32 0
+  %3 = load i16* %wid19, align 2, !tbaa !5
+  %cmp22 = icmp eq i16 %3, %w
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp22, label %return, label %for.cond
+
+return:                                           ; preds = %if.else, %for.cond.preheader, %land.rhs, %for.cond
+  %retval.0 = phi i32 [ -1, %for.cond.preheader ], [ %i.042, %land.rhs ], [ -1, %for.cond ], [ %shr, %if.else ]
+  ret i32 %retval.0
+}

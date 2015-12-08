@@ -1,0 +1,101 @@
+define internal fastcc %struct.rtx_def* @dw2_force_const_mem(%struct.rtx_def* nocapture %x) #0 {
+entry:
+  %0 = load %struct.splay_tree_s** @indirect_pool, align 8, !tbaa !0
+  %tobool = icmp eq %struct.splay_tree_s* %0, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = call %struct.splay_tree_s* @splay_tree_new(i32 (i64, i64)* @splay_tree_compare_pointers, void (i64)* null, void (i64)* null) #7
+  store %struct.splay_tree_s* %call, %struct.splay_tree_s** @indirect_pool, align 8, !tbaa !0
+  call void @ggc_add_root(i8* bitcast (%struct.splay_tree_s** @indirect_pool to i8*), i32 1, i32 8, void (i8*)* @mark_indirect_pool) #7
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %1 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 68
+  br i1 %cmp, label %if.end2, label %if.then1
+
+if.then1:                                         ; preds = %if.end
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 740, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.dw2_force_const_mem, i64 0, i64 0)) #10
+  unreachable
+
+if.end2:                                          ; preds = %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtstr = bitcast %union.rtunion_def* %arrayidx to i8**
+  %2 = load i8** %rtstr, align 8, !tbaa !0
+  %3 = load i8* %2, align 1, !tbaa !1
+  %cmp7 = icmp eq i8 %3, 42
+  %idx.ext = zext i1 %cmp7 to i64
+  %add.ptr = getelementptr inbounds i8* %2, i64 %idx.ext
+  %4 = load %struct.splay_tree_s** @indirect_pool, align 8, !tbaa !0
+  %5 = ptrtoint i8* %add.ptr to i64
+  %call9 = call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %4, i64 %5) #7
+  %tobool10 = icmp eq %struct.splay_tree_node_s* %call9, null
+  br i1 %tobool10, label %if.else, label %if.then11
+
+if.then11:                                        ; preds = %if.end2
+  %value = getelementptr inbounds %struct.splay_tree_node_s* %call9, i64 0, i32 1
+  %6 = load i64* %value, align 8, !tbaa !3
+  %7 = inttoptr i64 %6 to %union.tree_node*
+  br label %if.end32
+
+if.else:                                          ; preds = %if.end2
+  %call12 = call i64 @strlen(i8* %add.ptr) #9
+  %add = add i64 %call12, 8
+  %8 = alloca i8, i64 %add, align 1
+  %call13 = call i32 (i8*, i8*, ...)* @sprintf(i8* %8, i8* getelementptr inbounds ([10 x i8]* @.str102, i64 0, i64 0), i8* %add.ptr) #7
+  %call14 = call %union.tree_node* @get_identifier(i8* %8) #7
+  %9 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 28), align 8, !tbaa !0
+  %call15 = call %union.tree_node* @build_decl(i32 34, %union.tree_node* %call14, %union.tree_node* %9) #7
+  %artificial_flag = getelementptr inbounds %union.tree_node* %call15, i64 0, i32 0, i32 5
+  %10 = bitcast [8 x i8]* %artificial_flag to i64*
+  %bf.load17 = load i64* %10, align 8
+  %bf.set = or i64 %bf.load17, 4194304
+  store i64 %bf.set, i64* %10, align 8
+  %public_flag = getelementptr inbounds %union.tree_node* %call15, i64 0, i32 0, i32 0, i32 2
+  %11 = bitcast [4 x i8]* %public_flag to i32*
+  %bf.load19 = load i32* %11, align 8
+  %bf.set21 = or i32 %bf.load19, 524288
+  store i32 %bf.set21, i32* %11, align 8
+  %initial = getelementptr inbounds %union.tree_node* %call15, i64 0, i32 0, i32 12
+  store %union.tree_node* %call15, %union.tree_node** %initial, align 8, !tbaa !0
+  call void @make_decl_one_only(%union.tree_node* %call15) #7
+  %call23 = call %union.tree_node* @maybe_get_identifier(i8* %add.ptr) #7
+  %tobool24 = icmp eq %union.tree_node* %call23, null
+  br i1 %tobool24, label %if.end30, label %if.then25
+
+if.then25:                                        ; preds = %if.else
+  %static_flag = getelementptr inbounds %union.tree_node* %call23, i64 0, i32 0, i32 0, i32 2
+  %12 = bitcast [4 x i8]* %static_flag to i32*
+  %bf.load27 = load i32* %12, align 8
+  %bf.set29 = or i32 %bf.load27, 262144
+  store i32 %bf.set29, i32* %12, align 8
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.else, %if.then25
+  %13 = load %struct.splay_tree_s** @indirect_pool, align 8, !tbaa !0
+  %14 = ptrtoint %union.tree_node* %call15 to i64
+  %call31 = call %struct.splay_tree_node_s* @splay_tree_insert(%struct.splay_tree_s* %13, i64 %5, i64 %14) #7
+  br label %if.end32
+
+if.end32:                                         ; preds = %if.end30, %if.then11
+  %decl.0 = phi %union.tree_node* [ %7, %if.then11 ], [ %call15, %if.end30 ]
+  %rtl = getelementptr inbounds %union.tree_node* %decl.0, i64 0, i32 0, i32 17
+  %15 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %tobool34 = icmp eq %struct.rtx_def* %15, null
+  br i1 %tobool34, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %if.end32
+  call void @make_decl_rtl(%union.tree_node* %decl.0, i8* null) #7
+  %16 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.end32, %cond.false
+  %cond = phi %struct.rtx_def* [ %16, %cond.false ], [ %15, %if.end32 ]
+  %arrayidx40 = getelementptr inbounds %struct.rtx_def* %cond, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx40 to %struct.rtx_def**
+  %17 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  ret %struct.rtx_def* %17
+}

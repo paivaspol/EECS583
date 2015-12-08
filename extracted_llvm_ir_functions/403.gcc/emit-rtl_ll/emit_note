@@ -1,0 +1,73 @@
+define %struct.rtx_def* @emit_note(i8* %file, i32 %line) #0 {
+entry:
+  %cmp = icmp sgt i32 %line, 0
+  br i1 %cmp, label %if.then, label %if.end20
+
+if.then:                                          ; preds = %entry
+  %tobool = icmp eq i8* %file, null
+  %.pre = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit10.phi.trans.insert = getelementptr inbounds %struct.function* %.pre, i64 0, i32 3
+  %.pre44 = load %struct.emit_status** %emit10.phi.trans.insert, align 8, !tbaa !4
+  br i1 %tobool, label %if.end14, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then
+  %x_last_filename = getelementptr inbounds %struct.emit_status* %.pre44, i64 0, i32 8
+  %0 = load i8** %x_last_filename, align 8, !tbaa !4
+  %tobool1 = icmp eq i8* %0, null
+  br i1 %tobool1, label %if.end14, label %land.lhs.true2
+
+land.lhs.true2:                                   ; preds = %land.lhs.true
+  %call = tail call i32 @strcmp(i8* %file, i8* %0) #11
+  %tobool5 = icmp eq i32 %call, 0
+  br i1 %tobool5, label %land.lhs.true6, label %if.end14
+
+land.lhs.true6:                                   ; preds = %land.lhs.true2
+  %x_last_linenum = getelementptr inbounds %struct.emit_status* %.pre44, i64 0, i32 7
+  %1 = load i32* %x_last_linenum, align 4, !tbaa !0
+  %cmp8 = icmp eq i32 %1, %line
+  br i1 %cmp8, label %return, label %if.end14
+
+if.end14:                                         ; preds = %if.then, %land.lhs.true6, %land.lhs.true, %land.lhs.true2
+  %x_last_filename11 = getelementptr inbounds %struct.emit_status* %.pre44, i64 0, i32 8
+  store i8* %file, i8** %x_last_filename11, align 8, !tbaa !4
+  %2 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit12 = getelementptr inbounds %struct.function* %2, i64 0, i32 3
+  %3 = load %struct.emit_status** %emit12, align 8, !tbaa !4
+  %x_last_linenum13 = getelementptr inbounds %struct.emit_status* %3, i64 0, i32 7
+  store i32 %line, i32* %x_last_linenum13, align 4, !tbaa !0
+  %4 = load i32* @no_line_numbers, align 4, !tbaa !0
+  %tobool15 = icmp eq i32 %4, 0
+  br i1 %tobool15, label %if.end20, label %if.then18
+
+if.then18:                                        ; preds = %if.end14
+  %x_cur_insn_uid = getelementptr inbounds %struct.emit_status* %3, i64 0, i32 6
+  %5 = load i32* %x_cur_insn_uid, align 4, !tbaa !0
+  %inc = add nsw i32 %5, 1
+  store i32 %inc, i32* %x_cur_insn_uid, align 4, !tbaa !0
+  br label %return
+
+if.end20:                                         ; preds = %entry, %if.end14
+  %call21 = tail call %struct.rtx_def* @rtx_alloc(i32 37) #8
+  %6 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit22 = getelementptr inbounds %struct.function* %6, i64 0, i32 3
+  %7 = load %struct.emit_status** %emit22, align 8, !tbaa !4
+  %x_cur_insn_uid23 = getelementptr inbounds %struct.emit_status* %7, i64 0, i32 6
+  %8 = load i32* %x_cur_insn_uid23, align 4, !tbaa !0
+  %inc24 = add nsw i32 %8, 1
+  store i32 %inc24, i32* %x_cur_insn_uid23, align 4, !tbaa !0
+  %fld = getelementptr inbounds %struct.rtx_def* %call21, i64 0, i32 1
+  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*
+  store i32 %8, i32* %rtint, align 4, !tbaa !0
+  %9 = getelementptr inbounds %struct.rtx_def* %call21, i64 0, i32 1, i64 3, i32 0
+  %file.c = ptrtoint i8* %file to i64
+  store i64 %file.c, i64* %9, align 8, !tbaa !4
+  %arrayidx28 = getelementptr inbounds %struct.rtx_def* %call21, i64 0, i32 1, i64 4
+  %rtint29 = bitcast %union.rtunion_def* %arrayidx28 to i32*
+  store i32 %line, i32* %rtint29, align 4, !tbaa !0
+  tail call void @add_insn(%struct.rtx_def* %call21) #9
+  br label %return
+
+return:                                           ; preds = %land.lhs.true6, %if.end20, %if.then18
+  %retval.0 = phi %struct.rtx_def* [ null, %if.then18 ], [ %call21, %if.end20 ], [ null, %land.lhs.true6 ]
+  ret %struct.rtx_def* %retval.0
+}

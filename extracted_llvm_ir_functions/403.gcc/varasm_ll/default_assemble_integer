@@ -1,0 +1,42 @@
+define zeroext i1 @default_assemble_integer(%struct.rtx_def* %x, i32 %size, i32 %aligned_p) #0 {
+entry:
+  %tobool.i = icmp eq i32 %aligned_p, 0
+  %..i = select i1 %tobool.i, %struct.asm_int_op* getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 4), %struct.asm_int_op* getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 3)
+  switch i32 %size, label %land.end [
+    i32 1, label %integer_asm_op.exit
+    i32 2, label %sw.bb1.i
+    i32 4, label %sw.bb2.i
+    i32 8, label %sw.bb3.i
+    i32 16, label %sw.bb4.i
+  ]
+
+sw.bb1.i:                                         ; preds = %entry
+  %hi.i = getelementptr inbounds %struct.asm_int_op* %..i, i64 0, i32 0
+  br label %integer_asm_op.exit
+
+sw.bb2.i:                                         ; preds = %entry
+  %si.i = getelementptr inbounds %struct.asm_int_op* %..i, i64 0, i32 1
+  br label %integer_asm_op.exit
+
+sw.bb3.i:                                         ; preds = %entry
+  %di.i = getelementptr inbounds %struct.asm_int_op* %..i, i64 0, i32 2
+  br label %integer_asm_op.exit
+
+sw.bb4.i:                                         ; preds = %entry
+  %ti.i = getelementptr inbounds %struct.asm_int_op* %..i, i64 0, i32 3
+  br label %integer_asm_op.exit
+
+integer_asm_op.exit:                              ; preds = %entry, %sw.bb1.i, %sw.bb2.i, %sw.bb3.i, %sw.bb4.i
+  %retval.0.i.in = phi i8** [ %ti.i, %sw.bb4.i ], [ %di.i, %sw.bb3.i ], [ %si.i, %sw.bb2.i ], [ %hi.i, %sw.bb1.i ], [ getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 2), %entry ]
+  %retval.0.i = load i8** %retval.0.i.in, align 8
+  %tobool = icmp eq i8* %retval.0.i, null
+  br i1 %tobool, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %integer_asm_op.exit
+  tail call void @assemble_integer_with_op(i8* %retval.0.i, %struct.rtx_def* %x) #10
+  br label %land.end
+
+land.end:                                         ; preds = %entry, %integer_asm_op.exit, %land.rhs
+  %0 = phi i1 [ false, %integer_asm_op.exit ], [ true, %land.rhs ], [ false, %entry ]
+  ret i1 %0
+}

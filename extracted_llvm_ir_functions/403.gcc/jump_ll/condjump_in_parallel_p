@@ -1,0 +1,88 @@
+define i32 @condjump_in_parallel_p(%struct.rtx_def* nocapture %insn) #2 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 39
+  br i1 %cmp, label %if.else, label %return
+
+if.else:                                          ; preds = %entry
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtvec = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtvec_def**
+  %2 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !3
+  %arrayidx3 = getelementptr inbounds %struct.rtvec_def* %2, i64 0, i32 1, i64 0
+  %3 = load %struct.rtx_def** %arrayidx3, align 8, !tbaa !3
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load4 = load i32* %4, align 8
+  %bf.clear5 = and i32 %bf.load4, 65535
+  %cmp6 = icmp eq i32 %bf.clear5, 47
+  br i1 %cmp6, label %if.end8, label %return
+
+if.end8:                                          ; preds = %if.else
+  %fld9 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1
+  %rtx11 = bitcast [1 x %union.rtunion_def]* %fld9 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx11, align 8, !tbaa !3
+  %6 = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load12 = load i32* %6, align 8
+  %bf.clear13 = and i32 %bf.load12, 65535
+  %cmp14 = icmp eq i32 %bf.clear13, 59
+  br i1 %cmp14, label %if.end16, label %return
+
+if.end16:                                         ; preds = %if.end8
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 1
+  %rtx19 = bitcast %union.rtunion_def* %arrayidx18 to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %rtx19, align 8, !tbaa !3
+  %8 = bitcast %struct.rtx_def* %7 to i32*
+  %bf.load20 = load i32* %8, align 8
+  %bf.clear21 = and i32 %bf.load20, 65535
+  switch i32 %bf.clear21, label %if.then31 [
+    i32 67, label %return
+    i32 72, label %if.end32
+  ]
+
+if.then31:                                        ; preds = %if.end16
+  br label %return
+
+if.end32:                                         ; preds = %if.end16
+  %arrayidx37 = getelementptr inbounds %struct.rtx_def* %7, i64 0, i32 1, i64 2
+  %rtx38 = bitcast %union.rtunion_def* %arrayidx37 to %struct.rtx_def**
+  %9 = load %struct.rtx_def** %rtx38, align 8, !tbaa !3
+  %10 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !3
+  %cmp39 = icmp eq %struct.rtx_def* %9, %10
+  %arrayidx44 = getelementptr inbounds %struct.rtx_def* %7, i64 0, i32 1, i64 1
+  %rtx45 = bitcast %union.rtunion_def* %arrayidx44 to %struct.rtx_def**
+  %11 = load %struct.rtx_def** %rtx45, align 8, !tbaa !3
+  br i1 %cmp39, label %land.lhs.true, label %if.end59
+
+land.lhs.true:                                    ; preds = %if.end32
+  %12 = bitcast %struct.rtx_def* %11 to i32*
+  %bf.load46 = load i32* %12, align 8
+  %bf.clear47 = and i32 %bf.load46, 65535
+  switch i32 %bf.clear47, label %if.end59 [
+    i32 67, label %return
+    i32 51, label %return
+  ]
+
+if.end59:                                         ; preds = %if.end32, %land.lhs.true
+  %cmp66 = icmp eq %struct.rtx_def* %11, %10
+  br i1 %cmp66, label %land.lhs.true67, label %if.end88
+
+land.lhs.true67:                                  ; preds = %if.end59
+  %13 = bitcast %struct.rtx_def* %9 to i32*
+  %bf.load74 = load i32* %13, align 8
+  %bf.clear75 = and i32 %bf.load74, 65535
+  switch i32 %bf.clear75, label %if.end88 [
+    i32 67, label %return
+    i32 51, label %return
+  ]
+
+if.end88:                                         ; preds = %land.lhs.true67, %if.end59
+  br label %return
+
+return:                                           ; preds = %land.lhs.true67, %land.lhs.true67, %land.lhs.true, %land.lhs.true, %if.end16, %if.end8, %if.else, %entry, %if.end88, %if.then31
+  %retval.0 = phi i32 [ 0, %if.then31 ], [ 0, %if.end88 ], [ 0, %entry ], [ 0, %if.else ], [ 0, %if.end8 ], [ 1, %if.end16 ], [ 1, %land.lhs.true ], [ 1, %land.lhs.true ], [ 1, %land.lhs.true67 ], [ 1, %land.lhs.true67 ]
+  ret i32 %retval.0
+}

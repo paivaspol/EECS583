@@ -1,0 +1,25 @@
+define void @free_rgrid(float*** %grid, i32 %nx, i32 %ny) #0 {
+entry:
+  %0 = load float*** %grid, align 8, !tbaa !3
+  %1 = load float** %0, align 8, !tbaa !3
+  %2 = bitcast float* %1 to i8*
+  tail call void @save_free(i8* getelementptr inbounds ([11 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 271, i8* %2) #4
+  %cmp7 = icmp sgt i32 %nx, 0
+  br i1 %cmp7, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx2 = getelementptr inbounds float*** %grid, i64 %indvars.iv
+  %3 = load float*** %arrayidx2, align 8, !tbaa !3
+  %4 = bitcast float** %3 to i8*
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 273, i8* %4) #4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nx
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %5 = bitcast float*** %grid to i8*
+  tail call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 275, i8* %5) #4
+  ret void
+}

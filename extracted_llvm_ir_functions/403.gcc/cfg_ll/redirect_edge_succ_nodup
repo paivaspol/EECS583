@@ -1,0 +1,74 @@
+define %struct.edge_def* @redirect_edge_succ_nodup(%struct.edge_def* %e, %struct.basic_block_def* %new_succ) #0 {
+entry:
+  %src = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 2
+  %0 = load %struct.basic_block_def** %src, align 8, !tbaa !0
+  %succ = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 5
+  %s.025 = load %struct.edge_def** %succ, align 8
+  %tobool26 = icmp eq %struct.edge_def* %s.025, null
+  br i1 %tobool26, label %if.else, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %succ_next = getelementptr inbounds %struct.edge_def* %s.027, i64 0, i32 1
+  %s.0 = load %struct.edge_def** %succ_next, align 8
+  %tobool = icmp eq %struct.edge_def* %s.0, null
+  br i1 %tobool, label %if.else, label %for.body
+
+for.body:                                         ; preds = %entry, %for.cond
+  %s.027 = phi %struct.edge_def* [ %s.0, %for.cond ], [ %s.025, %entry ]
+  %dest = getelementptr inbounds %struct.edge_def* %s.027, i64 0, i32 3
+  %1 = load %struct.basic_block_def** %dest, align 8, !tbaa !0
+  %cmp = icmp ne %struct.basic_block_def* %1, %new_succ
+  %cmp1 = icmp eq %struct.edge_def* %s.027, %e
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %for.cond, label %if.then3
+
+if.then3:                                         ; preds = %for.body
+  %flags = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 6
+  %2 = load i32* %flags, align 4, !tbaa !3
+  %flags4 = getelementptr inbounds %struct.edge_def* %s.027, i64 0, i32 6
+  %3 = load i32* %flags4, align 4, !tbaa !3
+  %or = or i32 %3, %2
+  store i32 %or, i32* %flags4, align 4, !tbaa !3
+  %probability = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 7
+  %4 = load i32* %probability, align 4, !tbaa !3
+  %probability5 = getelementptr inbounds %struct.edge_def* %s.027, i64 0, i32 7
+  %5 = load i32* %probability5, align 4, !tbaa !3
+  %add = add nsw i32 %5, %4
+  store i32 %add, i32* %probability5, align 4, !tbaa !3
+  %count = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 8
+  %6 = load i64* %count, align 8, !tbaa !4
+  %count6 = getelementptr inbounds %struct.edge_def* %s.027, i64 0, i32 8
+  %7 = load i64* %count6, align 8, !tbaa !4
+  %add7 = add nsw i64 %7, %6
+  store i64 %add7, i64* %count6, align 8, !tbaa !4
+  tail call void @remove_edge(%struct.edge_def* %e) #7
+  br label %if.end8
+
+if.else:                                          ; preds = %for.cond, %entry
+  %dest.i = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 3
+  %8 = load %struct.basic_block_def** %dest.i, align 8, !tbaa !0
+  %pred.i = getelementptr inbounds %struct.basic_block_def* %8, i64 0, i32 4
+  br label %for.cond.i
+
+for.cond.i:                                       ; preds = %for.cond.i, %if.else
+  %pe.0.i = phi %struct.edge_def** [ %pred.i, %if.else ], [ %pred_next.i, %for.cond.i ]
+  %9 = load %struct.edge_def** %pe.0.i, align 8, !tbaa !0
+  %cmp.i = icmp eq %struct.edge_def* %9, %e
+  %pred_next.i = getelementptr inbounds %struct.edge_def* %9, i64 0, i32 0
+  br i1 %cmp.i, label %redirect_edge_succ.exit, label %for.cond.i
+
+redirect_edge_succ.exit:                          ; preds = %for.cond.i
+  %10 = load %struct.edge_def** %pred_next.i, align 8, !tbaa !0
+  store %struct.edge_def* %10, %struct.edge_def** %pe.0.i, align 8, !tbaa !0
+  %pred2.i = getelementptr inbounds %struct.basic_block_def* %new_succ, i64 0, i32 4
+  %11 = load %struct.edge_def** %pred2.i, align 8, !tbaa !0
+  %pred_next3.i = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 0
+  store %struct.edge_def* %11, %struct.edge_def** %pred_next3.i, align 8, !tbaa !0
+  store %struct.edge_def* %e, %struct.edge_def** %pred2.i, align 8, !tbaa !0
+  store %struct.basic_block_def* %new_succ, %struct.basic_block_def** %dest.i, align 8, !tbaa !0
+  br label %if.end8
+
+if.end8:                                          ; preds = %redirect_edge_succ.exit, %if.then3
+  %e.addr.0 = phi %struct.edge_def* [ %s.027, %if.then3 ], [ %e, %redirect_edge_succ.exit ]
+  ret %struct.edge_def* %e.addr.0
+}

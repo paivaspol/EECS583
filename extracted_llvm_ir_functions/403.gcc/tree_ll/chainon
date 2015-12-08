@@ -1,0 +1,20 @@
+define %union.tree_node* @chainon(%union.tree_node* %op1, %union.tree_node* %op2) #0 {
+entry:
+  %tobool = icmp eq %union.tree_node* %op1, null
+  br i1 %tobool, label %return, label %for.cond
+
+for.cond:                                         ; preds = %entry, %for.cond
+  %t1.0 = phi %union.tree_node* [ %0, %for.cond ], [ %op1, %entry ]
+  %chain = getelementptr inbounds %union.tree_node* %t1.0, i64 0, i32 0, i32 0, i32 0
+  %0 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %tobool1 = icmp eq %union.tree_node* %0, null
+  br i1 %tobool1, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.cond
+  store %union.tree_node* %op2, %union.tree_node** %chain, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %for.end
+  %retval.0 = phi %union.tree_node* [ %op1, %for.end ], [ %op2, %entry ]
+  ret %union.tree_node* %retval.0
+}

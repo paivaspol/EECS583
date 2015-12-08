@@ -1,0 +1,77 @@
+define void @put_atoms_in_box([3 x float]* nocapture %box, i32 %natoms, [3 x float]* nocapture %x) #1 {
+entry:
+  %cmp85 = icmp sgt i32 %natoms, 0
+  br i1 %cmp85, label %for.cond1.preheader, label %for.end48
+
+for.cond1.preheader:                              ; preds = %entry, %for.inc46
+  %indvars.iv97 = phi i64 [ %indvars.iv.next98, %for.inc46 ], [ 0, %entry ]
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %for.cond1.preheader, %for.inc44
+  %indvars.iv95 = phi i64 [ 2, %for.cond1.preheader ], [ %indvars.iv.next96, %for.inc44 ]
+  %indvars.iv91 = phi i32 [ 3, %for.cond1.preheader ], [ %indvars.iv.next92, %for.inc44 ]
+  %arrayidx5 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv97, i64 %indvars.iv95
+  %0 = load float* %arrayidx5, align 4, !tbaa !0
+  %cmp677 = fcmp olt float %0, 0.000000e+00
+  br i1 %cmp677, label %for.body9, label %while.cond18.loopexit
+
+while.cond.loopexit:                              ; preds = %for.body9
+  %.pre102 = load float* %arrayidx5, align 4, !tbaa !0
+  %cmp6 = fcmp olt float %.pre102, 0.000000e+00
+  br i1 %cmp6, label %for.body9, label %while.cond18.loopexit
+
+for.body9:                                        ; preds = %while.cond.preheader, %while.cond.loopexit, %for.body9
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body9 ], [ 0, %while.cond.loopexit ], [ 0, %while.cond.preheader ]
+  %arrayidx13 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv95, i64 %indvars.iv
+  %1 = load float* %arrayidx13, align 4, !tbaa !0
+  %arrayidx17 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv97, i64 %indvars.iv
+  %2 = load float* %arrayidx17, align 4, !tbaa !0
+  %add = fadd float %1, %2
+  store float %add, float* %arrayidx17, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %indvars.iv91
+  br i1 %exitcond, label %while.cond.loopexit, label %for.body9
+
+while.cond18.loopexit:                            ; preds = %while.cond.loopexit, %while.cond.preheader
+  %3 = phi float [ %0, %while.cond.preheader ], [ %.pre102, %while.cond.loopexit ]
+  %arrayidx26 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv95, i64 %indvars.iv95
+  %4 = load float* %arrayidx26, align 4, !tbaa !0
+  %cmp2783 = fcmp ult float %3, %4
+  br i1 %cmp2783, label %for.inc44, label %for.body31
+
+while.cond18.loopexit80:                          ; preds = %for.body31
+  %.pre = load float* %arrayidx5, align 4, !tbaa !0
+  %.pre101 = load float* %arrayidx26, align 4, !tbaa !0
+  %cmp27 = fcmp ult float %.pre, %.pre101
+  br i1 %cmp27, label %for.inc44, label %for.body31
+
+for.body31:                                       ; preds = %while.cond18.loopexit, %while.cond18.loopexit80, %for.body31
+  %indvars.iv89 = phi i64 [ %indvars.iv.next90, %for.body31 ], [ 0, %while.cond18.loopexit80 ], [ 0, %while.cond18.loopexit ]
+  %arrayidx35 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv95, i64 %indvars.iv89
+  %5 = load float* %arrayidx35, align 4, !tbaa !0
+  %arrayidx39 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv97, i64 %indvars.iv89
+  %6 = load float* %arrayidx39, align 4, !tbaa !0
+  %sub = fsub float %6, %5
+  store float %sub, float* %arrayidx39, align 4, !tbaa !0
+  %indvars.iv.next90 = add i64 %indvars.iv89, 1
+  %lftr.wideiv93 = trunc i64 %indvars.iv.next90 to i32
+  %exitcond94 = icmp eq i32 %lftr.wideiv93, %indvars.iv91
+  br i1 %exitcond94, label %while.cond18.loopexit80, label %for.body31
+
+for.inc44:                                        ; preds = %while.cond18.loopexit80, %while.cond18.loopexit
+  %indvars.iv.next96 = add i64 %indvars.iv95, -1
+  %7 = trunc i64 %indvars.iv95 to i32
+  %cmp2 = icmp sgt i32 %7, 0
+  %indvars.iv.next92 = add i32 %indvars.iv91, -1
+  br i1 %cmp2, label %while.cond.preheader, label %for.inc46
+
+for.inc46:                                        ; preds = %for.inc44
+  %indvars.iv.next98 = add i64 %indvars.iv97, 1
+  %lftr.wideiv99 = trunc i64 %indvars.iv.next98 to i32
+  %exitcond100 = icmp eq i32 %lftr.wideiv99, %natoms
+  br i1 %exitcond100, label %for.end48, label %for.cond1.preheader
+
+for.end48:                                        ; preds = %for.inc46, %entry
+  ret void
+}

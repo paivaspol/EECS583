@@ -1,0 +1,68 @@
+define void @write_index(i8* %outf, %struct.t_block* nocapture %b, i8** nocapture %gnames) #0 {
+entry:
+  %call = tail call %struct._IO_FILE* @ffopen(i8* %outf, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0)) #6
+  %nr = getelementptr inbounds %struct.t_block* %b, i64 0, i32 1
+  %0 = load i32* %nr, align 4, !tbaa !3
+  %cmp40 = icmp sgt i32 %0, 0
+  br i1 %cmp40, label %for.body.lr.ph, label %for.end20
+
+for.body.lr.ph:                                   ; preds = %entry
+  %index = getelementptr inbounds %struct.t_block* %b, i64 0, i32 2
+  %a = getelementptr inbounds %struct.t_block* %b, i64 0, i32 4
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.end
+  %indvars.iv42 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next43, %for.end ]
+  %arrayidx = getelementptr inbounds i8** %gnames, i64 %indvars.iv42
+  %1 = load i8** %arrayidx, align 8, !tbaa !0
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call, i8* getelementptr inbounds ([8 x i8]* @.str4, i64 0, i64 0), i8* %1) #6
+  %2 = load i32** %index, align 8, !tbaa !0
+  %arrayidx3 = getelementptr inbounds i32* %2, i64 %indvars.iv42
+  %3 = load i32* %arrayidx3, align 4, !tbaa !3
+  %indvars.iv.next43 = add i64 %indvars.iv42, 1
+  %arrayidx736 = getelementptr inbounds i32* %2, i64 %indvars.iv.next43
+  %4 = load i32* %arrayidx736, align 4, !tbaa !3
+  %cmp837 = icmp slt i32 %3, %4
+  br i1 %cmp837, label %for.body9.lr.ph, label %for.end
+
+for.body9.lr.ph:                                  ; preds = %for.body
+  %5 = sext i32 %3 to i64
+  br label %for.body9
+
+for.body9:                                        ; preds = %for.body9.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ %5, %for.body9.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %k.039 = phi i32 [ 0, %for.body9.lr.ph ], [ %inc16, %for.inc ]
+  %6 = load i32** %a, align 8, !tbaa !0
+  %arrayidx11 = getelementptr inbounds i32* %6, i64 %indvars.iv
+  %7 = load i32* %arrayidx11, align 4, !tbaa !3
+  %add12 = add nsw i32 %7, 1
+  %call13 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call, i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %add12) #6
+  %rem = srem i32 %k.039, 15
+  %cmp14 = icmp eq i32 %rem, 14
+  br i1 %cmp14, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body9
+  %fputc35 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %call)
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body9, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc16 = add nsw i32 %k.039, 1
+  %8 = load i32** %index, align 8, !tbaa !0
+  %arrayidx7 = getelementptr inbounds i32* %8, i64 %indvars.iv.next43
+  %9 = load i32* %arrayidx7, align 4, !tbaa !3
+  %10 = trunc i64 %indvars.iv.next to i32
+  %cmp8 = icmp slt i32 %10, %9
+  br i1 %cmp8, label %for.body9, label %for.end
+
+for.end:                                          ; preds = %for.inc, %for.body
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %call)
+  %11 = load i32* %nr, align 4, !tbaa !3
+  %12 = trunc i64 %indvars.iv.next43 to i32
+  %cmp = icmp slt i32 %12, %11
+  br i1 %cmp, label %for.body, label %for.end20
+
+for.end20:                                        ; preds = %for.end, %entry
+  tail call void @ffclose(%struct._IO_FILE* %call) #6
+  ret void
+}

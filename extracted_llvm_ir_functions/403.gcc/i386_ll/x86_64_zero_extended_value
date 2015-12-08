@@ -1,0 +1,93 @@
+define i32 @x86_64_zero_extended_value(%struct.rtx_def* nocapture %value) #1 {
+entry:
+  %0 = bitcast %struct.rtx_def* %value to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %return [
+    i32 58, label %sw.bb8
+    i32 54, label %sw.bb1
+    i32 68, label %sw.bb2
+    i32 67, label %sw.bb3
+  ]
+
+sw.bb1:                                           ; preds = %entry
+  %rtwint = getelementptr inbounds %struct.rtx_def* %value, i64 0, i32 1, i64 0, i32 0
+  %1 = load i64* %rtwint, align 8, !tbaa !14
+  %lnot = icmp ult i64 %1, 4294967296
+  %lnot.ext = zext i1 %lnot to i32
+  br label %return
+
+sw.bb2:                                           ; preds = %entry
+  %2 = load i32* @ix86_cmodel, align 4, !tbaa !10
+  %cmp = icmp eq i32 %2, 1
+  %conv = zext i1 %cmp to i32
+  br label %return
+
+sw.bb3:                                           ; preds = %entry
+  %3 = load i32* @ix86_cmodel, align 4, !tbaa !10
+  %4 = and i32 %3, -3
+  %5 = icmp eq i32 %4, 1
+  %lor.ext = zext i1 %5 to i32
+  br label %return
+
+sw.bb8:                                           ; preds = %entry
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %value, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %7 = bitcast %struct.rtx_def* %6 to i32*
+  %bf.load11 = load i32* %7, align 8
+  %bf.clear12 = and i32 %bf.load11, 65535
+  %cmp13 = icmp eq i32 %bf.clear12, 75
+  br i1 %cmp13, label %if.then, label %if.end60
+
+if.then:                                          ; preds = %sw.bb8
+  %arrayidx25 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 1
+  %rtx26 = bitcast %union.rtunion_def* %arrayidx25 to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %rtx26, align 8, !tbaa !4
+  %9 = load i32* @ix86_cmodel, align 4, !tbaa !10
+  %cmp27 = icmp eq i32 %9, 4
+  br i1 %cmp27, label %return, label %if.end
+
+if.end:                                           ; preds = %if.then
+  %fld18 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1
+  %rtx20 = bitcast [1 x %union.rtunion_def]* %fld18 to %struct.rtx_def**
+  %10 = load %struct.rtx_def** %rtx20, align 8, !tbaa !4
+  %11 = bitcast %struct.rtx_def* %10 to i32*
+  %bf.load30 = load i32* %11, align 8
+  %bf.clear31 = and i32 %bf.load30, 65535
+  %cond = icmp eq i32 %bf.clear31, 67
+  br i1 %cond, label %sw.bb33, label %return
+
+sw.bb33:                                          ; preds = %if.end
+  %12 = and i32 %9, -3
+  %13 = icmp eq i32 %12, 1
+  br i1 %13, label %land.lhs.true, label %if.end60
+
+land.lhs.true:                                    ; preds = %sw.bb33
+  %14 = bitcast %struct.rtx_def* %8 to i32*
+  %bf.load38 = load i32* %14, align 8
+  %bf.clear39 = and i32 %bf.load38, 65535
+  %cmp40 = icmp eq i32 %bf.clear39, 54
+  br i1 %cmp40, label %land.lhs.true42, label %if.end60
+
+land.lhs.true42:                                  ; preds = %land.lhs.true
+  %rtwint45 = getelementptr inbounds %struct.rtx_def* %8, i64 0, i32 1, i64 0, i32 0
+  %15 = load i64* %rtwint45, align 8, !tbaa !14
+  %call = tail call i64 @trunc_int_for_mode(i64 %15, i32 5) #9
+  %cmp46 = icmp sgt i64 %call, -65536
+  br i1 %cmp46, label %land.lhs.true48, label %if.end60
+
+land.lhs.true48:                                  ; preds = %land.lhs.true42
+  %16 = load i64* %rtwint45, align 8, !tbaa !14
+  %call52 = tail call i64 @trunc_int_for_mode(i64 %16, i32 4) #9
+  %17 = load i64* %rtwint45, align 8, !tbaa !14
+  %cmp56 = icmp eq i64 %call52, %17
+  br i1 %cmp56, label %return, label %if.end60
+
+if.end60:                                         ; preds = %sw.bb33, %land.lhs.true48, %land.lhs.true42, %land.lhs.true, %sw.bb8
+  br label %return
+
+return:                                           ; preds = %if.end, %entry, %land.lhs.true48, %if.then, %if.end60, %sw.bb3, %sw.bb2, %sw.bb1
+  %retval.0 = phi i32 [ 0, %if.end60 ], [ %lor.ext, %sw.bb3 ], [ %conv, %sw.bb2 ], [ %lnot.ext, %sw.bb1 ], [ 0, %if.then ], [ 1, %land.lhs.true48 ], [ 0, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,44 @@
+define float @do_projectx(%struct.t_edpar* nocapture %edi, [3 x float]* nocapture %x, [3 x float]* nocapture %vec) #5 {
+entry:
+  %nr = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 8, i32 0
+  %0 = load i32* %nr, align 4, !tbaa !3
+  %cmp26 = icmp sgt i32 %0, 0
+  br i1 %cmp26, label %for.cond1.preheader.lr.ph, label %for.end15
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %anrs = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 8, i32 1
+  %1 = load i32** %anrs, align 8, !tbaa !0
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.cond1.preheader.lr.ph, %for.inc13
+  %indvars.iv29 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next30, %for.inc13 ]
+  %proj.028 = phi float [ 0.000000e+00, %for.cond1.preheader.lr.ph ], [ %add, %for.inc13 ]
+  %arrayidx9 = getelementptr inbounds i32* %1, i64 %indvars.iv29
+  %2 = load i32* %arrayidx9, align 4, !tbaa !3
+  %idxprom10 = sext i32 %2 to i64
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %proj.125 = phi float [ %proj.028, %for.cond1.preheader ], [ %add, %for.body3 ]
+  %arrayidx5 = getelementptr inbounds [3 x float]* %vec, i64 %indvars.iv29, i64 %indvars.iv
+  %3 = load float* %arrayidx5, align 4, !tbaa !4
+  %arrayidx12 = getelementptr inbounds [3 x float]* %x, i64 %idxprom10, i64 %indvars.iv
+  %4 = load float* %arrayidx12, align 4, !tbaa !4
+  %mul = fmul float %3, %4
+  %add = fadd float %proj.125, %mul
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc13, label %for.body3
+
+for.inc13:                                        ; preds = %for.body3
+  %indvars.iv.next30 = add i64 %indvars.iv29, 1
+  %5 = trunc i64 %indvars.iv.next30 to i32
+  %cmp = icmp slt i32 %5, %0
+  br i1 %cmp, label %for.cond1.preheader, label %for.end15
+
+for.end15:                                        ; preds = %for.inc13, %entry
+  %proj.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %add, %for.inc13 ]
+  ret float %proj.0.lcssa
+}

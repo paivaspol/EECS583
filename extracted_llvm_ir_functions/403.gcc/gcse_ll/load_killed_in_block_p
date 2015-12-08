@@ -1,0 +1,65 @@
+define internal fastcc i32 @load_killed_in_block_p(%struct.basic_block_def* nocapture %bb, i32 %uid_limit, %struct.rtx_def* %x, i32 %avail_p) #0 {
+entry:
+  %index = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 11
+  %0 = load i32* %index, align 4, !tbaa !3
+  %idxprom = sext i32 %0 to i64
+  %1 = load %struct.rtx_def*** @modify_mem_list, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %1, i64 %idxprom
+  %list_entry.044 = load %struct.rtx_def** %arrayidx, align 8
+  %tobool45 = icmp eq %struct.rtx_def* %list_entry.044, null
+  br i1 %tobool45, label %return, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %entry
+  %tobool1 = icmp eq i32 %avail_p, 0
+  br label %while.body
+
+while.body:                                       ; preds = %while.cond.backedge, %while.body.lr.ph
+  %list_entry.046 = phi %struct.rtx_def* [ %list_entry.044, %while.body.lr.ph ], [ %list_entry.0, %while.cond.backedge ]
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %list_entry.046, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx4 to i32*
+  %3 = load i32* %rtint, align 4, !tbaa !3
+  %idxprom5 = sext i32 %3 to i64
+  %4 = load i32** @uid_cuid, align 8, !tbaa !0
+  %arrayidx6 = getelementptr inbounds i32* %4, i64 %idxprom5
+  %5 = load i32* %arrayidx6, align 4, !tbaa !3
+  br i1 %tobool1, label %land.lhs.true8, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %while.body
+  %cmp = icmp slt i32 %5, %uid_limit
+  br i1 %cmp, label %while.cond.backedge, label %if.end
+
+land.lhs.true8:                                   ; preds = %while.body
+  %cmp17 = icmp sgt i32 %5, %uid_limit
+  br i1 %cmp17, label %while.cond.backedge, label %if.end
+
+while.cond.backedge:                              ; preds = %if.end26, %land.lhs.true, %land.lhs.true8
+  %list_entry.0.in.be.in = getelementptr inbounds %struct.rtx_def* %list_entry.046, i64 0, i32 1, i64 1
+  %list_entry.0.in.be = bitcast %union.rtunion_def* %list_entry.0.in.be.in to %struct.rtx_def**
+  %list_entry.0 = load %struct.rtx_def** %list_entry.0.in.be, align 8
+  %tobool = icmp eq %struct.rtx_def* %list_entry.0, null
+  br i1 %tobool, label %return, label %while.body
+
+if.end:                                           ; preds = %land.lhs.true, %land.lhs.true8
+  %6 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load = load i32* %6, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp24 = icmp eq i32 %bf.clear, 34
+  br i1 %cmp24, label %return, label %if.end26
+
+if.end26:                                         ; preds = %if.end
+  store %struct.rtx_def* %x, %struct.rtx_def** @gcse_mem_operand, align 8, !tbaa !0
+  store i1 false, i1* @gcse_mems_conflict_p, align 1
+  %arrayidx28 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 3
+  %rtx29 = bitcast %union.rtunion_def* %arrayidx28 to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %rtx29, align 8, !tbaa !0
+  tail call void @note_stores(%struct.rtx_def* %7, void (%struct.rtx_def*, %struct.rtx_def*, i8*)* @mems_conflict_for_gcse_p, i8* null) #6
+  %.b = load i1* @gcse_mems_conflict_p, align 1
+  br i1 %.b, label %return, label %while.cond.backedge
+
+return:                                           ; preds = %while.cond.backedge, %if.end26, %if.end, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %if.end ], [ 1, %if.end26 ], [ 0, %while.cond.backedge ]
+  ret i32 %retval.0
+}

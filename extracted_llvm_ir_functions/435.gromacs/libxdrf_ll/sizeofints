@@ -1,0 +1,81 @@
+define internal fastcc i32 @sizeofints(i32* nocapture %sizes) #4 {
+entry:
+  %bytes = alloca [32 x i32], align 16
+  %0 = bitcast [32 x i32]* %bytes to i8*
+  call void @llvm.lifetime.start(i64 128, i8* %0) #3
+  %arrayidx = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 0
+  store i32 1, i32* %arrayidx, align 16, !tbaa !3
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %while.end, %entry
+  %indvars.iv15 = phi i64 [ 0, %entry ], [ %indvars.iv.next16, %while.end ]
+  %num_of_bytes.013 = phi i32 [ 1, %entry ], [ %bytecnt.1.lcssa, %while.end ]
+  %cmp24 = icmp eq i32 %num_of_bytes.013, 0
+  br i1 %cmp24, label %while.end, label %for.body3.lr.ph
+
+for.body3.lr.ph:                                  ; preds = %for.cond1.preheader
+  %arrayidx6 = getelementptr inbounds i32* %sizes, i64 %indvars.iv15
+  %1 = load i32* %arrayidx6, align 4, !tbaa !3
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3, %for.body3.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body3.lr.ph ], [ %indvars.iv.next, %for.body3 ]
+  %tmp.06 = phi i32 [ 0, %for.body3.lr.ph ], [ %shr, %for.body3 ]
+  %arrayidx4 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %indvars.iv
+  %2 = load i32* %arrayidx4, align 4, !tbaa !3
+  %mul = mul i32 %1, %2
+  %add = add i32 %mul, %tmp.06
+  %and = and i32 %add, 255
+  store i32 %and, i32* %arrayidx4, align 4, !tbaa !3
+  %shr = lshr i32 %add, 8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %num_of_bytes.013
+  br i1 %exitcond, label %while.cond.loopexit, label %for.body3
+
+while.cond.loopexit:                              ; preds = %for.body3
+  %cmp99 = icmp eq i32 %shr, 0
+  br i1 %cmp99, label %while.end, label %while.body
+
+while.body:                                       ; preds = %while.cond.loopexit, %while.body
+  %tmp.111 = phi i32 [ %shr14, %while.body ], [ %shr, %while.cond.loopexit ]
+  %bytecnt.110 = phi i32 [ %inc11, %while.body ], [ %num_of_bytes.013, %while.cond.loopexit ]
+  %and10 = and i32 %tmp.111, 255
+  %inc11 = add i32 %bytecnt.110, 1
+  %idxprom12 = zext i32 %bytecnt.110 to i64
+  %arrayidx13 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %idxprom12
+  store i32 %and10, i32* %arrayidx13, align 4, !tbaa !3
+  %shr14 = lshr i32 %tmp.111, 8
+  %cmp9 = icmp eq i32 %shr14, 0
+  br i1 %cmp9, label %while.end, label %while.body
+
+while.end:                                        ; preds = %for.cond1.preheader, %while.body, %while.cond.loopexit
+  %bytecnt.1.lcssa = phi i32 [ %num_of_bytes.013, %while.cond.loopexit ], [ %inc11, %while.body ], [ 0, %for.cond1.preheader ]
+  %indvars.iv.next16 = add i64 %indvars.iv15, 1
+  %lftr.wideiv17 = trunc i64 %indvars.iv.next16 to i32
+  %exitcond18 = icmp eq i32 %lftr.wideiv17, 3
+  br i1 %exitcond18, label %for.end17, label %for.cond1.preheader
+
+for.end17:                                        ; preds = %while.end
+  %dec = add i32 %bytecnt.1.lcssa, -1
+  %idxprom19 = zext i32 %dec to i64
+  %arrayidx20 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %idxprom19
+  %3 = load i32* %arrayidx20, align 4, !tbaa !3
+  %cmp211 = icmp eq i32 %3, 0
+  br i1 %cmp211, label %while.end25, label %while.body22
+
+while.body22:                                     ; preds = %for.end17, %while.body22
+  %num_of_bits.03 = phi i32 [ %inc23, %while.body22 ], [ 0, %for.end17 ]
+  %num.02 = phi i32 [ %mul24, %while.body22 ], [ 1, %for.end17 ]
+  %inc23 = add i32 %num_of_bits.03, 1
+  %mul24 = shl nsw i32 %num.02, 1
+  %cmp21 = icmp ult i32 %3, %mul24
+  br i1 %cmp21, label %while.end25, label %while.body22
+
+while.end25:                                      ; preds = %while.body22, %for.end17
+  %num_of_bits.0.lcssa = phi i32 [ 0, %for.end17 ], [ %inc23, %while.body22 ]
+  %mul26 = shl i32 %dec, 3
+  %add27 = add i32 %num_of_bits.0.lcssa, %mul26
+  call void @llvm.lifetime.end(i64 128, i8* %0) #3
+  ret i32 %add27
+}

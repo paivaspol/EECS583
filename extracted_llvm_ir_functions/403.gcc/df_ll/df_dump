@@ -1,0 +1,547 @@
+define void @df_dump(%struct.df* %df, i32 %flags, %struct._IO_FILE* %file) #0 {
+entry:
+  %tobool = icmp eq %struct.df* %df, null
+  %tobool1 = icmp eq %struct._IO_FILE* %file, null
+  %or.cond = or i1 %tobool, %tobool1
+  br i1 %or.cond, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([20 x i8]* @.str1, i64 0, i64 0), i64 19, i64 1, %struct._IO_FILE* %file)
+  %n_regs = getelementptr inbounds %struct.df* %df, i64 0, i32 16
+  %1 = load i32* %n_regs, align 4, !tbaa !4
+  %n_defs = getelementptr inbounds %struct.df* %df, i64 0, i32 11
+  %2 = load i32* %n_defs, align 4, !tbaa !4
+  %n_uses = getelementptr inbounds %struct.df* %df, i64 0, i32 14
+  %3 = load i32* %n_uses, align 4, !tbaa !4
+  %n_bbs = getelementptr inbounds %struct.df* %df, i64 0, i32 15
+  %4 = load i32* %n_bbs, align 4, !tbaa !4
+  %call2 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([51 x i8]* @.str2, i64 0, i64 0), i32 %1, i32 %2, i32 %3, i32 %4) #8
+  %and = and i32 %flags, 1
+  %tobool3 = icmp eq i32 %and, 0
+  br i1 %tobool3, label %if.end18, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([16 x i8]* @.str3, i64 0, i64 0), i64 15, i64 1, %struct._IO_FILE* %file)
+  %6 = load i32* %n_bbs, align 4, !tbaa !4
+  %cmp553 = icmp eq i32 %6, 0
+  br i1 %cmp553, label %if.end18, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.then4
+  %bbs = getelementptr inbounds %struct.df* %df, i64 0, i32 1
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %7 = phi i32 [ %6, %for.body.lr.ph ], [ %17, %for.inc ]
+  %i.0554 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %idxprom = zext i32 %i.0554 to i64
+  %8 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %8, i64 0, i32 4
+  %bb7 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb7, i64 0, i64 %idxprom
+  %9 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !3
+  %index = getelementptr inbounds %struct.basic_block_def* %9, i64 0, i32 11
+  %10 = load i32* %index, align 4, !tbaa !4
+  %idxprom8 = sext i32 %10 to i64
+  %11 = load %struct.bb_info** %bbs, align 8, !tbaa !3
+  %rd_in = getelementptr inbounds %struct.bb_info* %11, i64 %idxprom8, i32 2
+  %12 = load %struct.bitmap_head_def** %rd_in, align 8, !tbaa !3
+  %tobool10 = icmp eq %struct.bitmap_head_def* %12, null
+  br i1 %tobool10, label %for.inc, label %if.end12
+
+if.end12:                                         ; preds = %for.body
+  %call13 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str4, i64 0, i64 0), i32 %i.0554) #8
+  %13 = load %struct.bitmap_head_def** %rd_in, align 8, !tbaa !3
+  tail call void @bitmap_print(%struct._IO_FILE* %file, %struct.bitmap_head_def* %13, i8* getelementptr inbounds ([1 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #8
+  %call15 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str7, i64 0, i64 0), i32 %i.0554) #8
+  %rd_gen = getelementptr inbounds %struct.bb_info* %11, i64 %idxprom8, i32 1
+  %14 = load %struct.bitmap_head_def** %rd_gen, align 8, !tbaa !3
+  tail call void @bitmap_print(%struct._IO_FILE* %file, %struct.bitmap_head_def* %14, i8* getelementptr inbounds ([1 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #8
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0), i32 %i.0554) #8
+  %rd_kill = getelementptr inbounds %struct.bb_info* %11, i64 %idxprom8, i32 0
+  %15 = load %struct.bitmap_head_def** %rd_kill, align 8, !tbaa !3
+  tail call void @bitmap_print(%struct._IO_FILE* %file, %struct.bitmap_head_def* %15, i8* getelementptr inbounds ([1 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #8
+  %call17 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str9, i64 0, i64 0), i32 %i.0554) #8
+  %rd_out = getelementptr inbounds %struct.bb_info* %11, i64 %idxprom8, i32 3
+  %16 = load %struct.bitmap_head_def** %rd_out, align 8, !tbaa !3
+  tail call void @bitmap_print(%struct._IO_FILE* %file, %struct.bitmap_head_def* %16, i8* getelementptr inbounds ([1 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #8
+  %.pre563 = load i32* %n_bbs, align 4, !tbaa !4
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.end12
+  %17 = phi i32 [ %7, %for.body ], [ %.pre563, %if.end12 ]
+  %inc = add i32 %i.0554, 1
+  %cmp = icmp ult i32 %inc, %17
+  br i1 %cmp, label %for.body, label %if.end18
+
+if.end18:                                         ; preds = %if.then4, %for.inc, %if.end
+  %and19 = and i32 %flags, 16
+  %tobool20 = icmp eq i32 %and19, 0
+  br i1 %tobool20, label %if.end90, label %if.then21
+
+if.then21:                                        ; preds = %if.end18
+  %18 = tail call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str10, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %file)
+  %19 = load i32* %n_defs, align 4, !tbaa !4
+  %cmp25551 = icmp eq i32 %19, 0
+  br i1 %cmp25551, label %if.end90, label %for.body26.lr.ph
+
+for.body26.lr.ph:                                 ; preds = %if.then21
+  %defs = getelementptr inbounds %struct.df* %df, i64 0, i32 2
+  %insns = getelementptr inbounds %struct.df* %df, i64 0, i32 7
+  br label %for.body26
+
+for.body26:                                       ; preds = %for.inc87, %for.body26.lr.ph
+  %20 = phi i32 [ %19, %for.body26.lr.ph ], [ %40, %for.inc87 ]
+  %j.0552 = phi i32 [ 0, %for.body26.lr.ph ], [ %inc88, %for.inc87 ]
+  %idxprom27 = zext i32 %j.0552 to i64
+  %21 = load %struct.ref*** %defs, align 8, !tbaa !3
+  %arrayidx28 = getelementptr inbounds %struct.ref** %21, i64 %idxprom27
+  %22 = load %struct.ref** %arrayidx28, align 8, !tbaa !3
+  %tobool29 = icmp eq %struct.ref* %22, null
+  br i1 %tobool29, label %for.inc87, label %if.then30
+
+if.then30:                                        ; preds = %for.body26
+  %insn = getelementptr inbounds %struct.ref* %22, i64 0, i32 1
+  %23 = load %struct.rtx_def** %insn, align 8, !tbaa !3
+  %arrayidx34 = getelementptr inbounds %struct.rtx_def* %23, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx34 to i32*
+  %24 = load i32* %rtint, align 4, !tbaa !4
+  %idxprom35 = sext i32 %24 to i64
+  %25 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !3
+  %data36 = getelementptr inbounds %struct.varray_head_tag* %25, i64 0, i32 4
+  %bb37 = bitcast %union.varray_data_tag* %data36 to [1 x %struct.basic_block_def*]*
+  %arrayidx38 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb37, i64 0, i64 %idxprom35
+  %26 = load %struct.basic_block_def** %arrayidx38, align 8, !tbaa !3
+  %index39 = getelementptr inbounds %struct.basic_block_def* %26, i64 0, i32 11
+  %27 = load i32* %index39, align 4, !tbaa !4
+  %28 = load %struct.insn_info** %insns, align 8, !tbaa !3
+  %luid = getelementptr inbounds %struct.insn_info* %28, i64 %idxprom35, i32 2
+  %29 = load i32* %luid, align 4, !tbaa !4
+  %reg = getelementptr inbounds %struct.ref* %22, i64 0, i32 0
+  %30 = load %struct.rtx_def** %reg, align 8, !tbaa !3
+  %31 = bitcast %struct.rtx_def* %30 to i32*
+  %bf.load = load i32* %31, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp59 = icmp eq i32 %bf.clear, 63
+  br i1 %cmp59, label %cond.true, label %cond.end
+
+cond.true:                                        ; preds = %if.then30
+  %arrayidx65 = getelementptr inbounds %struct.rtx_def* %30, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx65 to %struct.rtx_def**
+  %32 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then30, %cond.true
+  %cond = phi %struct.rtx_def* [ %32, %cond.true ], [ %30, %if.then30 ]
+  %arrayidx71 = getelementptr inbounds %struct.rtx_def* %cond, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx71 to i32*
+  %33 = load i32* %rtuint, align 4, !tbaa !4
+  %call72 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([34 x i8]* @.str11, i64 0, i64 0), i32 %j.0552, i32 %27, i32 %29, i32 %24, i32 %33) #8
+  %34 = load %struct.ref*** %defs, align 8, !tbaa !3
+  %arrayidx75 = getelementptr inbounds %struct.ref** %34, i64 %idxprom27
+  %35 = load %struct.ref** %arrayidx75, align 8, !tbaa !3
+  %flags76 = getelementptr inbounds %struct.ref* %35, i64 0, i32 6
+  %36 = load i32* %flags76, align 4, !tbaa !6
+  %and77 = and i32 %36, 1
+  %tobool78 = icmp eq i32 %and77, 0
+  br i1 %tobool78, label %if.end81, label %if.then79
+
+if.then79:                                        ; preds = %cond.end
+  %37 = tail call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str12, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %file)
+  %.pre561 = load %struct.ref*** %defs, align 8, !tbaa !3
+  %arrayidx84.phi.trans.insert = getelementptr inbounds %struct.ref** %.pre561, i64 %idxprom27
+  %.pre562 = load %struct.ref** %arrayidx84.phi.trans.insert, align 8, !tbaa !3
+  br label %if.end81
+
+if.end81:                                         ; preds = %cond.end, %if.then79
+  %38 = phi %struct.ref* [ %35, %cond.end ], [ %.pre562, %if.then79 ]
+  %chain = getelementptr inbounds %struct.ref* %38, i64 0, i32 3
+  %39 = load %struct.df_link** %chain, align 8, !tbaa !3
+  tail call fastcc void @df_chain_dump(%struct.df_link* %39, %struct._IO_FILE* %file) #6
+  %fputc536 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #5
+  %.pre560 = load i32* %n_defs, align 4, !tbaa !4
+  br label %for.inc87
+
+for.inc87:                                        ; preds = %for.body26, %if.end81
+  %40 = phi i32 [ %20, %for.body26 ], [ %.pre560, %if.end81 ]
+  %inc88 = add i32 %j.0552, 1
+  %cmp25 = icmp ult i32 %inc88, %40
+  br i1 %cmp25, label %for.body26, label %if.end90
+
+if.end90:                                         ; preds = %if.then21, %for.inc87, %if.end18
+  %and91 = and i32 %flags, 2
+  %tobool92 = icmp eq i32 %and91, 0
+  br i1 %tobool92, label %if.end120, label %if.then93
+
+if.then93:                                        ; preds = %if.end90
+  %41 = tail call i64 @fwrite(i8* getelementptr inbounds ([16 x i8]* @.str13, i64 0, i64 0), i64 15, i64 1, %struct._IO_FILE* %file)
+  %42 = load i32* %n_bbs, align 4, !tbaa !4
+  %cmp97549 = icmp eq i32 %42, 0
+  br i1 %cmp97549, label %if.end120, label %for.body98.lr.ph
+
+for.body98.lr.ph:                                 ; preds = %if.then93
+  %bbs107 = getelementptr inbounds %struct.df* %df, i64 0, i32 1
+  br label %for.body98
+
+for.body98:                                       ; preds = %for.inc117, %for.body98.lr.ph
+  %43 = phi i32 [ %42, %for.body98.lr.ph ], [ %53, %for.inc117 ]
+  %i.1550 = phi i32 [ 0, %for.body98.lr.ph ], [ %inc118, %for.inc117 ]
+  %idxprom100 = zext i32 %i.1550 to i64
+  %44 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
+  %data101 = getelementptr inbounds %struct.varray_head_tag* %44, i64 0, i32 4
+  %bb102 = bitcast %union.varray_data_tag* %data101 to [1 x %struct.basic_block_def*]*
+  %arrayidx103 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb102, i64 0, i64 %idxprom100
+  %45 = load %struct.basic_block_def** %arrayidx103, align 8, !tbaa !3
+  %index105 = getelementptr inbounds %struct.basic_block_def* %45, i64 0, i32 11
+  %46 = load i32* %index105, align 4, !tbaa !4
+  %idxprom106 = sext i32 %46 to i64
+  %47 = load %struct.bb_info** %bbs107, align 8, !tbaa !3
+  %ru_in = getelementptr inbounds %struct.bb_info* %47, i64 %idxprom106, i32 6
+  %48 = load %struct.bitmap_head_def** %ru_in, align 8, !tbaa !3
+  %tobool109 = icmp eq %struct.bitmap_head_def* %48, null
+  br i1 %tobool109, label %for.inc117, label %if.end111
+
+if.end111:                                        ; preds = %for.body98
+  %call112 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str4, i64 0, i64 0), i32 %i.1550) #8
+  %49 = load %struct.bitmap_head_def** %ru_in, align 8, !tbaa !3
+  tail call void @bitmap_print(%struct._IO_FILE* %file, %struct.bitmap_head_def* %49, i8* getelementptr inbounds ([1 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #8
+  %call114 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str7, i64 0, i64 0), i32 %i.1550) #8
+  %ru_gen = getelementptr inbounds %struct.bb_info* %47, i64 %idxprom106, i32 5
+  %50 = load %struct.bitmap_head_def** %ru_gen, align 8, !tbaa !3
+  tail call void @bitmap_print(%struct._IO_FILE* %file, %struct.bitmap_head_def* %50, i8* getelementptr inbounds ([1 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #8
+  %call115 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0), i32 %i.1550) #8
+  %ru_kill = getelementptr inbounds %struct.bb_info* %47, i64 %idxprom106, i32 4
+  %51 = load %struct.bitmap_head_def** %ru_kill, align 8, !tbaa !3
+  tail call void @bitmap_print(%struct._IO_FILE* %file, %struct.bitmap_head_def* %51, i8* getelementptr inbounds ([1 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #8
+  %call116 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str9, i64 0, i64 0), i32 %i.1550) #8
+  %ru_out = getelementptr inbounds %struct.bb_info* %47, i64 %idxprom106, i32 7
+  %52 = load %struct.bitmap_head_def** %ru_out, align 8, !tbaa !3
+  tail call void @bitmap_print(%struct._IO_FILE* %file, %struct.bitmap_head_def* %52, i8* getelementptr inbounds ([1 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #8
+  %.pre559 = load i32* %n_bbs, align 4, !tbaa !4
+  br label %for.inc117
+
+for.inc117:                                       ; preds = %for.body98, %if.end111
+  %53 = phi i32 [ %43, %for.body98 ], [ %.pre559, %if.end111 ]
+  %inc118 = add i32 %i.1550, 1
+  %cmp97 = icmp ult i32 %inc118, %53
+  br i1 %cmp97, label %for.body98, label %if.end120
+
+if.end120:                                        ; preds = %if.then93, %for.inc117, %if.end90
+  %and121 = and i32 %flags, 8
+  %tobool122 = icmp eq i32 %and121, 0
+  br i1 %tobool122, label %if.end207, label %if.then123
+
+if.then123:                                       ; preds = %if.end120
+  %54 = tail call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str14, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %file)
+  %55 = load i32* %n_uses, align 4, !tbaa !4
+  %cmp127547 = icmp eq i32 %55, 0
+  br i1 %cmp127547, label %if.end207, label %for.body128.lr.ph
+
+for.body128.lr.ph:                                ; preds = %if.then123
+  %uses = getelementptr inbounds %struct.df* %df, i64 0, i32 3
+  %insns153 = getelementptr inbounds %struct.df* %df, i64 0, i32 7
+  br label %for.body128
+
+for.body128:                                      ; preds = %for.inc204, %for.body128.lr.ph
+  %56 = phi i32 [ %55, %for.body128.lr.ph ], [ %76, %for.inc204 ]
+  %j.1548 = phi i32 [ 0, %for.body128.lr.ph ], [ %inc205, %for.inc204 ]
+  %idxprom129 = zext i32 %j.1548 to i64
+  %57 = load %struct.ref*** %uses, align 8, !tbaa !3
+  %arrayidx130 = getelementptr inbounds %struct.ref** %57, i64 %idxprom129
+  %58 = load %struct.ref** %arrayidx130, align 8, !tbaa !3
+  %tobool131 = icmp eq %struct.ref* %58, null
+  br i1 %tobool131, label %for.inc204, label %if.then132
+
+if.then132:                                       ; preds = %for.body128
+  %insn136 = getelementptr inbounds %struct.ref* %58, i64 0, i32 1
+  %59 = load %struct.rtx_def** %insn136, align 8, !tbaa !3
+  %arrayidx138 = getelementptr inbounds %struct.rtx_def* %59, i64 0, i32 1, i64 0
+  %rtint139 = bitcast %union.rtunion_def* %arrayidx138 to i32*
+  %60 = load i32* %rtint139, align 4, !tbaa !4
+  %idxprom140 = sext i32 %60 to i64
+  %61 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !3
+  %data141 = getelementptr inbounds %struct.varray_head_tag* %61, i64 0, i32 4
+  %bb142 = bitcast %union.varray_data_tag* %data141 to [1 x %struct.basic_block_def*]*
+  %arrayidx143 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb142, i64 0, i64 %idxprom140
+  %62 = load %struct.basic_block_def** %arrayidx143, align 8, !tbaa !3
+  %index144 = getelementptr inbounds %struct.basic_block_def* %62, i64 0, i32 11
+  %63 = load i32* %index144, align 4, !tbaa !4
+  %64 = load %struct.insn_info** %insns153, align 8, !tbaa !3
+  %luid155 = getelementptr inbounds %struct.insn_info* %64, i64 %idxprom140, i32 2
+  %65 = load i32* %luid155, align 4, !tbaa !4
+  %reg166 = getelementptr inbounds %struct.ref* %58, i64 0, i32 0
+  %66 = load %struct.rtx_def** %reg166, align 8, !tbaa !3
+  %67 = bitcast %struct.rtx_def* %66 to i32*
+  %bf.load167 = load i32* %67, align 8
+  %bf.clear168 = and i32 %bf.load167, 65535
+  %cmp169 = icmp eq i32 %bf.clear168, 63
+  br i1 %cmp169, label %cond.true170, label %cond.end183
+
+cond.true170:                                     ; preds = %if.then132
+  %arrayidx176 = getelementptr inbounds %struct.rtx_def* %66, i64 0, i32 1, i64 0
+  %rtx177 = bitcast %union.rtunion_def* %arrayidx176 to %struct.rtx_def**
+  %68 = load %struct.rtx_def** %rtx177, align 8, !tbaa !3
+  br label %cond.end183
+
+cond.end183:                                      ; preds = %if.then132, %cond.true170
+  %cond184 = phi %struct.rtx_def* [ %68, %cond.true170 ], [ %66, %if.then132 ]
+  %arrayidx186 = getelementptr inbounds %struct.rtx_def* %cond184, i64 0, i32 1, i64 0
+  %rtuint187 = bitcast %union.rtunion_def* %arrayidx186 to i32*
+  %69 = load i32* %rtuint187, align 4, !tbaa !4
+  %call188 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([34 x i8]* @.str15, i64 0, i64 0), i32 %j.1548, i32 %63, i32 %65, i32 %60, i32 %69) #8
+  %70 = load %struct.ref*** %uses, align 8, !tbaa !3
+  %arrayidx191 = getelementptr inbounds %struct.ref** %70, i64 %idxprom129
+  %71 = load %struct.ref** %arrayidx191, align 8, !tbaa !3
+  %flags192 = getelementptr inbounds %struct.ref* %71, i64 0, i32 6
+  %72 = load i32* %flags192, align 4, !tbaa !6
+  %and193 = and i32 %72, 1
+  %tobool194 = icmp eq i32 %and193, 0
+  br i1 %tobool194, label %if.end197, label %if.then195
+
+if.then195:                                       ; preds = %cond.end183
+  %73 = tail call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str12, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %file)
+  %.pre557 = load %struct.ref*** %uses, align 8, !tbaa !3
+  %arrayidx200.phi.trans.insert = getelementptr inbounds %struct.ref** %.pre557, i64 %idxprom129
+  %.pre558 = load %struct.ref** %arrayidx200.phi.trans.insert, align 8, !tbaa !3
+  br label %if.end197
+
+if.end197:                                        ; preds = %cond.end183, %if.then195
+  %74 = phi %struct.ref* [ %71, %cond.end183 ], [ %.pre558, %if.then195 ]
+  %chain201 = getelementptr inbounds %struct.ref* %74, i64 0, i32 3
+  %75 = load %struct.df_link** %chain201, align 8, !tbaa !3
+  tail call fastcc void @df_chain_dump(%struct.df_link* %75, %struct._IO_FILE* %file) #6
+  %fputc533 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #5
+  %.pre556 = load i32* %n_uses, align 4, !tbaa !4
+  br label %for.inc204
+
+for.inc204:                                       ; preds = %for.body128, %if.end197
+  %76 = phi i32 [ %56, %for.body128 ], [ %.pre556, %if.end197 ]
+  %inc205 = add i32 %j.1548, 1
+  %cmp127 = icmp ult i32 %inc205, %76
+  br i1 %cmp127, label %for.body128, label %if.end207
+
+if.end207:                                        ; preds = %if.then123, %for.inc204, %if.end120
+  %and208 = and i32 %flags, 4
+  %tobool209 = icmp eq i32 %and208, 0
+  br i1 %tobool209, label %if.end237, label %if.then210
+
+if.then210:                                       ; preds = %if.end207
+  %77 = tail call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str16, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %file)
+  %78 = load i32* %n_bbs, align 4, !tbaa !4
+  %cmp214545 = icmp eq i32 %78, 0
+  br i1 %cmp214545, label %if.end237, label %for.body215.lr.ph
+
+for.body215.lr.ph:                                ; preds = %if.then210
+  %bbs224 = getelementptr inbounds %struct.df* %df, i64 0, i32 1
+  br label %for.body215
+
+for.body215:                                      ; preds = %for.inc234, %for.body215.lr.ph
+  %79 = phi i32 [ %78, %for.body215.lr.ph ], [ %89, %for.inc234 ]
+  %i.2546 = phi i32 [ 0, %for.body215.lr.ph ], [ %inc235, %for.inc234 ]
+  %idxprom217 = zext i32 %i.2546 to i64
+  %80 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
+  %data218 = getelementptr inbounds %struct.varray_head_tag* %80, i64 0, i32 4
+  %bb219 = bitcast %union.varray_data_tag* %data218 to [1 x %struct.basic_block_def*]*
+  %arrayidx220 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb219, i64 0, i64 %idxprom217
+  %81 = load %struct.basic_block_def** %arrayidx220, align 8, !tbaa !3
+  %index222 = getelementptr inbounds %struct.basic_block_def* %81, i64 0, i32 11
+  %82 = load i32* %index222, align 4, !tbaa !4
+  %idxprom223 = sext i32 %82 to i64
+  %83 = load %struct.bb_info** %bbs224, align 8, !tbaa !3
+  %lr_in = getelementptr inbounds %struct.bb_info* %83, i64 %idxprom223, i32 10
+  %84 = load %struct.bitmap_head_def** %lr_in, align 8, !tbaa !3
+  %tobool226 = icmp eq %struct.bitmap_head_def* %84, null
+  br i1 %tobool226, label %for.inc234, label %if.end228
+
+if.end228:                                        ; preds = %for.body215
+  %call229 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str4, i64 0, i64 0), i32 %i.2546) #8
+  %85 = load %struct.bitmap_head_def** %lr_in, align 8, !tbaa !3
+  tail call void @bitmap_print(%struct._IO_FILE* %file, %struct.bitmap_head_def* %85, i8* getelementptr inbounds ([1 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #8
+  %call231 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str17, i64 0, i64 0), i32 %i.2546) #8
+  %lr_use = getelementptr inbounds %struct.bb_info* %83, i64 %idxprom223, i32 9
+  %86 = load %struct.bitmap_head_def** %lr_use, align 8, !tbaa !3
+  tail call void @bitmap_print(%struct._IO_FILE* %file, %struct.bitmap_head_def* %86, i8* getelementptr inbounds ([1 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #8
+  %call232 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str18, i64 0, i64 0), i32 %i.2546) #8
+  %lr_def = getelementptr inbounds %struct.bb_info* %83, i64 %idxprom223, i32 8
+  %87 = load %struct.bitmap_head_def** %lr_def, align 8, !tbaa !3
+  tail call void @bitmap_print(%struct._IO_FILE* %file, %struct.bitmap_head_def* %87, i8* getelementptr inbounds ([1 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #8
+  %call233 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str9, i64 0, i64 0), i32 %i.2546) #8
+  %lr_out = getelementptr inbounds %struct.bb_info* %83, i64 %idxprom223, i32 11
+  %88 = load %struct.bitmap_head_def** %lr_out, align 8, !tbaa !3
+  tail call void @bitmap_print(%struct._IO_FILE* %file, %struct.bitmap_head_def* %88, i8* getelementptr inbounds ([1 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #8
+  %.pre555 = load i32* %n_bbs, align 4, !tbaa !4
+  br label %for.inc234
+
+for.inc234:                                       ; preds = %for.body215, %if.end228
+  %89 = phi i32 [ %79, %for.body215 ], [ %.pre555, %if.end228 ]
+  %inc235 = add i32 %i.2546, 1
+  %cmp214 = icmp ult i32 %inc235, %89
+  br i1 %cmp214, label %for.body215, label %if.end237
+
+if.end237:                                        ; preds = %if.then210, %for.inc234, %if.end207
+  %and238 = and i32 %flags, 224
+  %tobool239 = icmp eq i32 %and238, 0
+  br i1 %tobool239, label %if.end348, label %if.then240
+
+if.then240:                                       ; preds = %if.end237
+  %regs = getelementptr inbounds %struct.df* %df, i64 0, i32 5
+  %90 = load %struct.reg_info** %regs, align 8, !tbaa !3
+  %91 = tail call i64 @fwrite(i8* getelementptr inbounds ([16 x i8]* @.str19, i64 0, i64 0), i64 15, i64 1, %struct._IO_FILE* %file)
+  %92 = load i32* %n_regs, align 4, !tbaa !4
+  %cmp244541 = icmp eq i32 %92, 0
+  br i1 %cmp244541, label %if.end348, label %for.body245.lr.ph
+
+for.body245.lr.ph:                                ; preds = %if.then240
+  %and246 = and i32 %flags, 32
+  %tobool247 = icmp ne i32 %and246, 0
+  %and258 = and i32 %flags, 64
+  %tobool259 = icmp eq i32 %and258, 0
+  %and266 = and i32 %flags, 128
+  %tobool267 = icmp eq i32 %and266, 0
+  %tobool276 = icmp ne i32 %and258, 0
+  %tobool276.not = xor i1 %tobool276, true
+  %or.cond537 = or i1 %tobool267, %tobool276.not
+  %93 = and i32 %flags, 96
+  %94 = icmp eq i32 %93, 0
+  %tobool247.not = xor i1 %tobool247, true
+  %or.cond538 = and i1 %tobool267, %tobool247.not
+  br label %for.body245
+
+for.body245:                                      ; preds = %for.body245.lr.ph, %for.inc345
+  %95 = phi i32 [ %92, %for.body245.lr.ph ], [ %111, %for.inc345 ]
+  %j.2542 = phi i32 [ 0, %for.body245.lr.ph ], [ %inc346, %for.inc345 ]
+  br i1 %tobool247, label %land.lhs.true, label %lor.lhs.false257
+
+land.lhs.true:                                    ; preds = %for.body245
+  %idxprom248 = zext i32 %j.2542 to i64
+  %n_uses250 = getelementptr inbounds %struct.reg_info* %90, i64 %idxprom248, i32 4
+  %96 = load i32* %n_uses250, align 4, !tbaa !4
+  %tobool251 = icmp eq i32 %96, 0
+  br i1 %tobool251, label %lor.lhs.false252, label %if.then273
+
+lor.lhs.false252:                                 ; preds = %land.lhs.true
+  %n_defs255 = getelementptr inbounds %struct.reg_info* %90, i64 %idxprom248, i32 3
+  %97 = load i32* %n_defs255, align 4, !tbaa !4
+  %tobool256 = icmp eq i32 %97, 0
+  br i1 %tobool256, label %lor.lhs.false257, label %if.then273
+
+lor.lhs.false257:                                 ; preds = %lor.lhs.false252, %for.body245
+  br i1 %tobool259, label %lor.lhs.false265, label %land.lhs.true260
+
+land.lhs.true260:                                 ; preds = %lor.lhs.false257
+  %idxprom261 = zext i32 %j.2542 to i64
+  %defs263 = getelementptr inbounds %struct.reg_info* %90, i64 %idxprom261, i32 0
+  %98 = load %struct.df_link** %defs263, align 8, !tbaa !3
+  %tobool264 = icmp eq %struct.df_link* %98, null
+  br i1 %tobool264, label %lor.lhs.false265, label %if.then273
+
+lor.lhs.false265:                                 ; preds = %land.lhs.true260, %lor.lhs.false257
+  br i1 %tobool267, label %for.inc345, label %land.lhs.true268
+
+land.lhs.true268:                                 ; preds = %lor.lhs.false265
+  %idxprom269 = zext i32 %j.2542 to i64
+  %uses271 = getelementptr inbounds %struct.reg_info* %90, i64 %idxprom269, i32 1
+  %99 = load %struct.df_link** %uses271, align 8, !tbaa !3
+  %tobool272 = icmp eq %struct.df_link* %99, null
+  br i1 %tobool272, label %for.inc345, label %if.then273
+
+if.then273:                                       ; preds = %lor.lhs.false252, %land.lhs.true, %land.lhs.true260, %land.lhs.true268
+  %call274 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([7 x i8]* @.str20, i64 0, i64 0), i32 %j.2542) #8
+  br i1 %or.cond537, label %if.end289, label %if.then280
+
+if.then280:                                       ; preds = %if.then273
+  %call282 = tail call %struct.basic_block_def* @df_regno_bb(%struct.df* %df, i32 %j.2542) #6
+  %tobool283 = icmp eq %struct.basic_block_def* %call282, null
+  br i1 %tobool283, label %if.else, label %if.then284
+
+if.then284:                                       ; preds = %if.then280
+  %index285 = getelementptr inbounds %struct.basic_block_def* %call282, i64 0, i32 11
+  %100 = load i32* %index285, align 4, !tbaa !4
+  %call286 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([7 x i8]* @.str21, i64 0, i64 0), i32 %100) #8
+  br label %if.end289
+
+if.else:                                          ; preds = %if.then280
+  %101 = tail call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str22, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %file)
+  br label %if.end289
+
+if.end289:                                        ; preds = %if.then273, %if.then284, %if.else
+  br i1 %tobool247, label %if.then292, label %lor.lhs.false299.critedge
+
+if.then292:                                       ; preds = %if.end289
+  %idxprom293 = zext i32 %j.2542 to i64
+  %lifetime = getelementptr inbounds %struct.reg_info* %90, i64 %idxprom293, i32 2
+  %102 = load i32* %lifetime, align 4, !tbaa !4
+  %call295 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([9 x i8]* @.str23, i64 0, i64 0), i32 %102) #8
+  br i1 %94, label %if.then325.thread, label %if.end311
+
+lor.lhs.false299.critedge:                        ; preds = %if.end289
+  br i1 %tobool276, label %if.end311.thread, label %if.end319
+
+if.end311.thread:                                 ; preds = %lor.lhs.false299.critedge
+  %103 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str24, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %file)
+  %idxprom315.pre = zext i32 %j.2542 to i64
+  br label %if.then314
+
+if.end311:                                        ; preds = %if.then292
+  %104 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str24, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %file)
+  %n_defs309 = getelementptr inbounds %struct.reg_info* %90, i64 %idxprom293, i32 3
+  %105 = load i32* %n_defs309, align 4, !tbaa !4
+  %call310 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str25, i64 0, i64 0), i32 %105) #8
+  br i1 %tobool276, label %if.then314, label %if.then325.thread
+
+if.then314:                                       ; preds = %if.end311.thread, %if.end311
+  %idxprom315.pre-phi = phi i64 [ %idxprom315.pre, %if.end311.thread ], [ %idxprom293, %if.end311 ]
+  %defs317 = getelementptr inbounds %struct.reg_info* %90, i64 %idxprom315.pre-phi, i32 0
+  %106 = load %struct.df_link** %defs317, align 8, !tbaa !3
+  tail call fastcc void @df_chain_dump(%struct.df_link* %106, %struct._IO_FILE* %file) #6
+  br label %if.end319
+
+if.end319:                                        ; preds = %if.then314, %lor.lhs.false299.critedge
+  br i1 %or.cond538, label %if.end342, label %if.then325
+
+if.then325.thread:                                ; preds = %if.then292, %if.end311
+  %107 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str26, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %file)
+  br label %if.then329
+
+if.then325:                                       ; preds = %if.end319
+  %108 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str26, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %file)
+  br i1 %tobool247, label %if.then325.if.then329_crit_edge, label %if.end334
+
+if.then325.if.then329_crit_edge:                  ; preds = %if.then325
+  %idxprom330.pre = zext i32 %j.2542 to i64
+  br label %if.then329
+
+if.then329:                                       ; preds = %if.then325.if.then329_crit_edge, %if.then325.thread
+  %idxprom330.pre-phi = phi i64 [ %idxprom330.pre, %if.then325.if.then329_crit_edge ], [ %idxprom293, %if.then325.thread ]
+  %n_uses332 = getelementptr inbounds %struct.reg_info* %90, i64 %idxprom330.pre-phi, i32 4
+  %109 = load i32* %n_uses332, align 4, !tbaa !4
+  %call333 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str25, i64 0, i64 0), i32 %109) #8
+  br label %if.end334
+
+if.end334:                                        ; preds = %if.then329, %if.then325
+  br i1 %tobool267, label %if.end342, label %if.then337
+
+if.then337:                                       ; preds = %if.end334
+  %idxprom338 = zext i32 %j.2542 to i64
+  %uses340 = getelementptr inbounds %struct.reg_info* %90, i64 %idxprom338, i32 1
+  %110 = load %struct.df_link** %uses340, align 8, !tbaa !3
+  tail call fastcc void @df_chain_dump(%struct.df_link* %110, %struct._IO_FILE* %file) #6
+  br label %if.end342
+
+if.end342:                                        ; preds = %if.end319, %if.end334, %if.then337
+  %fputc530 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #5
+  %.pre = load i32* %n_regs, align 4, !tbaa !4
+  br label %for.inc345
+
+for.inc345:                                       ; preds = %land.lhs.true268, %lor.lhs.false265, %if.end342
+  %111 = phi i32 [ %95, %land.lhs.true268 ], [ %95, %lor.lhs.false265 ], [ %.pre, %if.end342 ]
+  %inc346 = add i32 %j.2542, 1
+  %cmp244 = icmp ult i32 %inc346, %111
+  br i1 %cmp244, label %for.body245, label %if.end348
+
+if.end348:                                        ; preds = %if.then240, %for.inc345, %if.end237
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #5
+  br label %return
+
+return:                                           ; preds = %entry, %if.end348
+  ret void
+}

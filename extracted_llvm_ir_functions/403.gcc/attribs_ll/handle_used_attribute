@@ -1,0 +1,47 @@
+define internal noalias %union.tree_node* @handle_used_attribute(%union.tree_node** nocapture %node, %union.tree_node* nocapture %name, %union.tree_node* nocapture %args, i32 %flags, i8* nocapture %no_add_attrs) #0 {
+entry:
+  %0 = load %union.tree_node** %node, align 8, !tbaa !0
+  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 30
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %bf.set = or i32 %bf.load, 65536
+  store i32 %bf.set, i32* %1, align 8
+  %2 = load %union.tree_node** %node, align 8, !tbaa !0
+  %assembler_name = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 14
+  %3 = load %union.tree_node** %assembler_name, align 8, !tbaa !0
+  %cmp4 = icmp eq %union.tree_node* %3, null
+  br i1 %cmp4, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %if.then
+  %4 = load void (%union.tree_node*)** @lang_set_decl_assembler_name, align 8, !tbaa !0
+  tail call void %4(%union.tree_node* %2) #4
+  %.pre = load %union.tree_node** %node, align 8, !tbaa !0
+  %assembler_name6.phi.trans.insert = getelementptr inbounds %union.tree_node* %.pre, i64 0, i32 0, i32 14
+  %.pre15 = load %union.tree_node** %assembler_name6.phi.trans.insert, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then, %cond.false
+  %5 = phi %union.tree_node* [ %3, %if.then ], [ %.pre15, %cond.false ]
+  %static_flag = getelementptr inbounds %union.tree_node* %5, i64 0, i32 0, i32 0, i32 2
+  %6 = bitcast [4 x i8]* %static_flag to i32*
+  %bf.load8 = load i32* %6, align 8
+  %bf.set10 = or i32 %bf.load8, 262144
+  store i32 %bf.set10, i32* %6, align 8
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %id = getelementptr inbounds %union.tree_node* %name, i64 0, i32 0, i32 1
+  %7 = getelementptr inbounds i8** %id, i64 1
+  %8 = load i8** %7, align 8, !tbaa !0
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([23 x i8]* @.str4, i64 0, i64 0), i8* %8) #4
+  store i8 1, i8* %no_add_attrs, align 1, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %cond.end
+  ret %union.tree_node* null
+}

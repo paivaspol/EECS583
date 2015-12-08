@@ -1,0 +1,58 @@
+define void @put_atoms_in_compact_unitcell([3 x float]* %box, i32 %natoms, [3 x float]* nocapture %x) #1 {
+entry:
+  %box_center = alloca [3 x float], align 4
+  %dx = alloca [3 x float], align 4
+  call void @init_pbc([3 x float]* %box) #6
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.body.i, %entry
+  %indvars.iv.i = phi i64 [ 0, %entry ], [ %indvars.iv.next.i, %for.body.i ]
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv.i, i64 %indvars.iv.i
+  %0 = load float* %arrayidx2.i, align 4, !tbaa !0
+  %conv3.i = fmul float %0, 5.000000e-01
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 %indvars.iv.i
+  store float %conv3.i, float* %arrayidx5.i, align 4, !tbaa !0
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv18 = trunc i64 %indvars.iv.next.i to i32
+  %exitcond19 = icmp eq i32 %lftr.wideiv18, 3
+  br i1 %exitcond19, label %for.cond.preheader, label %for.body.i
+
+for.cond.preheader:                               ; preds = %for.body.i
+  %arraydecay = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 0
+  %cmp16 = icmp sgt i32 %natoms, 0
+  br i1 %cmp16, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %arraydecay3 = getelementptr inbounds [3 x float]* %dx, i64 0, i64 0
+  %arrayidx2.i14 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 1
+  %arrayidx3.i = getelementptr inbounds [3 x float]* %dx, i64 0, i64 1
+  %arrayidx5.i15 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 2
+  %arrayidx6.i = getelementptr inbounds [3 x float]* %dx, i64 0, i64 2
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %arraydecay1 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 0
+  call void @pbc_dx(float* %arraydecay1, float* %arraydecay, float* %arraydecay3) #6
+  %1 = load float* %arraydecay, align 4, !tbaa !0
+  %2 = load float* %arraydecay3, align 4, !tbaa !0
+  %add.i = fadd float %1, %2
+  %3 = load float* %arrayidx2.i14, align 4, !tbaa !0
+  %4 = load float* %arrayidx3.i, align 4, !tbaa !0
+  %add4.i = fadd float %3, %4
+  %5 = load float* %arrayidx5.i15, align 4, !tbaa !0
+  %6 = load float* %arrayidx6.i, align 4, !tbaa !0
+  %add7.i = fadd float %5, %6
+  store float %add.i, float* %arraydecay1, align 4, !tbaa !0
+  %arrayidx9.i = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 1
+  store float %add4.i, float* %arrayidx9.i, align 4, !tbaa !0
+  %arrayidx10.i = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 2
+  store float %add7.i, float* %arrayidx10.i, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %natoms
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  ret void
+}

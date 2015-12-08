@@ -1,0 +1,52 @@
+define %struct.rtx_def* @get_first_block_beg() #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_last_parm_insn.i = getelementptr inbounds %struct.function* %0, i64 0, i32 36
+  %1 = load %struct.rtx_def** %x_last_parm_insn.i, align 8, !tbaa !0
+  %tobool.i = icmp eq %struct.rtx_def* %1, null
+  br i1 %tobool.i, label %if.end.i, label %if.then.i
+
+if.then.i:                                        ; preds = %entry
+  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 2
+  %rtx.i = bitcast %union.rtunion_def* %arrayidx.i to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx.i, align 8, !tbaa !0
+  br label %for.cond.preheader
+
+if.end.i:                                         ; preds = %entry
+  %call.i = tail call %struct.rtx_def* @get_insns() #10
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then.i, %if.end.i
+  %searcher.0.ph = phi %struct.rtx_def* [ %call.i, %if.end.i ], [ %2, %if.then.i ]
+  %tobool9 = icmp eq %struct.rtx_def* %searcher.0.ph, null
+  br i1 %tobool9, label %for.end, label %for.body
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %searcher.010 = phi %struct.rtx_def* [ %5, %for.inc ], [ %searcher.0.ph, %for.cond.preheader ]
+  %3 = bitcast %struct.rtx_def* %searcher.010 to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 37
+  br i1 %cmp, label %land.lhs.true, label %for.inc
+
+land.lhs.true:                                    ; preds = %for.body
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %searcher.010, i64 0, i32 1, i64 4
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %4 = load i32* %rtint, align 4, !tbaa !4
+  %cmp1 = icmp eq i32 %4, -98
+  br i1 %cmp1, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %land.lhs.true
+  ret %struct.rtx_def* %searcher.010
+
+for.inc:                                          ; preds = %for.body, %land.lhs.true
+  %arrayidx3 = getelementptr inbounds %struct.rtx_def* %searcher.010, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx3 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %5, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 4250, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.get_first_block_beg, i64 0, i64 0)) #8
+  unreachable
+}

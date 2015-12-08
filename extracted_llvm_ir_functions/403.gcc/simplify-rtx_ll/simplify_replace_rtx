@@ -1,0 +1,178 @@
+define %struct.rtx_def* @simplify_replace_rtx(%struct.rtx_def* %x, %struct.rtx_def* %old, %struct.rtx_def* %new) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear2 = and i32 %bf.lshr, 255
+  %cmp = icmp eq %struct.rtx_def* %x, %old
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %idxprom207 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom207
+  %1 = load i8* %arrayidx, align 1, !tbaa !0
+  %conv = sext i8 %1 to i32
+  switch i32 %conv, label %sw.default [
+    i32 49, label %sw.bb
+    i32 50, label %sw.bb16
+    i32 99, label %sw.bb16
+    i32 60, label %sw.bb26
+    i32 51, label %sw.bb82
+    i32 98, label %sw.bb82
+    i32 120, label %sw.bb113
+  ]
+
+sw.bb:                                            ; preds = %if.end
+  %arrayidx3 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx3 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load4 = load i32* %3, align 8
+  %bf.lshr5 = lshr i32 %bf.load4, 16
+  %bf.clear6 = and i32 %bf.lshr5, 255
+  %cmp10 = icmp eq %struct.rtx_def* %2, %old
+  br i1 %cmp10, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %sw.bb
+  %call = tail call %struct.rtx_def* @simplify_replace_rtx(%struct.rtx_def* %2, %struct.rtx_def* %old, %struct.rtx_def* %new) #5
+  br label %cond.end
+
+cond.end:                                         ; preds = %sw.bb, %cond.false
+  %cond = phi %struct.rtx_def* [ %call, %cond.false ], [ %new, %sw.bb ]
+  %call15 = tail call %struct.rtx_def* @simplify_gen_unary(i32 %bf.clear, i32 %bf.clear2, %struct.rtx_def* %cond, i32 %bf.clear6) #5
+  br label %return
+
+sw.bb16:                                          ; preds = %if.end, %if.end
+  %fld17 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1
+  %rtx19 = bitcast [1 x %union.rtunion_def]* %fld17 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx19, align 8, !tbaa !4
+  %call20 = tail call %struct.rtx_def* @simplify_replace_rtx(%struct.rtx_def* %4, %struct.rtx_def* %old, %struct.rtx_def* %new) #5
+  %arrayidx22 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
+  %rtx23 = bitcast %union.rtunion_def* %arrayidx22 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx23, align 8, !tbaa !4
+  %call24 = tail call %struct.rtx_def* @simplify_replace_rtx(%struct.rtx_def* %5, %struct.rtx_def* %old, %struct.rtx_def* %new) #5
+  %call25 = tail call %struct.rtx_def* @simplify_gen_binary(i32 %bf.clear, i32 %bf.clear2, %struct.rtx_def* %call20, %struct.rtx_def* %call24) #5
+  ret %struct.rtx_def* %call25
+
+sw.bb26:                                          ; preds = %if.end
+  %fld28 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1
+  %rtx30 = bitcast [1 x %union.rtunion_def]* %fld28 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx30, align 8, !tbaa !4
+  %7 = bitcast %struct.rtx_def* %6 to i32*
+  %bf.load31 = load i32* %7, align 8
+  %bf.clear33 = and i32 %bf.load31, 16711680
+  %cmp34 = icmp eq i32 %bf.clear33, 0
+  %arrayidx45 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
+  %rtx46 = bitcast %union.rtunion_def* %arrayidx45 to %struct.rtx_def**
+  br i1 %cmp34, label %cond.false43, label %cond.end50
+
+cond.false43:                                     ; preds = %sw.bb26
+  %8 = load %struct.rtx_def** %rtx46, align 8, !tbaa !4
+  %9 = bitcast %struct.rtx_def* %8 to i32*
+  %bf.load47 = load i32* %9, align 8
+  br label %cond.end50
+
+cond.end50:                                       ; preds = %sw.bb26, %cond.false43
+  %bf.load40.sink = phi i32 [ %bf.load47, %cond.false43 ], [ %bf.load31, %sw.bb26 ]
+  %bf.lshr41 = lshr i32 %bf.load40.sink, 16
+  %bf.clear42 = and i32 %bf.lshr41, 255
+  %call55 = tail call %struct.rtx_def* @simplify_replace_rtx(%struct.rtx_def* %6, %struct.rtx_def* %old, %struct.rtx_def* %new) #5
+  %10 = load %struct.rtx_def** %rtx46, align 8, !tbaa !4
+  %call59 = tail call %struct.rtx_def* @simplify_replace_rtx(%struct.rtx_def* %10, %struct.rtx_def* %old, %struct.rtx_def* %new) #5
+  %cmp60 = icmp eq i32 %bf.clear42, 0
+  br i1 %cmp60, label %cond.false63, label %cond.end79
+
+cond.false63:                                     ; preds = %cond.end50
+  %11 = bitcast %struct.rtx_def* %call55 to i32*
+  %bf.load64 = load i32* %11, align 8
+  %bf.clear66 = and i32 %bf.load64, 16711680
+  %cmp67 = icmp eq i32 %bf.clear66, 0
+  br i1 %cmp67, label %cond.false73, label %cond.end77
+
+cond.false73:                                     ; preds = %cond.false63
+  %12 = bitcast %struct.rtx_def* %call59 to i32*
+  %bf.load74 = load i32* %12, align 8
+  br label %cond.end77
+
+cond.end77:                                       ; preds = %cond.false63, %cond.false73
+  %bf.load70.sink = phi i32 [ %bf.load74, %cond.false73 ], [ %bf.load64, %cond.false63 ]
+  %bf.lshr71 = lshr i32 %bf.load70.sink, 16
+  %bf.clear72 = and i32 %bf.lshr71, 255
+  br label %cond.end79
+
+cond.end79:                                       ; preds = %cond.end50, %cond.end77
+  %cond80 = phi i32 [ %bf.clear72, %cond.end77 ], [ %bf.clear42, %cond.end50 ]
+  %call81 = tail call %struct.rtx_def* @simplify_gen_relational(i32 %bf.clear, i32 %bf.clear2, i32 %cond80, %struct.rtx_def* %call55, %struct.rtx_def* %call59) #5
+  br label %return
+
+sw.bb82:                                          ; preds = %if.end, %if.end
+  %fld84 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1
+  %rtx86 = bitcast [1 x %union.rtunion_def]* %fld84 to %struct.rtx_def**
+  %13 = load %struct.rtx_def** %rtx86, align 8, !tbaa !4
+  %14 = bitcast %struct.rtx_def* %13 to i32*
+  %bf.load87 = load i32* %14, align 8
+  %bf.lshr88 = lshr i32 %bf.load87, 16
+  %bf.clear89 = and i32 %bf.lshr88, 255
+  %call94 = tail call %struct.rtx_def* @simplify_replace_rtx(%struct.rtx_def* %13, %struct.rtx_def* %old, %struct.rtx_def* %new) #5
+  %cmp95 = icmp eq i32 %bf.clear89, 0
+  br i1 %cmp95, label %cond.false98, label %cond.end102
+
+cond.false98:                                     ; preds = %sw.bb82
+  %15 = bitcast %struct.rtx_def* %call94 to i32*
+  %bf.load99 = load i32* %15, align 8
+  %bf.lshr100 = lshr i32 %bf.load99, 16
+  %bf.clear101 = and i32 %bf.lshr100, 255
+  br label %cond.end102
+
+cond.end102:                                      ; preds = %sw.bb82, %cond.false98
+  %cond103 = phi i32 [ %bf.clear101, %cond.false98 ], [ %bf.clear89, %sw.bb82 ]
+  %arrayidx105 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
+  %rtx106 = bitcast %union.rtunion_def* %arrayidx105 to %struct.rtx_def**
+  %16 = load %struct.rtx_def** %rtx106, align 8, !tbaa !4
+  %call107 = tail call %struct.rtx_def* @simplify_replace_rtx(%struct.rtx_def* %16, %struct.rtx_def* %old, %struct.rtx_def* %new) #5
+  %arrayidx109 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 2
+  %rtx110 = bitcast %union.rtunion_def* %arrayidx109 to %struct.rtx_def**
+  %17 = load %struct.rtx_def** %rtx110, align 8, !tbaa !4
+  %call111 = tail call %struct.rtx_def* @simplify_replace_rtx(%struct.rtx_def* %17, %struct.rtx_def* %old, %struct.rtx_def* %new) #5
+  %call112 = tail call %struct.rtx_def* @simplify_gen_ternary(i32 %bf.clear, i32 %bf.clear2, i32 %cond103, %struct.rtx_def* %call94, %struct.rtx_def* %call107, %struct.rtx_def* %call111) #5
+  ret %struct.rtx_def* %call112
+
+sw.bb113:                                         ; preds = %if.end
+  %cmp114 = icmp eq i32 %bf.clear, 63
+  br i1 %cmp114, label %if.then116, label %return
+
+if.then116:                                       ; preds = %sw.bb113
+  %fld120 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1
+  %rtx122 = bitcast [1 x %union.rtunion_def]* %fld120 to %struct.rtx_def**
+  %18 = load %struct.rtx_def** %rtx122, align 8, !tbaa !4
+  %call123 = tail call %struct.rtx_def* @simplify_replace_rtx(%struct.rtx_def* %18, %struct.rtx_def* %old, %struct.rtx_def* %new) #5
+  %19 = load %struct.rtx_def** %rtx122, align 8, !tbaa !4
+  %20 = bitcast %struct.rtx_def* %19 to i32*
+  %bf.load127 = load i32* %20, align 8
+  %bf.lshr128 = lshr i32 %bf.load127, 16
+  %bf.clear129 = and i32 %bf.lshr128, 255
+  %arrayidx131 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
+  %rtuint = bitcast %union.rtunion_def* %arrayidx131 to i32*
+  %21 = load i32* %rtuint, align 4, !tbaa !8
+  %call132 = tail call %struct.rtx_def* @simplify_gen_subreg(i32 %bf.clear2, %struct.rtx_def* %call123, i32 %bf.clear129, i32 %21) #5
+  %tobool = icmp eq %struct.rtx_def* %call132, null
+  %x.call132 = select i1 %tobool, %struct.rtx_def* %x, %struct.rtx_def* %call132
+  ret %struct.rtx_def* %x.call132
+
+sw.default:                                       ; preds = %if.end
+  %cmp138 = icmp eq i32 %bf.clear, 66
+  br i1 %cmp138, label %if.then140, label %return
+
+if.then140:                                       ; preds = %sw.default
+  %arrayidx142 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx143 = bitcast %union.rtunion_def* %arrayidx142 to %struct.rtx_def**
+  %22 = load %struct.rtx_def** %rtx143, align 8, !tbaa !4
+  %call144 = tail call %struct.rtx_def* @simplify_replace_rtx(%struct.rtx_def* %22, %struct.rtx_def* %old, %struct.rtx_def* %new) #5
+  %call145 = tail call %struct.rtx_def* @replace_equiv_address_nv(%struct.rtx_def* %x, %struct.rtx_def* %call144) #4
+  ret %struct.rtx_def* %call145
+
+return:                                           ; preds = %sw.default, %sw.bb113, %entry, %cond.end79, %cond.end
+  %retval.0 = phi %struct.rtx_def* [ %call81, %cond.end79 ], [ %call15, %cond.end ], [ %new, %entry ], [ %x, %sw.bb113 ], [ %x, %sw.default ]
+  ret %struct.rtx_def* %retval.0
+}

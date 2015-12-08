@@ -1,0 +1,28 @@
+define void @emit_indirect_jump(%struct.rtx_def* %loc) #0 {
+entry:
+  %0 = load %struct.insn_operand_data** getelementptr inbounds ([0 x %struct.insn_data]* @insn_data, i64 0, i64 1159, i32 3), align 8, !tbaa !0
+  %predicate = getelementptr inbounds %struct.insn_operand_data* %0, i64 0, i32 0
+  %1 = load i32 (%struct.rtx_def*, i32)** %predicate, align 8, !tbaa !0
+  %2 = load i32* @target_flags, align 4, !tbaa !5
+  %and = lshr i32 %2, 25
+  %3 = and i32 %and, 1
+  %4 = or i32 %3, 4
+  %call = tail call i32 %1(%struct.rtx_def* %loc, i32 %4) #8
+  %tobool1 = icmp eq i32 %call, 0
+  br i1 %tobool1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %5 = load i32* @target_flags, align 4, !tbaa !5
+  %and2 = lshr i32 %5, 25
+  %6 = and i32 %and2, 1
+  %7 = or i32 %6, 4
+  %call5 = tail call %struct.rtx_def* @copy_to_mode_reg(i32 %7, %struct.rtx_def* %loc) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %loc.addr.0 = phi %struct.rtx_def* [ %loc, %entry ], [ %call5, %if.then ]
+  %call6 = tail call %struct.rtx_def* @gen_indirect_jump(%struct.rtx_def* %loc.addr.0) #8
+  %call7 = tail call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call6) #8
+  %call8 = tail call %struct.rtx_def* @emit_barrier() #8
+  ret void
+}

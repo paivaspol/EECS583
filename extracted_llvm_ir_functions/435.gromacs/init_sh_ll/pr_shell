@@ -1,0 +1,56 @@
+define internal fastcc void @pr_shell(%struct._IO_FILE* %log, i32 %ns, %struct.t_shell* nocapture %s) #0 {
+entry:
+  %tobool = icmp eq %struct._IO_FILE* %log, null
+  br i1 %tobool, label %if.end30, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str10, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %log)
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([25 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str16, i64 0, i64 0)) #4
+  %cmp52 = icmp sgt i32 %ns, 0
+  br i1 %cmp52, label %for.body, label %if.end30
+
+for.body:                                         ; preds = %if.then, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %if.then ]
+  %shell = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 1
+  %1 = load i32* %shell, align 4, !tbaa !4
+  %k_1 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 6
+  %2 = load float* %k_1, align 4, !tbaa !5
+  %conv = fpext float %2 to double
+  %div = fdiv double 1.000000e+00, %conv
+  %nucl1 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 2
+  %3 = load i32* %nucl1, align 4, !tbaa !4
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([16 x i8]* @.str17, i64 0, i64 0), i32 %1, double %div, i32 %3) #4
+  %nnucl = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 0
+  %4 = load i32* %nnucl, align 4, !tbaa !4
+  switch i32 %4, label %if.else27 [
+    i32 2, label %if.then11
+    i32 3, label %if.then20
+  ]
+
+if.then11:                                        ; preds = %for.body
+  %nucl2 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 3
+  %5 = load i32* %nucl2, align 4, !tbaa !4
+  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([7 x i8]* @.str18, i64 0, i64 0), i32 %5) #4
+  br label %for.inc
+
+if.then20:                                        ; preds = %for.body
+  %nucl223 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 3
+  %6 = load i32* %nucl223, align 4, !tbaa !4
+  %nucl3 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 4
+  %7 = load i32* %nucl3, align 4, !tbaa !4
+  %call26 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([12 x i8]* @.str19, i64 0, i64 0), i32 %6, i32 %7) #4
+  br label %for.inc
+
+if.else27:                                        ; preds = %for.body
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %log)
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then11, %if.else27, %if.then20
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %ns
+  br i1 %exitcond, label %if.end30, label %for.body
+
+if.end30:                                         ; preds = %if.then, %for.inc, %entry
+  ret void
+}

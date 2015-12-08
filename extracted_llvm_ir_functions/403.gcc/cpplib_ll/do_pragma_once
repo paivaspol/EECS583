@@ -1,0 +1,24 @@
+define internal void @do_pragma_once(%struct.cpp_reader* %pfile) #0 {
+entry:
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([25 x i8]* @.str28, i64 0, i64 0)) #8
+  %buffer = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
+  %0 = load %struct.cpp_buffer** %buffer, align 8, !tbaa !3
+  %prev = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 4
+  %1 = load %struct.cpp_buffer** %prev, align 8, !tbaa !3
+  %cmp = icmp eq %struct.cpp_buffer* %1, null
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([26 x i8]* @.str29, i64 0, i64 0)) #8
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %inc = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 6
+  %2 = load %struct.include_file** %inc, align 8, !tbaa !3
+  tail call void @_cpp_never_reread(%struct.include_file* %2) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  tail call fastcc void @check_eol(%struct.cpp_reader* %pfile) #9
+  ret void
+}

@@ -1,0 +1,288 @@
+define internal fastcc void @fixup_gotos(%struct.nesting* %thisblock, %struct.rtx_def* %stack_level, %union.tree_node* %cleanup_list, %struct.rtx_def* nocapture %first_insn, i32 %dont_jump_in) #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %stmt = getelementptr inbounds %struct.function* %0, i64 0, i32 1
+  %1 = load %struct.stmt_status** %stmt, align 8, !tbaa !0
+  %x_goto_fixup_chain = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 13
+  %f.0205 = load %struct.goto_fixup** %x_goto_fixup_chain, align 8
+  %tobool206 = icmp eq %struct.goto_fixup* %f.0205, null
+  br i1 %tobool206, label %for.end146, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %tobool7 = icmp eq i32 %dont_jump_in, 0
+  %tobool8 = icmp eq %struct.rtx_def* %stack_level, null
+  %or.cond = and i1 %tobool7, %tobool8
+  %tobool10 = icmp eq %union.tree_node* %cleanup_list, null
+  %or.cond194 = and i1 %or.cond, %tobool10
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %first_insn, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx13 to i32*
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc86
+  %f.0208 = phi %struct.goto_fixup* [ %f.0205, %for.body.lr.ph ], [ %f.0, %for.inc86 ]
+  %prev.0207 = phi %struct.goto_fixup* [ null, %for.body.lr.ph ], [ %f.0208, %for.inc86 ]
+  %before_jump = getelementptr inbounds %struct.goto_fixup* %f.0208, i64 0, i32 1
+  %2 = load %struct.rtx_def** %before_jump, align 8, !tbaa !0
+  %cmp = icmp eq %struct.rtx_def* %2, null
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.body
+  %cmp1 = icmp eq %struct.goto_fixup* %prev.0207, null
+  br i1 %cmp1, label %for.inc86, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %next = getelementptr inbounds %struct.goto_fixup* %f.0208, i64 0, i32 0
+  %3 = load %struct.goto_fixup** %next, align 8, !tbaa !0
+  %next3 = getelementptr inbounds %struct.goto_fixup* %prev.0207, i64 0, i32 0
+  store %struct.goto_fixup* %3, %struct.goto_fixup** %next3, align 8, !tbaa !0
+  br label %for.inc86
+
+if.else:                                          ; preds = %for.body
+  %target_rtl = getelementptr inbounds %struct.goto_fixup* %f.0208, i64 0, i32 4
+  %4 = load %struct.rtx_def** %target_rtl, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 1
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %cmp4 = icmp eq %struct.rtx_def* %5, null
+  br i1 %cmp4, label %for.inc86, label %if.then5
+
+if.then5:                                         ; preds = %if.else
+  %target = getelementptr inbounds %struct.goto_fixup* %f.0208, i64 0, i32 2
+  %6 = load %union.tree_node** %target, align 8, !tbaa !0
+  %cmp6 = icmp eq %union.tree_node* %6, null
+  %brmerge = or i1 %cmp6, %or.cond194
+  br i1 %brmerge, label %if.end38, label %land.lhs.true11
+
+land.lhs.true11:                                  ; preds = %if.then5
+  %7 = load i32* %rtint, align 4, !tbaa !4
+  %arrayidx16 = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 0
+  %rtint17 = bitcast %union.rtunion_def* %arrayidx16 to i32*
+  %8 = load i32* %rtint17, align 4, !tbaa !4
+  %cmp18 = icmp slt i32 %7, %8
+  br i1 %cmp18, label %land.lhs.true19, label %if.end38
+
+land.lhs.true19:                                  ; preds = %land.lhs.true11
+  %arrayidx25 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtint26 = bitcast %union.rtunion_def* %arrayidx25 to i32*
+  %9 = load i32* %rtint26, align 4, !tbaa !4
+  %cmp27 = icmp sgt i32 %7, %9
+  br i1 %cmp27, label %land.lhs.true28, label %if.end38
+
+land.lhs.true28:                                  ; preds = %land.lhs.true19
+  %regdecl_flag = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 5
+  %10 = bitcast [8 x i8]* %regdecl_flag to i64*
+  %bf.load = load i64* %10, align 8
+  %bf.cast = and i64 %bf.load, 1024
+  %tobool30 = icmp eq i64 %bf.cast, 0
+  br i1 %tobool30, label %if.then31, label %if.end38
+
+if.then31:                                        ; preds = %land.lhs.true28
+  tail call void (%union.tree_node*, i8*, ...)* @error_with_decl(%union.tree_node* %6, i8* getelementptr inbounds ([50 x i8]* @.str17, i64 0, i64 0)) #7
+  %11 = load %union.tree_node** %target, align 8, !tbaa !0
+  %regdecl_flag35 = getelementptr inbounds %union.tree_node* %11, i64 0, i32 0, i32 5
+  %12 = bitcast [8 x i8]* %regdecl_flag35 to i64*
+  %bf.load36 = load i64* %12, align 8
+  %bf.set = or i64 %bf.load36, 1024
+  store i64 %bf.set, i64* %12, align 8
+  br label %if.end38
+
+if.end38:                                         ; preds = %if.then5, %land.lhs.true28, %if.then31, %land.lhs.true19, %land.lhs.true11
+  tail call void @start_sequence() #7
+  tail call void @pushlevel(i32 0) #7
+  %context = getelementptr inbounds %struct.goto_fixup* %f.0208, i64 0, i32 3
+  %13 = load %union.tree_node** %context, align 8, !tbaa !0
+  tail call void @set_block(%union.tree_node* %13) #7
+  %cleanup_list_list = getelementptr inbounds %struct.goto_fixup* %f.0208, i64 0, i32 7
+  %14 = load %union.tree_node** %cleanup_list_list, align 8, !tbaa !0
+  %tobool39 = icmp eq %union.tree_node* %14, null
+  br i1 %tobool39, label %if.end56, label %for.body44
+
+for.body44:                                       ; preds = %if.end38, %for.inc
+  %lists.0204 = phi %union.tree_node* [ %18, %for.inc ], [ %14, %if.end38 ]
+  %addressable_flag = getelementptr inbounds %union.tree_node* %lists.0204, i64 0, i32 0, i32 0, i32 2
+  %15 = bitcast [4 x i8]* %addressable_flag to i32*
+  %bf.load45 = load i32* %15, align 8
+  %bf.clear47 = and i32 %bf.load45, 1024
+  %tobool48 = icmp eq i32 %bf.clear47, 0
+  br i1 %tobool48, label %for.inc, label %land.lhs.true49
+
+land.lhs.true49:                                  ; preds = %for.body44
+  %value = getelementptr inbounds %union.tree_node* %lists.0204, i64 0, i32 0, i32 2
+  %16 = bitcast i32* %value to %union.tree_node**
+  %17 = load %union.tree_node** %16, align 8, !tbaa !0
+  %cmp50 = icmp eq %union.tree_node* %17, null
+  br i1 %cmp50, label %for.inc, label %if.then51
+
+if.then51:                                        ; preds = %land.lhs.true49
+  tail call fastcc void @expand_cleanups(%union.tree_node* %17, i32 1, i32 1) #9
+  tail call void @do_pending_stack_adjust() #7
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true49, %for.body44, %if.then51
+  %chain = getelementptr inbounds %union.tree_node* %lists.0204, i64 0, i32 0, i32 0, i32 0
+  %18 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %tobool43 = icmp eq %union.tree_node* %18, null
+  br i1 %tobool43, label %if.end56, label %for.body44
+
+if.end56:                                         ; preds = %for.inc, %if.end38
+  %stack_level57 = getelementptr inbounds %struct.goto_fixup* %f.0208, i64 0, i32 6
+  %19 = load %struct.rtx_def** %stack_level57, align 8, !tbaa !0
+  %tobool58 = icmp eq %struct.rtx_def* %19, null
+  br i1 %tobool58, label %if.end79, label %land.lhs.true59
+
+land.lhs.true59:                                  ; preds = %if.end56
+  %20 = load %struct.rtx_def** %target_rtl, align 8, !tbaa !0
+  %21 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_return_label = getelementptr inbounds %struct.function* %21, i64 0, i32 24
+  %22 = load %struct.rtx_def** %x_return_label, align 8, !tbaa !0
+  %cmp61 = icmp eq %struct.rtx_def* %20, %22
+  br i1 %cmp61, label %land.lhs.true62, label %if.then76
+
+land.lhs.true62:                                  ; preds = %land.lhs.true59
+  %23 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %type = getelementptr inbounds %union.tree_node* %23, i64 0, i32 0, i32 0, i32 1
+  %24 = load %union.tree_node** %type, align 8, !tbaa !0
+  %code = getelementptr inbounds %union.tree_node* %24, i64 0, i32 0, i32 0, i32 2
+  %25 = bitcast [4 x i8]* %code to i32*
+  %bf.load65 = load i32* %25, align 8
+  %bf.clear66 = and i32 %bf.load65, 255
+  %cmp67 = icmp eq i32 %bf.clear66, 23
+  br i1 %cmp67, label %land.lhs.true68, label %if.then76
+
+land.lhs.true68:                                  ; preds = %land.lhs.true62
+  %type71 = bitcast %union.tree_node* %24 to %struct.tree_type*
+  %no_force_blk_flag = getelementptr inbounds %struct.tree_type* %type71, i64 0, i32 6
+  %26 = bitcast [4 x i8]* %no_force_blk_flag to i32*
+  %bf.load72 = load i32* %26, align 4
+  %bf.clear74 = and i32 %bf.load72, 131072
+  %tobool75 = icmp eq i32 %bf.clear74, 0
+  br i1 %tobool75, label %if.then76, label %if.end79
+
+if.then76:                                        ; preds = %land.lhs.true68, %land.lhs.true62, %land.lhs.true59
+  %27 = load %struct.rtx_def** %before_jump, align 8, !tbaa !0
+  tail call void @emit_stack_restore(i32 0, %struct.rtx_def* %19, %struct.rtx_def* %27) #7
+  br label %if.end79
+
+if.end79:                                         ; preds = %land.lhs.true68, %if.end56, %if.then76
+  %call = tail call %struct.rtx_def* @get_insns() #7
+  %call80 = tail call %union.tree_node* @poplevel(i32 1, i32 0, i32 0) #7
+  tail call void @end_sequence() #7
+  %28 = load %struct.rtx_def** %before_jump, align 8, !tbaa !0
+  %call82 = tail call %struct.rtx_def* @emit_insns_after(%struct.rtx_def* %call, %struct.rtx_def* %28) #7
+  store %struct.rtx_def* null, %struct.rtx_def** %before_jump, align 8, !tbaa !0
+  br label %for.inc86
+
+for.inc86:                                        ; preds = %if.then, %if.else, %if.then2, %if.end79
+  %next87 = getelementptr inbounds %struct.goto_fixup* %f.0208, i64 0, i32 0
+  %f.0 = load %struct.goto_fixup** %next87, align 8
+  %tobool = icmp eq %struct.goto_fixup* %f.0, null
+  br i1 %tobool, label %for.end88, label %for.body
+
+for.end88:                                        ; preds = %for.inc86
+  %.pre = load %struct.function** @cfun, align 8, !tbaa !0
+  %stmt89.phi.trans.insert = getelementptr inbounds %struct.function* %.pre, i64 0, i32 1
+  %.pre209 = load %struct.stmt_status** %stmt89.phi.trans.insert, align 8, !tbaa !0
+  %x_goto_fixup_chain90.phi.trans.insert = getelementptr inbounds %struct.stmt_status* %.pre209, i64 0, i32 13
+  %f.1199.pre = load %struct.goto_fixup** %x_goto_fixup_chain90.phi.trans.insert, align 8
+  %tobool92200 = icmp eq %struct.goto_fixup* %f.1199.pre, null
+  br i1 %tobool92200, label %for.end146, label %for.body93.lr.ph
+
+for.body93.lr.ph:                                 ; preds = %for.end88
+  %cmp103 = icmp eq %struct.nesting* %thisblock, null
+  %block_start_count = getelementptr inbounds %struct.nesting* %thisblock, i64 0, i32 4, i32 0, i32 0
+  %tobool139 = icmp eq %struct.rtx_def* %stack_level, null
+  %outer_cleanups = getelementptr inbounds %struct.nesting* %thisblock, i64 0, i32 4, i32 0, i32 5
+  br label %for.body93
+
+for.body93:                                       ; preds = %for.body93.lr.ph, %for.inc144
+  %f.1201 = phi %struct.goto_fixup* [ %f.1199.pre, %for.body93.lr.ph ], [ %f.1, %for.inc144 ]
+  %before_jump94 = getelementptr inbounds %struct.goto_fixup* %f.1201, i64 0, i32 1
+  %29 = load %struct.rtx_def** %before_jump94, align 8, !tbaa !0
+  %cmp95 = icmp eq %struct.rtx_def* %29, null
+  br i1 %cmp95, label %for.inc144, label %land.lhs.true96
+
+land.lhs.true96:                                  ; preds = %for.body93
+  %target_rtl97 = getelementptr inbounds %struct.goto_fixup* %f.1201, i64 0, i32 4
+  %30 = load %struct.rtx_def** %target_rtl97, align 8, !tbaa !0
+  %arrayidx99 = getelementptr inbounds %struct.rtx_def* %30, i64 0, i32 1, i64 1
+  %rtx100 = bitcast %union.rtunion_def* %arrayidx99 to %struct.rtx_def**
+  %31 = load %struct.rtx_def** %rtx100, align 8, !tbaa !0
+  %cmp101 = icmp ne %struct.rtx_def* %31, null
+  %or.cond195 = or i1 %cmp101, %cmp103
+  br i1 %or.cond195, label %for.inc144, label %land.lhs.true104
+
+land.lhs.true104:                                 ; preds = %land.lhs.true96
+  %32 = load i32* %block_start_count, align 4, !tbaa !4
+  %block_start_count105 = getelementptr inbounds %struct.goto_fixup* %f.1201, i64 0, i32 5
+  %33 = load i32* %block_start_count105, align 4, !tbaa !4
+  %cmp106 = icmp sgt i32 %32, %33
+  br i1 %cmp106, label %for.inc144, label %if.then107
+
+if.then107:                                       ; preds = %land.lhs.true104
+  %cleanup_list_list109 = getelementptr inbounds %struct.goto_fixup* %f.1201, i64 0, i32 7
+  %lists108.0196 = load %union.tree_node** %cleanup_list_list109, align 8
+  %tobool112197 = icmp eq %union.tree_node* %lists108.0196, null
+  br i1 %tobool112197, label %for.end138, label %for.body113.lr.ph
+
+for.body113.lr.ph:                                ; preds = %if.then107
+  %context120 = getelementptr inbounds %struct.goto_fixup* %f.1201, i64 0, i32 3
+  br label %for.body113
+
+for.body113:                                      ; preds = %for.cond111.backedge, %for.body113.lr.ph
+  %lists108.0198 = phi %union.tree_node* [ %lists108.0196, %for.body113.lr.ph ], [ %lists108.0, %for.cond111.backedge ]
+  %chain115 = getelementptr inbounds %union.tree_node* %lists108.0198, i64 0, i32 0, i32 0, i32 0
+  %34 = load %union.tree_node** %chain115, align 8, !tbaa !0
+  %35 = load %union.tree_node** %outer_cleanups, align 8, !tbaa !0
+  %cmp118 = icmp eq %union.tree_node* %34, %35
+  br i1 %cmp118, label %if.then119, label %for.cond111.backedge
+
+for.cond111.backedge:                             ; preds = %for.body113, %if.end130
+  %lists108.0 = phi %union.tree_node* [ %34, %for.body113 ], [ %lists108.0.pre, %if.end130 ]
+  %tobool112 = icmp eq %union.tree_node* %lists108.0, null
+  br i1 %tobool112, label %for.end138, label %for.body113
+
+if.then119:                                       ; preds = %for.body113
+  tail call void @start_sequence() #7
+  tail call void @pushlevel(i32 0) #7
+  %36 = load %union.tree_node** %context120, align 8, !tbaa !0
+  tail call void @set_block(%union.tree_node* %36) #7
+  %value122 = getelementptr inbounds %union.tree_node* %lists108.0198, i64 0, i32 0, i32 2
+  %37 = bitcast i32* %value122 to %union.tree_node**
+  %38 = load %union.tree_node** %37, align 8, !tbaa !0
+  tail call fastcc void @expand_cleanups(%union.tree_node* %38, i32 1, i32 1) #9
+  tail call void @do_pending_stack_adjust() #7
+  %call123 = tail call %struct.rtx_def* @get_insns() #7
+  %call124 = tail call %union.tree_node* @poplevel(i32 1, i32 0, i32 0) #7
+  tail call void @end_sequence() #7
+  %cmp125 = icmp eq %struct.rtx_def* %call123, null
+  br i1 %cmp125, label %if.end130, label %if.then126
+
+if.then126:                                       ; preds = %if.then119
+  %39 = load %struct.rtx_def** %before_jump94, align 8, !tbaa !0
+  %call128 = tail call %struct.rtx_def* @emit_insns_after(%struct.rtx_def* %call123, %struct.rtx_def* %39) #7
+  store %struct.rtx_def* %call128, %struct.rtx_def** %before_jump94, align 8, !tbaa !0
+  br label %if.end130
+
+if.end130:                                        ; preds = %if.then119, %if.then126
+  %40 = load %union.tree_node** %chain115, align 8, !tbaa !0
+  store %union.tree_node* %40, %union.tree_node** %cleanup_list_list109, align 8, !tbaa !0
+  %lists108.0.pre = load %union.tree_node** %chain115, align 8
+  br label %for.cond111.backedge
+
+for.end138:                                       ; preds = %for.cond111.backedge, %if.then107
+  br i1 %tobool139, label %for.inc144, label %if.then140
+
+if.then140:                                       ; preds = %for.end138
+  %stack_level141 = getelementptr inbounds %struct.goto_fixup* %f.1201, i64 0, i32 6
+  store %struct.rtx_def* %stack_level, %struct.rtx_def** %stack_level141, align 8, !tbaa !0
+  br label %for.inc144
+
+for.inc144:                                       ; preds = %land.lhs.true96, %for.end138, %land.lhs.true104, %for.body93, %if.then140
+  %next145 = getelementptr inbounds %struct.goto_fixup* %f.1201, i64 0, i32 0
+  %f.1 = load %struct.goto_fixup** %next145, align 8
+  %tobool92 = icmp eq %struct.goto_fixup* %f.1, null
+  br i1 %tobool92, label %for.end146, label %for.body93
+
+for.end146:                                       ; preds = %entry, %for.inc144, %for.end88
+  ret void
+}

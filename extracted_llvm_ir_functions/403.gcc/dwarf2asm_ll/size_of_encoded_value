@@ -1,0 +1,36 @@
+define i32 @size_of_encoded_value(i32 %encoding) #0 {
+entry:
+  %cmp = icmp eq i32 %encoding, 255
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %and = and i32 %encoding, 7
+  switch i32 %and, label %sw.epilog [
+    i32 0, label %sw.bb
+    i32 2, label %return
+    i32 3, label %sw.bb3
+    i32 4, label %sw.bb4
+  ]
+
+sw.bb:                                            ; preds = %if.end
+  %0 = load i32* @target_flags, align 4, !tbaa !4
+  %and1 = lshr i32 %0, 20
+  %1 = and i32 %and1, 32
+  %2 = add i32 %1, 32
+  %div = sdiv i32 %2, 8
+  br label %return
+
+sw.bb3:                                           ; preds = %if.end
+  br label %return
+
+sw.bb4:                                           ; preds = %if.end
+  br label %return
+
+sw.epilog:                                        ; preds = %if.end
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 340, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.size_of_encoded_value, i64 0, i64 0)) #10
+  unreachable
+
+return:                                           ; preds = %if.end, %entry, %sw.bb4, %sw.bb3, %sw.bb
+  %retval.0 = phi i32 [ 8, %sw.bb4 ], [ 4, %sw.bb3 ], [ %div, %sw.bb ], [ 0, %entry ], [ 2, %if.end ]
+  ret i32 %retval.0
+}

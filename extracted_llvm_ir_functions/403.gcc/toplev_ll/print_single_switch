@@ -1,0 +1,32 @@
+define internal fastcc i32 @print_single_switch(%struct._IO_FILE* nocapture %file, i32 %pos, i8* nocapture %indent, i8* %sep, i8* %type, i8* %name) #0 {
+entry:
+  %call = tail call i64 @strlen(i8* %sep) #12
+  %call1 = tail call i64 @strlen(i8* %type) #12
+  %add = add i64 %call1, %call
+  %call2 = tail call i64 @strlen(i8* %name) #12
+  %add3 = add i64 %add, %call2
+  %conv = trunc i64 %add3 to i32
+  %cmp = icmp eq i32 %pos, 0
+  br i1 %cmp, label %if.then11, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %add5 = add nsw i32 %conv, %pos
+  %cmp6 = icmp sgt i32 %add5, 75
+  br i1 %cmp6, label %if.then, label %if.end15
+
+if.then:                                          ; preds = %land.lhs.true
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #6
+  br label %if.then11
+
+if.then11:                                        ; preds = %entry, %if.then
+  %fputs = tail call i32 @fputs(i8* %indent, %struct._IO_FILE* %file) #6
+  %call13 = tail call i64 @strlen(i8* %indent) #12
+  %conv14 = trunc i64 %call13 to i32
+  br label %if.end15
+
+if.end15:                                         ; preds = %land.lhs.true, %if.then11
+  %pos.addr.1 = phi i32 [ %conv14, %if.then11 ], [ %pos, %land.lhs.true ]
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([7 x i8]* @.str341, i64 0, i64 0), i8* %sep, i8* %type, i8* %name) #11
+  %add17 = add nsw i32 %pos.addr.1, %conv
+  ret i32 %add17
+}

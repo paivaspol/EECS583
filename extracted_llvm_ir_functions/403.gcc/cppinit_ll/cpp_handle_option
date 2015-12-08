@@ -1,0 +1,1145 @@
+define i32 @cpp_handle_option(%struct.cpp_reader* %pfile, i32 %argc, i8** nocapture %argv, i32 %ignore) #0 {
+entry:
+  %endptr = alloca i8*, align 8
+  %pending = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 3
+  %0 = load %struct.cpp_pending** %pending, align 8, !tbaa !3
+  %1 = load i8** %argv, align 8, !tbaa !3
+  %2 = load i8* %1, align 1, !tbaa !0
+  %cmp = icmp eq i8 %2, 45
+  br i1 %cmp, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %entry
+  %arrayidx5 = getelementptr inbounds i8* %1, i64 1
+  %3 = load i8* %arrayidx5, align 1, !tbaa !0
+  %cmp7 = icmp eq i8 %3, 0
+  br i1 %cmp7, label %if.then, label %while.cond.outer.i
+
+if.then:                                          ; preds = %entry, %lor.lhs.false
+  %in_fname = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 0
+  %4 = load i8** %in_fname, align 8, !tbaa !3
+  %cmp10 = icmp eq i8* %4, null
+  br i1 %cmp10, label %if.then12, label %if.else
+
+if.then12:                                        ; preds = %if.then
+  store i8* %1, i8** %in_fname, align 8, !tbaa !3
+  br label %if.end465
+
+if.else:                                          ; preds = %if.then
+  %out_fname = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 1
+  %5 = load i8** %out_fname, align 8, !tbaa !3
+  %cmp18 = icmp eq i8* %5, null
+  br i1 %cmp18, label %if.then20, label %if.else25
+
+if.then20:                                        ; preds = %if.else
+  store i8* %1, i8** %out_fname, align 8, !tbaa !3
+  br label %if.end465
+
+if.else25:                                        ; preds = %if.else
+  %6 = load i8** @progname, align 8, !tbaa !3
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_fatal(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([50 x i8]* @.str6, i64 0, i64 0), i8* %6) #6
+  br label %if.end465
+
+while.cond.outer.i:                               ; preds = %if.end.i, %if.then.i, %lor.lhs.false
+  %mn.0.ph.i = phi i32 [ 0, %lor.lhs.false ], [ %add5.i, %if.then.i ], [ %add13.i, %if.end.i ]
+  %mx.0.ph.i = phi i32 [ 68, %lor.lhs.false ], [ %mx.0.i, %if.then.i ], [ %mx.0.i, %if.end.i ]
+  br label %while.cond.i
+
+while.cond.i:                                     ; preds = %if.else.i, %while.cond.outer.i
+  %mx.0.i = phi i32 [ %div.i, %if.else.i ], [ %mx.0.ph.i, %while.cond.outer.i ]
+  %cmp.i = icmp ugt i32 %mx.0.i, %mn.0.ph.i
+  br i1 %cmp.i, label %while.body.i, label %return
+
+while.body.i:                                     ; preds = %while.cond.i
+  %add.i = add i32 %mx.0.i, %mn.0.ph.i
+  %div.i = lshr i32 %add.i, 1
+  %idxprom.i = zext i32 %div.i to i64
+  %opt_len1.i = getelementptr inbounds [68 x %struct.cl_option]* bitcast (<{ { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] } }>* @cl_options to [68 x %struct.cl_option]*), i64 0, i64 %idxprom.i, i32 2
+  %7 = load i64* %opt_len1.i, align 16, !tbaa !5
+  %opt_text.i = getelementptr inbounds [68 x %struct.cl_option]* bitcast (<{ { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] } }>* @cl_options to [68 x %struct.cl_option]*), i64 0, i64 %idxprom.i, i32 0
+  %8 = load i8** %opt_text.i, align 16, !tbaa !3
+  %call.i = call i32 @memcmp(i8* %arrayidx5, i8* %8, i64 %7) #8
+  %cmp4.i = icmp sgt i32 %call.i, 0
+  br i1 %cmp4.i, label %if.then.i, label %if.else.i
+
+if.then.i:                                        ; preds = %while.body.i
+  %add5.i = add i32 %div.i, 1
+  br label %while.cond.outer.i
+
+if.else.i:                                        ; preds = %while.body.i
+  %cmp6.i = icmp slt i32 %call.i, 0
+  br i1 %cmp6.i, label %while.cond.i, label %if.else8.i
+
+if.else8.i:                                       ; preds = %if.else.i
+  %arrayidx5.sum = add i64 %7, 1
+  %arrayidx9.i = getelementptr inbounds i8* %1, i64 %arrayidx5.sum
+  %9 = load i8* %arrayidx9.i, align 1, !tbaa !0
+  %cmp10.i = icmp eq i8 %9, 0
+  br i1 %cmp10.i, label %if.end34, label %if.end.i
+
+if.end.i:                                         ; preds = %if.else8.i
+  %add13.i = add i32 %div.i, 1
+  %msg.i = getelementptr inbounds [68 x %struct.cl_option]* bitcast (<{ { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] } }>* @cl_options to [68 x %struct.cl_option]*), i64 0, i64 %idxprom.i, i32 1
+  %10 = load i8** %msg.i, align 8, !tbaa !3
+  %tobool.i = icmp eq i8* %10, null
+  br i1 %tobool.i, label %while.cond.outer.i, label %for.cond.preheader.i
+
+for.cond.preheader.i:                             ; preds = %if.end.i
+  %cmp1766.i = icmp ult i32 %add13.i, 68
+  br i1 %cmp1766.i, label %for.body.i, label %if.end34
+
+for.body.i:                                       ; preds = %for.cond.preheader.i, %if.end34.i
+  %mx.168.i = phi i32 [ %mx.1.mn.1.i, %if.end34.i ], [ %div.i, %for.cond.preheader.i ]
+  %mn.167.i = phi i32 [ %inc.i, %if.end34.i ], [ %add13.i, %for.cond.preheader.i ]
+  %idxprom19.i = zext i32 %mn.167.i to i64
+  %opt_len21.i = getelementptr inbounds [68 x %struct.cl_option]* bitcast (<{ { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] } }>* @cl_options to [68 x %struct.cl_option]*), i64 0, i64 %idxprom19.i, i32 2
+  %11 = load i64* %opt_len21.i, align 16, !tbaa !5
+  %opt_text24.i = getelementptr inbounds [68 x %struct.cl_option]* bitcast (<{ { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] } }>* @cl_options to [68 x %struct.cl_option]*), i64 0, i64 %idxprom19.i, i32 0
+  %12 = load i8** %opt_text24.i, align 16, !tbaa !3
+  %call25.i = call i32 @memcmp(i8* %arrayidx5, i8* %12, i64 %11) #8
+  %tobool26.i = icmp eq i32 %call25.i, 0
+  br i1 %tobool26.i, label %if.end28.i, label %parse_option.exit
+
+if.end28.i:                                       ; preds = %for.body.i
+  %arrayidx5.sum781 = add i64 %11, 1
+  %arrayidx29.i = getelementptr inbounds i8* %1, i64 %arrayidx5.sum781
+  %13 = load i8* %arrayidx29.i, align 1, !tbaa !0
+  %cmp31.i = icmp eq i8 %13, 0
+  br i1 %cmp31.i, label %parse_option.exit, label %if.end34.i
+
+if.end34.i:                                       ; preds = %if.end28.i
+  %msg37.i = getelementptr inbounds [68 x %struct.cl_option]* bitcast (<{ { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] } }>* @cl_options to [68 x %struct.cl_option]*), i64 0, i64 %idxprom19.i, i32 1
+  %14 = load i8** %msg37.i, align 8, !tbaa !3
+  %tobool38.i = icmp eq i8* %14, null
+  %mx.1.mn.1.i = select i1 %tobool38.i, i32 %mx.168.i, i32 %mn.167.i
+  %inc.i = add i32 %mn.167.i, 1
+  %cmp17.i = icmp ult i32 %inc.i, 68
+  br i1 %cmp17.i, label %for.body.i, label %parse_option.exit
+
+parse_option.exit:                                ; preds = %for.body.i, %if.end28.i, %if.end34.i
+  %retval.0.i = phi i32 [ %mn.167.i, %if.end28.i ], [ %mx.168.i, %for.body.i ], [ %mx.1.mn.1.i, %if.end34.i ]
+  %cmp31 = icmp slt i32 %retval.0.i, 0
+  br i1 %cmp31, label %return, label %if.end34
+
+if.end34:                                         ; preds = %if.else8.i, %for.cond.preheader.i, %parse_option.exit
+  %retval.0.i778 = phi i32 [ %retval.0.i, %parse_option.exit ], [ %div.i, %for.cond.preheader.i ], [ %div.i, %if.else8.i ]
+  %idxprom35 = sext i32 %retval.0.i778 to i64
+  %opt_code37 = getelementptr inbounds [68 x %struct.cl_option]* bitcast (<{ { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] } }>* @cl_options to [68 x %struct.cl_option]*), i64 0, i64 %idxprom35, i32 3
+  %15 = load i32* %opt_code37, align 8, !tbaa !10
+  %msg = getelementptr inbounds [68 x %struct.cl_option]* bitcast (<{ { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] } }>* @cl_options to [68 x %struct.cl_option]*), i64 0, i64 %idxprom35, i32 1
+  %16 = load i8** %msg, align 8, !tbaa !3
+  %tobool = icmp eq i8* %16, null
+  br i1 %tobool, label %if.end64, label %if.then40
+
+if.then40:                                        ; preds = %if.end34
+  %opt_len = getelementptr inbounds [68 x %struct.cl_option]* bitcast (<{ { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] }, { i8*, i8*, i64, i32, [4 x i8] } }>* @cl_options to [68 x %struct.cl_option]*), i64 0, i64 %idxprom35, i32 2
+  %17 = load i64* %opt_len, align 16, !tbaa !5
+  %add = add i64 %17, 1
+  %arrayidx45 = getelementptr inbounds i8* %1, i64 %add
+  %18 = load i8* %arrayidx45, align 1, !tbaa !0
+  %cmp48 = icmp ne i8 %18, 0
+  %cmp50 = icmp eq i32 %15, 21
+  %or.cond = or i1 %cmp48, %cmp50
+  br i1 %or.cond, label %if.end64, label %if.then52
+
+if.then52:                                        ; preds = %if.then40
+  %arrayidx54 = getelementptr inbounds i8** %argv, i64 1
+  %19 = load i8** %arrayidx54, align 8, !tbaa !3
+  %tobool55 = icmp eq i8* %19, null
+  br i1 %tobool55, label %if.then56, label %if.end64
+
+if.then56:                                        ; preds = %if.then52
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_fatal(%struct.cpp_reader* %pfile, i8* %16, i8* %1) #6
+  br label %return
+
+if.end64:                                         ; preds = %if.then40, %if.then52, %if.end34
+  %20 = phi i8* [ %19, %if.then52 ], [ %1, %if.then40 ], [ %1, %if.end34 ]
+  %arg.0 = phi i8* [ %19, %if.then52 ], [ %arrayidx45, %if.then40 ], [ null, %if.end34 ]
+  %i.0 = phi i32 [ 1, %if.then52 ], [ 0, %if.then40 ], [ 0, %if.end34 ]
+  switch i32 %15, label %if.end465 [
+    i32 21, label %sw.bb312
+    i32 23, label %sw.bb
+    i32 24, label %sw.bb66
+    i32 25, label %sw.bb69
+    i32 28, label %sw.bb71
+    i32 26, label %sw.bb73
+    i32 29, label %sw.bb76
+    i32 27, label %sw.bb78
+    i32 30, label %sw.bb81
+    i32 32, label %sw.bb83
+    i32 31, label %sw.bb86
+    i32 67, label %sw.bb108
+    i32 33, label %sw.bb110
+    i32 2, label %sw.bb110
+    i32 3, label %sw.bb112
+    i32 4, label %sw.bb115
+    i32 65, label %sw.bb118
+    i32 66, label %sw.bb121
+    i32 6, label %sw.bb123
+    i32 19, label %sw.bb125
+    i32 0, label %sw.bb127
+    i32 8, label %sw.bb129
+    i32 7, label %sw.bb131
+    i32 51, label %sw.bb132
+    i32 50, label %sw.bb134
+    i32 64, label %sw.bb136
+    i32 1, label %sw.bb138
+    i32 52, label %sw.bb141
+    i32 37, label %sw.bb143
+    i32 42, label %sw.bb148
+    i32 43, label %sw.bb149
+    i32 45, label %sw.bb150
+    i32 46, label %sw.bb151
+    i32 41, label %sw.bb152
+    i32 53, label %sw.bb153
+    i32 57, label %sw.bb154
+    i32 59, label %sw.bb155
+    i32 58, label %sw.bb155
+    i32 61, label %sw.bb156
+    i32 60, label %sw.bb157
+    i32 54, label %sw.bb157
+    i32 44, label %sw.bb157
+    i32 63, label %sw.bb158
+    i32 62, label %sw.bb158
+    i32 56, label %sw.bb158
+    i32 55, label %sw.bb158
+    i32 47, label %sw.bb159
+    i32 48, label %sw.bb161
+    i32 49, label %sw.bb163
+    i32 22, label %while.cond.preheader
+    i32 13, label %sw.bb188
+    i32 10, label %sw.bb190
+    i32 14, label %sw.bb193
+    i32 12, label %sw.bb198
+    i32 16, label %sw.bb200
+    i32 17, label %sw.bb202
+    i32 18, label %sw.bb202
+    i32 11, label %sw.bb205
+    i32 15, label %sw.bb210
+    i32 5, label %sw.bb215
+    i32 20, label %sw.bb231
+    i32 9, label %sw.bb232
+    i32 38, label %sw.bb248
+    i32 36, label %sw.bb250
+    i32 35, label %sw.bb250
+    i32 39, label %sw.bb274
+    i32 40, label %sw.bb274
+    i32 34, label %sw.bb310
+  ]
+
+while.cond.preheader:                             ; preds = %if.end64
+  %21 = load i8* %arg.0, align 1, !tbaa !0
+  %cmp175783 = icmp eq i8 %21, 0
+  br i1 %cmp175783, label %if.end465, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %while.cond.preheader
+  %dump_macros = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 46
+  %dump_includes = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 47
+  br label %while.body
+
+sw.bb:                                            ; preds = %if.end64
+  %user_label_prefix = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 10
+  store i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i8** %user_label_prefix, align 8, !tbaa !3
+  br label %if.end465
+
+sw.bb66:                                          ; preds = %if.end64
+  %user_label_prefix68 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 10
+  store i8* getelementptr inbounds ([1 x i8]* @.str8, i64 0, i64 0), i8** %user_label_prefix68, align 8, !tbaa !3
+  br label %if.end465
+
+sw.bb69:                                          ; preds = %if.end64
+  %operator_names = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 49
+  store i8 0, i8* %operator_names, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb71:                                          ; preds = %if.end64
+  %preprocessed = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 43
+  store i8 1, i8* %preprocessed, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb73:                                          ; preds = %if.end64
+  %preprocessed75 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 43
+  store i8 0, i8* %preprocessed75, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb76:                                          ; preds = %if.end64
+  %show_column = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 48
+  store i8 1, i8* %show_column, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb78:                                          ; preds = %if.end64
+  %show_column80 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 48
+  store i8 0, i8* %show_column80, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb81:                                          ; preds = %if.end64
+  %signed_char = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 13
+  store i8 1, i8* %signed_char, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb83:                                          ; preds = %if.end64
+  %signed_char85 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 13
+  store i8 0, i8* %signed_char85, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb86:                                          ; preds = %if.end64
+  %22 = load i8* %arg.0, align 1, !tbaa !0
+  %cmp89 = icmp eq i8 %22, 0
+  br i1 %cmp89, label %if.end465, label %if.then91
+
+if.then91:                                        ; preds = %sw.bb86
+  %call92 = call i64 @strtol(i8* %arg.0, i8** %endptr, i32 10) #6
+  %23 = load i8** %endptr, align 8, !tbaa !3
+  %24 = load i8* %23, align 1, !tbaa !0
+  %cmp94 = icmp eq i8 %24, 0
+  br i1 %cmp94, label %land.lhs.true96, label %if.end465
+
+land.lhs.true96:                                  ; preds = %if.then91
+  %call92.off = add i64 %call92, -1
+  %25 = icmp ult i64 %call92.off, 100
+  br i1 %25, label %if.then102, label %if.end465
+
+if.then102:                                       ; preds = %land.lhs.true96
+  %conv103 = trunc i64 %call92 to i32
+  %tabstop105 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 2
+  store i32 %conv103, i32* %tabstop105, align 4, !tbaa !2
+  br label %if.end465
+
+sw.bb108:                                         ; preds = %if.end64
+  %inhibit_warnings = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 27
+  store i8 1, i8* %inhibit_warnings, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb110:                                         ; preds = %if.end64, %if.end64
+  %26 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %27 = call i64 @fwrite(i8* getelementptr inbounds ([459 x i8]* @.str32, i64 0, i64 0), i64 458, i64 1, %struct._IO_FILE* %26) #4
+  %28 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %29 = call i64 @fwrite(i8* getelementptr inbounds ([504 x i8]* @.str33, i64 0, i64 0), i64 503, i64 1, %struct._IO_FILE* %28) #4
+  %30 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %31 = call i64 @fwrite(i8* getelementptr inbounds ([332 x i8]* @.str34, i64 0, i64 0), i64 331, i64 1, %struct._IO_FILE* %30) #4
+  %32 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %33 = call i64 @fwrite(i8* getelementptr inbounds ([299 x i8]* @.str35, i64 0, i64 0), i64 298, i64 1, %struct._IO_FILE* %32) #4
+  %34 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %35 = call i64 @fwrite(i8* getelementptr inbounds ([499 x i8]* @.str36, i64 0, i64 0), i64 498, i64 1, %struct._IO_FILE* %34) #4
+  %36 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %37 = call i64 @fwrite(i8* getelementptr inbounds ([406 x i8]* @.str37, i64 0, i64 0), i64 405, i64 1, %struct._IO_FILE* %36) #4
+  %38 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %39 = call i64 @fwrite(i8* getelementptr inbounds ([383 x i8]* @.str38, i64 0, i64 0), i64 382, i64 1, %struct._IO_FILE* %38) #4
+  %40 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %41 = call i64 @fwrite(i8* getelementptr inbounds ([399 x i8]* @.str39, i64 0, i64 0), i64 398, i64 1, %struct._IO_FILE* %40) #4
+  %42 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %43 = call i64 @fwrite(i8* getelementptr inbounds ([156 x i8]* @.str40, i64 0, i64 0), i64 155, i64 1, %struct._IO_FILE* %42) #4
+  %44 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %45 = call i64 @fwrite(i8* getelementptr inbounds ([370 x i8]* @.str41, i64 0, i64 0), i64 369, i64 1, %struct._IO_FILE* %44) #4
+  %46 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %47 = call i64 @fwrite(i8* getelementptr inbounds ([418 x i8]* @.str42, i64 0, i64 0), i64 417, i64 1, %struct._IO_FILE* %46) #4
+  %48 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %49 = call i64 @fwrite(i8* getelementptr inbounds ([446 x i8]* @.str43, i64 0, i64 0), i64 445, i64 1, %struct._IO_FILE* %48) #4
+  %help_only = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 50
+  store i8 1, i8* %help_only, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb112:                                         ; preds = %if.end64
+  %help_only114 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 50
+  store i8 1, i8* %help_only114, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb115:                                         ; preds = %if.end64
+  %help_only117 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 50
+  store i8 1, i8* %help_only117, align 1, !tbaa !0
+  %print_version = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 39
+  store i8 1, i8* %print_version, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb118:                                         ; preds = %if.end64
+  %verbose = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 12
+  store i8 1, i8* %verbose, align 1, !tbaa !0
+  %print_version120 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 39
+  store i8 1, i8* %print_version120, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb121:                                         ; preds = %if.end64
+  %print_version122 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 39
+  store i8 1, i8* %print_version122, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb123:                                         ; preds = %if.end64
+  %discard_comments = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 17
+  store i8 0, i8* %discard_comments, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb125:                                         ; preds = %if.end64
+  %no_line_commands = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 37
+  store i8 1, i8* %no_line_commands, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb127:                                         ; preds = %if.end64
+  %dollars_in_ident = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 39
+  store i8 0, i8* %dollars_in_ident, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb129:                                         ; preds = %if.end64
+  %print_include_names = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 25
+  store i8 1, i8* %print_include_names, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb131:                                         ; preds = %if.end64
+  call fastcc void @new_pending_directive(%struct.cpp_pending* %0, i8* %arg.0, void (%struct.cpp_reader*, i8*)* @cpp_define) #7
+  br label %if.end465
+
+sw.bb132:                                         ; preds = %if.end64
+  %pedantic_errors = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 26
+  store i8 1, i8* %pedantic_errors, align 1, !tbaa !0
+  br label %sw.bb134
+
+sw.bb134:                                         ; preds = %if.end64, %sw.bb132
+  %pedantic = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 42
+  store i8 1, i8* %pedantic, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb136:                                         ; preds = %if.end64
+  %trigraphs = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  store i8 1, i8* %trigraphs, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb138:                                         ; preds = %if.end64
+  %cplusplus = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  store i8 1, i8* %cplusplus, align 1, !tbaa !0
+  %cplusplus_comments = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 15
+  store i8 1, i8* %cplusplus_comments, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb141:                                         ; preds = %if.end64
+  %remap = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 36
+  store i8 1, i8* %remap, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb143:                                         ; preds = %if.end64
+  %include_prefix = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 8
+  store i8* %arg.0, i8** %include_prefix, align 8, !tbaa !3
+  %call145 = call i64 @strlen(i8* %arg.0) #8
+  %conv146 = trunc i64 %call145 to i32
+  %include_prefix_len = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 9
+  store i32 %conv146, i32* %include_prefix_len, align 4, !tbaa !2
+  br label %if.end465
+
+sw.bb148:                                         ; preds = %if.end64
+  %lang1.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 11
+  store i32 0, i32* %lang1.i, align 4, !tbaa !4
+  %c993.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 41
+  store i8 0, i8* %c993.i, align 1, !tbaa !0
+  %objc5.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 16
+  store i8 0, i8* %objc5.i, align 1, !tbaa !0
+  %cplusplus7.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  store i8 0, i8* %cplusplus7.i, align 1, !tbaa !0
+  %extended_numbers9.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 20
+  store i8 1, i8* %extended_numbers9.i, align 1, !tbaa !0
+  %trigraphs11.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  store i8 0, i8* %trigraphs11.i, align 1, !tbaa !0
+  %dollars_in_ident13.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 39
+  store i8 1, i8* %dollars_in_ident13.i, align 1, !tbaa !0
+  %cplusplus_comments15.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 15
+  store i8 1, i8* %cplusplus_comments15.i, align 1, !tbaa !0
+  %digraphs17.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 19
+  store i8 1, i8* %digraphs17.i, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb149:                                         ; preds = %if.end64
+  %lang1.i685 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 11
+  store i32 5, i32* %lang1.i685, align 4, !tbaa !4
+  %c993.i686 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 41
+  store i8 0, i8* %c993.i686, align 1, !tbaa !0
+  %objc5.i687 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 16
+  store i8 0, i8* %objc5.i687, align 1, !tbaa !0
+  %cplusplus7.i688 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  store i8 1, i8* %cplusplus7.i688, align 1, !tbaa !0
+  %extended_numbers9.i689 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 20
+  store i8 1, i8* %extended_numbers9.i689, align 1, !tbaa !0
+  %trigraphs11.i690 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  store i8 0, i8* %trigraphs11.i690, align 1, !tbaa !0
+  %dollars_in_ident13.i691 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 39
+  store i8 1, i8* %dollars_in_ident13.i691, align 1, !tbaa !0
+  %cplusplus_comments15.i692 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 15
+  store i8 1, i8* %cplusplus_comments15.i692, align 1, !tbaa !0
+  %digraphs17.i693 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 19
+  store i8 1, i8* %digraphs17.i693, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb150:                                         ; preds = %if.end64
+  %lang1.i694 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 11
+  store i32 7, i32* %lang1.i694, align 4, !tbaa !4
+  %c993.i695 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 41
+  store i8 0, i8* %c993.i695, align 1, !tbaa !0
+  %objc5.i696 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 16
+  store i8 1, i8* %objc5.i696, align 1, !tbaa !0
+  %cplusplus7.i697 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  store i8 0, i8* %cplusplus7.i697, align 1, !tbaa !0
+  %extended_numbers9.i698 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 20
+  store i8 1, i8* %extended_numbers9.i698, align 1, !tbaa !0
+  %trigraphs11.i699 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  store i8 0, i8* %trigraphs11.i699, align 1, !tbaa !0
+  %dollars_in_ident13.i700 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 39
+  store i8 1, i8* %dollars_in_ident13.i700, align 1, !tbaa !0
+  %cplusplus_comments15.i701 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 15
+  store i8 1, i8* %cplusplus_comments15.i701, align 1, !tbaa !0
+  %digraphs17.i702 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 19
+  store i8 1, i8* %digraphs17.i702, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb151:                                         ; preds = %if.end64
+  %lang1.i703 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 11
+  store i32 8, i32* %lang1.i703, align 4, !tbaa !4
+  %c993.i704 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 41
+  store i8 0, i8* %c993.i704, align 1, !tbaa !0
+  %objc5.i705 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 16
+  store i8 1, i8* %objc5.i705, align 1, !tbaa !0
+  %cplusplus7.i706 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  store i8 1, i8* %cplusplus7.i706, align 1, !tbaa !0
+  %extended_numbers9.i707 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 20
+  store i8 1, i8* %extended_numbers9.i707, align 1, !tbaa !0
+  %trigraphs11.i708 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  store i8 0, i8* %trigraphs11.i708, align 1, !tbaa !0
+  %dollars_in_ident13.i709 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 39
+  store i8 1, i8* %dollars_in_ident13.i709, align 1, !tbaa !0
+  %cplusplus_comments15.i710 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 15
+  store i8 1, i8* %cplusplus_comments15.i710, align 1, !tbaa !0
+  %digraphs17.i711 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 19
+  store i8 1, i8* %digraphs17.i711, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb152:                                         ; preds = %if.end64
+  %lang1.i712 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 11
+  store i32 9, i32* %lang1.i712, align 4, !tbaa !4
+  %c993.i713 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 41
+  store i8 0, i8* %c993.i713, align 1, !tbaa !0
+  %objc5.i714 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 16
+  store i8 0, i8* %objc5.i714, align 1, !tbaa !0
+  %cplusplus7.i715 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  store i8 0, i8* %cplusplus7.i715, align 1, !tbaa !0
+  %extended_numbers9.i716 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 20
+  store i8 1, i8* %extended_numbers9.i716, align 1, !tbaa !0
+  %trigraphs11.i717 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  store i8 0, i8* %trigraphs11.i717, align 1, !tbaa !0
+  %dollars_in_ident13.i718 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 39
+  store i8 0, i8* %dollars_in_ident13.i718, align 1, !tbaa !0
+  %cplusplus_comments15.i719 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 15
+  store i8 1, i8* %cplusplus_comments15.i719, align 1, !tbaa !0
+  %digraphs17.i720 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 19
+  store i8 0, i8* %digraphs17.i720, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb153:                                         ; preds = %if.end64
+  %lang1.i721 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 11
+  store i32 6, i32* %lang1.i721, align 4, !tbaa !4
+  %c993.i722 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 41
+  store i8 0, i8* %c993.i722, align 1, !tbaa !0
+  %objc5.i723 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 16
+  store i8 0, i8* %objc5.i723, align 1, !tbaa !0
+  %cplusplus7.i724 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  store i8 1, i8* %cplusplus7.i724, align 1, !tbaa !0
+  %extended_numbers9.i725 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 20
+  store i8 1, i8* %extended_numbers9.i725, align 1, !tbaa !0
+  %trigraphs11.i726 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  store i8 1, i8* %trigraphs11.i726, align 1, !tbaa !0
+  %dollars_in_ident13.i727 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 39
+  store i8 0, i8* %dollars_in_ident13.i727, align 1, !tbaa !0
+  %cplusplus_comments15.i728 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 15
+  store i8 1, i8* %cplusplus_comments15.i728, align 1, !tbaa !0
+  %digraphs17.i729 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 19
+  store i8 1, i8* %digraphs17.i729, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb154:                                         ; preds = %if.end64
+  %lang1.i730 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 11
+  store i32 0, i32* %lang1.i730, align 4, !tbaa !4
+  %c993.i731 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 41
+  store i8 0, i8* %c993.i731, align 1, !tbaa !0
+  %objc5.i732 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 16
+  store i8 0, i8* %objc5.i732, align 1, !tbaa !0
+  %cplusplus7.i733 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  store i8 0, i8* %cplusplus7.i733, align 1, !tbaa !0
+  %extended_numbers9.i734 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 20
+  store i8 1, i8* %extended_numbers9.i734, align 1, !tbaa !0
+  %trigraphs11.i735 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  store i8 0, i8* %trigraphs11.i735, align 1, !tbaa !0
+  %dollars_in_ident13.i736 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 39
+  store i8 1, i8* %dollars_in_ident13.i736, align 1, !tbaa !0
+  %cplusplus_comments15.i737 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 15
+  store i8 1, i8* %cplusplus_comments15.i737, align 1, !tbaa !0
+  %digraphs17.i738 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 19
+  store i8 1, i8* %digraphs17.i738, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb155:                                         ; preds = %if.end64, %if.end64
+  %lang1.i739 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 11
+  store i32 1, i32* %lang1.i739, align 4, !tbaa !4
+  %c993.i740 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 41
+  store i8 1, i8* %c993.i740, align 1, !tbaa !0
+  %objc5.i741 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 16
+  store i8 0, i8* %objc5.i741, align 1, !tbaa !0
+  %cplusplus7.i742 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  store i8 0, i8* %cplusplus7.i742, align 1, !tbaa !0
+  %extended_numbers9.i743 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 20
+  store i8 1, i8* %extended_numbers9.i743, align 1, !tbaa !0
+  %trigraphs11.i744 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  store i8 0, i8* %trigraphs11.i744, align 1, !tbaa !0
+  %dollars_in_ident13.i745 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 39
+  store i8 1, i8* %dollars_in_ident13.i745, align 1, !tbaa !0
+  %cplusplus_comments15.i746 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 15
+  store i8 1, i8* %cplusplus_comments15.i746, align 1, !tbaa !0
+  %digraphs17.i747 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 19
+  store i8 1, i8* %digraphs17.i747, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb156:                                         ; preds = %if.end64
+  %lang1.i748 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 11
+  store i32 3, i32* %lang1.i748, align 4, !tbaa !4
+  %c993.i749 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 41
+  store i8 0, i8* %c993.i749, align 1, !tbaa !0
+  %objc5.i750 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 16
+  store i8 0, i8* %objc5.i750, align 1, !tbaa !0
+  %cplusplus7.i751 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  store i8 0, i8* %cplusplus7.i751, align 1, !tbaa !0
+  %extended_numbers9.i752 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 20
+  store i8 0, i8* %extended_numbers9.i752, align 1, !tbaa !0
+  %trigraphs11.i753 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  store i8 1, i8* %trigraphs11.i753, align 1, !tbaa !0
+  %dollars_in_ident13.i754 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 39
+  store i8 0, i8* %dollars_in_ident13.i754, align 1, !tbaa !0
+  %cplusplus_comments15.i755 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 15
+  store i8 0, i8* %cplusplus_comments15.i755, align 1, !tbaa !0
+  %digraphs17.i756 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 19
+  store i8 1, i8* %digraphs17.i756, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb157:                                         ; preds = %if.end64, %if.end64, %if.end64
+  %lang1.i757 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 11
+  store i32 2, i32* %lang1.i757, align 4, !tbaa !4
+  %c993.i758 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 41
+  store i8 0, i8* %c993.i758, align 1, !tbaa !0
+  %objc5.i759 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 16
+  store i8 0, i8* %objc5.i759, align 1, !tbaa !0
+  %cplusplus7.i760 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  store i8 0, i8* %cplusplus7.i760, align 1, !tbaa !0
+  %extended_numbers9.i761 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 20
+  store i8 0, i8* %extended_numbers9.i761, align 1, !tbaa !0
+  %trigraphs11.i762 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  store i8 1, i8* %trigraphs11.i762, align 1, !tbaa !0
+  %dollars_in_ident13.i763 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 39
+  store i8 0, i8* %dollars_in_ident13.i763, align 1, !tbaa !0
+  %cplusplus_comments15.i764 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 15
+  store i8 0, i8* %cplusplus_comments15.i764, align 1, !tbaa !0
+  %digraphs17.i765 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 19
+  store i8 0, i8* %digraphs17.i765, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb158:                                         ; preds = %if.end64, %if.end64, %if.end64, %if.end64
+  %lang1.i766 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 11
+  store i32 4, i32* %lang1.i766, align 4, !tbaa !4
+  %c993.i767 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 41
+  store i8 1, i8* %c993.i767, align 1, !tbaa !0
+  %objc5.i768 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 16
+  store i8 0, i8* %objc5.i768, align 1, !tbaa !0
+  %cplusplus7.i769 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  store i8 0, i8* %cplusplus7.i769, align 1, !tbaa !0
+  %extended_numbers9.i770 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 20
+  store i8 1, i8* %extended_numbers9.i770, align 1, !tbaa !0
+  %trigraphs11.i771 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  store i8 1, i8* %trigraphs11.i771, align 1, !tbaa !0
+  %dollars_in_ident13.i772 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 39
+  store i8 0, i8* %dollars_in_ident13.i772, align 1, !tbaa !0
+  %cplusplus_comments15.i773 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 15
+  store i8 1, i8* %cplusplus_comments15.i773, align 1, !tbaa !0
+  %digraphs17.i774 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 19
+  store i8 1, i8* %digraphs17.i774, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb159:                                         ; preds = %if.end64
+  %no_standard_includes = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 44
+  store i8 1, i8* %no_standard_includes, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb161:                                         ; preds = %if.end64
+  %no_standard_cplusplus_includes = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 45
+  store i8 1, i8* %no_standard_cplusplus_includes, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb163:                                         ; preds = %if.end64
+  %out_fname165 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 1
+  %50 = load i8** %out_fname165, align 8, !tbaa !3
+  %cmp166 = icmp eq i8* %50, null
+  br i1 %cmp166, label %if.then168, label %if.else171
+
+if.then168:                                       ; preds = %sw.bb163
+  store i8* %arg.0, i8** %out_fname165, align 8, !tbaa !3
+  br label %if.end465
+
+if.else171:                                       ; preds = %sw.bb163
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_fatal(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([32 x i8]* @.str9, i64 0, i64 0)) #6
+  br label %return
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
+  %51 = phi i8 [ %21, %while.body.lr.ph ], [ %52, %while.cond.backedge ]
+  %arg.0.pn = phi i8* [ %arg.0, %while.body.lr.ph ], [ %incdec.ptr784, %while.cond.backedge ]
+  %incdec.ptr784 = getelementptr inbounds i8* %arg.0.pn, i64 1
+  %conv174 = sext i8 %51 to i32
+  switch i32 %conv174, label %while.cond.backedge [
+    i32 77, label %sw.bb178
+    i32 78, label %sw.bb180
+    i32 68, label %sw.bb183
+    i32 73, label %sw.bb186
+  ]
+
+while.cond.backedge:                              ; preds = %while.body, %sw.bb186, %sw.bb183, %sw.bb180, %sw.bb178
+  %52 = load i8* %incdec.ptr784, align 1, !tbaa !0
+  %cmp175 = icmp eq i8 %52, 0
+  br i1 %cmp175, label %if.end465, label %while.body
+
+sw.bb178:                                         ; preds = %while.body
+  store i8 1, i8* %dump_macros, align 1, !tbaa !0
+  br label %while.cond.backedge
+
+sw.bb180:                                         ; preds = %while.body
+  store i8 2, i8* %dump_macros, align 1, !tbaa !0
+  br label %while.cond.backedge
+
+sw.bb183:                                         ; preds = %while.body
+  store i8 3, i8* %dump_macros, align 1, !tbaa !0
+  br label %while.cond.backedge
+
+sw.bb186:                                         ; preds = %while.body
+  store i8 1, i8* %dump_includes, align 1, !tbaa !0
+  br label %while.cond.backedge
+
+sw.bb188:                                         ; preds = %if.end64
+  %print_deps_missing_files = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 23
+  store i8 1, i8* %print_deps_missing_files, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb190:                                         ; preds = %if.end64
+  %print_deps = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 21
+  store i8 2, i8* %print_deps, align 1, !tbaa !0
+  %no_output = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 35
+  store i8 1, i8* %no_output, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb193:                                         ; preds = %if.end64
+  %print_deps195 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 21
+  store i8 1, i8* %print_deps195, align 1, !tbaa !0
+  %no_output197 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 35
+  store i8 1, i8* %no_output197, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb198:                                         ; preds = %if.end64
+  %deps_file = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 4
+  store i8* %arg.0, i8** %deps_file, align 8, !tbaa !3
+  br label %if.end465
+
+sw.bb200:                                         ; preds = %if.end64
+  %deps_phony_targets = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 22
+  store i8 1, i8* %deps_phony_targets, align 1, !tbaa !0
+  br label %if.end465
+
+sw.bb202:                                         ; preds = %if.end64, %if.end64
+  %deps = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 31
+  %53 = load %struct.deps** %deps, align 8, !tbaa !3
+  %cmp203 = icmp eq i32 %15, 17
+  %conv204 = zext i1 %cmp203 to i32
+  call void @deps_add_target(%struct.deps* %53, i8* %arg.0, i32 %conv204) #6
+  br label %if.end465
+
+sw.bb205:                                         ; preds = %if.end64
+  %print_deps207 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 21
+  store i8 2, i8* %print_deps207, align 1, !tbaa !0
+  %deps_file209 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 4
+  store i8* %arg.0, i8** %deps_file209, align 8, !tbaa !3
+  br label %if.end465
+
+sw.bb210:                                         ; preds = %if.end64
+  %print_deps212 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 21
+  store i8 1, i8* %print_deps212, align 1, !tbaa !0
+  %deps_file214 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 4
+  store i8* %arg.0, i8** %deps_file214, align 8, !tbaa !3
+  br label %if.end465
+
+sw.bb215:                                         ; preds = %if.end64
+  %54 = load i8* %arg.0, align 1, !tbaa !0
+  %cmp218 = icmp eq i8 %54, 45
+  br i1 %cmp218, label %if.then220, label %if.else229
+
+if.then220:                                       ; preds = %sw.bb215
+  %arrayidx221 = getelementptr inbounds i8* %arg.0, i64 1
+  %55 = load i8* %arrayidx221, align 1, !tbaa !0
+  %cmp223 = icmp eq i8 %55, 0
+  br i1 %cmp223, label %if.then225, label %if.else227
+
+if.then225:                                       ; preds = %if.then220
+  %directive_head = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 0
+  %56 = load %struct.pending_option** %directive_head, align 8, !tbaa !3
+  %tobool4.i = icmp eq %struct.pending_option* %56, null
+  br i1 %tobool4.i, label %free_chain.exit, label %while.body.i776
+
+while.body.i776:                                  ; preds = %if.then225, %while.body.i776
+  %head.addr.05.i = phi %struct.pending_option* [ %57, %while.body.i776 ], [ %56, %if.then225 ]
+  %next1.i = getelementptr inbounds %struct.pending_option* %head.addr.05.i, i64 0, i32 0
+  %57 = load %struct.pending_option** %next1.i, align 8, !tbaa !3
+  %58 = bitcast %struct.pending_option* %head.addr.05.i to i8*
+  call void @free(i8* %58) #6
+  %tobool.i775 = icmp eq %struct.pending_option* %57, null
+  br i1 %tobool.i775, label %free_chain.exit, label %while.body.i776
+
+free_chain.exit:                                  ; preds = %while.body.i776, %if.then225
+  %59 = bitcast %struct.cpp_pending* %0 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %59, i8 0, i64 16, i32 8, i1 false)
+  br label %if.end465
+
+if.else227:                                       ; preds = %if.then220
+  call fastcc void @new_pending_directive(%struct.cpp_pending* %0, i8* %arrayidx221, void (%struct.cpp_reader*, i8*)* @cpp_unassert) #7
+  br label %if.end465
+
+if.else229:                                       ; preds = %sw.bb215
+  call fastcc void @new_pending_directive(%struct.cpp_pending* %0, i8* %arg.0, void (%struct.cpp_reader*, i8*)* @cpp_assert) #7
+  br label %if.end465
+
+sw.bb231:                                         ; preds = %if.end64
+  call fastcc void @new_pending_directive(%struct.cpp_pending* %0, i8* %arg.0, void (%struct.cpp_reader*, i8*)* @cpp_undef) #7
+  br label %if.end465
+
+sw.bb232:                                         ; preds = %if.end64
+  %call233 = call i32 @strcmp(i8* %arg.0, i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0)) #8
+  %tobool234 = icmp eq i32 %call233, 0
+  br i1 %tobool234, label %if.then235, label %if.else245
+
+if.then235:                                       ; preds = %sw.bb232
+  %ignore_srcdir = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 38
+  %60 = load i8* %ignore_srcdir, align 1, !tbaa !0
+  %tobool237 = icmp eq i8 %60, 0
+  br i1 %tobool237, label %if.then238, label %if.else243
+
+if.then238:                                       ; preds = %if.then235
+  %brack_head = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 4
+  %61 = load %struct.search_path** %brack_head, align 8, !tbaa !3
+  %quote_head = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 2
+  store %struct.search_path* %61, %struct.search_path** %quote_head, align 8, !tbaa !3
+  %brack_tail = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 5
+  %62 = load %struct.search_path** %brack_tail, align 8, !tbaa !3
+  %quote_tail = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 3
+  store %struct.search_path* %62, %struct.search_path** %quote_tail, align 8, !tbaa !3
+  %63 = bitcast %struct.search_path** %brack_head to i8*
+  call void @llvm.memset.p0i8.i64(i8* %63, i8 0, i64 16, i32 8, i1 false)
+  store i8 1, i8* %ignore_srcdir, align 1, !tbaa !0
+  br label %if.end465
+
+if.else243:                                       ; preds = %if.then235
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_fatal(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([20 x i8]* @.str11, i64 0, i64 0)) #6
+  br label %return
+
+if.else245:                                       ; preds = %sw.bb232
+  %call246 = call noalias i8* @xstrdup(i8* %arg.0) #6
+  call fastcc void @append_include_chain(%struct.cpp_reader* %pfile, i8* %call246, i32 0, i32 0) #7
+  br label %if.end465
+
+sw.bb248:                                         ; preds = %if.end64
+  %call249 = call noalias i8* @xstrdup(i8* %arg.0) #6
+  call fastcc void @append_include_chain(%struct.cpp_reader* %pfile, i8* %call249, i32 1, i32 0) #7
+  br label %if.end465
+
+sw.bb250:                                         ; preds = %if.end64, %if.end64
+  %call251 = call noalias i8* @xmalloc(i64 24) #6
+  %64 = bitcast i8* %call251 to %struct.pending_option*
+  %arg252 = getelementptr inbounds i8* %call251, i64 8
+  %65 = bitcast i8* %arg252 to i8**
+  store i8* %arg.0, i8** %65, align 8, !tbaa !3
+  %next = bitcast i8* %call251 to %struct.pending_option**
+  store %struct.pending_option* null, %struct.pending_option** %next, align 8, !tbaa !3
+  %cmp253 = icmp eq i32 %15, 36
+  br i1 %cmp253, label %do.body, label %do.body264
+
+do.body:                                          ; preds = %sw.bb250
+  %include_head = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 12
+  %66 = load %struct.pending_option** %include_head, align 8, !tbaa !3
+  %tobool256 = icmp eq %struct.pending_option* %66, null
+  br i1 %tobool256, label %if.then257, label %if.else259
+
+if.then257:                                       ; preds = %do.body
+  store %struct.pending_option* %64, %struct.pending_option** %include_head, align 8, !tbaa !3
+  %include_tail262.pre = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 13
+  br label %if.end261
+
+if.else259:                                       ; preds = %do.body
+  %include_tail = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 13
+  %67 = load %struct.pending_option** %include_tail, align 8, !tbaa !3
+  %next260 = getelementptr inbounds %struct.pending_option* %67, i64 0, i32 0
+  store %struct.pending_option* %64, %struct.pending_option** %next260, align 8, !tbaa !3
+  br label %if.end261
+
+if.end261:                                        ; preds = %if.else259, %if.then257
+  %include_tail262.pre-phi = phi %struct.pending_option** [ %include_tail, %if.else259 ], [ %include_tail262.pre, %if.then257 ]
+  store %struct.pending_option* %64, %struct.pending_option** %include_tail262.pre-phi, align 8, !tbaa !3
+  br label %if.end465
+
+do.body264:                                       ; preds = %sw.bb250
+  %imacros_head = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 10
+  %68 = load %struct.pending_option** %imacros_head, align 8, !tbaa !3
+  %tobool265 = icmp eq %struct.pending_option* %68, null
+  br i1 %tobool265, label %if.then266, label %if.else268
+
+if.then266:                                       ; preds = %do.body264
+  store %struct.pending_option* %64, %struct.pending_option** %imacros_head, align 8, !tbaa !3
+  %imacros_tail271.pre = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 11
+  br label %if.end270
+
+if.else268:                                       ; preds = %do.body264
+  %imacros_tail = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 11
+  %69 = load %struct.pending_option** %imacros_tail, align 8, !tbaa !3
+  %next269 = getelementptr inbounds %struct.pending_option* %69, i64 0, i32 0
+  store %struct.pending_option* %64, %struct.pending_option** %next269, align 8, !tbaa !3
+  br label %if.end270
+
+if.end270:                                        ; preds = %if.else268, %if.then266
+  %imacros_tail271.pre-phi = phi %struct.pending_option** [ %imacros_tail, %if.else268 ], [ %imacros_tail271.pre, %if.then266 ]
+  store %struct.pending_option* %64, %struct.pending_option** %imacros_tail271.pre-phi, align 8, !tbaa !3
+  br label %if.end465
+
+sw.bb274:                                         ; preds = %if.end64, %if.end64
+  %call275 = call i64 @strlen(i8* %arg.0) #8
+  %include_prefix278 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 8
+  %70 = load i8** %include_prefix278, align 8, !tbaa !3
+  %cmp279 = icmp eq i8* %70, null
+  br i1 %cmp279, label %if.else294, label %if.then281
+
+if.then281:                                       ; preds = %sw.bb274
+  %include_prefix_len283 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 9
+  %71 = load i32* %include_prefix_len283, align 4, !tbaa !2
+  %conv284 = zext i32 %71 to i64
+  %sext682 = shl i64 %call275, 32
+  %conv285 = ashr exact i64 %sext682, 32
+  %add286 = add i64 %conv285, 1
+  %add287 = add i64 %add286, %conv284
+  %call288 = call noalias i8* @xmalloc(i64 %add287) #6
+  %72 = load i8** %include_prefix278, align 8, !tbaa !3
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call288, i8* %72, i64 %conv284, i32 1, i1 false)
+  %add.ptr291 = getelementptr inbounds i8* %call288, i64 %conv284
+  %sext683 = add i64 %sext682, 4294967296
+  %conv293 = ashr exact i64 %sext683, 32
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr291, i8* %arg.0, i64 %conv293, i32 1, i1 false)
+  br label %if.end307
+
+if.else294:                                       ; preds = %sw.bb274
+  %73 = load i64* @cpp_GCC_INCLUDE_DIR_len, align 8, !tbaa !5
+  %tobool295 = icmp eq i64 %73, 0
+  br i1 %tobool295, label %if.else304, label %if.then296
+
+if.then296:                                       ; preds = %if.else294
+  %sext = shl i64 %call275, 32
+  %conv297 = ashr exact i64 %sext, 32
+  %add298 = add i64 %conv297, 1
+  %add299 = add i64 %add298, %73
+  %call300 = call noalias i8* @xmalloc(i64 %add299) #6
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call300, i8* getelementptr inbounds ([0 x i8]* @cpp_GCC_INCLUDE_DIR, i64 0, i64 0), i64 %73, i32 1, i1 false)
+  %add.ptr301 = getelementptr inbounds i8* %call300, i64 %73
+  %sext681 = add i64 %sext, 4294967296
+  %conv303 = ashr exact i64 %sext681, 32
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr301, i8* %arg.0, i64 %conv303, i32 1, i1 false)
+  br label %if.end307
+
+if.else304:                                       ; preds = %if.else294
+  %call305 = call noalias i8* @xstrdup(i8* %arg.0) #6
+  br label %if.end307
+
+if.end307:                                        ; preds = %if.then296, %if.else304, %if.then281
+  %fname.0 = phi i8* [ %call288, %if.then281 ], [ %call300, %if.then296 ], [ %call305, %if.else304 ]
+  %cmp308 = icmp eq i32 %15, 39
+  %cond = zext i1 %cmp308 to i32
+  call fastcc void @append_include_chain(%struct.cpp_reader* %pfile, i8* %fname.0, i32 %cond, i32 0) #7
+  br label %if.end465
+
+sw.bb310:                                         ; preds = %if.end64
+  %call311 = call noalias i8* @xstrdup(i8* %arg.0) #6
+  call fastcc void @append_include_chain(%struct.cpp_reader* %pfile, i8* %call311, i32 2, i32 0) #7
+  br label %if.end465
+
+sw.bb312:                                         ; preds = %if.end64
+  %call315 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0)) #8
+  %tobool316 = icmp eq i32 %call315, 0
+  br i1 %tobool316, label %if.then317, label %if.else320
+
+if.then317:                                       ; preds = %sw.bb312
+  %warn_trigraphs = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 31
+  store i8 1, i8* %warn_trigraphs, align 1, !tbaa !0
+  %warn_comments = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 30
+  store i8 1, i8* %warn_comments, align 1, !tbaa !0
+  br label %if.end465
+
+if.else320:                                       ; preds = %sw.bb312
+  %call323 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([14 x i8]* @.str13, i64 0, i64 0)) #8
+  %tobool324 = icmp eq i32 %call323, 0
+  br i1 %tobool324, label %if.then325, label %if.else327
+
+if.then325:                                       ; preds = %if.else320
+  %warn_traditional = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 33
+  store i8 1, i8* %warn_traditional, align 1, !tbaa !0
+  br label %if.end465
+
+if.else327:                                       ; preds = %if.else320
+  %call330 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([12 x i8]* @.str14, i64 0, i64 0)) #8
+  %tobool331 = icmp eq i32 %call330, 0
+  br i1 %tobool331, label %if.then332, label %if.else335
+
+if.then332:                                       ; preds = %if.else327
+  %warn_trigraphs334 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 31
+  store i8 1, i8* %warn_trigraphs334, align 1, !tbaa !0
+  br label %if.end465
+
+if.else335:                                       ; preds = %if.else327
+  %call338 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([10 x i8]* @.str15, i64 0, i64 0)) #8
+  %tobool339 = icmp eq i32 %call338, 0
+  br i1 %tobool339, label %if.then340, label %if.else343
+
+if.then340:                                       ; preds = %if.else335
+  %warn_comments342 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 30
+  store i8 1, i8* %warn_comments342, align 1, !tbaa !0
+  br label %if.end465
+
+if.else343:                                       ; preds = %if.else335
+  %call346 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([11 x i8]* @.str16, i64 0, i64 0)) #8
+  %tobool347 = icmp eq i32 %call346, 0
+  br i1 %tobool347, label %if.then348, label %if.else351
+
+if.then348:                                       ; preds = %if.else343
+  %warn_comments350 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 30
+  store i8 1, i8* %warn_comments350, align 1, !tbaa !0
+  br label %if.end465
+
+if.else351:                                       ; preds = %if.else343
+  %call354 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([8 x i8]* @.str17, i64 0, i64 0)) #8
+  %tobool355 = icmp eq i32 %call354, 0
+  br i1 %tobool355, label %if.then356, label %if.else358
+
+if.then356:                                       ; preds = %if.else351
+  %warn_undef = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 40
+  store i8 1, i8* %warn_undef, align 1, !tbaa !0
+  br label %if.end465
+
+if.else358:                                       ; preds = %if.else351
+  %call361 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([9 x i8]* @.str18, i64 0, i64 0)) #8
+  %tobool362 = icmp eq i32 %call361, 0
+  br i1 %tobool362, label %if.then363, label %if.else365
+
+if.then363:                                       ; preds = %if.else358
+  %warn_import = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 32
+  store i8 1, i8* %warn_import, align 1, !tbaa !0
+  br label %if.end465
+
+if.else365:                                       ; preds = %if.else358
+  %call368 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([8 x i8]* @.str19, i64 0, i64 0)) #8
+  %tobool369 = icmp eq i32 %call368, 0
+  br i1 %tobool369, label %if.then370, label %if.else372
+
+if.then370:                                       ; preds = %if.else365
+  %warnings_are_errors = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 34
+  store i8 1, i8* %warnings_are_errors, align 1, !tbaa !0
+  br label %if.end465
+
+if.else372:                                       ; preds = %if.else365
+  %call375 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([17 x i8]* @.str20, i64 0, i64 0)) #8
+  %tobool376 = icmp eq i32 %call375, 0
+  br i1 %tobool376, label %if.then377, label %if.else379
+
+if.then377:                                       ; preds = %if.else372
+  %warn_system_headers = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 28
+  store i8 1, i8* %warn_system_headers, align 1, !tbaa !0
+  br label %if.end465
+
+if.else379:                                       ; preds = %if.else372
+  %call382 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([17 x i8]* @.str21, i64 0, i64 0)) #8
+  %tobool383 = icmp eq i32 %call382, 0
+  br i1 %tobool383, label %if.then384, label %if.else387
+
+if.then384:                                       ; preds = %if.else379
+  %warn_traditional386 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 33
+  store i8 0, i8* %warn_traditional386, align 1, !tbaa !0
+  br label %if.end465
+
+if.else387:                                       ; preds = %if.else379
+  %call390 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([15 x i8]* @.str22, i64 0, i64 0)) #8
+  %tobool391 = icmp eq i32 %call390, 0
+  br i1 %tobool391, label %if.then392, label %if.else395
+
+if.then392:                                       ; preds = %if.else387
+  %warn_trigraphs394 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 31
+  store i8 0, i8* %warn_trigraphs394, align 1, !tbaa !0
+  br label %if.end465
+
+if.else395:                                       ; preds = %if.else387
+  %call398 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([13 x i8]* @.str23, i64 0, i64 0)) #8
+  %tobool399 = icmp eq i32 %call398, 0
+  br i1 %tobool399, label %if.then400, label %if.else403
+
+if.then400:                                       ; preds = %if.else395
+  %warn_comments402 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 30
+  store i8 0, i8* %warn_comments402, align 1, !tbaa !0
+  br label %if.end465
+
+if.else403:                                       ; preds = %if.else395
+  %call406 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([14 x i8]* @.str24, i64 0, i64 0)) #8
+  %tobool407 = icmp eq i32 %call406, 0
+  br i1 %tobool407, label %if.then408, label %if.else411
+
+if.then408:                                       ; preds = %if.else403
+  %warn_comments410 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 30
+  store i8 0, i8* %warn_comments410, align 1, !tbaa !0
+  br label %if.end465
+
+if.else411:                                       ; preds = %if.else403
+  %call414 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([11 x i8]* @.str25, i64 0, i64 0)) #8
+  %tobool415 = icmp eq i32 %call414, 0
+  br i1 %tobool415, label %if.then416, label %if.else419
+
+if.then416:                                       ; preds = %if.else411
+  %warn_undef418 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 40
+  store i8 0, i8* %warn_undef418, align 1, !tbaa !0
+  br label %if.end465
+
+if.else419:                                       ; preds = %if.else411
+  %call422 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([12 x i8]* @.str26, i64 0, i64 0)) #8
+  %tobool423 = icmp eq i32 %call422, 0
+  br i1 %tobool423, label %if.then424, label %if.else427
+
+if.then424:                                       ; preds = %if.else419
+  %warn_import426 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 32
+  store i8 0, i8* %warn_import426, align 1, !tbaa !0
+  br label %if.end465
+
+if.else427:                                       ; preds = %if.else419
+  %call430 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([11 x i8]* @.str27, i64 0, i64 0)) #8
+  %tobool431 = icmp eq i32 %call430, 0
+  br i1 %tobool431, label %if.then432, label %if.else435
+
+if.then432:                                       ; preds = %if.else427
+  %warnings_are_errors434 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 34
+  store i8 0, i8* %warnings_are_errors434, align 1, !tbaa !0
+  br label %if.end465
+
+if.else435:                                       ; preds = %if.else427
+  %call438 = call i32 @strcmp(i8* %20, i8* getelementptr inbounds ([20 x i8]* @.str28, i64 0, i64 0)) #8
+  %tobool439 = icmp eq i32 %call438, 0
+  br i1 %tobool439, label %if.then440, label %if.else443
+
+if.then440:                                       ; preds = %if.else435
+  %warn_system_headers442 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 28
+  store i8 0, i8* %warn_system_headers442, align 1, !tbaa !0
+  br label %if.end465
+
+if.else443:                                       ; preds = %if.else435
+  %tobool444 = icmp eq i32 %ignore, 0
+  br i1 %tobool444, label %return, label %if.end465
+
+if.end465:                                        ; preds = %while.cond.preheader, %while.cond.backedge, %if.else443, %sw.bb86, %sw.bb, %sw.bb66, %sw.bb69, %sw.bb71, %sw.bb73, %sw.bb76, %sw.bb78, %sw.bb81, %sw.bb83, %sw.bb108, %sw.bb110, %sw.bb112, %sw.bb115, %sw.bb118, %sw.bb121, %sw.bb123, %sw.bb125, %sw.bb127, %sw.bb129, %sw.bb131, %sw.bb134, %sw.bb136, %sw.bb138, %sw.bb141, %sw.bb143, %sw.bb148, %sw.bb149, %sw.bb150, %sw.bb151, %sw.bb152, %sw.bb153, %sw.bb154, %sw.bb155, %sw.bb156, %sw.bb157, %sw.bb158, %sw.bb159, %sw.bb161, %if.then168, %sw.bb188, %sw.bb190, %sw.bb193, %sw.bb198, %sw.bb200, %sw.bb202, %sw.bb205, %sw.bb210, %sw.bb231, %sw.bb248, %if.end307, %sw.bb310, %if.end64, %if.then91, %land.lhs.true96, %if.then102, %free_chain.exit, %if.else227, %if.else229, %if.else245, %if.then238, %if.end270, %if.end261, %if.then325, %if.then340, %if.then356, %if.then370, %if.then384, %if.then400, %if.then416, %if.then432, %if.then440, %if.then424, %if.then408, %if.then392, %if.then377, %if.then363, %if.then348, %if.then332, %if.then317, %if.then12, %if.else25, %if.then20
+  %i.1 = phi i32 [ 0, %if.then12 ], [ 0, %if.then20 ], [ 0, %if.else25 ], [ %i.0, %if.end64 ], [ %i.0, %sw.bb310 ], [ %i.0, %if.end307 ], [ %i.0, %if.end261 ], [ %i.0, %if.end270 ], [ %i.0, %sw.bb248 ], [ %i.0, %if.else245 ], [ %i.0, %if.then238 ], [ %i.0, %sw.bb231 ], [ %i.0, %free_chain.exit ], [ %i.0, %if.else227 ], [ %i.0, %if.else229 ], [ %i.0, %sw.bb210 ], [ %i.0, %sw.bb205 ], [ %i.0, %sw.bb202 ], [ %i.0, %sw.bb200 ], [ %i.0, %sw.bb198 ], [ %i.0, %sw.bb193 ], [ %i.0, %sw.bb190 ], [ %i.0, %sw.bb188 ], [ %i.0, %if.then168 ], [ %i.0, %sw.bb161 ], [ %i.0, %sw.bb159 ], [ %i.0, %sw.bb158 ], [ %i.0, %sw.bb157 ], [ %i.0, %sw.bb156 ], [ %i.0, %sw.bb155 ], [ %i.0, %sw.bb154 ], [ %i.0, %sw.bb153 ], [ %i.0, %sw.bb152 ], [ %i.0, %sw.bb151 ], [ %i.0, %sw.bb150 ], [ %i.0, %sw.bb149 ], [ %i.0, %sw.bb148 ], [ %i.0, %sw.bb143 ], [ %i.0, %sw.bb141 ], [ %i.0, %sw.bb138 ], [ %i.0, %sw.bb136 ], [ %i.0, %sw.bb134 ], [ %i.0, %sw.bb131 ], [ %i.0, %sw.bb129 ], [ %i.0, %sw.bb127 ], [ %i.0, %sw.bb125 ], [ %i.0, %sw.bb123 ], [ %i.0, %sw.bb121 ], [ %i.0, %sw.bb118 ], [ %i.0, %sw.bb115 ], [ %i.0, %sw.bb112 ], [ %i.0, %sw.bb110 ], [ %i.0, %sw.bb108 ], [ %i.0, %if.then102 ], [ %i.0, %land.lhs.true96 ], [ %i.0, %if.then91 ], [ %i.0, %sw.bb86 ], [ %i.0, %sw.bb83 ], [ %i.0, %sw.bb81 ], [ %i.0, %sw.bb78 ], [ %i.0, %sw.bb76 ], [ %i.0, %sw.bb73 ], [ %i.0, %sw.bb71 ], [ %i.0, %sw.bb69 ], [ %i.0, %sw.bb66 ], [ %i.0, %sw.bb ], [ %i.0, %if.else443 ], [ %i.0, %if.then440 ], [ %i.0, %if.then432 ], [ %i.0, %if.then424 ], [ %i.0, %if.then416 ], [ %i.0, %if.then408 ], [ %i.0, %if.then400 ], [ %i.0, %if.then392 ], [ %i.0, %if.then384 ], [ %i.0, %if.then377 ], [ %i.0, %if.then370 ], [ %i.0, %if.then363 ], [ %i.0, %if.then356 ], [ %i.0, %if.then348 ], [ %i.0, %if.then340 ], [ %i.0, %if.then332 ], [ %i.0, %if.then325 ], [ %i.0, %if.then317 ], [ %i.0, %while.cond.backedge ], [ %i.0, %while.cond.preheader ]
+  %add466 = add nsw i32 %i.1, 1
+  br label %return
+
+return:                                           ; preds = %while.cond.i, %if.else443, %parse_option.exit, %if.end465, %if.else243, %if.else171, %if.then56
+  %retval.0 = phi i32 [ %add466, %if.end465 ], [ %argc, %if.else243 ], [ %argc, %if.else171 ], [ %argc, %if.then56 ], [ 0, %parse_option.exit ], [ %i.0, %if.else443 ], [ 0, %while.cond.i ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,21 @@
+define void @add_params(%struct.param_info* nocapture %params, i64 %n) #0 {
+entry:
+  %0 = load %struct.param_info** @compiler_params, align 8, !tbaa !0
+  %1 = bitcast %struct.param_info* %0 to i8*
+  %2 = load i64* @num_compiler_params, align 8, !tbaa !3
+  %add = add i64 %2, %n
+  %mul = mul i64 %add, 24
+  %call = tail call i8* @xrealloc(i8* %1, i64 %mul) #5
+  %3 = bitcast i8* %call to %struct.param_info*
+  store %struct.param_info* %3, %struct.param_info** @compiler_params, align 8, !tbaa !0
+  %4 = load i64* @num_compiler_params, align 8, !tbaa !3
+  %add.ptr = getelementptr inbounds %struct.param_info* %3, i64 %4
+  %5 = bitcast %struct.param_info* %add.ptr to i8*
+  %6 = bitcast %struct.param_info* %params to i8*
+  %mul1 = mul i64 %n, 24
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* %6, i64 %mul1, i32 8, i1 false)
+  %7 = load i64* @num_compiler_params, align 8, !tbaa !3
+  %add2 = add i64 %7, %n
+  store i64 %add2, i64* @num_compiler_params, align 8, !tbaa !3
+  ret void
+}

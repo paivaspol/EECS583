@@ -1,0 +1,14 @@
+define internal void @build_real_from_int_cst_1(i8* nocapture %data) #0 {
+entry:
+  %tmp = alloca %struct.realvaluetype, align 8
+  %d = getelementptr inbounds i8* %data, i64 16
+  %type = bitcast i8* %data to %union.tree_node**
+  %0 = load %union.tree_node** %type, align 8, !tbaa !0
+  %i = getelementptr inbounds i8* %data, i64 8
+  %1 = bitcast i8* %i to %union.tree_node**
+  %2 = load %union.tree_node** %1, align 8, !tbaa !0
+  call void @real_value_from_int_cst(%struct.realvaluetype* sret %tmp, %union.tree_node* %0, %union.tree_node* %2) #10
+  %3 = bitcast %struct.realvaluetype* %tmp to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %d, i8* %3, i64 24, i32 8, i1 false), !tbaa.struct !5
+  ret void
+}

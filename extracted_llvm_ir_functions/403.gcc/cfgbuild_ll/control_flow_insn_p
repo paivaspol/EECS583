@@ -1,0 +1,67 @@
+define internal fastcc zeroext i1 @control_flow_insn_p(%struct.rtx_def* %insn) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %insn to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.default [
+    i32 37, label %return
+    i32 36, label %return
+    i32 33, label %sw.bb1
+    i32 34, label %sw.bb10
+    i32 32, label %sw.bb19
+    i32 35, label %return
+  ]
+
+sw.bb1:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load2 = load i32* %2, align 8
+  %bf.clear3 = and i32 %bf.load2, 65535
+  %bf.clear3.off = add i32 %bf.clear3, -44
+  %3 = icmp ugt i32 %bf.clear3.off, 1
+  br label %return
+
+sw.bb10:                                          ; preds = %entry
+  %4 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_nonlocal_goto_handler_labels = getelementptr inbounds %struct.function* %4, i64 0, i32 21
+  %5 = load %struct.rtx_def** %x_nonlocal_goto_handler_labels, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %5, null
+  br i1 %tobool, label %lor.rhs, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %sw.bb10
+  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn, i32 23, %struct.rtx_def* null) #4
+  %cmp11 = icmp eq %struct.rtx_def* %call, null
+  br i1 %cmp11, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0
+  %rtx14 = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx14, align 8, !tbaa !0
+  %rtwint = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 0, i32 0
+  %7 = load i64* %rtwint, align 8, !tbaa !4
+  %cmp17 = icmp sgt i64 %7, -1
+  br i1 %cmp17, label %return, label %lor.rhs
+
+lor.rhs:                                          ; preds = %sw.bb10, %lor.lhs.false
+  %call18 = tail call zeroext i1 @can_throw_internal(%struct.rtx_def* %insn) #4
+  br label %return
+
+sw.bb19:                                          ; preds = %entry
+  %8 = load i32* @flag_non_call_exceptions, align 4, !tbaa !3
+  %tobool20 = icmp eq i32 %8, 0
+  br i1 %tobool20, label %return, label %land.rhs21
+
+land.rhs21:                                       ; preds = %sw.bb19
+  %call22 = tail call zeroext i1 @can_throw_internal(%struct.rtx_def* %insn) #4
+  br label %return
+
+sw.default:                                       ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0), i32 134, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.control_flow_insn_p, i64 0, i64 0)) #5
+  unreachable
+
+return:                                           ; preds = %entry, %land.rhs21, %sw.bb19, %land.lhs.true, %lor.lhs.false, %lor.rhs, %entry, %entry, %sw.bb1
+  %retval.0 = phi i1 [ %3, %sw.bb1 ], [ false, %entry ], [ false, %entry ], [ true, %lor.lhs.false ], [ true, %land.lhs.true ], [ %call18, %lor.rhs ], [ false, %sw.bb19 ], [ %call22, %land.rhs21 ], [ false, %entry ]
+  ret i1 %retval.0
+}

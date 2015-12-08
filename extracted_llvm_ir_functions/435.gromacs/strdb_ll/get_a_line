@@ -1,0 +1,82 @@
+define i32 @get_a_line(%struct._IO_FILE* nocapture %fp, i8* %line, i32 %n) #0 {
+entry:
+  %0 = load i32* @get_a_line.nalloc, align 4, !tbaa !0
+  %cmp = icmp slt i32 %0, %n
+  br i1 %cmp, label %if.then, label %entry.do.body.preheader_crit_edge
+
+entry.do.body.preheader_crit_edge:                ; preds = %entry
+  %add2.pre = add nsw i32 %n, 1
+  br label %do.body.preheader
+
+if.then:                                          ; preds = %entry
+  store i32 %n, i32* @get_a_line.nalloc, align 4, !tbaa !0
+  %1 = load i8** @get_a_line.line0, align 8, !tbaa !3
+  %add = add nsw i32 %n, 1
+  %call = tail call i8* @save_realloc(i8* getelementptr inbounds ([6 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 49, i8* %1, i32 %add) #5
+  store i8* %call, i8** @get_a_line.line0, align 8, !tbaa !3
+  br label %do.body.preheader
+
+do.body.preheader:                                ; preds = %entry.do.body.preheader_crit_edge, %if.then
+  %add2.pre-phi = phi i32 [ %add2.pre, %entry.do.body.preheader_crit_edge ], [ %add, %if.then ]
+  %conv10 = sext i32 %n to i64
+  %sub = add nsw i32 %n, -1
+  %idxprom = sext i32 %sub to i64
+  br label %do.body
+
+do.body:                                          ; preds = %if.end24, %do.body.preheader
+  %2 = load i8** @get_a_line.line0, align 8, !tbaa !3
+  %call3 = tail call i8* @fgets(i8* %2, i32 %add2.pre-phi, %struct._IO_FILE* %fp) #5
+  %tobool = icmp eq i8* %call3, null
+  br i1 %tobool, label %return, label %if.end5
+
+if.end5:                                          ; preds = %do.body
+  %3 = load i8** @get_a_line.line0, align 8, !tbaa !3
+  %call6 = tail call i8* @strchr(i8* %3, i32 10) #6
+  %tobool7 = icmp eq i8* %call6, null
+  br i1 %tobool7, label %if.else, label %if.then8
+
+if.then8:                                         ; preds = %if.end5
+  store i8 0, i8* %call6, align 1, !tbaa !1
+  br label %if.end19
+
+if.else:                                          ; preds = %if.end5
+  %call9 = tail call i64 @strlen(i8* %3) #6
+  %cmp11 = icmp eq i64 %call9, %conv10
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  br i1 %cmp11, label %if.then13, label %if.else16
+
+if.then13:                                        ; preds = %if.else
+  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([74 x i8]* @.str2, i64 0, i64 0), i32 %n) #5
+  %5 = load i8** @get_a_line.line0, align 8, !tbaa !3
+  %arrayidx15 = getelementptr inbounds i8* %5, i64 %idxprom
+  store i8 0, i8* %arrayidx15, align 1, !tbaa !1
+  br label %if.end19
+
+if.else16:                                        ; preds = %if.else
+  %call17 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([58 x i8]* @.str3, i64 0, i64 0), i8* %3) #5
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.then13, %if.else16, %if.then8
+  %6 = load i8** @get_a_line.line0, align 8, !tbaa !3
+  %call20 = tail call i8* @strchr(i8* %6, i32 59) #6
+  %tobool21 = icmp eq i8* %call20, null
+  br i1 %tobool21, label %if.end24, label %if.then22
+
+if.then22:                                        ; preds = %if.end19
+  store i8 0, i8* %call20, align 1, !tbaa !1
+  %.pre = load i8** @get_a_line.line0, align 8, !tbaa !3
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.end19, %if.then22
+  %7 = phi i8* [ %6, %if.end19 ], [ %.pre, %if.then22 ]
+  %call25 = tail call i8* @strcpy(i8* %line, i8* %7) #5
+  %8 = load i8** @get_a_line.line0, align 8, !tbaa !3
+  tail call void @ltrim(i8* %8) #5
+  %9 = load i8* %8, align 1, !tbaa !1
+  %cmp28 = icmp eq i8 %9, 0
+  br i1 %cmp28, label %do.body, label %return
+
+return:                                           ; preds = %if.end24, %do.body
+  %retval.0 = phi i32 [ 0, %do.body ], [ 1, %if.end24 ]
+  ret i32 %retval.0
+}

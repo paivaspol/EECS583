@@ -1,0 +1,26 @@
+define void @set_diagnostic_context(%struct.diagnostic_context* nocapture %dc, i8* %msgid, [1 x %struct.__va_list_tag]* %args_ptr, i8* %file, i32 %line, i32 %warn) #2 {
+entry:
+  %0 = bitcast %struct.diagnostic_context* %dc to i8*
+  tail call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 376, i32 8, i1 false)
+  %message = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 1
+  store i8* %msgid, i8** %message, align 8, !tbaa !3
+  %args_ptr1 = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 2
+  store [1 x %struct.__va_list_tag]* %args_ptr, [1 x %struct.__va_list_tag]** %args_ptr1, align 8, !tbaa !3
+  %file2 = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 3
+  store i8* %file, i8** %file2, align 8, !tbaa !3
+  %line3 = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 4
+  store i32 %line, i32* %line3, align 4, !tbaa !0
+  %warn4 = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 5
+  store i32 %warn, i32* %warn4, align 4, !tbaa !0
+  %1 = load %struct.diagnostic_context** @global_dc, align 8, !tbaa !3
+  %begin_diagnostic = getelementptr inbounds %struct.diagnostic_context* %1, i64 0, i32 6
+  %2 = load void (%struct.output_buffer*, %struct.diagnostic_context*)** %begin_diagnostic, align 8, !tbaa !3
+  %begin_diagnostic5 = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 6
+  store void (%struct.output_buffer*, %struct.diagnostic_context*)* %2, void (%struct.output_buffer*, %struct.diagnostic_context*)** %begin_diagnostic5, align 8, !tbaa !3
+  %3 = load %struct.diagnostic_context** @global_dc, align 8, !tbaa !3
+  %end_diagnostic = getelementptr inbounds %struct.diagnostic_context* %3, i64 0, i32 7
+  %4 = load void (%struct.output_buffer*, %struct.diagnostic_context*)** %end_diagnostic, align 8, !tbaa !3
+  %end_diagnostic6 = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 7
+  store void (%struct.output_buffer*, %struct.diagnostic_context*)* %4, void (%struct.output_buffer*, %struct.diagnostic_context*)** %end_diagnostic6, align 8, !tbaa !3
+  ret void
+}

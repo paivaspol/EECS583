@@ -1,0 +1,52 @@
+define internal fastcc void @df_ref_debug(%struct.df* nocapture %df, %struct.ref* nocapture %ref, %struct._IO_FILE* nocapture %file) #0 {
+entry:
+  %type = getelementptr inbounds %struct.ref* %ref, i64 0, i32 4
+  %0 = load i32* %type, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, 0
+  %cond = select i1 %cmp, i32 100, i32 117
+  %id = getelementptr inbounds %struct.ref* %ref, i64 0, i32 5
+  %1 = load i32* %id, align 4, !tbaa !4
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str28, i64 0, i64 0), i32 %cond, i32 %1) #8
+  %reg = getelementptr inbounds %struct.ref* %ref, i64 0, i32 0
+  %2 = load %struct.rtx_def** %reg, align 8, !tbaa !3
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp1 = icmp eq i32 %bf.clear, 63
+  br i1 %cmp1, label %cond.true, label %cond.end
+
+cond.true:                                        ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond4 = phi %struct.rtx_def* [ %4, %cond.true ], [ %2, %entry ]
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %cond4, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx6 to i32*
+  %5 = load i32* %rtuint, align 4, !tbaa !4
+  %insn = getelementptr inbounds %struct.ref* %ref, i64 0, i32 1
+  %6 = load %struct.rtx_def** %insn, align 8, !tbaa !3
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx8 to i32*
+  %7 = load i32* %rtint, align 4, !tbaa !4
+  %idxprom = sext i32 %7 to i64
+  %8 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %8, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx9 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom
+  %9 = load %struct.basic_block_def** %arrayidx9, align 8, !tbaa !3
+  %index = getelementptr inbounds %struct.basic_block_def* %9, i64 0, i32 11
+  %10 = load i32* %index, align 4, !tbaa !4
+  %insns = getelementptr inbounds %struct.df* %df, i64 0, i32 7
+  %11 = load %struct.insn_info** %insns, align 8, !tbaa !3
+  %luid = getelementptr inbounds %struct.insn_info* %11, i64 %idxprom, i32 2
+  %12 = load i32* %luid, align 4, !tbaa !4
+  %call20 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([36 x i8]* @.str29, i64 0, i64 0), i32 %5, i32 %10, i32 %12, i32 %7) #8
+  %chain = getelementptr inbounds %struct.ref* %ref, i64 0, i32 3
+  %13 = load %struct.df_link** %chain, align 8, !tbaa !3
+  tail call fastcc void @df_chain_dump(%struct.df_link* %13, %struct._IO_FILE* %file) #6
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #5
+  ret void
+}

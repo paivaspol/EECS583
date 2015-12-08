@@ -1,0 +1,66 @@
+define %struct.fibheap* @fibheap_union(%struct.fibheap* %heapa, %struct.fibheap* %heapb) #0 {
+entry:
+  %root = getelementptr inbounds %struct.fibheap* %heapa, i64 0, i32 2
+  %0 = load %struct.fibnode** %root, align 8, !tbaa !0
+  %cmp = icmp eq %struct.fibnode* %0, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = bitcast %struct.fibheap* %heapa to i8*
+  tail call void @free(i8* %1) #5
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %root1 = getelementptr inbounds %struct.fibheap* %heapb, i64 0, i32 2
+  %2 = load %struct.fibnode** %root1, align 8, !tbaa !0
+  %cmp2 = icmp eq %struct.fibnode* %2, null
+  br i1 %cmp2, label %if.then3, label %if.end4
+
+if.then3:                                         ; preds = %if.end
+  %3 = bitcast %struct.fibheap* %heapb to i8*
+  tail call void @free(i8* %3) #5
+  br label %return
+
+if.end4:                                          ; preds = %if.end
+  %left = getelementptr inbounds %struct.fibnode* %0, i64 0, i32 2
+  %4 = load %struct.fibnode** %left, align 8, !tbaa !0
+  %right = getelementptr inbounds %struct.fibnode* %4, i64 0, i32 3
+  store %struct.fibnode* %2, %struct.fibnode** %right, align 8, !tbaa !0
+  %left5 = getelementptr inbounds %struct.fibnode* %2, i64 0, i32 2
+  %5 = load %struct.fibnode** %left5, align 8, !tbaa !0
+  %right6 = getelementptr inbounds %struct.fibnode* %5, i64 0, i32 3
+  store %struct.fibnode* %0, %struct.fibnode** %right6, align 8, !tbaa !0
+  %6 = load %struct.fibnode** %left, align 8, !tbaa !0
+  %7 = load %struct.fibnode** %left5, align 8, !tbaa !0
+  store %struct.fibnode* %7, %struct.fibnode** %left, align 8, !tbaa !0
+  store %struct.fibnode* %6, %struct.fibnode** %left5, align 8, !tbaa !0
+  %nodes = getelementptr inbounds %struct.fibheap* %heapb, i64 0, i32 0
+  %8 = load i64* %nodes, align 8, !tbaa !3
+  %nodes11 = getelementptr inbounds %struct.fibheap* %heapa, i64 0, i32 0
+  %9 = load i64* %nodes11, align 8, !tbaa !3
+  %add = add i64 %9, %8
+  store i64 %add, i64* %nodes11, align 8, !tbaa !3
+  %min = getelementptr inbounds %struct.fibheap* %heapb, i64 0, i32 1
+  %10 = load %struct.fibnode** %min, align 8, !tbaa !0
+  %min12 = getelementptr inbounds %struct.fibheap* %heapa, i64 0, i32 1
+  %11 = load %struct.fibnode** %min12, align 8, !tbaa !0
+  %key.i = getelementptr inbounds %struct.fibnode* %10, i64 0, i32 4
+  %12 = load i64* %key.i, align 8, !tbaa !3
+  %key1.i = getelementptr inbounds %struct.fibnode* %11, i64 0, i32 4
+  %13 = load i64* %key1.i, align 8, !tbaa !3
+  %cmp.i = icmp slt i64 %12, %13
+  br i1 %cmp.i, label %if.then14, label %if.end17
+
+if.then14:                                        ; preds = %if.end4
+  store %struct.fibnode* %10, %struct.fibnode** %min12, align 8, !tbaa !0
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.end4, %if.then14
+  %14 = bitcast %struct.fibheap* %heapb to i8*
+  tail call void @free(i8* %14) #5
+  br label %return
+
+return:                                           ; preds = %if.end17, %if.then3, %if.then
+  %retval.0 = phi %struct.fibheap* [ %heapb, %if.then ], [ %heapa, %if.then3 ], [ %heapa, %if.end17 ]
+  ret %struct.fibheap* %retval.0
+}

@@ -1,0 +1,69 @@
+define void @print_tty_formatted(%struct._IO_FILE* nocapture %out, i32 %nldesc, i8** nocapture %desc) #0 {
+entry:
+  %cmp54 = icmp sgt i32 %nldesc, 0
+  br i1 %cmp54, label %for.body, label %for.end.thread
+
+for.end.thread:                                   ; preds = %entry
+  %call361 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str62, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str63, i64 0, i64 0), i32 370, i32 0, i32 1) #6
+  br label %for.end30
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv57 = phi i64 [ %indvars.iv.next58, %for.body ], [ 0, %entry ]
+  %j.056 = phi i64 [ %add1, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i8** %desc, i64 %indvars.iv57
+  %0 = load i8** %arrayidx, align 8, !tbaa !0
+  %call = tail call i64 @strlen(i8* %0) #7
+  %conv51 = and i64 %j.056, 4294967295
+  %add = add i64 %conv51, 10
+  %add1 = add i64 %add, %call
+  %indvars.iv.next58 = add i64 %indvars.iv57, 1
+  %lftr.wideiv59 = trunc i64 %indvars.iv.next58 to i32
+  %exitcond60 = icmp eq i32 %lftr.wideiv59, %nldesc
+  br i1 %exitcond60, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %conv2 = trunc i64 %add1 to i32
+  %call3 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str62, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str63, i64 0, i64 0), i32 370, i32 %conv2, i32 1) #6
+  br i1 %cmp54, label %for.body7, label %for.end30
+
+for.body7:                                        ; preds = %for.end, %if.end
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end ], [ 0, %for.end ]
+  %call8 = tail call i64 @strlen(i8* %call3) #7
+  %cmp9 = icmp eq i64 %call8, 0
+  br i1 %cmp9, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body7
+  %sub = add i64 %call8, -1
+  %arrayidx12 = getelementptr inbounds i8* %call3, i64 %sub
+  %1 = load i8* %arrayidx12, align 1, !tbaa !1
+  switch i8 %1, label %if.then [
+    i8 32, label %if.end
+    i8 10, label %if.end
+  ]
+
+if.then:                                          ; preds = %land.lhs.true
+  %strlen = tail call i64 @strlen(i8* %call3)
+  %endptr = getelementptr i8* %call3, i64 %strlen
+  %2 = bitcast i8* %endptr to i16*
+  store i16 32, i16* %2, align 1
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %land.lhs.true, %for.body7, %if.then
+  %arrayidx25 = getelementptr inbounds i8** %desc, i64 %indvars.iv
+  %3 = load i8** %arrayidx25, align 8, !tbaa !0
+  %call.i = tail call fastcc i8* @repall(i8* %3, i32 8, %struct.t_sandr* getelementptr inbounds ([8 x %struct.t_sandr]* @sandrTty, i64 0, i64 0)) #6
+  %call27 = tail call i8* @strcat(i8* %call3, i8* %call.i) #6
+  tail call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str65, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str63, i64 0, i64 0), i32 377, i8* %call.i) #6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nldesc
+  br i1 %exitcond, label %for.end30, label %for.body7
+
+for.end30:                                        ; preds = %if.end, %for.end.thread, %for.end
+  %call362 = phi i8* [ %call361, %for.end.thread ], [ %call3, %for.end ], [ %call3, %if.end ]
+  %call31 = tail call i8* @wrap_lines(i8* %call362, i32 80, i32 0) #6
+  %call32 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str66, i64 0, i64 0), i8* %call31) #6
+  tail call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str65, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str63, i64 0, i64 0), i32 382, i8* %call31) #6
+  tail call void @save_free(i8* getelementptr inbounds ([4 x i8]* @.str62, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str63, i64 0, i64 0), i32 383, i8* %call362) #6
+  ret void
+}

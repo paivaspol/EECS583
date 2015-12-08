@@ -1,0 +1,13 @@
+define %struct.rtx_def* @gen_conditional_trap(%struct.rtx_def* nocapture %operand0, %struct.rtx_def* %operand1) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %0 = bitcast %struct.rtx_def* %operand0 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %call = tail call %struct.rtx_def* @ix86_expand_compare(i32 %bf.clear, %struct.rtx_def** null, %struct.rtx_def** null) #4
+  %call4 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 52, i32 0, %struct.rtx_def* %call, %struct.rtx_def* %operand1) #4
+  %call5 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call4) #4
+  %call6 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  ret %struct.rtx_def* %call6
+}

@@ -1,0 +1,22 @@
+define %struct.gauge_file* @restore_serial(i8* %filename) #0 {
+entry:
+  %call = tail call %struct.gauge_file* @r_serial_i(i8* %filename) #8
+  %header = getelementptr inbounds %struct.gauge_file* %call, i64 0, i32 1
+  %0 = load %struct.gauge_header** %header, align 8, !tbaa !3
+  %magic_number = getelementptr inbounds %struct.gauge_header* %0, i64 0, i32 0
+  %1 = load i32* %magic_number, align 4, !tbaa !0
+  %cmp = icmp eq i32 %1, 1111836489
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call void @r_serial_arch(%struct.gauge_file* %call) #8
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  tail call void @r_serial(%struct.gauge_file* %call) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  tail call void @r_serial_f(%struct.gauge_file* %call) #8
+  ret %struct.gauge_file* %call
+}

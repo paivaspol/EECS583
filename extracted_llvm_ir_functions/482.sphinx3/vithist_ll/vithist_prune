@@ -1,0 +1,277 @@
+define void @vithist_prune(%struct.vithist_t* nocapture %vh, %struct.dict_t* %dict, i32 %frm, i32 %maxwpf, i32 %maxhist, i32 %beam) #0 {
+entry:
+  %ve = alloca %struct.vithist_entry_t*, align 8
+  %i = alloca i32, align 4
+  %idxprom = sext i32 %frm to i64
+  %frame_start = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 1
+  %0 = load i32** %frame_start, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %0, i64 %idxprom
+  %1 = load i32* %arrayidx, align 4, !tbaa !3
+  %n_entry = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 2
+  %2 = load i32* %n_entry, align 4, !tbaa !3
+  %sub = add nsw i32 %2, -1
+  %bestscore = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 6
+  %3 = load i32** %bestscore, align 8, !tbaa !0
+  %arrayidx2 = getelementptr inbounds i32* %3, i64 %idxprom
+  %4 = load i32* %arrayidx2, align 4, !tbaa !3
+  %add = add nsw i32 %4, %beam
+  %call = call i8* @heap_new() #6
+  %add3 = add nsw i32 %maxwpf, 1
+  %conv = sext i32 %add3 to i64
+  %call4 = call i8* @__ckd_calloc__(i64 %conv, i64 4, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 410) #6
+  %5 = bitcast i8* %call4 to i32*
+  store i32 -1, i32* %5, align 4, !tbaa !3
+  store i32 %1, i32* %i, align 4, !tbaa !3
+  %cmp89 = icmp sgt i32 %1, %sub
+  br i1 %cmp89, label %while.cond.preheader, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %entry8 = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 0
+  br label %for.body
+
+while.cond.preheader:                             ; preds = %for.body, %entry
+  %6 = bitcast %struct.vithist_entry_t** %ve to i8**
+  %bghist = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 4
+  br label %while.cond.outer.outer.outer
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %storemerge90 = phi i32 [ %1, %for.body.lr.ph ], [ %inc, %for.body ]
+  %shr = ashr i32 %storemerge90, 14
+  %idxprom7 = sext i32 %shr to i64
+  %7 = load %struct.vithist_entry_t*** %entry8, align 8, !tbaa !0
+  %arrayidx9 = getelementptr inbounds %struct.vithist_entry_t** %7, i64 %idxprom7
+  %8 = load %struct.vithist_entry_t** %arrayidx9, align 8, !tbaa !0
+  %and = and i32 %storemerge90, 16383
+  %idx.ext86 = zext i32 %and to i64
+  %add.ptr = getelementptr inbounds %struct.vithist_entry_t* %8, i64 %idx.ext86
+  store %struct.vithist_entry_t* %add.ptr, %struct.vithist_entry_t** %ve, align 8, !tbaa !0
+  %9 = bitcast %struct.vithist_entry_t* %add.ptr to i8*
+  %score = getelementptr inbounds %struct.vithist_entry_t* %8, i64 %idx.ext86, i32 5
+  %10 = load i32* %score, align 4, !tbaa !3
+  %sub10 = sub nsw i32 0, %10
+  %call11 = call i32 @heap_insert(i8* %call, i8* %9, i32 %sub10) #6
+  %11 = load %struct.vithist_entry_t** %ve, align 8, !tbaa !0
+  %valid = getelementptr inbounds %struct.vithist_entry_t* %11, i64 0, i32 8
+  store i32 0, i32* %valid, align 4, !tbaa !3
+  %12 = load i32* %i, align 4, !tbaa !3
+  %inc = add nsw i32 %12, 1
+  store i32 %inc, i32* %i, align 4, !tbaa !3
+  %cmp = icmp slt i32 %12, %sub
+  br i1 %cmp, label %for.body, label %while.cond.preheader
+
+while.cond:                                       ; preds = %while.body, %while.cond.outer
+  %call12 = call i32 @heap_pop(i8* %call, i8** %6, i32* %i) #6
+  %cmp13 = icmp sgt i32 %call12, 0
+  br i1 %cmp13, label %land.lhs.true, label %while.end
+
+land.lhs.true:                                    ; preds = %while.cond
+  %13 = load %struct.vithist_entry_t** %ve, align 8, !tbaa !0
+  %score15 = getelementptr inbounds %struct.vithist_entry_t* %13, i64 0, i32 5
+  %14 = load i32* %score15, align 4, !tbaa !3
+  %cmp16 = icmp sge i32 %14, %add
+  %or.cond = and i1 %cmp16, %cmp18
+  br i1 %or.cond, label %while.body, label %while.end
+
+while.body:                                       ; preds = %land.lhs.true
+  %wid20 = getelementptr inbounds %struct.vithist_entry_t* %13, i64 0, i32 0
+  %15 = load i32* %wid20, align 4, !tbaa !3
+  %call21 = call i32 @dict_filler_word(%struct.dict_t* %dict, i32 %15) #6
+  %tobool = icmp eq i32 %call21, 0
+  %brmerge = or i1 %tobool, %tobool22
+  %filler_done.0.ph.mux = select i1 %tobool, i32 %filler_done.0.ph, i32 1
+  br i1 %brmerge, label %if.end24, label %while.cond
+
+if.end24:                                         ; preds = %while.body
+  store i32 0, i32* %i, align 4, !tbaa !3
+  %16 = load i32* %5, align 4, !tbaa !3
+  %cmp2887 = icmp sgt i32 %16, -1
+  br i1 %cmp2887, label %land.rhs30.lr.ph, label %for.end40
+
+land.rhs30.lr.ph:                                 ; preds = %if.end24
+  %17 = load %struct.vithist_entry_t** %ve, align 8, !tbaa !0
+  %wid33 = getelementptr inbounds %struct.vithist_entry_t* %17, i64 0, i32 0
+  br label %land.rhs30
+
+for.cond25:                                       ; preds = %land.rhs30
+  %18 = trunc i64 %indvars.iv.next to i32
+  store i32 %18, i32* %i, align 4, !tbaa !3
+  %arrayidx27 = getelementptr inbounds i32* %5, i64 %indvars.iv.next
+  %19 = load i32* %arrayidx27, align 4, !tbaa !3
+  %cmp28 = icmp sgt i32 %19, -1
+  br i1 %cmp28, label %land.rhs30, label %for.end40
+
+land.rhs30:                                       ; preds = %land.rhs30.lr.ph, %for.cond25
+  %20 = phi i64 [ 0, %land.rhs30.lr.ph ], [ %indvars.iv.next, %for.cond25 ]
+  %21 = phi i32 [ %16, %land.rhs30.lr.ph ], [ %19, %for.cond25 ]
+  %22 = load i32* %wid33, align 4, !tbaa !3
+  %cmp34 = icmp eq i32 %21, %22
+  %indvars.iv.next = add i64 %20, 1
+  br i1 %cmp34, label %for.end40, label %for.cond25
+
+for.end40:                                        ; preds = %for.cond25, %land.rhs30, %if.end24
+  %23 = phi i64 [ 0, %if.end24 ], [ %20, %land.rhs30 ], [ %indvars.iv.next, %for.cond25 ]
+  %sext = shl i64 %23, 32
+  %idxprom41 = ashr exact i64 %sext, 32
+  %arrayidx42 = getelementptr inbounds i32* %5, i64 %idxprom41
+  %24 = load i32* %arrayidx42, align 4, !tbaa !3
+  %cmp43 = icmp slt i32 %24, 0
+  br i1 %cmp43, label %if.then45, label %if.else
+
+if.then45:                                        ; preds = %for.end40
+  br i1 %cmp46, label %if.then48, label %while.cond.outer
+
+if.then48:                                        ; preds = %if.then45
+  %25 = load %struct.vithist_entry_t** %ve, align 8, !tbaa !0
+  %wid49 = getelementptr inbounds %struct.vithist_entry_t* %25, i64 0, i32 0
+  %26 = load i32* %wid49, align 4, !tbaa !3
+  store i32 %26, i32* %arrayidx42, align 4, !tbaa !3
+  %27 = load i32* %i, align 4, !tbaa !3
+  %add52 = add nsw i32 %27, 1
+  %idxprom53 = sext i32 %add52 to i64
+  %arrayidx54 = getelementptr inbounds i32* %5, i64 %idxprom53
+  store i32 -1, i32* %arrayidx54, align 4, !tbaa !3
+  %dec = add nsw i32 %maxwpf.addr.0.ph.ph.ph, -1
+  %dec55 = add nsw i32 %maxhist.addr.0.ph.ph, -1
+  %valid56 = getelementptr inbounds %struct.vithist_entry_t* %25, i64 0, i32 8
+  store i32 1, i32* %valid56, align 4, !tbaa !3
+  br label %while.cond.outer.outer.outer
+
+while.cond.outer.outer.outer:                     ; preds = %while.cond.preheader, %if.then48
+  %filler_done.0.ph.ph.ph = phi i32 [ %filler_done.0.ph.mux, %if.then48 ], [ 0, %while.cond.preheader ]
+  %maxhist.addr.0.ph.ph.ph = phi i32 [ %dec55, %if.then48 ], [ %maxhist, %while.cond.preheader ]
+  %maxwpf.addr.0.ph.ph.ph = phi i32 [ %dec, %if.then48 ], [ %maxwpf, %while.cond.preheader ]
+  %cmp46 = icmp sgt i32 %maxwpf.addr.0.ph.ph.ph, 0
+  br label %while.cond.outer.outer
+
+while.cond.outer.outer:                           ; preds = %while.cond.outer.outer.outer, %if.then59
+  %filler_done.0.ph.ph = phi i32 [ %filler_done.0.ph.mux, %if.then59 ], [ %filler_done.0.ph.ph.ph, %while.cond.outer.outer.outer ]
+  %maxhist.addr.0.ph.ph = phi i32 [ %dec60, %if.then59 ], [ %maxhist.addr.0.ph.ph.ph, %while.cond.outer.outer.outer ]
+  %cmp18 = icmp sgt i32 %maxhist.addr.0.ph.ph, 0
+  br label %while.cond.outer
+
+while.cond.outer:                                 ; preds = %if.else, %if.then45, %while.cond.outer.outer
+  %filler_done.0.ph = phi i32 [ %filler_done.0.ph.ph, %while.cond.outer.outer ], [ %filler_done.0.ph.mux, %if.then45 ], [ %filler_done.0.ph.mux, %if.else ]
+  %tobool22 = icmp eq i32 %filler_done.0.ph, 0
+  br label %while.cond
+
+if.else:                                          ; preds = %for.end40
+  %28 = load i32* %bghist, align 4, !tbaa !3
+  %tobool58 = icmp eq i32 %28, 0
+  br i1 %tobool58, label %if.then59, label %while.cond.outer
+
+if.then59:                                        ; preds = %if.else
+  %dec60 = add nsw i32 %maxhist.addr.0.ph.ph, -1
+  %29 = load %struct.vithist_entry_t** %ve, align 8, !tbaa !0
+  %valid61 = getelementptr inbounds %struct.vithist_entry_t* %29, i64 0, i32 8
+  store i32 1, i32* %valid61, align 4, !tbaa !3
+  br label %while.cond.outer.outer
+
+while.end:                                        ; preds = %land.lhs.true, %while.cond
+  call void @ckd_free(i8* %call4) #6
+  %call64 = call i32 @heap_destroy(i8* %call) #6
+  %30 = load i32** %frame_start, align 8, !tbaa !0
+  %arrayidx.i = getelementptr inbounds i32* %30, i64 %idxprom
+  %31 = load i32* %arrayidx.i, align 4, !tbaa !3
+  %32 = load i32* %n_entry, align 4, !tbaa !3
+  %sub.i = add nsw i32 %32, -1
+  %cmp69.i = icmp sgt i32 %31, %sub.i
+  br i1 %cmp69.i, label %for.end.i, label %for.body.lr.ph.i
+
+for.body.lr.ph.i:                                 ; preds = %while.end
+  %entry2.i = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 0
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.inc.i.for.body.i_crit_edge, %for.body.lr.ph.i
+  %te.073.i = phi i32 [ %31, %for.body.lr.ph.i ], [ %te.1.i, %for.inc.i.for.body.i_crit_edge ]
+  %i.072.i = phi i32 [ %31, %for.body.lr.ph.i ], [ %inc18.i, %for.inc.i.for.body.i_crit_edge ]
+  %bv.071.i = phi i32 [ -1, %for.body.lr.ph.i ], [ %bv.2.i, %for.inc.i.for.body.i_crit_edge ]
+  %bs.070.i = phi i32 [ -2147483648, %for.body.lr.ph.i ], [ %bs.2.i, %for.inc.i.for.body.i_crit_edge ]
+  %shr.i = ashr i32 %i.072.i, 14
+  %idxprom1.i = sext i32 %shr.i to i64
+  %33 = load %struct.vithist_entry_t*** %entry2.i, align 8, !tbaa !0
+  %arrayidx3.i = getelementptr inbounds %struct.vithist_entry_t** %33, i64 %idxprom1.i
+  %34 = load %struct.vithist_entry_t** %arrayidx3.i, align 8, !tbaa !0
+  %and.i = and i32 %i.072.i, 16383
+  %idx.ext65.i = zext i32 %and.i to i64
+  %add.ptr.i = getelementptr inbounds %struct.vithist_entry_t* %34, i64 %idx.ext65.i
+  %valid.i = getelementptr inbounds %struct.vithist_entry_t* %34, i64 %idx.ext65.i, i32 8
+  %35 = load i32* %valid.i, align 4, !tbaa !3
+  %tobool.i = icmp eq i32 %35, 0
+  br i1 %tobool.i, label %for.inc.i, label %if.then.i
+
+if.then.i:                                        ; preds = %for.body.i
+  %cmp4.i = icmp eq i32 %i.072.i, %te.073.i
+  br i1 %cmp4.i, label %if.end.i, label %if.then5.i
+
+if.then5.i:                                       ; preds = %if.then.i
+  %shr6.i = ashr i32 %te.073.i, 14
+  %idxprom7.i = sext i32 %shr6.i to i64
+  %arrayidx9.i = getelementptr inbounds %struct.vithist_entry_t** %33, i64 %idxprom7.i
+  %36 = load %struct.vithist_entry_t** %arrayidx9.i, align 8, !tbaa !0
+  %and10.i = and i32 %te.073.i, 16383
+  %idx.ext1166.i = zext i32 %and10.i to i64
+  %add.ptr12.i = getelementptr inbounds %struct.vithist_entry_t* %36, i64 %idx.ext1166.i
+  %37 = bitcast %struct.vithist_entry_t* %add.ptr12.i to i8*
+  %38 = bitcast %struct.vithist_entry_t* %add.ptr.i to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %37, i8* %38, i64 36, i32 4, i1 false) #3, !tbaa.struct !5
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.then5.i, %if.then.i
+  %score.i = getelementptr inbounds %struct.vithist_entry_t* %34, i64 %idx.ext65.i, i32 5
+  %39 = load i32* %score.i, align 4, !tbaa !3
+  %cmp13.i = icmp sgt i32 %39, %bs.070.i
+  %.bs.0.i = select i1 %cmp13.i, i32 %39, i32 %bs.070.i
+  %te.0.bv.0.i = select i1 %cmp13.i, i32 %te.073.i, i32 %bv.071.i
+  %inc.i = add nsw i32 %te.073.i, 1
+  br label %for.inc.i
+
+for.inc.i:                                        ; preds = %if.end.i, %for.body.i
+  %bs.2.i = phi i32 [ %.bs.0.i, %if.end.i ], [ %bs.070.i, %for.body.i ]
+  %bv.2.i = phi i32 [ %te.0.bv.0.i, %if.end.i ], [ %bv.071.i, %for.body.i ]
+  %te.1.i = phi i32 [ %inc.i, %if.end.i ], [ %te.073.i, %for.body.i ]
+  %cmp.i = icmp slt i32 %i.072.i, %sub.i
+  br i1 %cmp.i, label %for.inc.i.for.body.i_crit_edge, label %for.end.i
+
+for.inc.i.for.body.i_crit_edge:                   ; preds = %for.inc.i
+  %inc18.i = add nsw i32 %i.072.i, 1
+  br label %for.body.i
+
+for.end.i:                                        ; preds = %for.inc.i, %while.end
+  %te.0.lcssa.i = phi i32 [ %31, %while.end ], [ %te.1.i, %for.inc.i ]
+  %bv.0.lcssa.i = phi i32 [ -1, %while.end ], [ %bv.2.i, %for.inc.i ]
+  %bestvh.i = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 7
+  %40 = load i32** %bestvh.i, align 8, !tbaa !0
+  %arrayidx20.i = getelementptr inbounds i32* %40, i64 %idxprom
+  store i32 %bv.0.lcssa.i, i32* %arrayidx20.i, align 4, !tbaa !3
+  %41 = load i32* %n_entry, align 4, !tbaa !3
+  %sub22.i = add nsw i32 %41, -1
+  %shr23.i = ashr i32 %sub22.i, 14
+  %sub24.i = add nsw i32 %te.0.lcssa.i, -1
+  %shr25.i = ashr i32 %sub24.i, 14
+  %cmp2767.i = icmp sgt i32 %shr23.i, %shr25.i
+  br i1 %cmp2767.i, label %for.body28.lr.ph.i, label %vithist_frame_gc.exit
+
+for.body28.lr.ph.i:                               ; preds = %for.end.i
+  %entry30.i = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 0
+  %42 = sext i32 %shr23.i to i64
+  br label %for.body28.i
+
+for.body28.i:                                     ; preds = %for.body28.i, %for.body28.lr.ph.i
+  %indvars.iv.i = phi i64 [ %42, %for.body28.lr.ph.i ], [ %indvars.iv.next.i, %for.body28.i ]
+  %43 = load %struct.vithist_entry_t*** %entry30.i, align 8, !tbaa !0
+  %arrayidx31.i = getelementptr inbounds %struct.vithist_entry_t** %43, i64 %indvars.iv.i
+  %44 = load %struct.vithist_entry_t** %arrayidx31.i, align 8, !tbaa !0
+  %45 = bitcast %struct.vithist_entry_t* %44 to i8*
+  call void @ckd_free(i8* %45) #6
+  %46 = load %struct.vithist_entry_t*** %entry30.i, align 8, !tbaa !0
+  %arrayidx34.i = getelementptr inbounds %struct.vithist_entry_t** %46, i64 %indvars.iv.i
+  store %struct.vithist_entry_t* null, %struct.vithist_entry_t** %arrayidx34.i, align 8, !tbaa !0
+  %indvars.iv.next.i = add i64 %indvars.iv.i, -1
+  %47 = trunc i64 %indvars.iv.next.i to i32
+  %cmp27.i = icmp sgt i32 %47, %shr25.i
+  br i1 %cmp27.i, label %for.body28.i, label %vithist_frame_gc.exit
+
+vithist_frame_gc.exit:                            ; preds = %for.body28.i, %for.end.i
+  store i32 %te.0.lcssa.i, i32* %n_entry, align 4, !tbaa !3
+  ret void
+}

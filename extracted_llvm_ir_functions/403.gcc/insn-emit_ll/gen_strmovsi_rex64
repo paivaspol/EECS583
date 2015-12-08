@@ -1,0 +1,51 @@
+define %struct.rtx_def* @gen_strmovsi_rex64(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %0 = load i32* @x86_single_stringop, align 4, !tbaa !3
+  %1 = load i32* @ix86_cpu, align 4, !tbaa !5
+  %shl = shl i32 1, %1
+  %and = and i32 %shl, %0
+  %2 = load i32* @optimize_size, align 4, !tbaa !3
+  %3 = or i32 %and, %2
+  %4 = icmp eq i32 %3, 0
+  br i1 %4, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.rtx_def* @gen_strmovsi_rex_1(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1, %struct.rtx_def* %operand0, %struct.rtx_def* %operand1) #6
+  %call7 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call) #4
+  %call8 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %call9 = tail call %struct.rtx_def* @gen_reg_rtx(i32 4) #4
+  %call14 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 4, %struct.rtx_def* %operand1) #4
+  %call15 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %call9, %struct.rtx_def* %call14) #4
+  %call16 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call15) #4
+  %call17 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 4, %struct.rtx_def* %operand0) #4
+  %call18 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %call17, %struct.rtx_def* %call9) #4
+  %call19 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call18) #4
+  %call20 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 4) #4
+  %call21 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 75, i32 5, %struct.rtx_def* %operand0, %struct.rtx_def* %call20) #4
+  %call22 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %operand0, %struct.rtx_def* %call21) #4
+  %call23 = tail call %struct.rtx_def* @gen_rtx_REG(i32 52, i32 17) #4
+  %call24 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 49, i32 0, %struct.rtx_def* %call23) #4
+  %call25 = tail call %struct.rtvec_def* (i32, ...)* @gen_rtvec(i32 2, %struct.rtx_def* %call22, %struct.rtx_def* %call24) #4
+  %call26 = tail call %struct.rtx_def* @gen_rtx_fmt_E(i32 39, i32 0, %struct.rtvec_def* %call25) #4
+  %call27 = tail call %struct.rtx_def* @emit(%struct.rtx_def* %call26) #4
+  %call28 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 4) #4
+  %call29 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 75, i32 5, %struct.rtx_def* %operand1, %struct.rtx_def* %call28) #4
+  %call30 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %operand1, %struct.rtx_def* %call29) #4
+  %call31 = tail call %struct.rtx_def* @gen_rtx_REG(i32 52, i32 17) #4
+  %call32 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 49, i32 0, %struct.rtx_def* %call31) #4
+  %call33 = tail call %struct.rtvec_def* (i32, ...)* @gen_rtvec(i32 2, %struct.rtx_def* %call30, %struct.rtx_def* %call32) #4
+  %call34 = tail call %struct.rtx_def* @gen_rtx_fmt_E(i32 39, i32 0, %struct.rtvec_def* %call33) #4
+  %call35 = tail call %struct.rtx_def* @emit(%struct.rtx_def* %call34) #4
+  %call36 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi %struct.rtx_def* [ %call8, %if.then ], [ %call36, %if.else ]
+  ret %struct.rtx_def* %retval.0
+}

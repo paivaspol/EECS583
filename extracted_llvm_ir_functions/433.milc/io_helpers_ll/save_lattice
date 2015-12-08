@@ -1,0 +1,73 @@
+define %struct.gauge_file* @save_lattice(i32 %flag, i8* %filename) #0 {
+entry:
+  %ssplaq = alloca double, align 8
+  %stplaq = alloca double, align 8
+  %call = call double (...)* @dclock() #5
+  switch i32 %flag, label %sw.default [
+    i32 20, label %sw.epilog
+    i32 21, label %sw.bb1
+    i32 22, label %sw.bb3
+    i32 28, label %sw.bb5
+    i32 23, label %sw.bb7
+    i32 30, label %sw.bb9
+    i32 31, label %sw.bb11
+  ]
+
+sw.bb1:                                           ; preds = %entry
+  %call2 = call %struct.gauge_file* @save_ascii(i8* %filename) #5
+  br label %sw.epilog
+
+sw.bb3:                                           ; preds = %entry
+  %call4 = call %struct.gauge_file* @save_serial(i8* %filename) #5
+  br label %sw.epilog
+
+sw.bb5:                                           ; preds = %entry
+  %call6 = call %struct.gauge_file* @save_parallel(i8* %filename) #5
+  br label %sw.epilog
+
+sw.bb7:                                           ; preds = %entry
+  %call8 = call %struct.gauge_file* @save_checkpoint(i8* %filename) #5
+  br label %sw.epilog
+
+sw.bb9:                                           ; preds = %entry
+  %call10 = call %struct.gauge_file* @save_serial_archive(i8* %filename) #5
+  br label %sw.epilog
+
+sw.bb11:                                          ; preds = %entry
+  %call12 = call %struct.gauge_file* @save_parallel_archive(i8* %filename) #5
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %entry
+  %puts = call i32 @puts(i8* getelementptr inbounds ([53 x i8]* @str, i64 0, i64 0))
+  call void @terminate(i32 1) #5
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %entry, %sw.default, %sw.bb11, %sw.bb9, %sw.bb7, %sw.bb5, %sw.bb3, %sw.bb1
+  %gf.0 = phi %struct.gauge_file* [ undef, %sw.default ], [ %call12, %sw.bb11 ], [ %call10, %sw.bb9 ], [ %call8, %sw.bb7 ], [ %call6, %sw.bb5 ], [ %call4, %sw.bb3 ], [ %call2, %sw.bb1 ], [ null, %entry ]
+  %call14 = call double (...)* @dclock() #5
+  %cmp = icmp ne i32 %flag, 20
+  %0 = load i32* @this_node, align 4, !tbaa !0
+  %cmp15 = icmp eq i32 %0, 0
+  %or.cond = and i1 %cmp, %cmp15
+  br i1 %or.cond, label %if.then16, label %if.end18
+
+if.then16:                                        ; preds = %sw.epilog
+  %add = fsub double %call14, %call
+  %call17 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str1, i64 0, i64 0), double %add) #5
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.then16, %sw.epilog
+  call void @d_plaquette(double* %ssplaq, double* %stplaq) #5
+  %1 = load i32* @this_node, align 4, !tbaa !0
+  %cmp19 = icmp eq i32 %1, 0
+  br i1 %cmp19, label %if.then20, label %if.end22
+
+if.then20:                                        ; preds = %if.end18
+  %2 = load double* %ssplaq, align 8, !tbaa !3
+  %3 = load double* %stplaq, align 8, !tbaa !3
+  %call21 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str2, i64 0, i64 0), double %2, double %3) #5
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.then20, %if.end18
+  ret %struct.gauge_file* %gf.0
+}

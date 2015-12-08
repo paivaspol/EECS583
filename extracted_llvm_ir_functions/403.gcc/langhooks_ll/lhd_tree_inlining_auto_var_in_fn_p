@@ -1,0 +1,37 @@
+define i32 @lhd_tree_inlining_auto_var_in_fn_p(%union.tree_node* nocapture %var, %union.tree_node* %fn) #3 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %var, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %idxprom39 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom39
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %1, 100
+  br i1 %cmp, label %land.lhs.true, label %land.end
+
+land.lhs.true:                                    ; preds = %entry
+  %context = getelementptr inbounds %union.tree_node* %var, i64 0, i32 0, i32 9
+  %2 = load %union.tree_node** %context, align 8, !tbaa !0
+  %cmp2 = icmp eq %union.tree_node* %2, %fn
+  br i1 %cmp2, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %land.lhs.true
+  %bf.clear.off = add i32 %bf.clear, -34
+  %switch = icmp ult i32 %bf.clear.off, 2
+  %bf.clear19 = and i32 %bf.load, 262144
+  %tobool = icmp eq i32 %bf.clear19, 0
+  %or.cond = and i1 %switch, %tobool
+  br i1 %or.cond, label %land.end, label %lor.lhs.false20
+
+lor.lhs.false20:                                  ; preds = %land.rhs
+  %cmp25 = icmp eq i32 %bf.clear, 31
+  %cmp31 = icmp eq i32 %bf.clear, 36
+  %.cmp31 = or i1 %cmp25, %cmp31
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %lor.lhs.false20, %land.lhs.true, %entry
+  %3 = phi i1 [ false, %land.lhs.true ], [ false, %entry ], [ %.cmp31, %lor.lhs.false20 ], [ true, %land.rhs ]
+  %land.ext = zext i1 %3 to i32
+  ret i32 %land.ext
+}

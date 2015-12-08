@@ -1,0 +1,24 @@
+define internal i32 @record_canonical_element_1(i8** nocapture %srfp, i8* nocapture %data) #0 {
+entry:
+  %0 = load i8** %srfp, align 8, !tbaa !0
+  %reg1 = bitcast i8* %0 to i32*
+  %1 = load i32* %reg1, align 4, !tbaa !3
+  %canonical_elements2 = bitcast i8* %data to %struct.simple_bitmap_def**
+  %2 = load %struct.simple_bitmap_def** %canonical_elements2, align 8, !tbaa !0
+  %reg_partition3 = getelementptr inbounds i8* %data, i64 8
+  %3 = bitcast i8* %reg_partition3 to %struct.partition_def**
+  %4 = load %struct.partition_def** %3, align 8, !tbaa !0
+  %idxprom = zext i32 %1 to i64
+  %class_element = getelementptr inbounds %struct.partition_def* %4, i64 0, i32 1, i64 %idxprom, i32 0
+  %5 = load i32* %class_element, align 4, !tbaa !3
+  %rem = and i32 %5, 63
+  %sh_prom = zext i32 %rem to i64
+  %shl = shl i64 1, %sh_prom
+  %div = lshr i32 %5, 6
+  %idxprom8 = zext i32 %div to i64
+  %arrayidx9 = getelementptr inbounds %struct.simple_bitmap_def* %2, i64 0, i32 3, i64 %idxprom8
+  %6 = load i64* %arrayidx9, align 8, !tbaa !4
+  %or = or i64 %shl, %6
+  store i64 %or, i64* %arrayidx9, align 8, !tbaa !4
+  ret i32 1
+}

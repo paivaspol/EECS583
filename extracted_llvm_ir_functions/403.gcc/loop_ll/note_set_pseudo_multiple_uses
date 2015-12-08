@@ -1,0 +1,58 @@
+define internal void @note_set_pseudo_multiple_uses(%struct.rtx_def* %x, %struct.rtx_def* nocapture %y, i8* nocapture %data) #0 {
+entry:
+  %cmp = icmp eq %struct.rtx_def* %x, null
+  br i1 %cmp, label %if.end40, label %while.cond
+
+while.cond:                                       ; preds = %entry, %while.body
+  %x.addr.0 = phi %struct.rtx_def* [ %1, %while.body ], [ %x, %entry ]
+  %0 = bitcast %struct.rtx_def* %x.addr.0 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.end40 [
+    i32 64, label %while.body
+    i32 132, label %while.body
+    i32 133, label %while.body
+    i32 63, label %while.body
+    i32 61, label %lor.lhs.false15
+  ]
+
+while.body:                                       ; preds = %while.cond, %while.cond, %while.cond, %while.cond
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  br label %while.cond
+
+lor.lhs.false15:                                  ; preds = %while.cond
+  %arrayidx17 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx17 to i32*
+  %2 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp18 = icmp ult i32 %2, 53
+  br i1 %cmp18, label %if.end40, label %if.end20
+
+if.end20:                                         ; preds = %lor.lhs.false15
+  %3 = load i32* @max_reg_before_loop, align 4, !tbaa !3
+  %cmp24 = icmp ult i32 %2, %3
+  br i1 %cmp24, label %lor.lhs.false25, label %if.then39
+
+lor.lhs.false25:                                  ; preds = %if.end20
+  %idxprom = zext i32 %2 to i64
+  %array = getelementptr inbounds i8* %data, i64 8
+  %4 = bitcast i8* %array to %struct.loop_reg**
+  %5 = load %struct.loop_reg** %4, align 8, !tbaa !4
+  %single_usage = getelementptr inbounds %struct.loop_reg* %5, i64 %idxprom, i32 2
+  %6 = load %struct.rtx_def** %single_usage, align 8, !tbaa !4
+  %tobool = icmp eq %struct.rtx_def* %6, null
+  %7 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !4
+  %cmp38 = icmp eq %struct.rtx_def* %6, %7
+  %or.cond = or i1 %tobool, %cmp38
+  br i1 %or.cond, label %if.then39, label %if.end40
+
+if.then39:                                        ; preds = %lor.lhs.false25, %if.end20
+  %multiple_uses = getelementptr inbounds i8* %data, i64 16
+  %8 = bitcast i8* %multiple_uses to i32*
+  store i32 1, i32* %8, align 4, !tbaa !3
+  br label %if.end40
+
+if.end40:                                         ; preds = %while.cond, %lor.lhs.false25, %lor.lhs.false15, %entry, %if.then39
+  ret void
+}

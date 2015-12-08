@@ -1,0 +1,26 @@
+define void @prep_stmt(%union.tree_node* nocapture %t) #0 {
+entry:
+  %lang_flag_2 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %lang_flag_2 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 67108864
+  %tobool = icmp eq i32 %bf.clear, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %complexity = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 1
+  %1 = bitcast i8** %complexity to i32*
+  %2 = load i32* %1, align 4, !tbaa !4
+  store i32 %2, i32* @lineno, align 4, !tbaa !4
+  %bf.load2.pre = load i32* %0, align 8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %bf.load2 = phi i32 [ %bf.load, %entry ], [ %bf.load2.pre, %if.then ]
+  %bf.lshr3 = lshr i32 %bf.load2, 25
+  %bf.clear4 = and i32 %bf.lshr3, 1
+  %call = tail call %struct.stmt_tree_s* @current_stmt_tree() #5
+  %stmts_are_full_exprs_p = getelementptr inbounds %struct.stmt_tree_s* %call, i64 0, i32 3
+  store i32 %bf.clear4, i32* %stmts_are_full_exprs_p, align 4, !tbaa !4
+  ret void
+}

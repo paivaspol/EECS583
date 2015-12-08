@@ -1,0 +1,34 @@
+define internal fastcc i32 @dbcmp_len(i8* nocapture %search, i8* nocapture %database) #5 {
+entry:
+  %0 = load i8* %search, align 1, !tbaa !1
+  %tobool23 = icmp eq i8 %0, 0
+  br i1 %tobool23, label %while.end, label %land.lhs.true
+
+while.cond:                                       ; preds = %land.lhs.true
+  %arrayidx = getelementptr inbounds i8* %search, i64 %indvars.iv.next
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %tobool = icmp eq i8 %1, 0
+  br i1 %tobool, label %while.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry, %while.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %while.cond ], [ 0, %entry ]
+  %2 = phi i8 [ %1, %while.cond ], [ %0, %entry ]
+  %i.024 = phi i32 [ %inc, %while.cond ], [ 0, %entry ]
+  %arrayidx2 = getelementptr inbounds i8* %database, i64 %indvars.iv
+  %3 = load i8* %arrayidx2, align 1, !tbaa !1
+  %cmp = icmp eq i8 %2, %3
+  %not.tobool4 = icmp ne i8 %3, 0
+  %.cmp = and i1 %cmp, %not.tobool4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %i.024, 1
+  br i1 %.cmp, label %while.cond, label %while.end
+
+while.end:                                        ; preds = %while.cond, %land.lhs.true, %entry
+  %idxprom.lcssa = phi i64 [ 0, %entry ], [ %indvars.iv, %land.lhs.true ], [ %indvars.iv.next, %while.cond ]
+  %i.0.lcssa = phi i32 [ 0, %entry ], [ %i.024, %land.lhs.true ], [ %inc, %while.cond ]
+  %arrayidx13 = getelementptr inbounds i8* %database, i64 %idxprom.lcssa
+  %4 = load i8* %arrayidx13, align 1, !tbaa !1
+  %tobool14 = icmp eq i8 %4, 0
+  %i.0. = select i1 %tobool14, i32 %i.0.lcssa, i32 -3
+  ret i32 %i.0.
+}

@@ -1,0 +1,13 @@
+define %struct.vithist_entry_t* @vithist_id2entry(%struct.vithist_t* nocapture %vh, i32 %id) #2 {
+entry:
+  %shr = ashr i32 %id, 14
+  %idxprom = sext i32 %shr to i64
+  %entry1 = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 0
+  %0 = load %struct.vithist_entry_t*** %entry1, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.vithist_entry_t** %0, i64 %idxprom
+  %1 = load %struct.vithist_entry_t** %arrayidx, align 8, !tbaa !0
+  %and = and i32 %id, 16383
+  %idx.ext3 = zext i32 %and to i64
+  %add.ptr = getelementptr inbounds %struct.vithist_entry_t* %1, i64 %idx.ext3
+  ret %struct.vithist_entry_t* %add.ptr
+}

@@ -1,0 +1,27 @@
+define internal fastcc void @check_eol(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %cur_token = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 15
+  %0 = load %struct.cpp_token** %cur_token, align 8, !tbaa !3
+  %type = getelementptr inbounds %struct.cpp_token* %0, i64 -1, i32 2
+  %bf.load = load i8* %type, align 2
+  %cmp = icmp eq i8 %bf.load, 67
+  br i1 %cmp, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %call = tail call %struct.cpp_token* @_cpp_lex_token(%struct.cpp_reader* %pfile) #8
+  %type1 = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2
+  %bf.load2 = load i8* %type1, align 2
+  %cmp4 = icmp eq i8 %bf.load2, 67
+  br i1 %cmp4, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %directive = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 11
+  %1 = load %struct.directive** %directive, align 8, !tbaa !3
+  %name = getelementptr inbounds %struct.directive* %1, i64 0, i32 1
+  %2 = load i8** %name, align 8, !tbaa !3
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_pedwarn(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([37 x i8]* @.str25, i64 0, i64 0), i8* %2) #8
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %if.then, %entry
+  ret void
+}

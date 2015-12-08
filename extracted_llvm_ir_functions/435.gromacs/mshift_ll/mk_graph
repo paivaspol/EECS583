@@ -1,0 +1,341 @@
+define %struct.t_graph* @mk_graph(%struct.t_idef* nocapture %idef, i32 %natoms, i32 %bShakeOnly, i32 %bSettle) #0 {
+entry:
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str11, i64 0, i64 0), i32 234, i32 1, i32 48) #4
+  %start.i = getelementptr inbounds i8* %call, i64 12
+  %0 = bitcast i8* %start.i to i32*
+  store i32 %natoms, i32* %0, align 4, !tbaa !0
+  %end.i = getelementptr inbounds i8* %call, i64 16
+  %1 = bitcast i8* %end.i to i32*
+  store i32 0, i32* %1, align 4, !tbaa !0
+  %call.i = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str11, i64 0, i64 0), i32 212, i32 %natoms, i32 2) #4
+  %2 = bitcast i8* %call.i to i16*
+  %functype.i = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 3
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.inc.i, %entry
+  %indvars.iv47.i = phi i64 [ 0, %entry ], [ %indvars.iv.next48.i, %for.inc.i ]
+  %flags.i = getelementptr inbounds [44 x %struct.t_interaction_function]* @interaction_function, i64 0, i64 %indvars.iv47.i, i32 5
+  %3 = load i64* %flags.i, align 8, !tbaa !4
+  %and.i = and i64 %3, 8
+  %tobool.i = icmp eq i64 %and.i, 0
+  br i1 %tobool.i, label %for.inc.i, label %if.then.i
+
+if.then.i:                                        ; preds = %for.body.i
+  %4 = load i32** %functype.i, align 8, !tbaa !3
+  %nr.i.i = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 5, i64 %indvars.iv47.i, i32 0
+  %5 = load i32* %nr.i.i, align 4, !tbaa !0
+  %cmp119.i.i = icmp sgt i32 %5, 0
+  br i1 %cmp119.i.i, label %for.body.lr.ph.i.i, label %for.inc.i
+
+for.body.lr.ph.i.i:                               ; preds = %if.then.i
+  %iatoms.i.i = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 5, i64 %indvars.iv47.i, i32 2
+  %6 = load i32** %iatoms.i.i, align 8, !tbaa !3
+  br label %for.body.i.i
+
+for.body.i.i:                                     ; preds = %for.inc70.i.i, %for.body.lr.ph.i.i
+  %ia.0121.i.i = phi i32* [ %6, %for.body.lr.ph.i.i ], [ %add.ptr.i.i, %for.inc70.i.i ]
+  %j.0120.i.i = phi i32 [ 0, %for.body.lr.ph.i.i ], [ %add72.i.i, %for.inc70.i.i ]
+  %7 = load i32* %ia.0121.i.i, align 4, !tbaa !0
+  %idxprom.i.i = sext i32 %7 to i64
+  %arrayidx1.i.i = getelementptr inbounds i32* %4, i64 %idxprom.i.i
+  %8 = load i32* %arrayidx1.i.i, align 4, !tbaa !0
+  %idxprom2.i.i = sext i32 %8 to i64
+  %nratoms4.i.i = getelementptr inbounds [44 x %struct.t_interaction_function]* @interaction_function, i64 0, i64 %idxprom2.i.i, i32 2
+  %9 = load i32* %nratoms4.i.i, align 8, !tbaa !0
+  %cmp5.i.i = icmp eq i32 %8, 29
+  br i1 %cmp5.i.i, label %if.then.i.i, label %if.else.i.i
+
+if.then.i.i:                                      ; preds = %for.body.i.i
+  %arrayidx6.i.i = getelementptr inbounds i32* %ia.0121.i.i, i64 1
+  %10 = load i32* %arrayidx6.i.i, align 4, !tbaa !0
+  %cmp7.i.i = icmp slt i32 %10, %natoms
+  br i1 %cmp7.i.i, label %if.then8.i.i, label %for.inc70.i.i
+
+if.then8.i.i:                                     ; preds = %if.then.i.i
+  %idxprom9.i.i = sext i32 %10 to i64
+  %arrayidx10.i.i = getelementptr inbounds i16* %2, i64 %idxprom9.i.i
+  store i16 2, i16* %arrayidx10.i.i, align 2, !tbaa !5
+  %add.i.i = add nsw i32 %10, 1
+  %idxprom11.i.i = sext i32 %add.i.i to i64
+  %arrayidx12.i.i = getelementptr inbounds i16* %2, i64 %idxprom11.i.i
+  store i16 2, i16* %arrayidx12.i.i, align 2, !tbaa !5
+  %add13.i.i = add nsw i32 %10, 2
+  %idxprom14.i.i = sext i32 %add13.i.i to i64
+  %arrayidx15.i.i = getelementptr inbounds i16* %2, i64 %idxprom14.i.i
+  store i16 2, i16* %arrayidx15.i.i, align 2, !tbaa !5
+  %11 = load i32* %0, align 4, !tbaa !0
+  %cmp16.i.i = icmp slt i32 %11, %10
+  %..i.i = select i1 %cmp16.i.i, i32 %11, i32 %10
+  store i32 %..i.i, i32* %0, align 4, !tbaa !0
+  %12 = load i32* %1, align 4, !tbaa !0
+  %cmp21.i.i = icmp sgt i32 %12, %add13.i.i
+  %cond27.i.i = select i1 %cmp21.i.i, i32 %12, i32 %add13.i.i
+  store i32 %cond27.i.i, i32* %1, align 4, !tbaa !0
+  br label %for.inc70.i.i
+
+if.else.i.i:                                      ; preds = %for.body.i.i
+  %flags.i.i = getelementptr inbounds [44 x %struct.t_interaction_function]* @interaction_function, i64 0, i64 %idxprom2.i.i, i32 5
+  %13 = load i64* %flags.i.i, align 8, !tbaa !4
+  %and.i.i = and i64 %13, 2
+  %tobool.i.i = icmp eq i64 %and.i.i, 0
+  %.115.i.i = select i1 %tobool.i.i, i32 %9, i32 2
+  %cmp35117.i.i = icmp sgt i32 %.115.i.i, 0
+  br i1 %cmp35117.i.i, label %for.body36.i.preheader.i, label %for.inc70.i.i
+
+for.body36.i.preheader.i:                         ; preds = %if.else.i.i
+  %and61.i.i = and i64 %13, 8
+  %tobool62.i.i = icmp eq i64 %and61.i.i, 0
+  br label %for.body36.i.i
+
+for.body36.i.i:                                   ; preds = %for.cond34.backedge.i.i, %for.body36.i.preheader.i
+  %indvars.iv.i.i = phi i64 [ %indvars.iv.next.i.i, %for.cond34.backedge.i.i ], [ 0, %for.body36.i.preheader.i ]
+  %indvars.iv.next.i.i = add i64 %indvars.iv.i.i, 1
+  %arrayidx39.i.i = getelementptr inbounds i32* %ia.0121.i.i, i64 %indvars.iv.next.i.i
+  %14 = load i32* %arrayidx39.i.i, align 4, !tbaa !0
+  %cmp40.i.i = icmp slt i32 %14, %natoms
+  br i1 %cmp40.i.i, label %if.then41.i.i, label %for.cond34.backedge.i.i
+
+if.then41.i.i:                                    ; preds = %for.body36.i.i
+  %15 = load i32* %0, align 4, !tbaa !0
+  %cmp43.i.i = icmp slt i32 %15, %14
+  %.116.i.i = select i1 %cmp43.i.i, i32 %15, i32 %14
+  store i32 %.116.i.i, i32* %0, align 4, !tbaa !0
+  %16 = load i32* %1, align 4, !tbaa !0
+  %cmp51.i.i = icmp sgt i32 %16, %14
+  %cond56.i.i = select i1 %cmp51.i.i, i32 %16, i32 %14
+  store i32 %cond56.i.i, i32* %1, align 4, !tbaa !0
+  br i1 %tobool62.i.i, label %for.cond34.backedge.i.i, label %if.then63.i.i
+
+for.cond34.backedge.i.i:                          ; preds = %if.then63.i.i, %if.then41.i.i, %for.body36.i.i
+  %lftr.wideiv155 = trunc i64 %indvars.iv.next.i.i to i32
+  %exitcond156 = icmp eq i32 %lftr.wideiv155, %.115.i.i
+  br i1 %exitcond156, label %for.inc70.i.i, label %for.body36.i.i
+
+if.then63.i.i:                                    ; preds = %if.then41.i.i
+  %idxprom64.i.i = sext i32 %14 to i64
+  %arrayidx65.i.i = getelementptr inbounds i16* %2, i64 %idxprom64.i.i
+  %17 = load i16* %arrayidx65.i.i, align 2, !tbaa !5
+  %inc.i.i = add i16 %17, 1
+  store i16 %inc.i.i, i16* %arrayidx65.i.i, align 2, !tbaa !5
+  br label %for.cond34.backedge.i.i
+
+for.inc70.i.i:                                    ; preds = %for.cond34.backedge.i.i, %if.else.i.i, %if.then8.i.i, %if.then.i.i
+  %add71.i.i = add nsw i32 %9, 1
+  %add72.i.i = add nsw i32 %add71.i.i, %j.0120.i.i
+  %idx.ext.i.i = sext i32 %add71.i.i to i64
+  %add.ptr.i.i = getelementptr inbounds i32* %ia.0121.i.i, i64 %idx.ext.i.i
+  %cmp.i.i = icmp slt i32 %add72.i.i, %5
+  br i1 %cmp.i.i, label %for.body.i.i, label %for.inc.i
+
+for.inc.i:                                        ; preds = %for.inc70.i.i, %if.then.i, %for.body.i
+  %indvars.iv.next48.i = add i64 %indvars.iv47.i, 1
+  %lftr.wideiv157 = trunc i64 %indvars.iv.next48.i to i32
+  %exitcond158 = icmp eq i32 %lftr.wideiv157, 44
+  br i1 %exitcond158, label %for.end.i, label %for.body.i
+
+for.end.i:                                        ; preds = %for.inc.i
+  %18 = bitcast i8* %call to %struct.t_graph*
+  %19 = load i32* %0, align 4, !tbaa !0
+  %20 = load i32* %1, align 4, !tbaa !0
+  %cmp643.i = icmp sgt i32 %19, %20
+  br i1 %cmp643.i, label %for.end17.i, label %for.body7.lr.ph.i
+
+for.body7.lr.ph.i:                                ; preds = %for.end.i
+  %21 = sext i32 %19 to i64
+  br label %for.body7.i
+
+for.body7.i:                                      ; preds = %for.body7.i, %for.body7.lr.ph.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body7.i ], [ %21, %for.body7.lr.ph.i ]
+  %nnb.045.i = phi i32 [ %nnb.0.conv.i, %for.body7.i ], [ 0, %for.body7.lr.ph.i ]
+  %arrayidx9.i = getelementptr inbounds i16* %2, i64 %indvars.iv.i
+  %22 = load i16* %arrayidx9.i, align 2, !tbaa !5
+  %conv.i = sext i16 %22 to i32
+  %cmp10.i = icmp sgt i32 %nnb.045.i, %conv.i
+  %nnb.0.conv.i = select i1 %cmp10.i, i32 %nnb.045.i, i32 %conv.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %23 = trunc i64 %indvars.iv.i to i32
+  %cmp6.i = icmp slt i32 %23, %20
+  br i1 %cmp6.i, label %for.body7.i, label %for.end17.i
+
+for.end17.i:                                      ; preds = %for.body7.i, %for.end.i
+  %nnb.0.lcssa.i = phi i32 [ 0, %for.end.i ], [ %nnb.0.conv.i, %for.body7.i ]
+  %24 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  %tobool18.i = icmp eq %struct._IO_FILE* %24, null
+  br i1 %tobool18.i, label %calc_start_end.exit, label %if.then19.i
+
+if.then19.i:                                      ; preds = %for.end17.i
+  %call20.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %24, i8* getelementptr inbounds ([36 x i8]* @.str24, i64 0, i64 0), i32 %nnb.0.lcssa.i) #4
+  br label %calc_start_end.exit
+
+calc_start_end.exit:                              ; preds = %for.end17.i, %if.then19.i
+  tail call void @save_free(i8* getelementptr inbounds ([6 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str11, i64 0, i64 0), i32 224, i8* %call.i) #4
+  %add.i = add nsw i32 %nnb.0.lcssa.i, 6
+  %maxbond.i = bitcast i8* %call to i32*
+  store i32 %add.i, i32* %maxbond.i, align 4, !tbaa !0
+  %25 = load i32* %0, align 4, !tbaa !0
+  %26 = load i32* %1, align 4, !tbaa !0
+  %cmp = icmp slt i32 %25, %26
+  br i1 %cmp, label %if.else, label %if.then
+
+if.then:                                          ; preds = %calc_start_end.exit
+  %nnodes = getelementptr inbounds i8* %call, i64 4
+  %27 = bitcast i8* %nnodes to i32*
+  store i32 0, i32* %27, align 4, !tbaa !0
+  br label %if.end84
+
+if.else:                                          ; preds = %calc_start_end.exit
+  %sub = sub nsw i32 %26, %25
+  %add = add nsw i32 %sub, 1
+  %nnodes3 = getelementptr inbounds i8* %call, i64 4
+  %28 = bitcast i8* %nnodes3 to i32*
+  store i32 %add, i32* %28, align 4, !tbaa !0
+  %call5 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str11, i64 0, i64 0), i32 243, i32 %add, i32 12) #4
+  %29 = bitcast i8* %call5 to [3 x i32]*
+  %ishift = getelementptr inbounds i8* %call, i64 40
+  %30 = bitcast i8* %ishift to [3 x i32]**
+  store [3 x i32]* %29, [3 x i32]** %30, align 8, !tbaa !3
+  %31 = load i32* %28, align 4, !tbaa !0
+  %call7 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str11, i64 0, i64 0), i32 244, i32 %31, i32 4) #4
+  %32 = bitcast i8* %call7 to i32*
+  %nedge = getelementptr inbounds i8* %call, i64 24
+  %33 = bitcast i8* %nedge to i32**
+  store i32* %32, i32** %33, align 8, !tbaa !3
+  %34 = load %struct._IO_FILE** @debug, align 8, !tbaa !3
+  %tobool = icmp eq %struct._IO_FILE* %34, null
+  br i1 %tobool, label %if.end, label %if.then8
+
+if.then8:                                         ; preds = %if.else
+  %35 = load i32* %28, align 4, !tbaa !0
+  %36 = load i32* %maxbond.i, align 4, !tbaa !0
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %34, i8* getelementptr inbounds ([31 x i8]* @.str14, i64 0, i64 0), i32 %35, i32 %36) #4
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then8
+  %37 = load i32* %28, align 4, !tbaa !0
+  %call12 = tail call i8* @save_calloc(i8* getelementptr inbounds ([8 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str11, i64 0, i64 0), i32 252, i32 %37, i32 8) #4
+  %38 = bitcast i8* %call12 to i32**
+  %edge = getelementptr inbounds i8* %call, i64 32
+  %39 = bitcast i8* %edge to i32***
+  store i32** %38, i32*** %39, align 8, !tbaa !3
+  %40 = load i32* %maxbond.i, align 4, !tbaa !0
+  %41 = load i32* %28, align 4, !tbaa !0
+  %mul = mul nsw i32 %41, %40
+  %call15 = tail call i8* @save_calloc(i8* getelementptr inbounds ([11 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str11, i64 0, i64 0), i32 253, i32 %mul, i32 4) #4
+  %42 = bitcast i8* %call15 to i32*
+  %43 = load i32*** %39, align 8, !tbaa !3
+  store i32* %42, i32** %43, align 8, !tbaa !3
+  %44 = load i32* %28, align 4, !tbaa !0
+  %cmp18144 = icmp sgt i32 %44, 1
+  br i1 %cmp18144, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %45 = load i32* %maxbond.i, align 4, !tbaa !0
+  %idx.ext = sext i32 %45 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv152 = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next153, %for.body ]
+  %46 = add nsw i64 %indvars.iv152, -1
+  %47 = load i32*** %39, align 8, !tbaa !3
+  %arrayidx21 = getelementptr inbounds i32** %47, i64 %46
+  %48 = load i32** %arrayidx21, align 8, !tbaa !3
+  %add.ptr = getelementptr inbounds i32* %48, i64 %idx.ext
+  %arrayidx25 = getelementptr inbounds i32** %47, i64 %indvars.iv152
+  store i32* %add.ptr, i32** %arrayidx25, align 8, !tbaa !3
+  %indvars.iv.next153 = add i64 %indvars.iv152, 1
+  %49 = trunc i64 %indvars.iv.next153 to i32
+  %cmp18 = icmp slt i32 %49, %44
+  br i1 %cmp18, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %if.end
+  %tobool26 = icmp eq i32 %bShakeOnly, 0
+  br i1 %tobool26, label %for.body30, label %if.else58
+
+for.body30:                                       ; preds = %for.end, %for.inc38
+  %indvars.iv148 = phi i64 [ %indvars.iv.next149, %for.inc38 ], [ 0, %for.end ]
+  %flags = getelementptr inbounds [44 x %struct.t_interaction_function]* @interaction_function, i64 0, i64 %indvars.iv148, i32 5
+  %50 = load i64* %flags, align 8, !tbaa !4
+  %and = and i64 %50, 8
+  %tobool33 = icmp eq i64 %and, 0
+  br i1 %tobool33, label %for.inc38, label %if.then34
+
+if.then34:                                        ; preds = %for.body30
+  %51 = load i32** %functype.i, align 8, !tbaa !3
+  %arrayidx36 = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 5, i64 %indvars.iv148
+  tail call fastcc void @mk_igraph(%struct.t_graph* %18, i32* %51, %struct.t_ilist* %arrayidx36, i32 %natoms, i32 1) #5
+  br label %for.inc38
+
+for.inc38:                                        ; preds = %for.body30, %if.then34
+  %indvars.iv.next149 = add i64 %indvars.iv148, 1
+  %lftr.wideiv150 = trunc i64 %indvars.iv.next149 to i32
+  %exitcond151 = icmp eq i32 %lftr.wideiv150, 44
+  br i1 %exitcond151, label %for.body43, label %for.body30
+
+for.body43:                                       ; preds = %for.inc38, %for.inc55
+  %indvars.iv146 = phi i64 [ %indvars.iv.next147, %for.inc55 ], [ 0, %for.inc38 ]
+  %flags46 = getelementptr inbounds [44 x %struct.t_interaction_function]* @interaction_function, i64 0, i64 %indvars.iv146, i32 5
+  %52 = load i64* %flags46, align 8, !tbaa !4
+  %and47 = and i64 %52, 8
+  %tobool48 = icmp eq i64 %and47, 0
+  br i1 %tobool48, label %if.then49, label %for.inc55
+
+if.then49:                                        ; preds = %for.body43
+  %53 = load i32** %functype.i, align 8, !tbaa !3
+  %arrayidx53 = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 5, i64 %indvars.iv146
+  tail call fastcc void @mk_igraph(%struct.t_graph* %18, i32* %53, %struct.t_ilist* %arrayidx53, i32 %natoms, i32 0) #5
+  br label %for.inc55
+
+for.inc55:                                        ; preds = %for.body43, %if.then49
+  %indvars.iv.next147 = add i64 %indvars.iv146, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next147 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 44
+  br i1 %exitcond, label %if.end68, label %for.body43
+
+if.else58:                                        ; preds = %for.end
+  %54 = load i32** %functype.i, align 8, !tbaa !3
+  %arrayidx61 = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 5, i64 27
+  tail call fastcc void @mk_igraph(%struct.t_graph* %18, i32* %54, %struct.t_ilist* %arrayidx61, i32 %natoms, i32 1) #5
+  %tobool62 = icmp eq i32 %bSettle, 0
+  br i1 %tobool62, label %if.end68, label %if.then63
+
+if.then63:                                        ; preds = %if.else58
+  %55 = load i32** %functype.i, align 8, !tbaa !3
+  %arrayidx66 = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 5, i64 29
+  tail call fastcc void @mk_igraph(%struct.t_graph* %18, i32* %55, %struct.t_ilist* %arrayidx66, i32 %natoms, i32 1) #5
+  br label %if.end68
+
+if.end68:                                         ; preds = %for.inc55, %if.else58, %if.then63
+  %nbound = getelementptr inbounds i8* %call, i64 8
+  %56 = bitcast i8* %nbound to i32*
+  store i32 0, i32* %56, align 4, !tbaa !0
+  %57 = load i32* %28, align 4, !tbaa !0
+  %cmp71140 = icmp sgt i32 %57, 0
+  br i1 %cmp71140, label %for.body72.lr.ph, label %if.end84
+
+for.body72.lr.ph:                                 ; preds = %if.end68
+  %58 = load i32** %33, align 8, !tbaa !3
+  br label %for.body72
+
+for.body72:                                       ; preds = %for.body72.lr.ph, %for.inc81
+  %59 = phi i32 [ 0, %for.body72.lr.ph ], [ %61, %for.inc81 ]
+  %indvars.iv = phi i64 [ 0, %for.body72.lr.ph ], [ %indvars.iv.next, %for.inc81 ]
+  %arrayidx75 = getelementptr inbounds i32* %58, i64 %indvars.iv
+  %60 = load i32* %arrayidx75, align 4, !tbaa !0
+  %cmp76 = icmp sgt i32 %60, 0
+  br i1 %cmp76, label %if.then77, label %for.inc81
+
+if.then77:                                        ; preds = %for.body72
+  %inc79 = add nsw i32 %59, 1
+  store i32 %inc79, i32* %56, align 4, !tbaa !0
+  br label %for.inc81
+
+for.inc81:                                        ; preds = %for.body72, %if.then77
+  %61 = phi i32 [ %59, %for.body72 ], [ %inc79, %if.then77 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %62 = trunc i64 %indvars.iv.next to i32
+  %cmp71 = icmp slt i32 %62, %57
+  br i1 %cmp71, label %for.body72, label %if.end84
+
+if.end84:                                         ; preds = %if.end68, %for.inc81, %if.then
+  ret %struct.t_graph* %18
+}

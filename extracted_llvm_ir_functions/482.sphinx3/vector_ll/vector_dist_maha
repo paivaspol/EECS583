@@ -1,0 +1,29 @@
+define double @vector_dist_maha(float* nocapture %vec, float* nocapture %mean, float* nocapture %varinv, double %loginvdet, i32 %len) #2 {
+entry:
+  %cmp14 = icmp sgt i32 %len, 0
+  br i1 %cmp14, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %dist.015 = phi double [ %sub7, %for.body ], [ %loginvdet, %entry ]
+  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv
+  %0 = load float* %arrayidx, align 4, !tbaa !0
+  %arrayidx2 = getelementptr inbounds float* %mean, i64 %indvars.iv
+  %1 = load float* %arrayidx2, align 4, !tbaa !0
+  %sub = fsub float %0, %1
+  %conv = fpext float %sub to double
+  %mul = fmul double %conv, %conv
+  %arrayidx4 = getelementptr inbounds float* %varinv, i64 %indvars.iv
+  %2 = load float* %arrayidx4, align 4, !tbaa !0
+  %conv5 = fpext float %2 to double
+  %mul6 = fmul double %conv5, %mul
+  %sub7 = fsub double %dist.015, %mul6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %len
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %dist.0.lcssa = phi double [ %loginvdet, %entry ], [ %sub7, %for.body ]
+  ret double %dist.0.lcssa
+}

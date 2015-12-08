@@ -1,0 +1,103 @@
+define internal fastcc i8* @gen_formal_list_for_func_def(%union.tree_node* nocapture %fndecl, i32 %style) #0 {
+entry:
+  %arguments = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 10
+  %formal_decl.053 = load %union.tree_node** %arguments, align 8
+  %tobool54 = icmp eq %union.tree_node* %formal_decl.053, null
+  br i1 %tobool54, label %while.end, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %entry
+  %0 = icmp ult i32 %style, 2
+  %cmp6 = icmp eq i32 %style, 2
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end11
+  %formal_decl.056 = phi %union.tree_node* [ %formal_decl.053, %while.body.lr.ph ], [ %formal_decl.0, %if.end11 ]
+  %formal_list.055 = phi i8* [ getelementptr inbounds ([1 x i8]* @.str4, i64 0, i64 0), %while.body.lr.ph ], [ %formal_list.2, %if.end11 ]
+  %1 = load i8* %formal_list.055, align 1, !tbaa !1
+  %tobool1 = icmp ne i8 %1, 0
+  %or.cond = and i1 %tobool1, %0
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %while.body
+  %call = tail call noalias i8* (i8*, ...)* @concat(i8* %formal_list.055, i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0), i8* null) #7
+  br label %if.end
+
+if.end:                                           ; preds = %while.body, %if.then
+  %formal_list.1 = phi i8* [ %call, %if.then ], [ %formal_list.055, %while.body ]
+  %call5 = tail call fastcc i8* @gen_decl(%union.tree_node* %formal_decl.056, i32 0, i32 %style) #6
+  br i1 %cmp6, label %if.then8, label %if.else
+
+if.then8:                                         ; preds = %if.end
+  %call9 = tail call noalias i8* (i8*, ...)* @concat(i8* %formal_list.1, i8* %call5, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0), i8* null) #7
+  br label %if.end11
+
+if.else:                                          ; preds = %if.end
+  %call10 = tail call noalias i8* (i8*, ...)* @concat(i8* %formal_list.1, i8* %call5, i8* null) #7
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.else, %if.then8
+  %formal_list.2 = phi i8* [ %call9, %if.then8 ], [ %call10, %if.else ]
+  %chain = getelementptr inbounds %union.tree_node* %formal_decl.056, i64 0, i32 0, i32 0, i32 0
+  %formal_decl.0 = load %union.tree_node** %chain, align 8
+  %tobool = icmp eq %union.tree_node* %formal_decl.0, null
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.end11, %entry
+  %formal_list.0.lcssa = phi i8* [ getelementptr inbounds ([1 x i8]* @.str4, i64 0, i64 0), %entry ], [ %formal_list.2, %if.end11 ]
+  %cmp12 = icmp eq i32 %style, 0
+  br i1 %cmp12, label %if.then14, label %if.end27
+
+if.then14:                                        ; preds = %while.end
+  %2 = load %union.tree_node** %arguments, align 8, !tbaa !3
+  %tobool17 = icmp eq %union.tree_node* %2, null
+  br i1 %tobool17, label %if.then18, label %if.end20
+
+if.then18:                                        ; preds = %if.then14
+  %call19 = tail call noalias i8* (i8*, ...)* @concat(i8* %formal_list.0.lcssa, i8* getelementptr inbounds ([5 x i8]* @.str7, i64 0, i64 0), i8* null) #7
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.then14, %if.then18
+  %formal_list.3 = phi i8* [ %formal_list.0.lcssa, %if.then14 ], [ %call19, %if.then18 ]
+  %type = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 0, i32 1
+  %3 = load %union.tree_node** %type, align 8, !tbaa !3
+  %values.i = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 1
+  %4 = load i8** %values.i, align 8
+  %cond = icmp eq i8* %4, null
+  br i1 %cond, label %if.end27, label %land.rhs.lr.ph.i
+
+land.rhs.lr.ph.i:                                 ; preds = %if.end20
+  %5 = bitcast i8* %4 to %union.tree_node*
+  %6 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 27), align 8, !tbaa !3
+  br label %land.rhs.i
+
+land.rhs.i:                                       ; preds = %while.body.i, %land.rhs.lr.ph.i
+  %formal_type.011.i = phi %union.tree_node* [ %5, %land.rhs.lr.ph.i ], [ %9, %while.body.i ]
+  %value.i = getelementptr inbounds %union.tree_node* %formal_type.011.i, i64 0, i32 0, i32 2
+  %7 = bitcast i32* %value.i to %union.tree_node**
+  %8 = load %union.tree_node** %7, align 8, !tbaa !3
+  %cmp.i = icmp eq %union.tree_node* %8, %6
+  br i1 %cmp.i, label %if.end27, label %while.body.i
+
+while.body.i:                                     ; preds = %land.rhs.i
+  %chain.i = getelementptr inbounds %union.tree_node* %formal_type.011.i, i64 0, i32 0, i32 0, i32 0
+  %9 = load %union.tree_node** %chain.i, align 8, !tbaa !3
+  %tobool.i = icmp eq %union.tree_node* %9, null
+  br i1 %tobool.i, label %if.then24, label %land.rhs.i
+
+if.then24:                                        ; preds = %while.body.i
+  %call25 = tail call noalias i8* (i8*, ...)* @concat(i8* %formal_list.3, i8* getelementptr inbounds ([6 x i8]* @.str8, i64 0, i64 0), i8* null) #7
+  br label %if.end27
+
+if.end27:                                         ; preds = %land.rhs.i, %if.end20, %if.then24, %while.end
+  %formal_list.4 = phi i8* [ %call25, %if.then24 ], [ %formal_list.0.lcssa, %while.end ], [ %formal_list.3, %if.end20 ], [ %formal_list.3, %land.rhs.i ]
+  %10 = icmp ult i32 %style, 2
+  br i1 %10, label %if.then33, label %if.end35
+
+if.then33:                                        ; preds = %if.end27
+  %call34 = tail call noalias i8* (i8*, ...)* @concat(i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %formal_list.4, i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0), i8* null) #7
+  br label %if.end35
+
+if.end35:                                         ; preds = %if.end27, %if.then33
+  %formal_list.5 = phi i8* [ %call34, %if.then33 ], [ %formal_list.4, %if.end27 ]
+  ret i8* %formal_list.5
+}

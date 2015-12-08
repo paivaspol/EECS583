@@ -1,0 +1,91 @@
+define void @overflow_warning(%union.tree_node* nocapture %value) #0 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %value, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %if.else55 [
+    i32 25, label %land.lhs.true11
+    i32 27, label %land.lhs.true
+    i32 26, label %land.lhs.true40
+  ]
+
+land.lhs.true:                                    ; preds = %entry
+  %real = getelementptr inbounds %union.tree_node* %value, i64 0, i32 0, i32 2
+  %1 = bitcast i32* %real to %union.tree_node**
+  %2 = load %union.tree_node** %1, align 8, !tbaa !3
+  %code7 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %code7 to i32*
+  %bf.load8 = load i32* %3, align 8
+  %bf.clear9 = and i32 %bf.load8, 255
+  %cmp10 = icmp eq i32 %bf.clear9, 25
+  br i1 %cmp10, label %land.lhs.true11, label %land.lhs.true32
+
+land.lhs.true11:                                  ; preds = %entry, %land.lhs.true
+  %bf.clear14 = and i32 %bf.load, 524288
+  %tobool = icmp eq i32 %bf.clear14, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true11
+  %bf.clear18 = and i32 %bf.load, -524289
+  store i32 %bf.clear18, i32* %0, align 8
+  %4 = load i32* @skip_evaluation, align 4, !tbaa !0
+  %cmp19 = icmp eq i32 %4, 0
+  br i1 %cmp19, label %if.then20, label %if.end78
+
+if.then20:                                        ; preds = %if.then
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([31 x i8]* @.str7, i64 0, i64 0)) #8
+  br label %if.end78
+
+if.else:                                          ; preds = %land.lhs.true11
+  switch i32 %bf.clear, label %if.else55 [
+    i32 26, label %land.lhs.true40
+    i32 27, label %land.lhs.true32
+  ]
+
+land.lhs.true32:                                  ; preds = %land.lhs.true, %if.else
+  %real34 = getelementptr inbounds %union.tree_node* %value, i64 0, i32 0, i32 2
+  %5 = bitcast i32* %real34 to %union.tree_node**
+  %6 = load %union.tree_node** %5, align 8, !tbaa !3
+  %code36 = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 0, i32 2
+  %7 = bitcast [4 x i8]* %code36 to i32*
+  %bf.load37 = load i32* %7, align 8
+  %bf.clear38 = and i32 %bf.load37, 255
+  %cmp39 = icmp eq i32 %bf.clear38, 26
+  br i1 %cmp39, label %land.lhs.true40, label %if.else55
+
+land.lhs.true40:                                  ; preds = %entry, %if.else, %land.lhs.true32
+  %bf.clear45 = and i32 %bf.load, 524288
+  %tobool46 = icmp eq i32 %bf.clear45, 0
+  br i1 %tobool46, label %if.else55, label %if.then47
+
+if.then47:                                        ; preds = %land.lhs.true40
+  %bf.clear51 = and i32 %bf.load, -524289
+  store i32 %bf.clear51, i32* %0, align 8
+  %8 = load i32* @skip_evaluation, align 4, !tbaa !0
+  %cmp52 = icmp eq i32 %8, 0
+  br i1 %cmp52, label %if.then53, label %if.end78
+
+if.then53:                                        ; preds = %if.then47
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([38 x i8]* @.str8, i64 0, i64 0)) #8
+  br label %if.end78
+
+if.else55:                                        ; preds = %entry, %if.else, %land.lhs.true40, %land.lhs.true32
+  %9 = and i32 %bf.load, 524543
+  %10 = icmp eq i32 %9, 524316
+  br i1 %10, label %if.then68, label %if.end78
+
+if.then68:                                        ; preds = %if.else55
+  %bf.clear72 = and i32 %bf.load, -524289
+  store i32 %bf.clear72, i32* %0, align 8
+  %11 = load i32* @skip_evaluation, align 4, !tbaa !0
+  %cmp73 = icmp eq i32 %11, 0
+  br i1 %cmp73, label %if.then74, label %if.end78
+
+if.then74:                                        ; preds = %if.then68
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([30 x i8]* @.str9, i64 0, i64 0)) #8
+  br label %if.end78
+
+if.end78:                                         ; preds = %if.else55, %if.then53, %if.then47, %if.then68, %if.then74, %if.then, %if.then20
+  ret void
+}

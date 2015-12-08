@@ -1,0 +1,109 @@
+define internal fastcc void @defs_to_varying(%struct.rtx_def* nocapture %insn) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !4
+  %idxprom = sext i32 %0 to i64
+  %1 = load %struct.df** @df_analyzer, align 8, !tbaa !0
+  %insns = getelementptr inbounds %struct.df* %1, i64 0, i32 7
+  %2 = load %struct.insn_info** %insns, align 8, !tbaa !0
+  %defs = getelementptr inbounds %struct.insn_info* %2, i64 %idxprom, i32 0
+  %currdef.084 = load %struct.df_link** %defs, align 8
+  %tobool85 = icmp eq %struct.df_link* %currdef.084, null
+  br i1 %tobool85, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %cond.end67
+  %currdef.086 = phi %struct.df_link* [ %currdef.0, %cond.end67 ], [ %currdef.084, %entry ]
+  %ref = getelementptr inbounds %struct.df_link* %currdef.086, i64 0, i32 1
+  %3 = load %struct.ref** %ref, align 8, !tbaa !0
+  %reg = getelementptr inbounds %struct.ref* %3, i64 0, i32 0
+  %4 = load %struct.rtx_def** %reg, align 8, !tbaa !0
+  %5 = bitcast %struct.rtx_def* %4 to i32*
+  %bf.load = load i32* %5, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 63
+  br i1 %cmp, label %cond.true, label %cond.end
+
+cond.true:                                        ; preds = %for.body
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx5 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %for.body, %cond.true
+  %cond = phi %struct.rtx_def* [ %6, %cond.true ], [ %4, %for.body ]
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %cond, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx9 to i32*
+  %7 = load i32* %rtuint, align 4, !tbaa !4
+  %idxprom10 = zext i32 %7 to i64
+  %8 = load %struct.value** @values, align 8, !tbaa !0
+  %lattice_val = getelementptr inbounds %struct.value* %8, i64 %idxprom10, i32 0
+  %9 = load i32* %lattice_val, align 4, !tbaa !1
+  %cmp12 = icmp eq i32 %9, 2
+  br i1 %cmp12, label %if.end, label %if.then
+
+if.then:                                          ; preds = %cond.end
+  %arrayidx22 = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 0
+  br i1 %cmp, label %cond.true37, label %cond.end27
+
+cond.end27:                                       ; preds = %if.then
+  br label %cond.end46
+
+cond.true37:                                      ; preds = %if.then
+  %rtx23 = bitcast %union.rtunion_def* %arrayidx22 to %struct.rtx_def**
+  %10 = load %struct.rtx_def** %rtx23, align 8, !tbaa !0
+  %arrayidx3088 = getelementptr inbounds %struct.rtx_def* %10, i64 0, i32 1, i64 0
+  %arrayidx41 = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 0
+  %rtx42 = bitcast %union.rtunion_def* %arrayidx41 to %struct.rtx_def**
+  %11 = load %struct.rtx_def** %rtx42, align 8, !tbaa !0
+  br label %cond.end46
+
+cond.end46:                                       ; preds = %cond.end27, %cond.true37
+  %sh_prom91.pn.in.in.in.in = phi %union.rtunion_def* [ %arrayidx3088, %cond.true37 ], [ %arrayidx22, %cond.end27 ]
+  %cond47 = phi %struct.rtx_def* [ %11, %cond.true37 ], [ %4, %cond.end27 ]
+  %sh_prom91.pn.in.in.in = bitcast %union.rtunion_def* %sh_prom91.pn.in.in.in.in to i32*
+  %sh_prom91.pn.in.in = load i32* %sh_prom91.pn.in.in.in, align 4
+  %sh_prom91.pn.in = and i32 %sh_prom91.pn.in.in, 63
+  %sh_prom91.pn = zext i32 %sh_prom91.pn.in to i64
+  %shl93 = shl i64 1, %sh_prom91.pn
+  %arrayidx49 = getelementptr inbounds %struct.rtx_def* %cond47, i64 0, i32 1, i64 0
+  %rtuint50 = bitcast %union.rtunion_def* %arrayidx49 to i32*
+  %12 = load i32* %rtuint50, align 4, !tbaa !4
+  %div = lshr i32 %12, 6
+  %idxprom51 = zext i32 %div to i64
+  %13 = load %struct.simple_bitmap_def** @ssa_edges, align 8, !tbaa !0
+  %arrayidx52 = getelementptr inbounds %struct.simple_bitmap_def* %13, i64 0, i32 3, i64 %idxprom51
+  %14 = load i64* %arrayidx52, align 8, !tbaa !3
+  %or = or i64 %14, %shl93
+  store i64 %or, i64* %arrayidx52, align 8, !tbaa !3
+  %bf.load55.pre = load i32* %5, align 8
+  br label %if.end
+
+if.end:                                           ; preds = %cond.end, %cond.end46
+  %bf.load55 = phi i32 [ %bf.load, %cond.end ], [ %bf.load55.pre, %cond.end46 ]
+  %bf.clear56 = and i32 %bf.load55, 65535
+  %cmp57 = icmp eq i32 %bf.clear56, 63
+  br i1 %cmp57, label %cond.true58, label %cond.end67
+
+cond.true58:                                      ; preds = %if.end
+  %arrayidx62 = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 0
+  %rtx63 = bitcast %union.rtunion_def* %arrayidx62 to %struct.rtx_def**
+  %15 = load %struct.rtx_def** %rtx63, align 8, !tbaa !0
+  br label %cond.end67
+
+cond.end67:                                       ; preds = %if.end, %cond.true58
+  %cond68 = phi %struct.rtx_def* [ %15, %cond.true58 ], [ %4, %if.end ]
+  %arrayidx70 = getelementptr inbounds %struct.rtx_def* %cond68, i64 0, i32 1, i64 0
+  %rtuint71 = bitcast %union.rtunion_def* %arrayidx70 to i32*
+  %16 = load i32* %rtuint71, align 4, !tbaa !4
+  %idxprom72 = zext i32 %16 to i64
+  %lattice_val74 = getelementptr inbounds %struct.value* %8, i64 %idxprom72, i32 0
+  store i32 2, i32* %lattice_val74, align 4, !tbaa !1
+  %next = getelementptr inbounds %struct.df_link* %currdef.086, i64 0, i32 0
+  %currdef.0 = load %struct.df_link** %next, align 8
+  %tobool = icmp eq %struct.df_link* %currdef.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %cond.end67, %entry
+  ret void
+}

@@ -1,0 +1,29 @@
+define %struct.rtx_def* @set_of(%struct.rtx_def* %pat, %struct.rtx_def* %insn) #1 {
+entry:
+  %data = alloca %struct.set_of_data, align 8
+  %found = getelementptr inbounds %struct.set_of_data* %data, i64 0, i32 0
+  store %struct.rtx_def* null, %struct.rtx_def** %found, align 8, !tbaa !0
+  %pat1 = getelementptr inbounds %struct.set_of_data* %data, i64 0, i32 1
+  store %struct.rtx_def* %pat, %struct.rtx_def** %pat1, align 8, !tbaa !0
+  %0 = bitcast %struct.rtx_def* %insn to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom6 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom6
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %1, 105
+  br i1 %cmp, label %cond.true, label %cond.end
+
+cond.true:                                        ; preds = %entry
+  %arrayidx3 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx3 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi %struct.rtx_def* [ %2, %cond.true ], [ %insn, %entry ]
+  %3 = bitcast %struct.set_of_data* %data to i8*
+  call void @note_stores(%struct.rtx_def* %cond, void (%struct.rtx_def*, %struct.rtx_def*, i8*)* @set_of_1, i8* %3) #4
+  %4 = load %struct.rtx_def** %found, align 8, !tbaa !0
+  ret %struct.rtx_def* %4
+}

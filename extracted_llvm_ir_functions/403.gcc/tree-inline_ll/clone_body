@@ -1,0 +1,100 @@
+define void @clone_body(%union.tree_node* %clone, %union.tree_node* %fn, i8* %arg_map) #0 {
+entry:
+  %body.i = alloca %union.tree_node*, align 8
+  %id = alloca %struct.inline_data, align 8
+  %0 = bitcast %struct.inline_data* %id to i8*
+  call void @llvm.lifetime.start(i64 72, i8* %0) #1
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 72, i32 8, i1 false)
+  %call = call %struct.varray_head_tag* @varray_init(i64 2, i64 8, i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0)) #6
+  %fns = getelementptr inbounds %struct.inline_data* %id, i64 0, i32 0
+  store %struct.varray_head_tag* %call, %struct.varray_head_tag** %fns, align 8, !tbaa !0
+  %elements_used = getelementptr inbounds %struct.varray_head_tag* %call, i64 0, i32 1
+  %1 = load i64* %elements_used, align 8, !tbaa !4
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %call, i64 0, i32 0
+  %2 = load i64* %num_elements, align 8, !tbaa !4
+  %cmp = icmp ult i64 %1, %2
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %mul = shl i64 %2, 1
+  %call6 = call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %call, i64 %mul) #6
+  store %struct.varray_head_tag* %call6, %struct.varray_head_tag** %fns, align 8, !tbaa !0
+  %elements_used9.phi.trans.insert = getelementptr inbounds %struct.varray_head_tag* %call6, i64 0, i32 1
+  %.pre = load i64* %elements_used9.phi.trans.insert, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %3 = phi i64 [ %1, %entry ], [ %.pre, %if.then ]
+  %4 = phi %struct.varray_head_tag* [ %call, %entry ], [ %call6, %if.then ]
+  %elements_used9 = getelementptr inbounds %struct.varray_head_tag* %4, i64 0, i32 1
+  %inc = add i64 %3, 1
+  store i64 %inc, i64* %elements_used9, align 8, !tbaa !4
+  %data = getelementptr inbounds %struct.varray_head_tag* %4, i64 0, i32 4
+  %tree = bitcast %union.varray_data_tag* %data to [1 x %union.tree_node*]*
+  %arrayidx = getelementptr inbounds [1 x %union.tree_node*]* %tree, i64 0, i64 %3
+  store %union.tree_node* %clone, %union.tree_node** %arrayidx, align 8, !tbaa !0
+  %5 = load %struct.varray_head_tag** %fns, align 8, !tbaa !0
+  %elements_used13 = getelementptr inbounds %struct.varray_head_tag* %5, i64 0, i32 1
+  %6 = load i64* %elements_used13, align 8, !tbaa !4
+  %num_elements15 = getelementptr inbounds %struct.varray_head_tag* %5, i64 0, i32 0
+  %7 = load i64* %num_elements15, align 8, !tbaa !4
+  %cmp16 = icmp ult i64 %6, %7
+  br i1 %cmp16, label %if.end24, label %if.then17
+
+if.then17:                                        ; preds = %if.end
+  %mul21 = shl i64 %7, 1
+  %call22 = call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %5, i64 %mul21) #6
+  store %struct.varray_head_tag* %call22, %struct.varray_head_tag** %fns, align 8, !tbaa !0
+  %elements_used26.phi.trans.insert = getelementptr inbounds %struct.varray_head_tag* %call22, i64 0, i32 1
+  %.pre44 = load i64* %elements_used26.phi.trans.insert, align 8, !tbaa !4
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.end, %if.then17
+  %8 = phi i64 [ %6, %if.end ], [ %.pre44, %if.then17 ]
+  %9 = phi %struct.varray_head_tag* [ %5, %if.end ], [ %call22, %if.then17 ]
+  %elements_used26 = getelementptr inbounds %struct.varray_head_tag* %9, i64 0, i32 1
+  %inc27 = add i64 %8, 1
+  store i64 %inc27, i64* %elements_used26, align 8, !tbaa !4
+  %data29 = getelementptr inbounds %struct.varray_head_tag* %9, i64 0, i32 4
+  %tree30 = bitcast %union.varray_data_tag* %data29 to [1 x %union.tree_node*]*
+  %arrayidx31 = getelementptr inbounds [1 x %union.tree_node*]* %tree30, i64 0, i64 %8
+  store %union.tree_node* %fn, %union.tree_node** %arrayidx31, align 8, !tbaa !0
+  %10 = bitcast i8* %arg_map to %struct.splay_tree_s*
+  %decl_map = getelementptr inbounds %struct.inline_data* %id, i64 0, i32 3
+  store %struct.splay_tree_s* %10, %struct.splay_tree_s** %decl_map, align 8, !tbaa !0
+  %cloning_p = getelementptr inbounds %struct.inline_data* %id, i64 0, i32 8
+  store i8 1, i8* %cloning_p, align 4, !tbaa !5
+  %11 = bitcast %union.tree_node** %body.i to i8*
+  call void @llvm.lifetime.start(i64 8, i8* %11) #1
+  %12 = load %struct.varray_head_tag** %fns, align 8, !tbaa !0
+  %elements_used.i = getelementptr inbounds %struct.varray_head_tag* %12, i64 0, i32 1
+  %13 = load i64* %elements_used.i, align 8, !tbaa !4
+  %sub.i = add i64 %13, -1
+  %data.i = getelementptr inbounds %struct.varray_head_tag* %12, i64 0, i32 4
+  %tree.i = bitcast %union.varray_data_tag* %data.i to [1 x %union.tree_node*]*
+  %arrayidx.i = getelementptr inbounds [1 x %union.tree_node*]* %tree.i, i64 0, i64 %sub.i
+  %14 = load %union.tree_node** %arrayidx.i, align 8, !tbaa !0
+  %saved_tree.i = getelementptr inbounds %union.tree_node* %14, i64 0, i32 0, i32 20
+  %15 = load %union.tree_node** %saved_tree.i, align 8, !tbaa !0
+  store %union.tree_node* %15, %union.tree_node** %body.i, align 8, !tbaa !0
+  %call.i = call %union.tree_node* @walk_tree(%union.tree_node** %body.i, %union.tree_node* (%union.tree_node**, i32*, i8*)* @copy_body_r, i8* %0, i8* null) #6
+  %16 = load %union.tree_node** %body.i, align 8, !tbaa !0
+  call void @llvm.lifetime.end(i64 8, i8* %11) #1
+  %saved_tree = getelementptr inbounds %union.tree_node* %clone, i64 0, i32 0, i32 20
+  %17 = load %union.tree_node** %saved_tree, align 8, !tbaa !0
+  %chain = getelementptr inbounds %union.tree_node* %17, i64 0, i32 0, i32 0, i32 0
+  store %union.tree_node* %16, %union.tree_node** %chain, align 8, !tbaa !0
+  %18 = load %struct.varray_head_tag** %fns, align 8, !tbaa !0
+  %tobool = icmp eq %struct.varray_head_tag* %18, null
+  br i1 %tobool, label %do.end42, label %if.then37
+
+if.then37:                                        ; preds = %if.end24
+  %19 = bitcast %struct.varray_head_tag* %18 to i8*
+  call void @free(i8* %19) #6
+  store %struct.varray_head_tag* null, %struct.varray_head_tag** %fns, align 8, !tbaa !0
+  br label %do.end42
+
+do.end42:                                         ; preds = %if.end24, %if.then37
+  call void @llvm.lifetime.end(i64 72, i8* %0) #1
+  ret void
+}

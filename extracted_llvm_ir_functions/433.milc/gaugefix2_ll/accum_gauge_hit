@@ -1,0 +1,303 @@
+define void @accum_gauge_hit(i32 %gauge_dir, i32 %parity) #0 {
+entry:
+  %cmp = icmp eq i32 %parity, 1
+  %0 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %cond = select i1 %cmp, i32 %0, i32 0
+  %cmp1 = icmp eq i32 %parity, 2
+  %1 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cond5338 = select i1 %cmp1, i32 %0, i32 %1
+  %cmp6339 = icmp slt i32 %cond, %cond5338
+  br i1 %cmp6339, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %2 = load %struct.site** @lattice, align 8, !tbaa !3
+  %idxprom = sext i32 %cond to i64
+  %arrayidx = getelementptr inbounds %struct.site* %2, i64 %idxprom
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv370 = phi i64 [ %idxprom, %for.body.lr.ph ], [ %indvars.iv.next371, %for.inc ]
+  %s.0341 = phi %struct.site* [ %arrayidx, %for.body.lr.ph ], [ %incdec.ptr, %for.inc ]
+  %3 = load i32* @diffmat_offset, align 4, !tbaa !0
+  %cmp7 = icmp sgt i32 %3, -1
+  br i1 %cmp7, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.body
+  %4 = bitcast %struct.site* %s.0341 to i8*
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds i8* %4, i64 %idx.ext
+  %5 = bitcast i8* %add.ptr to %struct.su3_matrix*
+  tail call void @clear_su3mat(%struct.su3_matrix* %5) #5
+  br label %if.end
+
+if.else:                                          ; preds = %for.body
+  %6 = load %struct.su3_matrix** @diffmatp, align 8, !tbaa !3
+  %arrayidx9 = getelementptr inbounds %struct.su3_matrix* %6, i64 %indvars.iv370
+  tail call void @clear_su3mat(%struct.su3_matrix* %arrayidx9) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %7 = load i32* @sumvec_offset, align 4, !tbaa !0
+  %cmp10 = icmp sgt i32 %7, -1
+  br i1 %cmp10, label %if.then11, label %if.else14
+
+if.then11:                                        ; preds = %if.end
+  %8 = bitcast %struct.site* %s.0341 to i8*
+  %idx.ext12 = sext i32 %7 to i64
+  %add.ptr13 = getelementptr inbounds i8* %8, i64 %idx.ext12
+  %9 = bitcast i8* %add.ptr13 to %struct.su3_vector*
+  tail call void @clearvec(%struct.su3_vector* %9) #5
+  br label %for.inc
+
+if.else14:                                        ; preds = %if.end
+  %10 = load %struct.su3_vector** @sumvecp, align 8, !tbaa !3
+  %arrayidx16 = getelementptr inbounds %struct.su3_vector* %10, i64 %indvars.iv370
+  tail call void @clearvec(%struct.su3_vector* %arrayidx16) #5
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then11, %if.else14
+  %indvars.iv.next371 = add i64 %indvars.iv370, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %s.0341, i64 1
+  %11 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %12 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cond5 = select i1 %cmp1, i32 %11, i32 %12
+  %13 = trunc i64 %indvars.iv.next371 to i32
+  %cmp6 = icmp slt i32 %13, %cond5
+  br i1 %cmp6, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  %14 = phi i32 [ %1, %entry ], [ %12, %for.inc ]
+  %15 = phi i32 [ %0, %entry ], [ %11, %for.inc ]
+  %cond22 = select i1 %cmp, i32 %15, i32 0
+  %cond30333 = select i1 %cmp1, i32 %15, i32 %14
+  %cmp31334 = icmp slt i32 %cond22, %cond30333
+  br i1 %cmp31334, label %for.cond33.preheader.lr.ph, label %for.end122
+
+for.cond33.preheader.lr.ph:                       ; preds = %for.end
+  %16 = load %struct.site** @lattice, align 8, !tbaa !3
+  %idxprom23 = sext i32 %cond22 to i64
+  %arrayidx24 = getelementptr inbounds %struct.site* %16, i64 %idxprom23
+  br label %for.cond33.preheader
+
+for.cond33.preheader:                             ; preds = %for.cond33.preheader.lr.ph, %for.inc119
+  %indvars.iv367 = phi i64 [ %idxprom23, %for.cond33.preheader.lr.ph ], [ %indvars.iv.next368, %for.inc119 ]
+  %s.1336 = phi %struct.site* [ %arrayidx24, %for.cond33.preheader.lr.ph ], [ %incdec.ptr121, %for.inc119 ]
+  %17 = bitcast %struct.site* %s.1336 to i8*
+  br label %for.body35
+
+for.body35:                                       ; preds = %for.inc116, %for.cond33.preheader
+  %indvars.iv362 = phi i64 [ 0, %for.cond33.preheader ], [ %indvars.iv.next363, %for.inc116 ]
+  %18 = trunc i64 %indvars.iv362 to i32
+  %cmp36 = icmp eq i32 %18, %gauge_dir
+  br i1 %cmp36, label %for.inc116, label %if.then37
+
+if.then37:                                        ; preds = %for.body35
+  %arrayidx39 = getelementptr inbounds %struct.site* %s.1336, i64 0, i32 8, i64 %indvars.iv362
+  %19 = load i32* @diffmat_offset, align 4, !tbaa !0
+  %cmp40 = icmp sgt i32 %19, -1
+  br i1 %cmp40, label %if.then41, label %if.else46
+
+if.then41:                                        ; preds = %if.then37
+  %idx.ext42 = sext i32 %19 to i64
+  %add.ptr43 = getelementptr inbounds i8* %17, i64 %idx.ext42
+  %20 = bitcast i8* %add.ptr43 to %struct.su3_matrix*
+  tail call void @sub_su3_matrix(%struct.su3_matrix* %20, %struct.su3_matrix* %arrayidx39, %struct.su3_matrix* %20) #5
+  br label %if.end51
+
+if.else46:                                        ; preds = %if.then37
+  %21 = load %struct.su3_matrix** @diffmatp, align 8, !tbaa !3
+  %arrayidx48 = getelementptr inbounds %struct.su3_matrix* %21, i64 %indvars.iv367
+  tail call void @sub_su3_matrix(%struct.su3_matrix* %arrayidx48, %struct.su3_matrix* %arrayidx39, %struct.su3_matrix* %arrayidx48) #5
+  br label %if.end51
+
+if.end51:                                         ; preds = %if.else46, %if.then41
+  %22 = load i32* @sumvec_offset, align 4, !tbaa !0
+  %cmp52 = icmp sgt i32 %22, -1
+  br i1 %cmp52, label %for.cond54.preheader, label %for.cond82.preheader
+
+for.cond54.preheader:                             ; preds = %if.end51
+  %idx.ext62 = sext i32 %22 to i64
+  %add.ptr63 = getelementptr inbounds i8* %17, i64 %idx.ext62
+  %c = bitcast i8* %add.ptr63 to [3 x %struct.complex]*
+  br label %for.body56
+
+for.cond82.preheader:                             ; preds = %if.end51
+  %23 = load %struct.su3_vector** @sumvecp, align 8, !tbaa !3
+  br label %for.body84
+
+for.body56:                                       ; preds = %for.body56, %for.cond54.preheader
+  %indvars.iv358 = phi i64 [ 0, %for.cond54.preheader ], [ %indvars.iv.next359, %for.body56 ]
+  %real = getelementptr inbounds %struct.site* %s.1336, i64 0, i32 8, i64 %indvars.iv362, i32 0, i64 %indvars.iv358, i64 %indvars.iv358, i32 0
+  %24 = load double* %real, align 8, !tbaa !4
+  %real65 = getelementptr inbounds [3 x %struct.complex]* %c, i64 0, i64 %indvars.iv358, i32 0
+  %25 = load double* %real65, align 8, !tbaa !4
+  %add = fadd double %24, %25
+  store double %add, double* %real65, align 8, !tbaa !4
+  %imag = getelementptr inbounds %struct.site* %s.1336, i64 0, i32 8, i64 %indvars.iv362, i32 0, i64 %indvars.iv358, i64 %indvars.iv358, i32 1
+  %26 = load double* %imag, align 8, !tbaa !4
+  %imag76 = getelementptr inbounds [3 x %struct.complex]* %c, i64 0, i64 %indvars.iv358, i32 1
+  %27 = load double* %imag76, align 8, !tbaa !4
+  %add77 = fadd double %26, %27
+  store double %add77, double* %imag76, align 8, !tbaa !4
+  %indvars.iv.next359 = add i64 %indvars.iv358, 1
+  %lftr.wideiv360 = trunc i64 %indvars.iv.next359 to i32
+  %exitcond361 = icmp eq i32 %lftr.wideiv360, 3
+  br i1 %exitcond361, label %for.inc116, label %for.body56
+
+for.body84:                                       ; preds = %for.body84, %for.cond82.preheader
+  %indvars.iv354 = phi i64 [ 0, %for.cond82.preheader ], [ %indvars.iv.next355, %for.body84 ]
+  %real90 = getelementptr inbounds %struct.site* %s.1336, i64 0, i32 8, i64 %indvars.iv362, i32 0, i64 %indvars.iv354, i64 %indvars.iv354, i32 0
+  %28 = load double* %real90, align 8, !tbaa !4
+  %real96 = getelementptr inbounds %struct.su3_vector* %23, i64 %indvars.iv367, i32 0, i64 %indvars.iv354, i32 0
+  %29 = load double* %real96, align 8, !tbaa !4
+  %add97 = fadd double %28, %29
+  store double %add97, double* %real96, align 8, !tbaa !4
+  %imag103 = getelementptr inbounds %struct.site* %s.1336, i64 0, i32 8, i64 %indvars.iv362, i32 0, i64 %indvars.iv354, i64 %indvars.iv354, i32 1
+  %30 = load double* %imag103, align 8, !tbaa !4
+  %imag109 = getelementptr inbounds %struct.su3_vector* %23, i64 %indvars.iv367, i32 0, i64 %indvars.iv354, i32 1
+  %31 = load double* %imag109, align 8, !tbaa !4
+  %add110 = fadd double %30, %31
+  store double %add110, double* %imag109, align 8, !tbaa !4
+  %indvars.iv.next355 = add i64 %indvars.iv354, 1
+  %lftr.wideiv356 = trunc i64 %indvars.iv.next355 to i32
+  %exitcond357 = icmp eq i32 %lftr.wideiv356, 3
+  br i1 %exitcond357, label %for.inc116, label %for.body84
+
+for.inc116:                                       ; preds = %for.body56, %for.body84, %for.body35
+  %indvars.iv.next363 = add i64 %indvars.iv362, 1
+  %lftr.wideiv364 = trunc i64 %indvars.iv.next363 to i32
+  %exitcond365 = icmp eq i32 %lftr.wideiv364, 4
+  br i1 %exitcond365, label %for.inc119, label %for.body35
+
+for.inc119:                                       ; preds = %for.inc116
+  %indvars.iv.next368 = add i64 %indvars.iv367, 1
+  %incdec.ptr121 = getelementptr inbounds %struct.site* %s.1336, i64 1
+  %32 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %33 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cond30 = select i1 %cmp1, i32 %32, i32 %33
+  %34 = trunc i64 %indvars.iv.next368 to i32
+  %cmp31 = icmp slt i32 %34, %cond30
+  br i1 %cmp31, label %for.cond33.preheader, label %for.end122
+
+for.end122:                                       ; preds = %for.inc119, %for.end
+  %35 = phi i32 [ %14, %for.end ], [ %33, %for.inc119 ]
+  %36 = phi i32 [ %15, %for.end ], [ %32, %for.inc119 ]
+  %cond127 = select i1 %cmp, i32 %36, i32 0
+  %cond135325 = select i1 %cmp1, i32 %36, i32 %35
+  %cmp136326 = icmp slt i32 %cond127, %cond135325
+  br i1 %cmp136326, label %for.cond138.preheader.lr.ph, label %for.end234
+
+for.cond138.preheader.lr.ph:                      ; preds = %for.end122
+  %37 = load %struct.site** @lattice, align 8, !tbaa !3
+  %idxprom128 = sext i32 %cond127 to i64
+  %arrayidx129 = getelementptr inbounds %struct.site* %37, i64 %idxprom128
+  br label %for.cond138.preheader
+
+for.cond138.preheader:                            ; preds = %for.cond138.preheader.lr.ph, %for.inc231
+  %indvars.iv352 = phi i64 [ %idxprom128, %for.cond138.preheader.lr.ph ], [ %indvars.iv.next353, %for.inc231 ]
+  %s.2328 = phi %struct.site* [ %arrayidx129, %for.cond138.preheader.lr.ph ], [ %incdec.ptr233, %for.inc231 ]
+  %38 = bitcast %struct.site* %s.2328 to i8*
+  br label %for.body140
+
+for.body140:                                      ; preds = %for.inc228, %for.cond138.preheader
+  %indvars.iv348 = phi i64 [ 0, %for.cond138.preheader ], [ %indvars.iv.next349, %for.inc228 ]
+  %39 = trunc i64 %indvars.iv348 to i32
+  %cmp141 = icmp eq i32 %39, %gauge_dir
+  br i1 %cmp141, label %for.inc228, label %if.then142
+
+if.then142:                                       ; preds = %for.body140
+  %arrayidx145 = getelementptr inbounds [16 x i8**]* @gen_pt, i64 0, i64 %indvars.iv348
+  %40 = load i8*** %arrayidx145, align 8, !tbaa !3
+  %arrayidx146 = getelementptr inbounds i8** %40, i64 %indvars.iv352
+  %41 = load i8** %arrayidx146, align 8, !tbaa !3
+  %42 = bitcast i8* %41 to %struct.su3_matrix*
+  %43 = load i32* @diffmat_offset, align 4, !tbaa !0
+  %cmp147 = icmp sgt i32 %43, -1
+  br i1 %cmp147, label %if.then148, label %if.else153
+
+if.then148:                                       ; preds = %if.then142
+  %idx.ext149 = sext i32 %43 to i64
+  %add.ptr150 = getelementptr inbounds i8* %38, i64 %idx.ext149
+  %44 = bitcast i8* %add.ptr150 to %struct.su3_matrix*
+  tail call void @add_su3_matrix(%struct.su3_matrix* %44, %struct.su3_matrix* %42, %struct.su3_matrix* %44) #5
+  br label %if.end158
+
+if.else153:                                       ; preds = %if.then142
+  %45 = load %struct.su3_matrix** @diffmatp, align 8, !tbaa !3
+  %arrayidx155 = getelementptr inbounds %struct.su3_matrix* %45, i64 %indvars.iv352
+  tail call void @add_su3_matrix(%struct.su3_matrix* %arrayidx155, %struct.su3_matrix* %42, %struct.su3_matrix* %arrayidx155) #5
+  br label %if.end158
+
+if.end158:                                        ; preds = %if.else153, %if.then148
+  %46 = load i32* @sumvec_offset, align 4, !tbaa !0
+  %cmp159 = icmp sgt i32 %46, -1
+  %e166 = bitcast i8* %41 to [3 x [3 x %struct.complex]]*
+  br i1 %cmp159, label %for.cond161.preheader, label %for.cond194.preheader
+
+for.cond161.preheader:                            ; preds = %if.end158
+  %idx.ext171 = sext i32 %46 to i64
+  %add.ptr172 = getelementptr inbounds i8* %38, i64 %idx.ext171
+  %c173 = bitcast i8* %add.ptr172 to [3 x %struct.complex]*
+  br label %for.body163
+
+for.cond194.preheader:                            ; preds = %if.end158
+  %47 = load %struct.su3_vector** @sumvecp, align 8, !tbaa !3
+  br label %for.body196
+
+for.body163:                                      ; preds = %for.body163, %for.cond161.preheader
+  %indvars.iv344 = phi i64 [ 0, %for.cond161.preheader ], [ %indvars.iv.next345, %for.body163 ]
+  %real169 = getelementptr inbounds [3 x [3 x %struct.complex]]* %e166, i64 0, i64 %indvars.iv344, i64 %indvars.iv344, i32 0
+  %48 = load double* %real169, align 8, !tbaa !4
+  %real175 = getelementptr inbounds [3 x %struct.complex]* %c173, i64 0, i64 %indvars.iv344, i32 0
+  %49 = load double* %real175, align 8, !tbaa !4
+  %add176 = fadd double %48, %49
+  store double %add176, double* %real175, align 8, !tbaa !4
+  %imag182 = getelementptr inbounds [3 x [3 x %struct.complex]]* %e166, i64 0, i64 %indvars.iv344, i64 %indvars.iv344, i32 1
+  %50 = load double* %imag182, align 8, !tbaa !4
+  %imag188 = getelementptr inbounds [3 x %struct.complex]* %c173, i64 0, i64 %indvars.iv344, i32 1
+  %51 = load double* %imag188, align 8, !tbaa !4
+  %add189 = fadd double %50, %51
+  store double %add189, double* %imag188, align 8, !tbaa !4
+  %indvars.iv.next345 = add i64 %indvars.iv344, 1
+  %lftr.wideiv346 = trunc i64 %indvars.iv.next345 to i32
+  %exitcond347 = icmp eq i32 %lftr.wideiv346, 3
+  br i1 %exitcond347, label %for.inc228, label %for.body163
+
+for.body196:                                      ; preds = %for.body196, %for.cond194.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond194.preheader ], [ %indvars.iv.next, %for.body196 ]
+  %real202 = getelementptr inbounds [3 x [3 x %struct.complex]]* %e166, i64 0, i64 %indvars.iv, i64 %indvars.iv, i32 0
+  %52 = load double* %real202, align 8, !tbaa !4
+  %real208 = getelementptr inbounds %struct.su3_vector* %47, i64 %indvars.iv352, i32 0, i64 %indvars.iv, i32 0
+  %53 = load double* %real208, align 8, !tbaa !4
+  %add209 = fadd double %52, %53
+  store double %add209, double* %real208, align 8, !tbaa !4
+  %imag215 = getelementptr inbounds [3 x [3 x %struct.complex]]* %e166, i64 0, i64 %indvars.iv, i64 %indvars.iv, i32 1
+  %54 = load double* %imag215, align 8, !tbaa !4
+  %imag221 = getelementptr inbounds %struct.su3_vector* %47, i64 %indvars.iv352, i32 0, i64 %indvars.iv, i32 1
+  %55 = load double* %imag221, align 8, !tbaa !4
+  %add222 = fadd double %54, %55
+  store double %add222, double* %imag221, align 8, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc228, label %for.body196
+
+for.inc228:                                       ; preds = %for.body163, %for.body196, %for.body140
+  %indvars.iv.next349 = add i64 %indvars.iv348, 1
+  %lftr.wideiv350 = trunc i64 %indvars.iv.next349 to i32
+  %exitcond351 = icmp eq i32 %lftr.wideiv350, 4
+  br i1 %exitcond351, label %for.inc231, label %for.body140
+
+for.inc231:                                       ; preds = %for.inc228
+  %indvars.iv.next353 = add i64 %indvars.iv352, 1
+  %incdec.ptr233 = getelementptr inbounds %struct.site* %s.2328, i64 1
+  %56 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %57 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cond135 = select i1 %cmp1, i32 %56, i32 %57
+  %58 = trunc i64 %indvars.iv.next353 to i32
+  %cmp136 = icmp slt i32 %58, %cond135
+  br i1 %cmp136, label %for.cond138.preheader, label %for.end234
+
+for.end234:                                       ; preds = %for.inc231, %for.end122
+  ret void
+}

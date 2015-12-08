@@ -1,0 +1,55 @@
+define void @expand_builtin_init_dwarf_reg_sizes(%union.tree_node* %address) #1 {
+entry:
+  %0 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 0), align 8, !tbaa !4
+  %type = bitcast %union.tree_node* %0 to %struct.tree_type*
+  %mode1 = getelementptr inbounds %struct.tree_type* %type, i64 0, i32 6
+  %1 = bitcast [4 x i8]* %mode1 to i32*
+  %bf.load = load i32* %1, align 4
+  %bf.lshr = lshr i32 %bf.load, 9
+  %bf.clear = and i32 %bf.lshr, 127
+  %call = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %address, %struct.rtx_def* null, i32 0, i32 0) #9
+  %call2 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 51, %struct.rtx_def* %call) #9
+  %idxprom1637 = zext i32 %bf.clear to i64
+  %arrayidx17 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom1637
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
+  %2 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %2, 33554432
+  %tobool = icmp eq i32 %and, 0
+  %svr4_dbx_register_map.dbx64_register_map = select i1 %tobool, [53 x i32]* @svr4_dbx_register_map, [53 x i32]* @dbx64_register_map
+  %cond.in = getelementptr inbounds [53 x i32]* %svr4_dbx_register_map.dbx64_register_map, i64 0, i64 %indvars.iv
+  %cond = load i32* %cond.in, align 4
+  %cmp5 = icmp slt i32 %cond, 17
+  br i1 %cmp5, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body
+  %3 = load i8* %arrayidx17, align 1, !tbaa !1
+  %conv = zext i8 %3 to i32
+  %mul = mul nsw i32 %conv, %cond
+  %cmp24 = icmp slt i32 %mul, 0
+  br i1 %cmp24, label %for.inc, label %if.end
+
+if.end:                                           ; preds = %if.then
+  %arrayidx20 = getelementptr inbounds [53 x i32]* @reg_raw_mode, i64 0, i64 %indvars.iv
+  %4 = load i32* %arrayidx20, align 4, !tbaa !5
+  %idxprom21 = sext i32 %4 to i64
+  %arrayidx22 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom21
+  %5 = load i8* %arrayidx22, align 1, !tbaa !1
+  %conv18 = sext i32 %mul to i64
+  %conv23 = zext i8 %5 to i64
+  %call27 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %call2, i32 %bf.clear, i64 %conv18, i32 1, i32 1) #9
+  %call28 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv23) #9
+  %call29 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call27, %struct.rtx_def* %call28) #9
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.end, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 53
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  ret void
+}

@@ -1,0 +1,28 @@
+define %union.tree_node* @type_hash_canon(i32 %hashcode, %union.tree_node* %type) #0 {
+entry:
+  %0 = load i32* @debug_no_type_hash, align 4, !tbaa !4
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %call = tail call %union.tree_node* @type_hash_lookup(i32 %hashcode, %union.tree_node* %type) #10
+  %cmp = icmp eq %union.tree_node* %call, null
+  br i1 %cmp, label %if.else, label %return
+
+if.else:                                          ; preds = %if.end
+  %call.i = tail call i8* @ggc_alloc(i64 16) #9
+  %conv.i = zext i32 %hashcode to i64
+  %hash.i = bitcast i8* %call.i to i64*
+  store i64 %conv.i, i64* %hash.i, align 8, !tbaa !3
+  %type1.i = getelementptr inbounds i8* %call.i, i64 8
+  %1 = bitcast i8* %type1.i to %union.tree_node**
+  store %union.tree_node* %type, %union.tree_node** %1, align 8, !tbaa !0
+  %2 = load %struct.htab** @type_hash_table, align 8, !tbaa !0
+  %call2.i = tail call i8** @htab_find_slot_with_hash(%struct.htab* %2, i8* %call.i, i32 %hashcode, i32 1) #9
+  store i8* %call.i, i8** %call2.i, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end, %entry, %if.else
+  %retval.0 = phi %union.tree_node* [ %type, %if.else ], [ %type, %entry ], [ %call, %if.end ]
+  ret %union.tree_node* %retval.0
+}

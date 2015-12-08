@@ -1,0 +1,84 @@
+define internal fastcc i32 @simple_operand_p(%union.tree_node* nocapture %exp) #4 {
+entry:
+  br label %while.cond
+
+while.cond:                                       ; preds = %land.rhs, %entry
+  %exp.addr.0 = phi %union.tree_node* [ %exp, %entry ], [ %3, %land.rhs ]
+  %code = getelementptr inbounds %union.tree_node* %exp.addr.0, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %bf.clear.off = add i32 %bf.clear, -114
+  %switch = icmp ult i32 %bf.clear.off, 2
+  br i1 %switch, label %land.rhs, label %while.end
+
+land.rhs:                                         ; preds = %while.cond
+  %type = getelementptr inbounds %union.tree_node* %exp.addr.0, i64 0, i32 0, i32 0, i32 1
+  %1 = load %union.tree_node** %type, align 8, !tbaa !3
+  %type7 = bitcast %union.tree_node* %1 to %struct.tree_type*
+  %mode = getelementptr inbounds %struct.tree_type* %type7, i64 0, i32 6
+  %2 = bitcast [4 x i8]* %mode to i32*
+  %bf.load8 = load i32* %2, align 4
+  %operands = getelementptr inbounds %union.tree_node* %exp.addr.0, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  %3 = load %union.tree_node** %arrayidx, align 8, !tbaa !3
+  %type12 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 0, i32 1
+  %4 = load %union.tree_node** %type12, align 8, !tbaa !3
+  %type13 = bitcast %union.tree_node* %4 to %struct.tree_type*
+  %mode14 = getelementptr inbounds %struct.tree_type* %type13, i64 0, i32 6
+  %5 = bitcast [4 x i8]* %mode14 to i32*
+  %bf.load15 = load i32* %5, align 4
+  %bf.lshr94 = xor i32 %bf.load15, %bf.load8
+  %6 = and i32 %bf.lshr94, 65024
+  %cmp18 = icmp eq i32 %6, 0
+  br i1 %cmp18, label %while.cond, label %while.end
+
+while.end:                                        ; preds = %while.cond, %land.rhs
+  %idxprom93 = zext i32 %bf.clear to i64
+  %arrayidx26 = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom93
+  %7 = load i8* %arrayidx26, align 1, !tbaa !1
+  %cmp27 = icmp eq i8 %7, 99
+  br i1 %cmp27, label %lor.end80, label %lor.rhs
+
+lor.rhs:                                          ; preds = %while.end
+  %cmp36 = icmp eq i8 %7, 100
+  br i1 %cmp36, label %land.lhs.true, label %lor.end80
+
+land.lhs.true:                                    ; preds = %lor.rhs
+  %8 = and i32 %bf.load, 3072
+  %9 = icmp eq i32 %8, 0
+  br i1 %9, label %land.lhs.true48, label %lor.end80
+
+land.lhs.true48:                                  ; preds = %land.lhs.true
+  %nonlocal_flag = getelementptr inbounds %union.tree_node* %exp.addr.0, i64 0, i32 0, i32 5
+  %10 = bitcast [8 x i8]* %nonlocal_flag to i64*
+  %bf.load49 = load i64* %10, align 8
+  %bf.cast = and i64 %bf.load49, 512
+  %tobool52 = icmp eq i64 %bf.cast, 0
+  br i1 %tobool52, label %land.lhs.true53, label %lor.end80
+
+land.lhs.true53:                                  ; preds = %land.lhs.true48
+  %bf.clear57 = and i32 %bf.load, 524288
+  %tobool58 = icmp eq i32 %bf.clear57, 0
+  br i1 %tobool58, label %land.lhs.true59, label %lor.end80
+
+land.lhs.true59:                                  ; preds = %land.lhs.true53
+  %bf.cast64 = and i64 %bf.load49, 256
+  %tobool65 = icmp eq i64 %bf.cast64, 0
+  br i1 %tobool65, label %land.rhs66, label %lor.end80
+
+land.rhs66:                                       ; preds = %land.lhs.true59
+  %bf.clear70 = and i32 %bf.load, 262144
+  %tobool71 = icmp eq i32 %bf.clear70, 0
+  br i1 %tobool71, label %lor.end80, label %lor.rhs72
+
+lor.rhs72:                                        ; preds = %land.rhs66
+  %bf.cast77 = and i64 %bf.load49, 1024
+  %tobool78 = icmp ne i64 %bf.cast77, 0
+  br label %lor.end80
+
+lor.end80:                                        ; preds = %land.rhs66, %land.lhs.true59, %land.lhs.true53, %land.lhs.true48, %land.lhs.true, %lor.rhs, %lor.rhs72, %while.end
+  %11 = phi i1 [ true, %while.end ], [ false, %land.lhs.true59 ], [ false, %land.lhs.true53 ], [ false, %land.lhs.true48 ], [ false, %land.lhs.true ], [ false, %lor.rhs ], [ true, %land.rhs66 ], [ %tobool78, %lor.rhs72 ]
+  %lor.ext = zext i1 %11 to i32
+  ret i32 %lor.ext
+}

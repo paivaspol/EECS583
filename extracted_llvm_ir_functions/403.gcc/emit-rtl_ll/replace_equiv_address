@@ -1,0 +1,9 @@
+define %struct.rtx_def* @replace_equiv_address(%struct.rtx_def* %memref, %struct.rtx_def* %addr) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %memref, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  tail call void @update_temp_slot_address(%struct.rtx_def* %0, %struct.rtx_def* %addr) #8
+  %call = tail call fastcc %struct.rtx_def* @change_address_1(%struct.rtx_def* %memref, i32 0, %struct.rtx_def* %addr, i32 1) #9
+  ret %struct.rtx_def* %call
+}

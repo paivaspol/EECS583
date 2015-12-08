@@ -1,0 +1,71 @@
+define internal fastcc void @remove_AT(%struct.die_struct* %die) #1 {
+entry:
+  %cmp = icmp eq %struct.die_struct* %die, null
+  br i1 %cmp, label %if.end7, label %if.then
+
+if.then:                                          ; preds = %entry
+  %die_attr = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 2
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.body, %if.then
+  %p.0 = phi %struct.dw_attr_struct** [ %die_attr, %if.then ], [ %dw_attr_next, %for.body ]
+  %0 = load %struct.dw_attr_struct** %p.0, align 8, !tbaa !4
+  %tobool = icmp eq %struct.dw_attr_struct* %0, null
+  br i1 %tobool, label %if.end7, label %for.body
+
+for.body:                                         ; preds = %for.cond
+  %dw_attr = getelementptr inbounds %struct.dw_attr_struct* %0, i64 0, i32 0
+  %1 = load i32* %dw_attr, align 4, !tbaa !11
+  %cmp1 = icmp eq i32 %1, 60
+  %dw_attr_next = getelementptr inbounds %struct.dw_attr_struct* %0, i64 0, i32 1
+  br i1 %cmp1, label %if.then5, label %for.cond
+
+if.then5:                                         ; preds = %for.body
+  %2 = load %struct.dw_attr_struct** %dw_attr_next, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %2, %struct.dw_attr_struct** %p.0, align 8, !tbaa !4
+  %val_class.i.i = getelementptr inbounds %struct.dw_attr_struct* %0, i64 0, i32 2, i32 0
+  %3 = load i32* %val_class.i.i, align 4, !tbaa !1
+  switch i32 %3, label %free_AT.exit [
+    i32 14, label %sw.bb.i
+    i32 12, label %sw.bb5.i
+    i32 13, label %sw.bb5.i
+    i32 8, label %sw.bb8.i
+  ]
+
+sw.bb.i:                                          ; preds = %if.then5
+  %v.i = getelementptr inbounds %struct.dw_attr_struct* %0, i64 0, i32 2, i32 1
+  %val_str.i = bitcast %union.anon.3* %v.i to %struct.indirect_string_node**
+  %4 = load %struct.indirect_string_node** %val_str.i, align 8, !tbaa !4
+  %refcount.i = getelementptr inbounds %struct.indirect_string_node* %4, i64 0, i32 1
+  %5 = load i32* %refcount.i, align 4, !tbaa !0
+  %tobool.i = icmp eq i32 %5, 0
+  br i1 %tobool.i, label %free_AT.exit, label %if.then.i
+
+if.then.i:                                        ; preds = %sw.bb.i
+  %dec.i = add i32 %5, -1
+  store i32 %dec.i, i32* %refcount.i, align 4, !tbaa !0
+  br label %free_AT.exit
+
+sw.bb5.i:                                         ; preds = %if.then5, %if.then5
+  %v7.i = getelementptr inbounds %struct.dw_attr_struct* %0, i64 0, i32 2, i32 1
+  %val_lbl_id.i = bitcast %union.anon.3* %v7.i to i8**
+  %6 = load i8** %val_lbl_id.i, align 8, !tbaa !4
+  tail call void @free(i8* %6) #9
+  br label %free_AT.exit
+
+sw.bb8.i:                                         ; preds = %if.then5
+  %v10.i = getelementptr inbounds %struct.dw_attr_struct* %0, i64 0, i32 2, i32 1
+  %array.i = bitcast %union.anon.3* %v10.i to i64**
+  %7 = load i64** %array.i, align 8, !tbaa !4
+  %8 = bitcast i64* %7 to i8*
+  tail call void @free(i8* %8) #9
+  br label %free_AT.exit
+
+free_AT.exit:                                     ; preds = %if.then5, %sw.bb.i, %if.then.i, %sw.bb5.i, %sw.bb8.i
+  %9 = bitcast %struct.dw_attr_struct* %0 to i8*
+  tail call void @free(i8* %9) #9
+  br label %if.end7
+
+if.end7:                                          ; preds = %for.cond, %entry, %free_AT.exit
+  ret void
+}

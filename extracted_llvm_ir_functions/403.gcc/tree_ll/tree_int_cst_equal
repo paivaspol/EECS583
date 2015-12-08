@@ -1,0 +1,54 @@
+define i32 @tree_int_cst_equal(%union.tree_node* %t1, %union.tree_node* %t2) #3 {
+entry:
+  %cmp = icmp eq %union.tree_node* %t1, %t2
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp eq %union.tree_node* %t1, null
+  %cmp2 = icmp eq %union.tree_node* %t2, null
+  %or.cond = or i1 %cmp1, %cmp2
+  br i1 %or.cond, label %return, label %if.end4
+
+if.end4:                                          ; preds = %if.end
+  %code = getelementptr inbounds %union.tree_node* %t1, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp5 = icmp eq i32 %bf.clear, 25
+  br i1 %cmp5, label %land.lhs.true, label %if.end25
+
+land.lhs.true:                                    ; preds = %if.end4
+  %code7 = getelementptr inbounds %union.tree_node* %t2, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code7 to i32*
+  %bf.load8 = load i32* %1, align 8
+  %bf.clear9 = and i32 %bf.load8, 255
+  %cmp10 = icmp eq i32 %bf.clear9, 25
+  br i1 %cmp10, label %land.lhs.true11, label %if.end25
+
+land.lhs.true11:                                  ; preds = %land.lhs.true
+  %int_cst12 = getelementptr inbounds %union.tree_node* %t1, i64 0, i32 0, i32 2
+  %low = bitcast i32* %int_cst12 to i64*
+  %2 = load i64* %low, align 8, !tbaa !3
+  %int_cst14 = getelementptr inbounds %union.tree_node* %t2, i64 0, i32 0, i32 2
+  %low15 = bitcast i32* %int_cst14 to i64*
+  %3 = load i64* %low15, align 8, !tbaa !3
+  %cmp16 = icmp eq i64 %2, %3
+  br i1 %cmp16, label %land.lhs.true17, label %if.end25
+
+land.lhs.true17:                                  ; preds = %land.lhs.true11
+  %high = getelementptr inbounds i32* %int_cst12, i64 2
+  %4 = bitcast i32* %high to i64*
+  %5 = load i64* %4, align 8, !tbaa !3
+  %high22 = getelementptr inbounds i32* %int_cst14, i64 2
+  %6 = bitcast i32* %high22 to i64*
+  %7 = load i64* %6, align 8, !tbaa !3
+  %cmp23 = icmp eq i64 %5, %7
+  br i1 %cmp23, label %return, label %if.end25
+
+if.end25:                                         ; preds = %land.lhs.true17, %land.lhs.true11, %land.lhs.true, %if.end4
+  br label %return
+
+return:                                           ; preds = %land.lhs.true17, %if.end, %entry, %if.end25
+  %retval.0 = phi i32 [ 0, %if.end25 ], [ 1, %entry ], [ 0, %if.end ], [ 1, %land.lhs.true17 ]
+  ret i32 %retval.0
+}

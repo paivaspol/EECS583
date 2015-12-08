@@ -1,0 +1,30 @@
+define internal fastcc void @push_decl_scope(%union.tree_node* %scope) #1 {
+entry:
+  %0 = load %struct.varray_head_tag** @decl_scope_table, align 8, !tbaa !4
+  %elements_used = getelementptr inbounds %struct.varray_head_tag* %0, i64 0, i32 1
+  %1 = load i64* %elements_used, align 8, !tbaa !6
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %0, i64 0, i32 0
+  %2 = load i64* %num_elements, align 8, !tbaa !6
+  %cmp = icmp ult i64 %1, %2
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %mul = shl i64 %2, 1
+  %call = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %0, i64 %mul) #9
+  store %struct.varray_head_tag* %call, %struct.varray_head_tag** @decl_scope_table, align 8, !tbaa !4
+  %elements_used2.phi.trans.insert = getelementptr inbounds %struct.varray_head_tag* %call, i64 0, i32 1
+  %.pre = load i64* %elements_used2.phi.trans.insert, align 8, !tbaa !6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %3 = phi i64 [ %1, %entry ], [ %.pre, %if.then ]
+  %4 = phi %struct.varray_head_tag* [ %0, %entry ], [ %call, %if.then ]
+  %elements_used2 = getelementptr inbounds %struct.varray_head_tag* %4, i64 0, i32 1
+  %inc = add i64 %3, 1
+  store i64 %inc, i64* %elements_used2, align 8, !tbaa !6
+  %data = getelementptr inbounds %struct.varray_head_tag* %4, i64 0, i32 4
+  %tree = bitcast %union.varray_data_tag* %data to [1 x %union.tree_node*]*
+  %arrayidx = getelementptr inbounds [1 x %union.tree_node*]* %tree, i64 0, i64 %3
+  store %union.tree_node* %scope, %union.tree_node** %arrayidx, align 8, !tbaa !4
+  ret void
+}

@@ -1,0 +1,16 @@
+define void @do_view(i8* %fn, i8* nocapture %opts) #1 {
+entry:
+  %call = tail call i32 @bDoView() #4
+  %tobool = icmp eq i32 %call, 0
+  %tobool1 = icmp eq i8* %fn, null
+  %or.cond = or i1 %tobool, %tobool1
+  br i1 %or.cond, label %cleanup, label %if.then2
+
+if.then2:                                         ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i8* %fn) #4
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.then2, %entry
+  ret void
+}

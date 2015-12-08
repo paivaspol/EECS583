@@ -1,0 +1,108 @@
+define internal fastcc void @put_reg_into_stack(%struct.function* %function, %struct.rtx_def* %reg, %union.tree_node* %type, i32 %promoted_mode, i32 %decl_mode, i32 %volatile_p, i32 %original_regno, i32 %used_p, %struct.hash_table* %ht) #0 {
+entry:
+  %tobool = icmp ne %struct.function* %function, null
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %cond = select i1 %tobool, %struct.function* %function, %struct.function* %0
+  %cmp = icmp eq i32 %original_regno, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %regno.0 = phi i32 [ %1, %if.then ], [ %original_regno, %entry ]
+  %x_max_parm_reg = getelementptr inbounds %struct.function* %cond, i64 0, i32 37
+  %2 = load i32* %x_max_parm_reg, align 4, !tbaa !4
+  %cmp1 = icmp ult i32 %regno.0, %2
+  br i1 %cmp1, label %if.end4, label %if.then6
+
+if.end4:                                          ; preds = %if.end
+  %idxprom = zext i32 %regno.0 to i64
+  %x_parm_reg_stack_loc = getelementptr inbounds %struct.function* %cond, i64 0, i32 38
+  %3 = load %struct.rtx_def*** %x_parm_reg_stack_loc, align 8, !tbaa !0
+  %arrayidx3 = getelementptr inbounds %struct.rtx_def** %3, i64 %idxprom
+  %4 = load %struct.rtx_def** %arrayidx3, align 8, !tbaa !0
+  %cmp5 = icmp eq %struct.rtx_def* %4, null
+  br i1 %cmp5, label %if.then6, label %if.end9
+
+if.then6:                                         ; preds = %if.end, %if.end4
+  %idxprom7 = sext i32 %decl_mode to i64
+  %arrayidx8 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom7
+  %5 = load i8* %arrayidx8, align 1, !tbaa !1
+  %conv = zext i8 %5 to i64
+  %call = tail call fastcc %struct.rtx_def* @assign_stack_local_1(i32 %decl_mode, i64 %conv, i32 0, %struct.function* %cond) #9
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.then6, %if.end4
+  %new.1 = phi %struct.rtx_def* [ %call, %if.then6 ], [ %4, %if.end4 ]
+  %6 = bitcast %struct.rtx_def* %reg to i32*
+  %bf.load = load i32* %6, align 8
+  %bf.clear = and i32 %bf.load, -16777216
+  %bf.value = shl i32 %decl_mode, 16
+  %bf.shl = and i32 %bf.value, 16711680
+  %bf.set = or i32 %bf.shl, %bf.clear
+  %bf.set12 = or i32 %bf.set, 66
+  store i32 %bf.set12, i32* %6, align 8
+  %arrayidx14 = getelementptr inbounds %struct.rtx_def* %new.1, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx14 to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %8 = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0, i32 0
+  %.c = ptrtoint %struct.rtx_def* %7 to i64
+  store i64 %.c, i64* %8, align 8, !tbaa !0
+  %9 = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 1, i32 0
+  store i64 0, i64* %9, align 8, !tbaa !0
+  %bf.value21 = shl i32 %volatile_p, 27
+  %bf.shl22 = and i32 %bf.value21, 134217728
+  %bf.clear23 = and i32 %bf.set12, -134283198
+  %bf.set24 = or i32 %bf.clear23, %bf.shl22
+  store i32 %bf.set24, i32* %6, align 8
+  %tobool25 = icmp eq %union.tree_node* %type, null
+  br i1 %tobool25, label %if.end75, label %do.body
+
+do.body:                                          ; preds = %if.end9
+  %code = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 2
+  %10 = bitcast [4 x i8]* %code to i32*
+  %bf.load27 = load i32* %10, align 8
+  %bf.clear28 = and i32 %bf.load27, 255
+  %bf.clear28.off = add i32 %bf.clear28, -18
+  %switch = icmp ult i32 %bf.clear28.off, 5
+  br i1 %switch, label %if.then62, label %lor.lhs.false58
+
+lor.lhs.false58:                                  ; preds = %do.body
+  %11 = bitcast %struct.rtx_def* %new.1 to i32*
+  %bf.load59 = load i32* %11, align 8
+  %bf.clear60 = and i32 %bf.load59, 268435456
+  %tobool61 = icmp eq i32 %bf.clear60, 0
+  br i1 %tobool61, label %if.else, label %if.then62
+
+if.then62:                                        ; preds = %do.body, %lor.lhs.false58
+  %bf.set65 = and i32 %bf.set24, 1878982722
+  %bf.clear67 = or i32 %bf.set65, 268435456
+  br label %do.end
+
+if.else:                                          ; preds = %lor.lhs.false58
+  %bf.clear71 = and i32 %bf.set24, 1878982722
+  %bf.set72 = or i32 %bf.clear71, -2147483648
+  br label %do.end
+
+do.end:                                           ; preds = %if.then62, %if.else
+  %storemerge = phi i32 [ %bf.set72, %if.else ], [ %bf.clear67, %if.then62 ]
+  store i32 %storemerge, i32* %6, align 8
+  %call74 = tail call i64 @get_alias_set(%union.tree_node* %type) #10
+  tail call void @set_mem_alias_set(%struct.rtx_def* %reg, i64 %call74) #10
+  br label %if.end75
+
+if.end75:                                         ; preds = %if.end9, %do.end
+  %tobool76 = icmp eq i32 %used_p, 0
+  br i1 %tobool76, label %if.end78, label %if.then77
+
+if.then77:                                        ; preds = %if.end75
+  tail call fastcc void @schedule_fixup_var_refs(%struct.function* %function, %struct.rtx_def* %reg, %union.tree_node* %type, i32 %promoted_mode, %struct.hash_table* %ht) #9
+  br label %if.end78
+
+if.end78:                                         ; preds = %if.end75, %if.then77
+  ret void
+}

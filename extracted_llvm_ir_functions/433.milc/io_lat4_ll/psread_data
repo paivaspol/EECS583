@@ -1,0 +1,17 @@
+define i32 @psread_data(i32 %parallel, %struct._IO_FILE* %fp, i8* %src, i64 %size, i8* %myname, i8* %descrip) #0 {
+entry:
+  %tobool = icmp eq i32 %parallel, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @pread_data(%struct._IO_FILE* %fp, i8* %src, i64 %size, i8* %myname, i8* %descrip) #8
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 @sread_data(%struct._IO_FILE* %fp, i8* %src, i64 %size, i8* %myname, i8* %descrip) #8
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi i32 [ %call, %if.then ], [ %call1, %if.else ]
+  ret i32 %retval.0
+}

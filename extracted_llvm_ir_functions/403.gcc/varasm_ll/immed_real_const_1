@@ -1,0 +1,131 @@
+define %struct.rtx_def* @immed_real_const_1(%struct.realvaluetype* byval align 8 %d, i32 %mode) #0 {
+entry:
+  %u = alloca %union.real_extract, align 8
+  %0 = bitcast %union.real_extract* %u to i8*
+  %1 = bitcast %struct.realvaluetype* %d to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 24, i32 8, i1 false), !tbaa.struct !11
+  %call = call i32 @target_isnan(%struct.realvaluetype* byval align 8 %d) #9
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %land.lhs.true, label %if.else
+
+land.lhs.true:                                    ; preds = %entry
+  %call2 = call i32 @memcmp(i8* bitcast (%struct.realvaluetype* @dconst0 to i8*), i8* %1, i64 24) #11
+  %tobool3 = icmp eq i32 %call2, 0
+  br i1 %tobool3, label %if.then, label %if.else
+
+if.then:                                          ; preds = %land.lhs.true
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [3 x [59 x %struct.rtx_def*]]* @const_tiny_rtx, i64 0, i64 0, i64 %idxprom
+  %2 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !3
+  br label %return
+
+if.else:                                          ; preds = %land.lhs.true, %entry
+  %call4 = call i32 @target_isnan(%struct.realvaluetype* byval align 8 %d) #9
+  %tobool5 = icmp eq i32 %call4, 0
+  br i1 %tobool5, label %land.lhs.true6, label %if.else11
+
+land.lhs.true6:                                   ; preds = %if.else
+  %call7 = call i32 @ereal_cmp(%struct.realvaluetype* byval align 8 @dconst1, %struct.realvaluetype* byval align 8 %d) #9
+  %cmp = icmp eq i32 %call7, 0
+  br i1 %cmp, label %if.then8, label %if.else11
+
+if.then8:                                         ; preds = %land.lhs.true6
+  %idxprom9 = sext i32 %mode to i64
+  %arrayidx10 = getelementptr inbounds [3 x [59 x %struct.rtx_def*]]* @const_tiny_rtx, i64 0, i64 1, i64 %idxprom9
+  %3 = load %struct.rtx_def** %arrayidx10, align 8, !tbaa !3
+  br label %return
+
+if.else11:                                        ; preds = %if.else, %land.lhs.true6
+  %call12 = call i32 @target_isnan(%struct.realvaluetype* byval align 8 %d) #9
+  %tobool13 = icmp eq i32 %call12, 0
+  br i1 %tobool13, label %land.lhs.true14, label %if.end21
+
+land.lhs.true14:                                  ; preds = %if.else11
+  %call15 = call i32 @ereal_cmp(%struct.realvaluetype* byval align 8 @dconst2, %struct.realvaluetype* byval align 8 %d) #9
+  %cmp16 = icmp eq i32 %call15, 0
+  br i1 %cmp16, label %if.then17, label %if.end21
+
+if.then17:                                        ; preds = %land.lhs.true14
+  %idxprom18 = sext i32 %mode to i64
+  %arrayidx19 = getelementptr inbounds [3 x [59 x %struct.rtx_def*]]* @const_tiny_rtx, i64 0, i64 2, i64 %idxprom18
+  %4 = load %struct.rtx_def** %arrayidx19, align 8, !tbaa !3
+  br label %return
+
+if.end21:                                         ; preds = %if.else11, %land.lhs.true14
+  %5 = load %struct.function** @cfun, align 8, !tbaa !3
+  %cmp22 = icmp eq %struct.function* %5, null
+  br i1 %cmp22, label %if.end34, label %if.then23
+
+if.then23:                                        ; preds = %if.end21
+  %varasm = getelementptr inbounds %struct.function* %5, i64 0, i32 4
+  %6 = load %struct.varasm_status** %varasm, align 8, !tbaa !3
+  %x_const_double_chain = getelementptr inbounds %struct.varasm_status* %6, i64 0, i32 5
+  %r.070 = load %struct.rtx_def** %x_const_double_chain, align 8
+  %tobool2471 = icmp eq %struct.rtx_def* %r.070, null
+  br i1 %tobool2471, label %if.end34, label %for.body
+
+for.body:                                         ; preds = %if.then23, %for.inc
+  %r.072 = phi %struct.rtx_def* [ %r.0, %for.inc ], [ %r.070, %if.then23 ]
+  %rtwint = getelementptr inbounds %struct.rtx_def* %r.072, i64 0, i32 1, i64 1, i32 0
+  %7 = bitcast i64* %rtwint to i8*
+  %call26 = call i32 @memcmp(i8* %7, i8* %0, i64 24) #11
+  %tobool27 = icmp eq i32 %call26, 0
+  br i1 %tobool27, label %land.lhs.true28, label %for.inc
+
+land.lhs.true28:                                  ; preds = %for.body
+  %8 = bitcast %struct.rtx_def* %r.072 to i32*
+  %bf.load = load i32* %8, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %cmp29 = icmp eq i32 %bf.clear, %mode
+  br i1 %cmp29, label %return, label %for.inc
+
+for.inc:                                          ; preds = %for.body, %land.lhs.true28
+  %arrayidx33 = getelementptr inbounds %struct.rtx_def* %r.072, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx33 to %struct.rtx_def**
+  %r.0 = load %struct.rtx_def** %rtx, align 8
+  %tobool24 = icmp eq %struct.rtx_def* %r.0, null
+  br i1 %tobool24, label %if.end34, label %for.body
+
+if.end34:                                         ; preds = %if.then23, %for.inc, %if.end21
+  %call35 = call %struct.rtx_def* @rtx_alloc(i32 55) #9
+  %9 = bitcast %struct.rtx_def* %call35 to i32*
+  %bf.load36 = load i32* %9, align 8
+  %bf.value = shl i32 %mode, 16
+  %bf.shl = and i32 %bf.value, 16711680
+  %bf.clear37 = and i32 %bf.load36, -16711681
+  %bf.set = or i32 %bf.clear37, %bf.shl
+  store i32 %bf.set, i32* %9, align 8
+  %fld38 = getelementptr inbounds %struct.rtx_def* %call35, i64 0, i32 1
+  %rtwint40 = getelementptr inbounds %struct.rtx_def* %call35, i64 0, i32 1, i64 1, i32 0
+  %10 = bitcast i64* %rtwint40 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %0, i64 24, i32 1, i1 false)
+  %11 = load %union.tree_node** @current_function_decl, align 8, !tbaa !3
+  %cmp41 = icmp eq %union.tree_node* %11, null
+  br i1 %cmp41, label %if.else50, label %if.then42
+
+if.then42:                                        ; preds = %if.end34
+  %12 = load %struct.function** @cfun, align 8, !tbaa !3
+  %varasm43 = getelementptr inbounds %struct.function* %12, i64 0, i32 4
+  %13 = load %struct.varasm_status** %varasm43, align 8, !tbaa !3
+  %x_const_double_chain44 = getelementptr inbounds %struct.varasm_status* %13, i64 0, i32 5
+  %14 = load %struct.rtx_def** %x_const_double_chain44, align 8, !tbaa !3
+  %15 = getelementptr inbounds [1 x %union.rtunion_def]* %fld38, i64 0, i64 0, i32 0
+  %.c = ptrtoint %struct.rtx_def* %14 to i64
+  store i64 %.c, i64* %15, align 8, !tbaa !3
+  %16 = load %struct.function** @cfun, align 8, !tbaa !3
+  %varasm48 = getelementptr inbounds %struct.function* %16, i64 0, i32 4
+  %17 = load %struct.varasm_status** %varasm48, align 8, !tbaa !3
+  %x_const_double_chain49 = getelementptr inbounds %struct.varasm_status* %17, i64 0, i32 5
+  store %struct.rtx_def* %call35, %struct.rtx_def** %x_const_double_chain49, align 8, !tbaa !3
+  br label %return
+
+if.else50:                                        ; preds = %if.end34
+  %18 = getelementptr inbounds [1 x %union.rtunion_def]* %fld38, i64 0, i64 0, i32 0
+  store i64 0, i64* %18, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %land.lhs.true28, %if.then42, %if.else50, %if.then17, %if.then8, %if.then
+  %retval.0 = phi %struct.rtx_def* [ %4, %if.then17 ], [ %3, %if.then8 ], [ %2, %if.then ], [ %call35, %if.else50 ], [ %call35, %if.then42 ], [ %r.072, %land.lhs.true28 ]
+  ret %struct.rtx_def* %retval.0
+}

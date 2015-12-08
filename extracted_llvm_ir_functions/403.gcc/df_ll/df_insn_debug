@@ -1,0 +1,82 @@
+define void @df_insn_debug(%struct.df* nocapture %df, %struct.rtx_def* nocapture %insn, %struct._IO_FILE* nocapture %file) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !4
+  %insn_size = getelementptr inbounds %struct.df* %df, i64 0, i32 8
+  %1 = load i32* %insn_size, align 4, !tbaa !4
+  %cmp = icmp ult i32 %0, %1
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %idxprom = zext i32 %0 to i64
+  %insns = getelementptr inbounds %struct.df* %df, i64 0, i32 7
+  %2 = load %struct.insn_info** %insns, align 8, !tbaa !3
+  %defs = getelementptr inbounds %struct.insn_info* %2, i64 %idxprom, i32 0
+  %3 = load %struct.df_link** %defs, align 8, !tbaa !3
+  %tobool = icmp eq %struct.df_link* %3, null
+  br i1 %tobool, label %if.else, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %ref = getelementptr inbounds %struct.df_link* %3, i64 0, i32 1
+  %4 = load %struct.ref** %ref, align 8, !tbaa !3
+  %insn7 = getelementptr inbounds %struct.ref* %4, i64 0, i32 1
+  %5 = load %struct.rtx_def** %insn7, align 8, !tbaa !3
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 0
+  %rtint10 = bitcast %union.rtunion_def* %arrayidx9 to i32*
+  %6 = load i32* %rtint10, align 4, !tbaa !4
+  %idxprom11 = sext i32 %6 to i64
+  %7 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx12 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom11
+  %8 = load %struct.basic_block_def** %arrayidx12, align 8, !tbaa !3
+  %index = getelementptr inbounds %struct.basic_block_def* %8, i64 0, i32 11
+  %9 = load i32* %index, align 4, !tbaa !4
+  br label %if.end34
+
+if.else:                                          ; preds = %if.end
+  %uses = getelementptr inbounds %struct.insn_info* %2, i64 %idxprom, i32 1
+  %10 = load %struct.df_link** %uses, align 8, !tbaa !3
+  %tobool16 = icmp eq %struct.df_link* %10, null
+  br i1 %tobool16, label %if.end34, label %if.then17
+
+if.then17:                                        ; preds = %if.else
+  %ref22 = getelementptr inbounds %struct.df_link* %10, i64 0, i32 1
+  %11 = load %struct.ref** %ref22, align 8, !tbaa !3
+  %insn23 = getelementptr inbounds %struct.ref* %11, i64 0, i32 1
+  %12 = load %struct.rtx_def** %insn23, align 8, !tbaa !3
+  %arrayidx25 = getelementptr inbounds %struct.rtx_def* %12, i64 0, i32 1, i64 0
+  %rtint26 = bitcast %union.rtunion_def* %arrayidx25 to i32*
+  %13 = load i32* %rtint26, align 4, !tbaa !4
+  %idxprom27 = sext i32 %13 to i64
+  %14 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !3
+  %data28 = getelementptr inbounds %struct.varray_head_tag* %14, i64 0, i32 4
+  %bb29 = bitcast %union.varray_data_tag* %data28 to [1 x %struct.basic_block_def*]*
+  %arrayidx30 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb29, i64 0, i64 %idxprom27
+  %15 = load %struct.basic_block_def** %arrayidx30, align 8, !tbaa !3
+  %index31 = getelementptr inbounds %struct.basic_block_def* %15, i64 0, i32 11
+  %16 = load i32* %index31, align 4, !tbaa !4
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.else, %if.then17, %if.then2
+  %bbi.0 = phi i32 [ %9, %if.then2 ], [ %16, %if.then17 ], [ -1, %if.else ]
+  %idxprom38 = sext i32 %0 to i64
+  %luid = getelementptr inbounds %struct.insn_info* %2, i64 %idxprom38, i32 2
+  %17 = load i32* %luid, align 4, !tbaa !4
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([28 x i8]* @.str27, i64 0, i64 0), i32 %0, i32 %bbi.0, i32 %17) #8
+  %18 = load %struct.insn_info** %insns, align 8, !tbaa !3
+  %defs44 = getelementptr inbounds %struct.insn_info* %18, i64 %idxprom, i32 0
+  %19 = load %struct.df_link** %defs44, align 8, !tbaa !3
+  tail call fastcc void @df_chain_dump(%struct.df_link* %19, %struct._IO_FILE* %file) #6
+  %20 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str26, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %file)
+  %21 = load %struct.insn_info** %insns, align 8, !tbaa !3
+  %uses49 = getelementptr inbounds %struct.insn_info* %21, i64 %idxprom, i32 1
+  %22 = load %struct.df_link** %uses49, align 8, !tbaa !3
+  tail call fastcc void @df_chain_dump(%struct.df_link* %22, %struct._IO_FILE* %file) #6
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #5
+  br label %return
+
+return:                                           ; preds = %entry, %if.end34
+  ret void
+}

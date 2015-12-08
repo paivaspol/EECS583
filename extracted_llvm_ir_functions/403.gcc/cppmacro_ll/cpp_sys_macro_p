@@ -1,0 +1,27 @@
+define i32 @cpp_sys_macro_p(%struct.cpp_reader* nocapture %pfile) #4 {
+entry:
+  %context = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 10
+  %0 = load %struct.cpp_context** %context, align 8, !tbaa !3
+  %macro = getelementptr inbounds %struct.cpp_context* %0, i64 0, i32 5
+  %1 = load %struct.cpp_hashnode** %macro, align 8, !tbaa !3
+  %tobool = icmp eq %struct.cpp_hashnode* %1, null
+  br i1 %tobool, label %land.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %macro1 = getelementptr inbounds %struct.cpp_hashnode* %1, i64 0, i32 6, i32 0
+  %2 = load %struct.cpp_macro** %macro1, align 8, !tbaa !3
+  %tobool2 = icmp eq %struct.cpp_macro* %2, null
+  br i1 %tobool2, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %land.lhs.true
+  %syshdr = getelementptr inbounds %struct.cpp_macro* %2, i64 0, i32 5
+  %bf.load = load i8* %syshdr, align 2
+  %bf.clear = and i8 %bf.load, 4
+  %tobool5 = icmp ne i8 %bf.clear, 0
+  br label %land.end
+
+land.end:                                         ; preds = %land.lhs.true, %entry, %land.rhs
+  %3 = phi i1 [ false, %land.lhs.true ], [ false, %entry ], [ %tobool5, %land.rhs ]
+  %land.ext = zext i1 %3 to i32
+  ret i32 %land.ext
+}

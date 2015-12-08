@@ -1,0 +1,37 @@
+define internal fastcc void @expand_null_return_1(%struct.rtx_def* %last_insn) #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_cleanup_label = getelementptr inbounds %struct.function* %0, i64 0, i32 23
+  %1 = load %struct.rtx_def** %x_cleanup_label, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %1, null
+  br i1 %tobool, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %x_return_label = getelementptr inbounds %struct.function* %0, i64 0, i32 24
+  %2 = load %struct.rtx_def** %x_return_label, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi %struct.rtx_def* [ %2, %cond.false ], [ %1, %entry ]
+  tail call void @clear_pending_stack_adjust() #7
+  tail call void @do_pending_stack_adjust() #7
+  %3 = load %struct.function** @cfun, align 8, !tbaa !0
+  %stmt = getelementptr inbounds %struct.function* %3, i64 0, i32 1
+  %4 = load %struct.stmt_status** %stmt, align 8, !tbaa !0
+  %x_last_expr_type = getelementptr inbounds %struct.stmt_status* %4, i64 0, i32 8
+  store %union.tree_node* null, %union.tree_node** %x_last_expr_type, align 8, !tbaa !0
+  %cmp = icmp eq %struct.rtx_def* %cond, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %cond.end
+  %call = tail call %struct.rtx_def* @gen_label_rtx() #7
+  %5 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_return_label2 = getelementptr inbounds %struct.function* %5, i64 0, i32 24
+  store %struct.rtx_def* %call, %struct.rtx_def** %x_return_label2, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %cond.end
+  %end_label.0 = phi %struct.rtx_def* [ %call, %if.then ], [ %cond, %cond.end ]
+  tail call fastcc void @expand_goto_internal(%union.tree_node* null, %struct.rtx_def* %end_label.0, %struct.rtx_def* %last_insn) #9
+  ret void
+}

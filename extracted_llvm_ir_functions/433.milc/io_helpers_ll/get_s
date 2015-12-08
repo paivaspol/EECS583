@@ -1,0 +1,74 @@
+define i32 @get_s(i32 %prompt, i8* %variable_name_string, i8* %value) #0 {
+entry:
+  %checkname = alloca [80 x i8], align 16
+  %0 = getelementptr inbounds [80 x i8]* %checkname, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 80, i8* %0) #3
+  %tobool = icmp eq i32 %prompt, 0
+  br i1 %tobool, label %if.else6, label %while.body.preheader
+
+while.body.preheader:                             ; preds = %entry
+  %call54 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([10 x i8]* @.str33, i64 0, i64 0), i8* %variable_name_string) #5
+  %call155 = call i32 (i8*, ...)* @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i8* %value) #5
+  %cmp256 = icmp eq i32 %call155, 1
+  br i1 %cmp256, label %if.then3, label %if.else
+
+if.then3:                                         ; preds = %if.else, %while.body.preheader
+  %call4 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([7 x i8]* @.str51, i64 0, i64 0), i8* %variable_name_string, i8* %value) #5
+  br label %cleanup
+
+if.else:                                          ; preds = %while.body.preheader, %if.else
+  %puts53 = call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str73, i64 0, i64 0))
+  %call = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([10 x i8]* @.str33, i64 0, i64 0), i8* %variable_name_string) #5
+  %call1 = call i32 (i8*, ...)* @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i8* %value) #5
+  %cmp2 = icmp eq i32 %call1, 1
+  br i1 %cmp2, label %if.then3, label %if.else
+
+if.else6:                                         ; preds = %entry
+  %call7 = call i32 (i8*, ...)* @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i8* %0) #5
+  switch i32 %call7, label %if.else15 [
+    i32 -1, label %if.then9
+    i32 0, label %if.then13
+  ]
+
+if.then9:                                         ; preds = %if.else6
+  %call10 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([41 x i8]* @.str52, i64 0, i64 0), i8* %variable_name_string) #5
+  br label %cleanup
+
+if.then13:                                        ; preds = %if.else6
+  %call14 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([36 x i8]* @.str53, i64 0, i64 0), i8* %variable_name_string) #5
+  br label %cleanup
+
+if.else15:                                        ; preds = %if.else6
+  %call17 = call i32 @strcmp(i8* %0, i8* %variable_name_string) #7
+  %cmp18 = icmp eq i32 %call17, 0
+  br i1 %cmp18, label %if.end24, label %if.then19
+
+if.then19:                                        ; preds = %if.else15
+  %call21 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([49 x i8]* @.str54, i64 0, i64 0), i8* %variable_name_string, i8* %0) #5
+  br label %cleanup
+
+if.end24:                                         ; preds = %if.else15
+  %call25 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str9, i64 0, i64 0), i8* %variable_name_string) #5
+  %call26 = call i32 (i8*, ...)* @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i8* %value) #5
+  switch i32 %call26, label %if.end35 [
+    i32 -1, label %if.then28
+    i32 0, label %if.then32
+  ]
+
+if.then28:                                        ; preds = %if.end24
+  %call29 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([47 x i8]* @.str55, i64 0, i64 0), i8* %variable_name_string) #5
+  br label %cleanup
+
+if.then32:                                        ; preds = %if.end24
+  %call33 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([43 x i8]* @.str56, i64 0, i64 0), i8* %variable_name_string) #5
+  br label %cleanup
+
+if.end35:                                         ; preds = %if.end24
+  %puts = call i32 @puts(i8* %value)
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.then3, %if.end35, %if.then32, %if.then28, %if.then19, %if.then13, %if.then9
+  %retval.0 = phi i32 [ 1, %if.then9 ], [ 1, %if.then13 ], [ 1, %if.then19 ], [ 1, %if.then28 ], [ 1, %if.then32 ], [ 0, %if.end35 ], [ 0, %if.then3 ]
+  call void @llvm.lifetime.end(i64 80, i8* %0) #3
+  ret i32 %retval.0
+}

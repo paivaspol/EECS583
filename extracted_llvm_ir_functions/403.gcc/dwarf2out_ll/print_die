@@ -1,0 +1,211 @@
+define internal fastcc void @print_die(%struct.die_struct* nocapture %die, %struct._IO_FILE* %outfile) #1 {
+entry:
+  %0 = load i32* @print_indent, align 4, !tbaa !0
+  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([4 x i8]* @.str439, i64 0, i64 0), i32 %0, i8* getelementptr inbounds ([1 x i8]* @.str440, i64 0, i64 0)) #9
+  %die_offset = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 6
+  %1 = load i64* %die_offset, align 8, !tbaa !6
+  %die_tag = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 0
+  %2 = load i32* %die_tag, align 4, !tbaa !12
+  %call = tail call fastcc i8* @dwarf_tag_name(i32 %2) #10
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([14 x i8]* @.str419, i64 0, i64 0), i64 %1, i8* %call) #9
+  %3 = load i32* @print_indent, align 4, !tbaa !0
+  %call.i123 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([4 x i8]* @.str439, i64 0, i64 0), i32 %3, i8* getelementptr inbounds ([1 x i8]* @.str440, i64 0, i64 0)) #9
+  %die_abbrev = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 7
+  %4 = load i64* %die_abbrev, align 8, !tbaa !6
+  %call2 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([17 x i8]* @.str420, i64 0, i64 0), i64 %4) #9
+  %5 = load i64* %die_offset, align 8, !tbaa !6
+  %call4 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([14 x i8]* @.str421, i64 0, i64 0), i64 %5) #9
+  %die_attr = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 2
+  %a.0186 = load %struct.dw_attr_struct** %die_attr, align 8
+  %cmp187 = icmp eq %struct.dw_attr_struct* %a.0186, null
+  br i1 %cmp187, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %sw.epilog
+  %a.0188 = phi %struct.dw_attr_struct* [ %a.0, %sw.epilog ], [ %a.0186, %entry ]
+  %6 = load i32* @print_indent, align 4, !tbaa !0
+  %call.i124 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([4 x i8]* @.str439, i64 0, i64 0), i32 %6, i8* getelementptr inbounds ([1 x i8]* @.str440, i64 0, i64 0)) #9
+  %dw_attr = getelementptr inbounds %struct.dw_attr_struct* %a.0188, i64 0, i32 0
+  %7 = load i32* %dw_attr, align 4, !tbaa !11
+  %call5 = tail call fastcc i8* @dwarf_attr_name(i32 %7) #10
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([7 x i8]* @.str422, i64 0, i64 0), i8* %call5) #9
+  %val_class.i = getelementptr inbounds %struct.dw_attr_struct* %a.0188, i64 0, i32 2, i32 0
+  %8 = load i32* %val_class.i, align 4, !tbaa !1
+  switch i32 %8, label %sw.epilog [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb9
+    i32 2, label %sw.bb11
+    i32 3, label %AT_loc_list.exit
+    i32 4, label %sw.bb16
+    i32 5, label %AT_int.exit
+    i32 6, label %AT_unsigned.exit
+    i32 7, label %sw.bb24
+    i32 8, label %sw.bb29
+    i32 9, label %AT_flag.exit
+    i32 10, label %AT_ref.exit
+    i32 12, label %land.lhs.true.i165
+    i32 13, label %land.lhs.true.i165
+    i32 14, label %AT_string.exit
+  ]
+
+sw.bb:                                            ; preds = %for.body
+  %9 = tail call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str423, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %outfile)
+  br label %sw.epilog
+
+sw.bb9:                                           ; preds = %for.body
+  %10 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str424, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %outfile)
+  br label %sw.epilog
+
+sw.bb11:                                          ; preds = %for.body
+  %11 = tail call i64 @fwrite(i8* getelementptr inbounds ([20 x i8]* @.str425, i64 0, i64 0), i64 19, i64 1, %struct._IO_FILE* %outfile)
+  br label %sw.epilog
+
+AT_loc_list.exit:                                 ; preds = %for.body
+  %v.i = getelementptr inbounds %struct.dw_attr_struct* %a.0188, i64 0, i32 2, i32 1
+  %val_loc_list.i = bitcast %union.anon.3* %v.i to %struct.dw_loc_list_struct**
+  %12 = load %struct.dw_loc_list_struct** %val_loc_list.i, align 8, !tbaa !4
+  %ll_symbol = getelementptr inbounds %struct.dw_loc_list_struct* %12, i64 0, i32 3
+  %13 = load i8** %ll_symbol, align 8, !tbaa !4
+  %call15 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([26 x i8]* @.str426, i64 0, i64 0), i8* %13) #9
+  br label %sw.epilog
+
+sw.bb16:                                          ; preds = %for.body
+  %14 = tail call i64 @fwrite(i8* getelementptr inbounds ([11 x i8]* @.str427, i64 0, i64 0), i64 10, i64 1, %struct._IO_FILE* %outfile)
+  br label %sw.epilog
+
+AT_int.exit:                                      ; preds = %for.body
+  %val_int.i = getelementptr inbounds %struct.dw_attr_struct* %a.0188, i64 0, i32 2, i32 1, i32 0, i32 0
+  %15 = load i64* %val_int.i, align 8, !tbaa !6
+  %call20 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([4 x i8]* @.str428, i64 0, i64 0), i64 %15) #9
+  br label %sw.epilog
+
+AT_unsigned.exit:                                 ; preds = %for.body
+  %val_unsigned.i = getelementptr inbounds %struct.dw_attr_struct* %a.0188, i64 0, i32 2, i32 1, i32 0, i32 0
+  %16 = load i64* %val_unsigned.i, align 8, !tbaa !6
+  %call23 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([4 x i8]* @.str429, i64 0, i64 0), i64 %16) #9
+  br label %sw.epilog
+
+sw.bb24:                                          ; preds = %for.body
+  %hi = getelementptr inbounds %struct.dw_attr_struct* %a.0188, i64 0, i32 2, i32 1, i32 0, i32 0
+  %17 = load i64* %hi, align 8, !tbaa !6
+  %low = getelementptr inbounds %struct.dw_attr_struct* %a.0188, i64 0, i32 2, i32 1, i32 0, i32 1
+  %18 = load i64* %low, align 8, !tbaa !6
+  %call28 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([19 x i8]* @.str430, i64 0, i64 0), i64 %17, i64 %18) #9
+  br label %sw.epilog
+
+sw.bb29:                                          ; preds = %for.body
+  %19 = tail call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str431, i64 0, i64 0), i64 23, i64 1, %struct._IO_FILE* %outfile)
+  br label %sw.epilog
+
+AT_flag.exit:                                     ; preds = %for.body
+  %v.i139 = getelementptr inbounds %struct.dw_attr_struct* %a.0188, i64 0, i32 2, i32 1
+  %val_flag.i = bitcast %union.anon.3* %v.i139 to i8*
+  %20 = load i8* %val_flag.i, align 1, !tbaa !1
+  %conv.i = zext i8 %20 to i32
+  %call33 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([3 x i8]* @.str432, i64 0, i64 0), i32 %conv.i) #9
+  br label %sw.epilog
+
+AT_ref.exit:                                      ; preds = %for.body
+  %v.i145 = getelementptr inbounds %struct.dw_attr_struct* %a.0188, i64 0, i32 2, i32 1
+  %die.i = bitcast %union.anon.3* %v.i145 to %struct.die_struct**
+  %21 = load %struct.die_struct** %die.i, align 8, !tbaa !4
+  %cmp36 = icmp eq %struct.die_struct* %21, null
+  br i1 %cmp36, label %if.else45, label %AT_ref.exit162
+
+AT_ref.exit162:                                   ; preds = %AT_ref.exit
+  %die_symbol = getelementptr inbounds %struct.die_struct* %21, i64 0, i32 1
+  %22 = load i8** %die_symbol, align 8, !tbaa !4
+  %tobool = icmp eq i8* %22, null
+  br i1 %tobool, label %if.else, label %if.then38
+
+if.then38:                                        ; preds = %AT_ref.exit162
+  %call41 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([17 x i8]* @.str433, i64 0, i64 0), i8* %22) #9
+  br label %sw.epilog
+
+if.else:                                          ; preds = %AT_ref.exit162
+  %die_offset43 = getelementptr inbounds %struct.die_struct* %21, i64 0, i32 6
+  %23 = load i64* %die_offset43, align 8, !tbaa !6
+  %call44 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([11 x i8]* @.str434, i64 0, i64 0), i64 %23) #9
+  br label %sw.epilog
+
+if.else45:                                        ; preds = %AT_ref.exit
+  %24 = tail call i64 @fwrite(i8* getelementptr inbounds ([14 x i8]* @.str435, i64 0, i64 0), i64 13, i64 1, %struct._IO_FILE* %outfile)
+  br label %sw.epilog
+
+land.lhs.true.i165:                               ; preds = %for.body, %for.body
+  %.off.i = add i32 %8, -12
+  %switch.i = icmp ult i32 %.off.i, 2
+  br i1 %switch.i, label %AT_lbl.exit, label %if.end.i167
+
+if.end.i167:                                      ; preds = %land.lhs.true.i165
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4785, i8* getelementptr inbounds ([7 x i8]* @__FUNCTION__.AT_lbl, i64 0, i64 0)) #12
+  unreachable
+
+AT_lbl.exit:                                      ; preds = %land.lhs.true.i165
+  %v.i166 = getelementptr inbounds %struct.dw_attr_struct* %a.0188, i64 0, i32 2, i32 1
+  %val_lbl_id.i = bitcast %union.anon.3* %v.i166 to i8**
+  %25 = load i8** %val_lbl_id.i, align 8, !tbaa !4
+  %call50 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([10 x i8]* @.str436, i64 0, i64 0), i8* %25) #9
+  br label %sw.epilog
+
+AT_string.exit:                                   ; preds = %for.body
+  %v.i172 = getelementptr inbounds %struct.dw_attr_struct* %a.0188, i64 0, i32 2, i32 1
+  %val_str.i = bitcast %union.anon.3* %v.i172 to %struct.indirect_string_node**
+  %26 = load %struct.indirect_string_node** %val_str.i, align 8, !tbaa !4
+  %str.i = getelementptr inbounds %struct.indirect_string_node* %26, i64 0, i32 0, i32 1
+  %27 = load i8** %str.i, align 8, !tbaa !4
+  %cmp53 = icmp eq i8* %27, null
+  br i1 %cmp53, label %if.else57, label %AT_string.exit182
+
+AT_string.exit182:                                ; preds = %AT_string.exit
+  %call56 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outfile, i8* getelementptr inbounds ([5 x i8]* @.str437, i64 0, i64 0), i8* %27) #9
+  br label %sw.epilog
+
+if.else57:                                        ; preds = %AT_string.exit
+  %28 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str438, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %outfile)
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %for.body, %AT_string.exit182, %if.else57, %if.else45, %if.else, %if.then38, %AT_lbl.exit, %AT_flag.exit, %sw.bb29, %sw.bb24, %AT_unsigned.exit, %AT_int.exit, %sw.bb16, %AT_loc_list.exit, %sw.bb11, %sw.bb9, %sw.bb
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %outfile)
+  %dw_attr_next = getelementptr inbounds %struct.dw_attr_struct* %a.0188, i64 0, i32 1
+  %a.0 = load %struct.dw_attr_struct** %dw_attr_next, align 8
+  %cmp = icmp eq %struct.dw_attr_struct* %a.0, null
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %sw.epilog, %entry
+  %die_child = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 4
+  %29 = load %struct.die_struct** %die_child, align 8, !tbaa !4
+  %cmp61 = icmp eq %struct.die_struct* %29, null
+  %.pr = load i32* @print_indent, align 4, !tbaa !0
+  br i1 %cmp61, label %if.end69, label %for.body66.lr.ph
+
+for.body66.lr.ph:                                 ; preds = %for.end
+  %add = add nsw i32 %.pr, 4
+  store i32 %add, i32* @print_indent, align 4, !tbaa !0
+  br label %for.body66
+
+for.body66:                                       ; preds = %for.body66.lr.ph, %for.body66
+  %c.0185 = phi %struct.die_struct* [ %29, %for.body66.lr.ph ], [ %c.0, %for.body66 ]
+  tail call fastcc void @print_die(%struct.die_struct* %c.0185, %struct._IO_FILE* %outfile) #10
+  %die_sib = getelementptr inbounds %struct.die_struct* %c.0185, i64 0, i32 5
+  %c.0 = load %struct.die_struct** %die_sib, align 8
+  %cmp65 = icmp eq %struct.die_struct* %c.0, null
+  br i1 %cmp65, label %for.end68, label %for.body66
+
+for.end68:                                        ; preds = %for.body66
+  %.pre = load i32* @print_indent, align 4, !tbaa !0
+  %sub = add nsw i32 %.pre, -4
+  store i32 %sub, i32* @print_indent, align 4, !tbaa !0
+  br label %if.end69
+
+if.end69:                                         ; preds = %for.end, %for.end68
+  %30 = phi i32 [ %sub, %for.end68 ], [ %.pr, %for.end ]
+  %cmp70 = icmp eq i32 %30, 0
+  br i1 %cmp70, label %if.then71, label %if.end73
+
+if.then71:                                        ; preds = %if.end69
+  %fputc122 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %outfile)
+  br label %if.end73
+
+if.end73:                                         ; preds = %if.then71, %if.end69
+  ret void
+}

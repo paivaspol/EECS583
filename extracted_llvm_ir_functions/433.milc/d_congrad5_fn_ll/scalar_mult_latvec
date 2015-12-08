@@ -1,0 +1,92 @@
+define void @scalar_mult_latvec(i32 %src, double %scalar, i32 %dest, i32 %parity) #0 {
+entry:
+  switch i32 %parity, label %sw.epilog [
+    i32 2, label %sw.bb
+    i32 1, label %sw.bb3
+    i32 3, label %sw.bb15
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %0 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %cmp51 = icmp sgt i32 %0, 0
+  br i1 %cmp51, label %for.body.lr.ph, label %sw.epilog
+
+for.body.lr.ph:                                   ; preds = %sw.bb
+  %1 = load %struct.site** @lattice, align 8, !tbaa !4
+  %idx.ext = sext i32 %src to i64
+  %idx.ext1 = sext i32 %dest to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %s.053 = phi %struct.site* [ %1, %for.body.lr.ph ], [ %incdec.ptr, %for.body ]
+  %i.052 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
+  %2 = bitcast %struct.site* %s.053 to i8*
+  %add.ptr = getelementptr inbounds i8* %2, i64 %idx.ext
+  %3 = bitcast i8* %add.ptr to %struct.su3_vector*
+  %add.ptr2 = getelementptr inbounds i8* %2, i64 %idx.ext1
+  %4 = bitcast i8* %add.ptr2 to %struct.su3_vector*
+  tail call void @scalar_mult_su3_vector(%struct.su3_vector* %3, double %scalar, %struct.su3_vector* %4) #4
+  %inc = add nsw i32 %i.052, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %s.053, i64 1
+  %5 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %cmp = icmp slt i32 %inc, %5
+  br i1 %cmp, label %for.body, label %sw.epilog
+
+sw.bb3:                                           ; preds = %entry
+  %6 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %7 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp555 = icmp slt i32 %6, %7
+  br i1 %cmp555, label %for.body6.lr.ph, label %sw.epilog
+
+for.body6.lr.ph:                                  ; preds = %sw.bb3
+  %8 = load %struct.site** @lattice, align 8, !tbaa !4
+  %idxprom = sext i32 %6 to i64
+  %arrayidx = getelementptr inbounds %struct.site* %8, i64 %idxprom
+  %idx.ext7 = sext i32 %src to i64
+  %idx.ext9 = sext i32 %dest to i64
+  br label %for.body6
+
+for.body6:                                        ; preds = %for.body6.lr.ph, %for.body6
+  %s.157 = phi %struct.site* [ %arrayidx, %for.body6.lr.ph ], [ %incdec.ptr13, %for.body6 ]
+  %i.156 = phi i32 [ %6, %for.body6.lr.ph ], [ %inc12, %for.body6 ]
+  %9 = bitcast %struct.site* %s.157 to i8*
+  %add.ptr8 = getelementptr inbounds i8* %9, i64 %idx.ext7
+  %10 = bitcast i8* %add.ptr8 to %struct.su3_vector*
+  %add.ptr10 = getelementptr inbounds i8* %9, i64 %idx.ext9
+  %11 = bitcast i8* %add.ptr10 to %struct.su3_vector*
+  tail call void @scalar_mult_su3_vector(%struct.su3_vector* %10, double %scalar, %struct.su3_vector* %11) #4
+  %inc12 = add nsw i32 %i.156, 1
+  %incdec.ptr13 = getelementptr inbounds %struct.site* %s.157, i64 1
+  %12 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp5 = icmp slt i32 %inc12, %12
+  br i1 %cmp5, label %for.body6, label %sw.epilog
+
+sw.bb15:                                          ; preds = %entry
+  %13 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp1759 = icmp sgt i32 %13, 0
+  br i1 %cmp1759, label %for.body18.lr.ph, label %sw.epilog
+
+for.body18.lr.ph:                                 ; preds = %sw.bb15
+  %14 = load %struct.site** @lattice, align 8, !tbaa !4
+  %idx.ext19 = sext i32 %src to i64
+  %idx.ext21 = sext i32 %dest to i64
+  br label %for.body18
+
+for.body18:                                       ; preds = %for.body18.lr.ph, %for.body18
+  %s.261 = phi %struct.site* [ %14, %for.body18.lr.ph ], [ %incdec.ptr25, %for.body18 ]
+  %i.260 = phi i32 [ 0, %for.body18.lr.ph ], [ %inc24, %for.body18 ]
+  %15 = bitcast %struct.site* %s.261 to i8*
+  %add.ptr20 = getelementptr inbounds i8* %15, i64 %idx.ext19
+  %16 = bitcast i8* %add.ptr20 to %struct.su3_vector*
+  %add.ptr22 = getelementptr inbounds i8* %15, i64 %idx.ext21
+  %17 = bitcast i8* %add.ptr22 to %struct.su3_vector*
+  tail call void @scalar_mult_su3_vector(%struct.su3_vector* %16, double %scalar, %struct.su3_vector* %17) #4
+  %inc24 = add nsw i32 %i.260, 1
+  %incdec.ptr25 = getelementptr inbounds %struct.site* %s.261, i64 1
+  %18 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp17 = icmp slt i32 %inc24, %18
+  br i1 %cmp17, label %for.body18, label %sw.epilog
+
+sw.epilog:                                        ; preds = %sw.bb15, %for.body18, %sw.bb3, %for.body6, %sw.bb, %for.body, %entry
+  ret void
+}

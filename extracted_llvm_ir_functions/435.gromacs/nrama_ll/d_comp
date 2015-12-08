@@ -1,0 +1,29 @@
+define internal i32 @d_comp(i8* nocapture %a, i8* nocapture %b) #2 {
+entry:
+  %arrayidx = getelementptr inbounds i8* %a, i64 4
+  %0 = bitcast i8* %arrayidx to i32*
+  %1 = load i32* %0, align 4, !tbaa !0
+  %arrayidx2 = getelementptr inbounds i8* %b, i64 4
+  %2 = bitcast i8* %arrayidx2 to i32*
+  %3 = load i32* %2, align 4, !tbaa !0
+  %cmp = icmp slt i32 %1, %3
+  br i1 %cmp, label %return, label %if.else
+
+if.else:                                          ; preds = %entry
+  %cmp7 = icmp eq i32 %1, %3
+  br i1 %cmp7, label %if.then8, label %return
+
+if.then8:                                         ; preds = %if.else
+  %arrayidx10 = getelementptr inbounds i8* %a, i64 8
+  %4 = bitcast i8* %arrayidx10 to i32*
+  %5 = load i32* %4, align 4, !tbaa !0
+  %arrayidx12 = getelementptr inbounds i8* %b, i64 8
+  %6 = bitcast i8* %arrayidx12 to i32*
+  %7 = load i32* %6, align 4, !tbaa !0
+  %sub = sub nsw i32 %5, %7
+  br label %return
+
+return:                                           ; preds = %if.else, %entry, %if.then8
+  %retval.0 = phi i32 [ %sub, %if.then8 ], [ -1, %entry ], [ 1, %if.else ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,49 @@
+define void @remove_note(%struct.rtx_def* nocapture %insn, %struct.rtx_def* %note) #1 {
+entry:
+  %cmp = icmp eq %struct.rtx_def* %note, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 6
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct.rtx_def* %0, %note
+  br i1 %cmp1, label %if.then2, label %for.cond
+
+if.then2:                                         ; preds = %if.end
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %note, i64 0, i32 1, i64 1
+  %rtx5 = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx5, align 8, !tbaa !0
+  %2 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0
+  %.c37 = ptrtoint %struct.rtx_def* %1 to i64
+  store i64 %.c37, i64* %2, align 8, !tbaa !0
+  br label %return
+
+for.cond:                                         ; preds = %if.end, %for.body
+  %link.0 = phi %struct.rtx_def* [ %3, %for.body ], [ %0, %if.end ]
+  %tobool = icmp eq %struct.rtx_def* %link.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.body:                                         ; preds = %for.cond
+  %arrayidx14 = getelementptr inbounds %struct.rtx_def* %link.0, i64 0, i32 1, i64 1
+  %rtx15 = bitcast %union.rtunion_def* %arrayidx14 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx15, align 8, !tbaa !0
+  %cmp16 = icmp eq %struct.rtx_def* %3, %note
+  br i1 %cmp16, label %if.then17, label %for.cond
+
+if.then17:                                        ; preds = %for.body
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %note, i64 0, i32 1, i64 1
+  %rtx20 = bitcast %union.rtunion_def* %arrayidx19 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx20, align 8, !tbaa !0
+  %5 = getelementptr inbounds %union.rtunion_def* %arrayidx14, i64 0, i32 0
+  %.c = ptrtoint %struct.rtx_def* %4 to i64
+  store i64 %.c, i64* %5, align 8, !tbaa !0
+  br label %return
+
+for.end:                                          ; preds = %for.cond
+  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i32 1980, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.remove_note, i64 0, i64 0)) #6
+  unreachable
+
+return:                                           ; preds = %entry, %if.then17, %if.then2
+  ret void
+}

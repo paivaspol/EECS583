@@ -1,0 +1,20 @@
+define void @set_last_insn(%struct.rtx_def* %insn) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %cmp = icmp eq %struct.rtx_def* %0, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 2749, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.set_last_insn, i64 0, i64 0)) #10
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %1 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit = getelementptr inbounds %struct.function* %1, i64 0, i32 3
+  %2 = load %struct.emit_status** %emit, align 8, !tbaa !4
+  %x_last_insn = getelementptr inbounds %struct.emit_status* %2, i64 0, i32 3
+  store %struct.rtx_def* %insn, %struct.rtx_def** %x_last_insn, align 8, !tbaa !4
+  ret void
+}

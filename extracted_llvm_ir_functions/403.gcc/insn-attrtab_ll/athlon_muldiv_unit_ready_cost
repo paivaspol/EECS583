@@ -1,0 +1,64 @@
+define i32 @athlon_muldiv_unit_ready_cost(%struct.rtx_def* %insn) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !0
+  %cmp = icmp sgt i32 %0, -1
+  br i1 %cmp, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %entry
+  %call = tail call i32 @recog_memoized_1(%struct.rtx_def* %insn) #3
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi i32 [ %call, %cond.false ], [ %0, %entry ]
+  switch i32 %cond, label %return [
+    i32 265, label %sw.bb
+    i32 264, label %sw.bb
+    i32 263, label %sw.bb
+    i32 262, label %sw.bb
+    i32 261, label %sw.bb
+    i32 260, label %sw.bb
+    i32 259, label %sw.bb
+    i32 258, label %sw.bb
+    i32 257, label %sw.bb
+    i32 256, label %sw.bb
+    i32 255, label %sw.bb
+    i32 254, label %sw.bb
+    i32 253, label %sw.bb
+    i32 252, label %sw.bb
+    i32 251, label %sw.bb
+    i32 250, label %sw.bb
+    i32 249, label %sw.bb
+    i32 -1, label %sw.bb5
+  ]
+
+sw.bb:                                            ; preds = %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end, %cond.end
+  %1 = load i32* @ix86_cpu, align 4, !tbaa !4
+  %cmp4 = icmp eq i32 %1, 5
+  %. = select i1 %cmp4, i32 5, i32 42
+  br label %return
+
+sw.bb5:                                           ; preds = %cond.end
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx7 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp8 = icmp eq i32 %bf.clear, 40
+  br i1 %cmp8, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %sw.bb5
+  %call12 = tail call i32 @asm_noperands(%struct.rtx_def* %2) #3
+  %cmp13 = icmp slt i32 %call12, 0
+  br i1 %cmp13, label %if.then14, label %return
+
+if.then14:                                        ; preds = %land.lhs.true
+  tail call void @_fatal_insn_not_found(%struct.rtx_def* %insn, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 2669, i8* getelementptr inbounds ([30 x i8]* @__FUNCTION__.athlon_muldiv_unit_ready_cost, i64 0, i64 0)) #4
+  unreachable
+
+return:                                           ; preds = %cond.end, %land.lhs.true, %sw.bb5, %sw.bb
+  %retval.0 = phi i32 [ %., %sw.bb ], [ 42, %sw.bb5 ], [ 42, %land.lhs.true ], [ 42, %cond.end ]
+  ret i32 %retval.0
+}

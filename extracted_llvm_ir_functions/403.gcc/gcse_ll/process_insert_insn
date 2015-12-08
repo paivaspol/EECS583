@@ -1,0 +1,36 @@
+define internal fastcc %struct.rtx_def* @process_insert_insn(%struct.expr* nocapture %expr) #0 {
+entry:
+  %reaching_reg = getelementptr inbounds %struct.expr* %expr, i64 0, i32 5
+  %0 = load %struct.rtx_def** %reaching_reg, align 8, !tbaa !0
+  %expr1 = getelementptr inbounds %struct.expr* %expr, i64 0, i32 0
+  %1 = load %struct.rtx_def** %expr1, align 8, !tbaa !0
+  %call = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %1) #6
+  tail call void @start_sequence() #6
+  %2 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %call2 = tail call i32 @general_operand(%struct.rtx_def* %call, i32 %bf.clear) #6
+  %tobool = icmp eq i32 %call2, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call3 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %0, %struct.rtx_def* %call) #6
+  br label %if.end9
+
+if.else:                                          ; preds = %entry
+  %call4 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %0, %struct.rtx_def* %call) #6
+  %call5 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call4) #6
+  %call6 = tail call i32 @insn_invalid_p(%struct.rtx_def* %call5) #6
+  %tobool7 = icmp eq i32 %call6, 0
+  br i1 %tobool7, label %if.end9, label %if.then8
+
+if.then8:                                         ; preds = %if.else
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str9, i64 0, i64 0), i32 4610, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.process_insert_insn, i64 0, i64 0)) #8
+  unreachable
+
+if.end9:                                          ; preds = %if.else, %if.then
+  %call10 = tail call %struct.rtx_def* @gen_sequence() #6
+  tail call void @end_sequence() #6
+  ret %struct.rtx_def* %call10
+}

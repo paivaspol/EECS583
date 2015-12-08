@@ -1,0 +1,33 @@
+define void @vector_gautbl_maha_precomp(%struct.vector_gautbl_t* nocapture %gautbl) #0 {
+entry:
+  %n_gau = getelementptr inbounds %struct.vector_gautbl_t* %gautbl, i64 0, i32 0
+  %0 = load i32* %n_gau, align 4, !tbaa !3
+  %cmp9 = icmp sgt i32 %0, 0
+  br i1 %cmp9, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %var = getelementptr inbounds %struct.vector_gautbl_t* %gautbl, i64 0, i32 3
+  %veclen = getelementptr inbounds %struct.vector_gautbl_t* %gautbl, i64 0, i32 1
+  %lrd = getelementptr inbounds %struct.vector_gautbl_t* %gautbl, i64 0, i32 4
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %1 = load float*** %var, align 8, !tbaa !4
+  %arrayidx = getelementptr inbounds float** %1, i64 %indvars.iv
+  %2 = load float** %arrayidx, align 8, !tbaa !4
+  %3 = load i32* %veclen, align 4, !tbaa !3
+  %call = tail call double @vector_maha_precomp(float* %2, i32 %3) #6
+  %conv = fptrunc double %call to float
+  %4 = load float** %lrd, align 8, !tbaa !4
+  %arrayidx2 = getelementptr inbounds float* %4, i64 %indvars.iv
+  store float %conv, float* %arrayidx2, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %5 = load i32* %n_gau, align 4, !tbaa !3
+  %6 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %6, %5
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

@@ -1,0 +1,28 @@
+define i32 @no_real_insns_p(%struct.rtx_def* %head, %struct.rtx_def* nocapture %tail) #4 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %tail, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %cmp11 = icmp eq %struct.rtx_def* %0, %head
+  br i1 %cmp11, label %return, label %while.body
+
+while.body:                                       ; preds = %entry, %if.end
+  %head.addr.012 = phi %struct.rtx_def* [ %2, %if.end ], [ %head, %entry ]
+  %1 = bitcast %struct.rtx_def* %head.addr.012 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %bf.clear.off = add i32 %bf.clear, -36
+  %switch = icmp ult i32 %bf.clear.off, 2
+  br i1 %switch, label %if.end, label %return
+
+if.end:                                           ; preds = %while.body
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %head.addr.012, i64 0, i32 1, i64 2
+  %rtx7 = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx7, align 8, !tbaa !3
+  %cmp = icmp eq %struct.rtx_def* %2, %0
+  br i1 %cmp, label %return, label %while.body
+
+return:                                           ; preds = %if.end, %while.body, %entry
+  %retval.0 = phi i32 [ 1, %entry ], [ 0, %while.body ], [ 1, %if.end ]
+  ret i32 %retval.0
+}

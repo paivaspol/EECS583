@@ -1,0 +1,68 @@
+define i32 @memory_operand(%struct.rtx_def* %op, i32 %mode) #0 {
+entry:
+  %0 = load i32* @reload_completed, align 4, !tbaa !0
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  br i1 %cmp, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %if.then
+  %call = tail call i32 @general_operand(%struct.rtx_def* %op, i32 %mode) #7
+  %tobool1 = icmp ne i32 %call, 0
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %if.then
+  %2 = phi i1 [ false, %if.then ], [ %tobool1, %land.rhs ]
+  %land.ext = zext i1 %2 to i32
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %cmp2 = icmp eq i32 %mode, 0
+  %.phi.trans.insert31 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load8.pre = load i32* %.phi.trans.insert31, align 8
+  br i1 %cmp2, label %if.end7, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %bf.lshr = lshr i32 %bf.load8.pre, 16
+  %bf.clear4 = and i32 %bf.lshr, 255
+  %cmp5 = icmp eq i32 %bf.clear4, %mode
+  br i1 %cmp5, label %if.end7, label %return
+
+if.end7:                                          ; preds = %if.end, %land.lhs.true
+  %bf.clear9 = and i32 %bf.load8.pre, 65535
+  %cmp10 = icmp eq i32 %bf.clear9, 63
+  br i1 %cmp10, label %if.then11, label %if.end12
+
+if.then11:                                        ; preds = %if.end7
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %.phi.trans.insert = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load13.pre = load i32* %.phi.trans.insert, align 8
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.then11, %if.end7
+  %bf.load13 = phi i32 [ %bf.load13.pre, %if.then11 ], [ %bf.load8.pre, %if.end7 ]
+  %bf.clear14 = and i32 %bf.load13, 65535
+  %cmp15 = icmp eq i32 %bf.clear14, 66
+  br i1 %cmp15, label %land.rhs16, label %land.end19
+
+land.rhs16:                                       ; preds = %if.end12
+  %call17 = tail call i32 @general_operand(%struct.rtx_def* %op, i32 %mode) #7
+  %tobool18 = icmp ne i32 %call17, 0
+  br label %land.end19
+
+land.end19:                                       ; preds = %land.rhs16, %if.end12
+  %4 = phi i1 [ false, %if.end12 ], [ %tobool18, %land.rhs16 ]
+  %land.ext20 = zext i1 %4 to i32
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %land.end19, %land.end
+  %retval.0 = phi i32 [ %land.ext20, %land.end19 ], [ %land.ext, %land.end ], [ 0, %land.lhs.true ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,15 @@
+define i32 @size_of_uleb128(i64 %value) #5 {
+entry:
+  br label %do.body
+
+do.body:                                          ; preds = %do.body, %entry
+  %size.0 = phi i32 [ 0, %entry ], [ %add, %do.body ]
+  %value.addr.0 = phi i64 [ %value, %entry ], [ %shr, %do.body ]
+  %shr = lshr i64 %value.addr.0, 7
+  %add = add nsw i32 %size.0, 1
+  %cmp = icmp eq i64 %shr, 0
+  br i1 %cmp, label %do.end, label %do.body
+
+do.end:                                           ; preds = %do.body
+  ret i32 %add
+}

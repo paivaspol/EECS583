@@ -1,0 +1,41 @@
+define %struct.line_map* @lookup_line(%struct.line_maps* nocapture %set, i32 %line) #0 {
+entry:
+  %used = getelementptr inbounds %struct.line_maps* %set, i64 0, i32 2
+  %0 = load i32* %used, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, 0
+  br i1 %cmp, label %if.then, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %entry
+  %cmp114 = icmp ugt i32 %0, 1
+  %maps = getelementptr inbounds %struct.line_maps* %set, i64 0, i32 0
+  %1 = load %struct.line_map** %maps, align 8, !tbaa !4
+  br i1 %cmp114, label %while.body, label %while.end
+
+if.then:                                          ; preds = %entry
+  tail call void @abort() #7
+  unreachable
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %mx.016 = phi i32 [ %div.mx.0, %while.body ], [ %0, %while.cond.preheader ]
+  %mn.015 = phi i32 [ %mn.0.div, %while.body ], [ 0, %while.cond.preheader ]
+  %add = add i32 %mx.016, %mn.015
+  %div = lshr i32 %add, 1
+  %idxprom = zext i32 %div to i64
+  %from_line = getelementptr inbounds %struct.line_map* %1, i64 %idxprom, i32 2
+  %2 = load i32* %from_line, align 4, !tbaa !0
+  %cmp2 = icmp ugt i32 %2, %line
+  %mn.0.div = select i1 %cmp2, i32 %mn.015, i32 %div
+  %div.mx.0 = select i1 %cmp2, i32 %div, i32 %mx.016
+  %sub = sub i32 %div.mx.0, %mn.0.div
+  %cmp1 = icmp ugt i32 %sub, 1
+  br i1 %cmp1, label %while.body, label %while.cond.while.end_crit_edge
+
+while.cond.while.end_crit_edge:                   ; preds = %while.body
+  %phitmp = zext i32 %mn.0.div to i64
+  br label %while.end
+
+while.end:                                        ; preds = %while.cond.preheader, %while.cond.while.end_crit_edge
+  %mn.0.lcssa = phi i64 [ %phitmp, %while.cond.while.end_crit_edge ], [ 0, %while.cond.preheader ]
+  %arrayidx7 = getelementptr inbounds %struct.line_map* %1, i64 %mn.0.lcssa
+  ret %struct.line_map* %arrayidx7
+}

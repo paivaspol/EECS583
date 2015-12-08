@@ -1,0 +1,52 @@
+define i32 @df_ref_reg_replace(%struct.df* nocapture %df, %struct.ref* nocapture %ref, %struct.rtx_def* %oldreg, %struct.rtx_def* %newreg) #0 {
+entry:
+  %insn = getelementptr inbounds %struct.ref* %ref, i64 0, i32 1
+  %0 = load %struct.rtx_def** %insn, align 8, !tbaa !3
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom21 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom21
+  %2 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %2, 105
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %tobool = icmp eq %struct.rtx_def* %oldreg, null
+  br i1 %tobool, label %if.end5, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %reg = getelementptr inbounds %struct.ref* %ref, i64 0, i32 0
+  %3 = load %struct.rtx_def** %reg, align 8, !tbaa !3
+  %cmp2 = icmp eq %struct.rtx_def* %3, %oldreg
+  br i1 %cmp2, label %if.end5, label %if.then4
+
+if.then4:                                         ; preds = %land.lhs.true
+  tail call void @fancy_abort(i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0), i32 2664, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.df_ref_reg_replace, i64 0, i64 0)) #7
+  unreachable
+
+if.end5:                                          ; preds = %land.lhs.true, %if.end
+  %loc = getelementptr inbounds %struct.ref* %ref, i64 0, i32 2
+  %4 = load %struct.rtx_def*** %loc, align 8, !tbaa !3
+  %call = tail call i32 @validate_change(%struct.rtx_def* %0, %struct.rtx_def** %4, %struct.rtx_def* %newreg, i32 1) #8
+  %tobool7 = icmp eq i32 %call, 0
+  br i1 %tobool7, label %return, label %if.end9
+
+if.end9:                                          ; preds = %if.end5
+  %5 = load %struct.rtx_def** %insn, align 8, !tbaa !3
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx11 to i32*
+  %6 = load i32* %rtint, align 4, !tbaa !4
+  %idxprom12 = sext i32 %6 to i64
+  %7 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx13 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom12
+  %8 = load %struct.basic_block_def** %arrayidx13, align 8, !tbaa !3
+  tail call void @df_insn_modify(%struct.df* %df, %struct.basic_block_def* %8, %struct.rtx_def* %5) #6
+  br label %return
+
+return:                                           ; preds = %if.end5, %entry, %if.end9
+  %retval.0 = phi i32 [ 1, %if.end9 ], [ 0, %entry ], [ 0, %if.end5 ]
+  ret i32 %retval.0
+}

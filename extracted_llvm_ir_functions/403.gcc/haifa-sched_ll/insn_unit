@@ -1,0 +1,56 @@
+define i32 @insn_unit(%struct.rtx_def* %insn) #3 {
+entry:
+  %fld = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1
+  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !0
+  %idxprom = sext i32 %0 to i64
+  %1 = load %struct.haifa_insn_data** @h_i_d, align 8, !tbaa !3
+  %units = getelementptr inbounds %struct.haifa_insn_data* %1, i64 %idxprom, i32 9
+  %2 = load i16* %units, align 2, !tbaa !4
+  %conv = sext i16 %2 to i32
+  %cmp = icmp eq i16 %2, 0
+  br i1 %cmp, label %if.then, label %if.end35
+
+if.then:                                          ; preds = %entry
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4
+  %rtint5 = bitcast %union.rtunion_def* %arrayidx4 to i32*
+  %3 = load i32* %rtint5, align 4, !tbaa !0
+  %cmp6 = icmp sgt i32 %3, -1
+  br i1 %cmp6, label %if.else, label %cond.end
+
+cond.end:                                         ; preds = %if.then
+  %call = tail call i32 @recog_memoized_1(%struct.rtx_def* %insn) #9
+  %.pr = load i32* %rtint5, align 4, !tbaa !0
+  %cmp14 = icmp slt i32 %.pr, 0
+  br i1 %cmp14, label %if.end21, label %if.else
+
+if.else:                                          ; preds = %if.then, %cond.end
+  %call17 = tail call i32 @function_units_used(%struct.rtx_def* %insn) #9
+  %call17.lobit = lshr i32 %call17, 31
+  %call17.lobit.not = xor i32 %call17.lobit, 1
+  %inc.call17 = add nsw i32 %call17.lobit.not, %call17
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.else, %cond.end
+  %unit.0 = phi i32 [ -1, %cond.end ], [ %inc.call17, %if.else ]
+  %cmp22 = icmp sgt i32 %unit.0, -1
+  %cmp24 = icmp ult i32 %unit.0, 32768
+  %or.cond = or i1 %cmp22, %cmp24
+  br i1 %or.cond, label %if.then26, label %if.end35
+
+if.then26:                                        ; preds = %if.end21
+  %conv27 = trunc i32 %unit.0 to i16
+  %4 = load i32* %rtint, align 4, !tbaa !0
+  %idxprom31 = sext i32 %4 to i64
+  %5 = load %struct.haifa_insn_data** @h_i_d, align 8, !tbaa !3
+  %units33 = getelementptr inbounds %struct.haifa_insn_data* %5, i64 %idxprom31, i32 9
+  store i16 %conv27, i16* %units33, align 2, !tbaa !4
+  br label %if.end35
+
+if.end35:                                         ; preds = %if.end21, %if.then26, %entry
+  %unit.1 = phi i32 [ %unit.0, %if.then26 ], [ %conv, %entry ], [ %unit.0, %if.end21 ]
+  %cmp36 = icmp sgt i32 %unit.1, 0
+  %sub = sext i1 %cmp36 to i32
+  %cond41 = add nsw i32 %sub, %unit.1
+  ret i32 %cond41
+}

@@ -1,0 +1,108 @@
+define i32 @cpp_destroy(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %buffer = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
+  %0 = load %struct.cpp_buffer** %buffer, align 8, !tbaa !3
+  %cmp65 = icmp eq %struct.cpp_buffer* %0, null
+  br i1 %cmp65, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  tail call void @_cpp_pop_buffer(%struct.cpp_reader* %pfile) #6
+  %1 = load %struct.cpp_buffer** %buffer, align 8, !tbaa !3
+  %cmp = icmp eq %struct.cpp_buffer* %1, null
+  br i1 %cmp, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  %macro_buffer = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 23
+  %2 = load i8** %macro_buffer, align 8, !tbaa !3
+  %tobool = icmp eq i8* %2, null
+  br i1 %tobool, label %for.body.lr.ph, label %if.then
+
+if.then:                                          ; preds = %while.end
+  tail call void @free(i8* %2) #6
+  store i8* null, i8** %macro_buffer, align 8, !tbaa !3
+  %macro_buffer_len = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 24
+  store i32 0, i32* %macro_buffer_len, align 4, !tbaa !2
+  br label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.then, %while.end
+  %deps = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 31
+  %3 = load %struct.deps** %deps, align 8, !tbaa !3
+  tail call void @deps_free(%struct.deps* %3) #6
+  %buffer_ob = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 33
+  tail call void @obstack_free(%struct.obstack* %buffer_ob, i8* null) #6
+  tail call void @_cpp_destroy_hashtable(%struct.cpp_reader* %pfile) #6
+  tail call void @_cpp_cleanup_includes(%struct.cpp_reader* %pfile) #6
+  %a_buff = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 6
+  %4 = load %struct._cpp_buff** %a_buff, align 8, !tbaa !3
+  tail call void @_cpp_free_buff(%struct._cpp_buff* %4) #6
+  %u_buff = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 7
+  %5 = load %struct._cpp_buff** %u_buff, align 8, !tbaa !3
+  tail call void @_cpp_free_buff(%struct._cpp_buff* %5) #6
+  %free_buffs = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 8
+  %6 = load %struct._cpp_buff** %free_buffs, align 8, !tbaa !3
+  tail call void @_cpp_free_buff(%struct._cpp_buff* %6) #6
+  %base_run = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 16
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %run.064 = phi %struct.tokenrun* [ %base_run, %for.body.lr.ph ], [ %7, %for.cond.backedge ]
+  %next = getelementptr inbounds %struct.tokenrun* %run.064, i64 0, i32 0
+  %7 = load %struct.tokenrun** %next, align 8, !tbaa !3
+  %base = getelementptr inbounds %struct.tokenrun* %run.064, i64 0, i32 2
+  %8 = load %struct.cpp_token** %base, align 8, !tbaa !3
+  %9 = bitcast %struct.cpp_token* %8 to i8*
+  tail call void @free(i8* %9) #6
+  %cmp9 = icmp eq %struct.tokenrun* %run.064, %base_run
+  br i1 %cmp9, label %for.cond.backedge, label %if.then10
+
+for.cond.backedge:                                ; preds = %for.body, %if.then10
+  %tobool7 = icmp eq %struct.tokenrun* %7, null
+  br i1 %tobool7, label %for.end, label %for.body
+
+if.then10:                                        ; preds = %for.body
+  %10 = bitcast %struct.tokenrun* %run.064 to i8*
+  tail call void @free(i8* %10) #6
+  br label %for.cond.backedge
+
+for.end:                                          ; preds = %for.cond.backedge
+  %quote_include = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 5
+  %11 = load %struct.search_path** %quote_include, align 8, !tbaa !3
+  %tobool1361 = icmp eq %struct.search_path* %11, null
+  br i1 %tobool1361, label %for.end17, label %for.body14
+
+for.body14:                                       ; preds = %for.end, %for.body14
+  %dir.062 = phi %struct.search_path* [ %12, %for.body14 ], [ %11, %for.end ]
+  %next15 = getelementptr inbounds %struct.search_path* %dir.062, i64 0, i32 0
+  %12 = load %struct.search_path** %next15, align 8, !tbaa !3
+  %name = getelementptr inbounds %struct.search_path* %dir.062, i64 0, i32 1
+  %13 = load i8** %name, align 8, !tbaa !3
+  tail call void @free(i8* %13) #6
+  %14 = bitcast %struct.search_path* %dir.062 to i8*
+  tail call void @free(i8* %14) #6
+  %tobool13 = icmp eq %struct.search_path* %12, null
+  br i1 %tobool13, label %for.end17, label %for.body14
+
+for.end17:                                        ; preds = %for.body14, %for.end
+  %next18 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 9, i32 0
+  %15 = load %struct.cpp_context** %next18, align 8, !tbaa !3
+  %tobool2059 = icmp eq %struct.cpp_context* %15, null
+  br i1 %tobool2059, label %for.end24, label %for.body21
+
+for.body21:                                       ; preds = %for.end17, %for.body21
+  %context.060 = phi %struct.cpp_context* [ %16, %for.body21 ], [ %15, %for.end17 ]
+  %next22 = getelementptr inbounds %struct.cpp_context* %context.060, i64 0, i32 0
+  %16 = load %struct.cpp_context** %next22, align 8, !tbaa !3
+  %17 = bitcast %struct.cpp_context* %context.060 to i8*
+  tail call void @free(i8* %17) #6
+  %tobool20 = icmp eq %struct.cpp_context* %16, null
+  br i1 %tobool20, label %for.end24, label %for.body21
+
+for.end24:                                        ; preds = %for.body21, %for.end17
+  %line_maps = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 2
+  tail call void @free_line_maps(%struct.line_maps* %line_maps) #6
+  %errors = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 20
+  %18 = load i32* %errors, align 4, !tbaa !2
+  %19 = bitcast %struct.cpp_reader* %pfile to i8*
+  tail call void @free(i8* %19) #6
+  ret i32 %18
+}

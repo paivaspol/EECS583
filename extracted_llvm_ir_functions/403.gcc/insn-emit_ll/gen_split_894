@@ -1,0 +1,62 @@
+define %struct.rtx_def* @gen_split_894(%struct.rtx_def** %operands) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %arrayidx1 = getelementptr inbounds %struct.rtx_def** %operands, i64 3
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def** %operands, i64 4
+  tail call void @split_di(%struct.rtx_def** %operands, i32 1, %struct.rtx_def** %arrayidx1, %struct.rtx_def** %arrayidx2) #4
+  %0 = load %struct.rtx_def** %arrayidx1, align 8, !tbaa !0
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def** %operands, i64 1
+  %1 = load %struct.rtx_def** %arrayidx4, align 8, !tbaa !0
+  %call = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %0, %struct.rtx_def* %1) #4
+  %2 = load %struct.rtx_def** %arrayidx4, align 8, !tbaa !0
+  %call6 = tail call i32 @true_regnum(%struct.rtx_def* %2) #4
+  %cmp = icmp eq i32 %call6, 0
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def** %operands, i64 2
+  br i1 %cmp, label %land.lhs.true, label %if.else
+
+land.lhs.true:                                    ; preds = %entry
+  %3 = load %struct.rtx_def** %arrayidx7, align 8, !tbaa !0
+  %call8 = tail call i32 @true_regnum(%struct.rtx_def* %3) #4
+  %cmp9 = icmp eq i32 %call8, 1
+  br i1 %cmp9, label %land.lhs.true10, label %if.else
+
+land.lhs.true10:                                  ; preds = %land.lhs.true
+  %4 = load i32* @optimize_size, align 4, !tbaa !3
+  %tobool = icmp eq i32 %4, 0
+  br i1 %tobool, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %land.lhs.true10
+  %5 = load i32* @x86_use_cltd, align 4, !tbaa !3
+  %6 = load i32* @ix86_cpu, align 4, !tbaa !5
+  %shl = shl i32 1, %6
+  %and = and i32 %shl, %5
+  %tobool11 = icmp eq i32 %and, 0
+  br i1 %tobool11, label %if.else, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %land.lhs.true10
+  %7 = load %struct.rtx_def** %arrayidx7, align 8, !tbaa !0
+  %8 = load %struct.rtx_def** %arrayidx4, align 8, !tbaa !0
+  %call14 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 31) #4
+  %call15 = tail call %struct.rtx_def* @gen_ashrsi3_31(%struct.rtx_def* %7, %struct.rtx_def* %8, %struct.rtx_def* %call14) #6
+  %call16 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call15) #4
+  br label %if.end
+
+if.else:                                          ; preds = %entry, %lor.lhs.false, %land.lhs.true
+  %9 = load %struct.rtx_def** %arrayidx7, align 8, !tbaa !0
+  %10 = load %struct.rtx_def** %arrayidx4, align 8, !tbaa !0
+  %call19 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %9, %struct.rtx_def* %10) #4
+  %11 = load %struct.rtx_def** %arrayidx7, align 8, !tbaa !0
+  %call22 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 31) #4
+  %call23 = tail call %struct.rtx_def* @gen_ashrsi3_31(%struct.rtx_def* %11, %struct.rtx_def* %11, %struct.rtx_def* %call22) #6
+  %call24 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call23) #4
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %12 = load %struct.rtx_def** %arrayidx2, align 8, !tbaa !0
+  %arrayidx26 = getelementptr inbounds %struct.rtx_def** %operands, i64 2
+  %13 = load %struct.rtx_def** %arrayidx26, align 8, !tbaa !0
+  %call27 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %12, %struct.rtx_def* %13) #4
+  %call28 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  ret %struct.rtx_def* %call28
+}

@@ -1,0 +1,36 @@
+define void @lextree_utt_end(%struct.lextree_t* nocapture %l, %struct.kbcore_t* nocapture %kbc) #0 {
+entry:
+  %n_active = getelementptr inbounds %struct.lextree_t* %l, i64 0, i32 7
+  %0 = load i32* %n_active, align 4, !tbaa !3
+  %cmp9 = icmp sgt i32 %0, 0
+  br i1 %cmp9, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %mdef1 = getelementptr inbounds %struct.kbcore_t* %kbc, i64 0, i32 1
+  %1 = load %struct.mdef_t** %mdef1, align 8, !tbaa !0
+  %active = getelementptr inbounds %struct.lextree_t* %l, i64 0, i32 5
+  %n_emit_state = getelementptr inbounds %struct.mdef_t* %1, i64 0, i32 2
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %2 = load %struct.lextree_node_t*** %active, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.lextree_node_t** %2, i64 %indvars.iv
+  %3 = load %struct.lextree_node_t** %arrayidx, align 8, !tbaa !0
+  %frame = getelementptr inbounds %struct.lextree_node_t* %3, i64 0, i32 8
+  store i16 -1, i16* %frame, align 2, !tbaa !4
+  %hmm = getelementptr inbounds %struct.lextree_node_t* %3, i64 0, i32 0
+  %4 = load i32* %n_emit_state, align 4, !tbaa !3
+  tail call void @hmm_clear(%struct.hmm_t* %hmm, i32 %4) #4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %5 = load i32* %n_active, align 4, !tbaa !3
+  %6 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %6, %5
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  store i32 0, i32* %n_active, align 4, !tbaa !3
+  %n_next_active = getelementptr inbounds %struct.lextree_t* %l, i64 0, i32 8
+  store i32 0, i32* %n_next_active, align 4, !tbaa !3
+  ret void
+}

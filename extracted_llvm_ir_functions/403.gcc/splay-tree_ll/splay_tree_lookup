@@ -1,0 +1,30 @@
+define %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %sp, i64 %key) #0 {
+entry:
+  %root.i = getelementptr inbounds %struct.splay_tree_s* %sp, i64 0, i32 0
+  %0 = load %struct.splay_tree_node_s** %root.i, align 8, !tbaa !0
+  %cmp.i = icmp eq %struct.splay_tree_node_s* %0, null
+  br i1 %cmp.i, label %return, label %splay_tree_splay.exit
+
+splay_tree_splay.exit:                            ; preds = %entry
+  %call.i = tail call fastcc %struct.splay_tree_node_s* @splay_tree_splay_helper(%struct.splay_tree_s* %sp, i64 %key, %struct.splay_tree_node_s** %root.i, %struct.splay_tree_node_s** null, %struct.splay_tree_node_s** null) #6
+  %.pr = load %struct.splay_tree_node_s** %root.i, align 8, !tbaa !0
+  %tobool = icmp eq %struct.splay_tree_node_s* %.pr, null
+  br i1 %tobool, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %splay_tree_splay.exit
+  %comp = getelementptr inbounds %struct.splay_tree_s* %sp, i64 0, i32 1
+  %1 = load i32 (i64, i64)** %comp, align 8, !tbaa !0
+  %key2 = getelementptr inbounds %struct.splay_tree_node_s* %.pr, i64 0, i32 0
+  %2 = load i64* %key2, align 8, !tbaa !3
+  %call = tail call i32 %1(i64 %2, i64 %key) #6
+  %cmp = icmp eq i32 %call, 0
+  br i1 %cmp, label %if.then, label %return
+
+if.then:                                          ; preds = %land.lhs.true
+  %3 = load %struct.splay_tree_node_s** %root.i, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %land.lhs.true, %splay_tree_splay.exit, %if.then
+  %retval.0 = phi %struct.splay_tree_node_s* [ %3, %if.then ], [ null, %splay_tree_splay.exit ], [ null, %land.lhs.true ], [ null, %entry ]
+  ret %struct.splay_tree_node_s* %retval.0
+}

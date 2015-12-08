@@ -1,0 +1,68 @@
+define i32 @alias_sets_conflict_p(i64 %set1, i64 %set2) #0 {
+entry:
+  %cmp = icmp eq i64 %set1, 0
+  %cmp1 = icmp eq i64 %set2, 0
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq i64 %set1, %set2
+  %or.cond32 = or i1 %or.cond, %cmp3
+  br i1 %or.cond32, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %0 = load %struct.splay_tree_s** @alias_sets, align 8, !tbaa !0
+  %call.i = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %0, i64 %set1) #7
+  %cmp.i = icmp eq %struct.splay_tree_node_s* %call.i, null
+  br i1 %cmp.i, label %if.end9, label %get_alias_set_entry.exit
+
+get_alias_set_entry.exit:                         ; preds = %if.end
+  %value.i = getelementptr inbounds %struct.splay_tree_node_s* %call.i, i64 0, i32 1
+  %1 = load i64* %value.i, align 8, !tbaa !3
+  %2 = inttoptr i64 %1 to %struct.alias_set_entry*
+  %cmp4 = icmp eq i64 %1, 0
+  br i1 %cmp4, label %if.end9, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %get_alias_set_entry.exit
+  %has_zero_child = getelementptr inbounds %struct.alias_set_entry* %2, i64 0, i32 2
+  %3 = load i32* %has_zero_child, align 4, !tbaa !4
+  %tobool = icmp eq i32 %3, 0
+  br i1 %tobool, label %lor.lhs.false5, label %return
+
+lor.lhs.false5:                                   ; preds = %land.lhs.true
+  %children = getelementptr inbounds %struct.alias_set_entry* %2, i64 0, i32 1
+  %4 = load %struct.splay_tree_s** %children, align 8, !tbaa !0
+  %call6 = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %4, i64 %set2) #7
+  %tobool7 = icmp eq %struct.splay_tree_node_s* %call6, null
+  br i1 %tobool7, label %if.end9, label %return
+
+if.end9:                                          ; preds = %if.end, %lor.lhs.false5, %get_alias_set_entry.exit
+  %5 = load %struct.splay_tree_s** @alias_sets, align 8, !tbaa !0
+  %call.i33 = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %5, i64 %set2) #7
+  %cmp.i34 = icmp eq %struct.splay_tree_node_s* %call.i33, null
+  br i1 %cmp.i34, label %if.end20, label %get_alias_set_entry.exit38
+
+get_alias_set_entry.exit38:                       ; preds = %if.end9
+  %value.i35 = getelementptr inbounds %struct.splay_tree_node_s* %call.i33, i64 0, i32 1
+  %6 = load i64* %value.i35, align 8, !tbaa !3
+  %7 = inttoptr i64 %6 to %struct.alias_set_entry*
+  %cmp11 = icmp eq i64 %6, 0
+  br i1 %cmp11, label %if.end20, label %land.lhs.true12
+
+land.lhs.true12:                                  ; preds = %get_alias_set_entry.exit38
+  %has_zero_child13 = getelementptr inbounds %struct.alias_set_entry* %7, i64 0, i32 2
+  %8 = load i32* %has_zero_child13, align 4, !tbaa !4
+  %tobool14 = icmp eq i32 %8, 0
+  br i1 %tobool14, label %lor.lhs.false15, label %return
+
+lor.lhs.false15:                                  ; preds = %land.lhs.true12
+  %children16 = getelementptr inbounds %struct.alias_set_entry* %7, i64 0, i32 1
+  %9 = load %struct.splay_tree_s** %children16, align 8, !tbaa !0
+  %call17 = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %9, i64 %set1) #7
+  %tobool18 = icmp eq %struct.splay_tree_node_s* %call17, null
+  br i1 %tobool18, label %if.end20, label %return
+
+if.end20:                                         ; preds = %if.end9, %lor.lhs.false15, %get_alias_set_entry.exit38
+  br label %return
+
+return:                                           ; preds = %land.lhs.true12, %lor.lhs.false15, %land.lhs.true, %lor.lhs.false5, %entry, %if.end20
+  %retval.0 = phi i32 [ 0, %if.end20 ], [ 1, %entry ], [ 1, %lor.lhs.false5 ], [ 1, %land.lhs.true ], [ 1, %lor.lhs.false15 ], [ 1, %land.lhs.true12 ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,32 @@
+define void @mark_optab(i8* nocapture %arg) #0 {
+entry:
+  %0 = bitcast i8* %arg to %struct.optab**
+  %1 = load %struct.optab** %0, align 8, !tbaa !0
+  br label %do.body
+
+do.body:                                          ; preds = %for.inc, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
+  %libfunc = getelementptr inbounds %struct.optab* %1, i64 0, i32 1, i64 %indvars.iv, i32 1
+  %2 = load %struct.rtx_def** %libfunc, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct.rtx_def* %2, null
+  br i1 %cmp1, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %do.body
+  %3 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 0, i64 0
+  %call = tail call i32 @ggc_set_mark(i8* %3) #8
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %2) #8
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true, %do.body, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 59
+  br i1 %exitcond, label %for.end, label %do.body
+
+for.end:                                          ; preds = %for.inc
+  ret void
+}

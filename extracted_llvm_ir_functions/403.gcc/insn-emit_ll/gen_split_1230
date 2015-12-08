@@ -1,0 +1,24 @@
+define %struct.rtx_def* @gen_split_1230(%struct.rtx_def** %operands) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %operands, i64 5
+  %0 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  store %struct.rtx_def* %0, %struct.rtx_def** @ix86_compare_op0, align 8, !tbaa !0
+  %arrayidx1 = getelementptr inbounds %struct.rtx_def** %operands, i64 4
+  %1 = load %struct.rtx_def** %arrayidx1, align 8, !tbaa !0
+  store %struct.rtx_def* %1, %struct.rtx_def** @ix86_compare_op1, align 8, !tbaa !0
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def** %operands, i64 1
+  %2 = load %struct.rtx_def** %arrayidx2, align 8, !tbaa !0
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %call = tail call i32 @swap_condition(i32 %bf.clear) #4
+  %4 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  %5 = load %struct.rtx_def** %arrayidx1, align 8, !tbaa !0
+  %call5 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 %call, i32 0, %struct.rtx_def* %4, %struct.rtx_def* %5) #4
+  store %struct.rtx_def* %call5, %struct.rtx_def** %arrayidx2, align 8, !tbaa !0
+  %call7 = tail call i32 @ix86_expand_fp_movcc(%struct.rtx_def** %operands) #4
+  %call8 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  ret %struct.rtx_def* %call8
+}

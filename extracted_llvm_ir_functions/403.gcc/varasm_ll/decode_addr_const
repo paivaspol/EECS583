@@ -1,0 +1,126 @@
+define internal fastcc void @decode_addr_const(%union.tree_node* nocapture %exp, %struct.addr_const* nocapture %value) #0 {
+entry:
+  %operands = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.backedge, %entry
+  %target.0.in = phi %union.tree_node** [ %arrayidx, %entry ], [ %target.0.in.be, %while.body.backedge ]
+  %offset.0 = phi i32 [ 0, %entry ], [ %offset.0.be, %while.body.backedge ]
+  %target.0 = load %union.tree_node** %target.0.in, align 8
+  %code = getelementptr inbounds %union.tree_node* %target.0, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 39
+  br i1 %cmp, label %land.lhs.true, label %if.else
+
+land.lhs.true:                                    ; preds = %while.body
+  %operands3 = getelementptr inbounds %union.tree_node* %target.0, i64 0, i32 0, i32 2
+  %arrayidx4 = getelementptr inbounds i32* %operands3, i64 2
+  %1 = bitcast i32* %arrayidx4 to %union.tree_node**
+  %2 = load %union.tree_node** %1, align 8, !tbaa !3
+  %call = tail call %union.tree_node* @byte_position(%union.tree_node* %2) #9
+  %call5 = tail call i32 @host_integerp(%union.tree_node* %call, i32 0) #9
+  %tobool = icmp eq i32 %call5, 0
+  br i1 %tobool, label %land.lhs.true.if.else_crit_edge, label %if.then
+
+land.lhs.true.if.else_crit_edge:                  ; preds = %land.lhs.true
+  %bf.load16.pre = load i32* %0, align 8
+  br label %if.else
+
+if.then:                                          ; preds = %land.lhs.true
+  %3 = load %union.tree_node** %1, align 8, !tbaa !3
+  %call9 = tail call i64 @int_byte_position(%union.tree_node* %3) #9
+  %conv89 = zext i32 %offset.0 to i64
+  %add = add nsw i64 %call9, %conv89
+  br label %while.body.backedge
+
+if.else:                                          ; preds = %land.lhs.true.if.else_crit_edge, %while.body
+  %bf.load16 = phi i32 [ %bf.load16.pre, %land.lhs.true.if.else_crit_edge ], [ %bf.load, %while.body ]
+  %bf.clear17 = and i32 %bf.load16, 255
+  switch i32 %bf.clear17, label %sw.default [
+    i32 43, label %if.then26
+    i32 44, label %if.then26
+    i32 34, label %sw.bb
+    i32 30, label %sw.bb
+    i32 31, label %sw.bb51
+    i32 26, label %sw.bb58
+    i32 29, label %sw.bb58
+    i32 27, label %sw.bb58
+    i32 46, label %sw.bb58
+    i32 25, label %sw.bb58
+  ]
+
+if.then26:                                        ; preds = %if.else, %if.else
+  %type = getelementptr inbounds %union.tree_node* %target.0, i64 0, i32 0, i32 0, i32 1
+  %4 = load %union.tree_node** %type, align 8, !tbaa !3
+  %5 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 4
+  %6 = load %union.tree_node** %5, align 8, !tbaa !3
+  %call29 = tail call i64 @tree_low_cst(%union.tree_node* %6, i32 1) #9
+  %operands31 = getelementptr inbounds %union.tree_node* %target.0, i64 0, i32 0, i32 2
+  %arrayidx32 = getelementptr inbounds i32* %operands31, i64 2
+  %7 = bitcast i32* %arrayidx32 to %union.tree_node**
+  %8 = load %union.tree_node** %7, align 8, !tbaa !3
+  %call33 = tail call i64 @tree_low_cst(%union.tree_node* %8, i32 0) #9
+  %mul = mul nsw i64 %call33, %call29
+  %conv3488 = zext i32 %offset.0 to i64
+  %add35 = add nsw i64 %mul, %conv3488
+  br label %while.body.backedge
+
+while.body.backedge:                              ; preds = %if.then26, %if.then
+  %target.0.in.be.in = phi i32* [ %operands3, %if.then ], [ %operands31, %if.then26 ]
+  %offset.0.be.in = phi i64 [ %add, %if.then ], [ %add35, %if.then26 ]
+  %offset.0.be = trunc i64 %offset.0.be.in to i32
+  %target.0.in.be = bitcast i32* %target.0.in.be.in to %union.tree_node**
+  br label %while.body
+
+sw.bb:                                            ; preds = %if.else, %if.else
+  %rtl = getelementptr inbounds %union.tree_node* %target.0, i64 0, i32 0, i32 17
+  %9 = load %struct.rtx_def** %rtl, align 8, !tbaa !3
+  %tobool46 = icmp eq %struct.rtx_def* %9, null
+  br i1 %tobool46, label %cond.false, label %sw.epilog
+
+cond.false:                                       ; preds = %sw.bb
+  tail call void @make_decl_rtl(%union.tree_node* %target.0, i8* null) #10
+  %10 = load %struct.rtx_def** %rtl, align 8, !tbaa !3
+  br label %sw.epilog
+
+sw.bb51:                                          ; preds = %if.else
+  %11 = load %union.tree_node** %arrayidx, align 8, !tbaa !3
+  %call55 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %11) #9
+  %call56 = tail call %struct.rtx_def* @gen_rtx_fmt_u00(i32 67, i32 0, %struct.rtx_def* %call55) #9
+  %call57 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 2, %struct.rtx_def* %call56) #9
+  br label %sw.epilog
+
+sw.bb58:                                          ; preds = %if.else, %if.else, %if.else, %if.else, %if.else
+  %call59 = tail call %struct.rtx_def* @output_constant_def(%union.tree_node* %target.0, i32 1) #10
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %if.else
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), i32 2352, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.decode_addr_const, i64 0, i64 0)) #12
+  unreachable
+
+sw.epilog:                                        ; preds = %cond.false, %sw.bb, %sw.bb58, %sw.bb51
+  %x.0 = phi %struct.rtx_def* [ %call59, %sw.bb58 ], [ %call57, %sw.bb51 ], [ %10, %cond.false ], [ %9, %sw.bb ]
+  %12 = bitcast %struct.rtx_def* %x.0 to i32*
+  %bf.load60 = load i32* %12, align 8
+  %bf.clear61 = and i32 %bf.load60, 65535
+  %cmp62 = icmp eq i32 %bf.clear61, 66
+  br i1 %cmp62, label %if.end65, label %if.then64
+
+if.then64:                                        ; preds = %sw.epilog
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), i32 2356, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.decode_addr_const, i64 0, i64 0)) #12
+  unreachable
+
+if.end65:                                         ; preds = %sw.epilog
+  %arrayidx66 = getelementptr inbounds %struct.rtx_def* %x.0, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx66 to %struct.rtx_def**
+  %13 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %base = getelementptr inbounds %struct.addr_const* %value, i64 0, i32 0
+  store %struct.rtx_def* %13, %struct.rtx_def** %base, align 8, !tbaa !3
+  %conv67 = sext i32 %offset.0 to i64
+  %offset68 = getelementptr inbounds %struct.addr_const* %value, i64 0, i32 1
+  store i64 %conv67, i64* %offset68, align 8, !tbaa !10
+  ret void
+}

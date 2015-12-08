@@ -1,0 +1,43 @@
+define i32 @kept_level_p() #4 {
+entry:
+  %0 = load %struct.binding_level** @current_binding_level, align 8, !tbaa !0
+  %keep_if_subblocks = getelementptr inbounds %struct.binding_level* %0, i64 0, i32 10
+  %1 = load i8* %keep_if_subblocks, align 1, !tbaa !1
+  %tobool = icmp eq i8 %1, 0
+  br i1 %tobool, label %lor.lhs.false, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %blocks = getelementptr inbounds %struct.binding_level* %0, i64 0, i32 3
+  %2 = load %union.tree_node** %blocks, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %2, null
+  br i1 %cmp, label %lor.lhs.false, label %lor.end
+
+lor.lhs.false:                                    ; preds = %land.lhs.true, %entry
+  %keep = getelementptr inbounds %struct.binding_level* %0, i64 0, i32 9
+  %3 = load i8* %keep, align 1, !tbaa !1
+  %tobool3 = icmp eq i8 %3, 0
+  br i1 %tobool3, label %lor.lhs.false4, label %lor.end
+
+lor.lhs.false4:                                   ; preds = %lor.lhs.false
+  %names = getelementptr inbounds %struct.binding_level* %0, i64 0, i32 0
+  %4 = load %union.tree_node** %names, align 8, !tbaa !0
+  %cmp5 = icmp eq %union.tree_node* %4, null
+  br i1 %cmp5, label %lor.rhs, label %lor.end
+
+lor.rhs:                                          ; preds = %lor.lhs.false4
+  %tags = getelementptr inbounds %struct.binding_level* %0, i64 0, i32 1
+  %5 = load %union.tree_node** %tags, align 8, !tbaa !0
+  %cmp7 = icmp eq %union.tree_node* %5, null
+  br i1 %cmp7, label %lor.end, label %land.rhs
+
+land.rhs:                                         ; preds = %lor.rhs
+  %tag_transparent = getelementptr inbounds %struct.binding_level* %0, i64 0, i32 7
+  %6 = load i8* %tag_transparent, align 1, !tbaa !1
+  %lnot = icmp eq i8 %6, 0
+  br label %lor.end
+
+lor.end:                                          ; preds = %land.lhs.true, %lor.rhs, %lor.lhs.false4, %lor.lhs.false, %land.rhs
+  %7 = phi i1 [ true, %lor.lhs.false4 ], [ true, %lor.lhs.false ], [ true, %land.lhs.true ], [ false, %lor.rhs ], [ %lnot, %land.rhs ]
+  %lor.ext = zext i1 %7 to i32
+  ret i32 %lor.ext
+}

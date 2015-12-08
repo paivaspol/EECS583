@@ -1,0 +1,67 @@
+define internal fastcc %struct.rtx_def* @fold_rtx_mult_add(%struct.rtx_def* %mult1, %struct.rtx_def* %mult2, %struct.rtx_def* %add1, i32 %mode) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %mult1 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %cmp = icmp eq i32 %bf.clear, %mode
+  %cmp4 = icmp eq i32 %bf.clear, 0
+  %or.cond = or i1 %cmp, %cmp4
+  br i1 %or.cond, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %mult2 to i32*
+  %bf.load5 = load i32* %1, align 8
+  %bf.lshr6 = lshr i32 %bf.load5, 16
+  %bf.clear7 = and i32 %bf.lshr6, 255
+  %cmp8 = icmp eq i32 %bf.clear7, %mode
+  %cmp13 = icmp eq i32 %bf.clear7, 0
+  %or.cond67 = or i1 %cmp8, %cmp13
+  br i1 %or.cond67, label %lor.lhs.false14, label %if.then
+
+lor.lhs.false14:                                  ; preds = %lor.lhs.false
+  %2 = bitcast %struct.rtx_def* %add1 to i32*
+  %bf.load15 = load i32* %2, align 8
+  %bf.lshr16 = lshr i32 %bf.load15, 16
+  %bf.clear17 = and i32 %bf.lshr16, 255
+  %cmp18 = icmp eq i32 %bf.clear17, %mode
+  %cmp23 = icmp eq i32 %bf.clear17, 0
+  %or.cond68 = or i1 %cmp18, %cmp23
+  br i1 %or.cond68, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false14, %lor.lhs.false, %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str13, i64 0, i64 0), i32 2422, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.fold_rtx_mult_add, i64 0, i64 0)) #7
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false14
+  %bf.clear25 = and i32 %bf.load, 65535
+  %cmp26 = icmp eq i32 %bf.clear25, 54
+  %mult1.mult2 = select i1 %cmp26, %struct.rtx_def* %mult1, %struct.rtx_def* %mult2
+  %mult2.mult1 = select i1 %cmp26, %struct.rtx_def* %mult2, %struct.rtx_def* %mult1
+  %call = tail call %struct.rtx_def* @simplify_binary_operation(i32 78, i32 %mode, %struct.rtx_def* %mult2.mult1, %struct.rtx_def* %mult1.mult2) #6
+  %tobool = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool, label %if.then29, label %if.end31
+
+if.then29:                                        ; preds = %if.end
+  %call30 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 78, i32 %mode, %struct.rtx_def* %mult2.mult1, %struct.rtx_def* %mult1.mult2) #6
+  br label %if.end31
+
+if.end31:                                         ; preds = %if.end, %if.then29
+  %mult_res.0 = phi %struct.rtx_def* [ %call, %if.end ], [ %call30, %if.then29 ]
+  %bf.load32 = load i32* %2, align 8
+  %bf.clear33 = and i32 %bf.load32, 65535
+  %cmp34 = icmp eq i32 %bf.clear33, 54
+  %mult_res.0.add1 = select i1 %cmp34, %struct.rtx_def* %mult_res.0, %struct.rtx_def* %add1
+  %add1.mult_res.0 = select i1 %cmp34, %struct.rtx_def* %add1, %struct.rtx_def* %mult_res.0
+  %call37 = tail call %struct.rtx_def* @simplify_binary_operation(i32 75, i32 %mode, %struct.rtx_def* %mult_res.0.add1, %struct.rtx_def* %add1.mult_res.0) #6
+  %tobool38 = icmp eq %struct.rtx_def* %call37, null
+  br i1 %tobool38, label %if.then39, label %if.end41
+
+if.then39:                                        ; preds = %if.end31
+  %call40 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 75, i32 %mode, %struct.rtx_def* %mult_res.0.add1, %struct.rtx_def* %add1.mult_res.0) #6
+  br label %if.end41
+
+if.end41:                                         ; preds = %if.end31, %if.then39
+  %result.0 = phi %struct.rtx_def* [ %call37, %if.end31 ], [ %call40, %if.then39 ]
+  ret %struct.rtx_def* %result.0
+}

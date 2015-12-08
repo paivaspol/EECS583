@@ -1,0 +1,121 @@
+define internal fastcc void @remove_from_table(%struct.table_elt* %elt, i32 %hash) #0 {
+entry:
+  %cmp = icmp eq %struct.table_elt* %elt, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %first_same_value = getelementptr inbounds %struct.table_elt* %elt, i64 0, i32 6
+  store %struct.table_elt* null, %struct.table_elt** %first_same_value, align 8, !tbaa !0
+  %prev_same_value = getelementptr inbounds %struct.table_elt* %elt, i64 0, i32 5
+  %0 = load %struct.table_elt** %prev_same_value, align 8, !tbaa !0
+  %next_same_value = getelementptr inbounds %struct.table_elt* %elt, i64 0, i32 4
+  %1 = load %struct.table_elt** %next_same_value, align 8, !tbaa !0
+  %tobool = icmp eq %struct.table_elt* %1, null
+  br i1 %tobool, label %if.end3, label %if.then1
+
+if.then1:                                         ; preds = %if.end
+  %prev_same_value2 = getelementptr inbounds %struct.table_elt* %1, i64 0, i32 5
+  store %struct.table_elt* %0, %struct.table_elt** %prev_same_value2, align 8, !tbaa !0
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %if.then1
+  %tobool4 = icmp eq %struct.table_elt* %0, null
+  br i1 %tobool4, label %while.cond.preheader, label %if.then5
+
+while.cond.preheader:                             ; preds = %if.end3
+  br i1 %tobool, label %if.end10, label %while.body
+
+if.then5:                                         ; preds = %if.end3
+  %next_same_value6 = getelementptr inbounds %struct.table_elt* %0, i64 0, i32 4
+  store %struct.table_elt* %1, %struct.table_elt** %next_same_value6, align 8, !tbaa !0
+  br label %if.end10
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %next.096 = phi %struct.table_elt* [ %2, %while.body ], [ %1, %while.cond.preheader ]
+  %first_same_value8 = getelementptr inbounds %struct.table_elt* %next.096, i64 0, i32 6
+  store %struct.table_elt* %1, %struct.table_elt** %first_same_value8, align 8, !tbaa !0
+  %next_same_value9 = getelementptr inbounds %struct.table_elt* %next.096, i64 0, i32 4
+  %2 = load %struct.table_elt** %next_same_value9, align 8, !tbaa !0
+  %tobool7 = icmp eq %struct.table_elt* %2, null
+  br i1 %tobool7, label %if.end10, label %while.body
+
+if.end10:                                         ; preds = %while.cond.preheader, %while.body, %if.then5
+  %prev_same_hash = getelementptr inbounds %struct.table_elt* %elt, i64 0, i32 3
+  %3 = load %struct.table_elt** %prev_same_hash, align 8, !tbaa !0
+  %next_same_hash = getelementptr inbounds %struct.table_elt* %elt, i64 0, i32 2
+  %4 = load %struct.table_elt** %next_same_hash, align 8, !tbaa !0
+  %tobool13 = icmp eq %struct.table_elt* %4, null
+  br i1 %tobool13, label %if.end16, label %if.then14
+
+if.then14:                                        ; preds = %if.end10
+  %prev_same_hash15 = getelementptr inbounds %struct.table_elt* %4, i64 0, i32 3
+  store %struct.table_elt* %3, %struct.table_elt** %prev_same_hash15, align 8, !tbaa !0
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.end10, %if.then14
+  %tobool17 = icmp eq %struct.table_elt* %3, null
+  br i1 %tobool17, label %if.else20, label %if.then18
+
+if.then18:                                        ; preds = %if.end16
+  %next_same_hash19 = getelementptr inbounds %struct.table_elt* %3, i64 0, i32 2
+  store %struct.table_elt* %4, %struct.table_elt** %next_same_hash19, align 8, !tbaa !0
+  br label %if.end35
+
+if.else20:                                        ; preds = %if.end16
+  %idxprom = zext i32 %hash to i64
+  %arrayidx = getelementptr inbounds [32 x %struct.table_elt*]* @table, i64 0, i64 %idxprom
+  %5 = load %struct.table_elt** %arrayidx, align 8, !tbaa !0
+  %cmp21 = icmp eq %struct.table_elt* %5, %elt
+  br i1 %cmp21, label %if.then22, label %for.body
+
+if.then22:                                        ; preds = %if.else20
+  store %struct.table_elt* %4, %struct.table_elt** %arrayidx, align 8, !tbaa !0
+  br label %if.end35
+
+for.body:                                         ; preds = %if.else20, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %if.else20 ]
+  %arrayidx28 = getelementptr inbounds [32 x %struct.table_elt*]* @table, i64 0, i64 %indvars.iv
+  %6 = load %struct.table_elt** %arrayidx28, align 8, !tbaa !0
+  %cmp29 = icmp eq %struct.table_elt* %6, %elt
+  br i1 %cmp29, label %if.then30, label %for.inc
+
+if.then30:                                        ; preds = %for.body
+  store %struct.table_elt* %4, %struct.table_elt** %arrayidx28, align 8, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then30
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 32
+  br i1 %exitcond, label %if.end35, label %for.body
+
+if.end35:                                         ; preds = %for.inc, %if.then22, %if.then18
+  %related_value = getelementptr inbounds %struct.table_elt* %elt, i64 0, i32 7
+  %7 = load %struct.table_elt** %related_value, align 8, !tbaa !0
+  %cmp36 = icmp eq %struct.table_elt* %7, null
+  %cmp38 = icmp eq %struct.table_elt* %7, %elt
+  %or.cond = or i1 %cmp36, %cmp38
+  br i1 %or.cond, label %if.end54, label %while.cond41
+
+while.cond41:                                     ; preds = %if.end35, %while.cond41
+  %p.0 = phi %struct.table_elt* [ %8, %while.cond41 ], [ %7, %if.end35 ]
+  %related_value42 = getelementptr inbounds %struct.table_elt* %p.0, i64 0, i32 7
+  %8 = load %struct.table_elt** %related_value42, align 8, !tbaa !0
+  %cmp43 = icmp eq %struct.table_elt* %8, %elt
+  br i1 %cmp43, label %while.end46, label %while.cond41
+
+while.end46:                                      ; preds = %while.cond41
+  %cmp50 = icmp eq %struct.table_elt* %7, %p.0
+  %. = select i1 %cmp50, %struct.table_elt* null, %struct.table_elt* %7
+  store %struct.table_elt* %., %struct.table_elt** %related_value42, align 8, !tbaa !0
+  br label %if.end54
+
+if.end54:                                         ; preds = %while.end46, %if.end35
+  %9 = load %struct.table_elt** @free_element_chain, align 8, !tbaa !0
+  store %struct.table_elt* %9, %struct.table_elt** %next_same_hash, align 8, !tbaa !0
+  store %struct.table_elt* %elt, %struct.table_elt** @free_element_chain, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %if.end54
+  ret void
+}

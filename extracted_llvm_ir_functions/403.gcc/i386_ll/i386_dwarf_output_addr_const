@@ -1,0 +1,23 @@
+define void @i386_dwarf_output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %x) #1 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp ne i32 %and, 0
+  %cond = select i1 %tobool, i8* getelementptr inbounds ([8 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0)
+  %1 = tail call i64 @fwrite(i8* %cond, i64 7, i64 1, %struct._IO_FILE* %file)
+  %2 = load i32* @flag_pic, align 4, !tbaa !0
+  %tobool1 = icmp eq i32 %2, 0
+  br i1 %tobool1, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %x, i32 0) #10
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  tail call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %x) #9
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %call2 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #9
+  ret void
+}

@@ -1,0 +1,33 @@
+define internal fastcc %struct.rtx_def* @ix86_expand_aligntest(%struct.rtx_def* %variable, i32 %value) #1 {
+entry:
+  %call = tail call %struct.rtx_def* @gen_label_rtx() #9
+  %0 = bitcast %struct.rtx_def* %variable to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %call1 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %bf.clear) #9
+  %bf.load2 = load i32* %0, align 8
+  %bf.clear4 = and i32 %bf.load2, 16711680
+  %cmp = icmp eq i32 %bf.clear4, 327680
+  %conv = sext i32 %value to i64
+  %call5 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv) #9
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call6 = tail call %struct.rtx_def* @gen_anddi3(%struct.rtx_def* %call1, %struct.rtx_def* %variable, %struct.rtx_def* %call5) #9
+  %call7 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call6) #9
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %call10 = tail call %struct.rtx_def* @gen_andsi3(%struct.rtx_def* %call1, %struct.rtx_def* %variable, %struct.rtx_def* %call5) #9
+  %call11 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call10) #9
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %1 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !4
+  %bf.load12 = load i32* %0, align 8
+  %bf.lshr13 = lshr i32 %bf.load12, 16
+  %bf.clear14 = and i32 %bf.lshr13, 255
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %call1, %struct.rtx_def* %1, i32 103, %struct.rtx_def* null, i32 %bf.clear14, i32 1, %struct.rtx_def* %call) #9
+  ret %struct.rtx_def* %call
+}

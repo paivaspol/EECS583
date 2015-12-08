@@ -1,0 +1,104 @@
+define void @finish_run(%struct._IO_FILE* %log, %struct.t_commrec* nocapture %cr, i8* nocapture %confout, %struct.t_nsborder* nocapture %nsb, %struct.t_topology* nocapture %top, %struct.t_parm* nocapture %parm, %struct.t_nrnb* %nrnb, double %nodetime, double %realtime, i32 %step, i32 %bWriteStat) #0 {
+entry:
+  %ntot = alloca %struct.t_nrnb, align 8
+  %0 = bitcast %struct.t_nrnb* %ntot to i8*
+  call void @llvm.lifetime.start(i64 1032, i8* %0) #1
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 1032, i32 8, i1 false)
+  %nnodes = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 1
+  %1 = load i32* %nnodes, align 4, !tbaa !0
+  %cmp273 = icmp sgt i32 %1, 0
+  br i1 %cmp273, label %for.cond4.preheader, label %for.end20
+
+for.cond4.preheader:                              ; preds = %entry, %for.inc18
+  %indvars.iv76 = phi i64 [ %indvars.iv.next77, %for.inc18 ], [ 0, %entry ]
+  br label %for.body6
+
+for.body6:                                        ; preds = %for.body6, %for.cond4.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next, %for.body6 ]
+  %arrayidx11 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 %indvars.iv76, i32 0, i64 %indvars.iv
+  %2 = load double* %arrayidx11, align 8, !tbaa !6
+  %arrayidx14 = getelementptr inbounds %struct.t_nrnb* %ntot, i64 0, i32 0, i64 %indvars.iv
+  %3 = load double* %arrayidx14, align 8, !tbaa !6
+  %add = fadd double %2, %3
+  store double %add, double* %arrayidx14, align 8, !tbaa !6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 129
+  br i1 %exitcond, label %for.inc18, label %for.body6
+
+for.inc18:                                        ; preds = %for.body6
+  %indvars.iv.next77 = add i64 %indvars.iv76, 1
+  %4 = trunc i64 %indvars.iv.next77 to i32
+  %cmp2 = icmp slt i32 %4, %1
+  br i1 %cmp2, label %for.cond4.preheader, label %for.end20
+
+for.end20:                                        ; preds = %for.inc18, %entry
+  %tobool = icmp eq i32 %bWriteStat, 0
+  br i1 %tobool, label %for.end20.if.end31_crit_edge, label %if.then
+
+for.end20.if.end31_crit_edge:                     ; preds = %for.end20
+  %nodeid32.pre = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  br label %if.end31
+
+if.then:                                          ; preds = %for.end20
+  %nsteps = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 1
+  %5 = load i32* %nsteps, align 4, !tbaa !0
+  %conv = sitofp i32 %5 to float
+  %delta_t = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 15
+  %6 = load float* %delta_t, align 4, !tbaa !3
+  %mul = fmul float %conv, %6
+  %nodeid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  %7 = load i32* %nodeid, align 4, !tbaa !0
+  %cmp22 = icmp eq i32 %7, 0
+  br i1 %cmp22, label %land.lhs.true, label %if.else
+
+land.lhs.true:                                    ; preds = %if.then
+  %threadid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
+  %8 = load i32* %threadid, align 4, !tbaa !0
+  %cmp24 = icmp eq i32 %8, 0
+  br i1 %cmp24, label %if.then26, label %if.else
+
+if.then26:                                        ; preds = %land.lhs.true
+  %9 = load %struct._IO_FILE** @stderr, align 8, !tbaa !5
+  %10 = call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str19, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %9)
+  %11 = load %struct._IO_FILE** @stderr, align 8, !tbaa !5
+  %12 = load i32* %nnodes, align 4, !tbaa !0
+  call void @print_perf(%struct._IO_FILE* %11, double %nodetime, double %realtime, float %mul, %struct.t_nrnb* %ntot, i32 %12) #6
+  br label %if.end31
+
+if.else:                                          ; preds = %land.lhs.true, %if.then
+  %nodeid28 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 0
+  %13 = load i32* %nodeid28, align 4, !tbaa !0
+  %idxprom29 = sext i32 %13 to i64
+  %arrayidx30 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 %idxprom29
+  call void @print_nrnb(%struct._IO_FILE* %log, %struct.t_nrnb* %arrayidx30) #6
+  br label %if.end31
+
+if.end31:                                         ; preds = %for.end20.if.end31_crit_edge, %if.then26, %if.else
+  %nodeid32.pre-phi = phi i32* [ %nodeid32.pre, %for.end20.if.end31_crit_edge ], [ %nodeid, %if.then26 ], [ %nodeid, %if.else ]
+  %runtime.0 = phi float [ 0.000000e+00, %for.end20.if.end31_crit_edge ], [ %mul, %if.then26 ], [ %mul, %if.else ]
+  %14 = load i32* %nodeid32.pre-phi, align 4, !tbaa !0
+  %cmp33 = icmp eq i32 %14, 0
+  br i1 %cmp33, label %land.lhs.true35, label %if.end47
+
+land.lhs.true35:                                  ; preds = %if.end31
+  %threadid36 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
+  %15 = load i32* %threadid36, align 4, !tbaa !0
+  %cmp37 = icmp eq i32 %15, 0
+  br i1 %cmp37, label %if.then39, label %if.end47
+
+if.then39:                                        ; preds = %land.lhs.true35
+  %16 = load i32* %nnodes, align 4, !tbaa !0
+  call void @print_perf(%struct._IO_FILE* %log, double %nodetime, double %realtime, float %runtime.0, %struct.t_nrnb* %ntot, i32 %16) #6
+  %17 = load i32* %nnodes, align 4, !tbaa !0
+  %cmp42 = icmp sgt i32 %17, 1
+  br i1 %cmp42, label %if.then44, label %if.end47
+
+if.then44:                                        ; preds = %if.then39
+  call void @pr_load(%struct._IO_FILE* %log, i32 %17, %struct.t_nrnb* %nrnb) #6
+  br label %if.end47
+
+if.end47:                                         ; preds = %if.then39, %if.then44, %land.lhs.true35, %if.end31
+  call void @llvm.lifetime.end(i64 1032, i8* %0) #1
+  ret void
+}

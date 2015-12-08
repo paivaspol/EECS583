@@ -1,0 +1,132 @@
+define internal fastcc void @dbxout_range_type(%union.tree_node* %type) #0 {
+entry:
+  %0 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %fputc = tail call i32 @fputc(i32 114, %struct._IO_FILE* %0) #5
+  %type1 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 1
+  %1 = load %union.tree_node** %type1, align 8, !tbaa !0
+  %tobool = icmp eq %union.tree_node* %1, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call fastcc void @dbxout_type(%union.tree_node* %1, i32 0) #8
+  br label %if.end12
+
+if.else:                                          ; preds = %entry
+  %code = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 6
+  br i1 %cmp, label %if.else6, label %if.then5
+
+if.then5:                                         ; preds = %if.else
+  tail call fastcc void @dbxout_type(%union.tree_node* %type, i32 0) #8
+  br label %if.end12
+
+if.else6:                                         ; preds = %if.else
+  %symtab = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 10
+  %address = bitcast %union.tree_node** %symtab to i32*
+  %3 = load i32* %address, align 4, !tbaa !3
+  %cmp8 = icmp eq i32 %3, 0
+  br i1 %cmp8, label %if.else10, label %if.then9
+
+if.then9:                                         ; preds = %if.else6
+  %idxprom.i = sext i32 %3 to i64
+  %4 = load %struct.typeinfo** @typevec, align 8, !tbaa !0
+  %5 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %file_number.i = getelementptr inbounds %struct.typeinfo* %4, i64 %idxprom.i, i32 1
+  %6 = load i32* %file_number.i, align 4, !tbaa !3
+  %type_number.i = getelementptr inbounds %struct.typeinfo* %4, i64 %idxprom.i, i32 2
+  %7 = load i32* %type_number.i, align 4, !tbaa !3
+  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([8 x i8]* @.str57, i64 0, i64 0), i32 %6, i32 %7) #6
+  %8 = load i32* @current_sym_nchars, align 4, !tbaa !3
+  %add.i = add nsw i32 %8, 9
+  store i32 %add.i, i32* @current_sym_nchars, align 4, !tbaa !3
+  br label %if.end12
+
+if.else10:                                        ; preds = %if.else6
+  %9 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 5), align 8, !tbaa !0
+  %symtab.i56 = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 10
+  %address.i57 = bitcast %union.tree_node** %symtab.i56 to i32*
+  %10 = load i32* %address.i57, align 4, !tbaa !3
+  %idxprom.i58 = sext i32 %10 to i64
+  %11 = load %struct.typeinfo** @typevec, align 8, !tbaa !0
+  %12 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %file_number.i59 = getelementptr inbounds %struct.typeinfo* %11, i64 %idxprom.i58, i32 1
+  %13 = load i32* %file_number.i59, align 4, !tbaa !3
+  %type_number.i60 = getelementptr inbounds %struct.typeinfo* %11, i64 %idxprom.i58, i32 2
+  %14 = load i32* %type_number.i60, align 4, !tbaa !3
+  %call.i61 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %12, i8* getelementptr inbounds ([8 x i8]* @.str57, i64 0, i64 0), i32 %13, i32 %14) #6
+  %15 = load i32* @current_sym_nchars, align 4, !tbaa !3
+  %add.i62 = add nsw i32 %15, 9
+  store i32 %add.i62, i32* @current_sym_nchars, align 4, !tbaa !3
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.then5, %if.else10, %if.then9, %if.then
+  %16 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 12
+  %17 = load %union.tree_node** %16, align 8, !tbaa !0
+  %cmp14 = icmp eq %union.tree_node* %17, null
+  br i1 %cmp14, label %if.else24, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end12
+  %call17 = tail call i32 @host_integerp(%union.tree_node* %17, i32 0) #6
+  %tobool18 = icmp eq i32 %call17, 0
+  br i1 %tobool18, label %if.else24, label %if.then19
+
+if.then19:                                        ; preds = %land.lhs.true
+  %18 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %call20 = tail call i32 @_IO_putc(i32 59, %struct._IO_FILE* %18) #6
+  %19 = load i32* @current_sym_nchars, align 4, !tbaa !3
+  %add = add nsw i32 %19, 1
+  store i32 %add, i32* @current_sym_nchars, align 4, !tbaa !3
+  %20 = load %union.tree_node** %16, align 8, !tbaa !0
+  %call23 = tail call i64 @tree_low_cst(%union.tree_node* %20, i32 0) #6
+  tail call fastcc void @print_wide_int(i64 %call23) #8
+  br label %if.end27
+
+if.else24:                                        ; preds = %land.lhs.true, %if.end12
+  %21 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %22 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str55, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %21)
+  %23 = load i32* @current_sym_nchars, align 4, !tbaa !3
+  %add26 = add nsw i32 %23, 2
+  store i32 %add26, i32* @current_sym_nchars, align 4, !tbaa !3
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.else24, %if.then19
+  %24 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 13
+  %25 = load %union.tree_node** %24, align 8, !tbaa !0
+  %cmp29 = icmp eq %union.tree_node* %25, null
+  br i1 %cmp29, label %if.else43, label %land.lhs.true30
+
+land.lhs.true30:                                  ; preds = %if.end27
+  %call33 = tail call i32 @host_integerp(%union.tree_node* %25, i32 0) #6
+  %tobool34 = icmp eq i32 %call33, 0
+  br i1 %tobool34, label %if.else43, label %if.then35
+
+if.then35:                                        ; preds = %land.lhs.true30
+  %26 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %call36 = tail call i32 @_IO_putc(i32 59, %struct._IO_FILE* %26) #6
+  %27 = load i32* @current_sym_nchars, align 4, !tbaa !3
+  %add37 = add nsw i32 %27, 1
+  store i32 %add37, i32* @current_sym_nchars, align 4, !tbaa !3
+  %28 = load %union.tree_node** %24, align 8, !tbaa !0
+  %call40 = tail call i64 @tree_low_cst(%union.tree_node* %28, i32 0) #6
+  tail call fastcc void @print_wide_int(i64 %call40) #8
+  %29 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %call41 = tail call i32 @_IO_putc(i32 59, %struct._IO_FILE* %29) #6
+  %30 = load i32* @current_sym_nchars, align 4, !tbaa !3
+  %add42 = add nsw i32 %30, 1
+  br label %if.end46
+
+if.else43:                                        ; preds = %land.lhs.true30, %if.end27
+  %31 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %32 = tail call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str56, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %31)
+  %33 = load i32* @current_sym_nchars, align 4, !tbaa !3
+  %add45 = add nsw i32 %33, 4
+  br label %if.end46
+
+if.end46:                                         ; preds = %if.else43, %if.then35
+  %storemerge = phi i32 [ %add45, %if.else43 ], [ %add42, %if.then35 ]
+  store i32 %storemerge, i32* @current_sym_nchars, align 4, !tbaa !3
+  ret void
+}

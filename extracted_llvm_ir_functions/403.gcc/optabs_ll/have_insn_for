@@ -1,0 +1,20 @@
+define i32 @have_insn_for(i32 %code, i32 %mode) #4 {
+entry:
+  %idxprom = sext i32 %code to i64
+  %arrayidx = getelementptr inbounds [154 x %struct.optab*]* @code_to_optab, i64 0, i64 %idxprom
+  %0 = load %struct.optab** %arrayidx, align 8, !tbaa !0
+  %cmp = icmp eq %struct.optab* %0, null
+  br i1 %cmp, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %entry
+  %idxprom1 = sext i32 %mode to i64
+  %insn_code = getelementptr inbounds %struct.optab* %0, i64 0, i32 1, i64 %idxprom1, i32 0
+  %1 = load i32* %insn_code, align 4, !tbaa !6
+  %cmp5 = icmp ne i32 %1, 1317
+  br label %land.end
+
+land.end:                                         ; preds = %entry, %land.rhs
+  %2 = phi i1 [ false, %entry ], [ %cmp5, %land.rhs ]
+  %land.ext = zext i1 %2 to i32
+  ret i32 %land.ext
+}

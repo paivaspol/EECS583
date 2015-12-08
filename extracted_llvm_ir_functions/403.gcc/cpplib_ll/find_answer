@@ -1,0 +1,60 @@
+define internal fastcc %struct.answer** @find_answer(%struct.cpp_hashnode* %node, %struct.answer* %candidate) #0 {
+entry:
+  %value = getelementptr inbounds %struct.cpp_hashnode* %node, i64 0, i32 6
+  %answers = bitcast %union.anon* %value to %struct.answer**
+  %0 = load %struct.answer** %answers, align 8, !tbaa !3
+  %tobool31 = icmp eq %struct.answer* %0, null
+  br i1 %tobool31, label %for.end17, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %count1 = getelementptr inbounds %struct.answer* %candidate, i64 0, i32 1
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc16, %for.body.lr.ph
+  %1 = phi %struct.answer* [ %0, %for.body.lr.ph ], [ %5, %for.inc16 ]
+  %result.032 = phi %struct.answer** [ %answers, %for.body.lr.ph ], [ %next, %for.inc16 ]
+  %count = getelementptr inbounds %struct.answer* %1, i64 0, i32 1
+  %2 = load i32* %count, align 4, !tbaa !2
+  %3 = load i32* %count1, align 4, !tbaa !2
+  %cmp = icmp eq i32 %2, %3
+  br i1 %cmp, label %for.cond2.preheader, label %for.inc16
+
+for.cond2.preheader:                              ; preds = %for.body
+  %cmp429 = icmp eq i32 %2, 0
+  br i1 %cmp429, label %for.end17, label %for.body5
+
+for.cond2:                                        ; preds = %for.body5
+  %cmp4 = icmp ult i32 %inc, %.pre
+  br i1 %cmp4, label %for.body5, label %for.end
+
+for.body5:                                        ; preds = %for.cond2.preheader, %for.cond2
+  %i.030 = phi i32 [ %inc, %for.cond2 ], [ 0, %for.cond2.preheader ]
+  %idxprom = zext i32 %i.030 to i64
+  %arrayidx = getelementptr inbounds %struct.answer* %1, i64 0, i32 2, i64 %idxprom
+  %arrayidx8 = getelementptr inbounds %struct.answer* %candidate, i64 0, i32 2, i64 %idxprom
+  %call = tail call i32 @_cpp_equiv_tokens(%struct.cpp_token* %arrayidx, %struct.cpp_token* %arrayidx8) #8
+  %tobool9 = icmp eq i32 %call, 0
+  %inc = add i32 %i.030, 1
+  %.pre = load i32* %count, align 4, !tbaa !2
+  br i1 %tobool9, label %for.end, label %for.cond2
+
+for.end:                                          ; preds = %for.body5, %for.cond2
+  %i.0.lcssa = phi i32 [ %inc, %for.cond2 ], [ %i.030, %for.body5 ]
+  %cmp12 = icmp eq i32 %i.0.lcssa, %.pre
+  br i1 %cmp12, label %for.end17, label %for.end.for.inc16_crit_edge
+
+for.end.for.inc16_crit_edge:                      ; preds = %for.end
+  %.pre38 = load %struct.answer** %result.032, align 8, !tbaa !3
+  br label %for.inc16
+
+for.inc16:                                        ; preds = %for.end.for.inc16_crit_edge, %for.body
+  %4 = phi %struct.answer* [ %.pre38, %for.end.for.inc16_crit_edge ], [ %1, %for.body ]
+  %next = getelementptr inbounds %struct.answer* %4, i64 0, i32 0
+  %5 = load %struct.answer** %next, align 8, !tbaa !3
+  %tobool = icmp eq %struct.answer* %5, null
+  br i1 %tobool, label %for.end17, label %for.body
+
+for.end17:                                        ; preds = %for.cond2.preheader, %for.inc16, %for.end, %entry
+  %result.0.lcssa = phi %struct.answer** [ %answers, %entry ], [ %result.032, %for.end ], [ %next, %for.inc16 ], [ %result.032, %for.cond2.preheader ]
+  ret %struct.answer** %result.0.lcssa
+}

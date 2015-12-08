@@ -1,0 +1,49 @@
+define internal fastcc void @ix86_emit_save_regs_using_mov(%struct.rtx_def* %pointer, i64 %offset) #1 {
+entry:
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %entry
+  %offset.addr.021 = phi i64 [ %offset, %entry ], [ %offset.addr.1, %for.inc ]
+  %regno.020 = phi i32 [ 0, %entry ], [ %inc, %for.inc ]
+  %call = tail call fastcc i32 @ix86_save_reg(i32 %regno.020, i32 1) #10
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %0, 25
+  %1 = and i32 %and, 1
+  %2 = or i32 %1, 4
+  %call2 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %2, %struct.rtx_def* %pointer) #9
+  %3 = load i32* @target_flags, align 4, !tbaa !0
+  %and3 = lshr i32 %3, 25
+  %4 = and i32 %and3, 1
+  %5 = or i32 %4, 4
+  %call6 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %call2, i32 %5, i64 %offset.addr.021, i32 1, i32 1) #9
+  %6 = load i32* @target_flags, align 4, !tbaa !0
+  %and7 = lshr i32 %6, 25
+  %7 = and i32 %and7, 1
+  %8 = or i32 %7, 4
+  %call10 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %8, i32 %regno.020) #9
+  %call11 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call6, %struct.rtx_def* %call10) #9
+  %9 = bitcast %struct.rtx_def* %call11 to i32*
+  %bf.load = load i32* %9, align 8
+  %bf.set = or i32 %bf.load, -2147483648
+  store i32 %bf.set, i32* %9, align 8
+  %10 = load i32* @target_flags, align 4, !tbaa !0
+  %and12 = lshr i32 %10, 23
+  %11 = and i32 %and12, 4
+  %12 = add i32 %11, 4
+  %conv19 = zext i32 %12 to i64
+  %add = add nsw i64 %conv19, %offset.addr.021
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %offset.addr.1 = phi i64 [ %add, %if.then ], [ %offset.addr.021, %for.body ]
+  %inc = add nsw i32 %regno.020, 1
+  %exitcond = icmp eq i32 %inc, 53
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  ret void
+}

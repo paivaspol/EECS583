@@ -1,0 +1,39 @@
+define void @conflict_graph_print(%struct.conflict_graph_def* nocapture %graph, %struct._IO_FILE* %fp) #0 {
+entry:
+  %context = alloca %struct.print_context, align 8
+  %fp1 = getelementptr inbounds %struct.print_context* %context, i64 0, i32 0
+  store %struct._IO_FILE* %fp, %struct._IO_FILE** %fp1, align 8, !tbaa !3
+  %0 = call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %fp)
+  %num_regs = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 1
+  %1 = load i32* %num_regs, align 4, !tbaa !0
+  %cmp11 = icmp sgt i32 %1, 0
+  br i1 %cmp11, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %reg2 = getelementptr inbounds %struct.print_context* %context, i64 0, i32 1
+  %started = getelementptr inbounds %struct.print_context* %context, i64 0, i32 2
+  %2 = bitcast %struct.print_context* %context to i8*
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %reg.012 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  store i32 %reg.012, i32* %reg2, align 8, !tbaa !0
+  store i32 0, i32* %started, align 4, !tbaa !0
+  call void @conflict_graph_enum(%struct.conflict_graph_def* %graph, i32 %reg.012, i32 (i32, i32, i8*)* @print_conflict, i8* %2) #8
+  %3 = load i32* %started, align 4, !tbaa !0
+  %tobool = icmp eq i32 %3, 0
+  br i1 %tobool, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %call4 = call i32 @fputc(i32 10, %struct._IO_FILE* %fp) #6
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %inc = add nsw i32 %reg.012, 1
+  %4 = load i32* %num_regs, align 4, !tbaa !0
+  %cmp = icmp slt i32 %inc, %4
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

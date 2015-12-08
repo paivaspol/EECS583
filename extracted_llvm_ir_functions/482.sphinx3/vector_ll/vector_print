@@ -1,0 +1,21 @@
+define void @vector_print(%struct._IO_FILE* nocapture %fp, float* nocapture %v, i32 %dim) #0 {
+entry:
+  %cmp6 = icmp sgt i32 %dim, 0
+  br i1 %cmp6, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %v, i64 %indvars.iv
+  %0 = load float* %arrayidx, align 4, !tbaa !0
+  %conv = fpext float %0 to double
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), double %conv) #5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %dim
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %fp)
+  %call2 = tail call i32 @fflush(%struct._IO_FILE* %fp) #5
+  ret void
+}

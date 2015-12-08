@@ -1,0 +1,63 @@
+define internal void @dbxout_function_decl(%union.tree_node* nocapture %decl) #0 {
+entry:
+  %lscope_label_name.i = alloca [100 x i8], align 16
+  %initial = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 12
+  %0 = load %union.tree_node** %initial, align 8, !tbaa !0
+  %arguments = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 10
+  %1 = load %union.tree_node** %arguments, align 8, !tbaa !0
+  call fastcc void @dbxout_block(%union.tree_node* %0, i32 0, %union.tree_node* %1) #8
+  %2 = load i32* @use_gnu_debug_info_extensions, align 4, !tbaa !3
+  %tobool = icmp eq i32 %2, 0
+  %3 = load i8* getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 13), align 8, !tbaa !4, !range !5
+  %tobool3 = icmp eq i8 %3, 0
+  %or.cond = or i1 %tobool, %tobool3
+  br i1 %or.cond, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %4 = getelementptr inbounds [100 x i8]* %lscope_label_name.i, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 100, i8* %4) #5
+  %5 = load i32* @dbxout_function_end.scope_labelno, align 4, !tbaa !3
+  %call.i = call i32 (i8*, i8*, ...)* @sprintf(i8* %4, i8* getelementptr inbounds ([7 x i8]* @.str59, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str60, i64 0, i64 0), i32 %5) #6
+  %6 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %7 = load i32* @dbxout_function_end.scope_labelno, align 4, !tbaa !3
+  %call2.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([8 x i8]* @.str61, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str60, i64 0, i64 0), i32 %7) #6
+  %8 = load i32* @dbxout_function_end.scope_labelno, align 4, !tbaa !3
+  %inc.i = add nsw i32 %8, 1
+  store i32 %inc.i, i32* @dbxout_function_end.scope_labelno, align 4, !tbaa !3
+  %9 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %call5.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %9, i8* getelementptr inbounds ([13 x i8]* @.str62, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i32 36) #6
+  %10 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  call void @assemble_name(%struct._IO_FILE* %10, i8* %4) #6
+  %11 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %call7.i = call i32 @_IO_putc(i32 45, %struct._IO_FILE* %11) #6
+  %12 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %13 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %rtl.i = getelementptr inbounds %union.tree_node* %13, i64 0, i32 0, i32 17
+  %14 = load %struct.rtx_def** %rtl.i, align 8, !tbaa !0
+  %tobool.i = icmp eq %struct.rtx_def* %14, null
+  br i1 %tobool.i, label %cond.false.i, label %dbxout_function_end.exit
+
+cond.false.i:                                     ; preds = %if.then
+  call void @make_decl_rtl(%union.tree_node* %13, i8* null) #6
+  %15 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %rtl11.i = getelementptr inbounds %union.tree_node* %15, i64 0, i32 0, i32 17
+  %16 = load %struct.rtx_def** %rtl11.i, align 8, !tbaa !0
+  br label %dbxout_function_end.exit
+
+dbxout_function_end.exit:                         ; preds = %if.then, %cond.false.i
+  %cond.i = phi %struct.rtx_def* [ %16, %cond.false.i ], [ %14, %if.then ]
+  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %cond.i, i64 0, i32 1, i64 0
+  %rtx.i = bitcast %union.rtunion_def* %arrayidx.i to %struct.rtx_def**
+  %17 = load %struct.rtx_def** %rtx.i, align 8, !tbaa !0
+  %arrayidx13.i = getelementptr inbounds %struct.rtx_def* %17, i64 0, i32 1, i64 0
+  %rtstr.i = bitcast %union.rtunion_def* %arrayidx13.i to i8**
+  %18 = load i8** %rtstr.i, align 8, !tbaa !0
+  call void @assemble_name(%struct._IO_FILE* %12, i8* %18) #6
+  %19 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %fputc.i = call i32 @fputc(i32 10, %struct._IO_FILE* %19) #5
+  call void @llvm.lifetime.end(i64 100, i8* %4) #5
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %dbxout_function_end.exit
+  ret void
+}

@@ -1,0 +1,10 @@
+define void @output_address(%struct.rtx_def* %x) #0 {
+entry:
+  %x.addr = alloca %struct.rtx_def*, align 8
+  store %struct.rtx_def* %x, %struct.rtx_def** %x.addr, align 8, !tbaa !0
+  %call = call fastcc %struct.rtx_def* @walk_alter_subreg(%struct.rtx_def** %x.addr) #10
+  %0 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %1 = load %struct.rtx_def** %x.addr, align 8, !tbaa !0
+  call void @print_operand_address(%struct._IO_FILE* %0, %struct.rtx_def* %1) #8
+  ret void
+}

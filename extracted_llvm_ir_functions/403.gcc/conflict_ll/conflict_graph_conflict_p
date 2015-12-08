@@ -1,0 +1,19 @@
+define i32 @conflict_graph_conflict_p(%struct.conflict_graph_def* nocapture %graph, i32 %reg1, i32 %reg2) #0 {
+entry:
+  %arc = alloca %struct.conflict_graph_arc_def, align 8
+  %cmp = icmp slt i32 %reg1, %reg2
+  %cond = select i1 %cmp, i32 %reg1, i32 %reg2
+  %smaller = getelementptr inbounds %struct.conflict_graph_arc_def* %arc, i64 0, i32 2
+  store i32 %cond, i32* %smaller, align 8, !tbaa !0
+  %cmp1 = icmp sgt i32 %reg1, %reg2
+  %cond5 = select i1 %cmp1, i32 %reg1, i32 %reg2
+  %larger = getelementptr inbounds %struct.conflict_graph_arc_def* %arc, i64 0, i32 3
+  store i32 %cond5, i32* %larger, align 4, !tbaa !0
+  %arc_hash_table = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 0
+  %0 = load %struct.htab** %arc_hash_table, align 8, !tbaa !3
+  %1 = bitcast %struct.conflict_graph_arc_def* %arc to i8*
+  %call = call i8* @htab_find(%struct.htab* %0, i8* %1) #6
+  %cmp6 = icmp ne i8* %call, null
+  %conv = zext i1 %cmp6 to i32
+  ret i32 %conv
+}

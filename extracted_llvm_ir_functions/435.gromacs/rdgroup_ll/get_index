@@ -1,0 +1,30 @@
+define void @get_index(%struct.t_atoms* %atoms, i8* %fnm, i32 %ngrps, i32* nocapture %isize, i32** nocapture %index, i8** nocapture %grpnames) #0 {
+entry:
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str5, i64 0, i64 0), i32 231, i32 %ngrps, i32 4) #5
+  %0 = bitcast i8* %call to i32*
+  %call1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([7 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str5, i64 0, i64 0), i32 232, i32 1, i32 8) #5
+  %1 = bitcast i8* %call1 to i8***
+  %cmp = icmp eq i8* %fnm, null
+  br i1 %cmp, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call2 = tail call %struct.t_block* @init_index(i8* %fnm, i8*** %1) #7
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %call3 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str5, i64 0, i64 0), i32 237, i32 1, i32 1056) #5
+  %2 = bitcast i8* %call3 to %struct.t_block*
+  %call4 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str5, i64 0, i64 0), i32 238, i32 1, i32 4) #5
+  %3 = bitcast i8* %call4 to i32*
+  %index5 = getelementptr inbounds i8* %call3, i64 1032
+  %4 = bitcast i8* %index5 to i32**
+  store i32* %3, i32** %4, align 8, !tbaa !3
+  tail call void @analyse(%struct.t_atoms* %atoms, %struct.t_block* %2, i8*** %1, i32 0, i32 0) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %grps.0 = phi %struct.t_block* [ %call2, %if.then ], [ %2, %if.else ]
+  %5 = load i8*** %1, align 8, !tbaa !3
+  tail call fastcc void @rd_groups(%struct.t_block* %grps.0, i8** %5, i8** %grpnames, i32 %ngrps, i32* %isize, i32** %index, i32* %0) #7
+  ret void
+}

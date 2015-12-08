@@ -1,0 +1,107 @@
+define internal void @dbxout_init(i8* %input_file_name) #0 {
+entry:
+  %ltext_label_name = alloca [100 x i8], align 16
+  %0 = getelementptr inbounds [100 x i8]* %ltext_label_name, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 100, i8* %0) #5
+  %call = call %union.tree_node* @getdecls() #6
+  %1 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  store %struct._IO_FILE* %1, %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  store i32 100, i32* @typevec_len, align 4, !tbaa !3
+  %call1 = call noalias i8* @xcalloc(i64 100, i64 12) #6
+  %2 = bitcast i8* %call1 to %struct.typeinfo*
+  store %struct.typeinfo* %2, %struct.typeinfo** @typevec, align 8, !tbaa !0
+  %call2 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str59, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str71, i64 0, i64 0), i32 0) #6
+  %3 = load i32* @use_gnu_debug_info_extensions, align 4, !tbaa !3
+  %tobool = icmp eq i32 %3, 0
+  br i1 %tobool, label %if.end20, label %if.then
+
+if.then:                                          ; preds = %entry
+  %4 = load i8** @cwd, align 8, !tbaa !0
+  %tobool3 = icmp eq i8* %4, null
+  br i1 %tobool3, label %land.lhs.true, label %if.then14
+
+land.lhs.true:                                    ; preds = %if.then
+  %call4 = call i8* @getpwd() #6
+  store i8* %call4, i8** @cwd, align 8, !tbaa !0
+  %tobool5 = icmp eq i8* %call4, null
+  br i1 %tobool5, label %if.end20, label %land.lhs.true6
+
+land.lhs.true6:                                   ; preds = %land.lhs.true
+  %5 = load i8* %call4, align 1, !tbaa !1
+  %tobool7 = icmp eq i8 %5, 0
+  br i1 %tobool7, label %if.then11, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true6
+  %call8 = call i64 @strlen(i8* %call4) #7
+  %sub = add i64 %call8, -1
+  %arrayidx = getelementptr inbounds i8* %call4, i64 %sub
+  %6 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %6, 47
+  br i1 %cmp, label %if.end, label %if.then11
+
+if.then11:                                        ; preds = %lor.lhs.false, %land.lhs.true6
+  %call12 = call noalias i8* (i8*, ...)* @concat(i8* %call4, i8* getelementptr inbounds ([2 x i8]* @.str75, i64 0, i64 0), i8* null) #6
+  store i8* %call12, i8** @cwd, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false, %if.then11
+  %7 = phi i8* [ %call12, %if.then11 ], [ %call4, %lor.lhs.false ]
+  %tobool13 = icmp eq i8* %7, null
+  br i1 %tobool13, label %if.end20, label %if.then14
+
+if.then14:                                        ; preds = %if.then, %if.end
+  %8 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %9 = call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %8)
+  %10 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %11 = load i8** @cwd, align 8, !tbaa !0
+  call void @output_quoted_string(%struct._IO_FILE* %10, i8* %11) #6
+  %12 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %call16 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %12, i8* getelementptr inbounds ([9 x i8]* @.str72, i64 0, i64 0), i32 100) #6
+  %13 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  call void @assemble_name(%struct._IO_FILE* %13, i8* %0) #6
+  %14 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %call18 = call i32 @fputc(i32 10, %struct._IO_FILE* %14) #6
+  br label %if.end20
+
+if.end20:                                         ; preds = %land.lhs.true, %if.end, %entry, %if.then14
+  %15 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %16 = call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %15)
+  %17 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  call void @output_quoted_string(%struct._IO_FILE* %17, i8* %input_file_name) #6
+  %18 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %call22 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %18, i8* getelementptr inbounds ([9 x i8]* @.str72, i64 0, i64 0), i32 100) #6
+  %19 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  call void @assemble_name(%struct._IO_FILE* %19, i8* %0) #6
+  %20 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %call24 = call i32 @fputc(i32 10, %struct._IO_FILE* %20) #6
+  call void @text_section() #6
+  %21 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %call26 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %21, i8* getelementptr inbounds ([8 x i8]* @.str61, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str71, i64 0, i64 0), i32 0) #6
+  %22 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %call29 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %22, i8* getelementptr inbounds ([17 x i8]* @.str76, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([15 x i8]* @.str77, i64 0, i64 0), i32 60) #6
+  store i8* %input_file_name, i8** @lastfile, align 8, !tbaa !0
+  store i32 1, i32* @next_type_number, align 4, !tbaa !3
+  %call30 = call noalias i8* @xmalloc(i64 16) #6
+  %23 = bitcast i8* %call30 to %struct.dbx_file*
+  store %struct.dbx_file* %23, %struct.dbx_file** @current_file, align 8, !tbaa !0
+  %next = bitcast i8* %call30 to %struct.dbx_file**
+  store %struct.dbx_file* null, %struct.dbx_file** %next, align 8, !tbaa !0
+  %file_number = getelementptr inbounds i8* %call30, i64 8
+  %24 = bitcast i8* %file_number to i32*
+  store i32 0, i32* %24, align 4, !tbaa !3
+  %next_type_number = getelementptr inbounds i8* %call30, i64 12
+  %25 = bitcast i8* %next_type_number to i32*
+  store i32 1, i32* %25, align 4, !tbaa !3
+  store i32 1, i32* @next_file_number, align 4, !tbaa !3
+  %26 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 5), align 8, !tbaa !0
+  %27 = getelementptr inbounds %union.tree_node* %26, i64 0, i32 0, i32 11
+  %28 = load %union.tree_node** %27, align 8, !tbaa !0
+  %call31 = call i32 @dbxout_symbol(%union.tree_node* %28, i32 undef) #8
+  %29 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 0), align 8, !tbaa !0
+  %30 = getelementptr inbounds %union.tree_node* %29, i64 0, i32 0, i32 11
+  %31 = load %union.tree_node** %30, align 8, !tbaa !0
+  %call34 = call i32 @dbxout_symbol(%union.tree_node* %31, i32 undef) #8
+  call fastcc void @dbxout_typedefs(%union.tree_node* %call) #8
+  call void @llvm.lifetime.end(i64 100, i8* %0) #5
+  ret void
+}

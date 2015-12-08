@@ -1,0 +1,64 @@
+define internal fastcc zeroext i1 @dead_libcall_p(%struct.rtx_def* %insn) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn, i32 4, %struct.rtx_def* null) #6
+  %tobool = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = bitcast %struct.rtx_def* %insn to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom48 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom48
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %1, 105
+  br i1 %cmp, label %cond.true, label %cond.end16
+
+cond.true:                                        ; preds = %if.then
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load3 = load i32* %3, align 8
+  %bf.clear4 = and i32 %bf.load3, 65535
+  %cmp5 = icmp eq i32 %bf.clear4, 47
+  br i1 %cmp5, label %cond.end16, label %cond.false
+
+cond.false:                                       ; preds = %cond.true
+  %call14 = tail call %struct.rtx_def* @single_set_2(%struct.rtx_def* %insn, %struct.rtx_def* %2) #6
+  br label %cond.end16
+
+cond.end16:                                       ; preds = %cond.true, %if.then, %cond.false
+  %cond17 = phi %struct.rtx_def* [ %call14, %cond.false ], [ null, %if.then ], [ %2, %cond.true ]
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0
+  %rtx20 = bitcast %union.rtunion_def* %arrayidx19 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx20, align 8, !tbaa !0
+  %call21 = tail call %struct.rtx_def* @simplify_rtx(%struct.rtx_def* %4) #6
+  %tobool22 = icmp eq %struct.rtx_def* %call21, null
+  br i1 %tobool22, label %if.then23, label %if.end
+
+if.then23:                                        ; preds = %cond.end16
+  %5 = load %struct.rtx_def** %rtx20, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %cond.end16, %if.then23
+  %new.0 = phi %struct.rtx_def* [ %call21, %cond.end16 ], [ %5, %if.then23 ]
+  %tobool27 = icmp eq %struct.rtx_def* %cond17, null
+  br i1 %tobool27, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %arrayidx29 = getelementptr inbounds %struct.rtx_def* %cond17, i64 0, i32 1, i64 1
+  %rtx30 = bitcast %union.rtunion_def* %arrayidx29 to %struct.rtx_def**
+  %call31 = tail call i32 @validate_change(%struct.rtx_def* %insn, %struct.rtx_def** %rtx30, %struct.rtx_def* %new.0, i32 0) #6
+  %tobool32 = icmp eq i32 %call31, 0
+  br i1 %tobool32, label %return, label %if.then33
+
+if.then33:                                        ; preds = %land.lhs.true
+  %call34 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn, i32 6, %struct.rtx_def* null) #6
+  tail call void @remove_note(%struct.rtx_def* %insn, %struct.rtx_def* %call34) #6
+  br label %return
+
+return:                                           ; preds = %entry, %if.end, %land.lhs.true, %if.then33
+  %retval.0 = phi i1 [ true, %if.then33 ], [ false, %land.lhs.true ], [ false, %if.end ], [ false, %entry ]
+  ret i1 %retval.0
+}

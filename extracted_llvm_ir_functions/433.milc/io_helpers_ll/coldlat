@@ -1,0 +1,88 @@
+define void @coldlat() #0 {
+entry:
+  %0 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp52 = icmp sgt i32 %0, 0
+  br i1 %cmp52, label %for.cond1.preheader.lr.ph, label %for.end33
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %1 = load %struct.site** @lattice, align 8, !tbaa !4
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.cond1.preheader.lr.ph, %for.inc31
+  %i.054 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %inc32, %for.inc31 ]
+  %sit.053 = phi %struct.site* [ %1, %for.cond1.preheader.lr.ph ], [ %incdec.ptr, %for.inc31 ]
+  br label %for.cond4.preheader
+
+for.cond4.preheader:                              ; preds = %for.inc28, %for.cond1.preheader
+  %indvars.iv59 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next60, %for.inc28 ]
+  br label %for.cond7.preheader
+
+for.cond7.preheader:                              ; preds = %for.inc25, %for.cond4.preheader
+  %indvars.iv55 = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next56, %for.inc25 ]
+  br label %for.body9
+
+for.body9:                                        ; preds = %for.inc, %for.cond7.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond7.preheader ], [ %indvars.iv.next, %for.inc ]
+  %2 = trunc i64 %indvars.iv to i32
+  %3 = trunc i64 %indvars.iv55 to i32
+  %cmp10 = icmp eq i32 %3, %2
+  %arrayidx14 = getelementptr inbounds %struct.site* %sit.053, i64 0, i32 8, i64 %indvars.iv59, i32 0, i64 %indvars.iv55, i64 %indvars.iv
+  br i1 %cmp10, label %if.else, label %if.then
+
+if.then:                                          ; preds = %for.body9
+  %call = tail call { double, double } @cmplx(double 0.000000e+00, double 0.000000e+00) #5
+  %4 = extractvalue { double, double } %call, 0
+  %5 = extractvalue { double, double } %call, 1
+  %coerce.sroa.0.0.idx = getelementptr inbounds %struct.complex* %arrayidx14, i64 0, i32 0
+  store double %4, double* %coerce.sroa.0.0.idx, align 8
+  %coerce.sroa.1.8.idx39 = getelementptr inbounds %struct.site* %sit.053, i64 0, i32 8, i64 %indvars.iv59, i32 0, i64 %indvars.iv55, i64 %indvars.iv, i32 1
+  store double %5, double* %coerce.sroa.1.8.idx39, align 8
+  br label %for.inc
+
+if.else:                                          ; preds = %for.body9
+  %call23 = tail call { double, double } @cmplx(double 1.000000e+00, double 0.000000e+00) #5
+  %6 = extractvalue { double, double } %call23, 0
+  %7 = extractvalue { double, double } %call23, 1
+  %coerce24.sroa.0.0.idx = getelementptr inbounds %struct.complex* %arrayidx14, i64 0, i32 0
+  store double %6, double* %coerce24.sroa.0.0.idx, align 8
+  %coerce24.sroa.1.8.idx38 = getelementptr inbounds %struct.site* %sit.053, i64 0, i32 8, i64 %indvars.iv59, i32 0, i64 %indvars.iv55, i64 %indvars.iv, i32 1
+  store double %7, double* %coerce24.sroa.1.8.idx38, align 8
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then, %if.else
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc25, label %for.body9
+
+for.inc25:                                        ; preds = %for.inc
+  %indvars.iv.next56 = add i64 %indvars.iv55, 1
+  %lftr.wideiv57 = trunc i64 %indvars.iv.next56 to i32
+  %exitcond58 = icmp eq i32 %lftr.wideiv57, 3
+  br i1 %exitcond58, label %for.inc28, label %for.cond7.preheader
+
+for.inc28:                                        ; preds = %for.inc25
+  %indvars.iv.next60 = add i64 %indvars.iv59, 1
+  %lftr.wideiv61 = trunc i64 %indvars.iv.next60 to i32
+  %exitcond62 = icmp eq i32 %lftr.wideiv61, 4
+  br i1 %exitcond62, label %for.inc31, label %for.cond4.preheader
+
+for.inc31:                                        ; preds = %for.inc28
+  %inc32 = add nsw i32 %i.054, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %sit.053, i64 1
+  %8 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp = icmp slt i32 %inc32, %8
+  br i1 %cmp, label %for.cond1.preheader, label %for.end33
+
+for.end33:                                        ; preds = %for.inc31, %entry
+  %9 = load i32* @this_node, align 4, !tbaa !0
+  %cmp34 = icmp eq i32 %9, 0
+  br i1 %cmp34, label %if.then35, label %if.end37
+
+if.then35:                                        ; preds = %for.end33
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([32 x i8]* @str70, i64 0, i64 0))
+  br label %if.end37
+
+if.end37:                                         ; preds = %if.then35, %for.end33
+  ret void
+}

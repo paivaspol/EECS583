@@ -1,0 +1,47 @@
+define %struct.rtx_def* @hard_function_value(%union.tree_node* %valtype, %union.tree_node* nocapture %func, i32 %outgoing) #1 {
+entry:
+  %call = tail call %struct.rtx_def* @ix86_function_value(%union.tree_node* %valtype) #4
+  %0 = bitcast %struct.rtx_def* %call to i32*
+  %bf.load = load i32* %0, align 8
+  %1 = and i32 %bf.load, 16777215
+  %2 = icmp eq i32 %1, 3342397
+  br i1 %2, label %if.then, label %if.end18
+
+if.then:                                          ; preds = %entry
+  %call4 = tail call i64 @int_size_in_bytes(%union.tree_node* %valtype) #4
+  %3 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !tbaa !7
+  %cond28 = icmp eq i32 %3, 0
+  br i1 %cond28, label %if.then14, label %for.body
+
+for.body:                                         ; preds = %if.then, %for.inc
+  %tmpmode.029 = phi i32 [ %conv11, %for.inc ], [ %3, %if.then ]
+  %idxprom = sext i32 %tmpmode.029 to i64
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom
+  %4 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = zext i8 %4 to i64
+  %cmp6 = icmp ult i64 %conv, %call4
+  br i1 %cmp6, label %for.inc, label %if.end15
+
+for.inc:                                          ; preds = %for.body
+  %arrayidx10 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom
+  %5 = load i8* %arrayidx10, align 1, !tbaa !1
+  %conv11 = zext i8 %5 to i32
+  %cond = icmp eq i8 %5, 0
+  br i1 %cond, label %if.then14, label %for.body
+
+if.then14:                                        ; preds = %for.inc, %if.then
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 1635, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.hard_function_value, i64 0, i64 0)) #6
+  unreachable
+
+if.end15:                                         ; preds = %for.body
+  %bf.load16 = load i32* %0, align 8
+  %bf.value = shl i32 %tmpmode.029, 16
+  %bf.shl = and i32 %bf.value, 16711680
+  %bf.clear17 = and i32 %bf.load16, -16711681
+  %bf.set = or i32 %bf.clear17, %bf.shl
+  store i32 %bf.set, i32* %0, align 8
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.end15, %entry
+  ret %struct.rtx_def* %call
+}

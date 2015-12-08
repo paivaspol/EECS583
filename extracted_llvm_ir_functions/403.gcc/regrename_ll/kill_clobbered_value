@@ -1,0 +1,16 @@
+define internal void @kill_clobbered_value(%struct.rtx_def* nocapture %x, %struct.rtx_def* nocapture %set, i8* nocapture %data) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %set to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 49
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = bitcast i8* %data to %struct.value_data*
+  tail call fastcc void @kill_value(%struct.rtx_def* %x, %struct.value_data* %1) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  ret void
+}

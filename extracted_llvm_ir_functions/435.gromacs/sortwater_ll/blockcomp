@@ -1,0 +1,38 @@
+define internal i32 @blockcomp(i8* nocapture %a, i8* nocapture %b) #2 {
+entry:
+  %0 = load i32* @nwat, align 4, !tbaa !0
+  %1 = bitcast i8* %a to i32*
+  %2 = load i32* %1, align 4, !tbaa !0
+  %mul = mul nsw i32 %2, %0
+  %3 = bitcast i8* %b to i32*
+  %4 = load i32* %3, align 4, !tbaa !0
+  %mul1 = mul nsw i32 %4, %0
+  %idxprom = sext i32 %mul to i64
+  %5 = load [3 x float]** @xptr, align 8, !tbaa !4
+  %arraydecay = getelementptr inbounds [3 x float]* %5, i64 %idxprom, i64 0
+  %call = tail call fastcc i32 @block_index(float* %arraydecay) #6
+  %idxprom2 = sext i32 %mul1 to i64
+  %arraydecay4 = getelementptr inbounds [3 x float]* %5, i64 %idxprom2, i64 0
+  %call5 = tail call fastcc i32 @block_index(float* %arraydecay4) #6
+  %cmp = icmp eq i32 %call, %call5
+  br i1 %cmp, label %if.then, label %if.else23
+
+if.then:                                          ; preds = %entry
+  %6 = load float* %arraydecay, align 4, !tbaa !3
+  %7 = load float* %arraydecay4, align 4, !tbaa !3
+  %cmp12 = fcmp olt float %6, %7
+  br i1 %cmp12, label %return, label %if.else
+
+if.else:                                          ; preds = %if.then
+  %cmp20 = fcmp ogt float %6, %7
+  %. = zext i1 %cmp20 to i32
+  br label %return
+
+if.else23:                                        ; preds = %entry
+  %sub = sub nsw i32 %call, %call5
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then, %if.else23
+  %retval.0 = phi i32 [ %sub, %if.else23 ], [ -1, %if.then ], [ %., %if.else ]
+  ret i32 %retval.0
+}

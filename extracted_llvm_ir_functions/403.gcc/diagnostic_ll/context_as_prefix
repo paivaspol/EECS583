@@ -1,0 +1,33 @@
+define i8* @context_as_prefix(i8* %file, i32 %line, i32 %warn) #2 {
+entry:
+  %tobool = icmp eq i8* %file, null
+  %tobool1 = icmp ne i32 %warn, 0
+  br i1 %tobool, label %if.else4, label %if.then
+
+if.then:                                          ; preds = %entry
+  br i1 %tobool1, label %if.then2, label %if.else
+
+if.then2:                                         ; preds = %if.then
+  %call = tail call i8* (i8*, ...)* @build_message_string(i8* getelementptr inbounds ([17 x i8]* @.str1, i64 0, i64 0), i8* %file, i32 %line) #11
+  br label %return
+
+if.else:                                          ; preds = %if.then
+  %call3 = tail call i8* (i8*, ...)* @build_message_string(i8* getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), i8* %file, i32 %line) #11
+  br label %return
+
+if.else4:                                         ; preds = %entry
+  %0 = load i8** @progname, align 8, !tbaa !3
+  br i1 %tobool1, label %if.then6, label %if.else8
+
+if.then6:                                         ; preds = %if.else4
+  %call7 = tail call i8* (i8*, ...)* @build_message_string(i8* getelementptr inbounds ([14 x i8]* @.str3, i64 0, i64 0), i8* %0) #11
+  br label %return
+
+if.else8:                                         ; preds = %if.else4
+  %call9 = tail call i8* (i8*, ...)* @build_message_string(i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* %0) #11
+  br label %return
+
+return:                                           ; preds = %if.else8, %if.then6, %if.else, %if.then2
+  %retval.0 = phi i8* [ %call, %if.then2 ], [ %call3, %if.else ], [ %call7, %if.then6 ], [ %call9, %if.else8 ]
+  ret i8* %retval.0
+}

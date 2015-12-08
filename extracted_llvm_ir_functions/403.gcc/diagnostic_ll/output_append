@@ -1,0 +1,36 @@
+define void @output_append(%struct.output_buffer* %buffer, i8* %start, i8* %end) #2 {
+entry:
+  %line_length = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 3
+  %0 = load i32* %line_length, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, 0
+  br i1 %cmp, label %if.then, label %if.end5
+
+if.then:                                          ; preds = %entry
+  tail call void @output_emit_prefix(%struct.output_buffer* %buffer) #11
+  %ideal_maximum_length.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 2
+  %1 = load i32* %ideal_maximum_length.i, align 4, !tbaa !0
+  %cmp.i = icmp slt i32 %1, 1
+  %cmp215 = icmp eq i8* %start, %end
+  %or.cond = or i1 %cmp.i, %cmp215
+  br i1 %or.cond, label %if.end5, label %land.rhs
+
+while.cond:                                       ; preds = %land.rhs
+  %cmp2 = icmp eq i8* %incdec.ptr, %end
+  br i1 %cmp2, label %if.end5, label %land.rhs
+
+land.rhs:                                         ; preds = %if.then, %while.cond
+  %start.addr.016 = phi i8* [ %incdec.ptr, %while.cond ], [ %start, %if.then ]
+  %2 = load i8* %start.addr.016, align 1, !tbaa !1
+  %cmp3 = icmp eq i8 %2, 32
+  %incdec.ptr = getelementptr inbounds i8* %start.addr.016, i64 1
+  br i1 %cmp3, label %while.cond, label %if.end5
+
+if.end5:                                          ; preds = %if.then, %land.rhs, %while.cond, %entry
+  %start.addr.1 = phi i8* [ %start, %if.then ], [ %start, %entry ], [ %start.addr.016, %land.rhs ], [ %end, %while.cond ]
+  %sub.ptr.lhs.cast = ptrtoint i8* %end to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %start.addr.1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %conv6 = trunc i64 %sub.ptr.sub to i32
+  tail call fastcc void @output_append_r(%struct.output_buffer* %buffer, i8* %start.addr.1, i32 %conv6) #11
+  ret void
+}

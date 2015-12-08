@@ -1,0 +1,118 @@
+define void @subvq_free(%struct.subvq_t* %s) #0 {
+entry:
+  %tobool = icmp eq %struct.subvq_t* %s, null
+  br i1 %tobool, label %if.end35, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %n_sv = getelementptr inbounds %struct.subvq_t* %s, i64 0, i32 1
+  %0 = load i32* %n_sv, align 4, !tbaa !0
+  %cmp57 = icmp sgt i32 %0, 0
+  %featdim = getelementptr inbounds %struct.subvq_t* %s, i64 0, i32 3
+  br i1 %cmp57, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %1 = phi i32 [ %5, %for.inc ], [ %0, %for.cond.preheader ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond.preheader ]
+  %2 = load i32*** %featdim, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i32** %2, i64 %indvars.iv
+  %3 = load i32** %arrayidx, align 8, !tbaa !3
+  %tobool1 = icmp eq i32* %3, null
+  br i1 %tobool1, label %for.inc, label %if.then2
+
+if.then2:                                         ; preds = %for.body
+  %4 = bitcast i32* %3 to i8*
+  tail call void @ckd_free(i8* %4) #5
+  %.pre = load i32* %n_sv, align 4, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then2
+  %5 = phi i32 [ %1, %for.body ], [ %.pre, %if.then2 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %6 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %6, %5
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.cond.preheader, %for.inc
+  %7 = load i32*** %featdim, align 8, !tbaa !3
+  %tobool7 = icmp eq i32** %7, null
+  br i1 %tobool7, label %if.end10, label %if.then8
+
+if.then8:                                         ; preds = %for.end
+  %8 = bitcast i32** %7 to i8*
+  tail call void @ckd_free(i8* %8) #5
+  br label %if.end10
+
+if.end10:                                         ; preds = %for.end, %if.then8
+  %gautbl = getelementptr inbounds %struct.subvq_t* %s, i64 0, i32 4
+  %9 = load %struct.vector_gautbl_t** %gautbl, align 8, !tbaa !3
+  %tobool11 = icmp eq %struct.vector_gautbl_t* %9, null
+  br i1 %tobool11, label %if.end14, label %if.then12
+
+if.then12:                                        ; preds = %if.end10
+  %10 = bitcast %struct.vector_gautbl_t* %9 to i8*
+  tail call void @ckd_free(i8* %10) #5
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.end10, %if.then12
+  %map = getelementptr inbounds %struct.subvq_t* %s, i64 0, i32 5
+  %11 = load i32**** %map, align 8, !tbaa !3
+  %tobool15 = icmp eq i32*** %11, null
+  br i1 %tobool15, label %if.end18, label %if.then16
+
+if.then16:                                        ; preds = %if.end14
+  %12 = bitcast i32*** %11 to i8***
+  tail call void @ckd_free_3d(i8*** %12) #5
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.end14, %if.then16
+  %subvec = getelementptr inbounds %struct.subvq_t* %s, i64 0, i32 6
+  %13 = load float** %subvec, align 8, !tbaa !3
+  %tobool19 = icmp eq float* %13, null
+  br i1 %tobool19, label %if.end22, label %if.then20
+
+if.then20:                                        ; preds = %if.end18
+  %14 = bitcast float* %13 to i8*
+  tail call void @ckd_free(i8* %14) #5
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.end18, %if.then20
+  %vqdist = getelementptr inbounds %struct.subvq_t* %s, i64 0, i32 7
+  %15 = load i32*** %vqdist, align 8, !tbaa !3
+  %tobool23 = icmp eq i32** %15, null
+  br i1 %tobool23, label %if.end26, label %if.then24
+
+if.then24:                                        ; preds = %if.end22
+  %16 = bitcast i32** %15 to i8**
+  tail call void @ckd_free_2d(i8** %16) #5
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.end22, %if.then24
+  %gauscore = getelementptr inbounds %struct.subvq_t* %s, i64 0, i32 8
+  %17 = load i32** %gauscore, align 8, !tbaa !3
+  %tobool27 = icmp eq i32* %17, null
+  br i1 %tobool27, label %if.end30, label %if.then28
+
+if.then28:                                        ; preds = %if.end26
+  %18 = bitcast i32* %17 to i8*
+  tail call void @ckd_free(i8* %18) #5
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.end26, %if.then28
+  %mgau_sl = getelementptr inbounds %struct.subvq_t* %s, i64 0, i32 9
+  %19 = load i32** %mgau_sl, align 8, !tbaa !3
+  %tobool31 = icmp eq i32* %19, null
+  br i1 %tobool31, label %if.end34, label %if.then32
+
+if.then32:                                        ; preds = %if.end30
+  %20 = bitcast i32* %19 to i8*
+  tail call void @ckd_free(i8* %20) #5
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.end30, %if.then32
+  %21 = bitcast %struct.subvq_t* %s to i8*
+  tail call void @ckd_free(i8* %21) #5
+  br label %if.end35
+
+if.end35:                                         ; preds = %entry, %if.end34
+  ret void
+}

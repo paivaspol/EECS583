@@ -1,0 +1,14 @@
+define i8* @c_common_init(i8* %filename) #0 {
+entry:
+  %call = tail call i8* @init_c_lex(i8* %filename) #8
+  tail call void @init_pragma() #8
+  %.b = load i1* @c_attrs_initialized, align 1
+  br i1 %.b, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call fastcc void @c_init_attributes() #9
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  ret i8* %call
+}

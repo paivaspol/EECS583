@@ -1,0 +1,102 @@
+define void @p_graph(%struct._IO_FILE* %log, i8* %title, %struct.t_graph* nocapture %g) #0 {
+entry:
+  %tobool = icmp eq %struct._IO_FILE* %log, null
+  br i1 %tobool, label %if.end44, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([12 x i8]* @.str, i64 0, i64 0), i8* %title) #4
+  %maxbond = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 0
+  %0 = load i32* %maxbond, align 4, !tbaa !0
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0), i32 %0) #4
+  %nnodes = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 1
+  %1 = load i32* %nnodes, align 4, !tbaa !0
+  %call2 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([12 x i8]* @.str2, i64 0, i64 0), i32 %1) #4
+  %nbound = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 2
+  %2 = load i32* %nbound, align 4, !tbaa !0
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i32 %2) #4
+  %start = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 3
+  %3 = load i32* %start, align 4, !tbaa !0
+  %call4 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([12 x i8]* @.str4, i64 0, i64 0), i32 %3) #4
+  %end = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 4
+  %4 = load i32* %end, align 4, !tbaa !0
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([12 x i8]* @.str5, i64 0, i64 0), i32 %4) #4
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([48 x i8]* @.str6, i64 0, i64 0), i64 47, i64 1, %struct._IO_FILE* %log)
+  %6 = load i32* %nnodes, align 4, !tbaa !0
+  %cmp82 = icmp sgt i32 %6, 0
+  br i1 %cmp82, label %for.body.lr.ph, label %for.end42
+
+for.body.lr.ph:                                   ; preds = %if.then
+  %nedge = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 5
+  %ishift = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 7
+  %edge = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 6
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc40, %for.body.lr.ph
+  %7 = phi i32 [ %6, %for.body.lr.ph ], [ %25, %for.inc40 ]
+  %indvars.iv84 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next85.pre-phi, %for.inc40 ]
+  %8 = load i32** %nedge, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i32* %8, i64 %indvars.iv84
+  %9 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp8 = icmp sgt i32 %9, 0
+  br i1 %cmp8, label %if.then9, label %for.body.for.inc40_crit_edge
+
+for.body.for.inc40_crit_edge:                     ; preds = %for.body
+  %indvars.iv.next85.pre = add i64 %indvars.iv84, 1
+  %.pre87 = trunc i64 %indvars.iv.next85.pre to i32
+  br label %for.inc40
+
+if.then9:                                         ; preds = %for.body
+  %10 = load i32* %start, align 4, !tbaa !0
+  %11 = add i64 %indvars.iv84, 1
+  %12 = trunc i64 %11 to i32
+  %add11 = add i32 %12, %10
+  %13 = load [3 x i32]** %ishift, align 8, !tbaa !3
+  %arrayidx14 = getelementptr inbounds [3 x i32]* %13, i64 %indvars.iv84, i64 0
+  %14 = load i32* %arrayidx14, align 4, !tbaa !0
+  %arrayidx18 = getelementptr inbounds [3 x i32]* %13, i64 %indvars.iv84, i64 1
+  %15 = load i32* %arrayidx18, align 4, !tbaa !0
+  %arrayidx22 = getelementptr inbounds [3 x i32]* %13, i64 %indvars.iv84, i64 2
+  %16 = load i32* %arrayidx22, align 4, !tbaa !0
+  %call26 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([16 x i8]* @.str7, i64 0, i64 0), i32 %add11, i32 %14, i32 %15, i32 %16, i32 %9) #4
+  %17 = load i32** %nedge, align 8, !tbaa !3
+  %arrayidx3079 = getelementptr inbounds i32* %17, i64 %indvars.iv84
+  %18 = load i32* %arrayidx3079, align 4, !tbaa !0
+  %cmp3180 = icmp sgt i32 %18, 0
+  br i1 %cmp3180, label %for.body32, label %for.end
+
+for.body32:                                       ; preds = %if.then9, %for.body32
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body32 ], [ 0, %if.then9 ]
+  %19 = load i32*** %edge, align 8, !tbaa !3
+  %arrayidx35 = getelementptr inbounds i32** %19, i64 %indvars.iv84
+  %20 = load i32** %arrayidx35, align 8, !tbaa !3
+  %arrayidx36 = getelementptr inbounds i32* %20, i64 %indvars.iv
+  %21 = load i32* %arrayidx36, align 4, !tbaa !0
+  %add37 = add nsw i32 %21, 1
+  %call38 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0), i32 %add37) #4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %22 = load i32** %nedge, align 8, !tbaa !3
+  %arrayidx30 = getelementptr inbounds i32* %22, i64 %indvars.iv84
+  %23 = load i32* %arrayidx30, align 4, !tbaa !0
+  %24 = trunc i64 %indvars.iv.next to i32
+  %cmp31 = icmp slt i32 %24, %23
+  br i1 %cmp31, label %for.body32, label %for.end
+
+for.end:                                          ; preds = %for.body32, %if.then9
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %log)
+  %.pre = load i32* %nnodes, align 4, !tbaa !0
+  br label %for.inc40
+
+for.inc40:                                        ; preds = %for.body.for.inc40_crit_edge, %for.end
+  %.pre-phi = phi i32 [ %.pre87, %for.body.for.inc40_crit_edge ], [ %12, %for.end ]
+  %indvars.iv.next85.pre-phi = phi i64 [ %indvars.iv.next85.pre, %for.body.for.inc40_crit_edge ], [ %11, %for.end ]
+  %25 = phi i32 [ %7, %for.body.for.inc40_crit_edge ], [ %.pre, %for.end ]
+  %cmp = icmp slt i32 %.pre-phi, %25
+  br i1 %cmp, label %for.body, label %for.end42
+
+for.end42:                                        ; preds = %for.inc40, %if.then
+  %call43 = tail call i32 @fflush(%struct._IO_FILE* %log) #4
+  br label %if.end44
+
+if.end44:                                         ; preds = %entry, %for.end42
+  ret void
+}

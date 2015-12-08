@@ -1,0 +1,36 @@
+define i32 @sse_comparison_operator(%struct.rtx_def* nocapture %op, i32 %mode) #2 {
+entry:
+  %0 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.default [
+    i32 103, label %return
+    i32 107, label %return
+    i32 106, label %return
+    i32 112, label %return
+    i32 102, label %return
+    i32 115, label %return
+    i32 116, label %return
+    i32 113, label %return
+    i32 114, label %sw.bb1
+    i32 118, label %sw.bb1
+    i32 117, label %sw.bb1
+    i32 119, label %sw.bb1
+    i32 104, label %sw.bb1
+    i32 105, label %sw.bb1
+  ]
+
+sw.bb1:                                           ; preds = %entry, %entry, %entry, %entry, %entry, %entry
+  %1 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %1, 4
+  %and.lobit = and i32 %and, 1
+  %2 = xor i32 %and.lobit, 1
+  br label %return
+
+sw.default:                                       ; preds = %entry
+  br label %return
+
+return:                                           ; preds = %entry, %entry, %entry, %entry, %entry, %entry, %entry, %entry, %sw.default, %sw.bb1
+  %retval.0 = phi i32 [ 0, %sw.default ], [ %2, %sw.bb1 ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ]
+  ret i32 %retval.0
+}

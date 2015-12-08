@@ -1,0 +1,57 @@
+define void @reset_view(%struct.t_3dview* %view) #0 {
+entry:
+  %sc_x.i = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 5
+  store float 4.000000e+00, float* %sc_x.i, align 4, !tbaa !0
+  %sc_y.i = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 6
+  store float 4.000000e+00, float* %sc_y.i, align 4, !tbaa !0
+  %arraydecay = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 1, i64 0
+  store float 0.000000e+00, float* %arraydecay, align 4, !tbaa !0
+  %arrayidx1.i = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 1, i64 1
+  store float 0.000000e+00, float* %arrayidx1.i, align 4, !tbaa !0
+  %arrayidx2.i = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 1, i64 2
+  store float 0.000000e+00, float* %arrayidx2.i, align 4, !tbaa !0
+  %arraydecay1 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 0
+  %arraydecay2 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 2, i64 0
+  tail call void @calc_box_center([3 x float]* %arraydecay1, float* %arraydecay2) #4
+  %arrayidx4 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 0, i64 0
+  %0 = load float* %arrayidx4, align 4, !tbaa !0
+  %arrayidx7 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 1, i64 1
+  %1 = load float* %arrayidx7, align 4, !tbaa !0
+  %cmp = fcmp ogt float %0, %1
+  %. = select i1 %cmp, float %0, float %1
+  %conv14 = fmul float %., 3.000000e+00
+  store float %conv14, float* %arrayidx2.i, align 4, !tbaa !0
+  %call = tail call i32 @zoom_3d(%struct.t_3dview* %view, float 1.000000e+00) #5
+  %arrayidx18 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 2, i64 3
+  store float 0.000000e+00, float* %arrayidx18, align 4, !tbaa !0
+  %arrayidx20 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 1, i64 3
+  store float 0.000000e+00, float* %arrayidx20, align 4, !tbaa !0
+  br label %for.cond1.preheader.i
+
+for.cond1.preheader.i:                            ; preds = %for.inc11.i, %entry
+  %indvars.iv21.i = phi i64 [ 0, %entry ], [ %indvars.iv.next22.i, %for.inc11.i ]
+  %2 = trunc i64 %indvars.iv21.i to i32
+  br label %for.body3.i
+
+for.body3.i:                                      ; preds = %for.body3.i, %for.cond1.preheader.i
+  %indvars.iv.i = phi i64 [ 0, %for.cond1.preheader.i ], [ %indvars.iv.next.i, %for.body3.i ]
+  %3 = trunc i64 %indvars.iv.i to i32
+  %cmp4.i = icmp eq i32 %2, %3
+  %arrayidx6.i = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 4, i64 %indvars.iv21.i, i64 %indvars.iv.i
+  %..i = select i1 %cmp4.i, float 1.000000e+00, float 0.000000e+00
+  store float %..i, float* %arrayidx6.i, align 4, !tbaa !0
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.inc11.i, label %for.body3.i
+
+for.inc11.i:                                      ; preds = %for.body3.i
+  %indvars.iv.next22.i = add i64 %indvars.iv21.i, 1
+  %lftr.wideiv34 = trunc i64 %indvars.iv.next22.i to i32
+  %exitcond35 = icmp eq i32 %lftr.wideiv34, 4
+  br i1 %exitcond35, label %unity_m4.exit, label %for.cond1.preheader.i
+
+unity_m4.exit:                                    ; preds = %for.inc11.i
+  tail call void @calculate_view(%struct.t_3dview* %view) #5
+  ret void
+}

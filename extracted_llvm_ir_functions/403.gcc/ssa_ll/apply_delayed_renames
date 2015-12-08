@@ -1,0 +1,123 @@
+define internal fastcc void @apply_delayed_renames(%struct.rename_context* nocapture %c) #0 {
+entry:
+  %new_renames = getelementptr inbounds %struct.rename_context* %c, i64 0, i32 0
+  %r.060 = load %struct.rename_set_data** %new_renames, align 8
+  %cmp61 = icmp eq %struct.rename_set_data* %r.060, null
+  br i1 %cmp61, label %if.end34, label %for.body
+
+for.body:                                         ; preds = %entry, %ssa_rename_from_insert.exit
+  %r.062 = phi %struct.rename_set_data* [ %r.0, %ssa_rename_from_insert.exit ], [ %r.060, %entry ]
+  %old_reg = getelementptr inbounds %struct.rename_set_data* %r.062, i64 0, i32 2
+  %0 = load %struct.rtx_def** %old_reg, align 8, !tbaa !0
+  %call = tail call fastcc %struct.rtx_def* @ssa_rename_to_lookup(%struct.rtx_def* %0) #7
+  %prev_reg = getelementptr inbounds %struct.rename_set_data* %r.062, i64 0, i32 4
+  %1 = load %struct.rtx_def** %prev_reg, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct.rtx_def* %call, %1
+  br i1 %cmp1, label %if.end, label %if.then
+
+if.then:                                          ; preds = %for.body
+  tail call void @fancy_abort(i8* getelementptr inbounds ([47 x i8]* @.str1, i64 0, i64 0), i32 782, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.apply_delayed_renames, i64 0, i64 0)) #8
+  unreachable
+
+if.end:                                           ; preds = %for.body
+  %cmp3 = icmp eq %struct.rtx_def* %call, null
+  br i1 %cmp3, label %land.lhs.true, label %if.else
+
+land.lhs.true:                                    ; preds = %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %2 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp5 = icmp ult i32 %2, 53
+  br i1 %cmp5, label %if.else, label %if.then6
+
+if.then6:                                         ; preds = %land.lhs.true
+  %new_reg = getelementptr inbounds %struct.rename_set_data* %r.062, i64 0, i32 3
+  store %struct.rtx_def* %0, %struct.rtx_def** %new_reg, align 8, !tbaa !0
+  %3 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !0
+  store %struct.rtx_def* %3, %struct.rtx_def** %prev_reg, align 8, !tbaa !0
+  br label %if.end12
+
+if.else:                                          ; preds = %land.lhs.true, %if.end
+  %4 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %4, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %call10 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %bf.clear) #6
+  %new_reg11 = getelementptr inbounds %struct.rename_set_data* %r.062, i64 0, i32 3
+  store %struct.rtx_def* %call10, %struct.rtx_def** %new_reg11, align 8, !tbaa !0
+  %arrayidx15.phi.trans.insert = getelementptr inbounds %struct.rtx_def* %call10, i64 0, i32 1, i64 0
+  %rtuint16.phi.trans.insert = bitcast %union.rtunion_def* %arrayidx15.phi.trans.insert to i32*
+  %.pre = load i32* %rtuint16.phi.trans.insert, align 4, !tbaa !3
+  %.pre64 = load %struct.rtx_def** %old_reg, align 8, !tbaa !0
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.else, %if.then6
+  %5 = phi %struct.rtx_def* [ %.pre64, %if.else ], [ %0, %if.then6 ]
+  %6 = phi i32 [ %.pre, %if.else ], [ %2, %if.then6 ]
+  %7 = phi %struct.rtx_def* [ %call10, %if.else ], [ %0, %if.then6 ]
+  tail call fastcc void @ssa_rename_to_insert(%struct.rtx_def* %5, %struct.rtx_def* %7) #7
+  %8 = load %struct.varray_head_tag** @ssa_definition, align 8, !tbaa !0
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %8, i64 0, i32 0
+  %9 = load i64* %num_elements, align 8, !tbaa !4
+  %conv = trunc i64 %9 to i32
+  %cmp19 = icmp slt i32 %6, %conv
+  br i1 %cmp19, label %if.end24, label %if.then21
+
+if.then21:                                        ; preds = %if.end12
+  %mul = mul nsw i32 %6, 5
+  %div = sdiv i32 %mul, 4
+  %conv22 = sext i32 %div to i64
+  %call23 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %8, i64 %conv22) #6
+  store %struct.varray_head_tag* %call23, %struct.varray_head_tag** @ssa_definition, align 8, !tbaa !0
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.end12, %if.then21
+  %10 = phi %struct.varray_head_tag* [ %8, %if.end12 ], [ %call23, %if.then21 ]
+  %set_insn = getelementptr inbounds %struct.rename_set_data* %r.062, i64 0, i32 5
+  %11 = load %struct.rtx_def** %set_insn, align 8, !tbaa !0
+  %idxprom = sext i32 %6 to i64
+  %data = getelementptr inbounds %struct.varray_head_tag* %10, i64 0, i32 4
+  %rtx = bitcast %union.varray_data_tag* %data to [1 x %struct.rtx_def*]*
+  %arrayidx25 = getelementptr inbounds [1 x %struct.rtx_def*]* %rtx, i64 0, i64 %idxprom
+  store %struct.rtx_def* %11, %struct.rtx_def** %arrayidx25, align 8, !tbaa !0
+  %12 = load %struct.rtx_def** %old_reg, align 8, !tbaa !0
+  %call.i = tail call noalias i8* @xmalloc(i64 16) #6
+  %reg1.i = bitcast i8* %call.i to i32*
+  store i32 %6, i32* %reg1.i, align 4, !tbaa !3
+  %original.i = getelementptr inbounds i8* %call.i, i64 8
+  %13 = bitcast i8* %original.i to %struct.rtx_def**
+  store %struct.rtx_def* %12, %struct.rtx_def** %13, align 8, !tbaa !0
+  %14 = load %struct.htab** @ssa_rename_from_ht, align 8, !tbaa !0
+  %call2.i = tail call i8** @htab_find_slot_with_hash(%struct.htab* %14, i8* %call.i, i32 %6, i32 1) #6
+  %15 = load i8** %call2.i, align 8, !tbaa !0
+  %cmp.i = icmp eq i8* %15, null
+  br i1 %cmp.i, label %ssa_rename_from_insert.exit, label %if.then.i
+
+if.then.i:                                        ; preds = %if.end24
+  tail call void @free(i8* %15) #6
+  br label %ssa_rename_from_insert.exit
+
+ssa_rename_from_insert.exit:                      ; preds = %if.end24, %if.then.i
+  store i8* %call.i, i8** %call2.i, align 8, !tbaa !0
+  %next = getelementptr inbounds %struct.rename_set_data* %r.062, i64 0, i32 0
+  %r.0 = load %struct.rename_set_data** %next, align 8
+  %cmp = icmp eq %struct.rename_set_data* %r.0, null
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %ssa_rename_from_insert.exit
+  %cmp27 = icmp eq %struct.rename_set_data* %r.062, null
+  br i1 %cmp27, label %if.end34, label %if.then29
+
+if.then29:                                        ; preds = %for.end
+  %done_renames = getelementptr inbounds %struct.rename_context* %c, i64 0, i32 1
+  %16 = load %struct.rename_set_data** %done_renames, align 8, !tbaa !0
+  %next30 = getelementptr inbounds %struct.rename_set_data* %r.062, i64 0, i32 0
+  store %struct.rename_set_data* %16, %struct.rename_set_data** %next30, align 8, !tbaa !0
+  %17 = load %struct.rename_set_data** %new_renames, align 8, !tbaa !0
+  store %struct.rename_set_data* %17, %struct.rename_set_data** %done_renames, align 8, !tbaa !0
+  store %struct.rename_set_data* null, %struct.rename_set_data** %new_renames, align 8, !tbaa !0
+  br label %if.end34
+
+if.end34:                                         ; preds = %entry, %for.end, %if.then29
+  ret void
+}

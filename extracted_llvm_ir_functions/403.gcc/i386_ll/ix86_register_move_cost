@@ -1,0 +1,138 @@
+define i32 @ix86_register_move_cost(i32 %mode, i32 %class1, i32 %class2) #1 {
+entry:
+  %call = tail call i32 @ix86_secondary_memory_needed(i32 %class1, i32 %class2, i32 %mode, i32 0) #10
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end61, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @reg_classes_intersect_p(i32 %class1, i32 12) #9
+  %tobool2 = icmp eq i32 %call1, 0
+  br i1 %tobool2, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %if.then
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom
+  %0 = load i32* %arrayidx, align 4, !tbaa !9
+  %cmp = icmp eq i32 %0, 5
+  br i1 %cmp, label %cond.end17, label %lor.rhs
+
+lor.rhs:                                          ; preds = %cond.true
+  %cmp5 = icmp eq i32 %0, 6
+  %phitmp = select i1 %cmp5, i32 2, i32 1
+  br label %cond.end17
+
+cond.false:                                       ; preds = %if.then
+  %cmp6 = icmp eq i32 %mode, 18
+  %1 = sext i32 %mode to i64
+  %idxprom10 = select i1 %cmp6, i64 17, i64 %1
+  %arrayidx11 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom10
+  %2 = load i8* %arrayidx11, align 1, !tbaa !1
+  %conv = zext i8 %2 to i32
+  %3 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %3, 23
+  %4 = and i32 %and, 4
+  %5 = add i32 %4, 4
+  %add = add i32 %conv, -1
+  %sub = add i32 %add, %5
+  %div = sdiv i32 %sub, %5
+  br label %cond.end17
+
+cond.end17:                                       ; preds = %cond.true, %lor.rhs, %cond.false
+  %cond18 = phi i32 [ %div, %cond.false ], [ 2, %cond.true ], [ %phitmp, %lor.rhs ]
+  %call19 = tail call i32 @reg_classes_intersect_p(i32 %class2, i32 12) #9
+  %tobool20 = icmp eq i32 %call19, 0
+  br i1 %tobool20, label %cond.true21, label %cond.false33
+
+cond.true21:                                      ; preds = %cond.end17
+  %idxprom22 = sext i32 %mode to i64
+  %arrayidx23 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom22
+  %6 = load i32* %arrayidx23, align 4, !tbaa !9
+  %cmp24 = icmp eq i32 %6, 5
+  br i1 %cmp24, label %cond.end52, label %lor.rhs26
+
+lor.rhs26:                                        ; preds = %cond.true21
+  %cmp29 = icmp eq i32 %6, 6
+  %phitmp103 = select i1 %cmp29, i32 2, i32 1
+  br label %cond.end52
+
+cond.false33:                                     ; preds = %cond.end17
+  %cmp34 = icmp eq i32 %mode, 18
+  %7 = sext i32 %mode to i64
+  %idxprom40 = select i1 %cmp34, i64 17, i64 %7
+  %arrayidx41 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom40
+  %8 = load i8* %arrayidx41, align 1, !tbaa !1
+  %conv42 = zext i8 %8 to i32
+  %9 = load i32* @target_flags, align 4, !tbaa !0
+  %and43 = lshr i32 %9, 23
+  %10 = and i32 %and43, 4
+  %11 = add i32 %10, 4
+  %add46 = add i32 %conv42, -1
+  %sub47 = add i32 %add46, %11
+  %div51 = sdiv i32 %sub47, %11
+  br label %cond.end52
+
+cond.end52:                                       ; preds = %cond.true21, %lor.rhs26, %cond.false33
+  %cond53 = phi i32 [ %div51, %cond.false33 ], [ 2, %cond.true21 ], [ %phitmp103, %lor.rhs26 ]
+  %cmp54 = icmp sgt i32 %cond18, %cond53
+  %. = select i1 %cmp54, i32 20, i32 0
+  %call57 = tail call i32 @ix86_memory_move_cost(i32 %mode, i32 %class1, i32 0) #10
+  %call58 = tail call i32 @ix86_memory_move_cost(i32 %mode, i32 %class2, i32 1) #10
+  %add59 = add nsw i32 %call58, %call57
+  %add60 = add nsw i32 %add59, %.
+  br label %return
+
+if.end61:                                         ; preds = %entry
+  %call62 = tail call i32 @reg_class_subset_p(i32 %class1, i32 17) #9
+  %call63 = tail call i32 @reg_class_subset_p(i32 %class2, i32 17) #9
+  %cmp64 = icmp eq i32 %call62, %call63
+  br i1 %cmp64, label %lor.lhs.false, label %if.then70
+
+lor.lhs.false:                                    ; preds = %if.end61
+  %call66 = tail call i32 @reg_class_subset_p(i32 %class1, i32 16) #9
+  %call67 = tail call i32 @reg_class_subset_p(i32 %class2, i32 16) #9
+  %cmp68 = icmp eq i32 %call66, %call67
+  br i1 %cmp68, label %if.end71, label %if.then70
+
+if.then70:                                        ; preds = %lor.lhs.false, %if.end61
+  %12 = load %struct.processor_costs** @ix86_cost, align 8, !tbaa !4
+  %mmxsse_to_integer = getelementptr inbounds %struct.processor_costs* %12, i64 0, i32 23
+  %13 = load i32* %mmxsse_to_integer, align 4, !tbaa !0
+  br label %return
+
+if.end71:                                         ; preds = %lor.lhs.false
+  %call72 = tail call i32 @reg_classes_intersect_p(i32 %class1, i32 15) #9
+  %tobool73 = icmp eq i32 %call72, 0
+  br i1 %tobool73, label %if.end75, label %if.then74
+
+if.then74:                                        ; preds = %if.end71
+  %14 = load %struct.processor_costs** @ix86_cost, align 8, !tbaa !4
+  %fp_move = getelementptr inbounds %struct.processor_costs* %14, i64 0, i32 14
+  %15 = load i32* %fp_move, align 4, !tbaa !0
+  br label %return
+
+if.end75:                                         ; preds = %if.end71
+  %call76 = tail call i32 @reg_classes_intersect_p(i32 16, i32 %class1) #9
+  %tobool77 = icmp eq i32 %call76, 0
+  br i1 %tobool77, label %if.end79, label %if.then78
+
+if.then78:                                        ; preds = %if.end75
+  %16 = load %struct.processor_costs** @ix86_cost, align 8, !tbaa !4
+  %sse_move = getelementptr inbounds %struct.processor_costs* %16, i64 0, i32 20
+  %17 = load i32* %sse_move, align 4, !tbaa !0
+  br label %return
+
+if.end79:                                         ; preds = %if.end75
+  %call80 = tail call i32 @reg_classes_intersect_p(i32 17, i32 %class1) #9
+  %tobool81 = icmp eq i32 %call80, 0
+  br i1 %tobool81, label %return, label %if.then82
+
+if.then82:                                        ; preds = %if.end79
+  %18 = load %struct.processor_costs** @ix86_cost, align 8, !tbaa !4
+  %mmx_move = getelementptr inbounds %struct.processor_costs* %18, i64 0, i32 17
+  %19 = load i32* %mmx_move, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end79, %if.then82, %if.then78, %if.then74, %if.then70, %cond.end52
+  %retval.0 = phi i32 [ %add60, %cond.end52 ], [ %13, %if.then70 ], [ %15, %if.then74 ], [ %17, %if.then78 ], [ %19, %if.then82 ], [ 2, %if.end79 ]
+  ret i32 %retval.0
+}

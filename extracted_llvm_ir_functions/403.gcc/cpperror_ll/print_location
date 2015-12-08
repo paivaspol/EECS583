@@ -1,0 +1,76 @@
+define internal fastcc void @print_location(%struct.cpp_reader* %pfile, i32 %line, i32 %col) #0 {
+entry:
+  %buffer1 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
+  %0 = load %struct.cpp_buffer** %buffer1, align 8, !tbaa !0
+  %tobool = icmp eq %struct.cpp_buffer* %0, null
+  br i1 %tobool, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %2 = load i8** @progname, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* %2) #6
+  br label %if.end30
+
+if.else:                                          ; preds = %entry
+  %cmp = icmp eq i32 %line, 0
+  br i1 %cmp, label %if.then2, label %if.end
+
+if.then2:                                         ; preds = %if.else
+  %cur_token = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 15
+  %3 = load %struct.cpp_token** %cur_token, align 8, !tbaa !0
+  %line3 = getelementptr inbounds %struct.cpp_token* %3, i64 -1, i32 0
+  %4 = load i32* %line3, align 4, !tbaa !3
+  %col6 = getelementptr inbounds %struct.cpp_token* %3, i64 -1, i32 1
+  %5 = load i16* %col6, align 2, !tbaa !4
+  %conv = zext i16 %5 to i32
+  br label %if.end
+
+if.end:                                           ; preds = %if.then2, %if.else
+  %col.addr.0 = phi i32 [ %conv, %if.then2 ], [ %col, %if.else ]
+  %line.addr.0 = phi i32 [ %4, %if.then2 ], [ %line, %if.else ]
+  %line_maps = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 2
+  %call7 = tail call %struct.line_map* @lookup_line(%struct.line_maps* %line_maps, i32 %line.addr.0) #6
+  tail call void @print_containing_files(%struct.line_maps* %line_maps, %struct.line_map* %call7) #6
+  %to_line = getelementptr inbounds %struct.line_map* %call7, i64 0, i32 1
+  %6 = load i32* %to_line, align 4, !tbaa !3
+  %add = add i32 %6, %line.addr.0
+  %from_line = getelementptr inbounds %struct.line_map* %call7, i64 0, i32 2
+  %7 = load i32* %from_line, align 4, !tbaa !3
+  %sub = sub i32 %add, %7
+  %cmp9 = icmp eq i32 %col.addr.0, 0
+  %.col.addr.0 = select i1 %cmp9, i32 1, i32 %col.addr.0
+  %cmp13 = icmp eq i32 %add, %7
+  br i1 %cmp13, label %if.then15, label %if.else17
+
+if.then15:                                        ; preds = %if.end
+  %8 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %to_file = getelementptr inbounds %struct.line_map* %call7, i64 0, i32 0
+  %9 = load i8** %to_file, align 8, !tbaa !0
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %8, i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i8* %9) #6
+  br label %if.end28
+
+if.else17:                                        ; preds = %if.end
+  %show_column = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 48
+  %10 = load i8* %show_column, align 1, !tbaa !1
+  %cmp19 = icmp eq i8 %10, 0
+  %11 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %to_file22 = getelementptr inbounds %struct.line_map* %call7, i64 0, i32 0
+  %12 = load i8** %to_file22, align 8, !tbaa !0
+  br i1 %cmp19, label %if.then21, label %if.else24
+
+if.then21:                                        ; preds = %if.else17
+  %call23 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %11, i8* getelementptr inbounds ([7 x i8]* @.str6, i64 0, i64 0), i8* %12, i32 %sub) #6
+  br label %if.end28
+
+if.else24:                                        ; preds = %if.else17
+  %call26 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %11, i8* getelementptr inbounds ([10 x i8]* @.str7, i64 0, i64 0), i8* %12, i32 %sub, i32 %.col.addr.0) #6
+  br label %if.end28
+
+if.end28:                                         ; preds = %if.then21, %if.else24, %if.then15
+  %13 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call29 = tail call i32 @fputc(i32 32, %struct._IO_FILE* %13) #6
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.end28, %if.then
+  ret void
+}

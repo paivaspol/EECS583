@@ -1,0 +1,32 @@
+define internal fastcc void @handle_newline(%struct.cpp_reader* nocapture %pfile) #1 {
+entry:
+  %buffer1 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
+  %0 = load %struct.cpp_buffer** %buffer1, align 8, !tbaa !0
+  %cur = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 0
+  %1 = load i8** %cur, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8* %1, i64 -1
+  %2 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = zext i8 %2 to i32
+  %3 = load i8* %1, align 1, !tbaa !1
+  %conv4 = zext i8 %3 to i32
+  %add = add nsw i32 %conv4, %conv
+  %cmp = icmp eq i32 %add, 23
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %incdec.ptr = getelementptr inbounds i8* %1, i64 1
+  store i8* %incdec.ptr, i8** %cur, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %4 = phi i8* [ %incdec.ptr, %if.then ], [ %1, %entry ]
+  %line_base = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 3
+  store i8* %4, i8** %line_base, align 8, !tbaa !0
+  %col_adjust = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 8
+  store i32 0, i32* %col_adjust, align 4, !tbaa !3
+  %line = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 4
+  %5 = load i32* %line, align 4, !tbaa !3
+  %inc = add i32 %5, 1
+  store i32 %inc, i32* %line, align 4, !tbaa !3
+  ret void
+}

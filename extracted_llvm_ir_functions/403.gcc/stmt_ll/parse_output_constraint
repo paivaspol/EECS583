@@ -1,0 +1,266 @@
+define zeroext i1 @parse_output_constraint(i8** nocapture %constraint_p, i32 %operand_num, i32 %ninputs, i32 %noutputs, i8* nocapture %allows_mem, i8* nocapture %allows_reg, i8* %is_inout) #0 {
+entry:
+  %0 = load i8** %constraint_p, align 8, !tbaa !0
+  store i8 0, i8* %allows_mem, align 1, !tbaa !5
+  store i8 0, i8* %allows_reg, align 1, !tbaa !5
+  %call = call i8* @strchr(i8* %0, i32 61) #10
+  %tobool = icmp eq i8* %call, null
+  br i1 %tobool, label %if.end, label %if.end4
+
+if.end:                                           ; preds = %entry
+  %call1 = call i8* @strchr(i8* %0, i32 43) #10
+  %tobool2 = icmp eq i8* %call1, null
+  br i1 %tobool2, label %if.then3, label %if.end4
+
+if.then3:                                         ; preds = %if.end
+  call void (i8*, ...)* @error(i8* getelementptr inbounds ([36 x i8]* @.str1, i64 0, i64 0)) #7
+  br label %return
+
+if.end4:                                          ; preds = %entry, %if.end
+  %p.0248 = phi i8* [ %call1, %if.end ], [ %call, %entry ]
+  %1 = load i8* %p.0248, align 1, !tbaa !1
+  %cmp = icmp eq i8 %1, 43
+  %frombool = zext i1 %cmp to i8
+  store i8 %frombool, i8* %is_inout, align 1, !tbaa !5
+  %cmp6 = icmp ne i8* %p.0248, %0
+  %cmp6.not = xor i1 %cmp6, true
+  %tobool8 = icmp eq i8* %is_inout, null
+  %or.cond = and i1 %tobool8, %cmp6.not
+  br i1 %or.cond, label %for.cond.preheader, label %if.then9
+
+if.then9:                                         ; preds = %if.end4
+  %call10 = call i64 @strlen(i8* %0) #10
+  br i1 %cmp6, label %if.then13, label %if.end15
+
+if.then13:                                        ; preds = %if.then9
+  %2 = load i8* %p.0248, align 1, !tbaa !1
+  %conv14 = sext i8 %2 to i32
+  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([62 x i8]* @.str2, i64 0, i64 0), i32 %conv14, i32 %operand_num) #7
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then13, %if.then9
+  %add = add i64 %call10, 1
+  %3 = alloca i8, i64 %add, align 1
+  %call16 = call i8* @strcpy(i8* %3, i8* %0) #7
+  %4 = load i8* %3, align 1, !tbaa !1
+  %sub.ptr.lhs.cast = ptrtoint i8* %p.0248 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %0 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %arrayidx17 = getelementptr inbounds i8* %3, i64 %sub.ptr.sub
+  store i8 %4, i8* %arrayidx17, align 1, !tbaa !1
+  store i8 61, i8* %3, align 1, !tbaa !1
+  %conv19 = trunc i64 %call10 to i32
+  %call20 = call i8* @ggc_alloc_string(i8* %3, i32 %conv19) #7
+  store i8* %call20, i8** %constraint_p, align 8, !tbaa !0
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.end4, %if.end15
+  %constraint.0.pn.ph = phi i8* [ %call20, %if.end15 ], [ %0, %if.end4 ]
+  %p.1250 = getelementptr inbounds i8* %constraint.0.pn.ph, i64 1
+  %5 = load i8* %p.1250, align 1, !tbaa !1
+  %tobool22251 = icmp eq i8 %5, 0
+  br i1 %tobool22251, label %return, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %add25 = add nsw i32 %operand_num, 1
+  %add26 = add nsw i32 %noutputs, %ninputs
+  %cmp27 = icmp eq i32 %add25, %add26
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %6 = phi i8 [ %5, %for.body.lr.ph ], [ %15, %for.cond.backedge ]
+  %p.1252 = phi i8* [ %p.1250, %for.body.lr.ph ], [ %p.1, %for.cond.backedge ]
+  %conv23 = sext i8 %6 to i32
+  switch i32 %conv23, label %sw.default [
+    i32 43, label %sw.bb
+    i32 61, label %sw.bb
+    i32 37, label %sw.bb24
+    i32 86, label %sw.bb31
+    i32 109, label %sw.bb31
+    i32 111, label %sw.bb31
+    i32 63, label %for.cond.backedge
+    i32 33, label %for.cond.backedge
+    i32 42, label %for.cond.backedge
+    i32 38, label %for.cond.backedge
+    i32 35, label %for.cond.backedge
+    i32 69, label %for.cond.backedge
+    i32 70, label %for.cond.backedge
+    i32 71, label %for.cond.backedge
+    i32 72, label %for.cond.backedge
+    i32 115, label %for.cond.backedge
+    i32 105, label %for.cond.backedge
+    i32 110, label %for.cond.backedge
+    i32 73, label %for.cond.backedge
+    i32 74, label %for.cond.backedge
+    i32 75, label %for.cond.backedge
+    i32 76, label %for.cond.backedge
+    i32 77, label %for.cond.backedge
+    i32 78, label %for.cond.backedge
+    i32 79, label %for.cond.backedge
+    i32 80, label %for.cond.backedge
+    i32 44, label %for.cond.backedge
+    i32 48, label %sw.bb33
+    i32 49, label %sw.bb33
+    i32 50, label %sw.bb33
+    i32 51, label %sw.bb33
+    i32 52, label %sw.bb33
+    i32 53, label %sw.bb33
+    i32 54, label %sw.bb33
+    i32 55, label %sw.bb33
+    i32 56, label %sw.bb33
+    i32 57, label %sw.bb33
+    i32 91, label %sw.bb33
+    i32 60, label %sw.bb34
+    i32 62, label %sw.bb34
+    i32 103, label %sw.bb35
+    i32 88, label %sw.bb35
+    i32 112, label %sw.bb36
+    i32 114, label %sw.bb36
+  ]
+
+sw.bb:                                            ; preds = %for.body, %for.body
+  call void (i8*, ...)* @error(i8* getelementptr inbounds ([62 x i8]* @.str3, i64 0, i64 0)) #7
+  br label %return
+
+sw.bb24:                                          ; preds = %for.body
+  br i1 %cmp27, label %if.then29, label %for.cond.backedge
+
+if.then29:                                        ; preds = %sw.bb24
+  call void (i8*, ...)* @error(i8* getelementptr inbounds ([39 x i8]* @.str4, i64 0, i64 0)) #7
+  br label %return
+
+sw.bb31:                                          ; preds = %for.body, %for.body, %for.body
+  store i8 1, i8* %allows_mem, align 1, !tbaa !5
+  br label %for.cond.backedge
+
+sw.bb33:                                          ; preds = %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body
+  call void (i8*, ...)* @error(i8* getelementptr inbounds ([48 x i8]* @.str5, i64 0, i64 0)) #7
+  br label %return
+
+sw.bb34:                                          ; preds = %for.body, %for.body
+  store i8 1, i8* %allows_mem, align 1, !tbaa !5
+  br label %for.cond.backedge
+
+sw.bb35:                                          ; preds = %for.body, %for.body
+  store i8 1, i8* %allows_reg, align 1, !tbaa !5
+  store i8 1, i8* %allows_mem, align 1, !tbaa !5
+  br label %for.cond.backedge
+
+sw.bb36:                                          ; preds = %for.body, %for.body
+  store i8 1, i8* %allows_reg, align 1, !tbaa !5
+  br label %for.cond.backedge
+
+sw.default:                                       ; preds = %for.body
+  %and = and i32 %conv23, 255
+  %idxprom244 = zext i32 %and to i64
+  %arrayidx38 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom244
+  %7 = load i16* %arrayidx38, align 2, !tbaa !6
+  %and40 = and i16 %7, 136
+  %tobool41 = icmp eq i16 %and40, 0
+  br i1 %tobool41, label %for.cond.backedge, label %if.end43
+
+if.end43:                                         ; preds = %sw.default
+  switch i8 %6, label %cond.false154 [
+    i8 114, label %cond.end188.thread
+    i8 82, label %cond.end188.thread
+    i8 113, label %cond.end188.thread
+    i8 81, label %cond.end188.thread
+    i8 102, label %cond.true67
+    i8 116, label %cond.true77
+    i8 117, label %cond.true89
+    i8 97, label %cond.end188.thread
+    i8 98, label %cond.end188.thread
+    i8 99, label %cond.end188.thread
+    i8 100, label %cond.end188.thread
+    i8 120, label %cond.true121
+    i8 89, label %cond.true130
+    i8 121, label %cond.true139
+    i8 65, label %cond.end188.thread
+    i8 68, label %cond.end188.thread
+  ]
+
+cond.true67:                                      ; preds = %if.end43
+  %8 = load i32* @target_flags, align 4, !tbaa !4
+  %and68 = and i32 %8, 1
+  %tobool69 = icmp eq i32 %and68, 0
+  br i1 %tobool69, label %lor.rhs, label %cond.end188.thread
+
+lor.rhs:                                          ; preds = %cond.true67
+  %and70 = and i32 %8, 32
+  %tobool71 = icmp ne i32 %and70, 0
+  %phitmp246 = select i1 %tobool71, i32 15, i32 0
+  br label %cond.end188
+
+cond.true77:                                      ; preds = %if.end43
+  %9 = load i32* @target_flags, align 4, !tbaa !4
+  %and78 = and i32 %9, 1
+  %tobool79 = icmp eq i32 %and78, 0
+  br i1 %tobool79, label %lor.rhs80, label %cond.end188.thread
+
+lor.rhs80:                                        ; preds = %cond.true77
+  %and81 = and i32 %9, 32
+  %tobool82 = icmp ne i32 %and81, 0
+  %phitmp245 = select i1 %tobool82, i32 13, i32 0
+  br label %cond.end188
+
+cond.true89:                                      ; preds = %if.end43
+  %10 = load i32* @target_flags, align 4, !tbaa !4
+  %and90 = and i32 %10, 1
+  %tobool91 = icmp eq i32 %and90, 0
+  br i1 %tobool91, label %lor.rhs92, label %cond.end188.thread
+
+lor.rhs92:                                        ; preds = %cond.true89
+  %and93 = and i32 %10, 32
+  %tobool94 = icmp ne i32 %and93, 0
+  %phitmp = select i1 %tobool94, i32 14, i32 0
+  br label %cond.end188
+
+cond.true121:                                     ; preds = %if.end43
+  %11 = load i32* @target_flags, align 4, !tbaa !4
+  %and122 = and i32 %11, 327680
+  %cmp123 = icmp ne i32 %and122, 0
+  %cond125 = select i1 %cmp123, i32 16, i32 0
+  br label %cond.end188
+
+cond.true130:                                     ; preds = %if.end43
+  %12 = load i32* @target_flags, align 4, !tbaa !4
+  %and131 = lshr i32 %12, 14
+  %13 = and i32 %and131, 16
+  br label %cond.end188
+
+cond.true139:                                     ; preds = %if.end43
+  %14 = load i32* @target_flags, align 4, !tbaa !4
+  %and140 = and i32 %14, 16384
+  %cmp141 = icmp ne i32 %and140, 0
+  %cond143 = select i1 %cmp141, i32 17, i32 0
+  br label %cond.end188
+
+cond.false154:                                    ; preds = %if.end43
+  %cmp156 = icmp eq i8 %6, 83
+  %cond158 = select i1 %cmp156, i32 5, i32 0
+  br label %cond.end188
+
+cond.end188.thread:                               ; preds = %if.end43, %if.end43, %if.end43, %if.end43, %if.end43, %if.end43, %if.end43, %if.end43, %if.end43, %if.end43, %cond.true67, %cond.true77, %cond.true89
+  store i8 1, i8* %allows_reg, align 1, !tbaa !5
+  br label %for.cond.backedge
+
+cond.end188:                                      ; preds = %lor.rhs92, %lor.rhs80, %lor.rhs, %cond.true121, %cond.true139, %cond.false154, %cond.true130
+  %cond189 = phi i32 [ %cond125, %cond.true121 ], [ %13, %cond.true130 ], [ %cond143, %cond.true139 ], [ %cond158, %cond.false154 ], [ %phitmp246, %lor.rhs ], [ %phitmp245, %lor.rhs80 ], [ %phitmp, %lor.rhs92 ]
+  %cmp190 = icmp eq i32 %cond189, 0
+  store i8 1, i8* %allows_reg, align 1, !tbaa !5
+  br i1 %cmp190, label %if.else, label %for.cond.backedge
+
+for.cond.backedge:                                ; preds = %cond.end188, %sw.default, %sw.bb31, %sw.bb34, %sw.bb35, %sw.bb36, %sw.bb24, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %if.else, %cond.end188.thread
+  %p.1 = getelementptr inbounds i8* %p.1252, i64 1
+  %15 = load i8* %p.1, align 1, !tbaa !1
+  %tobool22 = icmp eq i8 %15, 0
+  br i1 %tobool22, label %return, label %for.body
+
+if.else:                                          ; preds = %cond.end188
+  store i8 1, i8* %allows_mem, align 1, !tbaa !5
+  br label %for.cond.backedge
+
+return:                                           ; preds = %for.cond.preheader, %for.cond.backedge, %sw.bb33, %if.then29, %sw.bb, %if.then3
+  %retval.0 = phi i1 [ false, %sw.bb33 ], [ false, %if.then29 ], [ false, %sw.bb ], [ false, %if.then3 ], [ true, %for.cond.backedge ], [ true, %for.cond.preheader ]
+  ret i1 %retval.0
+}

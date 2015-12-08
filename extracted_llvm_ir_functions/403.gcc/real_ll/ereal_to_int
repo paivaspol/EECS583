@@ -1,0 +1,81 @@
+define void @ereal_to_int(i64* nocapture %low, i64* nocapture %high, %struct.realvaluetype* byval nocapture align 8 %rr) #0 {
+entry:
+  %d = alloca [6 x i16], align 2
+  %df = alloca [6 x i16], align 2
+  %dg = alloca [6 x i16], align 2
+  %dh = alloca [6 x i16], align 2
+  %0 = bitcast [6 x i16]* %d to i8*
+  %1 = bitcast %struct.realvaluetype* %rr to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false)
+  %arraydecay = getelementptr inbounds [6 x i16]* %d, i64 0, i64 0
+  %arrayidx.i = getelementptr inbounds [6 x i16]* %d, i64 0, i64 5
+  %2 = load i16* %arrayidx.i, align 2, !tbaa !0
+  %and.i = and i16 %2, 32767
+  %cmp.i = icmp eq i16 %and.i, 32767
+  br i1 %cmp.i, label %for.body.i, label %if.end
+
+for.body.i:                                       ; preds = %entry, %for.inc.i
+  %i.012.i = phi i32 [ %inc.i, %for.inc.i ], [ 0, %entry ]
+  %x.addr.011.i = phi i16* [ %incdec.ptr.i, %for.inc.i ], [ %arraydecay, %entry ]
+  %3 = load i16* %x.addr.011.i, align 2, !tbaa !0
+  %cmp5.i = icmp eq i16 %3, 0
+  br i1 %cmp5.i, label %for.inc.i, label %if.then
+
+for.inc.i:                                        ; preds = %for.body.i
+  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1
+  %inc.i = add nsw i32 %i.012.i, 1
+  %cmp2.i = icmp slt i32 %inc.i, 5
+  br i1 %cmp2.i, label %for.body.i, label %if.end
+
+if.then:                                          ; preds = %for.body.i
+  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([27 x i8]* @.str, i64 0, i64 0)) #7
+  store i64 -1, i64* %low, align 8, !tbaa !4
+  store i64 -1, i64* %high, align 8, !tbaa !4
+  br label %if.end23
+
+if.end:                                           ; preds = %for.inc.i, %entry
+  %tobool3 = icmp sgt i16 %2, -1
+  br i1 %tobool3, label %if.end6, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %xor.i = xor i16 %2, -32768
+  store i16 %xor.i, i16* %arrayidx.i, align 2, !tbaa !0
+  %arraydecay7.c = getelementptr inbounds [6 x i16]* %df, i64 0, i64 0
+  call fastcc void @eldexp(i16* getelementptr inbounds ([6 x i16]* @eone, i64 0, i64 0), i32 64, i16* %arraydecay7.c) #6
+  %arraydecay10.c = getelementptr inbounds [6 x i16]* %dg, i64 0, i64 0
+  call fastcc void @ediv(i16* %arraydecay7.c, i16* %arraydecay, i16* %arraydecay10.c) #6
+  %arraydecay12.c = getelementptr inbounds [6 x i16]* %dh, i64 0, i64 0
+  call fastcc void @euifrac(i16* %arraydecay10.c, i64* %high, i16* %arraydecay12.c) #6
+  call fastcc void @emul(i16* %arraydecay7.c, i16* %arraydecay12.c, i16* %arraydecay10.c) #6
+  call fastcc void @euifrac(i16* %arraydecay10.c, i64* %low, i16* %arraydecay12.c) #6
+  %4 = load i64* %high, align 8, !tbaa !4
+  %neg = xor i64 %4, -1
+  store i64 %neg, i64* %high, align 8, !tbaa !4
+  %5 = load i64* %low, align 8, !tbaa !4
+  %tobool20 = icmp eq i64 %5, 0
+  br i1 %tobool20, label %if.else, label %if.then21
+
+if.end6:                                          ; preds = %if.end
+  %arraydecay7 = getelementptr inbounds [6 x i16]* %df, i64 0, i64 0
+  call fastcc void @eldexp(i16* getelementptr inbounds ([6 x i16]* @eone, i64 0, i64 0), i32 64, i16* %arraydecay7) #6
+  %arraydecay10 = getelementptr inbounds [6 x i16]* %dg, i64 0, i64 0
+  call fastcc void @ediv(i16* %arraydecay7, i16* %arraydecay, i16* %arraydecay10) #6
+  %arraydecay12 = getelementptr inbounds [6 x i16]* %dh, i64 0, i64 0
+  call fastcc void @euifrac(i16* %arraydecay10, i64* %high, i16* %arraydecay12) #6
+  call fastcc void @emul(i16* %arraydecay7, i16* %arraydecay12, i16* %arraydecay10) #6
+  call fastcc void @euifrac(i16* %arraydecay10, i64* %low, i16* %arraydecay12) #6
+  br label %if.end23
+
+if.then21:                                        ; preds = %if.then4
+  %sub = sub nsw i64 0, %5
+  store i64 %sub, i64* %low, align 8, !tbaa !4
+  br label %if.end23
+
+if.else:                                          ; preds = %if.then4
+  %add = sub i64 0, %4
+  store i64 %add, i64* %high, align 8, !tbaa !4
+  br label %if.end23
+
+if.end23:                                         ; preds = %if.end6, %if.then21, %if.else, %if.then
+  ret void
+}

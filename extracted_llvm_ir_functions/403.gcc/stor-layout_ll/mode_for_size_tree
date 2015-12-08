@@ -1,0 +1,26 @@
+define i32 @mode_for_size_tree(%union.tree_node* %size, i32 %class, i32 %limit) #0 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %size, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 25
+  br i1 %cmp, label %lor.lhs.false, label %return
+
+lor.lhs.false:                                    ; preds = %entry
+  %call = tail call i32 @compare_tree_int(%union.tree_node* %size, i64 1000) #7
+  %cmp1 = icmp sgt i32 %call, 0
+  br i1 %cmp1, label %return, label %if.else
+
+if.else:                                          ; preds = %lor.lhs.false
+  %int_cst2 = getelementptr inbounds %union.tree_node* %size, i64 0, i32 0, i32 2
+  %low = bitcast i32* %int_cst2 to i64*
+  %1 = load i64* %low, align 8, !tbaa !6
+  %conv = trunc i64 %1 to i32
+  %call3 = tail call i32 @mode_for_size(i32 %conv, i32 %class, i32 %limit) #9
+  br label %return
+
+return:                                           ; preds = %lor.lhs.false, %entry, %if.else
+  %retval.0 = phi i32 [ %call3, %if.else ], [ 51, %entry ], [ 51, %lor.lhs.false ]
+  ret i32 %retval.0
+}

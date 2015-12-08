@@ -1,0 +1,18 @@
+define void @lmclass_set_dump(%struct.lmclass_set_s* nocapture %set, %struct._IO_FILE* nocapture %fp) #0 {
+entry:
+  %lmclass_list = getelementptr inbounds %struct.lmclass_set_s* %set, i64 0, i32 0
+  %cl.03 = load %struct.lmclass_s** %lmclass_list, align 8
+  %tobool4 = icmp eq %struct.lmclass_s* %cl.03, null
+  br i1 %tobool4, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %cl.05 = phi %struct.lmclass_s* [ %cl.0, %for.body ], [ %cl.03, %entry ]
+  tail call void @lmclass_dump(%struct.lmclass_s* %cl.05, %struct._IO_FILE* %fp) #7
+  %next = getelementptr inbounds %struct.lmclass_s* %cl.05, i64 0, i32 2
+  %cl.0 = load %struct.lmclass_s** %next, align 8
+  %tobool = icmp eq %struct.lmclass_s* %cl.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

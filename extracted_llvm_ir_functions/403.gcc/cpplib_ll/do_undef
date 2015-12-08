@@ -1,0 +1,50 @@
+define internal void @do_undef(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %call = tail call fastcc %struct.cpp_hashnode* @lex_macro_node(%struct.cpp_reader* %pfile) #9
+  %tobool = icmp eq %struct.cpp_hashnode* %call, null
+  br i1 %tobool, label %if.end8, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %type = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 4
+  %0 = bitcast i8* %type to i16*
+  %bf.load = load i16* %0, align 4
+  %1 = trunc i16 %bf.load to i8
+  %cmp = icmp eq i8 %1, 1
+  br i1 %cmp, label %if.then, label %if.end8
+
+if.then:                                          ; preds = %land.lhs.true
+  %2 = lshr i16 %bf.load, 8
+  %3 = trunc i16 %2 to i8
+  %undef = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 35, i32 4
+  %4 = load void (%struct.cpp_reader*, i32, %struct.cpp_hashnode*)** %undef, align 8, !tbaa !3
+  %tobool1 = icmp eq void (%struct.cpp_reader*, i32, %struct.cpp_hashnode*)* %4, null
+  br i1 %tobool1, label %if.end, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %directive_line = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 5
+  %5 = load i32* %directive_line, align 4, !tbaa !2
+  tail call void %4(%struct.cpp_reader* %pfile, i32 %5, %struct.cpp_hashnode* %call) #8
+  %flags.phi.trans.insert = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 5
+  %.pre = load i8* %flags.phi.trans.insert, align 1, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then2
+  %6 = phi i8 [ %.pre, %if.then2 ], [ %3, %if.then ]
+  %and = and i8 %6, 16
+  %tobool5 = icmp eq i8 %and, 0
+  br i1 %tobool5, label %if.end7, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  %str = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 0, i32 1
+  %7 = load i8** %str, align 8, !tbaa !3
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([16 x i8]* @.str67, i64 0, i64 0), i8* %7) #8
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end, %if.then6
+  tail call void @_cpp_free_definition(%struct.cpp_hashnode* %call) #8
+  br label %if.end8
+
+if.end8:                                          ; preds = %entry, %if.end7, %land.lhs.true
+  tail call fastcc void @check_eol(%struct.cpp_reader* %pfile) #9
+  ret void
+}

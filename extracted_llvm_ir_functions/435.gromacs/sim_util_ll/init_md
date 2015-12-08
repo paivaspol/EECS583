@@ -1,0 +1,223 @@
+define void @init_md(%struct.t_commrec* %cr, %struct.t_inputrec* %ir, [3 x float]* nocapture %box, float* nocapture %t, float* nocapture %t0, float* nocapture %lambda, float* nocapture %lam0, float* nocapture %SAfactor, %struct.t_nrnb* %mynrnb, i32* nocapture %bTYZ, %struct.t_topology* %top, i32 %nfile, %struct.t_filenm* %fnm, i8** nocapture %traj, i8** nocapture %xtc_traj, i32* nocapture %fp_ene, %struct._IO_FILE** nocapture %fp_dgdl, %struct.t_mdebin** nocapture %mdebin, %struct.t_groups* %grps, [3 x float]* nocapture %force_vir, [3 x float]* nocapture %pme_vir, [3 x float]* nocapture %shake_vir, %struct.t_mdatoms* %mdatoms, float* nocapture %mu_tot, i32* nocapture %bNEMD, %struct.t_vcm** nocapture %vcm, %struct.t_nsborder* nocapture %nsb) #0 {
+entry:
+  %init_t = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 14
+  %0 = load float* %init_t, align 4, !tbaa !3
+  store float %0, float* %t0, align 4, !tbaa !3
+  store float %0, float* %t, align 4, !tbaa !3
+  %efep = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 46
+  %1 = load i32* %efep, align 4, !tbaa !0
+  %cmp = icmp eq i32 %1, 0
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %init_lambda = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 47
+  %2 = load float* %init_lambda, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %storemerge127 = phi float [ %2, %if.then ], [ 0.000000e+00, %entry ]
+  store float %storemerge127, float* %lam0, align 4, !tbaa !3
+  store float %storemerge127, float* %lambda, align 4, !tbaa !3
+  %bSimAnn = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 33
+  %3 = load i32* %bSimAnn, align 4, !tbaa !0
+  %tobool = icmp eq i32 %3, 0
+  br i1 %tobool, label %if.else7, label %if.then1
+
+if.then1:                                         ; preds = %if.end
+  %4 = load float* %t0, align 4, !tbaa !3
+  %zero_temp_time = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 34
+  %5 = load float* %zero_temp_time, align 4, !tbaa !3
+  %div = fdiv float %4, %5
+  %conv2 = fsub float 1.000000e+00, %div
+  store float %conv2, float* %SAfactor, align 4, !tbaa !3
+  %cmp3 = fcmp olt float %conv2, 0.000000e+00
+  br i1 %cmp3, label %if.then5, label %if.end8
+
+if.then5:                                         ; preds = %if.then1
+  store float 0.000000e+00, float* %SAfactor, align 4, !tbaa !3
+  br label %if.end8
+
+if.else7:                                         ; preds = %if.end
+  store float 1.000000e+00, float* %SAfactor, align 4, !tbaa !3
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.then1, %if.then5, %if.else7
+  tail call void @init_nrnb(%struct.t_nrnb* %mynrnb) #6
+  store i32 0, i32* %bTYZ, align 4, !tbaa !0
+  %rcoulomb.i = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 38
+  %6 = load float* %rcoulomb.i, align 4, !tbaa !3
+  %rlist.i = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 35
+  %7 = load float* %rlist.i, align 4, !tbaa !3
+  %cmp.i = fcmp ogt float %6, %7
+  br i1 %cmp.i, label %set_pot_bools.exit, label %lor.rhs.i
+
+lor.rhs.i:                                        ; preds = %if.end8
+  %coulombtype.i = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 36
+  %8 = load i32* %coulombtype.i, align 4, !tbaa !0
+  %switch.tableidx.i = add i32 %8, -3
+  %9 = icmp ult i32 %switch.tableidx.i, 4
+  br label %set_pot_bools.exit
+
+set_pot_bools.exit:                               ; preds = %if.end8, %lor.rhs.i
+  %10 = phi i1 [ true, %if.end8 ], [ %9, %lor.rhs.i ]
+  %lor.ext.i = zext i1 %10 to i32
+  %rvdw.i = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 41
+  %11 = load float* %rvdw.i, align 4, !tbaa !3
+  %cmp12.i = fcmp ogt float %11, %7
+  %conv.i = zext i1 %cmp12.i to i32
+  %functype.i = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 3
+  %12 = load i32** %functype.i, align 8, !tbaa !5
+  %13 = load i32* %12, align 4, !tbaa !0
+  %cmp13.i = icmp eq i32 %13, 14
+  %conv14.i = zext i1 %cmp13.i to i32
+  %nr.i = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 5, i64 11, i32 0
+  %14 = load i32* %nr.i, align 4, !tbaa !0
+  %cmp17.i = icmp sgt i32 %14, 0
+  %conv18.i = zext i1 %cmp17.i to i32
+  %cmp9 = icmp eq i32 %nfile, -1
+  br i1 %cmp9, label %if.end60, label %if.then11
+
+if.then11:                                        ; preds = %set_pot_bools.exit
+  %call = tail call i8* @ftp2fn(i32 3, i32 %nfile, %struct.t_filenm* %fnm) #6
+  store i8* %call, i8** %traj, align 8, !tbaa !5
+  %call12 = tail call i8* @ftp2fn(i32 6, i32 %nfile, %struct.t_filenm* %fnm) #6
+  store i8* %call12, i8** %xtc_traj, align 8, !tbaa !5
+  store i32 -1, i32* %fp_ene, align 4, !tbaa !0
+  %atoms = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 2
+  %idef = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1
+  %15 = load i32* %efep, align 4, !tbaa !0
+  %cmp14 = icmp ne i32 %15, 0
+  %conv15 = zext i1 %cmp14 to i32
+  %epc = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 28
+  %16 = load i32* %epc, align 4, !tbaa !0
+  %eDispCorr = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 43
+  %17 = load i32* %eDispCorr, align 4, !tbaa !0
+  %arrayidx16 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 32, i64 1, i64 0
+  %18 = load float* %arrayidx16, align 4, !tbaa !3
+  %fabsf = tail call float @fabsf(float %18) #8
+  %19 = fpext float %fabsf to double
+  %cmp19 = fcmp ogt double %19, 1.200000e-38
+  br i1 %cmp19, label %lor.end56, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.then11
+  %arrayidx23 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 32, i64 2, i64 0
+  %20 = load float* %arrayidx23, align 4, !tbaa !3
+  %fabsf122 = tail call float @fabsf(float %20) #8
+  %21 = fpext float %fabsf122 to double
+  %cmp26 = fcmp ogt double %21, 1.200000e-38
+  br i1 %cmp26, label %lor.end56, label %lor.lhs.false28
+
+lor.lhs.false28:                                  ; preds = %lor.lhs.false
+  %arrayidx31 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 32, i64 2, i64 1
+  %22 = load float* %arrayidx31, align 4, !tbaa !3
+  %fabsf123 = tail call float @fabsf(float %22) #8
+  %23 = fpext float %fabsf123 to double
+  %cmp34 = fcmp ogt double %23, 1.200000e-38
+  br i1 %cmp34, label %lor.end56, label %lor.rhs
+
+lor.rhs:                                          ; preds = %lor.lhs.false28
+  %arrayidx37 = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
+  %24 = load float* %arrayidx37, align 4, !tbaa !3
+  %fabsf124 = tail call float @fabsf(float %24) #8
+  %25 = fpext float %fabsf124 to double
+  %cmp40 = fcmp ogt double %25, 1.200000e-38
+  br i1 %cmp40, label %lor.end56, label %lor.lhs.false42
+
+lor.lhs.false42:                                  ; preds = %lor.rhs
+  %arrayidx44 = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
+  %26 = load float* %arrayidx44, align 4, !tbaa !3
+  %fabsf125 = tail call float @fabsf(float %26) #8
+  %27 = fpext float %fabsf125 to double
+  %cmp47 = fcmp ogt double %27, 1.200000e-38
+  br i1 %cmp47, label %lor.end56, label %lor.rhs49
+
+lor.rhs49:                                        ; preds = %lor.lhs.false42
+  %arrayidx51 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
+  %28 = load float* %arrayidx51, align 4, !tbaa !3
+  %fabsf126 = tail call float @fabsf(float %28) #8
+  %29 = fpext float %fabsf126 to double
+  %cmp54 = fcmp ogt double %29, 1.200000e-38
+  br label %lor.end56
+
+lor.end56:                                        ; preds = %lor.rhs, %lor.lhs.false42, %lor.rhs49, %lor.lhs.false28, %lor.lhs.false, %if.then11
+  %30 = phi i1 [ true, %lor.lhs.false28 ], [ true, %lor.lhs.false ], [ true, %if.then11 ], [ true, %lor.lhs.false42 ], [ true, %lor.rhs ], [ %cmp54, %lor.rhs49 ]
+  %lor.ext = zext i1 %30 to i32
+  %etc = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 27
+  %31 = load i32* %etc, align 4, !tbaa !0
+  %cmp57 = icmp eq i32 %31, 2
+  %conv58 = zext i1 %cmp57 to i32
+  %call59 = tail call %struct.t_mdebin* @init_mdebin(i32 -1, %struct.t_groups* %grps, %struct.t_atoms* %atoms, %struct.t_idef* %idef, i32 %lor.ext.i, i32 %conv.i, i32 %conv14.i, i32 %conv18.i, i32 %conv15, i32 %16, i32 %17, i32 %lor.ext, i32 %conv58, %struct.t_commrec* %cr) #6
+  store %struct.t_mdebin* %call59, %struct.t_mdebin** %mdebin, align 8, !tbaa !5
+  br label %if.end60
+
+if.end60:                                         ; preds = %set_pot_bools.exit, %lor.end56
+  %32 = bitcast [3 x float]* %force_vir to i8*
+  tail call void @llvm.memset.p0i8.i64(i8* %32, i8 0, i64 36, i32 4, i1 false) #1
+  %33 = bitcast [3 x float]* %pme_vir to i8*
+  tail call void @llvm.memset.p0i8.i64(i8* %33, i8 0, i64 36, i32 4, i1 false) #1
+  %34 = bitcast [3 x float]* %shake_vir to i8*
+  tail call void @llvm.memset.p0i8.i64(i8* %34, i8 0, i64 36, i32 4, i1 false) #1
+  store float 0.000000e+00, float* %mu_tot, align 4, !tbaa !3
+  %arrayidx1.i = getelementptr inbounds float* %mu_tot, i64 1
+  store float 0.000000e+00, float* %arrayidx1.i, align 4, !tbaa !3
+  %arrayidx2.i128 = getelementptr inbounds float* %mu_tot, i64 2
+  store float 0.000000e+00, float* %arrayidx2.i128, align 4, !tbaa !3
+  %35 = load float* %lambda, align 4, !tbaa !3
+  tail call void @init_mdatoms(%struct.t_mdatoms* %mdatoms, float %35, i32 1) #6
+  %36 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !5
+  %nodeid = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 0
+  %37 = load i32* %nodeid, align 4, !tbaa !0
+  %idxprom = sext i32 %37 to i64
+  %arrayidx61 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %idxprom
+  %38 = load i32* %arrayidx61, align 4, !tbaa !0
+  %arrayidx64 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom
+  %39 = load i32* %arrayidx64, align 4, !tbaa !0
+  %nstcomm = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 7
+  %40 = load i32* %nstcomm, align 4, !tbaa !0
+  %call65 = tail call %struct.t_vcm* @init_vcm(%struct._IO_FILE* %36, %struct.t_topology* %top, %struct.t_commrec* %cr, %struct.t_mdatoms* %mdatoms, i32 %38, i32 %39, i32 %40) #6
+  store %struct.t_vcm* %call65, %struct.t_vcm** %vcm, align 8, !tbaa !5
+  %ngacc = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 80, i32 1
+  %41 = load i32* %ngacc, align 4, !tbaa !0
+  %cmp66 = icmp sgt i32 %41, 1
+  br i1 %cmp66, label %lor.end74, label %lor.rhs68
+
+lor.rhs68:                                        ; preds = %if.end60
+  %acc = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 80, i32 7
+  %42 = load [3 x float]** %acc, align 8, !tbaa !5
+  %arraydecay = getelementptr inbounds [3 x float]* %42, i64 0, i64 0
+  %43 = load float* %arraydecay, align 4, !tbaa !3
+  %mul.i = fmul float %43, %43
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %42, i64 0, i64 1
+  %44 = load float* %arrayidx2.i, align 4, !tbaa !3
+  %mul4.i = fmul float %44, %44
+  %add.i = fadd float %mul.i, %mul4.i
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %42, i64 0, i64 2
+  %45 = load float* %arrayidx5.i, align 4, !tbaa !3
+  %mul7.i = fmul float %45, %45
+  %add8.i = fadd float %add.i, %mul7.i
+  %conv9.i = tail call float @sqrtf(float %add8.i) #2
+  %cmp72 = fcmp ogt float %conv9.i, 0.000000e+00
+  br label %lor.end74
+
+lor.end74:                                        ; preds = %lor.rhs68, %if.end60
+  %46 = phi i1 [ true, %if.end60 ], [ %cmp72, %lor.rhs68 ]
+  %lor.ext75 = zext i1 %46 to i32
+  store i32 %lor.ext75, i32* %bNEMD, align 4, !tbaa !0
+  %eI = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 0
+  %47 = load i32* %eI, align 4, !tbaa !0
+  %cmp76 = icmp eq i32 %47, 4
+  br i1 %cmp76, label %if.then78, label %if.end81
+
+if.then78:                                        ; preds = %lor.end74
+  %ngtc = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 80, i32 0
+  %48 = load i32* %ngtc, align 4, !tbaa !0
+  %tau_t = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 80, i32 6
+  %49 = load float** %tau_t, align 8, !tbaa !5
+  %delta_t = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 15
+  %50 = load float* %delta_t, align 4, !tbaa !3
+  tail call void @init_sd_consts(i32 %48, float* %49, float %50) #6
+  br label %if.end81
+
+if.end81:                                         ; preds = %if.then78, %lor.end74
+  ret void
+}

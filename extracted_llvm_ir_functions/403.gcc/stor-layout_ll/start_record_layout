@@ -1,0 +1,37 @@
+define noalias %struct.record_layout_info_s* @start_record_layout(%union.tree_node* %t) #0 {
+entry:
+  %call = tail call noalias i8* @xmalloc(i64 72) #7
+  %0 = bitcast i8* %call to %struct.record_layout_info_s*
+  %t1 = bitcast i8* %call to %union.tree_node**
+  store %union.tree_node* %t, %union.tree_node** %t1, align 8, !tbaa !0
+  %align = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 7
+  %1 = bitcast %union.tree_node** %align to i32*
+  %2 = load i32* %1, align 4, !tbaa !3
+  %cmp = icmp ult i32 %2, 8
+  %. = select i1 %cmp, i32 8, i32 %2
+  %record_align = getelementptr inbounds i8* %call, i64 32
+  %3 = bitcast i8* %record_align to i32*
+  store i32 %., i32* %3, align 4, !tbaa !3
+  %unpadded_align = getelementptr inbounds i8* %call, i64 40
+  %4 = bitcast i8* %unpadded_align to i32*
+  store i32 %., i32* %4, align 4, !tbaa !3
+  %unpacked_align = getelementptr inbounds i8* %call, i64 36
+  %5 = bitcast i8* %unpacked_align to i32*
+  store i32 %., i32* %5, align 4, !tbaa !3
+  %cmp6 = icmp ugt i32 %., 128
+  %cond11 = select i1 %cmp6, i32 %., i32 128
+  %offset_align = getelementptr inbounds i8* %call, i64 16
+  %6 = bitcast i8* %offset_align to i32*
+  store i32 %cond11, i32* %6, align 4, !tbaa !3
+  %7 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 15), align 8, !tbaa !0
+  %offset = getelementptr inbounds i8* %call, i64 8
+  %8 = bitcast i8* %offset to %union.tree_node**
+  store %union.tree_node* %7, %union.tree_node** %8, align 8, !tbaa !0
+  %9 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 17), align 8, !tbaa !0
+  %bitpos = getelementptr inbounds i8* %call, i64 24
+  %10 = bitcast i8* %bitpos to %union.tree_node**
+  store %union.tree_node* %9, %union.tree_node** %10, align 8, !tbaa !0
+  %prev_field = getelementptr inbounds i8* %call, i64 48
+  call void @llvm.memset.p0i8.i64(i8* %prev_field, i8 0, i64 20, i32 8, i1 false)
+  ret %struct.record_layout_info_s* %0
+}

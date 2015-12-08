@@ -1,0 +1,47 @@
+define void @cleanup_barriers() #0 {
+entry:
+  %call = tail call %struct.rtx_def* @get_insns() #7
+  %tobool22 = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool22, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.cond.backedge
+  %insn.023 = phi %struct.rtx_def* [ %0, %for.cond.backedge ], [ %call, %entry ]
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.023, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %1 = bitcast %struct.rtx_def* %insn.023 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 35
+  br i1 %cmp, label %if.then, label %for.cond.backedge
+
+if.then:                                          ; preds = %for.body
+  %call1 = tail call %struct.rtx_def* @prev_nonnote_insn(%struct.rtx_def* %insn.023) #7
+  %2 = bitcast %struct.rtx_def* %call1 to i32*
+  %bf.load2 = load i32* %2, align 8
+  %bf.clear3 = and i32 %bf.load2, 65535
+  %cmp4 = icmp eq i32 %bf.clear3, 35
+  br i1 %cmp4, label %if.then5, label %if.else
+
+if.then5:                                         ; preds = %if.then
+  tail call void @delete_barrier(%struct.rtx_def* %insn.023) #8
+  br label %for.cond.backedge
+
+if.else:                                          ; preds = %if.then
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %insn.023, i64 0, i32 1, i64 1
+  %rtx8 = bitcast %union.rtunion_def* %arrayidx7 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx8, align 8, !tbaa !3
+  %cmp9 = icmp eq %struct.rtx_def* %call1, %3
+  br i1 %cmp9, label %for.cond.backedge, label %if.then10
+
+for.cond.backedge:                                ; preds = %if.else, %for.body, %if.then10, %if.then5
+  %tobool = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+if.then10:                                        ; preds = %if.else
+  tail call void @reorder_insns(%struct.rtx_def* %insn.023, %struct.rtx_def* %insn.023, %struct.rtx_def* %call1) #7
+  br label %for.cond.backedge
+
+for.end:                                          ; preds = %for.cond.backedge, %entry
+  ret void
+}

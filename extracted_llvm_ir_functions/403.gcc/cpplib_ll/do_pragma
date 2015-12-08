@@ -1,0 +1,113 @@
+define internal void @do_pragma(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %prevent_expansion = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 7
+  %0 = load i8* %prevent_expansion, align 1, !tbaa !0
+  %inc = add i8 %0, 1
+  store i8 %inc, i8* %prevent_expansion, align 1, !tbaa !0
+  %call = tail call %struct.cpp_token* @cpp_get_token(%struct.cpp_reader* %pfile) #8
+  %type = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2
+  %bf.load = load i8* %type, align 2
+  %cmp = icmp eq i8 %bf.load, 56
+  br i1 %cmp, label %if.then, label %if.end14
+
+if.then:                                          ; preds = %entry
+  %pragmas = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 34
+  %1 = load %struct.pragma_entry** %pragmas, align 8, !tbaa !3
+  %val = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4
+  %node = bitcast %union.anon.0* %val to %struct.cpp_hashnode**
+  %2 = load %struct.cpp_hashnode** %node, align 8, !tbaa !3
+  %tobool4.i = icmp eq %struct.pragma_entry* %1, null
+  br i1 %tobool4.i, label %if.end14, label %land.rhs.i
+
+land.rhs.i:                                       ; preds = %if.then, %while.body.i
+  %chain.addr.05.i = phi %struct.pragma_entry* [ %4, %while.body.i ], [ %1, %if.then ]
+  %pragma1.i = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i, i64 0, i32 1
+  %3 = load %struct.cpp_hashnode** %pragma1.i, align 8, !tbaa !3
+  %cmp.i = icmp eq %struct.cpp_hashnode* %3, %2
+  br i1 %cmp.i, label %land.lhs.true, label %while.body.i
+
+while.body.i:                                     ; preds = %land.rhs.i
+  %next.i = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i, i64 0, i32 0
+  %4 = load %struct.pragma_entry** %next.i, align 8, !tbaa !3
+  %tobool.i = icmp eq %struct.pragma_entry* %4, null
+  br i1 %tobool.i, label %if.end14, label %land.rhs.i
+
+land.lhs.true:                                    ; preds = %land.rhs.i
+  %is_nspace = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i, i64 0, i32 2
+  %5 = load i32* %is_nspace, align 4, !tbaa !2
+  %tobool2 = icmp eq i32 %5, 0
+  br i1 %tobool2, label %if.end14, label %if.then3
+
+if.then3:                                         ; preds = %land.lhs.true
+  %call4 = tail call %struct.cpp_token* @cpp_get_token(%struct.cpp_reader* %pfile) #8
+  %type5 = getelementptr inbounds %struct.cpp_token* %call4, i64 0, i32 2
+  %bf.load6 = load i8* %type5, align 2
+  %cmp8 = icmp eq i8 %bf.load6, 56
+  br i1 %cmp8, label %if.then9, label %if.end14
+
+if.then9:                                         ; preds = %if.then3
+  %u = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i, i64 0, i32 3
+  %space = bitcast %union.anon.1* %u to %struct.pragma_entry**
+  %6 = load %struct.pragma_entry** %space, align 8, !tbaa !3
+  %val10 = getelementptr inbounds %struct.cpp_token* %call4, i64 0, i32 4
+  %node11 = bitcast %union.anon.0* %val10 to %struct.cpp_hashnode**
+  %7 = load %struct.cpp_hashnode** %node11, align 8, !tbaa !3
+  %tobool4.i54 = icmp eq %struct.pragma_entry* %6, null
+  br i1 %tobool4.i54, label %if.end14, label %land.rhs.i58
+
+land.rhs.i58:                                     ; preds = %if.then9, %while.body.i61
+  %chain.addr.05.i55 = phi %struct.pragma_entry* [ %9, %while.body.i61 ], [ %6, %if.then9 ]
+  %pragma1.i56 = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i55, i64 0, i32 1
+  %8 = load %struct.cpp_hashnode** %pragma1.i56, align 8, !tbaa !3
+  %cmp.i57 = icmp eq %struct.cpp_hashnode* %8, %7
+  br i1 %cmp.i57, label %if.end14, label %while.body.i61
+
+while.body.i61:                                   ; preds = %land.rhs.i58
+  %next.i59 = getelementptr inbounds %struct.pragma_entry* %chain.addr.05.i55, i64 0, i32 0
+  %9 = load %struct.pragma_entry** %next.i59, align 8, !tbaa !3
+  %tobool.i60 = icmp eq %struct.pragma_entry* %9, null
+  br i1 %tobool.i60, label %if.end14, label %land.rhs.i58
+
+if.end14:                                         ; preds = %while.body.i, %while.body.i61, %land.rhs.i58, %if.then, %if.then9, %if.then3, %land.lhs.true, %entry
+  %p.0 = phi %struct.pragma_entry* [ %chain.addr.05.i, %land.lhs.true ], [ null, %entry ], [ null, %if.then3 ], [ null, %if.then9 ], [ null, %if.then ], [ null, %while.body.i61 ], [ %chain.addr.05.i55, %land.rhs.i58 ], [ null, %while.body.i ]
+  %token.0 = phi %struct.cpp_token* [ %call, %land.lhs.true ], [ %call, %entry ], [ %call4, %if.then3 ], [ %call4, %if.then9 ], [ %call, %if.then ], [ %call4, %while.body.i61 ], [ %call4, %land.rhs.i58 ], [ %call, %while.body.i ]
+  %count.0 = phi i32 [ 1, %land.lhs.true ], [ 1, %entry ], [ 2, %if.then3 ], [ 2, %if.then9 ], [ 1, %if.then ], [ 2, %while.body.i61 ], [ 2, %land.rhs.i58 ], [ 1, %while.body.i ]
+  %line_change = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 35, i32 0
+  %10 = load void (%struct.cpp_reader*, %struct.cpp_token*, i32)** %line_change, align 8, !tbaa !3
+  %tobool15 = icmp eq void (%struct.cpp_reader*, %struct.cpp_token*, i32)* %10, null
+  br i1 %tobool15, label %if.end19, label %if.then16
+
+if.then16:                                        ; preds = %if.end14
+  tail call void %10(%struct.cpp_reader* %pfile, %struct.cpp_token* %token.0, i32 1) #8
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.end14, %if.then16
+  %tobool20 = icmp eq %struct.pragma_entry* %p.0, null
+  br i1 %tobool20, label %if.else23, label %if.then21
+
+if.then21:                                        ; preds = %if.end19
+  %handler = getelementptr inbounds %struct.pragma_entry* %p.0, i64 0, i32 3, i32 0
+  %11 = load void (%struct.cpp_reader*)** %handler, align 8, !tbaa !3
+  tail call void %11(%struct.cpp_reader* %pfile) #8
+  br label %if.end30
+
+if.else23:                                        ; preds = %if.end19
+  %def_pragma = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 35, i32 6
+  %12 = load void (%struct.cpp_reader*, i32)** %def_pragma, align 8, !tbaa !3
+  %tobool25 = icmp eq void (%struct.cpp_reader*, i32)* %12, null
+  br i1 %tobool25, label %if.end30, label %if.then26
+
+if.then26:                                        ; preds = %if.else23
+  tail call void @_cpp_backup_tokens(%struct.cpp_reader* %pfile, i32 %count.0) #8
+  %13 = load void (%struct.cpp_reader*, i32)** %def_pragma, align 8, !tbaa !3
+  %directive_line = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 5
+  %14 = load i32* %directive_line, align 4, !tbaa !2
+  tail call void %13(%struct.cpp_reader* %pfile, i32 %14) #8
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.else23, %if.then26, %if.then21
+  %15 = load i8* %prevent_expansion, align 1, !tbaa !0
+  %dec = add i8 %15, -1
+  store i8 %dec, i8* %prevent_expansion, align 1, !tbaa !0
+  ret void
+}

@@ -1,0 +1,70 @@
+define i8* @string_copy(%struct.obstack* %memory, i8* nocapture %k) #0 {
+entry:
+  %call = tail call i64 @strlen(i8* %k) #8
+  %add = add i64 %call, 1
+  %chunk_limit = getelementptr inbounds %struct.obstack* %memory, i64 0, i32 4
+  %0 = load i8** %chunk_limit, align 8, !tbaa !0
+  %next_free = getelementptr inbounds %struct.obstack* %memory, i64 0, i32 3
+  %1 = load i8** %next_free, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint i8* %0 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %sext = shl i64 %add, 32
+  %conv1 = ashr exact i64 %sext, 32
+  %cmp = icmp slt i64 %sub.ptr.sub, %conv1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %conv = trunc i64 %add to i32
+  tail call void @_obstack_newchunk(%struct.obstack* %memory, i32 %conv) #6
+  %.pre = load i8** %next_free, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i8* [ %.pre, %if.then ], [ %1, %entry ]
+  %add.ptr = getelementptr inbounds i8* %2, i64 %conv1
+  store i8* %add.ptr, i8** %next_free, align 8, !tbaa !0
+  %object_base = getelementptr inbounds %struct.obstack* %memory, i64 0, i32 2
+  %3 = load i8** %object_base, align 8, !tbaa !0
+  %cmp5 = icmp eq i8* %add.ptr, %3
+  br i1 %cmp5, label %if.then7, label %if.end8
+
+if.then7:                                         ; preds = %if.end
+  %maybe_empty_object = getelementptr inbounds %struct.obstack* %memory, i64 0, i32 10
+  %bf.load = load i8* %maybe_empty_object, align 8
+  %bf.set = or i8 %bf.load, 2
+  store i8 %bf.set, i8* %maybe_empty_object, align 8
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.end, %if.then7
+  %sub.ptr.lhs.cast10 = ptrtoint i8* %add.ptr to i64
+  %alignment_mask = getelementptr inbounds %struct.obstack* %memory, i64 0, i32 6
+  %4 = load i32* %alignment_mask, align 4, !tbaa !3
+  %conv12 = sext i32 %4 to i64
+  %add13 = add nsw i64 %conv12, %sub.ptr.lhs.cast10
+  %neg = xor i32 %4, -1
+  %conv15 = sext i32 %neg to i64
+  %and = and i64 %add13, %conv15
+  %add.ptr16 = getelementptr inbounds i8* null, i64 %and
+  store i8* %add.ptr16, i8** %next_free, align 8, !tbaa !0
+  %chunk = getelementptr inbounds %struct.obstack* %memory, i64 0, i32 1
+  %5 = load %struct._obstack_chunk** %chunk, align 8, !tbaa !0
+  %sub.ptr.lhs.cast19 = ptrtoint i8* %add.ptr16 to i64
+  %sub.ptr.rhs.cast20 = ptrtoint %struct._obstack_chunk* %5 to i64
+  %sub.ptr.sub21 = sub i64 %sub.ptr.lhs.cast19, %sub.ptr.rhs.cast20
+  %6 = load i8** %chunk_limit, align 8, !tbaa !0
+  %sub.ptr.lhs.cast24 = ptrtoint i8* %6 to i64
+  %sub.ptr.sub26 = sub i64 %sub.ptr.lhs.cast24, %sub.ptr.rhs.cast20
+  %cmp27 = icmp sgt i64 %sub.ptr.sub21, %sub.ptr.sub26
+  br i1 %cmp27, label %if.then29, label %if.end32
+
+if.then29:                                        ; preds = %if.end8
+  store i8* %6, i8** %next_free, align 8, !tbaa !0
+  br label %if.end32
+
+if.end32:                                         ; preds = %if.then29, %if.end8
+  %7 = phi i8* [ %6, %if.then29 ], [ %add.ptr16, %if.end8 ]
+  store i8* %7, i8** %object_base, align 8, !tbaa !0
+  %call35 = tail call i8* @strcpy(i8* %3, i8* %k) #6
+  ret i8* %3
+}

@@ -1,0 +1,124 @@
+define void @split_specs_attrs(%union.tree_node* %specs_attrs, %union.tree_node** nocapture %declspecs, %union.tree_node** nocapture %prefix_attributes) #0 {
+entry:
+  %cmp = icmp eq %union.tree_node* %specs_attrs, null
+  br i1 %cmp, label %for.cond.outer.outer, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %code = getelementptr inbounds %union.tree_node* %specs_attrs, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %if.then9 [
+    i32 25, label %if.then
+    i32 2, label %for.cond.outer.outer
+  ]
+
+if.then:                                          ; preds = %land.lhs.true
+  store %union.tree_node* null, %union.tree_node** %declspecs, align 8, !tbaa !0
+  store %union.tree_node* null, %union.tree_node** %prefix_attributes, align 8, !tbaa !0
+  br label %return
+
+if.then9:                                         ; preds = %land.lhs.true
+  store %union.tree_node* %specs_attrs, %union.tree_node** %declspecs, align 8, !tbaa !0
+  store %union.tree_node* null, %union.tree_node** %prefix_attributes, align 8, !tbaa !0
+  br label %return
+
+for.cond.outer77:                                 ; preds = %while.cond, %for.cond.outer
+  %a.0.ph78 = phi %union.tree_node* [ %a.0.ph, %for.cond.outer ], [ %a.1, %while.cond ]
+  %t.0.ph79 = phi %union.tree_node* [ %t.0.ph76, %for.cond.outer ], [ %1, %while.cond ]
+  %attrs.0.ph81 = phi %union.tree_node* [ %attrs.0.ph, %for.cond.outer ], [ %attrs.1.ph, %while.cond ]
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond.outer77, %if.else19
+  %t.0 = phi %union.tree_node* [ %1, %if.else19 ], [ %t.0.ph79, %for.cond.outer77 ]
+  %tobool = icmp eq %union.tree_node* %t.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.body:                                         ; preds = %for.cond
+  %chain = getelementptr inbounds %union.tree_node* %t.0, i64 0, i32 0, i32 0, i32 0
+  %1 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %value = getelementptr inbounds %union.tree_node* %t.0, i64 0, i32 0, i32 2
+  %2 = bitcast i32* %value to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %cmp12 = icmp eq %union.tree_node* %3, null
+  br i1 %cmp12, label %if.else19, label %if.then13
+
+if.then13:                                        ; preds = %for.body
+  br i1 %cmp14, label %for.cond.outer.outer, label %if.else
+
+for.cond.outer.outer:                             ; preds = %if.then13, %entry, %land.lhs.true
+  %s.0.ph.ph = phi %union.tree_node* [ null, %land.lhs.true ], [ null, %entry ], [ %t.0, %if.then13 ]
+  %a.0.ph.ph = phi %union.tree_node* [ null, %land.lhs.true ], [ null, %entry ], [ %a.0.ph78, %if.then13 ]
+  %t.0.ph76.ph = phi %union.tree_node* [ %specs_attrs, %land.lhs.true ], [ null, %entry ], [ %1, %if.then13 ]
+  %attrs.0.ph.ph = phi %union.tree_node* [ null, %land.lhs.true ], [ null, %entry ], [ %attrs.0.ph81, %if.then13 ]
+  %cmp14 = icmp eq %union.tree_node* %s.0.ph.ph, null
+  br label %for.cond.outer
+
+if.else:                                          ; preds = %if.then13
+  %chain17 = getelementptr inbounds %union.tree_node* %s.0.ph, i64 0, i32 0, i32 0, i32 0
+  store %union.tree_node* %t.0, %union.tree_node** %chain17, align 8, !tbaa !0
+  br label %for.cond.outer
+
+for.cond.outer:                                   ; preds = %for.cond.outer.outer, %if.else
+  %s.0.ph = phi %union.tree_node* [ %t.0, %if.else ], [ %s.0.ph.ph, %for.cond.outer.outer ]
+  %a.0.ph = phi %union.tree_node* [ %a.0.ph78, %if.else ], [ %a.0.ph.ph, %for.cond.outer.outer ]
+  %t.0.ph76 = phi %union.tree_node* [ %1, %if.else ], [ %t.0.ph76.ph, %for.cond.outer.outer ]
+  %attrs.0.ph = phi %union.tree_node* [ %attrs.0.ph81, %if.else ], [ %attrs.0.ph.ph, %for.cond.outer.outer ]
+  br label %for.cond.outer77
+
+if.else19:                                        ; preds = %for.body
+  %purpose = getelementptr inbounds %union.tree_node* %t.0, i64 0, i32 0, i32 1
+  %4 = load i8** %purpose, align 8
+  %5 = bitcast i8* %4 to %union.tree_node*
+  %cmp21 = icmp eq i8* %4, null
+  br i1 %cmp21, label %for.cond, label %if.then22
+
+if.then22:                                        ; preds = %if.else19
+  %cmp23 = icmp eq %union.tree_node* %attrs.0.ph81, null
+  br i1 %cmp23, label %while.cond.preheader, label %if.else27
+
+if.else27:                                        ; preds = %if.then22
+  %chain31 = getelementptr inbounds %union.tree_node* %a.0.ph78, i64 0, i32 0, i32 0, i32 0
+  store %union.tree_node* %5, %union.tree_node** %chain31, align 8, !tbaa !0
+  %6 = load i8** %purpose, align 8
+  %7 = bitcast i8* %6 to %union.tree_node*
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.else27, %if.then22
+  %a.1.ph = phi %union.tree_node* [ %5, %if.then22 ], [ %7, %if.else27 ]
+  %attrs.1.ph = phi %union.tree_node* [ %5, %if.then22 ], [ %attrs.0.ph81, %if.else27 ]
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.preheader, %while.cond
+  %a.1 = phi %union.tree_node* [ %8, %while.cond ], [ %a.1.ph, %while.cond.preheader ]
+  %chain36 = getelementptr inbounds %union.tree_node* %a.1, i64 0, i32 0, i32 0, i32 0
+  %8 = load %union.tree_node** %chain36, align 8, !tbaa !0
+  %cmp37 = icmp eq %union.tree_node* %8, null
+  br i1 %cmp37, label %for.cond.outer77, label %while.cond
+
+for.end:                                          ; preds = %for.cond
+  %cmp42 = icmp eq %union.tree_node* %s.0.ph, null
+  br i1 %cmp42, label %if.end46, label %if.then43
+
+if.then43:                                        ; preds = %for.end
+  %chain45 = getelementptr inbounds %union.tree_node* %s.0.ph, i64 0, i32 0, i32 0, i32 0
+  store %union.tree_node* null, %union.tree_node** %chain45, align 8, !tbaa !0
+  br label %if.end46
+
+if.end46:                                         ; preds = %for.end, %if.then43
+  %cmp47 = icmp eq %union.tree_node* %a.0.ph78, null
+  br i1 %cmp47, label %if.end51, label %if.then48
+
+if.then48:                                        ; preds = %if.end46
+  %chain50 = getelementptr inbounds %union.tree_node* %a.0.ph78, i64 0, i32 0, i32 0, i32 0
+  store %union.tree_node* null, %union.tree_node** %chain50, align 8, !tbaa !0
+  br label %if.end51
+
+if.end51:                                         ; preds = %if.end46, %if.then48
+  store %union.tree_node* %s.0.ph.ph, %union.tree_node** %declspecs, align 8, !tbaa !0
+  store %union.tree_node* %attrs.0.ph81, %union.tree_node** %prefix_attributes, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end51, %if.then9, %if.then
+  ret void
+}

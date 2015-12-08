@@ -1,0 +1,32 @@
+define void @w_serial_f(%struct.gauge_file* nocapture %gf) #0 {
+entry:
+  tail call void (...)* @g_sync() #9
+  %0 = load i32* @this_node, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, 0
+  br i1 %cmp, label %if.then, label %if.end6
+
+if.then:                                          ; preds = %entry
+  %parallel = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 5
+  %1 = load i32* %parallel, align 4, !tbaa !0
+  %tobool = icmp eq i32 %1, 0
+  br i1 %tobool, label %if.end3, label %if.then1
+
+if.then1:                                         ; preds = %if.then
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([54 x i8]* @str178, i64 0, i64 0))
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.then1, %if.then
+  %fp = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 0
+  %2 = load %struct._IO_FILE** %fp, align 8, !tbaa !3
+  %call2 = tail call i32 @fclose(%struct._IO_FILE* %2) #9
+  %.pr = load i32* @this_node, align 4, !tbaa !0
+  %cmp4 = icmp eq i32 %.pr, 0
+  br i1 %cmp4, label %if.then5, label %if.end6
+
+if.then5:                                         ; preds = %if.end3
+  tail call void @write_gauge_info_file(%struct.gauge_file* %gf) #8
+  br label %if.end6
+
+if.end6:                                          ; preds = %entry, %if.then5, %if.end3
+  ret void
+}

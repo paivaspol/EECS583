@@ -1,0 +1,38 @@
+define %struct.rtx_def* @gen_rtx_CONST_INT(i32 %mode, i64 %arg) #0 {
+entry:
+  %arg.addr = alloca i64, align 8
+  store i64 %arg, i64* %arg.addr, align 8, !tbaa !3
+  %arg.off = add i64 %arg, 64
+  %0 = icmp ult i64 %arg.off, 129
+  br i1 %0, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %arrayidx = getelementptr inbounds [129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 %arg.off
+  %1 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !4
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %2 = load %struct.htab** @const_int_htab, align 8, !tbaa !4
+  %3 = bitcast i64* %arg.addr to i8*
+  %conv = trunc i64 %arg to i32
+  %call = call i8** @htab_find_slot_with_hash(%struct.htab* %2, i8* %3, i32 %conv, i32 1) #8
+  %4 = load i8** %call, align 8, !tbaa !4
+  %cmp2 = icmp eq i8* %4, null
+  br i1 %cmp2, label %if.then4, label %if.end6
+
+if.then4:                                         ; preds = %if.end
+  %5 = load i64* %arg.addr, align 8, !tbaa !3
+  %call5 = call %struct.rtx_def* @gen_rtx_fmt_w(i32 54, i32 0, i64 %5) #8
+  %6 = getelementptr inbounds %struct.rtx_def* %call5, i64 0, i32 0, i64 0
+  store i8* %6, i8** %call, align 8, !tbaa !4
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.then4, %if.end
+  %7 = phi i8* [ %6, %if.then4 ], [ %4, %if.end ]
+  %8 = bitcast i8* %7 to %struct.rtx_def*
+  br label %return
+
+return:                                           ; preds = %if.end6, %if.then
+  %retval.0 = phi %struct.rtx_def* [ %1, %if.then ], [ %8, %if.end6 ]
+  ret %struct.rtx_def* %retval.0
+}

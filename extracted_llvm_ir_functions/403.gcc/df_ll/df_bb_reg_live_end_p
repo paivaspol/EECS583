@@ -1,0 +1,15 @@
+define i32 @df_bb_reg_live_end_p(%struct.df* nocapture %df, %struct.basic_block_def* nocapture %bb, %struct.rtx_def* nocapture %reg) #0 {
+entry:
+  %index = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 11
+  %0 = load i32* %index, align 4, !tbaa !4
+  %idxprom = sext i32 %0 to i64
+  %bbs = getelementptr inbounds %struct.df* %df, i64 0, i32 1
+  %1 = load %struct.bb_info** %bbs, align 8, !tbaa !3
+  %lr_out = getelementptr inbounds %struct.bb_info* %1, i64 %idxprom, i32 11
+  %2 = load %struct.bitmap_head_def** %lr_out, align 8, !tbaa !3
+  %arrayidx1 = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx1 to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !4
+  %call = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %2, i32 %3) #8
+  ret i32 %call
+}

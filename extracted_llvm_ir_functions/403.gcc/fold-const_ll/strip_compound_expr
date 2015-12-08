@@ -1,0 +1,90 @@
+define internal fastcc %union.tree_node* @strip_compound_expr(%union.tree_node* %t, %union.tree_node* %s) #0 {
+entry:
+  %code1 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code1 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %if.else40 [
+    i32 47, label %land.lhs.true
+    i32 51, label %if.then19
+  ]
+
+land.lhs.true:                                    ; preds = %entry
+  %operands = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  %1 = load %union.tree_node** %arrayidx, align 8, !tbaa !3
+  %code3 = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %code3 to i32*
+  %bf.load4 = load i32* %2, align 8
+  %bf.clear5 = and i32 %bf.load4, 255
+  %cmp6 = icmp eq i32 %bf.clear5, 114
+  br i1 %cmp6, label %land.lhs.true7, label %if.else40
+
+land.lhs.true7:                                   ; preds = %land.lhs.true
+  %operands12 = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 2
+  %arrayidx13 = bitcast i32* %operands12 to %union.tree_node**
+  %3 = load %union.tree_node** %arrayidx13, align 8, !tbaa !3
+  %cmp14 = icmp eq %union.tree_node* %3, %s
+  br i1 %cmp14, label %if.then, label %if.else40
+
+if.then:                                          ; preds = %land.lhs.true7
+  %arrayidx17 = getelementptr inbounds i32* %operands, i64 2
+  %4 = bitcast i32* %arrayidx17 to %union.tree_node**
+  %5 = load %union.tree_node** %4, align 8, !tbaa !3
+  br label %return
+
+if.then19:                                        ; preds = %entry
+  %operands21.phi.trans.insert = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
+  %arrayidx22.phi.trans.insert = bitcast i32* %operands21.phi.trans.insert to %union.tree_node**
+  %.pre = load %union.tree_node** %arrayidx22.phi.trans.insert, align 8, !tbaa !3
+  %operands21 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
+  %arrayidx22 = bitcast i32* %operands21 to %union.tree_node**
+  %call = tail call fastcc %union.tree_node* @strip_compound_expr(%union.tree_node* %.pre, %union.tree_node* %s) #7
+  store %union.tree_node* %call, %union.tree_node** %arrayidx22, align 8, !tbaa !3
+  %arrayidx28 = getelementptr inbounds i32* %operands21, i64 2
+  %6 = bitcast i32* %arrayidx28 to %union.tree_node**
+  %7 = load %union.tree_node** %6, align 8, !tbaa !3
+  %call29 = tail call fastcc %union.tree_node* @strip_compound_expr(%union.tree_node* %7, %union.tree_node* %s) #7
+  store %union.tree_node* %call29, %union.tree_node** %6, align 8, !tbaa !3
+  %arrayidx35 = getelementptr inbounds i32* %operands21, i64 4
+  %8 = bitcast i32* %arrayidx35 to %union.tree_node**
+  %9 = load %union.tree_node** %8, align 8, !tbaa !3
+  %call36 = tail call fastcc %union.tree_node* @strip_compound_expr(%union.tree_node* %9, %union.tree_node* %s) #7
+  store %union.tree_node* %call36, %union.tree_node** %8, align 8, !tbaa !3
+  ret %union.tree_node* %t
+
+if.else40:                                        ; preds = %land.lhs.true7, %land.lhs.true, %entry
+  %idxprom107 = zext i32 %bf.clear to i64
+  %arrayidx41 = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom107
+  %10 = load i8* %arrayidx41, align 1, !tbaa !1
+  switch i8 %10, label %return [
+    i8 49, label %if.then44
+    i8 60, label %if.then63
+    i8 50, label %if.then63
+  ]
+
+if.then44:                                        ; preds = %if.else40
+  %operands46 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
+  %arrayidx47 = bitcast i32* %operands46 to %union.tree_node**
+  %11 = load %union.tree_node** %arrayidx47, align 8, !tbaa !3
+  %call48 = tail call fastcc %union.tree_node* @strip_compound_expr(%union.tree_node* %11, %union.tree_node* %s) #7
+  store %union.tree_node* %call48, %union.tree_node** %arrayidx47, align 8, !tbaa !3
+  ret %union.tree_node* %t
+
+if.then63:                                        ; preds = %if.else40, %if.else40
+  %operands65 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
+  %arrayidx66 = bitcast i32* %operands65 to %union.tree_node**
+  %12 = load %union.tree_node** %arrayidx66, align 8, !tbaa !3
+  %call67 = tail call fastcc %union.tree_node* @strip_compound_expr(%union.tree_node* %12, %union.tree_node* %s) #7
+  store %union.tree_node* %call67, %union.tree_node** %arrayidx66, align 8, !tbaa !3
+  %arrayidx73 = getelementptr inbounds i32* %operands65, i64 2
+  %13 = bitcast i32* %arrayidx73 to %union.tree_node**
+  %14 = load %union.tree_node** %13, align 8, !tbaa !3
+  %call74 = tail call fastcc %union.tree_node* @strip_compound_expr(%union.tree_node* %14, %union.tree_node* %s) #7
+  store %union.tree_node* %call74, %union.tree_node** %13, align 8, !tbaa !3
+  ret %union.tree_node* %t
+
+return:                                           ; preds = %if.else40, %if.then
+  %retval.0 = phi %union.tree_node* [ %5, %if.then ], [ %t, %if.else40 ]
+  ret %union.tree_node* %retval.0
+}

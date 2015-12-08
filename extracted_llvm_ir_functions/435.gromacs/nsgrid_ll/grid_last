@@ -1,0 +1,67 @@
+define void @grid_last(%struct._IO_FILE* %log, i32 %bDD, i32* nocapture %cg_index, %struct.t_grid* nocapture %grid, i32 %cg0, i32 %cg1, i32 %ncg) #0 {
+entry:
+  %CG0 = alloca [2 x i32], align 4
+  %CG1 = alloca [2 x i32], align 4
+  %cell_index1 = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 8
+  %0 = load i32** %cell_index1, align 8, !tbaa !4
+  %nra2 = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 10
+  %1 = load i32** %nra2, align 8, !tbaa !4
+  %index3 = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 9
+  %2 = load i32** %index3, align 8, !tbaa !4
+  %a4 = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 11
+  %3 = load i32** %a4, align 8, !tbaa !4
+  %ncells5 = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 4
+  %4 = load i32* %ncells5, align 4, !tbaa !3
+  %arraydecay = getelementptr inbounds [2 x i32]* %CG0, i64 0, i64 0
+  %arraydecay6 = getelementptr inbounds [2 x i32]* %CG1, i64 0, i64 0
+  call fastcc void @calc_bor(%struct._IO_FILE* %log, i32 %bDD, i32 %cg0, i32 %cg1, i32 %ncg, i32* %arraydecay, i32* %arraydecay6) #6
+  %nr = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 0
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc23, %entry
+  %indvars.iv43 = phi i64 [ 0, %entry ], [ %indvars.iv.next44, %for.inc23 ]
+  %arrayidx = getelementptr inbounds [2 x i32]* %CG0, i64 0, i64 %indvars.iv43
+  %5 = load i32* %arrayidx, align 4, !tbaa !3
+  %arrayidx9 = getelementptr inbounds [2 x i32]* %CG1, i64 0, i64 %indvars.iv43
+  %6 = load i32* %arrayidx9, align 4, !tbaa !3
+  %cmp1040 = icmp slt i32 %5, %6
+  br i1 %cmp1040, label %for.body11.lr.ph, label %for.inc23
+
+for.body11.lr.ph:                                 ; preds = %for.body
+  %7 = sext i32 %5 to i64
+  br label %for.body11
+
+for.body11:                                       ; preds = %for.body11.lr.ph, %for.body11
+  %indvars.iv = phi i64 [ %7, %for.body11.lr.ph ], [ %indvars.iv.next, %for.body11 ]
+  %arrayidx13 = getelementptr inbounds i32* %0, i64 %indvars.iv
+  %8 = load i32* %arrayidx13, align 4, !tbaa !3
+  call fastcc void @_range_check(i8* getelementptr inbounds ([3 x i8]* @.str11, i64 0, i64 0), i32 %8, i32 %4, i32 261) #6
+  %idxprom14 = sext i32 %8 to i64
+  %arrayidx15 = getelementptr inbounds i32* %2, i64 %idxprom14
+  %9 = load i32* %arrayidx15, align 4, !tbaa !3
+  %arrayidx17 = getelementptr inbounds i32* %1, i64 %idxprom14
+  %10 = load i32* %arrayidx17, align 4, !tbaa !3
+  %inc = add nsw i32 %10, 1
+  store i32 %inc, i32* %arrayidx17, align 4, !tbaa !3
+  %add = add nsw i32 %10, %9
+  %11 = load i32* %nr, align 4, !tbaa !3
+  call fastcc void @_range_check(i8* getelementptr inbounds ([4 x i8]* @.str12, i64 0, i64 0), i32 %add, i32 %11, i32 263) #6
+  %arrayidx19 = getelementptr inbounds i32* %cg_index, i64 %indvars.iv
+  %12 = load i32* %arrayidx19, align 4, !tbaa !3
+  %idxprom20 = sext i32 %add to i64
+  %arrayidx21 = getelementptr inbounds i32* %3, i64 %idxprom20
+  store i32 %12, i32* %arrayidx21, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %13 = trunc i64 %indvars.iv.next to i32
+  %cmp10 = icmp slt i32 %13, %6
+  br i1 %cmp10, label %for.body11, label %for.inc23
+
+for.inc23:                                        ; preds = %for.body11, %for.body
+  %indvars.iv.next44 = add i64 %indvars.iv43, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next44 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 2
+  br i1 %exitcond, label %for.end25, label %for.body
+
+for.end25:                                        ; preds = %for.inc23
+  ret void
+}

@@ -1,0 +1,74 @@
+define i8* @fibheap_replace_key_data(%struct.fibheap* nocapture %heap, %struct.fibnode* %node, i64 %key, i8* %data) #0 {
+entry:
+  %key1.i.i = getelementptr inbounds %struct.fibnode* %node, i64 0, i32 4
+  %0 = load i64* %key1.i.i, align 8, !tbaa !3
+  %1 = icmp slt i64 %0, %key
+  br i1 %1, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %data1 = getelementptr inbounds %struct.fibnode* %node, i64 0, i32 5
+  %2 = load i8** %data1, align 8, !tbaa !0
+  store i8* %data, i8** %data1, align 8, !tbaa !0
+  store i64 %key, i64* %key1.i.i, align 8, !tbaa !3
+  %parent = getelementptr inbounds %struct.fibnode* %node, i64 0, i32 0
+  %3 = load %struct.fibnode** %parent, align 8, !tbaa !0
+  %sext = shl i64 %0, 32
+  %conv5 = ashr exact i64 %sext, 32
+  %cmp6 = icmp eq i64 %conv5, %key
+  br i1 %cmp6, label %return, label %if.end9
+
+if.end9:                                          ; preds = %if.end
+  %cmp10 = icmp eq %struct.fibnode* %3, null
+  br i1 %cmp10, label %if.end16, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end9
+  %key1.i47 = getelementptr inbounds %struct.fibnode* %3, i64 0, i32 4
+  %4 = load i64* %key1.i47, align 8, !tbaa !3
+  %5 = icmp slt i64 %4, %key
+  br i1 %5, label %if.end16, label %if.then15
+
+if.then15:                                        ; preds = %land.lhs.true
+  tail call fastcc void @fibheap_cut(%struct.fibheap* %heap, %struct.fibnode* %node, %struct.fibnode* %3) #6
+  %parent8.i = getelementptr inbounds %struct.fibnode* %3, i64 0, i32 0
+  %6 = load %struct.fibnode** %parent8.i, align 8, !tbaa !0
+  %cmp9.i = icmp eq %struct.fibnode* %6, null
+  br i1 %cmp9.i, label %if.end16, label %while.body.i
+
+while.body.i:                                     ; preds = %if.then15, %if.else.i
+  %7 = phi %struct.fibnode* [ %9, %if.else.i ], [ %6, %if.then15 ]
+  %y.addr.010.i = phi %struct.fibnode* [ %7, %if.else.i ], [ %3, %if.then15 ]
+  %mark.i = getelementptr inbounds %struct.fibnode* %y.addr.010.i, i64 0, i32 6
+  %8 = bitcast [4 x i8]* %mark.i to i32*
+  %bf.load.i = load i32* %8, align 8
+  %cmp1.i = icmp sgt i32 %bf.load.i, -1
+  br i1 %cmp1.i, label %if.then.i, label %if.else.i
+
+if.then.i:                                        ; preds = %while.body.i
+  %bf.set.i = or i32 %bf.load.i, -2147483648
+  store i32 %bf.set.i, i32* %8, align 8
+  br label %if.end16
+
+if.else.i:                                        ; preds = %while.body.i
+  tail call fastcc void @fibheap_cut(%struct.fibheap* %heap, %struct.fibnode* %y.addr.010.i, %struct.fibnode* %7) #5
+  %parent.i = getelementptr inbounds %struct.fibnode* %7, i64 0, i32 0
+  %9 = load %struct.fibnode** %parent.i, align 8, !tbaa !0
+  %cmp.i45 = icmp eq %struct.fibnode* %9, null
+  br i1 %cmp.i45, label %if.end16, label %while.body.i
+
+if.end16:                                         ; preds = %if.else.i, %if.then15, %land.lhs.true, %if.then.i, %if.end9
+  %min = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 1
+  %10 = load %struct.fibnode** %min, align 8, !tbaa !0
+  %11 = load i64* %key1.i.i, align 8, !tbaa !3
+  %key1.i = getelementptr inbounds %struct.fibnode* %10, i64 0, i32 4
+  %12 = load i64* %key1.i, align 8, !tbaa !3
+  %13 = icmp sgt i64 %11, %12
+  br i1 %13, label %return, label %if.then20
+
+if.then20:                                        ; preds = %if.end16
+  store %struct.fibnode* %node, %struct.fibnode** %min, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end16, %entry, %if.then20, %if.end
+  %retval.0 = phi i8* [ %2, %if.end ], [ %2, %if.then20 ], [ null, %entry ], [ %2, %if.end16 ]
+  ret i8* %retval.0
+}

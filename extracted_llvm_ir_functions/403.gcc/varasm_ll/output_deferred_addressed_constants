@@ -1,0 +1,36 @@
+define void @output_deferred_addressed_constants() #0 {
+entry:
+  %0 = load i32* @defer_addressed_constants_flag, align 4, !tbaa !4
+  %dec = add nsw i32 %0, -1
+  store i32 %dec, i32* @defer_addressed_constants_flag, align 4, !tbaa !4
+  %cmp = icmp sgt i32 %dec, 0
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = load %struct.deferred_constant** @deferred_constants, align 8, !tbaa !3
+  %tobool7 = icmp eq %struct.deferred_constant* %1, null
+  br i1 %tobool7, label %for.end, label %for.body
+
+for.body:                                         ; preds = %if.end, %for.body
+  %p.08 = phi %struct.deferred_constant* [ %5, %for.body ], [ %1, %if.end ]
+  %exp = getelementptr inbounds %struct.deferred_constant* %p.08, i64 0, i32 1
+  %2 = load %union.tree_node** %exp, align 8, !tbaa !3
+  %reloc = getelementptr inbounds %struct.deferred_constant* %p.08, i64 0, i32 2
+  %3 = load i32* %reloc, align 4, !tbaa !4
+  %labelno = getelementptr inbounds %struct.deferred_constant* %p.08, i64 0, i32 3
+  %4 = load i32* %labelno, align 4, !tbaa !4
+  tail call fastcc void @output_constant_def_contents(%union.tree_node* %2, i32 %3, i32 %4) #10
+  %next1 = getelementptr inbounds %struct.deferred_constant* %p.08, i64 0, i32 0
+  %5 = load %struct.deferred_constant** %next1, align 8, !tbaa !3
+  %6 = bitcast %struct.deferred_constant* %p.08 to i8*
+  tail call void @free(i8* %6) #9
+  %tobool = icmp eq %struct.deferred_constant* %5, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %if.end
+  store %struct.deferred_constant* null, %struct.deferred_constant** @deferred_constants, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %entry, %for.end
+  ret void
+}

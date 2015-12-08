@@ -1,0 +1,59 @@
+define void @debug_sbitmap(%struct.simple_bitmap_def* nocapture %bmap) #0 {
+entry:
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %n_bits = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 0
+  %1 = load i32* %n_bits, align 4, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([21 x i8]* @.str4, i64 0, i64 0), i32 %1) #6
+  %2 = load i32* %n_bits, align 4, !tbaa !0
+  %cmp23 = icmp eq i32 %2, 0
+  br i1 %cmp23, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %3 = phi i32 [ %8, %for.inc ], [ %2, %entry ]
+  %pos.026 = phi i32 [ %pos.2, %for.inc ], [ 30, %entry ]
+  %i.024 = phi i32 [ %inc, %for.inc ], [ 0, %entry ]
+  %div = lshr i32 %i.024, 6
+  %idxprom = zext i32 %div to i64
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 3, i64 %idxprom
+  %4 = load i64* %arrayidx, align 8, !tbaa !4
+  %rem = and i32 %i.024, 63
+  %sh_prom = zext i32 %rem to i64
+  %5 = shl i64 1, %sh_prom
+  %and22 = and i64 %4, %5
+  %tobool = icmp eq i64 %and22, 0
+  br i1 %tobool, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %cmp2 = icmp ugt i32 %pos.026, 70
+  br i1 %cmp2, label %if.then3, label %if.end
+
+if.then3:                                         ; preds = %if.then
+  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %6)
+  br label %if.end
+
+if.end:                                           ; preds = %if.then3, %if.then
+  %pos.1 = phi i32 [ 0, %if.then3 ], [ %pos.026, %if.then ]
+  %7 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i32 %i.024) #6
+  %cmp6 = icmp ugt i32 %i.024, 9
+  %add = select i1 %cmp6, i32 2, i32 1
+  %cmp7 = icmp ugt i32 %i.024, 99
+  %conv8 = zext i1 %cmp7 to i32
+  %add9 = add nsw i32 %add, %conv8
+  %add10 = add i32 %add9, %pos.1
+  %.pre = load i32* %n_bits, align 4, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.end
+  %8 = phi i32 [ %.pre, %if.end ], [ %3, %for.body ]
+  %pos.2 = phi i32 [ %add10, %if.end ], [ %pos.026, %for.body ]
+  %inc = add i32 %i.024, 1
+  %cmp = icmp ult i32 %inc, %8
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  %9 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %10 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %9)
+  ret void
+}

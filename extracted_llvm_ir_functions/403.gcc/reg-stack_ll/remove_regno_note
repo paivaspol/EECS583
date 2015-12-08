@@ -1,0 +1,54 @@
+define internal fastcc void @remove_regno_note(%struct.rtx_def* nocapture %insn, i32 %regno) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 6
+  %rtx193 = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %this.04 = load %struct.rtx_def** %rtx193, align 8
+  %tobool5 = icmp eq %struct.rtx_def* %this.04, null
+  br i1 %tobool5, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %if.else
+  %this.07 = phi %struct.rtx_def* [ %this.0, %if.else ], [ %this.04, %entry ]
+  %arrayidx18.sink6 = phi %union.rtunion_def* [ %arrayidx18, %if.else ], [ %arrayidx, %entry ]
+  %0 = bitcast %struct.rtx_def* %this.07 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 16711680
+  %cmp = icmp eq i32 %bf.clear, 65536
+  br i1 %cmp, label %land.lhs.true, label %if.else
+
+land.lhs.true:                                    ; preds = %for.body
+  %fld1 = getelementptr inbounds %struct.rtx_def* %this.07, i64 0, i32 1
+  %rtx3 = bitcast [1 x %union.rtunion_def]* %fld1 to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx3, align 8, !tbaa !2
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load4 = load i32* %2, align 8
+  %bf.clear5 = and i32 %bf.load4, 65535
+  %cmp6 = icmp eq i32 %bf.clear5, 61
+  br i1 %cmp6, label %land.lhs.true7, label %if.else
+
+land.lhs.true7:                                   ; preds = %land.lhs.true
+  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx12 to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp13 = icmp eq i32 %3, %regno
+  br i1 %cmp13, label %if.then, label %if.else
+
+if.then:                                          ; preds = %land.lhs.true7
+  %arrayidx15 = getelementptr inbounds %struct.rtx_def* %this.07, i64 0, i32 1, i64 1
+  %rtx16 = bitcast %union.rtunion_def* %arrayidx15 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx16, align 8, !tbaa !2
+  %5 = getelementptr inbounds %union.rtunion_def* %arrayidx18.sink6, i64 0, i32 0
+  %.c = ptrtoint %struct.rtx_def* %4 to i64
+  store i64 %.c, i64* %5, align 8, !tbaa !2
+  ret void
+
+if.else:                                          ; preds = %land.lhs.true7, %land.lhs.true, %for.body
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %this.07, i64 0, i32 1, i64 1
+  %rtx19 = bitcast %union.rtunion_def* %arrayidx18 to %struct.rtx_def**
+  %this.0 = load %struct.rtx_def** %rtx19, align 8
+  %tobool = icmp eq %struct.rtx_def* %this.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.else, %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 885, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.remove_regno_note, i64 0, i64 0)) #8
+  unreachable
+}

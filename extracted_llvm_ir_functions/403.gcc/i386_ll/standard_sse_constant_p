@@ -1,0 +1,22 @@
+define i32 @standard_sse_constant_p(%struct.rtx_def* %x) #2 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 55
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear2 = and i32 %bf.lshr, 255
+  %idxprom6 = zext i32 %bf.clear2 to i64
+  %arrayidx = getelementptr inbounds [3 x [59 x %struct.rtx_def*]]* @const_tiny_rtx, i64 0, i64 0, i64 %idxprom6
+  %1 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !4
+  %cmp3 = icmp eq %struct.rtx_def* %1, %x
+  %conv = zext i1 %cmp3 to i32
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ %conv, %if.end ], [ -1, %entry ]
+  ret i32 %retval.0
+}

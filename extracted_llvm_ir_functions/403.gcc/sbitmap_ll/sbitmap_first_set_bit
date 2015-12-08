@@ -1,0 +1,44 @@
+define i32 @sbitmap_first_set_bit(%struct.simple_bitmap_def* nocapture %bmap) #3 {
+entry:
+  %size = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 1
+  %0 = load i32* %size, align 4, !tbaa !0
+  %cmp25 = icmp eq i32 %0, 0
+  br i1 %cmp25, label %return, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc9
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc9 ], [ 0, %entry ]
+  %word_num_.026 = phi i32 [ %inc10, %for.inc9 ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 3, i64 %indvars.iv
+  %1 = load i64* %arrayidx, align 8, !tbaa !4
+  %cmp1 = icmp eq i64 %1, 0
+  br i1 %cmp1, label %for.inc9, label %for.body4
+
+for.cond2:                                        ; preds = %for.body4
+  %cmp3 = icmp ult i32 %inc, 64
+  br i1 %cmp3, label %for.body4, label %for.inc9
+
+for.body4:                                        ; preds = %for.body, %for.cond2
+  %bit_num_.123 = phi i32 [ %inc, %for.cond2 ], [ 0, %for.body ]
+  %sh_prom = zext i32 %bit_num_.123 to i64
+  %shl = shl i64 1, %sh_prom
+  %and = and i64 %shl, %1
+  %cmp5 = icmp eq i64 %and, 0
+  %inc = add i32 %bit_num_.123, 1
+  br i1 %cmp5, label %for.cond2, label %if.then6
+
+if.then6:                                         ; preds = %for.body4
+  %mul = shl i32 %word_num_.026, 6
+  %add = add i32 %bit_num_.123, %mul
+  br label %return
+
+for.inc9:                                         ; preds = %for.cond2, %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc10 = add i32 %word_num_.026, 1
+  %2 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp ult i32 %2, %0
+  br i1 %cmp, label %for.body, label %return
+
+return:                                           ; preds = %entry, %for.inc9, %if.then6
+  %retval.0 = phi i32 [ %add, %if.then6 ], [ -1, %for.inc9 ], [ -1, %entry ]
+  ret i32 %retval.0
+}

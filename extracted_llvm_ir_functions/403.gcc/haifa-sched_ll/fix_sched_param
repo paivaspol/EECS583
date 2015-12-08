@@ -1,0 +1,18 @@
+define void @fix_sched_param(i8* %param, i8* nocapture %val) #0 {
+entry:
+  %call = tail call i32 @strcmp(i8* %param, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #8
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @atoi(i8* %val) #8
+  store i32 %call1, i32* @sched_verbose_param, align 4, !tbaa !0
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([35 x i8]* @.str1, i64 0, i64 0), i8* %param) #9
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void
+}

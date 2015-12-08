@@ -1,0 +1,113 @@
+define i8* @check_html(i8* %s, i8* %program) #0 {
+entry:
+  %buf.i = alloca [256 x i8], align 16
+  %call = call fastcc i8* @repall(i8* %s, i32 10, %struct.t_sandr* getelementptr inbounds ([10 x %struct.t_sandr]* @sandrHTML, i64 0, i64 0)) #5
+  %0 = getelementptr inbounds [256 x i8]* %buf.i, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %0) #4
+  %1 = load %struct.t_sandr** @html_xref.sr, align 8, !tbaa !0
+  %cmp.i = icmp eq %struct.t_sandr* %1, null
+  br i1 %cmp.i, label %if.then.i, label %if.end20thread-pre-split.i
+
+if.then.i:                                        ; preds = %entry
+  %call.i = call i32 @get_file(i8* getelementptr inbounds ([10 x i8]* @.str183, i64 0, i64 0), i8*** @html_xref.str) #6
+  store i32 %call.i, i32* @html_xref.nstr, align 4, !tbaa !3
+  %call1.i = call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str184, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str63, i64 0, i64 0), i32 187, i32 %call.i, i32 16) #6
+  %2 = bitcast i8* %call1.i to %struct.t_sandr*
+  store %struct.t_sandr* %2, %struct.t_sandr** @html_xref.sr, align 8, !tbaa !0
+  %3 = load i32* @html_xref.nstr, align 4, !tbaa !3
+  %cmp231.i = icmp sgt i32 %3, 0
+  br i1 %cmp231.i, label %for.body.lr.ph.i, label %for.end.i
+
+for.body.lr.ph.i:                                 ; preds = %if.then.i
+  %tobool.i = icmp eq i8* %program, null
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.inc.i, %for.body.lr.ph.i
+  %indvars.iv.i = phi i64 [ 0, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %for.inc.i ]
+  %j.032.i = phi i32 [ 0, %for.body.lr.ph.i ], [ %j.1.i, %for.inc.i ]
+  br i1 %tobool.i, label %if.then5.i, label %lor.lhs.false.i
+
+lor.lhs.false.i:                                  ; preds = %for.body.i
+  %4 = load i8*** @html_xref.str, align 8, !tbaa !0
+  %arrayidx.i = getelementptr inbounds i8** %4, i64 %indvars.iv.i
+  %5 = load i8** %arrayidx.i, align 8, !tbaa !0
+  %call3.i = call i32 @gmx_strcasecmp(i8* %program, i8* %5) #6
+  %cmp4.i = icmp eq i32 %call3.i, 0
+  br i1 %cmp4.i, label %for.inc.i, label %if.then5.i
+
+if.then5.i:                                       ; preds = %lor.lhs.false.i, %for.body.i
+  %6 = load i8*** @html_xref.str, align 8, !tbaa !0
+  %arrayidx7.i = getelementptr inbounds i8** %6, i64 %indvars.iv.i
+  %7 = load i8** %arrayidx7.i, align 8, !tbaa !0
+  %idxprom8.i = sext i32 %j.032.i to i64
+  %8 = load %struct.t_sandr** @html_xref.sr, align 8, !tbaa !0
+  %search.i = getelementptr inbounds %struct.t_sandr* %8, i64 %idxprom8.i, i32 0
+  store i8* %7, i8** %search.i, align 8, !tbaa !0
+  %9 = load i8*** @html_xref.str, align 8, !tbaa !0
+  %arrayidx11.i = getelementptr inbounds i8** %9, i64 %indvars.iv.i
+  %10 = load i8** %arrayidx11.i, align 8, !tbaa !0
+  %call14.i = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([25 x i8]* @.str185, i64 0, i64 0), i8* %10, i8* %10) #6
+  %call16.i = call i8* @gmx_strdup(i8* %0) #6
+  %11 = load %struct.t_sandr** @html_xref.sr, align 8, !tbaa !0
+  %replace.i = getelementptr inbounds %struct.t_sandr* %11, i64 %idxprom8.i, i32 1
+  store i8* %call16.i, i8** %replace.i, align 8, !tbaa !0
+  %inc.i = add nsw i32 %j.032.i, 1
+  br label %for.inc.i
+
+for.inc.i:                                        ; preds = %if.then5.i, %lor.lhs.false.i
+  %j.1.i = phi i32 [ %inc.i, %if.then5.i ], [ %j.032.i, %lor.lhs.false.i ]
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %12 = load i32* @html_xref.nstr, align 4, !tbaa !3
+  %13 = trunc i64 %indvars.iv.next.i to i32
+  %cmp2.i = icmp slt i32 %13, %12
+  br i1 %cmp2.i, label %for.body.i, label %for.cond.for.end_crit_edge.i
+
+for.cond.for.end_crit_edge.i:                     ; preds = %for.inc.i
+  %.pre.pre.i = load %struct.t_sandr** @html_xref.sr, align 8, !tbaa !0
+  br label %for.end.i
+
+for.end.i:                                        ; preds = %for.cond.for.end_crit_edge.i, %if.then.i
+  %.pre.i = phi %struct.t_sandr* [ %.pre.pre.i, %for.cond.for.end_crit_edge.i ], [ %2, %if.then.i ]
+  %j.0.lcssa.i = phi i32 [ %j.1.i, %for.cond.for.end_crit_edge.i ], [ 0, %if.then.i ]
+  store i32 %j.0.lcssa.i, i32* @html_xref.nstr, align 4, !tbaa !3
+  br label %if.end20.i
+
+if.end20thread-pre-split.i:                       ; preds = %entry
+  %.pr.i = load i32* @html_xref.nstr, align 4, !tbaa !3
+  br label %if.end20.i
+
+if.end20.i:                                       ; preds = %if.end20thread-pre-split.i, %for.end.i
+  %14 = phi %struct.t_sandr* [ %1, %if.end20thread-pre-split.i ], [ %.pre.i, %for.end.i ]
+  %15 = phi i32 [ %.pr.i, %if.end20thread-pre-split.i ], [ %j.0.lcssa.i, %for.end.i ]
+  %cmp11.i.i = icmp sgt i32 %15, 0
+  br i1 %cmp11.i.i, label %for.body.i.i, label %html_xref.exit
+
+for.body.i.i:                                     ; preds = %if.end20.i, %if.end.i.i
+  %indvars.iv.i.i = phi i64 [ %indvars.iv.next.i.i, %if.end.i.i ], [ 0, %if.end20.i ]
+  %buf.012.i.i = phi i8* [ %call.i.i, %if.end.i.i ], [ %call, %if.end20.i ]
+  %search.i.i = getelementptr inbounds %struct.t_sandr* %14, i64 %indvars.iv.i.i, i32 0
+  %16 = load i8** %search.i.i, align 8, !tbaa !0
+  %replace.i.i = getelementptr inbounds %struct.t_sandr* %14, i64 %indvars.iv.i.i, i32 1
+  %17 = load i8** %replace.i.i, align 8, !tbaa !0
+  %call.i.i = call i8* @replaceww(i8* %buf.012.i.i, i8* %16, i8* %17) #6
+  %18 = trunc i64 %indvars.iv.i.i to i32
+  %tobool.i.i = icmp eq i32 %18, 0
+  %tobool3.i.i = icmp eq i8* %buf.012.i.i, null
+  %or.cond.i.i = or i1 %tobool.i.i, %tobool3.i.i
+  br i1 %or.cond.i.i, label %if.end.i.i, label %if.then.i.i
+
+if.then.i.i:                                      ; preds = %for.body.i.i
+  call void @save_free(i8* getelementptr inbounds ([4 x i8]* @.str62, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str63, i64 0, i64 0), i32 160, i8* %buf.012.i.i) #6
+  br label %if.end.i.i
+
+if.end.i.i:                                       ; preds = %if.then.i.i, %for.body.i.i
+  %indvars.iv.next.i.i = add i64 %indvars.iv.i.i, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i.i to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %15
+  br i1 %exitcond, label %html_xref.exit, label %for.body.i.i
+
+html_xref.exit:                                   ; preds = %if.end.i.i, %if.end20.i
+  %buf.0.lcssa.i.i = phi i8* [ %call, %if.end20.i ], [ %call.i.i, %if.end.i.i ]
+  call void @llvm.lifetime.end(i64 256, i8* %0) #4
+  ret i8* %buf.0.lcssa.i.i
+}

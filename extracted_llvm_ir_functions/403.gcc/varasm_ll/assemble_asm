@@ -1,0 +1,24 @@
+define void @assemble_asm(%union.tree_node* nocapture %string) #0 {
+entry:
+  tail call void @app_enable() #9
+  %code = getelementptr inbounds %union.tree_node* %string, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 121
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %operands = getelementptr inbounds %union.tree_node* %string, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  %1 = load %union.tree_node** %arrayidx, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %string.addr.0 = phi %union.tree_node* [ %1, %if.then ], [ %string, %entry ]
+  %2 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
+  %pointer = getelementptr inbounds %union.tree_node* %string.addr.0, i64 0, i32 0, i32 4
+  %3 = load %union.tree_node** %pointer, align 8
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([5 x i8]* @.str59, i64 0, i64 0), %union.tree_node* %3) #9
+  ret void
+}

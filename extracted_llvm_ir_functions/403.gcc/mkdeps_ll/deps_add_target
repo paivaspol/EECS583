@@ -1,0 +1,47 @@
+define void @deps_add_target(%struct.deps* nocapture %d, i8* %t, i32 %quote) #0 {
+entry:
+  %ntargets = getelementptr inbounds %struct.deps* %d, i64 0, i32 1
+  %0 = load i32* %ntargets, align 4, !tbaa !3
+  %targets_size = getelementptr inbounds %struct.deps* %d, i64 0, i32 2
+  %1 = load i32* %targets_size, align 4, !tbaa !3
+  %cmp = icmp eq i32 %0, %1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %mul = shl i32 %0, 1
+  %add = add i32 %mul, 4
+  store i32 %add, i32* %targets_size, align 4, !tbaa !3
+  %targetv = getelementptr inbounds %struct.deps* %d, i64 0, i32 0
+  %2 = load i8*** %targetv, align 8, !tbaa !0
+  %3 = bitcast i8** %2 to i8*
+  %conv = zext i32 %add to i64
+  %mul4 = shl nuw nsw i64 %conv, 3
+  %call = tail call i8* @xrealloc(i8* %3, i64 %mul4) #5
+  %4 = bitcast i8* %call to i8**
+  store i8** %4, i8*** %targetv, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %tobool = icmp eq i32 %quote, 0
+  br i1 %tobool, label %if.else, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  %call7 = tail call fastcc i8* @munge(i8* %t) #6
+  br label %if.end9
+
+if.else:                                          ; preds = %if.end
+  %call8 = tail call noalias i8* @xstrdup(i8* %t) #5
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.else, %if.then6
+  %t.addr.0 = phi i8* [ %call7, %if.then6 ], [ %call8, %if.else ]
+  %5 = load i32* %ntargets, align 4, !tbaa !3
+  %inc = add i32 %5, 1
+  store i32 %inc, i32* %ntargets, align 4, !tbaa !3
+  %idxprom = zext i32 %5 to i64
+  %targetv11 = getelementptr inbounds %struct.deps* %d, i64 0, i32 0
+  %6 = load i8*** %targetv11, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8** %6, i64 %idxprom
+  store i8* %t.addr.0, i8** %arrayidx, align 8, !tbaa !0
+  ret void
+}

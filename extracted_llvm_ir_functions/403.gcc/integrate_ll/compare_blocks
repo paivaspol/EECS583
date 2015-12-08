@@ -1,0 +1,24 @@
+define internal i32 @compare_blocks(i8* nocapture %v1, i8* nocapture %v2) #5 {
+entry:
+  %0 = bitcast i8* %v1 to %union.tree_node**
+  %1 = load %union.tree_node** %0, align 8, !tbaa !0
+  %2 = bitcast i8* %v2 to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %abstract_origin = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 6
+  %4 = bitcast %union.anon* %abstract_origin to %union.tree_node**
+  %5 = load %union.tree_node** %4, align 8, !tbaa !0
+  %abstract_origin2 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 6
+  %6 = bitcast %union.anon* %abstract_origin2 to %union.tree_node**
+  %7 = load %union.tree_node** %6, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %5, %7
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %cmp3 = icmp ult %union.tree_node* %5, %7
+  %cond = select i1 %cmp3, i32 -1, i32 1
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ %cond, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0
+}

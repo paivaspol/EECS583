@@ -1,0 +1,101 @@
+define internal void @reg_dead_at_p_1(%struct.rtx_def* nocapture %dest, %struct.rtx_def* nocapture %x, i8* nocapture %data) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %dest to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 61
+  br i1 %cmp, label %if.end, label %if.end73
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp1 = icmp ult i32 %1, 53
+  br i1 %cmp1, label %cond.true, label %cond.end59
+
+cond.true:                                        ; preds = %if.end
+  %.off = add i32 %1, -8
+  %2 = icmp ult i32 %.off, 8
+  %.off93 = add i32 %1, -21
+  %3 = icmp ult i32 %.off93, 8
+  %or.cond = or i1 %2, %3
+  %.off94 = add i32 %1, -45
+  %4 = icmp ult i32 %.off94, 8
+  %or.cond100 = or i1 %or.cond, %4
+  %.off95 = add i32 %1, -29
+  %5 = icmp ult i32 %.off95, 8
+  %or.cond102 = or i1 %or.cond100, %5
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear17 = and i32 %bf.lshr, 255
+  br i1 %or.cond102, label %cond.true15, label %cond.false
+
+cond.true15:                                      ; preds = %cond.true
+  %idxprom97 = zext i32 %bf.clear17 to i64
+  %arrayidx18 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom97
+  %6 = load i32* %arrayidx18, align 4, !tbaa !7
+  %cmp19 = icmp eq i32 %6, 5
+  br i1 %cmp19, label %cond.end59, label %lor.rhs
+
+lor.rhs:                                          ; preds = %cond.true15
+  %cmp25 = icmp eq i32 %6, 6
+  %phitmp = select i1 %cmp25, i32 2, i32 1
+  br label %cond.end59
+
+cond.false:                                       ; preds = %cond.true
+  switch i32 %bf.clear17, label %cond.false41 [
+    i32 18, label %cond.true30
+    i32 24, label %cond.true37
+  ]
+
+cond.true30:                                      ; preds = %cond.false
+  %7 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %7, 25
+  %8 = and i32 %and, 1
+  %9 = xor i32 %8, 3
+  br label %cond.end59
+
+cond.true37:                                      ; preds = %cond.false
+  %10 = load i32* @target_flags, align 4, !tbaa !0
+  %and38 = lshr i32 %10, 24
+  %11 = and i32 %and38, 2
+  %12 = xor i32 %11, 6
+  br label %cond.end59
+
+cond.false41:                                     ; preds = %cond.false
+  %idxprom4596 = zext i32 %bf.clear17 to i64
+  %arrayidx46 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom4596
+  %13 = load i8* %arrayidx46, align 1, !tbaa !1
+  %conv = zext i8 %13 to i32
+  %14 = load i32* @target_flags, align 4, !tbaa !0
+  %and47 = lshr i32 %14, 23
+  %15 = and i32 %and47, 4
+  %16 = add i32 %15, 4
+  %add = add i32 %conv, -1
+  %sub = add i32 %add, %16
+  %div = sdiv i32 %sub, %16
+  br label %cond.end59
+
+cond.end59:                                       ; preds = %cond.true15, %lor.rhs, %if.end, %cond.true37, %cond.false41, %cond.true30
+  %cond60 = phi i32 [ %9, %cond.true30 ], [ %12, %cond.true37 ], [ %div, %cond.false41 ], [ 1, %if.end ], [ 2, %cond.true15 ], [ %phitmp, %lor.rhs ]
+  %17 = load i32* @reg_dead_endregno, align 4, !tbaa !0
+  %cmp62 = icmp ugt i32 %17, %1
+  br i1 %cmp62, label %land.lhs.true64, label %if.end73
+
+land.lhs.true64:                                  ; preds = %cond.end59
+  %add61 = add i32 %cond60, %1
+  %18 = load i32* @reg_dead_regno, align 4, !tbaa !0
+  %cmp65 = icmp ult i32 %18, %add61
+  br i1 %cmp65, label %if.then67, label %if.end73
+
+if.then67:                                        ; preds = %land.lhs.true64
+  %19 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load68 = load i32* %19, align 8
+  %bf.clear69 = and i32 %bf.load68, 65535
+  %cmp70 = icmp eq i32 %bf.clear69, 49
+  %cond72 = select i1 %cmp70, i32 1, i32 -1
+  store i32 %cond72, i32* @reg_dead_flag, align 4, !tbaa !0
+  br label %if.end73
+
+if.end73:                                         ; preds = %entry, %if.then67, %land.lhs.true64, %cond.end59
+  ret void
+}

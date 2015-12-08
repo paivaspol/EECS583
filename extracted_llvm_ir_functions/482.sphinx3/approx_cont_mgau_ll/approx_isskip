@@ -1,0 +1,29 @@
+define i32 @approx_isskip(i32 %frame, i32 %ds_ratio, i32 %cond_ds, i32 %isSameBestIdx, i32* nocapture %skip_count) #0 {
+entry:
+  %cmp = icmp sgt i32 %cond_ds, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %tobool = icmp eq i32 %isSameBestIdx, 0
+  br i1 %tobool, label %return, label %if.then1
+
+if.then1:                                         ; preds = %if.then
+  %0 = load i32* %skip_count, align 4, !tbaa !0
+  %sub = add nsw i32 %ds_ratio, -1
+  %cmp2 = icmp slt i32 %0, %sub
+  br i1 %cmp2, label %return, label %if.else
+
+if.else:                                          ; preds = %if.then1
+  store i32 0, i32* %skip_count, align 4, !tbaa !0
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %rem = srem i32 %frame, %ds_ratio
+  %not.cmp5 = icmp ne i32 %rem, 0
+  %. = zext i1 %not.cmp5 to i32
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then, %if.then1, %if.else
+  %retval.0 = phi i32 [ 0, %if.else ], [ 1, %if.then1 ], [ 0, %if.then ], [ %., %if.end ]
+  ret i32 %retval.0
+}

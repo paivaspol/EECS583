@@ -1,0 +1,67 @@
+define double @imp_gauge_action() #0 {
+entry:
+  %g_action = alloca double, align 8
+  store double 0.000000e+00, double* %g_action, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc32, %entry
+  %indvars.iv58 = phi i64 [ 0, %entry ], [ %indvars.iv.next59, %for.inc32 ]
+  %arrayidx = getelementptr inbounds [3 x i32]* @loop_length, i64 0, i64 %indvars.iv58
+  %0 = load i32* %arrayidx, align 4, !tbaa !3
+  %arrayidx3 = getelementptr inbounds [3 x i32]* @loop_num, i64 0, i64 %indvars.iv58
+  %1 = load i32* %arrayidx3, align 4, !tbaa !3
+  %cmp455 = icmp sgt i32 %1, 0
+  br i1 %cmp455, label %for.body5.lr.ph, label %for.inc32
+
+for.body5.lr.ph:                                  ; preds = %for.body
+  %arrayidx15 = getelementptr inbounds [3 x [1 x double]]* @loop_coeff, i64 0, i64 %indvars.iv58, i64 0
+  br label %for.body5
+
+for.body5:                                        ; preds = %for.body5.lr.ph, %for.inc29
+  %indvars.iv = phi i64 [ 0, %for.body5.lr.ph ], [ %indvars.iv.next, %for.inc29 ]
+  %arraydecay = getelementptr inbounds [3 x [16 x [6 x i32]]]* @loop_table, i64 0, i64 %indvars.iv58, i64 %indvars.iv, i64 0
+  call void @path_product(i32* %arraydecay, i32 %0) #5
+  %2 = load i32* @sites_on_node, align 4, !tbaa !3
+  %cmp1152 = icmp sgt i32 %2, 0
+  br i1 %cmp1152, label %for.body12.lr.ph, label %for.inc29
+
+for.body12.lr.ph:                                 ; preds = %for.body5
+  %3 = load %struct.site** @lattice, align 8, !tbaa !4
+  br label %for.body12
+
+for.body12:                                       ; preds = %for.body12.lr.ph, %for.body12
+  %i.054 = phi i32 [ 0, %for.body12.lr.ph ], [ %inc27, %for.body12 ]
+  %s.053 = phi %struct.site* [ %3, %for.body12.lr.ph ], [ %incdec.ptr, %for.body12 ]
+  %tempmat1 = getelementptr inbounds %struct.site* %s.053, i64 0, i32 18
+  %call = call { double, double } @trace_su3(%struct.su3_matrix* %tempmat1) #5
+  %4 = extractvalue { double, double } %call, 0
+  %sub = fsub double 3.000000e+00, %4
+  %5 = load double* %arrayidx15, align 8, !tbaa !0
+  %mul = fmul double %5, %sub
+  %6 = load double* %g_action, align 8, !tbaa !0
+  %add25 = fadd double %6, %mul
+  store double %add25, double* %g_action, align 8, !tbaa !0
+  %inc27 = add nsw i32 %i.054, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %s.053, i64 1
+  %7 = load i32* @sites_on_node, align 4, !tbaa !3
+  %cmp11 = icmp slt i32 %inc27, %7
+  br i1 %cmp11, label %for.body12, label %for.inc29
+
+for.inc29:                                        ; preds = %for.body12, %for.body5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %8 = load i32* %arrayidx3, align 4, !tbaa !3
+  %9 = trunc i64 %indvars.iv.next to i32
+  %cmp4 = icmp slt i32 %9, %8
+  br i1 %cmp4, label %for.body5, label %for.inc32
+
+for.inc32:                                        ; preds = %for.inc29, %for.body
+  %indvars.iv.next59 = add i64 %indvars.iv58, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next59 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.end34, label %for.body
+
+for.end34:                                        ; preds = %for.inc32
+  call void @g_doublesum(double* %g_action) #5
+  %10 = load double* %g_action, align 8, !tbaa !0
+  ret double %10
+}

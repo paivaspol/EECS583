@@ -1,0 +1,139 @@
+define void @try_constants(%struct.rtx_def* %insn, %struct.inline_remap* %map) #0 {
+entry:
+  %num_sets = getelementptr inbounds %struct.inline_remap* %map, i64 0, i32 18
+  store i32 0, i32* %num_sets, align 4, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  tail call fastcc void @subst_constants(%struct.rtx_def** %rtx, %struct.rtx_def* %insn, %struct.inline_remap* %map, i32 1) #8
+  %call = tail call i32 @apply_change_group() #7
+  tail call fastcc void @subst_constants(%struct.rtx_def** %rtx, %struct.rtx_def* %insn, %struct.inline_remap* %map, i32 0) #8
+  %call4 = tail call i32 @apply_change_group() #7
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  tail call void @note_stores(%struct.rtx_def* %0, void (%struct.rtx_def*, %struct.rtx_def*, i8*)* @mark_stores, i8* null) #7
+  %last_pc_value = getelementptr inbounds %struct.inline_remap* %map, i64 0, i32 20
+  store %struct.rtx_def* null, %struct.rtx_def** %last_pc_value, align 8, !tbaa !0
+  %1 = load i32* %num_sets, align 4, !tbaa !3
+  %cmp158 = icmp sgt i32 %1, 0
+  br i1 %cmp158, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %const_equiv_varray = getelementptr inbounds %struct.inline_remap* %map, i64 0, i32 9
+  %const_age = getelementptr inbounds %struct.inline_remap* %map, i64 0, i32 10
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %dest = getelementptr inbounds %struct.inline_remap* %map, i64 0, i32 19, i64 %indvars.iv, i32 0
+  %2 = load %struct.rtx_def** %dest, align 8, !tbaa !0
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp10 = icmp eq i32 %bf.clear, 61
+  br i1 %cmp10, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.body
+  %arrayidx16 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx16 to i32*
+  %4 = load i32* %rtuint, align 4, !tbaa !3
+  %conv = sext i32 %4 to i64
+  %5 = load %struct.varray_head_tag** %const_equiv_varray, align 8, !tbaa !0
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %5, i64 0, i32 0
+  %6 = load i64* %num_elements, align 8, !tbaa !6
+  %cmp17 = icmp ult i64 %conv, %6
+  br i1 %cmp17, label %if.end29, label %if.then19
+
+if.then19:                                        ; preds = %if.then
+  %7 = load %struct.varray_head_tag** @global_const_equiv_varray, align 8, !tbaa !0
+  %cmp21 = icmp eq %struct.varray_head_tag* %7, %5
+  %add = add nsw i32 %4, 1
+  %conv24 = sext i32 %add to i64
+  %call25 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %5, i64 %conv24) #7
+  store %struct.varray_head_tag* %call25, %struct.varray_head_tag** %const_equiv_varray, align 8, !tbaa !0
+  br i1 %cmp21, label %if.then27, label %if.end29
+
+if.then27:                                        ; preds = %if.then19
+  store %struct.varray_head_tag* %call25, %struct.varray_head_tag** @global_const_equiv_varray, align 8, !tbaa !0
+  %.pre = load %struct.varray_head_tag** %const_equiv_varray, align 8, !tbaa !0
+  br label %if.end29
+
+if.end29:                                         ; preds = %if.then, %if.then19, %if.then27
+  %8 = phi %struct.varray_head_tag* [ %5, %if.then ], [ %call25, %if.then19 ], [ %.pre, %if.then27 ]
+  %rtx33 = getelementptr inbounds %struct.varray_head_tag* %8, i64 0, i32 4, i32 0, i64 %conv, i32 0
+  %9 = load %struct.rtx_def** %rtx33, align 8, !tbaa !0
+  %cmp34 = icmp eq %struct.rtx_def* %9, null
+  br i1 %cmp34, label %if.then47, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end29
+  %equiv = getelementptr inbounds %struct.inline_remap* %map, i64 0, i32 19, i64 %indvars.iv, i32 1
+  %10 = load %struct.rtx_def** %equiv, align 8, !tbaa !0
+  %call45 = tail call i32 @rtx_equal_p(%struct.rtx_def* %9, %struct.rtx_def* %10) #7
+  %tobool46 = icmp eq i32 %call45, 0
+  br i1 %tobool46, label %lor.lhs.false.if.then47_crit_edge, label %for.inc
+
+lor.lhs.false.if.then47_crit_edge:                ; preds = %lor.lhs.false
+  %.pre161 = load %struct.varray_head_tag** %const_equiv_varray, align 8, !tbaa !0
+  br label %if.then47
+
+if.then47:                                        ; preds = %if.end29, %lor.lhs.false.if.then47_crit_edge
+  %11 = phi %struct.varray_head_tag* [ %.pre161, %lor.lhs.false.if.then47_crit_edge ], [ %8, %if.end29 ]
+  %12 = load %struct.rtx_def** %dest, align 8, !tbaa !0
+  %arrayidx53 = getelementptr inbounds %struct.rtx_def* %12, i64 0, i32 1, i64 0
+  %rtuint54 = bitcast %union.rtunion_def* %arrayidx53 to i32*
+  %13 = load i32* %rtuint54, align 4, !tbaa !3
+  %conv55 = zext i32 %13 to i64
+  %num_elements57 = getelementptr inbounds %struct.varray_head_tag* %11, i64 0, i32 0
+  %14 = load i64* %num_elements57, align 8, !tbaa !6
+  %cmp58 = icmp ult i64 %conv55, %14
+  br i1 %cmp58, label %if.end81, label %if.then60
+
+if.then60:                                        ; preds = %if.then47
+  %15 = load %struct.varray_head_tag** @global_const_equiv_varray, align 8, !tbaa !0
+  %cmp63 = icmp eq %struct.varray_head_tag* %15, %11
+  %add73 = add i32 %13, 1
+  %conv74 = zext i32 %add73 to i64
+  %call75 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %11, i64 %conv74) #7
+  store %struct.varray_head_tag* %call75, %struct.varray_head_tag** %const_equiv_varray, align 8, !tbaa !0
+  br i1 %cmp63, label %if.then78, label %if.end81
+
+if.then78:                                        ; preds = %if.then60
+  store %struct.varray_head_tag* %call75, %struct.varray_head_tag** @global_const_equiv_varray, align 8, !tbaa !0
+  %.pre160 = load %struct.varray_head_tag** %const_equiv_varray, align 8, !tbaa !0
+  br label %if.end81
+
+if.end81:                                         ; preds = %if.then60, %if.then47, %if.then78
+  %16 = phi %struct.varray_head_tag* [ %11, %if.then47 ], [ %.pre160, %if.then78 ], [ %call75, %if.then60 ]
+  %17 = load %struct.rtx_def** %dest, align 8, !tbaa !0
+  %arrayidx87 = getelementptr inbounds %struct.rtx_def* %17, i64 0, i32 1, i64 0
+  %rtuint88 = bitcast %union.rtunion_def* %arrayidx87 to i32*
+  %18 = load i32* %rtuint88, align 4, !tbaa !3
+  %idxprom89 = zext i32 %18 to i64
+  %equiv97 = getelementptr inbounds %struct.inline_remap* %map, i64 0, i32 19, i64 %indvars.iv, i32 1
+  %19 = load %struct.rtx_def** %equiv97, align 8, !tbaa !0
+  %rtx98 = getelementptr inbounds %struct.varray_head_tag* %16, i64 0, i32 4, i32 0, i64 %idxprom89, i32 0
+  store %struct.rtx_def* %19, %struct.rtx_def** %rtx98, align 8, !tbaa !0
+  %20 = load i32* %const_age, align 4, !tbaa !3
+  %age = getelementptr inbounds %struct.varray_head_tag* %16, i64 0, i32 4, i32 0, i64 %idxprom89, i32 1
+  store i32 %20, i32* %age, align 4, !tbaa !3
+  br label %for.inc
+
+if.else:                                          ; preds = %for.body
+  %21 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !0
+  %cmp104 = icmp eq %struct.rtx_def* %2, %21
+  br i1 %cmp104, label %if.then106, label %for.inc
+
+if.then106:                                       ; preds = %if.else
+  %equiv110 = getelementptr inbounds %struct.inline_remap* %map, i64 0, i32 19, i64 %indvars.iv, i32 1
+  %22 = load %struct.rtx_def** %equiv110, align 8, !tbaa !0
+  store %struct.rtx_def* %22, %struct.rtx_def** %last_pc_value, align 8, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %lor.lhs.false, %if.end81, %if.then106, %if.else
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %23 = load i32* %num_sets, align 4, !tbaa !3
+  %24 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %24, %23
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

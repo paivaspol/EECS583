@@ -1,0 +1,16 @@
+define internal fastcc void @emit_jump_if_reachable(%struct.rtx_def* %label) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @get_last_insn() #7
+  %0 = bitcast %struct.rtx_def* %call to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 35
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @emit_jump(%struct.rtx_def* %label) #9
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

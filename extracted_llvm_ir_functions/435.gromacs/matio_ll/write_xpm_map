@@ -1,0 +1,117 @@
+define void @write_xpm_map(%struct._IO_FILE* nocapture %out, i32 %n_x, i32 %n_y, i32* nocapture %nlevels, float %lo, float %hi, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rhi.coerce0, float %rhi.coerce1) #0 {
+entry:
+  %0 = load i32* %nlevels, align 4, !tbaa !3
+  %conv = sext i32 %0 to i64
+  %call = tail call i64 @strlen(i8* getelementptr inbounds ([89 x i8]* @mapper, i64 0, i64 0)) #10
+  %mul = mul i64 %call, %call
+  %cmp = icmp ugt i64 %conv, %mul
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %conv7 = trunc i64 %mul to i32
+  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([56 x i8]* @.str62, i64 0, i64 0), i32 %0, i32 %conv7) #8
+  %call9 = tail call i64 @strlen(i8* getelementptr inbounds ([89 x i8]* @mapper, i64 0, i64 0)) #10
+  %mul11 = mul i64 %call9, %call9
+  %conv12 = trunc i64 %mul11 to i32
+  store i32 %conv12, i32* %nlevels, align 4, !tbaa !3
+  br label %if.end17
+
+if.else:                                          ; preds = %entry
+  %cmp13 = icmp slt i32 %0, 2
+  br i1 %cmp13, label %if.then15, label %if.end17
+
+if.then15:                                        ; preds = %if.else
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([57 x i8]* @.str63, i64 0, i64 0), i32 %0) #8
+  store i32 2, i32* %nlevels, align 4, !tbaa !3
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.else, %if.then15, %if.then
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([32 x i8]* @.str65, i64 0, i64 0), i64 31, i64 1, %struct._IO_FILE* %out)
+  %4 = load i32* %nlevels, align 4, !tbaa !3
+  %conv19 = sext i32 %4 to i64
+  %call20 = tail call i64 @strlen(i8* getelementptr inbounds ([89 x i8]* @mapper, i64 0, i64 0)) #10
+  %cmp21 = icmp ule i64 %conv19, %call20
+  %cond = select i1 %cmp21, i32 1, i32 2
+  %call23 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([18 x i8]* @.str66, i64 0, i64 0), i32 %n_x, i32 %n_y, i32 %4, i32 %cond) #8
+  %5 = load i32* %nlevels, align 4, !tbaa !3
+  %sub = add nsw i32 %5, -1
+  %conv24 = sitofp i32 %sub to double
+  %div = fdiv double 1.000000e+00, %conv24
+  %conv25 = fptrunc double %div to float
+  %cmp26117 = icmp sgt i32 %5, 0
+  br i1 %cmp26117, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end17
+  %rlo.sroa.0.0.vec.extract = extractelement <2 x float> %rlo.coerce0, i32 0
+  %rhi.sroa.0.0.vec.extract = extractelement <2 x float> %rhi.coerce0, i32 0
+  %rlo.sroa.0.4.vec.extract = extractelement <2 x float> %rlo.coerce0, i32 1
+  %rhi.sroa.0.4.vec.extract = extractelement <2 x float> %rhi.coerce0, i32 1
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %cond.end
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %cond.end ]
+  %6 = phi i32 [ %5, %for.body.lr.ph ], [ %10, %cond.end ]
+  %7 = trunc i64 %indvars.iv to i32
+  %sub28 = xor i32 %7, -1
+  %sub29 = add i32 %6, %sub28
+  %conv30 = sitofp i32 %sub29 to float
+  %mul32 = fmul float %rlo.sroa.0.0.vec.extract, %conv30
+  %conv33 = sitofp i32 %7 to float
+  %mul35 = fmul float %rhi.sroa.0.0.vec.extract, %conv33
+  %add = fadd float %mul35, %mul32
+  %mul36 = fmul float %conv25, %add
+  %mul39 = fmul float %rlo.sroa.0.4.vec.extract, %conv30
+  %mul42 = fmul float %rhi.sroa.0.4.vec.extract, %conv33
+  %add43 = fadd float %mul42, %mul39
+  %mul44 = fmul float %conv25, %add43
+  %mul47 = fmul float %conv30, %rlo.coerce1
+  %mul50 = fmul float %conv33, %rhi.coerce1
+  %add51 = fadd float %mul50, %mul47
+  %mul52 = fmul float %conv25, %add51
+  %call54 = tail call i64 @strlen(i8* getelementptr inbounds ([89 x i8]* @mapper, i64 0, i64 0)) #10
+  %rem = urem i64 %indvars.iv, %call54
+  %arrayidx = getelementptr inbounds [89 x i8]* @mapper, i64 0, i64 %rem
+  %8 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv55 = sext i8 %8 to i32
+  %conv56 = sext i32 %6 to i64
+  %cmp58 = icmp ugt i64 %conv56, %call54
+  br i1 %cmp58, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %for.body
+  %div62 = udiv i64 %indvars.iv, %call54
+  %arrayidx63 = getelementptr inbounds [89 x i8]* @mapper, i64 0, i64 %div62
+  %9 = load i8* %arrayidx63, align 1, !tbaa !1
+  %conv64 = sext i8 %9 to i32
+  br label %cond.end
+
+cond.end:                                         ; preds = %for.body, %cond.false
+  %cond65 = phi i32 [ %conv64, %cond.false ], [ 32, %for.body ]
+  %mul66 = fmul float %mul36, 2.550000e+02
+  %conv67 = fpext float %mul66 to double
+  %add68 = fadd double %conv67, 5.000000e-01
+  %conv69 = fptosi double %add68 to i32
+  %mul70 = fmul float %mul44, 2.550000e+02
+  %conv71 = fpext float %mul70 to double
+  %add72 = fadd double %conv71, 5.000000e-01
+  %conv73 = fptosi double %add72 to i32
+  %mul74 = fmul float %mul52, 2.550000e+02
+  %conv75 = fpext float %mul74 to double
+  %add76 = fadd double %conv75, 5.000000e-01
+  %conv77 = fptosi double %add76 to i32
+  %mul79 = fmul float %conv30, %lo
+  %mul81 = fmul float %conv33, %hi
+  %add82 = fadd float %mul81, %mul79
+  %mul83 = fmul float %conv25, %add82
+  %conv84 = fpext float %mul83 to double
+  %call85 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([39 x i8]* @.str67, i64 0, i64 0), i32 %conv55, i32 %cond65, i32 %conv69, i32 %conv73, i32 %conv77, double %conv84) #8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %10 = load i32* %nlevels, align 4, !tbaa !3
+  %11 = trunc i64 %indvars.iv.next to i32
+  %cmp26 = icmp slt i32 %11, %10
+  br i1 %cmp26, label %for.body, label %for.end
+
+for.end:                                          ; preds = %cond.end, %if.end17
+  ret void
+}

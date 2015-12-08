@@ -1,0 +1,47 @@
+define void @fe_frame_to_fea(%struct.fe_t* nocapture %FE, double* nocapture %in, double* nocapture %fea) #0 {
+entry:
+  %FB_TYPE = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 6
+  %0 = load i32* %FB_TYPE, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, 1
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %FFT_SIZE = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 5
+  %1 = load i32* %FFT_SIZE, align 4, !tbaa !0
+  %conv = sext i32 %1 to i64
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 8) #5
+  %2 = bitcast i8* %call to double*
+  %MEL_FB = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 11
+  %3 = load %struct.melfb_t** %MEL_FB, align 8, !tbaa !3
+  %num_filters = getelementptr inbounds %struct.melfb_t* %3, i64 0, i32 2
+  %4 = load i32* %num_filters, align 4, !tbaa !0
+  %conv1 = sext i32 %4 to i64
+  %call2 = tail call noalias i8* @calloc(i64 %conv1, i64 8) #5
+  %5 = bitcast i8* %call2 to double*
+  %cmp3 = icmp eq i8* %call, null
+  %cmp5 = icmp eq i8* %call2, null
+  %or.cond = or i1 %cmp3, %cmp5
+  br i1 %or.cond, label %if.then7, label %if.end
+
+if.then7:                                         ; preds = %if.then
+  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %7 = tail call i64 @fwrite(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i64 52, i64 1, %struct._IO_FILE* %6)
+  tail call void @exit(i32 0) #6
+  unreachable
+
+if.end:                                           ; preds = %if.then
+  %FRAME_SIZE = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 4
+  %8 = load i32* %FRAME_SIZE, align 4, !tbaa !0
+  tail call void @fe_spec_magnitude(double* %in, i32 %8, double* %2, i32 %1) #4
+  tail call void @fe_mel_spec(%struct.fe_t* %FE, double* %2, double* %5) #4
+  tail call void @fe_mel_cep(%struct.fe_t* %FE, double* %5, double* %fea) #4
+  tail call void @free(i8* %call) #5
+  tail call void @free(i8* %call2) #5
+  ret void
+
+if.else:                                          ; preds = %entry
+  %9 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %10 = tail call i64 @fwrite(i8* getelementptr inbounds ([49 x i8]* @.str3, i64 0, i64 0), i64 48, i64 1, %struct._IO_FILE* %9)
+  tail call void @exit(i32 0) #6
+  unreachable
+}

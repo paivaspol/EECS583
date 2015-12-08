@@ -1,0 +1,53 @@
+define internal fastcc zeroext i1 @set_live_p(%struct.rtx_def* %set, i32* nocapture %counts) #0 {
+entry:
+  %call = tail call i32 @set_noop_p(%struct.rtx_def* %set) #6
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.else, label %if.end28
+
+if.else:                                          ; preds = %entry
+  %fld = getelementptr inbounds %struct.rtx_def* %set, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 61
+  br i1 %cmp, label %lor.lhs.false, label %return
+
+lor.lhs.false:                                    ; preds = %if.else
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx5 to i32*
+  %2 = load i32* %rtuint, align 4, !tbaa !4
+  %cmp6 = icmp ult i32 %2, 53
+  br i1 %cmp6, label %return, label %lor.lhs.false7
+
+lor.lhs.false7:                                   ; preds = %lor.lhs.false
+  %idxprom = zext i32 %2 to i64
+  %arrayidx14 = getelementptr inbounds i32* %counts, i64 %idxprom
+  %3 = load i32* %arrayidx14, align 4, !tbaa !4
+  %cmp15 = icmp eq i32 %3, 0
+  br i1 %cmp15, label %lor.lhs.false16, label %return
+
+lor.lhs.false16:                                  ; preds = %lor.lhs.false7
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %set, i64 0, i32 1, i64 1
+  %rtx19 = bitcast %union.rtunion_def* %arrayidx18 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx19, align 8, !tbaa !0
+  %call20 = tail call i32 @side_effects_p(%struct.rtx_def* %4) #6
+  %tobool21 = icmp eq i32 %call20, 0
+  br i1 %tobool21, label %lor.lhs.false22, label %return
+
+lor.lhs.false22:                                  ; preds = %lor.lhs.false16
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %6 = load %struct.function** @cfun, align 8, !tbaa !0
+  %internal_arg_pointer = getelementptr inbounds %struct.function* %6, i64 0, i32 15
+  %7 = load %struct.rtx_def** %internal_arg_pointer, align 8, !tbaa !0
+  %cmp26 = icmp eq %struct.rtx_def* %5, %7
+  br i1 %cmp26, label %return, label %if.end28
+
+if.end28:                                         ; preds = %entry, %lor.lhs.false22
+  br label %return
+
+return:                                           ; preds = %lor.lhs.false, %lor.lhs.false22, %if.else, %lor.lhs.false7, %lor.lhs.false16, %if.end28
+  %retval.0 = phi i1 [ false, %if.end28 ], [ true, %lor.lhs.false16 ], [ true, %lor.lhs.false7 ], [ true, %if.else ], [ true, %lor.lhs.false22 ], [ true, %lor.lhs.false ]
+  ret i1 %retval.0
+}

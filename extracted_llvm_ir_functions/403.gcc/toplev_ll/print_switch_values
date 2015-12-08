@@ -1,0 +1,175 @@
+define internal fastcc void @print_switch_values(%struct._IO_FILE* nocapture %file, i8* nocapture %indent) #0 {
+entry:
+  %prefix = alloca [256 x i8], align 16
+  %0 = load i8* %indent, align 1, !tbaa !1
+  %tobool = icmp ne i8 %0, 0
+  %cond = select i1 %tobool, i8* getelementptr inbounds ([2 x i8]* @.str26, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str28, i64 0, i64 0)
+  %call = call fastcc i32 @print_single_switch(%struct._IO_FILE* %file, i32 0, i8* %indent, i8* %cond, i8* getelementptr inbounds ([17 x i8]* @.str29, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str28, i64 0, i64 0)) #15
+  %1 = load i8*** @save_argv, align 8, !tbaa !4
+  %p.01319 = getelementptr inbounds i8** %1, i64 1
+  %2 = load i8** %p.01319, align 8, !tbaa !4
+  %cmp1420 = icmp eq i8* %2, null
+  br i1 %cmp1420, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry, %if.end29
+  %3 = phi i8* [ %9, %if.end29 ], [ %2, %entry ]
+  %p.01323 = phi i8** [ %p.013, %if.end29 ], [ %p.01319, %entry ]
+  %.pn.ph22 = phi i8** [ %p.016, %if.end29 ], [ %1, %entry ]
+  %pos.addr.0.ph21 = phi i32 [ %call30, %if.end29 ], [ %call, %entry ]
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %4 = phi i8* [ %3, %for.body.lr.ph ], [ %6, %for.cond.backedge ]
+  %p.016 = phi i8** [ %p.01323, %for.body.lr.ph ], [ %p.0, %for.cond.backedge ]
+  %.pn15 = phi i8** [ %.pn.ph22, %for.body.lr.ph ], [ %.pn.be, %for.cond.backedge ]
+  %5 = load i8* %4, align 1, !tbaa !1
+  %cmp3 = icmp eq i8 %5, 45
+  br i1 %cmp3, label %if.then, label %for.cond.backedge
+
+for.cond.backedge:                                ; preds = %for.body, %if.end23, %if.end18, %if.end13, %if.then8
+  %.pn.be = phi i8** [ %p.016, %if.end13 ], [ %p.016, %if.end18 ], [ %p.016, %if.end23 ], [ %p.016, %for.body ], [ %p.0.incdec.ptr, %if.then8 ]
+  %p.0 = getelementptr inbounds i8** %.pn.be, i64 1
+  %6 = load i8** %p.0, align 8, !tbaa !4
+  %cmp = icmp eq i8* %6, null
+  br i1 %cmp, label %for.end, label %for.body
+
+if.then:                                          ; preds = %for.body
+  %call5 = call i32 @strcmp(i8* %4, i8* getelementptr inbounds ([3 x i8]* @.str30, i64 0, i64 0)) #12
+  %cmp6 = icmp eq i32 %call5, 0
+  br i1 %cmp6, label %if.then8, label %if.end13
+
+if.then8:                                         ; preds = %if.then
+  %arrayidx9 = getelementptr inbounds i8** %.pn15, i64 2
+  %7 = load i8** %arrayidx9, align 8, !tbaa !4
+  %cmp10 = icmp eq i8* %7, null
+  %p.0.incdec.ptr = select i1 %cmp10, i8** %p.016, i8** %arrayidx9
+  br label %for.cond.backedge
+
+if.end13:                                         ; preds = %if.then
+  %call14 = call i32 @strcmp(i8* %4, i8* getelementptr inbounds ([7 x i8]* @.str31, i64 0, i64 0)) #12
+  %cmp15 = icmp eq i32 %call14, 0
+  br i1 %cmp15, label %for.cond.backedge, label %if.end18
+
+if.end18:                                         ; preds = %if.end13
+  %call19 = call i32 @strcmp(i8* %4, i8* getelementptr inbounds ([9 x i8]* @.str32, i64 0, i64 0)) #12
+  %cmp20 = icmp eq i32 %call19, 0
+  br i1 %cmp20, label %for.cond.backedge, label %if.end23
+
+if.end23:                                         ; preds = %if.end18
+  %arrayidx24 = getelementptr inbounds i8* %4, i64 1
+  %8 = load i8* %arrayidx24, align 1, !tbaa !1
+  %cmp26 = icmp eq i8 %8, 100
+  br i1 %cmp26, label %for.cond.backedge, label %if.end29
+
+if.end29:                                         ; preds = %if.end23
+  %call30 = call fastcc i32 @print_single_switch(%struct._IO_FILE* %file, i32 %pos.addr.0.ph21, i8* %indent, i8* getelementptr inbounds ([2 x i8]* @.str26, i64 0, i64 0), i8* %4, i8* getelementptr inbounds ([1 x i8]* @.str28, i64 0, i64 0)) #15
+  %p.013 = getelementptr inbounds i8** %p.016, i64 1
+  %9 = load i8** %p.013, align 8, !tbaa !4
+  %cmp14 = icmp eq i8* %9, null
+  br i1 %cmp14, label %for.end, label %for.body.lr.ph
+
+for.end:                                          ; preds = %entry, %if.end29, %for.cond.backedge
+  %pos.addr.0.ph18 = phi i32 [ %pos.addr.0.ph21, %for.cond.backedge ], [ %call, %entry ], [ %call30, %if.end29 ]
+  %cmp33 = icmp sgt i32 %pos.addr.0.ph18, 0
+  br i1 %cmp33, label %if.then35, label %if.end37
+
+if.then35:                                        ; preds = %for.end
+  %fputc4 = call i32 @fputc(i32 10, %struct._IO_FILE* %file) #6
+  br label %if.end37
+
+if.end37:                                         ; preds = %if.then35, %for.end
+  %10 = load i8* %indent, align 1, !tbaa !1
+  %tobool39 = icmp ne i8 %10, 0
+  %cond40 = select i1 %tobool39, i8* getelementptr inbounds ([2 x i8]* @.str26, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str28, i64 0, i64 0)
+  %call41 = call fastcc i32 @print_single_switch(%struct._IO_FILE* %file, i32 0, i8* %indent, i8* %cond40, i8* getelementptr inbounds ([18 x i8]* @.str33, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str28, i64 0, i64 0)) #15
+  br label %for.body45
+
+for.body45:                                       ; preds = %for.inc54, %if.end37
+  %j.010 = phi i64 [ 0, %if.end37 ], [ %inc, %for.inc54 ]
+  %pos.addr.29 = phi i32 [ %call41, %if.end37 ], [ %pos.addr.3, %for.inc54 ]
+  %variable = getelementptr inbounds [97 x %struct.lang_independent_options]* @f_options, i64 0, i64 %j.010, i32 1
+  %11 = load i32** %variable, align 8, !tbaa !4
+  %12 = load i32* %11, align 4, !tbaa !0
+  %on_value = getelementptr inbounds [97 x %struct.lang_independent_options]* @f_options, i64 0, i64 %j.010, i32 2
+  %13 = load i32* %on_value, align 16, !tbaa !0
+  %cmp48 = icmp eq i32 %12, %13
+  br i1 %cmp48, label %if.then50, label %for.inc54
+
+if.then50:                                        ; preds = %for.body45
+  %string = getelementptr inbounds [97 x %struct.lang_independent_options]* @f_options, i64 0, i64 %j.010, i32 0
+  %14 = load i8** %string, align 16, !tbaa !4
+  %call52 = call fastcc i32 @print_single_switch(%struct._IO_FILE* %file, i32 %pos.addr.29, i8* %indent, i8* getelementptr inbounds ([2 x i8]* @.str26, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str34, i64 0, i64 0), i8* %14) #15
+  br label %for.inc54
+
+for.inc54:                                        ; preds = %for.body45, %if.then50
+  %pos.addr.3 = phi i32 [ %call52, %if.then50 ], [ %pos.addr.29, %for.body45 ]
+  %inc = add i64 %j.010, 1
+  %exitcond25 = icmp eq i64 %inc, 97
+  br i1 %exitcond25, label %for.body59, label %for.body45
+
+for.cond83.preheader:                             ; preds = %for.inc80
+  %15 = getelementptr inbounds [256 x i8]* %prefix, i64 0, i64 0
+  br label %for.body86
+
+for.body59:                                       ; preds = %for.inc54, %for.inc80
+  %j.18 = phi i64 [ %inc81, %for.inc80 ], [ 0, %for.inc54 ]
+  %pos.addr.47 = phi i32 [ %pos.addr.5, %for.inc80 ], [ %pos.addr.3, %for.inc54 ]
+  %name = getelementptr inbounds [56 x %struct.anon.3]* @target_switches, i64 0, i64 %j.18, i32 0
+  %16 = load i8** %name, align 8, !tbaa !4
+  %17 = load i8* %16, align 1, !tbaa !1
+  %cmp63 = icmp eq i8 %17, 0
+  br i1 %cmp63, label %for.inc80, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body59
+  %value = getelementptr inbounds [56 x %struct.anon.3]* @target_switches, i64 0, i64 %j.18, i32 1
+  %18 = load i32* %value, align 8, !tbaa !0
+  %19 = lshr i64 57260077759506453, %j.18
+  %20 = and i64 %19, 1
+  %cmp66 = icmp eq i64 %20, 0
+  br i1 %cmp66, label %for.inc80, label %land.lhs.true68
+
+land.lhs.true68:                                  ; preds = %land.lhs.true
+  %21 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %21, %18
+  %cmp73 = icmp eq i32 %and, %18
+  br i1 %cmp73, label %if.then75, label %for.inc80
+
+if.then75:                                        ; preds = %land.lhs.true68
+  %call78 = call fastcc i32 @print_single_switch(%struct._IO_FILE* %file, i32 %pos.addr.47, i8* %indent, i8* getelementptr inbounds ([2 x i8]* @.str26, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str35, i64 0, i64 0), i8* %16) #15
+  br label %for.inc80
+
+for.inc80:                                        ; preds = %land.lhs.true, %for.body59, %land.lhs.true68, %if.then75
+  %pos.addr.5 = phi i32 [ %call78, %if.then75 ], [ %pos.addr.47, %land.lhs.true68 ], [ %pos.addr.47, %land.lhs.true ], [ %pos.addr.47, %for.body59 ]
+  %inc81 = add i64 %j.18, 1
+  %exitcond24 = icmp eq i64 %inc81, 56
+  br i1 %exitcond24, label %for.cond83.preheader, label %for.body59
+
+for.body86:                                       ; preds = %for.inc100, %for.cond83.preheader
+  %j.26 = phi i64 [ 0, %for.cond83.preheader ], [ %inc101, %for.inc100 ]
+  %pos.addr.65 = phi i32 [ %pos.addr.5, %for.cond83.preheader ], [ %pos.addr.7, %for.inc100 ]
+  %variable88 = getelementptr inbounds [13 x %struct.anon.4]* @target_options, i64 0, i64 %j.26, i32 1
+  %22 = load i8*** %variable88, align 8, !tbaa !4
+  %23 = load i8** %22, align 8, !tbaa !4
+  %cmp89 = icmp eq i8* %23, null
+  br i1 %cmp89, label %for.inc100, label %if.then91
+
+if.then91:                                        ; preds = %for.body86
+  call void @llvm.lifetime.start(i64 256, i8* %15) #6
+  %prefix93 = getelementptr inbounds [13 x %struct.anon.4]* @target_options, i64 0, i64 %j.26, i32 0
+  %24 = load i8** %prefix93, align 8, !tbaa !4
+  %call94 = call i32 (i8*, i8*, ...)* @sprintf(i8* %15, i8* getelementptr inbounds ([5 x i8]* @.str36, i64 0, i64 0), i8* %24) #11
+  %25 = load i8** %22, align 8, !tbaa !4
+  %call98 = call fastcc i32 @print_single_switch(%struct._IO_FILE* %file, i32 %pos.addr.65, i8* %indent, i8* getelementptr inbounds ([2 x i8]* @.str26, i64 0, i64 0), i8* %15, i8* %25) #15
+  call void @llvm.lifetime.end(i64 256, i8* %15) #6
+  br label %for.inc100
+
+for.inc100:                                       ; preds = %for.body86, %if.then91
+  %pos.addr.7 = phi i32 [ %call98, %if.then91 ], [ %pos.addr.65, %for.body86 ]
+  %inc101 = add i64 %j.26, 1
+  %exitcond = icmp eq i64 %inc101, 13
+  br i1 %exitcond, label %for.end102, label %for.body86
+
+for.end102:                                       ; preds = %for.inc100
+  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %file) #6
+  ret void
+}

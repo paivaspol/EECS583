@@ -1,0 +1,32 @@
+define i8* @_cpp_aligned_alloc(%struct.cpp_reader* nocapture %pfile, i64 %len) #1 {
+entry:
+  %a_buff = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 6
+  %0 = load %struct._cpp_buff** %a_buff, align 8, !tbaa !0
+  %cur = getelementptr inbounds %struct._cpp_buff* %0, i64 0, i32 2
+  %1 = load i8** %cur, align 8, !tbaa !0
+  %limit = getelementptr inbounds %struct._cpp_buff* %0, i64 0, i32 3
+  %2 = load i8** %limit, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint i8* %2 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp = icmp ult i64 %sub.ptr.sub, %len
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct._cpp_buff* @_cpp_get_buff(%struct.cpp_reader* %pfile, i64 %len) #10
+  %3 = load %struct._cpp_buff** %a_buff, align 8, !tbaa !0
+  %next = getelementptr inbounds %struct._cpp_buff* %call, i64 0, i32 0
+  store %struct._cpp_buff* %3, %struct._cpp_buff** %next, align 8, !tbaa !0
+  store %struct._cpp_buff* %call, %struct._cpp_buff** %a_buff, align 8, !tbaa !0
+  %cur3 = getelementptr inbounds %struct._cpp_buff* %call, i64 0, i32 2
+  %4 = load i8** %cur3, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %buff.0 = phi %struct._cpp_buff* [ %call, %if.then ], [ %0, %entry ]
+  %result.0 = phi i8* [ %4, %if.then ], [ %1, %entry ]
+  %add.ptr = getelementptr inbounds i8* %result.0, i64 %len
+  %cur4 = getelementptr inbounds %struct._cpp_buff* %buff.0, i64 0, i32 2
+  store i8* %add.ptr, i8** %cur4, align 8, !tbaa !0
+  ret i8* %result.0
+}

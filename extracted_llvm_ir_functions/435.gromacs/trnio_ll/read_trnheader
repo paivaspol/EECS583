@@ -1,0 +1,16 @@
+define void @read_trnheader(i8* %fn, %struct.t_trnheader* %trn) #0 {
+entry:
+  %bOK = alloca i32, align 4
+  %call.i = call i32 @gmx_fio_open(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0)) #4
+  %call1 = call fastcc i32 @do_trnheader(i32 %call.i, i32 1, %struct.t_trnheader* %trn, i32* %bOK) #5
+  %tobool = icmp eq i32 %call1, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([14 x i8]* @.str9, i64 0, i64 0), i8* %fn) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  call void @gmx_fio_close(i32 %call.i) #4
+  ret void
+}

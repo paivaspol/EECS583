@@ -1,0 +1,227 @@
+define internal fastcc void @emit_swap_insn(%struct.rtx_def* %insn, %struct.stack_def* nocapture %regstack, %struct.rtx_def* nocapture %reg) #0 {
+entry:
+  %call = tail call fastcc i32 @get_hard_regnum(%struct.stack_def* %regstack, %struct.rtx_def* %reg) #7
+  %cmp = icmp slt i32 %call, 8
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 990, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.emit_swap_insn, i64 0, i64 0)) #8
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %cmp4 = icmp eq i32 %call, 8
+  br i1 %cmp4, label %if.end175, label %if.end6
+
+if.end6:                                          ; preds = %if.end
+  %top = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 0
+  %0 = load i32* %top, align 4, !tbaa !3
+  %sub = add nsw i32 %call, -8
+  %sub7 = sub nsw i32 %0, %sub
+  %idxprom = sext i32 %sub7 to i64
+  %arrayidx = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 2, i64 %idxprom
+  %1 = load i8* %arrayidx, align 1, !tbaa !0
+  %idxprom10 = sext i32 %0 to i64
+  %arrayidx12 = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 2, i64 %idxprom10
+  %2 = load i8* %arrayidx12, align 1, !tbaa !0
+  store i8 %2, i8* %arrayidx, align 1, !tbaa !0
+  %3 = load i32* %top, align 4, !tbaa !3
+  %idxprom18 = sext i32 %3 to i64
+  %arrayidx20 = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 2, i64 %idxprom18
+  store i8 %1, i8* %arrayidx20, align 1, !tbaa !0
+  %4 = load %struct.basic_block_def** @current_block, align 8, !tbaa !2
+  %tobool = icmp eq %struct.basic_block_def* %4, null
+  br i1 %tobool, label %if.end159, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end6
+  %head = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 0
+  %5 = load %struct.rtx_def** %head, align 8, !tbaa !2
+  %cmp21 = icmp eq %struct.rtx_def* %5, %insn
+  br i1 %cmp21, label %if.end159, label %if.then23
+
+if.then23:                                        ; preds = %land.lhs.true
+  %arrayidx30 = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 1
+  %rtx31 = bitcast %union.rtunion_def* %arrayidx30 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx31, align 8, !tbaa !2
+  %tmp25.0.in.in227 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 1
+  %tmp25.0.in228 = bitcast %union.rtunion_def* %tmp25.0.in.in227 to %struct.rtx_def**
+  %tmp25.0229 = load %struct.rtx_def** %tmp25.0.in228, align 8
+  %cmp32230 = icmp eq %struct.rtx_def* %tmp25.0229, %6
+  br i1 %cmp32230, label %if.end159, label %while.body
+
+while.body:                                       ; preds = %if.then23, %while.cond.backedge
+  %tmp25.0231 = phi %struct.rtx_def* [ %tmp25.0, %while.cond.backedge ], [ %tmp25.0229, %if.then23 ]
+  %7 = bitcast %struct.rtx_def* %tmp25.0231 to i32*
+  %bf.load = load i32* %7, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %while.cond.backedge [
+    i32 36, label %if.end63
+    i32 34, label %if.end63
+    i32 37, label %land.lhs.true45
+    i32 32, label %land.lhs.true55
+  ]
+
+land.lhs.true45:                                  ; preds = %while.body
+  %arrayidx47 = getelementptr inbounds %struct.rtx_def* %tmp25.0231, i64 0, i32 1, i64 4
+  %rtint = bitcast %union.rtunion_def* %arrayidx47 to i32*
+  %8 = load i32* %rtint, align 4, !tbaa !3
+  %cmp48 = icmp eq i32 %8, -80
+  br i1 %cmp48, label %land.lhs.true66, label %while.cond.backedge
+
+land.lhs.true55:                                  ; preds = %while.body
+  %call56 = tail call i32 @stack_regs_mentioned(%struct.rtx_def* %tmp25.0231) #7
+  %tobool57 = icmp eq i32 %call56, 0
+  br i1 %tobool57, label %while.cond.backedge, label %if.end63
+
+while.cond.backedge:                              ; preds = %while.body, %land.lhs.true45, %land.lhs.true55
+  %tmp25.0.in.in = getelementptr inbounds %struct.rtx_def* %tmp25.0231, i64 0, i32 1, i64 1
+  %tmp25.0.in = bitcast %union.rtunion_def* %tmp25.0.in.in to %struct.rtx_def**
+  %tmp25.0 = load %struct.rtx_def** %tmp25.0.in, align 8
+  %cmp32 = icmp eq %struct.rtx_def* %tmp25.0, %6
+  br i1 %cmp32, label %if.end159, label %while.body
+
+if.end63:                                         ; preds = %while.body, %while.body, %land.lhs.true55
+  %cmp64 = icmp eq %struct.rtx_def* %tmp25.0231, null
+  br i1 %cmp64, label %if.end159, label %if.end63.land.lhs.true66_crit_edge
+
+if.end63.land.lhs.true66_crit_edge:               ; preds = %if.end63
+  %bf.load67.pre = load i32* %7, align 8
+  br label %land.lhs.true66
+
+land.lhs.true66:                                  ; preds = %land.lhs.true45, %if.end63.land.lhs.true66_crit_edge
+  %bf.load67 = phi i32 [ %bf.load67.pre, %if.end63.land.lhs.true66_crit_edge ], [ %bf.load, %land.lhs.true45 ]
+  %bf.clear68 = and i32 %bf.load67, 65535
+  %idxprom69215 = zext i32 %bf.clear68 to i64
+  %arrayidx70 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom69215
+  %9 = load i8* %arrayidx70, align 1, !tbaa !0
+  %cmp72 = icmp eq i8 %9, 105
+  br i1 %cmp72, label %cond.true, label %if.end159
+
+cond.true:                                        ; preds = %land.lhs.true66
+  %arrayidx75 = getelementptr inbounds %struct.rtx_def* %tmp25.0231, i64 0, i32 1, i64 3
+  %rtx76 = bitcast %union.rtunion_def* %arrayidx75 to %struct.rtx_def**
+  %10 = load %struct.rtx_def** %rtx76, align 8, !tbaa !2
+  %11 = bitcast %struct.rtx_def* %10 to i32*
+  %bf.load77 = load i32* %11, align 8
+  %bf.clear78 = and i32 %bf.load77, 65535
+  %cmp79 = icmp eq i32 %bf.clear78, 47
+  br i1 %cmp79, label %cond.end90, label %cond.false
+
+cond.false:                                       ; preds = %cond.true
+  %call88 = tail call %struct.rtx_def* @single_set_2(%struct.rtx_def* %tmp25.0231, %struct.rtx_def* %10) #6
+  br label %cond.end90
+
+cond.end90:                                       ; preds = %cond.true, %cond.false
+  %cond91 = phi %struct.rtx_def* [ %call88, %cond.false ], [ %10, %cond.true ]
+  %cmp92 = icmp eq %struct.rtx_def* %cond91, null
+  br i1 %cmp92, label %if.end159, label %if.then94
+
+if.then94:                                        ; preds = %cond.end90
+  %arrayidx97 = getelementptr inbounds %struct.rtx_def* %cond91, i64 0, i32 1, i64 1
+  %rtx98 = bitcast %union.rtunion_def* %arrayidx97 to %struct.rtx_def**
+  %call99 = tail call fastcc %struct.rtx_def** @get_true_reg(%struct.rtx_def** %rtx98) #7
+  %12 = load %struct.rtx_def** %call99, align 8, !tbaa !2
+  %arrayidx102 = getelementptr inbounds %struct.rtx_def* %cond91, i64 0, i32 1, i64 0
+  %rtx103 = bitcast %union.rtunion_def* %arrayidx102 to %struct.rtx_def**
+  %call104 = tail call fastcc %struct.rtx_def** @get_true_reg(%struct.rtx_def** %rtx103) #7
+  %13 = load %struct.rtx_def** %call104, align 8, !tbaa !2
+  %14 = bitcast %struct.rtx_def* %13 to i32*
+  %bf.load105 = load i32* %14, align 8
+  %bf.clear106 = and i32 %bf.load105, 65535
+  %cmp107 = icmp eq i32 %bf.clear106, 61
+  br i1 %cmp107, label %land.lhs.true109, label %if.end131
+
+land.lhs.true109:                                 ; preds = %if.then94
+  %arrayidx111 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx111 to i32*
+  %15 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp112 = icmp eq i32 %15, 8
+  br i1 %cmp112, label %land.lhs.true114, label %if.end131
+
+land.lhs.true114:                                 ; preds = %land.lhs.true109
+  %16 = bitcast %struct.rtx_def* %12 to i32*
+  %bf.load115 = load i32* %16, align 8
+  %bf.clear116 = and i32 %bf.load115, 65535
+  %cmp117 = icmp eq i32 %bf.clear116, 61
+  br i1 %cmp117, label %land.lhs.true119, label %if.end131
+
+land.lhs.true119:                                 ; preds = %land.lhs.true114
+  %arrayidx121 = getelementptr inbounds %struct.rtx_def* %12, i64 0, i32 1, i64 0
+  %rtuint122 = bitcast %union.rtunion_def* %arrayidx121 to i32*
+  %17 = load i32* %rtuint122, align 4, !tbaa !3
+  %sub123 = add i32 %call, -1
+  %cmp124 = icmp eq i32 %17, %sub123
+  br i1 %cmp124, label %land.lhs.true126, label %if.end131
+
+land.lhs.true126:                                 ; preds = %land.lhs.true119
+  %call127 = tail call %struct.rtx_def* @find_regno_note(%struct.rtx_def* %tmp25.0231, i32 1, i32 8) #6
+  %cmp128 = icmp eq %struct.rtx_def* %call127, null
+  br i1 %cmp128, label %if.end175, label %land.lhs.true126.if.end131_crit_edge
+
+land.lhs.true126.if.end131_crit_edge:             ; preds = %land.lhs.true126
+  %bf.load132.pre = load i32* %14, align 8
+  br label %if.end131
+
+if.end131:                                        ; preds = %land.lhs.true126.if.end131_crit_edge, %land.lhs.true119, %land.lhs.true114, %land.lhs.true109, %if.then94
+  %bf.load132 = phi i32 [ %bf.load132.pre, %land.lhs.true126.if.end131_crit_edge ], [ %bf.load105, %land.lhs.true119 ], [ %bf.load105, %land.lhs.true114 ], [ %bf.load105, %land.lhs.true109 ], [ %bf.load105, %if.then94 ]
+  %bf.clear133 = and i32 %bf.load132, 65535
+  %cmp134 = icmp eq i32 %bf.clear133, 61
+  br i1 %cmp134, label %land.lhs.true136, label %if.end159
+
+land.lhs.true136:                                 ; preds = %if.end131
+  %arrayidx138 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1, i64 0
+  %rtuint139 = bitcast %union.rtunion_def* %arrayidx138 to i32*
+  %18 = load i32* %rtuint139, align 4, !tbaa !3
+  %cmp140 = icmp eq i32 %18, %call
+  br i1 %cmp140, label %land.lhs.true142, label %if.end159
+
+land.lhs.true142:                                 ; preds = %land.lhs.true136
+  %19 = bitcast %struct.rtx_def* %12 to i32*
+  %bf.load143 = load i32* %19, align 8
+  %bf.clear144 = and i32 %bf.load143, 65535
+  %cmp145 = icmp eq i32 %bf.clear144, 61
+  br i1 %cmp145, label %land.lhs.true147, label %if.end159
+
+land.lhs.true147:                                 ; preds = %land.lhs.true142
+  %arrayidx149 = getelementptr inbounds %struct.rtx_def* %12, i64 0, i32 1, i64 0
+  %rtuint150 = bitcast %union.rtunion_def* %arrayidx149 to i32*
+  %20 = load i32* %rtuint150, align 4, !tbaa !3
+  %cmp151 = icmp eq i32 %20, 8
+  br i1 %cmp151, label %land.lhs.true153, label %if.end159
+
+land.lhs.true153:                                 ; preds = %land.lhs.true147
+  %call154 = tail call %struct.rtx_def* @find_regno_note(%struct.rtx_def* %tmp25.0231, i32 1, i32 8) #6
+  %cmp155 = icmp eq %struct.rtx_def* %call154, null
+  br i1 %cmp155, label %if.end175, label %if.end159
+
+if.end159:                                        ; preds = %if.then23, %while.cond.backedge, %if.end63, %land.lhs.true66, %if.end6, %land.lhs.true, %cond.end90, %if.end131, %land.lhs.true136, %land.lhs.true142, %land.lhs.true147, %land.lhs.true153
+  %cmp64218 = phi i1 [ true, %cond.end90 ], [ true, %if.end131 ], [ true, %land.lhs.true136 ], [ true, %land.lhs.true142 ], [ true, %land.lhs.true147 ], [ true, %land.lhs.true153 ], [ false, %if.end63 ], [ false, %land.lhs.true ], [ false, %if.end6 ], [ true, %land.lhs.true66 ], [ false, %while.cond.backedge ], [ false, %if.then23 ]
+  %i1.0217 = phi %struct.rtx_def* [ %tmp25.0231, %cond.end90 ], [ %tmp25.0231, %if.end131 ], [ %tmp25.0231, %land.lhs.true136 ], [ %tmp25.0231, %land.lhs.true142 ], [ %tmp25.0231, %land.lhs.true147 ], [ %tmp25.0231, %land.lhs.true153 ], [ null, %if.end63 ], [ null, %land.lhs.true ], [ null, %if.end6 ], [ %tmp25.0231, %land.lhs.true66 ], [ null, %while.cond.backedge ], [ null, %if.then23 ]
+  %idxprom161 = sext i32 %sub to i64
+  %arrayidx163 = getelementptr inbounds [8 x [59 x %struct.rtx_def*]]* @FP_mode_reg, i64 0, i64 %idxprom161, i64 17
+  %21 = load %struct.rtx_def** %arrayidx163, align 8, !tbaa !2
+  %22 = load %struct.rtx_def** getelementptr inbounds ([8 x [59 x %struct.rtx_def*]]* @FP_mode_reg, i64 0, i64 0, i64 17), align 8, !tbaa !2
+  %call164 = tail call %struct.rtx_def* @gen_swapxf(%struct.rtx_def* %21, %struct.rtx_def* %22) #6
+  br i1 %cmp64218, label %if.then166, label %if.else
+
+if.then166:                                       ; preds = %if.end159
+  %call167 = tail call %struct.rtx_def* @emit_insn_after(%struct.rtx_def* %call164, %struct.rtx_def* %i1.0217) #6
+  br label %if.end175
+
+if.else:                                          ; preds = %if.end159
+  %23 = load %struct.basic_block_def** @current_block, align 8, !tbaa !2
+  %tobool168 = icmp eq %struct.basic_block_def* %23, null
+  br i1 %tobool168, label %if.else172, label %if.then169
+
+if.then169:                                       ; preds = %if.else
+  %head170 = getelementptr inbounds %struct.basic_block_def* %23, i64 0, i32 0
+  %24 = load %struct.rtx_def** %head170, align 8, !tbaa !2
+  %call171 = tail call %struct.rtx_def* @emit_insn_before(%struct.rtx_def* %call164, %struct.rtx_def* %24) #6
+  br label %if.end175
+
+if.else172:                                       ; preds = %if.else
+  %call173 = tail call %struct.rtx_def* @emit_insn_before(%struct.rtx_def* %call164, %struct.rtx_def* %insn) #6
+  br label %if.end175
+
+if.end175:                                        ; preds = %if.then169, %if.else172, %land.lhs.true153, %land.lhs.true126, %if.end, %if.then166
+  ret void
+}

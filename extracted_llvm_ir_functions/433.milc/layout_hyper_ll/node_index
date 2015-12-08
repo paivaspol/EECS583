@@ -1,0 +1,37 @@
+define i32 @node_index(i32 %x, i32 %y, i32 %z, i32 %t) #3 {
+entry:
+  %0 = load i64* bitcast ([4 x i32]* @squaresize to i64*), align 16
+  %1 = trunc i64 %0 to i32
+  %rem = srem i32 %x, %1
+  %2 = lshr i64 %0, 32
+  %3 = trunc i64 %2 to i32
+  %rem1 = srem i32 %y, %3
+  %4 = load i64* bitcast (i32* getelementptr inbounds ([4 x i32]* @squaresize, i64 0, i64 2) to i64*), align 8
+  %5 = trunc i64 %4 to i32
+  %rem2 = srem i32 %z, %5
+  %6 = lshr i64 %4, 32
+  %7 = trunc i64 %6 to i32
+  %rem3 = srem i32 %t, %7
+  %mul = mul nsw i32 %rem3, %5
+  %add = add nsw i32 %mul, %rem2
+  %mul4 = mul nsw i32 %add, %3
+  %add5 = add nsw i32 %mul4, %rem1
+  %mul6 = mul nsw i32 %add5, %1
+  %add7 = add nsw i32 %mul6, %rem
+  %add8 = add nsw i32 %y, %x
+  %add9 = add nsw i32 %add8, %z
+  %add10 = add nsw i32 %add9, %t
+  %rem1118 = and i32 %add10, 1
+  %cmp = icmp eq i32 %rem1118, 0
+  br i1 %cmp, label %return, label %if.else
+
+if.else:                                          ; preds = %entry
+  %8 = load i32* @sites_on_node, align 4, !tbaa !0
+  %add12 = add nsw i32 %8, %add7
+  br label %return
+
+return:                                           ; preds = %entry, %if.else
+  %retval.0.in = phi i32 [ %add12, %if.else ], [ %add7, %entry ]
+  %retval.0 = sdiv i32 %retval.0.in, 2
+  ret i32 %retval.0
+}

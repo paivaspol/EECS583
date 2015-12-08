@@ -1,0 +1,53 @@
+define void @do_wmap(%struct._IO_FILE* nocapture %out, i32 %i0, i32 %imax, i32 %nlevels, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rhi.coerce0, float %rhi.coerce1, float %lo, float %hi) #0 {
+entry:
+  %cmp56 = icmp sgt i32 %imax, 0
+  br i1 %cmp56, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %rlo.sroa.0.0.vec.extract = extractelement <2 x float> %rlo.coerce0, i32 0
+  %rhi.sroa.0.0.vec.extract = extractelement <2 x float> %rhi.coerce0, i32 0
+  %conv6 = sitofp i32 %nlevels to float
+  %rlo.sroa.0.4.vec.extract = extractelement <2 x float> %rlo.coerce0, i32 1
+  %rhi.sroa.0.4.vec.extract = extractelement <2 x float> %rhi.coerce0, i32 1
+  %0 = sext i32 %i0 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %1 = trunc i64 %indvars.iv to i32
+  %sub = sub nsw i32 %nlevels, %1
+  %conv = sitofp i32 %sub to float
+  %mul = fmul float %rlo.sroa.0.0.vec.extract, %conv
+  %conv3 = sitofp i32 %1 to float
+  %mul5 = fmul float %rhi.sroa.0.0.vec.extract, %conv3
+  %add = fadd float %mul5, %mul
+  %div = fdiv float %add, %conv6
+  %mul9 = fmul float %rlo.sroa.0.4.vec.extract, %conv
+  %mul12 = fmul float %rhi.sroa.0.4.vec.extract, %conv3
+  %add13 = fadd float %mul12, %mul9
+  %div15 = fdiv float %add13, %conv6
+  %mul18 = fmul float %conv, %rlo.coerce1
+  %mul21 = fmul float %conv3, %rhi.coerce1
+  %add22 = fadd float %mul21, %mul18
+  %div24 = fdiv float %add22, %conv6
+  %2 = add nsw i64 %indvars.iv, %0
+  %arrayidx = getelementptr inbounds [89 x i8]* @mapper, i64 0, i64 %2
+  %3 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv26 = sext i8 %3 to i32
+  %mul28 = fmul float %conv, %lo
+  %mul30 = fmul float %conv3, %hi
+  %add31 = fadd float %mul30, %mul28
+  %div33 = fdiv float %add31, %conv6
+  %conv34 = fpext float %div33 to double
+  %conv35 = fpext float %div to double
+  %conv36 = fpext float %div15 to double
+  %conv37 = fpext float %div24 to double
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([28 x i8]* @.str13, i64 0, i64 0), i32 %conv26, double %conv34, double %conv35, double %conv36, double %conv37) #8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %imax
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

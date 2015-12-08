@@ -1,0 +1,22 @@
+define void @add_partial_entry(%union.tree_node* %handler) #0 {
+entry:
+  tail call void @expand_eh_region_start() #7
+  %0 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh = getelementptr inbounds %struct.function* %0, i64 0, i32 0
+  %1 = load %struct.eh_status** %eh, align 8, !tbaa !3
+  %protect_list = getelementptr inbounds %struct.eh_status* %1, i64 0, i32 4
+  %2 = load %union.tree_node** %protect_list, align 8, !tbaa !3
+  %value = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 2
+  %3 = bitcast i32* %value to %union.tree_node**
+  %4 = load %union.tree_node** %3, align 8, !tbaa !3
+  %call = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %handler, %union.tree_node* %4) #6
+  %5 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh1 = getelementptr inbounds %struct.function* %5, i64 0, i32 0
+  %6 = load %struct.eh_status** %eh1, align 8, !tbaa !3
+  %protect_list2 = getelementptr inbounds %struct.eh_status* %6, i64 0, i32 4
+  %7 = load %union.tree_node** %protect_list2, align 8, !tbaa !3
+  %value4 = getelementptr inbounds %union.tree_node* %7, i64 0, i32 0, i32 2
+  %8 = bitcast i32* %value4 to %union.tree_node**
+  store %union.tree_node* %call, %union.tree_node** %8, align 8, !tbaa !3
+  ret void
+}

@@ -1,0 +1,81 @@
+define void @mv_grid(%struct.t_commrec* nocapture %cr, i32 %bDD, i32* nocapture %cg_index, %struct.t_grid* nocapture %grid, i32* nocapture %cgload) #0 {
+entry:
+  %cell_index = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 8
+  %0 = load i32** %cell_index, align 8, !tbaa !4
+  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
+  %1 = load i32* %nnodes, align 4, !tbaa !3
+  %sub62 = add nsw i32 %1, -1
+  %cmp63 = icmp sgt i32 %sub62, 0
+  br i1 %cmp63, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %nodeid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  %2 = load i32* %nodeid, align 4, !tbaa !3
+  %left = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
+  %right = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %cond.end20
+  %i.065 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %cond.end20 ]
+  %cur.064 = phi i32 [ %2, %for.body.lr.ph ], [ %rem37, %cond.end20 ]
+  %cmp1 = icmp eq i32 %cur.064, 0
+  br i1 %cmp1, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %for.body
+  %sub2 = add nsw i32 %cur.064, -1
+  %idxprom = sext i32 %sub2 to i64
+  %arrayidx = getelementptr inbounds i32* %cgload, i64 %idxprom
+  %3 = load i32* %arrayidx, align 4, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %for.body, %cond.false
+  %cond = phi i32 [ %3, %cond.false ], [ 0, %for.body ]
+  %idxprom3 = sext i32 %cur.064 to i64
+  %arrayidx4 = getelementptr inbounds i32* %cgload, i64 %idxprom3
+  %4 = load i32* %arrayidx4, align 4, !tbaa !3
+  %sub5 = sub nsw i32 %4, %cond
+  %5 = load i32* %left, align 4, !tbaa !3
+  %idxprom6 = sext i32 %cond to i64
+  %arrayidx7 = getelementptr inbounds i32* %0, i64 %idxprom6
+  %6 = bitcast i32* %arrayidx7 to i8*
+  %mul = shl i32 %sub5, 2
+  tail call void @gmx_tx(i32 %5, i8* %6, i32 %mul) #5
+  %add = add nsw i32 %cur.064, 1
+  %7 = load i32* %nnodes, align 4, !tbaa !3
+  %rem = srem i32 %add, %7
+  %cmp10 = icmp eq i32 %rem, 0
+  br i1 %cmp10, label %cond.end20, label %cond.false13
+
+cond.false13:                                     ; preds = %cond.end
+  %sub17 = add nsw i32 %rem, -1
+  %idxprom18 = sext i32 %sub17 to i64
+  %arrayidx19 = getelementptr inbounds i32* %cgload, i64 %idxprom18
+  %8 = load i32* %arrayidx19, align 4, !tbaa !3
+  br label %cond.end20
+
+cond.end20:                                       ; preds = %cond.end, %cond.false13
+  %cond21 = phi i32 [ %8, %cond.false13 ], [ 0, %cond.end ]
+  %idxprom25 = sext i32 %rem to i64
+  %arrayidx26 = getelementptr inbounds i32* %cgload, i64 %idxprom25
+  %9 = load i32* %arrayidx26, align 4, !tbaa !3
+  %sub27 = sub nsw i32 %9, %cond21
+  %10 = load i32* %right, align 4, !tbaa !3
+  %idxprom28 = sext i32 %cond21 to i64
+  %arrayidx29 = getelementptr inbounds i32* %0, i64 %idxprom28
+  %11 = bitcast i32* %arrayidx29 to i8*
+  %mul31 = shl i32 %sub27, 2
+  tail call void @gmx_rx(i32 %10, i8* %11, i32 %mul31) #5
+  %12 = load i32* %left, align 4, !tbaa !3
+  tail call void @gmx_tx_wait(i32 %12) #5
+  %13 = load i32* %right, align 4, !tbaa !3
+  tail call void @gmx_rx_wait(i32 %13) #5
+  %14 = load i32* %nnodes, align 4, !tbaa !3
+  %rem37 = srem i32 %add, %14
+  %inc = add nsw i32 %i.065, 1
+  %sub = add nsw i32 %14, -1
+  %cmp = icmp slt i32 %inc, %sub
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %cond.end20, %entry
+  ret void
+}

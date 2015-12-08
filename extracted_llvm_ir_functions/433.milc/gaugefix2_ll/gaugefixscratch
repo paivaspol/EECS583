@@ -1,0 +1,64 @@
+define void @gaugefixscratch(i32 %diffmat, i32 %sumvec) #0 {
+entry:
+  store i32 %diffmat, i32* @diffmat_offset, align 4, !tbaa !0
+  store %struct.su3_matrix* null, %struct.su3_matrix** @diffmatp, align 8, !tbaa !3
+  %cmp = icmp slt i32 %diffmat, 0
+  br i1 %cmp, label %if.then, label %if.end10
+
+if.then:                                          ; preds = %entry
+  %0 = load i32* @sites_on_node, align 4, !tbaa !0
+  %conv = sext i32 %0 to i64
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 144) #5
+  %1 = bitcast i8* %call to %struct.su3_matrix*
+  store %struct.su3_matrix* %1, %struct.su3_matrix** @diffmatp, align 8, !tbaa !3
+  %cmp1 = icmp eq i8* %call, null
+  br i1 %cmp1, label %if.then3, label %if.end10
+
+if.then3:                                         ; preds = %if.then
+  %2 = load i32* @this_node, align 4, !tbaa !0
+  %cmp4 = icmp eq i32 %2, 0
+  br i1 %cmp4, label %if.then6, label %if.end
+
+if.then6:                                         ; preds = %if.then3
+  %puts27 = tail call i32 @puts(i8* getelementptr inbounds ([31 x i8]* @str3, i64 0, i64 0))
+  br label %if.end
+
+if.end:                                           ; preds = %if.then6, %if.then3
+  %3 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call8 = tail call i32 @fflush(%struct._IO_FILE* %3) #5
+  tail call void @terminate(i32 1) #5
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.then, %if.end, %entry
+  store i32 %sumvec, i32* @sumvec_offset, align 4, !tbaa !0
+  store %struct.su3_vector* null, %struct.su3_vector** @sumvecp, align 8, !tbaa !3
+  %cmp11 = icmp slt i32 %sumvec, 0
+  br i1 %cmp11, label %if.then13, label %if.end26
+
+if.then13:                                        ; preds = %if.end10
+  %4 = load i32* @sites_on_node, align 4, !tbaa !0
+  %conv14 = sext i32 %4 to i64
+  %call15 = tail call noalias i8* @calloc(i64 %conv14, i64 48) #5
+  %5 = bitcast i8* %call15 to %struct.su3_vector*
+  store %struct.su3_vector* %5, %struct.su3_vector** @sumvecp, align 8, !tbaa !3
+  %cmp16 = icmp eq i8* %call15, null
+  br i1 %cmp16, label %if.then18, label %if.end26
+
+if.then18:                                        ; preds = %if.then13
+  %6 = load i32* @this_node, align 4, !tbaa !0
+  %cmp19 = icmp eq i32 %6, 0
+  br i1 %cmp19, label %if.then21, label %if.end23
+
+if.then21:                                        ; preds = %if.then18
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([30 x i8]* @str, i64 0, i64 0))
+  br label %if.end23
+
+if.end23:                                         ; preds = %if.then21, %if.then18
+  %7 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call24 = tail call i32 @fflush(%struct._IO_FILE* %7) #5
+  tail call void @terminate(i32 1) #5
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.then13, %if.end23, %if.end10
+  ret void
+}

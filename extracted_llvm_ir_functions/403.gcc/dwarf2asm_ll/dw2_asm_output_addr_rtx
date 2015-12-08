@@ -1,0 +1,26 @@
+define void @dw2_asm_output_addr_rtx(i32 %size, %struct.rtx_def* %addr, i8* %comment, ...) #0 {
+entry:
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  call void @dw2_assemble_integer(i32 %size, %struct.rtx_def* %addr) #8
+  %0 = load i32* @flag_debug_asm, align 4, !tbaa !4
+  %tobool = icmp eq i32 %0, 0
+  %tobool2 = icmp eq i8* %comment, null
+  %or.cond = or i1 %tobool, %tobool2
+  br i1 %or.cond, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
+  %1 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0)) #7
+  %2 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %call4 = call i32 @vfprintf(%struct._IO_FILE* %2, i8* %comment, %struct.__va_list_tag* %arraydecay) #7
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %3 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %call5 = call i32 @fputc(i32 10, %struct._IO_FILE* %3) #7
+  call void @llvm.va_end(i8* %arraydecay1)
+  ret void
+}

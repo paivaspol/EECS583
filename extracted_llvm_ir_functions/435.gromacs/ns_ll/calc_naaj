@@ -1,0 +1,45 @@
+define i32 @calc_naaj(i32 %icg, i32 %cgtot) #3 {
+entry:
+  %rem = srem i32 %cgtot, 2
+  %cmp = icmp eq i32 %rem, 1
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %div = sdiv i32 %cgtot, 2
+  %add = add nsw i32 %div, 1
+  br label %if.end34
+
+if.else:                                          ; preds = %entry
+  %rem141 = and i32 %cgtot, 3
+  %cmp2 = icmp eq i32 %rem141, 0
+  br i1 %cmp2, label %if.then3, label %if.else24
+
+if.then3:                                         ; preds = %if.else
+  %div4 = sdiv i32 %cgtot, 2
+  %cmp5 = icmp sgt i32 %div4, %icg
+  %rem7 = srem i32 %icg, 2
+  br i1 %cmp5, label %if.then6, label %if.else14
+
+if.then6:                                         ; preds = %if.then3
+  %cmp8 = icmp eq i32 %rem7, 0
+  %add11 = zext i1 %cmp8 to i32
+  %add11.div4 = add nsw i32 %add11, %div4
+  ret i32 %add11.div4
+
+if.else14:                                        ; preds = %if.then3
+  %cmp16 = icmp eq i32 %rem7, 1
+  %add19 = zext i1 %cmp16 to i32
+  %add19.div4 = add nsw i32 %add19, %div4
+  br label %if.end34
+
+if.else24:                                        ; preds = %if.else
+  %rem2542 = and i32 %icg, 1
+  %div28 = sdiv i32 %cgtot, 2
+  %0 = xor i32 %rem2542, 1
+  %add29.div28 = add nsw i32 %div28, %0
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.else24, %if.else14, %if.then
+  %naaj.0 = phi i32 [ %add, %if.then ], [ %add19.div4, %if.else14 ], [ %add29.div28, %if.else24 ]
+  ret i32 %naaj.0
+}

@@ -1,0 +1,45 @@
+define void @write_xpm_axis(%struct._IO_FILE* nocapture %out, i8* %axis, i32 %n, float* %label) #0 {
+entry:
+  %tobool = icmp eq float* %label, null
+  br i1 %tobool, label %if.end9, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp18 = icmp sgt i32 %n, 0
+  br i1 %cmp18, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %if.end6
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end6 ], [ 0, %for.cond.preheader ]
+  %0 = trunc i64 %indvars.iv to i32
+  %rem = srem i32 %0, 80
+  %cmp1 = icmp eq i32 %rem, 0
+  br i1 %cmp1, label %if.then2, label %if.end6
+
+if.then2:                                         ; preds = %for.body
+  %tobool3 = icmp eq i32 %0, 0
+  br i1 %tobool3, label %if.end, label %if.then4
+
+if.then4:                                         ; preds = %if.then2
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str68, i64 0, i64 0), i64 3, i64 1, %struct._IO_FILE* %out)
+  br label %if.end
+
+if.end:                                           ; preds = %if.then2, %if.then4
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([14 x i8]* @.str69, i64 0, i64 0), i8* %axis) #8
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end, %for.body
+  %arrayidx = getelementptr inbounds float* %label, i64 %indvars.iv
+  %2 = load float* %arrayidx, align 4, !tbaa !5
+  %conv = fpext float %2 to double
+  %call7 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str70, i64 0, i64 0), double %conv) #8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.end6, %for.cond.preheader
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str68, i64 0, i64 0), i64 3, i64 1, %struct._IO_FILE* %out)
+  br label %if.end9
+
+if.end9:                                          ; preds = %entry, %for.end
+  ret void
+}

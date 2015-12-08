@@ -1,0 +1,18 @@
+define void @_cpp_release_buff(%struct.cpp_reader* nocapture %pfile, %struct._cpp_buff* %buff) #1 {
+entry:
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond, %entry
+  %end.0 = phi %struct._cpp_buff* [ %buff, %entry ], [ %0, %while.cond ]
+  %next = getelementptr inbounds %struct._cpp_buff* %end.0, i64 0, i32 0
+  %0 = load %struct._cpp_buff** %next, align 8, !tbaa !0
+  %tobool = icmp eq %struct._cpp_buff* %0, null
+  br i1 %tobool, label %while.end, label %while.cond
+
+while.end:                                        ; preds = %while.cond
+  %free_buffs = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 8
+  %1 = load %struct._cpp_buff** %free_buffs, align 8, !tbaa !0
+  store %struct._cpp_buff* %1, %struct._cpp_buff** %next, align 8, !tbaa !0
+  store %struct._cpp_buff* %buff, %struct._cpp_buff** %free_buffs, align 8, !tbaa !0
+  ret void
+}

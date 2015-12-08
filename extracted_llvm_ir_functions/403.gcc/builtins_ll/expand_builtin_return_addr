@@ -1,0 +1,63 @@
+define %struct.rtx_def* @expand_builtin_return_addr(i32 %fndecl_code, i32 %count, %struct.rtx_def* %tem) #0 {
+entry:
+  %cmp = icmp sgt i32 %count, 0
+  br i1 %cmp, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  tail call void @ix86_setup_frame_addresses() #7
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %i.042 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
+  %tem.addr.041 = phi %struct.rtx_def* [ %tem, %for.body.lr.ph ], [ %call7, %for.body ]
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %0, 25
+  %1 = and i32 %and, 1
+  %2 = or i32 %1, 4
+  %call = tail call %struct.rtx_def* @memory_address(i32 %2, %struct.rtx_def* %tem.addr.041) #7
+  %3 = load i32* @target_flags, align 4, !tbaa !0
+  %and2 = lshr i32 %3, 25
+  %4 = and i32 %and2, 1
+  %5 = or i32 %4, 4
+  %call5 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %5, %struct.rtx_def* %call) #7
+  %call6 = tail call i64 @get_frame_alias_set() #7
+  tail call void @set_mem_alias_set(%struct.rtx_def* %call5, i64 %call6) #7
+  %call7 = tail call %struct.rtx_def* @copy_to_reg(%struct.rtx_def* %call5) #7
+  %inc = add nsw i32 %i.042, 1
+  %exitcond = icmp eq i32 %inc, %count
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %tem.addr.0.lcssa = phi %struct.rtx_def* [ %tem, %entry ], [ %call7, %for.body ]
+  %cmp8 = icmp eq i32 %fndecl_code, 52
+  br i1 %cmp8, label %return, label %if.end10
+
+if.end10:                                         ; preds = %for.end
+  %cmp11 = icmp eq i32 %count, 0
+  %6 = load i32* @target_flags, align 4, !tbaa !0
+  %and12 = and i32 %6, 33554432
+  %7 = lshr exact i32 %and12, 25
+  %8 = or i32 %7, 4
+  br i1 %cmp11, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %if.end10
+  %9 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 5), align 8, !tbaa !3
+  %10 = lshr exact i32 %and12, 23
+  %sub = sub i32 -4, %10
+  %conv = sext i32 %sub to i64
+  %call18 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %9, i64 %conv) #7
+  %call19 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %8, %struct.rtx_def* %call18) #7
+  br label %return
+
+cond.false:                                       ; preds = %if.end10
+  %11 = lshr exact i32 %and12, 23
+  %12 = add i32 %11, 4
+  %conv2639 = zext i32 %12 to i64
+  %call27 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tem.addr.0.lcssa, i64 %conv2639) #7
+  %call28 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %8, %struct.rtx_def* %call27) #7
+  br label %return
+
+return:                                           ; preds = %cond.true, %cond.false, %for.end
+  %retval.0 = phi %struct.rtx_def* [ %tem.addr.0.lcssa, %for.end ], [ %call19, %cond.true ], [ %call28, %cond.false ]
+  ret %struct.rtx_def* %retval.0
+}

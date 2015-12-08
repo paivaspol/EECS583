@@ -1,0 +1,19 @@
+define zeroext i1 @named_section_first_declaration(i8* %name) #0 {
+entry:
+  %0 = load %struct.htab** @in_named_htab, align 8, !tbaa !3
+  %call = tail call i32 @htab_hash_string(i8* %name) #9
+  %call1 = tail call i8** @htab_find_slot_with_hash(%struct.htab* %0, i8* %name, i32 %call, i32 0) #9
+  %1 = load i8** %call1, align 8
+  %2 = getelementptr inbounds i8* %1, i64 12
+  %3 = load i8* %2, align 1, !tbaa !5, !range !6
+  %tobool = icmp eq i8 %3, 0
+  br i1 %tobool, label %if.then, label %return
+
+if.then:                                          ; preds = %entry
+  store i8 1, i8* %2, align 1, !tbaa !5
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i1 [ true, %if.then ], [ false, %entry ]
+  ret i1 %retval.0
+}

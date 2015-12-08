@@ -1,0 +1,116 @@
+define void @lincs_warning([3 x float]* nocapture %x, [3 x float]* nocapture %xprime, i32 %ncons, i32* nocapture %bla1, i32* nocapture %bla2, float* nocapture %bllen, float %wangle) #0 {
+entry:
+  %buf = alloca [4096 x i8], align 16
+  %0 = getelementptr inbounds [4096 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %0) #2
+  %conv = fpext float %wangle to double
+  %mul = fmul double %conv, 0x3F91DF46A2529D39
+  %call = call double @cos(double %mul) #6
+  %conv1 = fptrunc double %call to float
+  %call3 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([102 x i8]* @.str, i64 0, i64 0), double %conv) #6
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call5 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* %0) #6
+  %2 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  %tobool = icmp eq %struct._IO_FILE* %2, null
+  br i1 %tobool, label %for.cond.preheader, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call7 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* %0) #6
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry, %if.then
+  %cmp103 = icmp sgt i32 %ncons, 0
+  br i1 %cmp103, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds i32* %bla1, i64 %indvars.iv
+  %3 = load i32* %arrayidx, align 4, !tbaa !0
+  %arrayidx10 = getelementptr inbounds i32* %bla2, i64 %indvars.iv
+  %4 = load i32* %arrayidx10, align 4, !tbaa !0
+  %idxprom11 = sext i32 %3 to i64
+  %arraydecay13 = getelementptr inbounds [3 x float]* %x, i64 %idxprom11, i64 0
+  %idxprom14 = sext i32 %4 to i64
+  %arraydecay16 = getelementptr inbounds [3 x float]* %x, i64 %idxprom14, i64 0
+  %5 = load float* %arraydecay13, align 4, !tbaa !4
+  %6 = load float* %arraydecay16, align 4, !tbaa !4
+  %sub.i = fsub float %5, %6
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %x, i64 %idxprom11, i64 1
+  %7 = load float* %arrayidx2.i, align 4, !tbaa !4
+  %arrayidx3.i = getelementptr inbounds [3 x float]* %x, i64 %idxprom14, i64 1
+  %8 = load float* %arrayidx3.i, align 4, !tbaa !4
+  %sub4.i = fsub float %7, %8
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %x, i64 %idxprom11, i64 2
+  %9 = load float* %arrayidx5.i, align 4, !tbaa !4
+  %arrayidx6.i = getelementptr inbounds [3 x float]* %x, i64 %idxprom14, i64 2
+  %10 = load float* %arrayidx6.i, align 4, !tbaa !4
+  %sub7.i = fsub float %9, %10
+  %arraydecay20 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom11, i64 0
+  %arraydecay23 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom14, i64 0
+  %11 = load float* %arraydecay20, align 4, !tbaa !4
+  %12 = load float* %arraydecay23, align 4, !tbaa !4
+  %sub.i80 = fsub float %11, %12
+  %arrayidx2.i81 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom11, i64 1
+  %13 = load float* %arrayidx2.i81, align 4, !tbaa !4
+  %arrayidx3.i82 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom14, i64 1
+  %14 = load float* %arrayidx3.i82, align 4, !tbaa !4
+  %sub4.i83 = fsub float %13, %14
+  %arrayidx5.i84 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom11, i64 2
+  %15 = load float* %arrayidx5.i84, align 4, !tbaa !4
+  %arrayidx6.i85 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom14, i64 2
+  %16 = load float* %arrayidx6.i85, align 4, !tbaa !4
+  %sub7.i86 = fsub float %15, %16
+  %mul.i89 = fmul float %sub.i, %sub.i
+  %mul4.i91 = fmul float %sub4.i, %sub4.i
+  %add.i92 = fadd float %mul.i89, %mul4.i91
+  %mul7.i94 = fmul float %sub7.i, %sub7.i
+  %add8.i95 = fadd float %add.i92, %mul7.i94
+  %conv9.i96 = call float @sqrtf(float %add8.i95) #3
+  %mul.i73 = fmul float %sub.i80, %sub.i80
+  %mul4.i75 = fmul float %sub4.i83, %sub4.i83
+  %add.i76 = fadd float %mul.i73, %mul4.i75
+  %mul7.i78 = fmul float %sub7.i86, %sub7.i86
+  %add8.i79 = fadd float %add.i76, %mul7.i78
+  %conv9.i = call float @sqrtf(float %add8.i79) #3
+  %mul.i = fmul float %sub.i, %sub.i80
+  %mul4.i = fmul float %sub4.i, %sub4.i83
+  %add.i = fadd float %mul.i, %mul4.i
+  %mul7.i = fmul float %sub7.i, %sub7.i86
+  %add8.i = fadd float %add.i, %mul7.i
+  %mul32 = fmul float %conv9.i96, %conv9.i
+  %div = fdiv float %add8.i, %mul32
+  %cmp33 = fcmp olt float %div, %conv1
+  br i1 %cmp33, label %if.then35, label %for.inc
+
+if.then35:                                        ; preds = %for.body
+  %add = add nsw i32 %3, 1
+  %add37 = add nsw i32 %4, 1
+  %conv38 = fpext float %div to double
+  %call39 = call double @acos(double %conv38) #6
+  %mul40 = fmul double %call39, 0x404CA5DC1A63C1F8
+  %conv41 = fpext float %conv9.i96 to double
+  %conv42 = fpext float %conv9.i to double
+  %arrayidx44 = getelementptr inbounds float* %bllen, i64 %indvars.iv
+  %17 = load float* %arrayidx44, align 4, !tbaa !4
+  %conv45 = fpext float %17 to double
+  %call46 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([39 x i8]* @.str1, i64 0, i64 0), i32 %add, i32 %add37, double %mul40, double %conv41, double %conv42, double %conv45) #6
+  %18 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call48 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %18, i8* %0) #6
+  %19 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  %tobool49 = icmp eq %struct._IO_FILE* %19, null
+  br i1 %tobool49, label %for.inc, label %if.then50
+
+if.then50:                                        ; preds = %if.then35
+  %call52 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %19, i8* %0) #6
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then35, %for.body, %if.then50
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %ncons
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  call void @llvm.lifetime.end(i64 4096, i8* %0) #2
+  ret void
+}

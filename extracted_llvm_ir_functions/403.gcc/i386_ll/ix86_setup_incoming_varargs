@@ -1,0 +1,176 @@
+define void @ix86_setup_incoming_varargs(%struct.ix86_args* nocapture %cum, i32 %mode, %union.tree_node* %type, i32* nocapture %pretend_size, i32 %no_rtl) #1 {
+entry:
+  %next_cum = alloca %struct.ix86_args, align 4
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end90, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = load %struct.function** @cfun, align 8, !tbaa !4
+  %machine = getelementptr inbounds %struct.function* %1, i64 0, i32 51
+  %2 = load %struct.machine_function** %machine, align 8, !tbaa !4
+  %save_varrargs_registers = getelementptr inbounds %struct.machine_function* %2, i64 0, i32 1
+  store i32 1, i32* %save_varrargs_registers, align 4, !tbaa !0
+  %3 = load %union.tree_node** @current_function_decl, align 8, !tbaa !4
+  %type1 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 0, i32 1
+  %4 = load %union.tree_node** %type1, align 8, !tbaa !4
+  %values = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 1
+  %5 = load i8** %values, align 8
+  %cmp = icmp eq i8* %5, null
+  br i1 %cmp, label %if.end8.critedge, label %land.rhs
+
+land.rhs:                                         ; preds = %if.end
+  %6 = bitcast i8* %5 to %union.tree_node*
+  %call = call %union.tree_node* @tree_last(%union.tree_node* %6) #9
+  %value = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 2
+  %7 = bitcast i32* %value to %union.tree_node**
+  %8 = load %union.tree_node** %7, align 8, !tbaa !4
+  %9 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 27), align 8, !tbaa !4
+  %cmp5 = icmp eq %union.tree_node* %8, %9
+  %10 = bitcast %struct.ix86_args* %next_cum to i8*
+  %11 = bitcast %struct.ix86_args* %cum to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %11, i64 28, i32 4, i1 false), !tbaa.struct !16
+  br i1 %cmp5, label %if.end8, label %if.then7
+
+if.then7:                                         ; preds = %land.rhs
+  call void @function_arg_advance(%struct.ix86_args* %next_cum, i32 %mode, %union.tree_node* %type, i32 1) #10
+  br label %if.end8
+
+if.end8.critedge:                                 ; preds = %if.end
+  %12 = bitcast %struct.ix86_args* %next_cum to i8*
+  %13 = bitcast %struct.ix86_args* %cum to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %12, i8* %13, i64 28, i32 4, i1 false), !tbaa.struct !16
+  br label %if.end8
+
+if.end8:                                          ; preds = %land.rhs, %if.end8.critedge, %if.then7
+  %tobool9 = icmp eq i32 %no_rtl, 0
+  %14 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 3), align 8, !tbaa !4
+  %. = select i1 %tobool9, %struct.rtx_def* %14, %struct.rtx_def* null
+  %call12 = call i64 @get_varargs_alias_set() #9
+  %regno = getelementptr inbounds %struct.ix86_args* %next_cum, i64 0, i32 2
+  %15 = load i32* %regno, align 4, !tbaa !0
+  %16 = load i32* @ix86_regparm, align 4, !tbaa !0
+  %cmp13111 = icmp slt i32 %15, %16
+  br i1 %cmp13111, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end8
+  %sext110 = shl i64 %call12, 32
+  %conv23 = ashr exact i64 %sext110, 32
+  %17 = sext i32 %15 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ %17, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %18 = load i32* @target_flags, align 4, !tbaa !0
+  %and15 = and i32 %18, 33554432
+  %19 = lshr exact i32 %and15, 25
+  %20 = or i32 %19, 4
+  %21 = lshr exact i32 %and15, 23
+  %22 = add i32 %21, 4
+  %23 = trunc i64 %indvars.iv to i32
+  %mul = mul nsw i32 %22, %23
+  %conv20 = sext i32 %mul to i64
+  %call21 = call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %., i64 %conv20) #9
+  %call22 = call %struct.rtx_def* @gen_rtx_MEM(i32 %20, %struct.rtx_def* %call21) #9
+  call void @set_mem_alias_set(%struct.rtx_def* %call22, i64 %conv23) #9
+  %24 = load i32* @target_flags, align 4, !tbaa !0
+  %and24 = lshr i32 %24, 25
+  %25 = and i32 %and24, 1
+  %26 = or i32 %25, 4
+  %arrayidx = getelementptr inbounds [6 x i32]* @x86_64_int_parameter_registers, i64 0, i64 %indvars.iv
+  %27 = load i32* %arrayidx, align 4, !tbaa !0
+  %call27 = call %struct.rtx_def* @gen_rtx_REG(i32 %26, i32 %27) #9
+  %call28 = call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call22, %struct.rtx_def* %call27) #9
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %28 = load i32* @ix86_regparm, align 4, !tbaa !0
+  %29 = trunc i64 %indvars.iv.next to i32
+  %cmp13 = icmp slt i32 %29, %28
+  br i1 %cmp13, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %if.end8
+  %sse_nregs = getelementptr inbounds %struct.ix86_args* %next_cum, i64 0, i32 4
+  %30 = load i32* %sse_nregs, align 4, !tbaa !0
+  %tobool29 = icmp eq i32 %30, 0
+  br i1 %tobool29, label %if.end90, label %if.then30
+
+if.then30:                                        ; preds = %for.end
+  %call31 = call %struct.rtx_def* @gen_label_rtx() #9
+  %31 = load i32* @target_flags, align 4, !tbaa !0
+  %and32 = lshr i32 %31, 25
+  %32 = and i32 %and32, 1
+  %33 = or i32 %32, 4
+  %call35 = call %struct.rtx_def* @gen_rtx_fmt_u00(i32 67, i32 %33, %struct.rtx_def* %call31) #9
+  %34 = load i32* @target_flags, align 4, !tbaa !0
+  %and36 = lshr i32 %34, 25
+  %35 = and i32 %and36, 1
+  %36 = or i32 %35, 4
+  %call39 = call %struct.rtx_def* @gen_reg_rtx(i32 %36) #9
+  %37 = load i32* @target_flags, align 4, !tbaa !0
+  %and40 = lshr i32 %37, 25
+  %38 = and i32 %and40, 1
+  %39 = or i32 %38, 4
+  %call43 = call %struct.rtx_def* @gen_reg_rtx(i32 %39) #9
+  %call44 = call %struct.rtx_def* @gen_rtx_REG(i32 2, i32 0) #9
+  %call45 = call %struct.rtx_def* @gen_zero_extendqidi2(%struct.rtx_def* %call43, %struct.rtx_def* %call44) #9
+  %call46 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call45) #9
+  %40 = load i32* @target_flags, align 4, !tbaa !0
+  %and47 = lshr i32 %40, 25
+  %41 = and i32 %and47, 1
+  %42 = or i32 %41, 4
+  %call50 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 4) #9
+  %call51 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 78, i32 %42, %struct.rtx_def* %call43, %struct.rtx_def* %call50) #9
+  %call52 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %call39, %struct.rtx_def* %call51) #9
+  %call53 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call52) #9
+  %sse_regno = getelementptr inbounds %struct.ix86_args* %next_cum, i64 0, i32 5
+  %43 = load i32* %sse_regno, align 4, !tbaa !0
+  %tobool54 = icmp eq i32 %43, 0
+  br i1 %tobool54, label %if.else, label %if.then55
+
+if.then55:                                        ; preds = %if.then30
+  %mul57 = shl nsw i32 %43, 2
+  %conv58 = sext i32 %mul57 to i64
+  %call59 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv58) #9
+  %call60 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 75, i32 5, %struct.rtx_def* %call35, %struct.rtx_def* %call59) #9
+  %call61 = call %struct.rtx_def* @gen_rtx_fmt_e(i32 58, i32 5, %struct.rtx_def* %call60) #9
+  %call62 = call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call43, %struct.rtx_def* %call61) #9
+  br label %if.end64
+
+if.else:                                          ; preds = %if.then30
+  %call63 = call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call43, %struct.rtx_def* %call35) #9
+  br label %if.end64
+
+if.end64:                                         ; preds = %if.else, %if.then55
+  %call65 = call %struct.rtx_def* @gen_subdi3(%struct.rtx_def* %call43, %struct.rtx_def* %call43, %struct.rtx_def* %call39) #9
+  %call66 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call65) #9
+  %44 = load i32* @target_flags, align 4, !tbaa !0
+  %and67 = lshr i32 %44, 25
+  %45 = and i32 %and67, 1
+  %46 = or i32 %45, 4
+  %call70 = call %struct.rtx_def* @gen_reg_rtx(i32 %46) #9
+  %47 = load i32* @target_flags, align 4, !tbaa !0
+  %and71 = and i32 %47, 33554432
+  %tobool72 = icmp ne i32 %and71, 0
+  %conv75 = select i1 %tobool72, i64 175, i64 151
+  %call76 = call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %., i64 %conv75) #9
+  %call77 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %call70, %struct.rtx_def* %call76) #9
+  %call78 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call77) #9
+  %call79 = call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %call70, i64 -127) #9
+  %call80 = call %struct.rtx_def* @gen_rtx_MEM(i32 51, %struct.rtx_def* %call79) #9
+  %sext = shl i64 %call12, 32
+  %conv81 = ashr exact i64 %sext, 32
+  call void @set_mem_alias_set(%struct.rtx_def* %call80, i64 %conv81) #9
+  %48 = load i32* @target_flags, align 4, !tbaa !0
+  %and82 = lshr i32 %48, 20
+  %49 = and i32 %and82, 32
+  %50 = add i32 %49, 32
+  call void @set_mem_align(%struct.rtx_def* %call80, i32 %50) #9
+  %conv86 = sext i32 %43 to i64
+  %call87 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv86) #9
+  %call88 = call %struct.rtx_def* @gen_sse_prologue_save(%struct.rtx_def* %call80, %struct.rtx_def* %call43, %struct.rtx_def* %call87, %struct.rtx_def* %call31) #9
+  %call89 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call88) #9
+  br label %if.end90
+
+if.end90:                                         ; preds = %for.end, %entry, %if.end64
+  ret void
+}

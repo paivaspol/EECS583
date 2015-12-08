@@ -1,0 +1,28 @@
+define i32 @vector_cmp(float* nocapture %v1, float* nocapture %v2, i32 %len) #2 {
+entry:
+  %cmp18 = icmp sgt i32 %len, 0
+  br i1 %cmp18, label %for.body, label %return
+
+for.cond:                                         ; preds = %if.end
+  %0 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %0, %len
+  br i1 %cmp, label %for.body, label %return
+
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %v1, i64 %indvars.iv
+  %1 = load float* %arrayidx, align 4, !tbaa !0
+  %arrayidx2 = getelementptr inbounds float* %v2, i64 %indvars.iv
+  %2 = load float* %arrayidx2, align 4, !tbaa !0
+  %cmp3 = fcmp olt float %1, %2
+  br i1 %cmp3, label %return, label %if.end
+
+if.end:                                           ; preds = %for.body
+  %cmp8 = fcmp ogt float %1, %2
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp8, label %return, label %for.cond
+
+return:                                           ; preds = %for.cond, %if.end, %for.body, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %if.end ], [ -1, %for.body ], [ 0, %for.cond ]
+  ret i32 %retval.0
+}

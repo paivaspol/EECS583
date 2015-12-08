@@ -12,8 +12,8 @@ def convert_to_ir(root_dir, output_dir):
                     output_full_path = input_file_path.replace('.c', '.ll')
                 else:
                     output_full_path = os.path.join(output_dir, filename.replace('.c', '.ll'))
-
-                convert_command = 'clang -Os -S -emit-llvm -DSPEC_CPU -DNDEBUG -DPERL_CORE -DSPEC_CPU_LP64 -DSPEC_CPU_LINUX_X64 {0} -o {1}'.format(input_full_path, output_full_path)
+                
+                convert_command = 'clang -Os -S -emit-llvm -DSPEC_CPU -DNDEBUG -I{2} -DPERL_CORE -DSPEC_CPU_LP64 -DSPEC_CPU_LINUX_X64 {0} -o {1}'.format(input_full_path, output_full_path, path)
                 print 'Converting: {0}'.format(input_full_path)
                 subprocess.call(convert_command, shell=True)
 

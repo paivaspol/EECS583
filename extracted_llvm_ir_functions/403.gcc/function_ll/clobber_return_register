@@ -1,0 +1,33 @@
+define void @clobber_return_register() #0 {
+entry:
+  tail call void @diddle_return_value(void (%struct.rtx_def*, i8*)* @do_clobber_return_reg, i8* null) #9
+  %0 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %result = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 11
+  %1 = load %union.tree_node** %result, align 8, !tbaa !0
+  %rtl = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 17
+  %2 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %cmp = icmp eq %struct.rtx_def* %2, null
+  br i1 %cmp, label %if.end13, label %cond.end
+
+cond.end:                                         ; preds = %entry
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp10 = icmp eq i32 %bf.clear, 61
+  br i1 %cmp10, label %land.lhs.true, label %if.end13
+
+land.lhs.true:                                    ; preds = %cond.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %4 = load i32* %rtuint, align 4, !tbaa !4
+  %cmp11 = icmp ugt i32 %4, 52
+  br i1 %cmp11, label %if.then12, label %if.end13
+
+if.then12:                                        ; preds = %land.lhs.true
+  %call.i = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 49, i32 0, %struct.rtx_def* %2) #10
+  %call1.i = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call.i) #10
+  br label %if.end13
+
+if.end13:                                         ; preds = %entry, %cond.end, %land.lhs.true, %if.then12
+  ret void
+}

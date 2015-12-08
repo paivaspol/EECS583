@@ -1,0 +1,24 @@
+define internal i32 @dw2_output_indirect_constant_1(%struct.splay_tree_node_s* nocapture %node, i8* nocapture %data) #0 {
+entry:
+  %key = getelementptr inbounds %struct.splay_tree_node_s* %node, i64 0, i32 0
+  %0 = load i64* %key, align 8, !tbaa !3
+  %1 = inttoptr i64 %0 to i8*
+  %2 = load i32* @target_flags, align 4, !tbaa !4
+  %and = lshr i32 %2, 25
+  %3 = and i32 %and, 1
+  %4 = or i32 %3, 4
+  %call = tail call %struct.rtx_def* @gen_rtx_fmt_s(i32 68, i32 %4, i8* %1) #7
+  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([20 x i8]* @.str103, i64 0, i64 0), i8* %1) #7
+  %value = getelementptr inbounds %struct.splay_tree_node_s* %node, i64 0, i32 1
+  %6 = load i64* %value, align 8, !tbaa !3
+  %7 = inttoptr i64 %6 to %union.tree_node*
+  tail call void @assemble_variable(%union.tree_node* %7, i32 1, i32 1, i32 1) #7
+  %8 = load i32* @target_flags, align 4, !tbaa !4
+  %and2 = lshr i32 %8, 20
+  %9 = and i32 %and2, 32
+  %10 = add i32 %9, 32
+  %div = sdiv i32 %10, 8
+  %call8 = tail call zeroext i1 @assemble_integer(%struct.rtx_def* %call, i32 %div, i32 %10, i32 1) #7
+  ret i32 0
+}

@@ -1,0 +1,16 @@
+define void @insert_default_attributes(%union.tree_node* %decl) #0 {
+entry:
+  %public_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %public_flag to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 524288
+  %tobool = icmp eq i32 %bf.clear, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  tail call void @c_common_insert_default_attributes(%union.tree_node* %decl) #8
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  ret void
+}

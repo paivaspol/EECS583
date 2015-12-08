@@ -1,0 +1,37 @@
+define internal fastcc %struct.cpp_token* @alloc_expansion_token(%struct.cpp_reader* %pfile, %struct.cpp_macro* nocapture %macro) #0 {
+entry:
+  %a_buff = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 6
+  %0 = load %struct._cpp_buff** %a_buff, align 8, !tbaa !3
+  %limit = getelementptr inbounds %struct._cpp_buff* %0, i64 0, i32 3
+  %1 = load i8** %limit, align 8, !tbaa !3
+  %cur = getelementptr inbounds %struct._cpp_buff* %0, i64 0, i32 2
+  %2 = load i8** %cur, align 8, !tbaa !3
+  %sub.ptr.lhs.cast = ptrtoint i8* %1 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %2 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %count = getelementptr inbounds %struct.cpp_macro* %macro, i64 0, i32 3
+  %3 = load i32* %count, align 4, !tbaa !7
+  %add = add i32 %3, 1
+  %conv = zext i32 %add to i64
+  %mul = mul i64 %conv, 24
+  %cmp = icmp ult i64 %sub.ptr.sub, %mul
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @_cpp_extend_buff(%struct.cpp_reader* %pfile, %struct._cpp_buff** %a_buff, i64 24) #7
+  %.pre = load i32* %count, align 4, !tbaa !7
+  %.pre12 = load %struct._cpp_buff** %a_buff, align 8, !tbaa !3
+  %cur6.phi.trans.insert = getelementptr inbounds %struct._cpp_buff* %.pre12, i64 0, i32 2
+  %.pre13 = load i8** %cur6.phi.trans.insert, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %4 = phi i8* [ %.pre13, %if.then ], [ %2, %entry ]
+  %5 = phi i32 [ %.pre, %if.then ], [ %3, %entry ]
+  %inc = add i32 %5, 1
+  store i32 %inc, i32* %count, align 4, !tbaa !7
+  %idxprom = zext i32 %5 to i64
+  %6 = bitcast i8* %4 to %struct.cpp_token*
+  %arrayidx = getelementptr inbounds %struct.cpp_token* %6, i64 %idxprom
+  ret %struct.cpp_token* %arrayidx
+}

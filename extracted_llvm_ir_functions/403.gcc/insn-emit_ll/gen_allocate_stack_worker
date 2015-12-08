@@ -1,0 +1,23 @@
+define %struct.rtx_def* @gen_allocate_stack_worker(%struct.rtx_def* %operand0) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %0 = load i32* @target_flags, align 4, !tbaa !3
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.rtx_def* @gen_allocate_stack_worker_rex64(%struct.rtx_def* %operand0) #6
+  %call2 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call) #4
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %call4 = tail call %struct.rtx_def* @gen_allocate_stack_worker_1(%struct.rtx_def* %operand0) #6
+  %call5 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call4) #4
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %call6 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  ret %struct.rtx_def* %call6
+}

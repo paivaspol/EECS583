@@ -1,0 +1,75 @@
+define i32 @lm_bglist(%struct.lm_s* nocapture %lm, i16 zeroext %w1, %struct.bg_t** nocapture %bgptr, i32* nocapture %bowt) #2 {
+entry:
+  %conv = zext i16 %w1 to i32
+  %cmp = icmp eq i16 %w1, -1
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %n_ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 0
+  %0 = load i32* %n_ug, align 4, !tbaa !3
+  %cmp3 = icmp slt i32 %conv, %0
+  br i1 %cmp3, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 972, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #8
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([35 x i8]* @.str25, i64 0, i64 0), i32 %conv) #8
+  br label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false, %if.then
+  %n_bg = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 1
+  %1 = load i32* %n_bg, align 4, !tbaa !3
+  %cmp6 = icmp sgt i32 %1, 0
+  br i1 %cmp6, label %cond.end, label %if.else
+
+cond.end:                                         ; preds = %if.end
+  %add = add nsw i32 %conv, 1
+  %idxprom52 = zext i32 %add to i64
+  %ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 9
+  %2 = load %struct.ug_t** %ug, align 8, !tbaa !0
+  %firstbg = getelementptr inbounds %struct.ug_t* %2, i64 %idxprom52, i32 3
+  %3 = load i32* %firstbg, align 4, !tbaa !3
+  %idxprom9 = zext i16 %w1 to i64
+  %firstbg12 = getelementptr inbounds %struct.ug_t* %2, i64 %idxprom9, i32 3
+  %4 = load i32* %firstbg12, align 4, !tbaa !3
+  %sub = sub nsw i32 %3, %4
+  %cmp13 = icmp sgt i32 %sub, 0
+  br i1 %cmp13, label %if.then15, label %if.else
+
+if.then15:                                        ; preds = %cond.end
+  %membg = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 12
+  %5 = load %struct.membg_t** %membg, align 8, !tbaa !0
+  %bg = getelementptr inbounds %struct.membg_t* %5, i64 %idxprom9, i32 0
+  %6 = load %struct.bg_t** %bg, align 8, !tbaa !0
+  %tobool = icmp eq %struct.bg_t* %6, null
+  br i1 %tobool, label %if.then18, label %if.end19
+
+if.then18:                                        ; preds = %if.then15
+  tail call fastcc void @load_bg(%struct.lm_s* %lm, i16 zeroext %w1) #9
+  %.pre = load %struct.membg_t** %membg, align 8, !tbaa !0
+  %bg26.phi.trans.insert = getelementptr inbounds %struct.membg_t* %.pre, i64 %idxprom9, i32 0
+  %.pre56 = load %struct.bg_t** %bg26.phi.trans.insert, align 8, !tbaa !0
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.then15, %if.then18
+  %7 = phi %struct.bg_t* [ %6, %if.then15 ], [ %.pre56, %if.then18 ]
+  %8 = phi %struct.membg_t* [ %5, %if.then15 ], [ %.pre, %if.then18 ]
+  %used = getelementptr inbounds %struct.membg_t* %8, i64 %idxprom9, i32 1
+  store i32 1, i32* %used, align 4, !tbaa !3
+  store %struct.bg_t* %7, %struct.bg_t** %bgptr, align 8, !tbaa !0
+  %9 = load %struct.ug_t** %ug, align 8, !tbaa !0
+  %bowt30 = getelementptr inbounds %struct.ug_t* %9, i64 %idxprom9, i32 2
+  %l = bitcast %union.lmlog_t* %bowt30 to i32*
+  %10 = load i32* %l, align 4, !tbaa !3
+  br label %if.end31
+
+if.else:                                          ; preds = %if.end, %cond.end
+  %cond55 = phi i32 [ %sub, %cond.end ], [ 0, %if.end ]
+  store %struct.bg_t* null, %struct.bg_t** %bgptr, align 8, !tbaa !0
+  br label %if.end31
+
+if.end31:                                         ; preds = %if.else, %if.end19
+  %cond54 = phi i32 [ %cond55, %if.else ], [ %sub, %if.end19 ]
+  %storemerge = phi i32 [ 0, %if.else ], [ %10, %if.end19 ]
+  store i32 %storemerge, i32* %bowt, align 4, !tbaa !3
+  ret i32 %cond54
+}

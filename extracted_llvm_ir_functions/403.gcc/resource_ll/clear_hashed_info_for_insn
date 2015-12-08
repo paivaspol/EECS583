@@ -1,0 +1,38 @@
+define void @clear_hashed_info_for_insn(%struct.rtx_def* nocapture %insn) #0 {
+entry:
+  %0 = load %struct.target_info*** @target_hash_table, align 8, !tbaa !0
+  %cmp = icmp eq %struct.target_info** %0, null
+  br i1 %cmp, label %if.end10, label %if.then
+
+if.then:                                          ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtint, align 4, !tbaa !4
+  %rem = srem i32 %1, 257
+  %idxprom = sext i32 %rem to i64
+  %arrayidx1 = getelementptr inbounds %struct.target_info** %0, i64 %idxprom
+  %tinfo.017 = load %struct.target_info** %arrayidx1, align 8
+  %tobool18 = icmp eq %struct.target_info* %tinfo.017, null
+  br i1 %tobool18, label %if.end10, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %next = getelementptr inbounds %struct.target_info* %tinfo.019, i64 0, i32 1
+  %tinfo.0 = load %struct.target_info** %next, align 8
+  %tobool = icmp eq %struct.target_info* %tinfo.0, null
+  br i1 %tobool, label %if.end10, label %for.body
+
+for.body:                                         ; preds = %if.then, %for.cond
+  %tinfo.019 = phi %struct.target_info* [ %tinfo.0, %for.cond ], [ %tinfo.017, %if.then ]
+  %uid = getelementptr inbounds %struct.target_info* %tinfo.019, i64 0, i32 0
+  %2 = load i32* %uid, align 4, !tbaa !4
+  %cmp5 = icmp eq i32 %2, %1
+  br i1 %cmp5, label %if.then8, label %for.cond
+
+if.then8:                                         ; preds = %for.body
+  %block = getelementptr inbounds %struct.target_info* %tinfo.019, i64 0, i32 3
+  store i32 -1, i32* %block, align 4, !tbaa !4
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.then, %for.cond, %entry, %if.then8
+  ret void
+}

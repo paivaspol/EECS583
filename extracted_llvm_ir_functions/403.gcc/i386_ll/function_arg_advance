@@ -1,0 +1,151 @@
+define void @function_arg_advance(%struct.ix86_args* nocapture %cum, i32 %mode, %union.tree_node* %type, i32 %named) #1 {
+entry:
+  %int_nregs = alloca i32, align 4
+  %sse_nregs = alloca i32, align 4
+  %cmp = icmp eq i32 %mode, 51
+  br i1 %cmp, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %entry
+  %call = call i64 @int_size_in_bytes(%union.tree_node* %type) #9
+  br label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom
+  %0 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv1 = zext i8 %0 to i64
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i64 [ %call, %cond.true ], [ %conv1, %cond.false ]
+  %conv2 = trunc i64 %cond to i32
+  %1 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %1, 23
+  %2 = and i32 %and, 4
+  %3 = add i32 %2, 4
+  %add = add i32 %conv2, -1
+  %sub = add i32 %add, %3
+  %div = sdiv i32 %sub, %3
+  %4 = load i8** @ix86_debug_arg_string, align 8, !tbaa !4
+  %cmp7 = icmp eq i8* %4, null
+  br i1 %cmp7, label %if.end, label %if.then
+
+if.then:                                          ; preds = %cond.end
+  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
+  %words9 = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 0
+  %6 = load i32* %words9, align 4, !tbaa !0
+  %nregs = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 1
+  %7 = load i32* %nregs, align 4, !tbaa !0
+  %idxprom10 = sext i32 %mode to i64
+  %arrayidx11 = getelementptr inbounds [59 x i8*]* @mode_name, i64 0, i64 %idxprom10
+  %8 = load i8** %arrayidx11, align 8, !tbaa !4
+  %call12 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([61 x i8]* @.str65, i64 0, i64 0), i32 %div, i32 %6, i32 %7, i8* %8, i32 %named) #9
+  %.pre = load i32* @target_flags, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %cond.end, %if.then
+  %9 = phi i32 [ %1, %cond.end ], [ %.pre, %if.then ]
+  %and13 = and i32 %9, 33554432
+  %tobool14 = icmp eq i32 %and13, 0
+  br i1 %tobool14, label %if.else39, label %if.then15
+
+if.then15:                                        ; preds = %if.end
+  %call16 = call fastcc i32 @examine_argument(i32 %mode, %union.tree_node* %type, i32 0, i32* %int_nregs, i32* %sse_nregs) #10
+  %tobool17 = icmp eq i32 %call16, 0
+  br i1 %tobool17, label %if.then18, label %if.else
+
+if.then18:                                        ; preds = %if.then15
+  %words19 = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 0
+  %10 = load i32* %words19, align 4, !tbaa !0
+  %add20 = add nsw i32 %10, %div
+  store i32 %add20, i32* %words19, align 4, !tbaa !0
+  br label %if.end74
+
+if.else:                                          ; preds = %if.then15
+  %11 = load i32* %sse_nregs, align 4, !tbaa !0
+  %sse_nregs21 = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 4
+  %12 = load i32* %sse_nregs21, align 4, !tbaa !0
+  %cmp22 = icmp sgt i32 %11, %12
+  br i1 %cmp22, label %if.else34, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.else
+  %13 = load i32* %int_nregs, align 4, !tbaa !0
+  %nregs24 = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 1
+  %14 = load i32* %nregs24, align 4, !tbaa !0
+  %cmp25 = icmp sgt i32 %13, %14
+  br i1 %cmp25, label %if.else34, label %if.then27
+
+if.then27:                                        ; preds = %land.lhs.true
+  %sub29 = sub nsw i32 %14, %13
+  store i32 %sub29, i32* %nregs24, align 4, !tbaa !0
+  %sub31 = sub nsw i32 %12, %11
+  store i32 %sub31, i32* %sse_nregs21, align 4, !tbaa !0
+  %regno = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 2
+  %15 = load i32* %regno, align 4, !tbaa !0
+  %add32 = add nsw i32 %15, %13
+  store i32 %add32, i32* %regno, align 4, !tbaa !0
+  %sse_regno = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 5
+  %16 = load i32* %sse_regno, align 4, !tbaa !0
+  %add33 = add nsw i32 %16, %11
+  store i32 %add33, i32* %sse_regno, align 4, !tbaa !0
+  br label %if.end74
+
+if.else34:                                        ; preds = %land.lhs.true, %if.else
+  %words35 = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 0
+  %17 = load i32* %words35, align 4, !tbaa !0
+  %add36 = add nsw i32 %17, %div
+  store i32 %add36, i32* %words35, align 4, !tbaa !0
+  br label %if.end74
+
+if.else39:                                        ; preds = %if.end
+  %and40 = and i32 %9, 327680
+  %cmp41 = icmp ne i32 %and40, 0
+  %cmp44 = icmp eq i32 %mode, 6
+  %or.cond = and i1 %cmp41, %cmp44
+  br i1 %or.cond, label %if.then46, label %if.else59
+
+if.then46:                                        ; preds = %if.else39
+  %sse_words = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 3
+  %18 = load i32* %sse_words, align 4, !tbaa !0
+  %add47 = add nsw i32 %18, %div
+  store i32 %add47, i32* %sse_words, align 4, !tbaa !0
+  %sse_nregs48 = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 4
+  %19 = load i32* %sse_nregs48, align 4, !tbaa !0
+  %sub49 = add nsw i32 %19, -1
+  store i32 %sub49, i32* %sse_nregs48, align 4, !tbaa !0
+  %sse_regno50 = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 5
+  %20 = load i32* %sse_regno50, align 4, !tbaa !0
+  %add51 = add nsw i32 %20, 1
+  store i32 %add51, i32* %sse_regno50, align 4, !tbaa !0
+  %cmp53 = icmp slt i32 %19, 2
+  br i1 %cmp53, label %if.then55, label %if.end74
+
+if.then55:                                        ; preds = %if.then46
+  store i32 0, i32* %sse_nregs48, align 4, !tbaa !0
+  store i32 0, i32* %sse_regno50, align 4, !tbaa !0
+  br label %if.end74
+
+if.else59:                                        ; preds = %if.else39
+  %words60 = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 0
+  %21 = load i32* %words60, align 4, !tbaa !0
+  %add61 = add nsw i32 %21, %div
+  store i32 %add61, i32* %words60, align 4, !tbaa !0
+  %nregs62 = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 1
+  %22 = load i32* %nregs62, align 4, !tbaa !0
+  %sub63 = sub nsw i32 %22, %div
+  store i32 %sub63, i32* %nregs62, align 4, !tbaa !0
+  %regno64 = getelementptr inbounds %struct.ix86_args* %cum, i64 0, i32 2
+  %23 = load i32* %regno64, align 4, !tbaa !0
+  %add65 = add nsw i32 %23, %div
+  store i32 %add65, i32* %regno64, align 4, !tbaa !0
+  %cmp67 = icmp slt i32 %sub63, 1
+  br i1 %cmp67, label %if.then69, label %if.end74
+
+if.then69:                                        ; preds = %if.else59
+  store i32 0, i32* %nregs62, align 4, !tbaa !0
+  store i32 0, i32* %regno64, align 4, !tbaa !0
+  br label %if.end74
+
+if.end74:                                         ; preds = %if.then55, %if.then46, %if.then69, %if.else59, %if.then18, %if.else34, %if.then27
+  ret void
+}

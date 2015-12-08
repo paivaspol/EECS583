@@ -1,0 +1,27 @@
+define i32 @node_number(i32 %x, i32 %y, i32 %z, i32 %t) #3 {
+entry:
+  %0 = load i64* bitcast ([4 x i32]* @squaresize to i64*), align 16
+  %1 = trunc i64 %0 to i32
+  %div = sdiv i32 %x, %1
+  %2 = lshr i64 %0, 32
+  %3 = trunc i64 %2 to i32
+  %div1 = sdiv i32 %y, %3
+  %4 = load i64* bitcast (i32* getelementptr inbounds ([4 x i32]* @squaresize, i64 0, i64 2) to i64*), align 8
+  %5 = trunc i64 %4 to i32
+  %div2 = sdiv i32 %z, %5
+  %6 = lshr i64 %4, 32
+  %7 = trunc i64 %6 to i32
+  %div3 = sdiv i32 %t, %7
+  %8 = load i64* bitcast ([4 x i32]* @nsquares to i64*), align 16
+  %9 = trunc i64 %8 to i32
+  %10 = lshr i64 %8, 32
+  %11 = trunc i64 %10 to i32
+  %12 = load i32* getelementptr inbounds ([4 x i32]* @nsquares, i64 0, i64 2), align 8, !tbaa !0
+  %mul = mul nsw i32 %12, %div3
+  %add = add nsw i32 %mul, %div2
+  %mul4 = mul nsw i32 %add, %11
+  %add5 = add nsw i32 %mul4, %div1
+  %mul6 = mul nsw i32 %add5, %9
+  %add7 = add nsw i32 %mul6, %div
+  ret i32 %add7
+}

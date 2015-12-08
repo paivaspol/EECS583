@@ -1,0 +1,19 @@
+define %struct.rtx_def* @loop_insn_emit_before(%struct.loop* nocapture %loop, %struct.basic_block_def* nocapture %where_bb, %struct.rtx_def* %where_insn, %struct.rtx_def* %pattern) #0 {
+entry:
+  %tobool4 = icmp eq %struct.rtx_def* %where_insn, null
+  br i1 %tobool4, label %if.then.lr.ph, label %if.end
+
+if.then.lr.ph:                                    ; preds = %entry
+  %start.i = getelementptr inbounds %struct.loop* %loop, i64 0, i32 26
+  %0 = load %struct.rtx_def** %start.i, align 8, !tbaa !4
+  %tobool = icmp eq %struct.rtx_def* %0, null
+  br label %if.then
+
+if.then:                                          ; preds = %if.then.lr.ph, %if.then
+  br i1 %tobool, label %if.then, label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %where_insn.tr.lcssa = phi %struct.rtx_def* [ %where_insn, %entry ], [ %0, %if.then ]
+  %call1 = tail call %struct.rtx_def* @emit_insn_before(%struct.rtx_def* %pattern, %struct.rtx_def* %where_insn.tr.lcssa) #8
+  ret %struct.rtx_def* %call1
+}

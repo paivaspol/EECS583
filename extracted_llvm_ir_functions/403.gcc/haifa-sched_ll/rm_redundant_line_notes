@@ -1,0 +1,113 @@
+define void @rm_redundant_line_notes() #0 {
+entry:
+  %call = tail call %struct.rtx_def* @get_insns() #9
+  %call1 = tail call %struct.rtx_def* @get_last_insn() #9
+  %tobool97 = icmp eq %struct.rtx_def* %call1, null
+  br i1 %tobool97, label %if.end74, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %notes.0102 = phi i32 [ %notes.2, %for.inc ], [ 0, %entry ]
+  %active_insn.0101 = phi i32 [ %active_insn.1, %for.inc ], [ 0, %entry ]
+  %insn.099 = phi %struct.rtx_def* [ %10, %for.inc ], [ %call1, %entry ]
+  %line.098 = phi %struct.rtx_def* [ %line.2, %for.inc ], [ null, %entry ]
+  %0 = bitcast %struct.rtx_def* %insn.099 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.then62 [
+    i32 37, label %land.lhs.true
+    i32 32, label %land.lhs.true49
+  ]
+
+land.lhs.true:                                    ; preds = %for.body
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.099, i64 0, i32 1, i64 4
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtint, align 4, !tbaa !0
+  %cmp2 = icmp sgt i32 %1, 0
+  br i1 %cmp2, label %if.then, label %land.lhs.true41
+
+if.then:                                          ; preds = %land.lhs.true
+  %cmp3 = icmp eq i32 %active_insn.0101, 0
+  br i1 %cmp3, label %if.then4, label %if.else
+
+if.then4:                                         ; preds = %if.then
+  %inc = add nsw i32 %notes.0102, 1
+  %2 = getelementptr inbounds %struct.rtx_def* %insn.099, i64 0, i32 1, i64 3, i32 0
+  store i64 0, i64* %2, align 8, !tbaa !3
+  store i32 -99, i32* %rtint, align 4, !tbaa !0
+  br label %for.inc
+
+if.else:                                          ; preds = %if.then
+  %tobool10 = icmp eq %struct.rtx_def* %line.098, null
+  br i1 %tobool10, label %for.inc, label %land.lhs.true11
+
+land.lhs.true11:                                  ; preds = %if.else
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %line.098, i64 0, i32 1, i64 4
+  %rtint14 = bitcast %union.rtunion_def* %arrayidx13 to i32*
+  %3 = load i32* %rtint14, align 4, !tbaa !0
+  %cmp18 = icmp eq i32 %3, %1
+  br i1 %cmp18, label %land.lhs.true19, label %for.inc
+
+land.lhs.true19:                                  ; preds = %land.lhs.true11
+  %arrayidx21 = getelementptr inbounds %struct.rtx_def* %line.098, i64 0, i32 1, i64 3
+  %rtstr22 = bitcast %union.rtunion_def* %arrayidx21 to i8**
+  %4 = load i8** %rtstr22, align 8, !tbaa !3
+  %arrayidx24 = getelementptr inbounds %struct.rtx_def* %insn.099, i64 0, i32 1, i64 3
+  %rtstr25 = bitcast %union.rtunion_def* %arrayidx24 to i8**
+  %5 = load i8** %rtstr25, align 8, !tbaa !3
+  %cmp26 = icmp eq i8* %4, %5
+  br i1 %cmp26, label %if.then27, label %for.inc
+
+if.then27:                                        ; preds = %land.lhs.true19
+  %inc28 = add nsw i32 %notes.0102, 1
+  %6 = getelementptr inbounds %union.rtunion_def* %arrayidx21, i64 0, i32 0
+  store i64 0, i64* %6, align 8, !tbaa !3
+  store i32 -99, i32* %rtint14, align 4, !tbaa !0
+  br label %for.inc
+
+land.lhs.true41:                                  ; preds = %land.lhs.true
+  %arrayidx43 = getelementptr inbounds %struct.rtx_def* %insn.099, i64 0, i32 1, i64 4
+  %rtint44 = bitcast %union.rtunion_def* %arrayidx43 to i32*
+  %7 = load i32* %rtint44, align 4, !tbaa !0
+  %cmp45 = icmp eq i32 %7, -99
+  br i1 %cmp45, label %for.inc, label %if.then62
+
+land.lhs.true49:                                  ; preds = %for.body
+  %arrayidx51 = getelementptr inbounds %struct.rtx_def* %insn.099, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx51 to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %9 = bitcast %struct.rtx_def* %8 to i32*
+  %bf.load52 = load i32* %9, align 8
+  %bf.clear53 = and i32 %bf.load52, 65535
+  %bf.clear53.off = add i32 %bf.clear53, -48
+  %switch = icmp ult i32 %bf.clear53.off, 2
+  br i1 %switch, label %for.inc, label %if.then62
+
+if.then62:                                        ; preds = %for.body, %land.lhs.true41, %land.lhs.true49
+  %inc63 = add nsw i32 %active_insn.0101, 1
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true49, %if.then4, %if.then27, %if.else, %land.lhs.true19, %land.lhs.true11, %if.then62, %land.lhs.true41
+  %line.2 = phi %struct.rtx_def* [ %line.098, %land.lhs.true41 ], [ %line.098, %if.then62 ], [ %line.098, %if.then4 ], [ %insn.099, %if.then27 ], [ %insn.099, %if.else ], [ %insn.099, %land.lhs.true19 ], [ %insn.099, %land.lhs.true11 ], [ %line.098, %land.lhs.true49 ]
+  %active_insn.1 = phi i32 [ %active_insn.0101, %land.lhs.true41 ], [ %inc63, %if.then62 ], [ 0, %if.then4 ], [ 0, %if.then27 ], [ 0, %if.else ], [ 0, %land.lhs.true19 ], [ 0, %land.lhs.true11 ], [ %active_insn.0101, %land.lhs.true49 ]
+  %notes.2 = phi i32 [ %notes.0102, %land.lhs.true41 ], [ %notes.0102, %if.then62 ], [ %inc, %if.then4 ], [ %inc28, %if.then27 ], [ %notes.0102, %if.else ], [ %notes.0102, %land.lhs.true19 ], [ %notes.0102, %land.lhs.true11 ], [ %notes.0102, %land.lhs.true49 ]
+  %arrayidx67 = getelementptr inbounds %struct.rtx_def* %insn.099, i64 0, i32 1, i64 1
+  %rtx68 = bitcast %union.rtunion_def* %arrayidx67 to %struct.rtx_def**
+  %10 = load %struct.rtx_def** %rtx68, align 8, !tbaa !3
+  %tobool = icmp eq %struct.rtx_def* %10, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  %11 = load i32* @sched_verbose, align 4, !tbaa !0
+  %tobool69 = icmp eq i32 %11, 0
+  %tobool71 = icmp eq i32 %notes.2, 0
+  %or.cond = or i1 %tobool69, %tobool71
+  br i1 %or.cond, label %if.end74, label %if.then72
+
+if.then72:                                        ; preds = %for.end
+  %12 = load %struct._IO_FILE** @sched_dump, align 8, !tbaa !3
+  %call73 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %12, i8* getelementptr inbounds ([33 x i8]* @.str4, i64 0, i64 0), i32 %notes.2) #9
+  br label %if.end74
+
+if.end74:                                         ; preds = %entry, %for.end, %if.then72
+  ret void
+}

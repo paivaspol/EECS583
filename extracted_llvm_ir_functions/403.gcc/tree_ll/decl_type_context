@@ -1,0 +1,45 @@
+define %union.tree_node* @decl_type_context(%union.tree_node* nocapture %decl) #0 {
+entry:
+  %context2 = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 9
+  %context.046 = load %union.tree_node** %context2, align 8
+  %tobool47 = icmp eq %union.tree_node* %context.046, null
+  br i1 %tobool47, label %return, label %while.body
+
+while.body:                                       ; preds = %entry, %while.cond.backedge
+  %context.048 = phi %union.tree_node* [ %context.0, %while.cond.backedge ], [ %context.046, %entry ]
+  %code = getelementptr inbounds %union.tree_node* %context.048, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %if.else34 [
+    i32 20, label %return
+    i32 21, label %return
+    i32 22, label %return
+    i32 33, label %if.then25
+    i32 30, label %if.then25
+    i32 4, label %if.then33
+  ]
+
+if.then25:                                        ; preds = %while.body, %while.body
+  %context27 = getelementptr inbounds %union.tree_node* %context.048, i64 0, i32 0, i32 9
+  br label %while.cond.backedge
+
+if.then33:                                        ; preds = %while.body
+  %supercontext = getelementptr inbounds %union.tree_node* %context.048, i64 0, i32 0, i32 5
+  %1 = bitcast [8 x i8]* %supercontext to %union.tree_node**
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.then33, %if.then25
+  %context.0.in.be = phi %union.tree_node** [ %context27, %if.then25 ], [ %1, %if.then33 ]
+  %context.0 = load %union.tree_node** %context.0.in.be, align 8
+  %tobool = icmp eq %union.tree_node* %context.0, null
+  br i1 %tobool, label %return, label %while.body
+
+if.else34:                                        ; preds = %while.body
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str147, i64 0, i64 0), i32 4430, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.decl_type_context, i64 0, i64 0)) #8
+  unreachable
+
+return:                                           ; preds = %while.cond.backedge, %while.body, %while.body, %while.body, %entry
+  %retval.0 = phi %union.tree_node* [ null, %entry ], [ %context.048, %while.body ], [ %context.048, %while.body ], [ %context.048, %while.body ], [ null, %while.cond.backedge ]
+  ret %union.tree_node* %retval.0
+}

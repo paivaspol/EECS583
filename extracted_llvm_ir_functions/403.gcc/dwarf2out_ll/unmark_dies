@@ -1,0 +1,20 @@
+define internal fastcc void @unmark_dies(%struct.die_struct* nocapture %die) #1 {
+entry:
+  %die_mark = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 8
+  store i32 0, i32* %die_mark, align 4, !tbaa !0
+  %die_child = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 4
+  %c.04 = load %struct.die_struct** %die_child, align 8
+  %tobool5 = icmp eq %struct.die_struct* %c.04, null
+  br i1 %tobool5, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %c.06 = phi %struct.die_struct* [ %c.0, %for.body ], [ %c.04, %entry ]
+  tail call fastcc void @unmark_dies(%struct.die_struct* %c.06) #10
+  %die_sib = getelementptr inbounds %struct.die_struct* %c.06, i64 0, i32 5
+  %c.0 = load %struct.die_struct** %die_sib, align 8
+  %tobool = icmp eq %struct.die_struct* %c.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

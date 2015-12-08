@@ -1,0 +1,20 @@
+define void @calc_invh(float* nocapture %box, i32 %nx, i32 %ny, i32 %nz, float* nocapture %invh) #0 {
+entry:
+  %conv = sitofp i32 %nx to float
+  %0 = load float* %box, align 4, !tbaa !0
+  %div = fdiv float %conv, %0
+  store float %div, float* %invh, align 4, !tbaa !0
+  %conv2 = sitofp i32 %ny to float
+  %arrayidx3 = getelementptr inbounds float* %box, i64 1
+  %1 = load float* %arrayidx3, align 4, !tbaa !0
+  %div4 = fdiv float %conv2, %1
+  %arrayidx5 = getelementptr inbounds float* %invh, i64 1
+  store float %div4, float* %arrayidx5, align 4, !tbaa !0
+  %conv6 = sitofp i32 %nz to float
+  %arrayidx7 = getelementptr inbounds float* %box, i64 2
+  %2 = load float* %arrayidx7, align 4, !tbaa !0
+  %div8 = fdiv float %conv6, %2
+  %arrayidx9 = getelementptr inbounds float* %invh, i64 2
+  store float %div8, float* %arrayidx9, align 4, !tbaa !0
+  ret void
+}

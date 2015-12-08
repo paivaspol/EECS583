@@ -1,0 +1,124 @@
+define i32 @count_occurrences(%struct.rtx_def* %x, %struct.rtx_def* %find, i32 %count_dest) #1 {
+entry:
+  %cmp92 = icmp eq %struct.rtx_def* %x, %find
+  br i1 %cmp92, label %return, label %if.end.lr.ph
+
+if.end.lr.ph:                                     ; preds = %entry
+  %tobool10 = icmp eq i32 %count_dest, 0
+  br label %if.end
+
+if.end:                                           ; preds = %if.end.lr.ph, %if.then11
+  %x.tr93 = phi %struct.rtx_def* [ %x, %if.end.lr.ph ], [ %3, %if.then11 ]
+  %0 = bitcast %struct.rtx_def* %x.tr93 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.epilog [
+    i32 61, label %return
+    i32 54, label %return
+    i32 55, label %return
+    i32 56, label %return
+    i32 68, label %return
+    i32 36, label %return
+    i32 59, label %return
+    i32 69, label %return
+    i32 66, label %sw.bb1
+    i32 47, label %sw.bb7
+  ]
+
+sw.bb1:                                           ; preds = %if.end
+  %1 = bitcast %struct.rtx_def* %find to i32*
+  %bf.load2 = load i32* %1, align 8
+  %bf.clear3 = and i32 %bf.load2, 65535
+  %cmp4 = icmp eq i32 %bf.clear3, 66
+  br i1 %cmp4, label %land.lhs.true, label %sw.epilog
+
+land.lhs.true:                                    ; preds = %sw.bb1
+  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %x.tr93, %struct.rtx_def* %find) #5
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %sw.epilog, label %return
+
+sw.bb7:                                           ; preds = %if.end
+  %fld = getelementptr inbounds %struct.rtx_def* %x.tr93, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %cmp8 = icmp eq %struct.rtx_def* %2, %find
+  %or.cond = and i1 %cmp8, %tobool10
+  br i1 %or.cond, label %if.then11, label %sw.epilog
+
+if.then11:                                        ; preds = %sw.bb7
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %x.tr93, i64 0, i32 1, i64 1
+  %rtx14 = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx14, align 8, !tbaa !0
+  %cmp = icmp eq %struct.rtx_def* %3, %find
+  br i1 %cmp, label %return, label %if.end
+
+sw.epilog:                                        ; preds = %if.end, %sw.bb7, %land.lhs.true, %sw.bb1
+  %bf.clear104 = phi i32 [ 66, %land.lhs.true ], [ 66, %sw.bb1 ], [ 47, %sw.bb7 ], [ %bf.clear, %if.end ]
+  %idxprom75 = zext i32 %bf.clear104 to i64
+  %arrayidx19 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom75
+  %4 = load i8* %arrayidx19, align 1, !tbaa !1
+  %cmp2081 = icmp eq i8 %4, 0
+  br i1 %cmp2081, label %return, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %sw.epilog
+  %arrayidx17 = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom75
+  %5 = load i8** %arrayidx17, align 8, !tbaa !0
+  %conv = zext i8 %4 to i32
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc46
+  %indvars.iv95 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next96, %for.inc46 ]
+  %count.084 = phi i32 [ 0, %for.body.lr.ph ], [ %count.2, %for.inc46 ]
+  %format_ptr.083 = phi i8* [ %5, %for.body.lr.ph ], [ %incdec.ptr, %for.inc46 ]
+  %incdec.ptr = getelementptr inbounds i8* %format_ptr.083, i64 1
+  %6 = load i8* %format_ptr.083, align 1, !tbaa !1
+  %conv22 = sext i8 %6 to i32
+  switch i32 %conv22, label %for.inc46 [
+    i32 101, label %sw.bb23
+    i32 69, label %for.cond30.preheader
+  ]
+
+for.cond30.preheader:                             ; preds = %for.body
+  %arrayidx33 = getelementptr inbounds %struct.rtx_def* %x.tr93, i64 0, i32 1, i64 %indvars.iv95
+  %rtvec = bitcast %union.rtunion_def* %arrayidx33 to %struct.rtvec_def**
+  %7 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem76 = getelementptr inbounds %struct.rtvec_def* %7, i64 0, i32 0
+  %8 = load i32* %num_elem76, align 4, !tbaa !3
+  %cmp3477 = icmp sgt i32 %8, 0
+  br i1 %cmp3477, label %for.body36, label %for.inc46
+
+sw.bb23:                                          ; preds = %for.body
+  %arrayidx26 = getelementptr inbounds %struct.rtx_def* %x.tr93, i64 0, i32 1, i64 %indvars.iv95
+  %rtx27 = bitcast %union.rtunion_def* %arrayidx26 to %struct.rtx_def**
+  %9 = load %struct.rtx_def** %rtx27, align 8, !tbaa !0
+  %call28 = tail call i32 @count_occurrences(%struct.rtx_def* %9, %struct.rtx_def* %find, i32 %count_dest) #4
+  %add = add nsw i32 %call28, %count.084
+  br label %for.inc46
+
+for.body36:                                       ; preds = %for.cond30.preheader, %for.body36
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body36 ], [ 0, %for.cond30.preheader ]
+  %10 = phi %struct.rtvec_def* [ %12, %for.body36 ], [ %7, %for.cond30.preheader ]
+  %count.179 = phi i32 [ %add44, %for.body36 ], [ %count.084, %for.cond30.preheader ]
+  %arrayidx42 = getelementptr inbounds %struct.rtvec_def* %10, i64 0, i32 1, i64 %indvars.iv
+  %11 = load %struct.rtx_def** %arrayidx42, align 8, !tbaa !0
+  %call43 = tail call i32 @count_occurrences(%struct.rtx_def* %11, %struct.rtx_def* %find, i32 %count_dest) #4
+  %add44 = add nsw i32 %call43, %count.179
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %12 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %12, i64 0, i32 0
+  %13 = load i32* %num_elem, align 4, !tbaa !3
+  %14 = trunc i64 %indvars.iv.next to i32
+  %cmp34 = icmp slt i32 %14, %13
+  br i1 %cmp34, label %for.body36, label %for.inc46
+
+for.inc46:                                        ; preds = %for.cond30.preheader, %for.body36, %sw.bb23, %for.body
+  %count.2 = phi i32 [ %count.084, %for.body ], [ %add, %sw.bb23 ], [ %count.084, %for.cond30.preheader ], [ %add44, %for.body36 ]
+  %indvars.iv.next96 = add i64 %indvars.iv95, 1
+  %15 = trunc i64 %indvars.iv.next96 to i32
+  %cmp20 = icmp slt i32 %15, %conv
+  br i1 %cmp20, label %for.body, label %return
+
+return:                                           ; preds = %entry, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.then11, %sw.epilog, %for.inc46, %land.lhs.true
+  %retval.0 = phi i32 [ 1, %land.lhs.true ], [ 0, %sw.epilog ], [ %count.2, %for.inc46 ], [ 1, %entry ], [ 0, %if.end ], [ 0, %if.end ], [ 0, %if.end ], [ 0, %if.end ], [ 0, %if.end ], [ 0, %if.end ], [ 0, %if.end ], [ 0, %if.end ], [ 1, %if.then11 ]
+  ret i32 %retval.0
+}

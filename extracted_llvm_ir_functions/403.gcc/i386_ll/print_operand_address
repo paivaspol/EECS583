@@ -1,0 +1,262 @@
+define void @print_operand_address(%struct._IO_FILE* %file, %struct.rtx_def* %addr) #1 {
+entry:
+  %parts = alloca %struct.ix86_address, align 8
+  %call = call fastcc i32 @ix86_decompose_address(%struct.rtx_def* %addr, %struct.ix86_address* %parts) #10
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 6126, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.print_operand_address, i64 0, i64 0)) #11
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %base1 = getelementptr inbounds %struct.ix86_address* %parts, i64 0, i32 0
+  %0 = load %struct.rtx_def** %base1, align 8, !tbaa !4
+  %index2 = getelementptr inbounds %struct.ix86_address* %parts, i64 0, i32 1
+  %1 = load %struct.rtx_def** %index2, align 8, !tbaa !4
+  %disp3 = getelementptr inbounds %struct.ix86_address* %parts, i64 0, i32 2
+  %2 = load %struct.rtx_def** %disp3, align 8, !tbaa !4
+  %scale4 = getelementptr inbounds %struct.ix86_address* %parts, i64 0, i32 3
+  %3 = load i64* %scale4, align 8, !tbaa !14
+  %conv = trunc i64 %3 to i32
+  %tobool5 = icmp ne %struct.rtx_def* %0, null
+  %tobool5.not = xor i1 %tobool5, true
+  %tobool6 = icmp eq %struct.rtx_def* %1, null
+  %or.cond = and i1 %tobool6, %tobool5.not
+  br i1 %or.cond, label %if.then7, label %if.else36
+
+if.then7:                                         ; preds = %if.end
+  %4 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load = load i32* %4, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 54
+  br i1 %cmp, label %if.then9, label %if.else
+
+if.then9:                                         ; preds = %if.then7
+  %5 = load i32* @ix86_asm_dialect, align 4, !tbaa !11
+  %cmp10 = icmp eq i32 %5, 1
+  br i1 %cmp10, label %if.then16, label %if.end20
+
+if.then16:                                        ; preds = %if.then9
+  %call17 = call i32 @_IO_putc(i32 37, %struct._IO_FILE* %file) #9
+  %6 = call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str131, i64 0, i64 0), i64 3, i64 1, %struct._IO_FILE* %file)
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.then16, %if.then9
+  %rtwint = getelementptr inbounds %struct.rtx_def* %addr, i64 0, i32 1, i64 0, i32 0
+  %7 = load i64* %rtwint, align 8, !tbaa !14
+  %call21 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str130, i64 0, i64 0), i64 %7) #9
+  br label %if.end26
+
+if.else:                                          ; preds = %if.then7
+  %8 = load i32* @flag_pic, align 4, !tbaa !0
+  %tobool22 = icmp eq i32 %8, 0
+  br i1 %tobool22, label %if.else24, label %if.then23
+
+if.then23:                                        ; preds = %if.else
+  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %addr, i32 0) #10
+  br label %if.end26
+
+if.else24:                                        ; preds = %if.else
+  call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %addr) #9
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.then23, %if.else24, %if.end20
+  %bf.load27 = load i32* %4, align 8
+  %bf.clear28 = and i32 %bf.load27, 65535
+  %cmp29 = icmp eq i32 %bf.clear28, 54
+  br i1 %cmp29, label %if.end167, label %land.lhs.true31
+
+land.lhs.true31:                                  ; preds = %if.end26
+  %9 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %9, 33554432
+  %tobool32 = icmp eq i32 %and, 0
+  br i1 %tobool32, label %if.end167, label %if.then33
+
+if.then33:                                        ; preds = %land.lhs.true31
+  %10 = call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str132, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %file)
+  br label %if.end167
+
+if.else36:                                        ; preds = %if.end
+  %11 = load i32* @ix86_asm_dialect, align 4, !tbaa !11
+  %cmp37 = icmp eq i32 %11, 0
+  %tobool40 = icmp eq %struct.rtx_def* %2, null
+  br i1 %cmp37, label %if.then39, label %if.else68
+
+if.then39:                                        ; preds = %if.else36
+  br i1 %tobool40, label %if.end53, label %if.then41
+
+if.then41:                                        ; preds = %if.then39
+  %12 = load i32* @flag_pic, align 4, !tbaa !0
+  %tobool42 = icmp eq i32 %12, 0
+  br i1 %tobool42, label %if.else44, label %if.then43
+
+if.then43:                                        ; preds = %if.then41
+  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %2, i32 0) #10
+  br label %if.end53
+
+if.else44:                                        ; preds = %if.then41
+  %13 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load45 = load i32* %13, align 8
+  %bf.clear46 = and i32 %bf.load45, 65535
+  %cmp47 = icmp eq i32 %bf.clear46, 67
+  br i1 %cmp47, label %if.then49, label %if.else50
+
+if.then49:                                        ; preds = %if.else44
+  call void @output_asm_label(%struct.rtx_def* %2) #9
+  br label %if.end53
+
+if.else50:                                        ; preds = %if.else44
+  call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %2) #9
+  br label %if.end53
+
+if.end53:                                         ; preds = %if.then39, %if.then43, %if.else50, %if.then49
+  %call54 = call i32 @_IO_putc(i32 40, %struct._IO_FILE* %file) #9
+  br i1 %tobool5, label %if.then56, label %if.end57
+
+if.then56:                                        ; preds = %if.end53
+  call void @print_reg(%struct.rtx_def* %0, i32 0, %struct._IO_FILE* %file) #10
+  br label %if.end57
+
+if.end57:                                         ; preds = %if.then56, %if.end53
+  br i1 %tobool6, label %if.end66, label %if.then59
+
+if.then59:                                        ; preds = %if.end57
+  %call60 = call i32 @_IO_putc(i32 44, %struct._IO_FILE* %file) #9
+  call void @print_reg(%struct.rtx_def* %1, i32 0, %struct._IO_FILE* %file) #10
+  %cmp61 = icmp eq i32 %conv, 1
+  br i1 %cmp61, label %if.end66, label %if.then63
+
+if.then63:                                        ; preds = %if.then59
+  %call64 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str133, i64 0, i64 0), i32 %conv) #9
+  br label %if.end66
+
+if.end66:                                         ; preds = %if.then59, %if.end57, %if.then63
+  %call67 = call i32 @_IO_putc(i32 41, %struct._IO_FILE* %file) #9
+  br label %if.end167
+
+if.else68:                                        ; preds = %if.else36
+  br i1 %tobool40, label %if.end126, label %if.then70
+
+if.then70:                                        ; preds = %if.else68
+  %14 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load71 = load i32* %14, align 8
+  %bf.clear72 = and i32 %bf.load71, 65535
+  %cmp73 = icmp eq i32 %bf.clear72, 58
+  br i1 %cmp73, label %land.lhs.true75, label %if.end107
+
+land.lhs.true75:                                  ; preds = %if.then70
+  %arrayidx77 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx77 to %struct.rtx_def**
+  %15 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %16 = bitcast %struct.rtx_def* %15 to i32*
+  %bf.load78 = load i32* %16, align 8
+  %bf.clear79 = and i32 %bf.load78, 65535
+  %cmp80 = icmp eq i32 %bf.clear79, 75
+  br i1 %cmp80, label %land.lhs.true82, label %if.end107
+
+land.lhs.true82:                                  ; preds = %land.lhs.true75
+  %arrayidx87 = getelementptr inbounds %struct.rtx_def* %15, i64 0, i32 1, i64 1
+  %rtx88 = bitcast %union.rtunion_def* %arrayidx87 to %struct.rtx_def**
+  %17 = load %struct.rtx_def** %rtx88, align 8, !tbaa !4
+  %18 = bitcast %struct.rtx_def* %17 to i32*
+  %bf.load89 = load i32* %18, align 8
+  %bf.clear90 = and i32 %bf.load89, 65535
+  %cmp91 = icmp eq i32 %bf.clear90, 54
+  br i1 %cmp91, label %if.then93, label %if.end107
+
+if.then93:                                        ; preds = %land.lhs.true82
+  %arrayidx104 = getelementptr inbounds %struct.rtx_def* %15, i64 0, i32 1, i64 0
+  %rtx105 = bitcast %union.rtunion_def* %arrayidx104 to %struct.rtx_def**
+  %19 = load %struct.rtx_def** %rtx105, align 8, !tbaa !4
+  %call106 = call %struct.rtx_def* @gen_rtx_fmt_e(i32 58, i32 0, %struct.rtx_def* %19) #9
+  br label %if.end107
+
+if.end107:                                        ; preds = %if.then93, %land.lhs.true82, %land.lhs.true75, %if.then70
+  %disp.0 = phi %struct.rtx_def* [ %call106, %if.then93 ], [ %2, %land.lhs.true82 ], [ %2, %land.lhs.true75 ], [ %2, %if.then70 ]
+  %offset.0 = phi %struct.rtx_def* [ %17, %if.then93 ], [ null, %land.lhs.true82 ], [ null, %land.lhs.true75 ], [ null, %if.then70 ]
+  %20 = load i32* @flag_pic, align 4, !tbaa !0
+  %tobool108 = icmp eq i32 %20, 0
+  br i1 %tobool108, label %if.else110, label %if.then109
+
+if.then109:                                       ; preds = %if.end107
+  call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %disp.0, i32 0) #10
+  br label %if.end126
+
+if.else110:                                       ; preds = %if.end107
+  %21 = bitcast %struct.rtx_def* %disp.0 to i32*
+  %bf.load111 = load i32* %21, align 8
+  %bf.clear112 = and i32 %bf.load111, 65535
+  switch i32 %bf.clear112, label %if.else122 [
+    i32 67, label %if.then115
+    i32 54, label %if.end126
+  ]
+
+if.then115:                                       ; preds = %if.else110
+  call void @output_asm_label(%struct.rtx_def* %disp.0) #9
+  br label %if.end126
+
+if.else122:                                       ; preds = %if.else110
+  call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %disp.0) #9
+  br label %if.end126
+
+if.end126:                                        ; preds = %if.else110, %if.else68, %if.then109, %if.else122, %if.then115
+  %offset.1 = phi %struct.rtx_def* [ %offset.0, %if.then109 ], [ %offset.0, %if.then115 ], [ %offset.0, %if.else122 ], [ null, %if.else68 ], [ %disp.0, %if.else110 ]
+  %call127 = call i32 @_IO_putc(i32 91, %struct._IO_FILE* %file) #9
+  br i1 %tobool5, label %if.then129, label %if.else145
+
+if.then129:                                       ; preds = %if.end126
+  call void @print_reg(%struct.rtx_def* %0, i32 0, %struct._IO_FILE* %file) #10
+  %tobool130 = icmp eq %struct.rtx_def* %offset.1, null
+  br i1 %tobool130, label %if.end155, label %if.then131
+
+if.then131:                                       ; preds = %if.then129
+  %rtwint134 = getelementptr inbounds %struct.rtx_def* %offset.1, i64 0, i32 1, i64 0, i32 0
+  %22 = load i64* %rtwint134, align 8, !tbaa !14
+  %cmp135 = icmp sgt i64 %22, -1
+  br i1 %cmp135, label %if.then137, label %if.end139
+
+if.then137:                                       ; preds = %if.then131
+  %call138 = call i32 @_IO_putc(i32 43, %struct._IO_FILE* %file) #9
+  %.pre = load i64* %rtwint134, align 8, !tbaa !14
+  br label %if.end139
+
+if.end139:                                        ; preds = %if.then137, %if.then131
+  %23 = phi i64 [ %.pre, %if.then137 ], [ %22, %if.then131 ]
+  %call143 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str130, i64 0, i64 0), i64 %23) #9
+  br label %if.end155
+
+if.else145:                                       ; preds = %if.end126
+  %tobool146 = icmp eq %struct.rtx_def* %offset.1, null
+  br i1 %tobool146, label %if.else152, label %if.then147
+
+if.then147:                                       ; preds = %if.else145
+  %rtwint150 = getelementptr inbounds %struct.rtx_def* %offset.1, i64 0, i32 1, i64 0, i32 0
+  %24 = load i64* %rtwint150, align 8, !tbaa !14
+  %call151 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str130, i64 0, i64 0), i64 %24) #9
+  br label %if.end155
+
+if.else152:                                       ; preds = %if.else145
+  %call153 = call i32 @_IO_putc(i32 48, %struct._IO_FILE* %file) #9
+  br label %if.end155
+
+if.end155:                                        ; preds = %if.then129, %if.then147, %if.else152, %if.end139
+  br i1 %tobool6, label %if.end164, label %if.then157
+
+if.then157:                                       ; preds = %if.end155
+  %call158 = call i32 @_IO_putc(i32 43, %struct._IO_FILE* %file) #9
+  call void @print_reg(%struct.rtx_def* %1, i32 0, %struct._IO_FILE* %file) #10
+  %cmp159 = icmp eq i32 %conv, 1
+  br i1 %cmp159, label %if.end164, label %if.then161
+
+if.then161:                                       ; preds = %if.then157
+  %call162 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str134, i64 0, i64 0), i32 %conv) #9
+  br label %if.end164
+
+if.end164:                                        ; preds = %if.then157, %if.end155, %if.then161
+  %call165 = call i32 @_IO_putc(i32 93, %struct._IO_FILE* %file) #9
+  br label %if.end167
+
+if.end167:                                        ; preds = %land.lhs.true31, %if.end26, %if.end66, %if.end164, %if.then33
+  ret void
+}

@@ -1,0 +1,64 @@
+define internal fastcc %struct.rtx_def* @get_memory_rtx(%union.tree_node* %exp) #0 {
+entry:
+  %0 = load i32* @ptr_mode, align 4, !tbaa !5
+  %call = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %exp, %struct.rtx_def* null, i32 %0, i32 1) #7
+  %call1 = tail call %struct.rtx_def* @memory_address(i32 51, %struct.rtx_def* %call) #7
+  %call2 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 51, %struct.rtx_def* %call1) #7
+  br label %while.cond
+
+while.cond:                                       ; preds = %land.rhs, %entry
+  %exp.addr.0 = phi %union.tree_node* [ %exp, %entry ], [ %2, %land.rhs ]
+  %code = getelementptr inbounds %union.tree_node* %exp.addr.0, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %bf.clear.off = add i32 %bf.clear, -114
+  %switch = icmp ult i32 %bf.clear.off, 3
+  br i1 %switch, label %land.rhs, label %while.end
+
+land.rhs:                                         ; preds = %while.cond
+  %operands = getelementptr inbounds %union.tree_node* %exp.addr.0, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  %2 = load %union.tree_node** %arrayidx, align 8, !tbaa !3
+  %type = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 1
+  %3 = load %union.tree_node** %type, align 8, !tbaa !3
+  %code17 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 0, i32 2
+  %4 = bitcast [4 x i8]* %code17 to i32*
+  %bf.load18 = load i32* %4, align 8
+  %5 = and i32 %bf.load18, 253
+  %6 = icmp eq i32 %5, 13
+  br i1 %6, label %while.cond, label %if.else
+
+while.end:                                        ; preds = %while.cond
+  %cmp38 = icmp eq i32 %bf.clear, 121
+  br i1 %cmp38, label %if.then, label %if.else
+
+if.then:                                          ; preds = %while.end
+  %operands40 = getelementptr inbounds %union.tree_node* %exp.addr.0, i64 0, i32 0, i32 2
+  %arrayidx41 = bitcast i32* %operands40 to %union.tree_node**
+  %7 = load %union.tree_node** %arrayidx41, align 8, !tbaa !3
+  tail call void @set_mem_attributes(%struct.rtx_def* %call2, %union.tree_node* %7, i32 0) #7
+  br label %if.end63
+
+if.else:                                          ; preds = %land.rhs, %while.end
+  %type43 = getelementptr inbounds %union.tree_node* %exp.addr.0, i64 0, i32 0, i32 0, i32 1
+  %8 = load %union.tree_node** %type43, align 8, !tbaa !3
+  %code45 = getelementptr inbounds %union.tree_node* %8, i64 0, i32 0, i32 0, i32 2
+  %9 = bitcast [4 x i8]* %code45 to i32*
+  %bf.load46 = load i32* %9, align 8
+  %bf.clear47 = and i32 %bf.load46, 255
+  switch i32 %bf.clear47, label %if.end63 [
+    i32 13, label %if.then57
+    i32 15, label %if.then57
+  ]
+
+if.then57:                                        ; preds = %if.else, %if.else
+  %type61 = getelementptr inbounds %union.tree_node* %8, i64 0, i32 0, i32 0, i32 1
+  %10 = load %union.tree_node** %type61, align 8, !tbaa !3
+  %call62 = tail call %union.tree_node* @build1(i32 41, %union.tree_node* %10, %union.tree_node* %exp.addr.0) #7
+  tail call void @set_mem_alias_set(%struct.rtx_def* %call2, i64 0) #7
+  br label %if.end63
+
+if.end63:                                         ; preds = %if.else, %if.then57, %if.then
+  ret %struct.rtx_def* %call2
+}

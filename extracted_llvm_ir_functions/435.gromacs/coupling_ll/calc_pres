@@ -1,0 +1,93 @@
+define void @calc_pres(i32 %ePBC, [3 x float]* %box, [3 x float]* %ekin, [3 x float]* %vir, [3 x float]* %pres, float %Elr) #0 {
+entry:
+  %cmp = icmp eq i32 %ePBC, 1
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %0 = bitcast [3 x float]* %pres to i8*
+  tail call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 36, i32 4, i1 false) #3
+  br label %if.end25
+
+if.else:                                          ; preds = %entry
+  %conv1 = fdiv float %Elr, 6.000000e+00
+  %arrayidx1.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
+  %1 = load float* %arrayidx1.i, align 4, !tbaa !0
+  %arrayidx3.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
+  %2 = load float* %arrayidx3.i, align 4, !tbaa !0
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
+  %3 = load float* %arrayidx5.i, align 4, !tbaa !0
+  %mul.i = fmul float %2, %3
+  %arrayidx7.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
+  %4 = load float* %arrayidx7.i, align 4, !tbaa !0
+  %arrayidx9.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 2
+  %5 = load float* %arrayidx9.i, align 4, !tbaa !0
+  %mul10.i = fmul float %4, %5
+  %sub.i = fsub float %mul.i, %mul10.i
+  %mul11.i = fmul float %1, %sub.i
+  %arrayidx13.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
+  %6 = load float* %arrayidx13.i, align 4, !tbaa !0
+  %arrayidx15.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 1
+  %7 = load float* %arrayidx15.i, align 4, !tbaa !0
+  %mul18.i = fmul float %3, %7
+  %arrayidx22.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 2
+  %8 = load float* %arrayidx22.i, align 4, !tbaa !0
+  %mul23.i = fmul float %4, %8
+  %sub24.i = fsub float %mul18.i, %mul23.i
+  %mul25.i = fmul float %6, %sub24.i
+  %sub26.i = fsub float %mul11.i, %mul25.i
+  %arrayidx28.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
+  %9 = load float* %arrayidx28.i, align 4, !tbaa !0
+  %mul33.i = fmul float %5, %7
+  %mul38.i = fmul float %2, %8
+  %sub39.i = fsub float %mul33.i, %mul38.i
+  %mul40.i = fmul float %9, %sub39.i
+  %add.i = fadd float %mul40.i, %sub26.i
+  %conv2 = fpext float %add.i to double
+  %div3 = fdiv double 3.321080e+01, %conv2
+  %conv4 = fptrunc double %div3 to float
+  br label %for.cond7.preheader
+
+for.cond7.preheader:                              ; preds = %for.inc21, %if.else
+  %indvars.iv41 = phi i64 [ 0, %if.else ], [ %indvars.iv.next42, %for.inc21 ]
+  br label %for.body10
+
+for.body10:                                       ; preds = %for.body10, %for.cond7.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond7.preheader ], [ %indvars.iv.next, %for.body10 ]
+  %arrayidx12 = getelementptr inbounds [3 x float]* %ekin, i64 %indvars.iv41, i64 %indvars.iv
+  %10 = load float* %arrayidx12, align 4, !tbaa !0
+  %arrayidx16 = getelementptr inbounds [3 x float]* %vir, i64 %indvars.iv41, i64 %indvars.iv
+  %11 = load float* %arrayidx16, align 4, !tbaa !0
+  %sub = fsub float %10, %11
+  %add = fadd float %conv1, %sub
+  %mul = fmul float %conv4, %add
+  %arrayidx20 = getelementptr inbounds [3 x float]* %pres, i64 %indvars.iv41, i64 %indvars.iv
+  store float %mul, float* %arrayidx20, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc21, label %for.body10
+
+for.inc21:                                        ; preds = %for.body10
+  %indvars.iv.next42 = add i64 %indvars.iv41, 1
+  %lftr.wideiv43 = trunc i64 %indvars.iv.next42 to i32
+  %exitcond44 = icmp eq i32 %lftr.wideiv43, 3
+  br i1 %exitcond44, label %for.end23, label %for.cond7.preheader
+
+for.end23:                                        ; preds = %for.inc21
+  %12 = load %struct._IO_FILE** @debug, align 8, !tbaa !3
+  %tobool = icmp eq %struct._IO_FILE* %12, null
+  br i1 %tobool, label %if.end25, label %if.then24
+
+if.then24:                                        ; preds = %for.end23
+  tail call void @pr_rvecs(%struct._IO_FILE* %12, i32 0, i8* getelementptr inbounds ([9 x i8]* @.str, i64 0, i64 0), [3 x float]* %pres, i32 3) #5
+  %13 = load %struct._IO_FILE** @debug, align 8, !tbaa !3
+  tail call void @pr_rvecs(%struct._IO_FILE* %13, i32 0, i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), [3 x float]* %ekin, i32 3) #5
+  %14 = load %struct._IO_FILE** @debug, align 8, !tbaa !3
+  tail call void @pr_rvecs(%struct._IO_FILE* %14, i32 0, i8* getelementptr inbounds ([9 x i8]* @.str2, i64 0, i64 0), [3 x float]* %vir, i32 3) #5
+  %15 = load %struct._IO_FILE** @debug, align 8, !tbaa !3
+  tail call void @pr_rvecs(%struct._IO_FILE* %15, i32 0, i8* getelementptr inbounds ([9 x i8]* @.str3, i64 0, i64 0), [3 x float]* %box, i32 3) #5
+  br label %if.end25
+
+if.end25:                                         ; preds = %for.end23, %if.then24, %if.then
+  ret void
+}

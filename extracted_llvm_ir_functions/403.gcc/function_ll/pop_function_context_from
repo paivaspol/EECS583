@@ -1,0 +1,79 @@
+define void @pop_function_context_from(%union.tree_node* nocapture %context) #0 {
+entry:
+  %0 = load %struct.function** @outer_function_chain, align 8, !tbaa !0
+  store %struct.function* %0, %struct.function** @cfun, align 8, !tbaa !0
+  %outer = getelementptr inbounds %struct.function* %0, i64 0, i32 7
+  %1 = load %struct.function** %outer, align 8, !tbaa !0
+  store %struct.function* %1, %struct.function** @outer_function_chain, align 8, !tbaa !0
+  %decl = getelementptr inbounds %struct.function* %0, i64 0, i32 6
+  %2 = load %union.tree_node** %decl, align 8, !tbaa !0
+  store %union.tree_node* %2, %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  store i16* null, i16** @reg_renumber, align 8, !tbaa !0
+  tail call void @restore_emit_status(%struct.function* %0) #10
+  %3 = load void (%struct.function*)** @restore_lang_status, align 8, !tbaa !0
+  %tobool = icmp eq void (%struct.function*)* %3, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void %3(%struct.function* %0) #10
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %fixup_var_refs_queue = getelementptr inbounds %struct.function* %0, i64 0, i32 43
+  %4 = load %struct.var_refs_queue** %fixup_var_refs_queue, align 8, !tbaa !0
+  %cmp = icmp eq %struct.var_refs_queue* %4, null
+  br i1 %cmp, label %if.end26, label %if.else
+
+if.else:                                          ; preds = %if.end
+  %next = getelementptr inbounds %struct.var_refs_queue* %4, i64 0, i32 3
+  %5 = load %struct.var_refs_queue** %next, align 8, !tbaa !0
+  %cmp3 = icmp eq %struct.var_refs_queue* %5, null
+  br i1 %cmp3, label %if.then4, label %for.body
+
+if.then4:                                         ; preds = %if.else
+  %modified = getelementptr inbounds %struct.var_refs_queue* %4, i64 0, i32 0
+  %6 = load %struct.rtx_def** %modified, align 8, !tbaa !0
+  %promoted_mode = getelementptr inbounds %struct.var_refs_queue* %4, i64 0, i32 1
+  %7 = load i32* %promoted_mode, align 4, !tbaa !3
+  %unsignedp = getelementptr inbounds %struct.var_refs_queue* %4, i64 0, i32 2
+  %8 = load i32* %unsignedp, align 4, !tbaa !4
+  tail call fastcc void @fixup_var_refs(%struct.rtx_def* %6, i32 %7, i32 %8, %struct.rtx_def* %6, %struct.hash_table* null) #9
+  br label %if.end26
+
+for.cond16.preheader:                             ; preds = %for.body
+  %queue.149.pre = load %struct.var_refs_queue** %fixup_var_refs_queue, align 8
+  %tobool1750 = icmp eq %struct.var_refs_queue* %queue.149.pre, null
+  br i1 %tobool1750, label %if.end26, label %for.body18
+
+for.body:                                         ; preds = %if.else, %for.body
+  %list.054 = phi %struct.rtx_def* [ %call, %for.body ], [ null, %if.else ]
+  %queue.053 = phi %struct.var_refs_queue* [ %10, %for.body ], [ %4, %if.else ]
+  %modified13 = getelementptr inbounds %struct.var_refs_queue* %queue.053, i64 0, i32 0
+  %9 = load %struct.rtx_def** %modified13, align 8, !tbaa !0
+  %call = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 3, i32 0, %struct.rtx_def* %9, %struct.rtx_def* %list.054) #10
+  %next14 = getelementptr inbounds %struct.var_refs_queue* %queue.053, i64 0, i32 3
+  %10 = load %struct.var_refs_queue** %next14, align 8, !tbaa !0
+  %tobool12 = icmp eq %struct.var_refs_queue* %10, null
+  br i1 %tobool12, label %for.cond16.preheader, label %for.body
+
+for.body18:                                       ; preds = %for.cond16.preheader, %for.body18
+  %queue.151 = phi %struct.var_refs_queue* [ %queue.1, %for.body18 ], [ %queue.149.pre, %for.cond16.preheader ]
+  %modified19 = getelementptr inbounds %struct.var_refs_queue* %queue.151, i64 0, i32 0
+  %11 = load %struct.rtx_def** %modified19, align 8, !tbaa !0
+  %promoted_mode20 = getelementptr inbounds %struct.var_refs_queue* %queue.151, i64 0, i32 1
+  %12 = load i32* %promoted_mode20, align 4, !tbaa !3
+  %unsignedp21 = getelementptr inbounds %struct.var_refs_queue* %queue.151, i64 0, i32 2
+  %13 = load i32* %unsignedp21, align 4, !tbaa !4
+  tail call fastcc void @fixup_var_refs(%struct.rtx_def* %11, i32 %12, i32 %13, %struct.rtx_def* %call, %struct.hash_table* null) #9
+  %next23 = getelementptr inbounds %struct.var_refs_queue* %queue.151, i64 0, i32 3
+  %queue.1 = load %struct.var_refs_queue** %next23, align 8
+  %tobool17 = icmp eq %struct.var_refs_queue* %queue.1, null
+  br i1 %tobool17, label %if.end26, label %for.body18
+
+if.end26:                                         ; preds = %for.cond16.preheader, %for.body18, %if.then4, %if.end
+  store %struct.var_refs_queue* null, %struct.var_refs_queue** %fixup_var_refs_queue, align 8, !tbaa !0
+  store i32 1, i32* @rtx_equal_function_value_matters, align 4, !tbaa !4
+  store i32 0, i32* @virtuals_instantiated, align 4, !tbaa !4
+  store i32 1, i32* @generating_concat_p, align 4, !tbaa !4
+  ret void
+}

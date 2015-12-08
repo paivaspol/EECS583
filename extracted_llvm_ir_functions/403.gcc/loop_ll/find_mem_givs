@@ -1,0 +1,116 @@
+define internal fastcc void @find_mem_givs(%struct.loop* %loop, %struct.rtx_def* %x, %struct.rtx_def* %insn, i32 %not_every_iteration, i32 %maybe_multiple) #0 {
+entry:
+  %src_reg = alloca %struct.rtx_def*, align 8
+  %add_val = alloca %struct.rtx_def*, align 8
+  %mult_val = alloca %struct.rtx_def*, align 8
+  %ext_val = alloca %struct.rtx_def*, align 8
+  %benefit = alloca i32, align 4
+  %cmp = icmp eq %struct.rtx_def* %x, null
+  br i1 %cmp, label %for.end47, label %if.end
+
+if.end:                                           ; preds = %entry
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.epilog [
+    i32 61, label %for.end47
+    i32 54, label %for.end47
+    i32 58, label %for.end47
+    i32 55, label %for.end47
+    i32 68, label %for.end47
+    i32 67, label %for.end47
+    i32 59, label %for.end47
+    i32 69, label %for.end47
+    i32 44, label %for.end47
+    i32 45, label %for.end47
+    i32 48, label %for.end47
+    i32 49, label %for.end47
+    i32 66, label %sw.bb1
+  ]
+
+sw.bb1:                                           ; preds = %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear3 = and i32 %bf.lshr, 255
+  %call = call fastcc i32 @general_induction_var(%struct.loop* %loop, %struct.rtx_def* %1, %struct.rtx_def** %src_reg, %struct.rtx_def** %add_val, %struct.rtx_def** %mult_val, %struct.rtx_def** %ext_val, i32 1, i32* %benefit, i32 %bf.clear3) #10
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %for.end47, label %if.then4
+
+if.then4:                                         ; preds = %sw.bb1
+  %call5 = call noalias i8* @xmalloc(i64 168) #8
+  %2 = bitcast i8* %call5 to %struct.induction*
+  %3 = load %struct.rtx_def** %src_reg, align 8, !tbaa !4
+  %4 = load %struct.rtx_def** @addr_placeholder, align 8, !tbaa !4
+  %5 = load %struct.rtx_def** %mult_val, align 8, !tbaa !4
+  %6 = load %struct.rtx_def** %add_val, align 8, !tbaa !4
+  %7 = load %struct.rtx_def** %ext_val, align 8, !tbaa !4
+  %8 = load i32* %benefit, align 4, !tbaa !3
+  call fastcc void @record_giv(%struct.loop* %loop, %struct.induction* %2, %struct.rtx_def* %insn, %struct.rtx_def* %3, %struct.rtx_def* %4, %struct.rtx_def* %5, %struct.rtx_def* %6, %struct.rtx_def* %7, i32 %8, i32 0, i32 %not_every_iteration, i32 %maybe_multiple, %struct.rtx_def** %rtx) #10
+  %mem = getelementptr inbounds i8* %call5, i64 56
+  %9 = bitcast i8* %mem to %struct.rtx_def**
+  store %struct.rtx_def* %x, %struct.rtx_def** %9, align 8, !tbaa !4
+  br label %for.end47
+
+sw.epilog:                                        ; preds = %if.end
+  %idxprom77 = zext i32 %bf.clear to i64
+  %arrayidx10 = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom77
+  %10 = load i8** %arrayidx10, align 8, !tbaa !4
+  %arrayidx12 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom77
+  %11 = load i8* %arrayidx12, align 1, !tbaa !1
+  %cmp1382 = icmp eq i8 %11, 0
+  br i1 %cmp1382, label %for.end47, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %sw.epilog
+  %12 = zext i8 %11 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %indvars.iv84 = phi i64 [ %12, %for.body.lr.ph ], [ %indvars.iv.next85, %for.cond.backedge ]
+  %indvars.iv.next85 = add i64 %indvars.iv84, -1
+  %arrayidx16 = getelementptr inbounds i8* %10, i64 %indvars.iv.next85
+  %13 = load i8* %arrayidx16, align 1, !tbaa !1
+  switch i8 %13, label %for.cond.backedge [
+    i8 101, label %if.then20
+    i8 69, label %for.cond31.preheader
+  ]
+
+for.cond.backedge:                                ; preds = %for.cond31.preheader, %for.body37, %for.body, %if.then20
+  %14 = trunc i64 %indvars.iv.next85 to i32
+  %cmp13 = icmp sgt i32 %14, 0
+  br i1 %cmp13, label %for.body, label %for.end47
+
+for.cond31.preheader:                             ; preds = %for.body
+  %arrayidx34 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next85
+  %rtvec = bitcast %union.rtunion_def* %arrayidx34 to %struct.rtvec_def**
+  %15 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  %num_elem78 = getelementptr inbounds %struct.rtvec_def* %15, i64 0, i32 0
+  %16 = load i32* %num_elem78, align 4, !tbaa !3
+  %cmp3579 = icmp sgt i32 %16, 0
+  br i1 %cmp3579, label %for.body37, label %for.cond.backedge
+
+if.then20:                                        ; preds = %for.body
+  %arrayidx23 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next85
+  %rtx24 = bitcast %union.rtunion_def* %arrayidx23 to %struct.rtx_def**
+  %17 = load %struct.rtx_def** %rtx24, align 8, !tbaa !4
+  call fastcc void @find_mem_givs(%struct.loop* %loop, %struct.rtx_def* %17, %struct.rtx_def* %insn, i32 %not_every_iteration, i32 %maybe_multiple) #10
+  br label %for.cond.backedge
+
+for.body37:                                       ; preds = %for.cond31.preheader, %for.body37
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body37 ], [ 0, %for.cond31.preheader ]
+  %18 = phi %struct.rtvec_def* [ %20, %for.body37 ], [ %15, %for.cond31.preheader ]
+  %arrayidx43 = getelementptr inbounds %struct.rtvec_def* %18, i64 0, i32 1, i64 %indvars.iv
+  %19 = load %struct.rtx_def** %arrayidx43, align 8, !tbaa !4
+  call fastcc void @find_mem_givs(%struct.loop* %loop, %struct.rtx_def* %19, %struct.rtx_def* %insn, i32 %not_every_iteration, i32 %maybe_multiple) #10
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %20 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %20, i64 0, i32 0
+  %21 = load i32* %num_elem, align 4, !tbaa !3
+  %22 = trunc i64 %indvars.iv.next to i32
+  %cmp35 = icmp slt i32 %22, %21
+  br i1 %cmp35, label %for.body37, label %for.cond.backedge
+
+for.end47:                                        ; preds = %sw.epilog, %for.cond.backedge, %sw.bb1, %if.then4, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %entry
+  ret void
+}

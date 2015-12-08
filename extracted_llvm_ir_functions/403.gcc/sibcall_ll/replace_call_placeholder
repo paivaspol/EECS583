@@ -1,0 +1,63 @@
+define void @replace_call_placeholder(%struct.rtx_def* %insn, i32 %use) #0 {
+entry:
+  switch i32 %use, label %if.else23 [
+    i32 2, label %if.then
+    i32 3, label %if.then5
+    i32 1, label %if.then15
+  ]
+
+if.then:                                          ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 2
+  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx3, align 8, !tbaa !0
+  %call = tail call %struct.rtx_def* @emit_insns_before(%struct.rtx_def* %1, %struct.rtx_def* %insn) #4
+  br label %if.end25
+
+if.then5:                                         ; preds = %entry
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx8 = bitcast %union.rtunion_def* %arrayidx7 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx8, align 8, !tbaa !0
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 1
+  %rtx11 = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx11, align 8, !tbaa !0
+  %call12 = tail call %struct.rtx_def* @emit_insns_before(%struct.rtx_def* %3, %struct.rtx_def* %insn) #4
+  br label %if.end25
+
+if.then15:                                        ; preds = %entry
+  %arrayidx17 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx18 = bitcast %union.rtunion_def* %arrayidx17 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx18, align 8, !tbaa !0
+  %arrayidx20 = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 0
+  %rtx21 = bitcast %union.rtunion_def* %arrayidx20 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx21, align 8, !tbaa !0
+  %call22 = tail call %struct.rtx_def* @emit_insns_before(%struct.rtx_def* %5, %struct.rtx_def* %insn) #4
+  br label %if.end25
+
+if.else23:                                        ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i32 550, i8* getelementptr inbounds ([25 x i8]* @__FUNCTION__.replace_call_placeholder, i64 0, i64 0)) #5
+  unreachable
+
+if.end25:                                         ; preds = %if.then5, %if.then15, %if.then
+  %arrayidx27 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx28 = bitcast %union.rtunion_def* %arrayidx27 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx28, align 8, !tbaa !0
+  %arrayidx30 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 3
+  %rtx31 = bitcast %union.rtunion_def* %arrayidx30 to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %rtx31, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %7, null
+  br i1 %tobool, label %if.end39, label %if.then32
+
+if.then32:                                        ; preds = %if.end25
+  %8 = bitcast %struct.rtx_def* %7 to i32*
+  %bf.load = load i32* %8, align 8
+  %bf.clear = and i32 %bf.load, -268435457
+  store i32 %bf.clear, i32* %8, align 8
+  br label %if.end39
+
+if.end39:                                         ; preds = %if.end25, %if.then32
+  tail call void @remove_insn(%struct.rtx_def* %insn) #4
+  ret void
+}

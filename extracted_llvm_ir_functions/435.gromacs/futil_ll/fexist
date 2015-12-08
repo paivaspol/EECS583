@@ -1,0 +1,18 @@
+define i32 @fexist(i8* %fname) #0 {
+entry:
+  %cmp = icmp eq i8* %fname, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call %struct._IO_FILE* @fopen(i8* %fname, i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0)) #6
+  %cmp1 = icmp eq %struct._IO_FILE* %call, null
+  br i1 %cmp1, label %return, label %if.else
+
+if.else:                                          ; preds = %if.end
+  %call3 = tail call i32 @fclose(%struct._IO_FILE* %call) #6
+  br label %return
+
+return:                                           ; preds = %if.end, %entry, %if.else
+  %retval.0 = phi i32 [ 1, %if.else ], [ 0, %entry ], [ 0, %if.end ]
+  ret i32 %retval.0
+}

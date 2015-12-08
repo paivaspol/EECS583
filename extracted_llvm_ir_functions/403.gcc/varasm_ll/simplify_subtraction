@@ -1,0 +1,61 @@
+define %struct.rtx_def* @simplify_subtraction(%struct.rtx_def* %x) #0 {
+entry:
+  %val0 = alloca %struct.rtx_const, align 8
+  %val1 = alloca %struct.rtx_const, align 8
+  %0 = getelementptr inbounds %struct.rtx_const* %val0, i64 0, i32 0, i64 0
+  call void @llvm.lifetime.start(i64 136, i8* %0) #6
+  %1 = getelementptr inbounds %struct.rtx_const* %val1, i64 0, i32 0, i64 0
+  call void @llvm.lifetime.start(i64 136, i8* %1) #6
+  %2 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %fld = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  call fastcc void @decode_rtx_const(i32 %bf.clear, %struct.rtx_def* %3, %struct.rtx_const* %val0) #10
+  %bf.load1 = load i32* %2, align 8
+  %bf.lshr2 = lshr i32 %bf.load1, 16
+  %bf.clear3 = and i32 %bf.lshr2, 255
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
+  %rtx6 = bitcast %union.rtunion_def* %arrayidx5 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx6, align 8, !tbaa !3
+  call fastcc void @decode_rtx_const(i32 %bf.clear3, %struct.rtx_def* %4, %struct.rtx_const* %val1) #10
+  %5 = bitcast %struct.rtx_const* %val0 to i32*
+  %bf.load7 = load i32* %5, align 8
+  %bf.clear8 = and i32 %bf.load7, 65535
+  %cmp = icmp ugt i32 %bf.clear8, 1
+  br i1 %cmp, label %land.lhs.true, label %cleanup
+
+land.lhs.true:                                    ; preds = %entry
+  %6 = bitcast %struct.rtx_const* %val1 to i32*
+  %bf.load11 = load i32* %6, align 8
+  %bf.clear12 = and i32 %bf.load11, 65535
+  %cmp13 = icmp eq i32 %bf.clear8, %bf.clear12
+  br i1 %cmp13, label %land.lhs.true14, label %cleanup
+
+land.lhs.true14:                                  ; preds = %land.lhs.true
+  %un = getelementptr inbounds %struct.rtx_const* %val0, i64 0, i32 1
+  %base = bitcast %union.anon.5* %un to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %base, align 8, !tbaa !3
+  %un15 = getelementptr inbounds %struct.rtx_const* %val1, i64 0, i32 1
+  %base17 = bitcast %union.anon.5* %un15 to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %base17, align 8, !tbaa !3
+  %cmp18 = icmp eq %struct.rtx_def* %7, %8
+  br i1 %cmp18, label %if.then, label %cleanup
+
+if.then:                                          ; preds = %land.lhs.true14
+  %9 = getelementptr inbounds %struct.rtx_const* %val0, i64 0, i32 1, i32 0, i64 1
+  %10 = load i64* %9, align 8, !tbaa !10
+  %11 = getelementptr inbounds %struct.rtx_const* %val1, i64 0, i32 1, i32 0, i64 1
+  %12 = load i64* %11, align 8, !tbaa !10
+  %sub = sub nsw i64 %10, %12
+  %call = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %sub) #9
+  br label %cleanup
+
+cleanup:                                          ; preds = %entry, %land.lhs.true, %land.lhs.true14, %if.then
+  %retval.0 = phi %struct.rtx_def* [ %call, %if.then ], [ %x, %land.lhs.true14 ], [ %x, %land.lhs.true ], [ %x, %entry ]
+  call void @llvm.lifetime.end(i64 136, i8* %1) #6
+  call void @llvm.lifetime.end(i64 136, i8* %0) #6
+  ret %struct.rtx_def* %retval.0
+}

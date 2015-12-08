@@ -1,0 +1,44 @@
+define void @ps_rgb_nbox(%struct._IO_FILE* nocapture %ps, %struct.t_rgb* nocapture %rgb, float %n) #0 {
+entry:
+  %cmp = fcmp ogt float %n, 2.000000e+00
+  br i1 %cmp, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp213 = fcmp ogt float %n, 0.000000e+00
+  br i1 %cmp213, label %for.body.lr.ph, label %if.end
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %r.i10 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 0
+  %g.i11 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 1
+  %b.i12 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 2
+  br label %for.body
+
+if.then:                                          ; preds = %entry
+  %r.i = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 0
+  %0 = load float* %r.i, align 4, !tbaa !4
+  %g.i = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 1
+  %1 = load float* %g.i, align 4, !tbaa !4
+  %b.i = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 2
+  %2 = load float* %b.i, align 4, !tbaa !4
+  tail call void @ps_color(%struct._IO_FILE* %ps, float %0, float %1, float %2) #4
+  %3 = load float* @gen_ybox, align 4, !tbaa !4
+  %mul = fmul float %3, %n
+  %conv = fpext float %mul to double
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %ps, i8* getelementptr inbounds ([10 x i8]* @.str16, i64 0, i64 0), double %conv) #4
+  br label %if.end
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %i.014 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
+  %4 = load float* %r.i10, align 4, !tbaa !4
+  %5 = load float* %g.i11, align 4, !tbaa !4
+  %6 = load float* %b.i12, align 4, !tbaa !4
+  %call.i = tail call fastcc i32 @search_col(%struct._IO_FILE* %ps, float %4, float %5, float %6) #4
+  %call1.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %ps, i8* getelementptr inbounds ([5 x i8]* @.str18, i64 0, i64 0), i32 %call.i) #4
+  %inc = add nsw i32 %i.014, 1
+  %conv1 = sitofp i32 %inc to float
+  %cmp2 = fcmp olt float %conv1, %n
+  br i1 %cmp2, label %for.body, label %if.end
+
+if.end:                                           ; preds = %for.cond.preheader, %for.body, %if.then
+  ret void
+}

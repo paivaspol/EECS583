@@ -1,0 +1,38 @@
+define void @set_pot_bools(%struct.t_inputrec* nocapture %ir, %struct.t_topology* nocapture %top, i32* nocapture %bLR, i32* nocapture %bLJLR, i32* nocapture %bBHAM, i32* nocapture %b14) #0 {
+entry:
+  %rcoulomb = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 38
+  %0 = load float* %rcoulomb, align 4, !tbaa !3
+  %rlist = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 35
+  %1 = load float* %rlist, align 4, !tbaa !3
+  %cmp = fcmp ogt float %0, %1
+  br i1 %cmp, label %lor.end10, label %lor.rhs
+
+lor.rhs:                                          ; preds = %entry
+  %coulombtype = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 36
+  %2 = load i32* %coulombtype, align 4, !tbaa !0
+  %switch.tableidx = add i32 %2, -3
+  %3 = icmp ult i32 %switch.tableidx, 4
+  br label %lor.end10
+
+lor.end10:                                        ; preds = %lor.rhs, %entry
+  %4 = phi i1 [ true, %entry ], [ %3, %lor.rhs ]
+  %lor.ext = zext i1 %4 to i32
+  store i32 %lor.ext, i32* %bLR, align 4, !tbaa !0
+  %rvdw = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 41
+  %5 = load float* %rvdw, align 4, !tbaa !3
+  %cmp12 = fcmp ogt float %5, %1
+  %conv = zext i1 %cmp12 to i32
+  store i32 %conv, i32* %bLJLR, align 4, !tbaa !0
+  %functype = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 3
+  %6 = load i32** %functype, align 8, !tbaa !5
+  %7 = load i32* %6, align 4, !tbaa !0
+  %cmp13 = icmp eq i32 %7, 14
+  %conv14 = zext i1 %cmp13 to i32
+  store i32 %conv14, i32* %bBHAM, align 4, !tbaa !0
+  %nr = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 5, i64 11, i32 0
+  %8 = load i32* %nr, align 4, !tbaa !0
+  %cmp17 = icmp sgt i32 %8, 0
+  %conv18 = zext i1 %cmp17 to i32
+  store i32 %conv18, i32* %b14, align 4, !tbaa !0
+  ret void
+}

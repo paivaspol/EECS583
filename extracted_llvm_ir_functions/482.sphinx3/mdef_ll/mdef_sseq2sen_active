@@ -1,0 +1,55 @@
+define void @mdef_sseq2sen_active(%struct.mdef_t* nocapture %mdef, i32* nocapture %sseq, i32* nocapture %sen) #0 {
+entry:
+  %n_sseq = getelementptr inbounds %struct.mdef_t* %mdef, i64 0, i32 10
+  %0 = load i32* %n_sseq, align 4, !tbaa !0
+  %cmp23 = icmp sgt i32 %0, 0
+  br i1 %cmp23, label %for.body.lr.ph, label %for.end13
+
+for.body.lr.ph:                                   ; preds = %entry
+  %sseq2 = getelementptr inbounds %struct.mdef_t* %mdef, i64 0, i32 9
+  %n_emit_state = getelementptr inbounds %struct.mdef_t* %mdef, i64 0, i32 2
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc11
+  %1 = phi i32 [ %0, %for.body.lr.ph ], [ %9, %for.inc11 ]
+  %indvars.iv25 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next26, %for.inc11 ]
+  %arrayidx = getelementptr inbounds i32* %sseq, i64 %indvars.iv25
+  %2 = load i32* %arrayidx, align 4, !tbaa !0
+  %tobool = icmp eq i32 %2, 0
+  br i1 %tobool, label %for.inc11, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %3 = load i16*** %sseq2, align 8, !tbaa !3
+  %arrayidx3 = getelementptr inbounds i16** %3, i64 %indvars.iv25
+  %4 = load i16** %arrayidx3, align 8, !tbaa !3
+  %5 = load i32* %n_emit_state, align 4, !tbaa !0
+  %cmp521 = icmp sgt i32 %5, 0
+  br i1 %cmp521, label %for.body6, label %for.inc11
+
+for.body6:                                        ; preds = %if.then, %for.body6
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body6 ], [ 0, %if.then ]
+  %arrayidx8 = getelementptr inbounds i16* %4, i64 %indvars.iv
+  %6 = load i16* %arrayidx8, align 2, !tbaa !4
+  %idxprom9 = sext i16 %6 to i64
+  %arrayidx10 = getelementptr inbounds i32* %sen, i64 %idxprom9
+  store i32 1, i32* %arrayidx10, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %7 = load i32* %n_emit_state, align 4, !tbaa !0
+  %8 = trunc i64 %indvars.iv.next to i32
+  %cmp5 = icmp slt i32 %8, %7
+  br i1 %cmp5, label %for.body6, label %for.cond4.for.inc11.loopexit_crit_edge
+
+for.cond4.for.inc11.loopexit_crit_edge:           ; preds = %for.body6
+  %.pre.pre = load i32* %n_sseq, align 4, !tbaa !0
+  br label %for.inc11
+
+for.inc11:                                        ; preds = %if.then, %for.cond4.for.inc11.loopexit_crit_edge, %for.body
+  %9 = phi i32 [ %1, %for.body ], [ %.pre.pre, %for.cond4.for.inc11.loopexit_crit_edge ], [ %1, %if.then ]
+  %indvars.iv.next26 = add i64 %indvars.iv25, 1
+  %10 = trunc i64 %indvars.iv.next26 to i32
+  %cmp = icmp slt i32 %10, %9
+  br i1 %cmp, label %for.body, label %for.end13
+
+for.end13:                                        ; preds = %for.inc11, %entry
+  ret void
+}

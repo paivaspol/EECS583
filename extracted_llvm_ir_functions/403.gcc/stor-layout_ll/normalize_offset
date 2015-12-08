@@ -1,0 +1,30 @@
+define void @normalize_offset(%union.tree_node** nocapture %poffset, %union.tree_node** nocapture %pbitpos, i32 %off_align) #0 {
+entry:
+  %0 = load %union.tree_node** %pbitpos, align 8, !tbaa !0
+  %conv = zext i32 %off_align to i64
+  %call = tail call i32 @compare_tree_int(%union.tree_node* %0, i64 %conv) #7
+  %cmp = icmp sgt i32 %call, -1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = load %union.tree_node** %pbitpos, align 8, !tbaa !0
+  %call3 = tail call %union.tree_node* @size_int_wide(i64 %conv, i32 3) #7
+  %call4 = tail call %union.tree_node* @size_binop(i32 64, %union.tree_node* %1, %union.tree_node* %call3) #7
+  %2 = load %union.tree_node** %poffset, align 8, !tbaa !0
+  %3 = load %union.tree_node** getelementptr inbounds ([6 x %union.tree_node*]* @sizetype_tab, i64 0, i64 0), align 16, !tbaa !0
+  %call5 = tail call %union.tree_node* @convert(%union.tree_node* %3, %union.tree_node* %call4) #7
+  %div = lshr i32 %off_align, 3
+  %conv6 = zext i32 %div to i64
+  %call7 = tail call %union.tree_node* @size_int_wide(i64 %conv6, i32 0) #7
+  %call8 = tail call %union.tree_node* @size_binop(i32 61, %union.tree_node* %call5, %union.tree_node* %call7) #7
+  %call9 = tail call %union.tree_node* @size_binop(i32 59, %union.tree_node* %2, %union.tree_node* %call8) #7
+  store %union.tree_node* %call9, %union.tree_node** %poffset, align 8, !tbaa !0
+  %4 = load %union.tree_node** %pbitpos, align 8, !tbaa !0
+  %call11 = tail call %union.tree_node* @size_int_wide(i64 %conv, i32 3) #7
+  %call12 = tail call %union.tree_node* @size_binop(i32 68, %union.tree_node* %4, %union.tree_node* %call11) #7
+  store %union.tree_node* %call12, %union.tree_node** %pbitpos, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  ret void
+}

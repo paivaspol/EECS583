@@ -1,0 +1,38 @@
+define i32 @df_ref_remove(%struct.df* nocapture %df, %struct.ref* %ref) #0 {
+entry:
+  %type = getelementptr inbounds %struct.ref* %ref, i64 0, i32 4
+  %0 = load i32* %type, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, 0
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call fastcc void @df_def_unlink(%struct.df* %df, %struct.ref* %ref) #6
+  %insn = getelementptr inbounds %struct.ref* %ref, i64 0, i32 1
+  %1 = load %struct.rtx_def** %insn, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %2 = load i32* %rtint, align 4, !tbaa !4
+  %idxprom = sext i32 %2 to i64
+  %insns = getelementptr inbounds %struct.df* %df, i64 0, i32 7
+  %3 = load %struct.insn_info** %insns, align 8, !tbaa !3
+  %defs = getelementptr inbounds %struct.insn_info* %3, i64 %idxprom, i32 0
+  %call = tail call fastcc %struct.df_link* @df_ref_unlink(%struct.df_link** %defs, %struct.ref* %ref) #6
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  tail call fastcc void @df_use_unlink(%struct.df* %df, %struct.ref* %ref) #6
+  %insn2 = getelementptr inbounds %struct.ref* %ref, i64 0, i32 1
+  %4 = load %struct.rtx_def** %insn2, align 8, !tbaa !3
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 0
+  %rtint5 = bitcast %union.rtunion_def* %arrayidx4 to i32*
+  %5 = load i32* %rtint5, align 4, !tbaa !4
+  %idxprom6 = sext i32 %5 to i64
+  %insns7 = getelementptr inbounds %struct.df* %df, i64 0, i32 7
+  %6 = load %struct.insn_info** %insns7, align 8, !tbaa !3
+  %uses = getelementptr inbounds %struct.insn_info* %6, i64 %idxprom6, i32 1
+  %call9 = tail call fastcc %struct.df_link* @df_ref_unlink(%struct.df_link** %uses, %struct.ref* %ref) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret i32 1
+}

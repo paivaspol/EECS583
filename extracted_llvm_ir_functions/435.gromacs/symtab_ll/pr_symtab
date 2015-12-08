@@ -1,0 +1,76 @@
+define void @pr_symtab(%struct._IO_FILE* %fp, i32 %indent, i8* %title, %struct.t_symtab* %symtab) #0 {
+entry:
+  %0 = bitcast %struct.t_symtab* %symtab to i8*
+  %call = tail call i32 @available(%struct._IO_FILE* %fp, i8* %0, i8* %title) #5
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end12, label %if.then
+
+if.then:                                          ; preds = %entry
+  %nr1 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 0
+  %1 = load i32* %nr1, align 4, !tbaa !3
+  %call2 = tail call i32 @pr_title_n(%struct._IO_FILE* %fp, i32 %indent, i8* %title, i32 %1) #5
+  %symbuf4 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 1
+  %symbuf.037 = load %struct.symbuf** %symbuf4, align 8
+  %cmp38 = icmp eq %struct.symbuf* %symbuf.037, null
+  br i1 %cmp38, label %if.end12, label %for.cond.preheader.lr.ph
+
+for.cond.preheader.lr.ph:                         ; preds = %if.then
+  %2 = load i32* %nr1, align 4, !tbaa !3
+  %tobool7 = icmp eq %struct._IO_FILE* %fp, null
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %for.cond.preheader.lr.ph, %for.end
+  %symbuf.042 = phi %struct.symbuf* [ %symbuf.037, %for.cond.preheader.lr.ph ], [ %symbuf.0, %for.end ]
+  %nr.040 = phi i32 [ %2, %for.cond.preheader.lr.ph ], [ %sub, %for.end ]
+  %i.039 = phi i32 [ 0, %for.cond.preheader.lr.ph ], [ %i.1.lcssa, %for.end ]
+  %bufsize = getelementptr inbounds %struct.symbuf* %symbuf.042, i64 0, i32 0
+  %3 = load i32* %bufsize, align 4, !tbaa !3
+  %cmp531 = icmp sgt i32 %3, 0
+  %cmp632 = icmp sgt i32 %nr.040, 0
+  %or.cond33 = and i1 %cmp531, %cmp632
+  br i1 %or.cond33, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %buf = getelementptr inbounds %struct.symbuf* %symbuf.042, i64 0, i32 1
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %4 = phi i32 [ %3, %for.body.lr.ph ], [ %7, %for.inc ]
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %j.035 = phi i32 [ 0, %for.body.lr.ph ], [ %inc11, %for.inc ]
+  %i.134 = phi i32 [ %i.039, %for.body.lr.ph ], [ %i.2, %for.inc ]
+  br i1 %tobool7, label %for.inc, label %if.then8
+
+if.then8:                                         ; preds = %for.body
+  %call9 = tail call i32 @pr_indent(%struct._IO_FILE* %fp, i32 %call2) #5
+  %inc = add nsw i32 %i.134, 1
+  %5 = load i8*** %buf, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8** %5, i64 %indvars.iv
+  %6 = load i8** %arrayidx, align 8, !tbaa !0
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([13 x i8]* @.str6, i64 0, i64 0), i8* %title, i32 %i.134, i8* %6) #5
+  %.pre = load i32* %bufsize, align 4, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then8
+  %7 = phi i32 [ %.pre, %if.then8 ], [ %4, %for.body ]
+  %i.2 = phi i32 [ %inc, %if.then8 ], [ %i.134, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc11 = add nsw i32 %j.035, 1
+  %8 = trunc i64 %indvars.iv.next to i32
+  %cmp5 = icmp slt i32 %8, %7
+  %cmp6 = icmp slt i32 %8, %nr.040
+  %or.cond = and i1 %cmp5, %cmp6
+  br i1 %or.cond, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %j.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %inc11, %for.inc ]
+  %i.1.lcssa = phi i32 [ %i.039, %for.cond.preheader ], [ %i.2, %for.inc ]
+  %sub = sub nsw i32 %nr.040, %j.0.lcssa
+  %next = getelementptr inbounds %struct.symbuf* %symbuf.042, i64 0, i32 2
+  %symbuf.0 = load %struct.symbuf** %next, align 8
+  %cmp = icmp eq %struct.symbuf* %symbuf.0, null
+  br i1 %cmp, label %if.end12, label %for.cond.preheader
+
+if.end12:                                         ; preds = %if.then, %for.end, %entry
+  ret void
+}

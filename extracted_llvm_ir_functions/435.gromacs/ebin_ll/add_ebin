@@ -1,0 +1,67 @@
+define void @add_ebin(%struct.t_ebin* nocapture %eb, i32 %index, i32 %nener, float* nocapture %ener, i32 %step) #0 {
+entry:
+  %add = add nsw i32 %nener, %index
+  %nener1 = getelementptr inbounds %struct.t_ebin* %eb, i64 0, i32 0
+  %0 = load i32* %nener1, align 4, !tbaa !0
+  %cmp = icmp sgt i32 %add, %0
+  %cmp2 = icmp slt i32 %index, 0
+  %or.cond = or i1 %cmp, %cmp2
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([59 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0), i32 95, i32 %index, i32 %nener, i32 %0) #5
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %cmp4 = icmp sgt i32 %step, 0
+  br i1 %cmp4, label %if.then5, label %if.end9
+
+if.then5:                                         ; preds = %if.end
+  %conv = sitofp i32 %step to double
+  %div = fdiv double 1.000000e+00, %conv
+  %add7 = fadd double %conv, 1.000000e+00
+  %div8 = fdiv double %div, %add7
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end, %if.then5
+  %invmm.0 = phi double [ %div8, %if.then5 ], [ 0.000000e+00, %if.end ]
+  %idxprom = sext i32 %index to i64
+  %e10 = getelementptr inbounds %struct.t_ebin* %eb, i64 0, i32 2
+  %1 = load %struct.t_energy** %e10, align 8, !tbaa !3
+  %cmp1154 = icmp sgt i32 %nener, 0
+  br i1 %cmp1154, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end9
+  %conv22 = sitofp i32 %step to double
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %arrayidx14 = getelementptr inbounds float* %ener, i64 %indvars.iv
+  %2 = load float* %arrayidx14, align 4, !tbaa !4
+  %conv15 = fpext float %2 to double
+  %arrayidx.sum = add i64 %indvars.iv, %idxprom
+  %e19 = getelementptr inbounds %struct.t_energy* %1, i64 %arrayidx.sum, i32 0
+  store float %2, float* %e19, align 4, !tbaa !4
+  %esum = getelementptr inbounds %struct.t_energy* %1, i64 %arrayidx.sum, i32 2
+  %3 = load double* %esum, align 8, !tbaa !5
+  %mul = fmul double %conv22, %conv15
+  %sub = fsub double %3, %mul
+  %conv23 = fptrunc double %sub to float
+  %mul.i = fmul float %conv23, %conv23
+  %conv24 = fpext float %mul.i to double
+  %mul25 = fmul double %invmm.0, %conv24
+  %eav = getelementptr inbounds %struct.t_energy* %1, i64 %arrayidx.sum, i32 1
+  %4 = load double* %eav, align 8, !tbaa !5
+  %add28 = fadd double %4, %mul25
+  store double %add28, double* %eav, align 8, !tbaa !5
+  %add32 = fadd double %conv15, %3
+  store double %add32, double* %esum, align 8, !tbaa !5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nener
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %if.end9
+  ret void
+}

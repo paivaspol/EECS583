@@ -1,0 +1,26 @@
+define void @set_block(%union.tree_node* %block) #0 {
+entry:
+  %0 = load %struct.binding_level** @current_binding_level, align 8, !tbaa !0
+  %this_block = getelementptr inbounds %struct.binding_level* %0, i64 0, i32 4
+  store %union.tree_node* %block, %union.tree_node** %this_block, align 8, !tbaa !0
+  %1 = load %struct.binding_level** @current_binding_level, align 8, !tbaa !0
+  %names = getelementptr inbounds %struct.binding_level* %1, i64 0, i32 0
+  %2 = load %union.tree_node** %names, align 8, !tbaa !0
+  %vars = getelementptr inbounds %union.tree_node* %block, i64 0, i32 0, i32 2
+  %3 = bitcast i32* %vars to %union.tree_node**
+  %4 = load %union.tree_node** %3, align 8, !tbaa !0
+  %call = tail call %union.tree_node* @chainon(%union.tree_node* %2, %union.tree_node* %4) #8
+  %5 = load %struct.binding_level** @current_binding_level, align 8, !tbaa !0
+  %names2 = getelementptr inbounds %struct.binding_level* %5, i64 0, i32 0
+  store %union.tree_node* %call, %union.tree_node** %names2, align 8, !tbaa !0
+  %6 = load %struct.binding_level** @current_binding_level, align 8, !tbaa !0
+  %blocks = getelementptr inbounds %struct.binding_level* %6, i64 0, i32 3
+  %7 = load %union.tree_node** %blocks, align 8, !tbaa !0
+  %8 = getelementptr inbounds %union.tree_node* %block, i64 0, i32 0, i32 4
+  %9 = load %union.tree_node** %8, align 8, !tbaa !0
+  %call4 = tail call %union.tree_node* @chainon(%union.tree_node* %7, %union.tree_node* %9) #8
+  %10 = load %struct.binding_level** @current_binding_level, align 8, !tbaa !0
+  %blocks5 = getelementptr inbounds %struct.binding_level* %10, i64 0, i32 3
+  store %union.tree_node* %call4, %union.tree_node** %blocks5, align 8, !tbaa !0
+  ret void
+}

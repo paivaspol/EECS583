@@ -1,0 +1,171 @@
+define internal fastcc %struct.file_name_map* @read_name_map(%struct.cpp_reader* nocapture %pfile, i8* %dirname) #0 {
+entry:
+  %map_list = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 7
+  %map_list_ptr.0136 = load %struct.file_name_map_list** %map_list, align 8
+  %tobool137 = icmp eq %struct.file_name_map_list* %map_list_ptr.0136, null
+  br i1 %tobool137, label %for.end, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %map_list_next = getelementptr inbounds %struct.file_name_map_list* %map_list_ptr.0138, i64 0, i32 0
+  %map_list_ptr.0 = load %struct.file_name_map_list** %map_list_next, align 8
+  %tobool = icmp eq %struct.file_name_map_list* %map_list_ptr.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.cond
+  %map_list_ptr.0138 = phi %struct.file_name_map_list* [ %map_list_ptr.0, %for.cond ], [ %map_list_ptr.0136, %entry ]
+  %map_list_name = getelementptr inbounds %struct.file_name_map_list* %map_list_ptr.0138, i64 0, i32 1
+  %0 = load i8** %map_list_name, align 8, !tbaa !0
+  %call = call i32 @strcmp(i8* %0, i8* %dirname) #9
+  %tobool1 = icmp eq i32 %call, 0
+  br i1 %tobool1, label %if.then, label %for.cond
+
+if.then:                                          ; preds = %for.body
+  %map_list_map = getelementptr inbounds %struct.file_name_map_list* %map_list_ptr.0138, i64 0, i32 2
+  br label %return
+
+for.end:                                          ; preds = %for.cond, %entry
+  %call2 = call noalias i8* @xmalloc(i64 24) #6
+  %1 = bitcast i8* %call2 to %struct.file_name_map_list*
+  %call3 = call noalias i8* @xstrdup(i8* %dirname) #6
+  %map_list_name4 = getelementptr inbounds i8* %call2, i64 8
+  %2 = bitcast i8* %map_list_name4 to i8**
+  store i8* %call3, i8** %2, align 8, !tbaa !0
+  %map_list_map5 = getelementptr inbounds i8* %call2, i64 16
+  %3 = bitcast i8* %map_list_map5 to %struct.file_name_map**
+  store %struct.file_name_map* null, %struct.file_name_map** %3, align 8, !tbaa !0
+  %call6 = call i64 @strlen(i8* %dirname) #9
+  %add7 = add i64 %call6, 12
+  %4 = alloca i8, i64 %add7, align 1
+  %call8 = call i8* @strcpy(i8* %4, i8* %dirname) #6
+  %5 = load i8* %dirname, align 1, !tbaa !1
+  %tobool9 = icmp eq i8 %5, 0
+  br i1 %tobool9, label %if.end12, label %if.then10
+
+if.then10:                                        ; preds = %for.end
+  %strlen130 = call i64 @strlen(i8* %4)
+  %endptr131 = getelementptr i8* %4, i64 %strlen130
+  %6 = bitcast i8* %endptr131 to i16*
+  store i16 47, i16* %6, align 1
+  br label %if.end12
+
+if.end12:                                         ; preds = %for.end, %if.then10
+  %strlen = call i64 @strlen(i8* %4)
+  %endptr = getelementptr i8* %4, i64 %strlen
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %endptr, i8* getelementptr inbounds ([11 x i8]* @.str2, i64 0, i64 0), i64 11, i32 1, i1 false)
+  %call14 = call %struct._IO_FILE* @fopen(i8* %4, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0)) #6
+  %tobool15 = icmp eq %struct._IO_FILE* %call14, null
+  br i1 %tobool15, label %if.end77, label %if.then16
+
+if.then16:                                        ; preds = %if.end12
+  %call17 = call i64 @strlen(i8* %dirname) #9
+  %call18132 = call i32 @_IO_getc(%struct._IO_FILE* %call14) #6
+  %cmp133 = icmp eq i32 %call18132, -1
+  br i1 %cmp133, label %while.end75, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %if.then16
+  %sext = shl i64 %call17, 32
+  %conv48 = ashr exact i64 %sext, 32
+  %add50 = add i64 %conv48, 2
+  %add.ptr.sum = add i64 %conv48, 1
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
+  %call18134 = phi i32 [ %call18132, %while.body.lr.ph ], [ %call18, %while.cond.backedge ]
+  %and = and i32 %call18134, 255
+  %idxprom128 = zext i32 %and to i64
+  %arrayidx = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom128
+  %7 = load i16* %arrayidx, align 2, !tbaa !5
+  %and21 = and i16 %7, 3072
+  %tobool22 = icmp eq i16 %and21, 0
+  br i1 %tobool22, label %if.end24, label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %while.cond65, %while.cond65, %while.body
+  %call18 = call i32 @_IO_getc(%struct._IO_FILE* %call14) #6
+  %cmp = icmp eq i32 %call18, -1
+  br i1 %cmp, label %while.end75, label %while.body
+
+if.end24:                                         ; preds = %while.body
+  %call25 = call fastcc i8* @read_filename_string(i32 %call18134, %struct._IO_FILE* %call14) #7
+  br label %while.cond26
+
+while.cond26:                                     ; preds = %land.rhs, %if.end24
+  %call27 = call i32 @_IO_getc(%struct._IO_FILE* %call14) #6
+  %cmp28 = icmp eq i32 %call27, -1
+  br i1 %cmp28, label %while.end, label %land.rhs
+
+land.rhs:                                         ; preds = %while.cond26
+  %and30 = and i32 %call27, 255
+  %idxprom31129 = zext i32 %and30 to i64
+  %arrayidx32 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom31129
+  %8 = load i16* %arrayidx32, align 2, !tbaa !5
+  %and34 = and i16 %8, 1
+  %tobool35 = icmp eq i16 %and34, 0
+  br i1 %tobool35, label %while.end, label %while.cond26
+
+while.end:                                        ; preds = %land.rhs, %while.cond26
+  %call27.lcssa = phi i32 [ %call27, %land.rhs ], [ -1, %while.cond26 ]
+  %call37 = call fastcc i8* @read_filename_string(i32 %call27.lcssa, %struct._IO_FILE* %call14) #7
+  %call38 = call noalias i8* @xmalloc(i64 24) #6
+  %9 = bitcast i8* %call38 to %struct.file_name_map*
+  %map_from = getelementptr inbounds i8* %call38, i64 8
+  %10 = bitcast i8* %map_from to i8**
+  store i8* %call25, i8** %10, align 8, !tbaa !0
+  %11 = load i8* %call37, align 1, !tbaa !1
+  switch i8 %11, label %if.else [
+    i8 47, label %if.then47
+    i8 36, label %if.then47
+  ]
+
+if.then47:                                        ; preds = %while.end, %while.end
+  %map_to = getelementptr inbounds i8* %call38, i64 16
+  %12 = bitcast i8* %map_to to i8**
+  store i8* %call37, i8** %12, align 8, !tbaa !0
+  br label %if.end62
+
+if.else:                                          ; preds = %while.end
+  %call49 = call i64 @strlen(i8* %call37) #9
+  %add51 = add i64 %add50, %call49
+  %call52 = call noalias i8* @xmalloc(i64 %add51) #6
+  %map_to53 = getelementptr inbounds i8* %call38, i64 16
+  %13 = bitcast i8* %map_to53 to i8**
+  store i8* %call52, i8** %13, align 8, !tbaa !0
+  %call55 = call i8* @strcpy(i8* %call52, i8* %dirname) #6
+  %14 = load i8** %13, align 8, !tbaa !0
+  %arrayidx58 = getelementptr inbounds i8* %14, i64 %conv48
+  store i8 47, i8* %arrayidx58, align 1, !tbaa !1
+  %15 = load i8** %13, align 8, !tbaa !0
+  %add.ptr60 = getelementptr inbounds i8* %15, i64 %add.ptr.sum
+  %call61 = call i8* @strcpy(i8* %add.ptr60, i8* %call37) #6
+  call void @free(i8* %call37) #6
+  br label %if.end62
+
+if.end62:                                         ; preds = %if.else, %if.then47
+  %16 = load %struct.file_name_map** %3, align 8, !tbaa !0
+  %map_next = bitcast i8* %call38 to %struct.file_name_map**
+  store %struct.file_name_map* %16, %struct.file_name_map** %map_next, align 8, !tbaa !0
+  store %struct.file_name_map* %9, %struct.file_name_map** %3, align 8, !tbaa !0
+  br label %while.cond65
+
+while.cond65:                                     ; preds = %while.cond65, %if.end62
+  %call66 = call i32 @_IO_getc(%struct._IO_FILE* %call14) #6
+  switch i32 %call66, label %while.cond65 [
+    i32 10, label %while.cond.backedge
+    i32 -1, label %while.cond.backedge
+  ]
+
+while.end75:                                      ; preds = %while.cond.backedge, %if.then16
+  %call76 = call i32 @fclose(%struct._IO_FILE* %call14) #6
+  br label %if.end77
+
+if.end77:                                         ; preds = %if.end12, %while.end75
+  %17 = load %struct.file_name_map_list** %map_list, align 8, !tbaa !0
+  %map_list_next80 = bitcast i8* %call2 to %struct.file_name_map_list**
+  store %struct.file_name_map_list* %17, %struct.file_name_map_list** %map_list_next80, align 8, !tbaa !0
+  store %struct.file_name_map_list* %1, %struct.file_name_map_list** %map_list, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end77, %if.then
+  %retval.0.in = phi %struct.file_name_map** [ %map_list_map, %if.then ], [ %3, %if.end77 ]
+  %retval.0 = load %struct.file_name_map** %retval.0.in, align 8
+  ret %struct.file_name_map* %retval.0
+}

@@ -1,0 +1,44 @@
+define internal fastcc void @schedule_fixup_var_refs(%struct.function* %function, %struct.rtx_def* %reg, %union.tree_node* %type, i32 %promoted_mode, %struct.hash_table* %ht) #0 {
+entry:
+  %tobool = icmp eq %union.tree_node* %type, null
+  br i1 %tobool, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %unsigned_flag = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %unsigned_flag to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load, 13
+  %bf.clear = and i32 %bf.lshr, 1
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi i32 [ %bf.clear, %cond.true ], [ 0, %entry ]
+  %cmp = icmp eq %struct.function* %function, null
+  br i1 %cmp, label %if.else, label %if.then
+
+if.then:                                          ; preds = %cond.end
+  %call = tail call i8* @ggc_alloc(i64 24) #10
+  %1 = bitcast i8* %call to %struct.var_refs_queue*
+  %modified = bitcast i8* %call to %struct.rtx_def**
+  store %struct.rtx_def* %reg, %struct.rtx_def** %modified, align 8, !tbaa !0
+  %promoted_mode1 = getelementptr inbounds i8* %call, i64 8
+  %2 = bitcast i8* %promoted_mode1 to i32*
+  store i32 %promoted_mode, i32* %2, align 4, !tbaa !3
+  %unsignedp = getelementptr inbounds i8* %call, i64 12
+  %3 = bitcast i8* %unsignedp to i32*
+  store i32 %cond, i32* %3, align 4, !tbaa !4
+  %fixup_var_refs_queue = getelementptr inbounds %struct.function* %function, i64 0, i32 43
+  %4 = load %struct.var_refs_queue** %fixup_var_refs_queue, align 8, !tbaa !0
+  %next = getelementptr inbounds i8* %call, i64 16
+  %5 = bitcast i8* %next to %struct.var_refs_queue**
+  store %struct.var_refs_queue* %4, %struct.var_refs_queue** %5, align 8, !tbaa !0
+  store %struct.var_refs_queue* %1, %struct.var_refs_queue** %fixup_var_refs_queue, align 8, !tbaa !0
+  br label %if.end
+
+if.else:                                          ; preds = %cond.end
+  tail call fastcc void @fixup_var_refs(%struct.rtx_def* %reg, i32 %promoted_mode, i32 %cond, %struct.rtx_def* %reg, %struct.hash_table* %ht) #9
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void
+}

@@ -1,0 +1,32 @@
+define void @_cpp_pop_context(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %context1 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 10
+  %0 = load %struct.cpp_context** %context1, align 8, !tbaa !3
+  %macro = getelementptr inbounds %struct.cpp_context* %0, i64 0, i32 5
+  %1 = load %struct.cpp_hashnode** %macro, align 8, !tbaa !3
+  %tobool = icmp eq %struct.cpp_hashnode* %1, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %flags = getelementptr inbounds %struct.cpp_hashnode* %1, i64 0, i32 5
+  %2 = load i8* %flags, align 1, !tbaa !0
+  %and = and i8 %2, -33
+  store i8 %and, i8* %flags, align 1, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %buff = getelementptr inbounds %struct.cpp_context* %0, i64 0, i32 4
+  %3 = load %struct._cpp_buff** %buff, align 8, !tbaa !3
+  %tobool4 = icmp eq %struct._cpp_buff* %3, null
+  br i1 %tobool4, label %if.end7, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  tail call void @_cpp_release_buff(%struct.cpp_reader* %pfile, %struct._cpp_buff* %3) #7
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end, %if.then5
+  %prev = getelementptr inbounds %struct.cpp_context* %0, i64 0, i32 1
+  %4 = load %struct.cpp_context** %prev, align 8, !tbaa !3
+  store %struct.cpp_context* %4, %struct.cpp_context** %context1, align 8, !tbaa !3
+  ret void
+}

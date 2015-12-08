@@ -1,0 +1,50 @@
+define %struct.rtx_def* @get_arg_pointer_save_area(%struct.function* %f) #0 {
+entry:
+  %x_arg_pointer_save_area = getelementptr inbounds %struct.function* %f, i64 0, i32 30
+  %0 = load %struct.rtx_def** %x_arg_pointer_save_area, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = load i32* @target_flags, align 4, !tbaa !4
+  %and = lshr i32 %1, 25
+  %2 = and i32 %and, 1
+  %3 = or i32 %2, 4
+  %idxprom22 = zext i32 %3 to i64
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom22
+  %4 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = zext i8 %4 to i64
+  %call = tail call fastcc %struct.rtx_def* @assign_stack_local_1(i32 %3, i64 %conv, i32 0, %struct.function* %f) #9
+  store %struct.rtx_def* %call, %struct.rtx_def** %x_arg_pointer_save_area, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %ret.0 = phi %struct.rtx_def* [ %0, %entry ], [ %call, %if.then ]
+  %5 = load %struct.function** @cfun, align 8, !tbaa !0
+  %cmp = icmp eq %struct.function* %5, %f
+  br i1 %cmp, label %land.lhs.true, label %if.end14
+
+land.lhs.true:                                    ; preds = %if.end
+  %arg_pointer_save_area_init = getelementptr inbounds %struct.function* %f, i64 0, i32 56
+  %6 = bitcast [4 x i8]* %arg_pointer_save_area_init to i32*
+  %bf.load = load i32* %6, align 8
+  %bf.clear = and i32 %bf.load, 8388608
+  %tobool7 = icmp eq i32 %bf.clear, 0
+  br i1 %tobool7, label %if.then8, label %if.end14
+
+if.then8:                                         ; preds = %land.lhs.true
+  tail call void @start_sequence() #10
+  %call9 = tail call %struct.rtx_def* @validize_mem(%struct.rtx_def* %ret.0) #10
+  %7 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 6), align 8, !tbaa !0
+  %call10 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call9, %struct.rtx_def* %7) #10
+  %call11 = tail call %struct.rtx_def* @gen_sequence() #10
+  tail call void @end_sequence() #10
+  tail call void @push_topmost_sequence() #10
+  %call12 = tail call %struct.rtx_def* @get_insns() #10
+  %call13 = tail call %struct.rtx_def* @emit_insn_after(%struct.rtx_def* %call11, %struct.rtx_def* %call12) #10
+  tail call void @pop_topmost_sequence() #10
+  br label %if.end14
+
+if.end14:                                         ; preds = %land.lhs.true, %if.then8, %if.end
+  ret %struct.rtx_def* %ret.0
+}

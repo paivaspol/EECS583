@@ -1,0 +1,37 @@
+define i32 @dict_filler_word(%struct.dict_t* nocapture %d, i32 %w) #4 {
+entry:
+  %idxprom = sext i32 %w to i64
+  %word = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 4
+  %0 = load %struct.dictword_t** %word, align 8, !tbaa !0
+  %basewid = getelementptr inbounds %struct.dictword_t* %0, i64 %idxprom, i32 4
+  %1 = load i32* %basewid, align 4, !tbaa !3
+  %startwid = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 11
+  %2 = load i32* %startwid, align 4, !tbaa !3
+  %cmp = icmp eq i32 %1, %2
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %finishwid = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 12
+  %3 = load i32* %finishwid, align 4, !tbaa !3
+  %cmp1 = icmp eq i32 %1, %3
+  br i1 %cmp1, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false
+  %filler_start = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 8
+  %4 = load i32* %filler_start, align 4, !tbaa !3
+  %cmp2 = icmp slt i32 %1, %4
+  br i1 %cmp2, label %if.end5, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %filler_end = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 9
+  %5 = load i32* %filler_end, align 4, !tbaa !3
+  %cmp3 = icmp sgt i32 %1, %5
+  br i1 %cmp3, label %if.end5, label %return
+
+if.end5:                                          ; preds = %land.lhs.true, %if.end
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %entry, %lor.lhs.false, %if.end5
+  %retval.0 = phi i32 [ 0, %if.end5 ], [ 0, %lor.lhs.false ], [ 0, %entry ], [ 1, %land.lhs.true ]
+  ret i32 %retval.0
+}

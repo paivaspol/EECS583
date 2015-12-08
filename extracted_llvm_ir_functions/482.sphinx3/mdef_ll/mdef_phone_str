@@ -1,0 +1,54 @@
+define i32 @mdef_phone_str(%struct.mdef_t* nocapture %m, i32 %pid, i8* nocapture %buf) #0 {
+entry:
+  store i8 0, i8* %buf, align 1, !tbaa !1
+  %n_ciphone = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 0
+  %0 = load i32* %n_ciphone, align 4, !tbaa !0
+  %cmp = icmp sgt i32 %0, %pid
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %conv = zext i32 %pid to i64
+  %sext = shl i64 %conv, 56
+  %idxprom.i = ashr exact i64 %sext, 56
+  %ciphone.i = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 7
+  %1 = load %struct.ciphone_t** %ciphone.i, align 8, !tbaa !3
+  %name.i = getelementptr inbounds %struct.ciphone_t* %1, i64 %idxprom.i, i32 0
+  %2 = load i8** %name.i, align 8, !tbaa !3
+  %strlen = tail call i64 @strlen(i8* %2)
+  %leninc = add i64 %strlen, 1
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %buf, i8* %2, i64 %leninc, i32 1, i1 false)
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %idxprom = sext i32 %pid to i64
+  %phone = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 8
+  %3 = load %struct.phone_t** %phone, align 8, !tbaa !3
+  %ci = getelementptr inbounds %struct.phone_t* %3, i64 %idxprom, i32 2
+  %4 = load i8* %ci, align 1, !tbaa !1
+  %idxprom.i37 = sext i8 %4 to i64
+  %ciphone.i38 = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 7
+  %5 = load %struct.ciphone_t** %ciphone.i38, align 8, !tbaa !3
+  %name.i39 = getelementptr inbounds %struct.ciphone_t* %5, i64 %idxprom.i37, i32 0
+  %6 = load i8** %name.i39, align 8, !tbaa !3
+  %lc = getelementptr inbounds %struct.phone_t* %3, i64 %idxprom, i32 3
+  %7 = load i8* %lc, align 1, !tbaa !1
+  %idxprom.i34 = sext i8 %7 to i64
+  %name.i36 = getelementptr inbounds %struct.ciphone_t* %5, i64 %idxprom.i34, i32 0
+  %8 = load i8** %name.i36, align 8, !tbaa !3
+  %rc = getelementptr inbounds %struct.phone_t* %3, i64 %idxprom, i32 4
+  %9 = load i8* %rc, align 1, !tbaa !1
+  %idxprom.i31 = sext i8 %9 to i64
+  %name.i33 = getelementptr inbounds %struct.ciphone_t* %5, i64 %idxprom.i31, i32 0
+  %10 = load i8** %name.i33, align 8, !tbaa !3
+  %wpos = getelementptr inbounds %struct.phone_t* %3, i64 %idxprom, i32 5
+  %11 = load i32* %wpos, align 4, !tbaa !1
+  %idxprom15 = zext i32 %11 to i64
+  %arrayidx16 = getelementptr inbounds [6 x i8]* @.str11, i64 0, i64 %idxprom15
+  %12 = load i8* %arrayidx16, align 1, !tbaa !1
+  %conv17 = sext i8 %12 to i32
+  %call18 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %buf, i8* getelementptr inbounds ([14 x i8]* @.str13, i64 0, i64 0), i8* %6, i8* %8, i8* %10, i32 %conv17) #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret i32 0
+}

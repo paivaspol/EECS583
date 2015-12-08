@@ -1,0 +1,101 @@
+define void @ed_cons([3 x float]* nocapture %x, %struct.t_edpar* nocapture %edi, i32 %step) #0 {
+entry:
+  %nr = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 8, i32 0
+  %0 = load i32* %nr, align 4, !tbaa !3
+  %cmp65 = icmp sgt i32 %0, 0
+  br i1 %cmp65, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %anrs = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 8, i32 1
+  %1 = load i32** %anrs, align 8, !tbaa !0
+  %x6 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 8, i32 2
+  %2 = load [3 x float]** %x6, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv67 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next68, %for.body ]
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv67
+  %3 = load i32* %arrayidx, align 4, !tbaa !3
+  %idxprom2 = sext i32 %3 to i64
+  %arraydecay = getelementptr inbounds [3 x float]* %x, i64 %idxprom2, i64 0
+  %arraydecay8 = getelementptr inbounds [3 x float]* %2, i64 %indvars.iv67, i64 0
+  %4 = load float* %arraydecay, align 4, !tbaa !4
+  %5 = load float* %arraydecay8, align 4, !tbaa !4
+  %sub.i = fsub float %4, %5
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %x, i64 %idxprom2, i64 1
+  %6 = load float* %arrayidx2.i, align 4, !tbaa !4
+  %arrayidx3.i = getelementptr inbounds [3 x float]* %2, i64 %indvars.iv67, i64 1
+  %7 = load float* %arrayidx3.i, align 4, !tbaa !4
+  %sub4.i = fsub float %6, %7
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %x, i64 %idxprom2, i64 2
+  %8 = load float* %arrayidx5.i, align 4, !tbaa !4
+  %arrayidx6.i = getelementptr inbounds [3 x float]* %2, i64 %indvars.iv67, i64 2
+  %9 = load float* %arrayidx6.i, align 4, !tbaa !4
+  %sub7.i = fsub float %8, %9
+  store float %sub.i, float* %arraydecay, align 4, !tbaa !4
+  store float %sub4.i, float* %arrayidx2.i, align 4, !tbaa !4
+  store float %sub7.i, float* %arrayidx5.i, align 4, !tbaa !4
+  %indvars.iv.next68 = add i64 %indvars.iv67, 1
+  %10 = trunc i64 %indvars.iv.next68 to i32
+  %cmp = icmp slt i32 %10, %0
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  %cmp9 = icmp sgt i32 %step, -1
+  br i1 %cmp9, label %if.then, label %if.end12.critedge
+
+if.then:                                          ; preds = %for.end
+  tail call void @do_linfix([3 x float]* %x, %struct.t_edpar* %edi, i32 %step) #7
+  tail call void @do_linacc([3 x float]* %x, %struct.t_edpar* %edi) #7
+  tail call void @do_radfix([3 x float]* %x, %struct.t_edpar* %edi, i32 undef) #7
+  br label %if.end12
+
+if.end12.critedge:                                ; preds = %for.end
+  tail call void @do_linacc([3 x float]* %x, %struct.t_edpar* %edi) #7
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end12.critedge, %if.then
+  tail call void @do_radacc([3 x float]* %x, %struct.t_edpar* %edi) #7
+  tail call void @do_radcon([3 x float]* %x, %struct.t_edpar* %edi) #7
+  %11 = load i32* %nr, align 4, !tbaa !3
+  %cmp1663 = icmp sgt i32 %11, 0
+  br i1 %cmp1663, label %for.body17.lr.ph, label %for.end32
+
+for.body17.lr.ph:                                 ; preds = %if.end12
+  %anrs20 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 8, i32 1
+  %12 = load i32** %anrs20, align 8, !tbaa !0
+  %x27 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 8, i32 2
+  %13 = load [3 x float]** %x27, align 8, !tbaa !0
+  br label %for.body17
+
+for.body17:                                       ; preds = %for.body17.lr.ph, %for.body17
+  %indvars.iv = phi i64 [ 0, %for.body17.lr.ph ], [ %indvars.iv.next, %for.body17 ]
+  %arrayidx21 = getelementptr inbounds i32* %12, i64 %indvars.iv
+  %14 = load i32* %arrayidx21, align 4, !tbaa !3
+  %idxprom22 = sext i32 %14 to i64
+  %arraydecay24 = getelementptr inbounds [3 x float]* %x, i64 %idxprom22, i64 0
+  %arraydecay29 = getelementptr inbounds [3 x float]* %13, i64 %indvars.iv, i64 0
+  %15 = load float* %arraydecay24, align 4, !tbaa !4
+  %16 = load float* %arraydecay29, align 4, !tbaa !4
+  %add.i = fadd float %15, %16
+  %arrayidx2.i59 = getelementptr inbounds [3 x float]* %x, i64 %idxprom22, i64 1
+  %17 = load float* %arrayidx2.i59, align 4, !tbaa !4
+  %arrayidx3.i60 = getelementptr inbounds [3 x float]* %13, i64 %indvars.iv, i64 1
+  %18 = load float* %arrayidx3.i60, align 4, !tbaa !4
+  %add4.i = fadd float %17, %18
+  %arrayidx5.i61 = getelementptr inbounds [3 x float]* %x, i64 %idxprom22, i64 2
+  %19 = load float* %arrayidx5.i61, align 4, !tbaa !4
+  %arrayidx6.i62 = getelementptr inbounds [3 x float]* %13, i64 %indvars.iv, i64 2
+  %20 = load float* %arrayidx6.i62, align 4, !tbaa !4
+  %add7.i = fadd float %19, %20
+  store float %add.i, float* %arraydecay24, align 4, !tbaa !4
+  store float %add4.i, float* %arrayidx2.i59, align 4, !tbaa !4
+  store float %add7.i, float* %arrayidx5.i61, align 4, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %21 = trunc i64 %indvars.iv.next to i32
+  %cmp16 = icmp slt i32 %21, %11
+  br i1 %cmp16, label %for.body17, label %for.end32
+
+for.end32:                                        ; preds = %for.body17, %if.end12
+  ret void
+}

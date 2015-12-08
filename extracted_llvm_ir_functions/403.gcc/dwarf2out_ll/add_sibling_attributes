@@ -1,0 +1,65 @@
+define internal fastcc void @add_sibling_attributes(%struct.die_struct* %die) #1 {
+entry:
+  %die_tag = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 0
+  %0 = load i32* %die_tag, align 4, !tbaa !12
+  %cmp = icmp eq i32 %0, 17
+  br i1 %cmp, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %die_sib = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 5
+  %1 = load %struct.die_struct** %die_sib, align 8, !tbaa !4
+  %tobool = icmp eq %struct.die_struct* %1, null
+  br i1 %tobool, label %if.end, label %land.lhs.true1
+
+land.lhs.true1:                                   ; preds = %land.lhs.true
+  %die_child = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 4
+  %2 = load %struct.die_struct** %die_child, align 8, !tbaa !4
+  %cmp2 = icmp eq %struct.die_struct* %2, null
+  br i1 %cmp2, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true1
+  %call.i = tail call noalias i8* @xmalloc(i64 40) #9
+  %dw_attr_next.i = getelementptr inbounds i8* %call.i, i64 8
+  %3 = bitcast i8* %dw_attr_next.i to %struct.dw_attr_struct**
+  store %struct.dw_attr_struct* null, %struct.dw_attr_struct** %3, align 8, !tbaa !4
+  %dw_attr.i = bitcast i8* %call.i to i32*
+  store i32 1, i32* %dw_attr.i, align 4, !tbaa !11
+  %dw_attr_val.i = getelementptr inbounds i8* %call.i, i64 16
+  %val_class.i = bitcast i8* %dw_attr_val.i to i32*
+  store i32 10, i32* %val_class.i, align 4, !tbaa !1
+  %v.i = getelementptr inbounds i8* %call.i, i64 24
+  %die2.i = bitcast i8* %v.i to %struct.die_struct**
+  store %struct.die_struct* %1, %struct.die_struct** %die2.i, align 8, !tbaa !4
+  %external.i = getelementptr inbounds i8* %call.i, i64 32
+  %4 = bitcast i8* %external.i to i32*
+  store i32 0, i32* %4, align 4, !tbaa !0
+  %cmp.i.i = icmp eq %struct.die_struct* %die, null
+  %cmp1.i.i = icmp eq i8* %call.i, null
+  %or.cond.i.i = or i1 %cmp.i.i, %cmp1.i.i
+  br i1 %or.cond.i.i, label %if.end, label %if.then.i.i
+
+if.then.i.i:                                      ; preds = %if.then
+  %5 = bitcast i8* %call.i to %struct.dw_attr_struct*
+  %die_attr.i.i = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 2
+  %6 = load %struct.dw_attr_struct** %die_attr.i.i, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %6, %struct.dw_attr_struct** %3, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %5, %struct.dw_attr_struct** %die_attr.i.i, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %land.lhs.true, %entry, %if.then.i.i, %land.lhs.true1
+  %die_child4 = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 4
+  %c.014 = load %struct.die_struct** %die_child4, align 8
+  %cmp515 = icmp eq %struct.die_struct* %c.014, null
+  br i1 %cmp515, label %for.end, label %for.body
+
+for.body:                                         ; preds = %if.end, %for.body
+  %c.016 = phi %struct.die_struct* [ %c.0, %for.body ], [ %c.014, %if.end ]
+  tail call fastcc void @add_sibling_attributes(%struct.die_struct* %c.016) #10
+  %die_sib6 = getelementptr inbounds %struct.die_struct* %c.016, i64 0, i32 5
+  %c.0 = load %struct.die_struct** %die_sib6, align 8
+  %cmp5 = icmp eq %struct.die_struct* %c.0, null
+  br i1 %cmp5, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %if.end
+  ret void
+}

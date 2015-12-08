@@ -1,0 +1,36 @@
+define %struct.rtx_def* @get_condition_for_loop(%struct.loop* %loop, %struct.rtx_def* %x) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @get_condition(%struct.rtx_def* %x, %struct.rtx_def** null) #10
+  %cmp = icmp eq %struct.rtx_def* %call, null
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %fld = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %call1 = tail call i32 @loop_invariant_p(%struct.loop* %loop, %struct.rtx_def* %0) #10
+  %tobool = icmp eq i32 %call1, 0
+  br i1 %tobool, label %return, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %lor.lhs.false
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 1
+  %rtx5 = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx5, align 8, !tbaa !4
+  %call6 = tail call i32 @loop_invariant_p(%struct.loop* %loop, %struct.rtx_def* %1) #10
+  %tobool7 = icmp eq i32 %call6, 0
+  br i1 %tobool7, label %if.end, label %return
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %2 = bitcast %struct.rtx_def* %call to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %call8 = tail call i32 @swap_condition(i32 %bf.clear) #8
+  %3 = load %struct.rtx_def** %rtx5, align 8, !tbaa !4
+  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %call15 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 %call8, i32 0, %struct.rtx_def* %3, %struct.rtx_def* %4) #8
+  br label %return
+
+return:                                           ; preds = %entry, %lor.lhs.false, %lor.lhs.false2, %if.end
+  %retval.0 = phi %struct.rtx_def* [ %call15, %if.end ], [ %call, %lor.lhs.false2 ], [ %call, %lor.lhs.false ], [ null, %entry ]
+  ret %struct.rtx_def* %retval.0
+}

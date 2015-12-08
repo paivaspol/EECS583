@@ -1,0 +1,83 @@
+define void @_do_section(i32 %fp, i32 %key, i32 %bRead, i8* %src, i32 %line) #0 {
+entry:
+  %buf = alloca [4096 x i8], align 16
+  %0 = getelementptr inbounds [4096 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %0) #1
+  %call = call i32 @gmx_fio_getftp(i32 %fp) #5
+  %cmp = icmp eq i32 %call, 27
+  br i1 %cmp, label %if.then, label %if.end54
+
+if.then:                                          ; preds = %entry
+  %tobool = icmp eq i32 %bRead, 0
+  br i1 %tobool, label %cond.false, label %if.else
+
+cond.false:                                       ; preds = %if.then
+  %1 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !0
+  %idxprom4 = sext i32 %key to i64
+  %arrayidx5 = getelementptr inbounds [7 x i8*]* @itemstr, i64 0, i64 %idxprom4
+  %2 = load i8** %arrayidx5, align 8, !tbaa !0
+  %call6 = call i32 %1(i8* %2, i32 1, i32 7, i8* getelementptr inbounds ([13 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 88) #5
+  %call7 = call i32 @gmx_fio_getdebug(i32 %fp) #5
+  call void @gmx_fio_setdebug(i32 %fp, i32 0) #5
+  %3 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !0
+  %arrayidx15 = getelementptr inbounds [7 x i8*]* @comment_str, i64 0, i64 %idxprom4
+  %4 = load i8** %arrayidx15, align 8, !tbaa !0
+  %call16 = call i32 %3(i8* %4, i32 1, i32 7, i8* getelementptr inbounds ([17 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 91) #5
+  call void @gmx_fio_setdebug(i32 %fp, i32 %call7) #5
+  br label %if.end54
+
+if.else:                                          ; preds = %if.then
+  %call19 = call i32 @gmx_fio_getdebug(i32 %fp) #5
+  %tobool20 = icmp eq i32 %call19, 0
+  br i1 %tobool20, label %if.else.do.body.preheader_crit_edge, label %if.then21
+
+if.else.do.body.preheader_crit_edge:              ; preds = %if.else
+  %idxprom34.pre = sext i32 %key to i64
+  %arrayidx35.pre = getelementptr inbounds [7 x i8*]* @itemstr, i64 0, i64 %idxprom34.pre
+  br label %do.body.preheader
+
+if.then21:                                        ; preds = %if.else
+  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %idxprom22 = sext i32 %key to i64
+  %arrayidx23 = getelementptr inbounds [7 x i8*]* @itemstr, i64 0, i64 %idxprom22
+  %6 = load i8** %arrayidx23, align 8, !tbaa !0
+  %call24 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([32 x i8]* @.str3, i64 0, i64 0), i8* %6, i8* %src, i32 %line) #5
+  br label %do.body.preheader
+
+do.body.preheader:                                ; preds = %if.else.do.body.preheader_crit_edge, %if.then21
+  %arrayidx35.pre-phi = phi i8** [ %arrayidx35.pre, %if.else.do.body.preheader_crit_edge ], [ %arrayidx23, %if.then21 ]
+  br label %do.cond
+
+do.cond:                                          ; preds = %do.body.preheader, %do.cond
+  %7 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !0
+  %call27 = call i32 %7(i8* %0, i32 1, i32 7, i8* getelementptr inbounds ([4 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 100) #5
+  %8 = load i8** %arrayidx35.pre-phi, align 8, !tbaa !0
+  %call36 = call i32 @gmx_strcasecmp(i8* %0, i8* %8) #5
+  %cmp37 = icmp eq i32 %call36, 0
+  br i1 %cmp37, label %do.end, label %do.cond
+
+do.end:                                           ; preds = %do.cond
+  %9 = load i8** %arrayidx35.pre-phi, align 8, !tbaa !0
+  %call41 = call i32 @gmx_strcasecmp(i8* %0, i8* %9) #5
+  %cmp42 = icmp eq i32 %call41, 0
+  br i1 %cmp42, label %if.else46, label %if.then43
+
+if.then43:                                        ; preds = %do.end
+  %10 = load i8** %arrayidx35.pre-phi, align 8, !tbaa !0
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([35 x i8]* @.str5, i64 0, i64 0), i8* %10) #5
+  br label %if.end54
+
+if.else46:                                        ; preds = %do.end
+  %call47 = call i32 @gmx_fio_getdebug(i32 %fp) #5
+  %tobool48 = icmp eq i32 %call47, 0
+  br i1 %tobool48, label %if.end54, label %if.then49
+
+if.then49:                                        ; preds = %if.else46
+  %11 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %12 = call i64 @fwrite(i8* getelementptr inbounds ([15 x i8]* @.str6, i64 0, i64 0), i64 14, i64 1, %struct._IO_FILE* %11)
+  br label %if.end54
+
+if.end54:                                         ; preds = %if.else46, %cond.false, %if.then49, %if.then43, %entry
+  call void @llvm.lifetime.end(i64 4096, i8* %0) #1
+  ret void
+}

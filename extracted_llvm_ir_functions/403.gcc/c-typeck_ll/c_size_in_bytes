@@ -1,0 +1,49 @@
+define %union.tree_node* @c_size_in_bytes(%union.tree_node* nocapture %type) #0 {
+entry:
+  %code1 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code1 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %if.end [
+    i32 23, label %if.then
+    i32 5, label %if.then
+    i32 0, label %if.then
+  ]
+
+if.then:                                          ; preds = %entry, %entry, %entry
+  %1 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 16), align 8, !tbaa !0
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %cmp2 = icmp eq i32 %bf.clear, 5
+  %size = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 2
+  %2 = bitcast i32* %size to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %cmp6.not = icmp ne %union.tree_node* %3, null
+  %brmerge = or i1 %cmp6.not, %cmp2
+  br i1 %brmerge, label %if.end14, label %if.then13
+
+if.then13:                                        ; preds = %if.end
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([44 x i8]* @.str14, i64 0, i64 0)) #8
+  %4 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 16), align 8, !tbaa !0
+  br label %return
+
+if.end14:                                         ; preds = %if.end
+  %5 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 4
+  %6 = load %union.tree_node** %5, align 8, !tbaa !0
+  %7 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 0), align 8, !tbaa !0
+  %type16 = bitcast %union.tree_node* %7 to %struct.tree_type*
+  %precision = getelementptr inbounds %struct.tree_type* %type16, i64 0, i32 6
+  %8 = bitcast [4 x i8]* %precision to i32*
+  %bf.load17 = load i32* %8, align 4
+  %bf.clear18 = lshr i32 %bf.load17, 3
+  %div = and i32 %bf.clear18, 63
+  %conv26 = zext i32 %div to i64
+  %call = tail call %union.tree_node* @size_int_wide(i64 %conv26, i32 0) #8
+  %call19 = tail call %union.tree_node* @size_binop(i32 63, %union.tree_node* %6, %union.tree_node* %call) #8
+  br label %return
+
+return:                                           ; preds = %if.end14, %if.then13, %if.then
+  %retval.0 = phi %union.tree_node* [ %1, %if.then ], [ %call19, %if.end14 ], [ %4, %if.then13 ]
+  ret %union.tree_node* %retval.0
+}

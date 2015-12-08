@@ -1,0 +1,12 @@
+define i64 @get_run_time() #0 {
+entry:
+  %total_elapsed = alloca %struct.timevar_time_def, align 4
+  call void @timevar_get(i32 0, %struct.timevar_time_def* %total_elapsed) #6
+  %user = getelementptr inbounds %struct.timevar_time_def* %total_elapsed, i64 0, i32 0
+  %0 = load float* %user, align 4, !tbaa !4
+  %sys = getelementptr inbounds %struct.timevar_time_def* %total_elapsed, i64 0, i32 1
+  %1 = load float* %sys, align 4, !tbaa !4
+  %add = fadd float %0, %1
+  %conv = fptosi float %add to i64
+  ret i64 %conv
+}

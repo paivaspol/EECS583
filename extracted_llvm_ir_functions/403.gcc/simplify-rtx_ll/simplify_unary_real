@@ -1,0 +1,123 @@
+define internal void @simplify_unary_real(i8* nocapture %p) #0 {
+entry:
+  %d = alloca %struct.realvaluetype, align 8
+  %tmp = alloca %struct.realvaluetype, align 8
+  %tmp13 = alloca %struct.realvaluetype, align 8
+  %tmp16 = alloca %struct.realvaluetype, align 8
+  %tmp18 = alloca %struct.realvaluetype, align 8
+  %tmp20 = alloca %struct.realvaluetype, align 8
+  %operand = bitcast i8* %p to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %operand, align 8, !tbaa !4
+  %u.sroa.0.0.idx = getelementptr inbounds %struct.rtx_def* %0, i64 1, i32 0, i64 0
+  %u.sroa.0.0.cast26 = bitcast %struct.realvaluetype* %d to i8*
+  call void @llvm.memmove.p0i8.p0i8.i64(i8* %u.sroa.0.0.cast26, i8* %u.sroa.0.0.idx, i64 24, i32 8, i1 false)
+  %1 = getelementptr inbounds i8* %p, i64 24
+  %2 = load i8* %1, align 1, !tbaa !11, !range !12
+  %tobool = icmp eq i8 %2, 0
+  %code = getelementptr inbounds i8* %p, i64 20
+  %3 = bitcast i8* %code to i32*
+  %4 = load i32* %3, align 4, !tbaa !6
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  switch i32 %4, label %sw.default [
+    i32 126, label %sw.bb
+    i32 128, label %sw.bb2
+  ]
+
+sw.bb:                                            ; preds = %if.then
+  %call = call i64 @efixi(%struct.realvaluetype* byval align 8 %d) #4
+  br label %sw.epilog
+
+sw.bb2:                                           ; preds = %if.then
+  %call3 = call i64 @efixui(%struct.realvaluetype* byval align 8 %d) #4
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %if.then
+  call void @fancy_abort(i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 380, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.simplify_unary_real, i64 0, i64 0)) #6
+  unreachable
+
+sw.epilog:                                        ; preds = %sw.bb2, %sw.bb
+  %i.0 = phi i64 [ %call3, %sw.bb2 ], [ %call, %sw.bb ]
+  %mode = getelementptr inbounds i8* %p, i64 16
+  %5 = bitcast i8* %mode to i32*
+  %6 = load i32* %5, align 4, !tbaa !5
+  %call4 = call i64 @trunc_int_for_mode(i64 %i.0, i32 %6) #4
+  %call5 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %call4) #4
+  %result = getelementptr inbounds i8* %p, i64 8
+  %7 = bitcast i8* %result to %struct.rtx_def**
+  store %struct.rtx_def* %call5, %struct.rtx_def** %7, align 8, !tbaa !4
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  switch i32 %4, label %sw.default21 [
+    i32 130, label %sw.bb7
+    i32 129, label %sw.bb9
+    i32 77, label %sw.bb12
+    i32 124, label %sw.bb14
+    i32 123, label %sw.epilog22
+    i32 126, label %sw.bb17
+    i32 128, label %sw.bb19
+  ]
+
+sw.bb7:                                           ; preds = %if.else
+  %result8 = getelementptr inbounds i8* %p, i64 8
+  %8 = bitcast i8* %result8 to %struct.rtx_def**
+  store %struct.rtx_def* null, %struct.rtx_def** %8, align 8, !tbaa !4
+  br label %if.end
+
+sw.bb9:                                           ; preds = %if.else
+  %call10 = call i32 @target_negative(%struct.realvaluetype* byval align 8 %d) #4
+  %tobool11 = icmp eq i32 %call10, 0
+  br i1 %tobool11, label %sw.epilog22, label %cond.true
+
+cond.true:                                        ; preds = %sw.bb9
+  call void @ereal_negate(%struct.realvaluetype* sret %tmp, %struct.realvaluetype* byval align 8 %d) #4
+  %9 = bitcast %struct.realvaluetype* %tmp to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %u.sroa.0.0.cast26, i8* %9, i64 24, i32 8, i1 false), !tbaa.struct !10
+  br label %sw.epilog22
+
+sw.bb12:                                          ; preds = %if.else
+  call void @ereal_negate(%struct.realvaluetype* sret %tmp13, %struct.realvaluetype* byval align 8 %d) #4
+  %10 = bitcast %struct.realvaluetype* %tmp13 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %u.sroa.0.0.cast26, i8* %10, i64 24, i32 8, i1 false), !tbaa.struct !10
+  br label %sw.epilog22
+
+sw.bb14:                                          ; preds = %if.else
+  %mode15 = getelementptr inbounds i8* %p, i64 16
+  %11 = bitcast i8* %mode15 to i32*
+  %12 = load i32* %11, align 4, !tbaa !5
+  call void @real_value_truncate(%struct.realvaluetype* sret %tmp16, i32 %12, %struct.realvaluetype* byval align 8 %d) #4
+  %13 = bitcast %struct.realvaluetype* %tmp16 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %u.sroa.0.0.cast26, i8* %13, i64 24, i32 8, i1 false), !tbaa.struct !10
+  br label %sw.epilog22
+
+sw.bb17:                                          ; preds = %if.else
+  call void @etrunci(%struct.realvaluetype* sret %tmp18, %struct.realvaluetype* byval align 8 %d) #4
+  %14 = bitcast %struct.realvaluetype* %tmp18 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %u.sroa.0.0.cast26, i8* %14, i64 24, i32 8, i1 false), !tbaa.struct !10
+  br label %sw.epilog22
+
+sw.bb19:                                          ; preds = %if.else
+  call void @etruncui(%struct.realvaluetype* sret %tmp20, %struct.realvaluetype* byval align 8 %d) #4
+  %15 = bitcast %struct.realvaluetype* %tmp20 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %u.sroa.0.0.cast26, i8* %15, i64 24, i32 8, i1 false), !tbaa.struct !10
+  br label %sw.epilog22
+
+sw.default21:                                     ; preds = %if.else
+  call void @fancy_abort(i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 400, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.simplify_unary_real, i64 0, i64 0)) #6
+  unreachable
+
+sw.epilog22:                                      ; preds = %sw.bb9, %cond.true, %sw.bb19, %sw.bb17, %if.else, %sw.bb14, %sw.bb12
+  %mode23 = getelementptr inbounds i8* %p, i64 16
+  %16 = bitcast i8* %mode23 to i32*
+  %17 = load i32* %16, align 4, !tbaa !5
+  %call24 = call %struct.rtx_def* @immed_real_const_1(%struct.realvaluetype* byval align 8 %d, i32 %17) #4
+  %result25 = getelementptr inbounds i8* %p, i64 8
+  %18 = bitcast i8* %result25 to %struct.rtx_def**
+  store %struct.rtx_def* %call24, %struct.rtx_def** %18, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %sw.bb7, %sw.epilog22, %sw.epilog
+  ret void
+}

@@ -1,0 +1,42 @@
+define internal fastcc void @record_last_reg_set_info(%struct.rtx_def* nocapture %insn, i32 %regno) #0 {
+entry:
+  %idxprom = sext i32 %regno to i64
+  %0 = load %struct.reg_avail_info** @reg_avail_info, align 8, !tbaa !0
+  %arrayidx1 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx1 to i32*
+  %1 = load i32* %rtint, align 4, !tbaa !3
+  %idxprom2 = sext i32 %1 to i64
+  %2 = load i32** @uid_cuid, align 8, !tbaa !0
+  %arrayidx3 = getelementptr inbounds i32* %2, i64 %idxprom2
+  %3 = load i32* %arrayidx3, align 4, !tbaa !3
+  %last_set = getelementptr inbounds %struct.reg_avail_info* %0, i64 %idxprom, i32 2
+  store i32 %3, i32* %last_set, align 4, !tbaa !3
+  %last_bb = getelementptr inbounds %struct.reg_avail_info* %0, i64 %idxprom, i32 0
+  %4 = load i32* %last_bb, align 4, !tbaa !3
+  %5 = load i32* @current_bb, align 4, !tbaa !3
+  %cmp = icmp eq i32 %4, %5
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  store i32 %5, i32* %last_bb, align 4, !tbaa !3
+  %first_set = getelementptr inbounds %struct.reg_avail_info* %0, i64 %idxprom, i32 1
+  store i32 %3, i32* %first_set, align 4, !tbaa !3
+  %rem = and i32 %regno, 63
+  %sh_prom = zext i32 %rem to i64
+  %shl = shl i64 1, %sh_prom
+  %div = lshr i32 %regno, 6
+  %idxprom5 = zext i32 %div to i64
+  %6 = load i32* @current_bb, align 4, !tbaa !3
+  %idxprom6 = sext i32 %6 to i64
+  %7 = load %struct.simple_bitmap_def*** @reg_set_in_block, align 8, !tbaa !0
+  %arrayidx7 = getelementptr inbounds %struct.simple_bitmap_def** %7, i64 %idxprom6
+  %8 = load %struct.simple_bitmap_def** %arrayidx7, align 8, !tbaa !0
+  %arrayidx8 = getelementptr inbounds %struct.simple_bitmap_def* %8, i64 0, i32 3, i64 %idxprom5
+  %9 = load i64* %arrayidx8, align 8, !tbaa !5
+  %or = or i64 %9, %shl
+  store i64 %or, i64* %arrayidx8, align 8, !tbaa !5
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

@@ -1,0 +1,59 @@
+define i32 @partition_union(%struct.partition_def* %part, i32 %elem1, i32 %elem2) #0 {
+entry:
+  %idxprom = sext i32 %elem1 to i64
+  %class_element2 = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 %idxprom, i32 0
+  %0 = load i32* %class_element2, align 4, !tbaa !0
+  %idxprom3 = sext i32 %elem2 to i64
+  %class_element5 = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 %idxprom3, i32 0
+  %1 = load i32* %class_element5, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, %1
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %class_count = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 %idxprom, i32 2
+  %2 = load i32* %class_count, align 4, !tbaa !0
+  %class_count10 = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 %idxprom3, i32 2
+  %3 = load i32* %class_count10, align 4, !tbaa !0
+  %cmp11 = icmp ult i32 %2, %3
+  %elem1.elem2 = select i1 %cmp11, i32 %elem1, i32 %elem2
+  %elem2.elem1 = select i1 %cmp11, i32 %elem2, i32 %elem1
+  %. = select i1 %cmp11, i32 %1, i32 %0
+  %idxprom17 = sext i32 %elem2.elem1 to i64
+  %idxprom19 = sext i32 %elem1.elem2 to i64
+  %arrayidx20 = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 %idxprom19
+  %class_element21 = getelementptr inbounds %struct.partition_elem* %arrayidx20, i64 0, i32 0
+  %4 = load i32* %class_element21, align 4, !tbaa !0
+  %idxprom22 = sext i32 %4 to i64
+  %class_count24 = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 %idxprom22, i32 2
+  %5 = load i32* %class_count24, align 4, !tbaa !0
+  %idxprom25 = sext i32 %. to i64
+  %class_count27 = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 %idxprom25, i32 2
+  %6 = load i32* %class_count27, align 4, !tbaa !0
+  %add = add i32 %6, %5
+  store i32 %add, i32* %class_count27, align 4, !tbaa !0
+  store i32 %., i32* %class_element21, align 4, !tbaa !0
+  %next = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 %idxprom19, i32 1
+  %p.064 = load %struct.partition_elem** %next, align 8
+  %cmp2965 = icmp eq %struct.partition_elem* %p.064, %arrayidx20
+  br i1 %cmp2965, label %for.end, label %for.body
+
+for.body:                                         ; preds = %if.end, %for.body
+  %p.066 = phi %struct.partition_elem* [ %p.0, %for.body ], [ %p.064, %if.end ]
+  %class_element30 = getelementptr inbounds %struct.partition_elem* %p.066, i64 0, i32 0
+  store i32 %., i32* %class_element30, align 4, !tbaa !0
+  %next31 = getelementptr inbounds %struct.partition_elem* %p.066, i64 0, i32 1
+  %p.0 = load %struct.partition_elem** %next31, align 8
+  %cmp29 = icmp eq %struct.partition_elem* %p.0, %arrayidx20
+  br i1 %cmp29, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %if.end
+  %next32 = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 %idxprom17, i32 1
+  %7 = load %struct.partition_elem** %next32, align 8, !tbaa !3
+  store %struct.partition_elem* %p.064, %struct.partition_elem** %next32, align 8, !tbaa !3
+  store %struct.partition_elem* %7, %struct.partition_elem** %next, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %entry, %for.end
+  %retval.0 = phi i32 [ %., %for.end ], [ %0, %entry ]
+  ret i32 %retval.0
+}

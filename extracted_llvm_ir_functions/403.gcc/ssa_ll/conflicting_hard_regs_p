@@ -1,0 +1,47 @@
+define internal fastcc i32 @conflicting_hard_regs_p(i32 %reg1, i32 %reg2) #0 {
+entry:
+  %call.i = tail call fastcc %struct.rtx_def* @ssa_rename_from_lookup(i32 %reg1) #6
+  %cmp.i = icmp eq %struct.rtx_def* %call.i, null
+  br i1 %cmp.i, label %original_register.exit, label %cond.true.i
+
+cond.true.i:                                      ; preds = %entry
+  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %call.i, i64 0, i32 1, i64 0
+  %rtuint.i = bitcast %union.rtunion_def* %arrayidx.i to i32*
+  %0 = load i32* %rtuint.i, align 4, !tbaa !3
+  br label %original_register.exit
+
+original_register.exit:                           ; preds = %entry, %cond.true.i
+  %cond.i = phi i32 [ %0, %cond.true.i ], [ %reg1, %entry ]
+  %call.i25 = tail call fastcc %struct.rtx_def* @ssa_rename_from_lookup(i32 %reg2) #6
+  %cmp.i26 = icmp eq %struct.rtx_def* %call.i25, null
+  br i1 %cmp.i26, label %original_register.exit31, label %cond.true.i29
+
+cond.true.i29:                                    ; preds = %original_register.exit
+  %arrayidx.i27 = getelementptr inbounds %struct.rtx_def* %call.i25, i64 0, i32 1, i64 0
+  %rtuint.i28 = bitcast %union.rtunion_def* %arrayidx.i27 to i32*
+  %1 = load i32* %rtuint.i28, align 4, !tbaa !3
+  br label %original_register.exit31
+
+original_register.exit31:                         ; preds = %original_register.exit, %cond.true.i29
+  %cond.i30 = phi i32 [ %1, %cond.true.i29 ], [ %reg2, %original_register.exit ]
+  %cmp = icmp slt i32 %cond.i, 53
+  %cmp2 = icmp slt i32 %cond.i30, 53
+  %or.cond = and i1 %cmp, %cmp2
+  %or.cond.not = xor i1 %or.cond, true
+  %cmp4 = icmp eq i32 %cond.i, %cond.i30
+  %or.cond21 = or i1 %cmp4, %or.cond.not
+  br i1 %or.cond21, label %if.end, label %return
+
+if.end:                                           ; preds = %original_register.exit31
+  %cmp.not = xor i1 %cmp, true
+  %or.cond22 = or i1 %cmp2, %cmp.not
+  br i1 %or.cond22, label %if.end9, label %return
+
+if.end9:                                          ; preds = %if.end
+  %or.cond24 = and i1 %cmp2, %cmp.not
+  %. = zext i1 %or.cond24 to i32
+  ret i32 %.
+
+return:                                           ; preds = %if.end, %original_register.exit31
+  ret i32 1
+}

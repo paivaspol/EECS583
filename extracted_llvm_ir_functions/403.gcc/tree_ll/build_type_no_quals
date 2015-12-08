@@ -1,0 +1,30 @@
+define %union.tree_node* @build_type_no_quals(%union.tree_node* nocapture %t) #0 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %sw.default [
+    i32 13, label %sw.bb
+    i32 15, label %sw.bb3
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %type = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 1
+  %1 = load %union.tree_node** %type, align 8, !tbaa !0
+  %call = tail call %union.tree_node* @build_type_no_quals(%union.tree_node* %1) #10
+  %call2 = tail call %union.tree_node* @build_pointer_type(%union.tree_node* %call) #10
+  ret %union.tree_node* %call2
+
+sw.bb3:                                           ; preds = %entry
+  %type5 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 1
+  %2 = load %union.tree_node** %type5, align 8, !tbaa !0
+  %call6 = tail call %union.tree_node* @build_type_no_quals(%union.tree_node* %2) #10
+  %call7 = tail call %union.tree_node* @build_reference_type(%union.tree_node* %call6) #10
+  ret %union.tree_node* %call7
+
+sw.default:                                       ; preds = %entry
+  %3 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 15
+  %4 = load %union.tree_node** %3, align 8, !tbaa !0
+  ret %union.tree_node* %4
+}

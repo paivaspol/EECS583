@@ -1,0 +1,45 @@
+define internal void @record_initial(%struct.rtx_def* nocapture %dest, %struct.rtx_def* %set, i8* nocapture %data) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %dest to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 61
+  br i1 %cmp, label %lor.lhs.false, label %if.end17
+
+lor.lhs.false:                                    ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !3
+  %n_regs = getelementptr inbounds i8* %data, i64 8
+  %2 = bitcast i8* %n_regs to i32*
+  %3 = load i32* %2, align 4, !tbaa !3
+  %cmp1 = icmp ult i32 %1, %3
+  br i1 %cmp1, label %lor.lhs.false2, label %if.end17
+
+lor.lhs.false2:                                   ; preds = %lor.lhs.false
+  %idxprom = zext i32 %1 to i64
+  %regs = bitcast i8* %data to %struct.iv**
+  %4 = load %struct.iv** %regs, align 8, !tbaa !4
+  %type = getelementptr inbounds %struct.iv* %4, i64 %idxprom, i32 0
+  %5 = load i32* %type, align 4, !tbaa !10
+  %cmp7 = icmp eq i32 %5, 1
+  br i1 %cmp7, label %if.end, label %if.end17
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %class = getelementptr inbounds %struct.iv* %4, i64 %idxprom, i32 1, i32 0
+  %6 = load %struct.iv_class** %class, align 8, !tbaa !4
+  %init_insn = getelementptr inbounds %struct.iv_class* %6, i64 0, i32 10
+  %7 = load %struct.rtx_def** %init_insn, align 8, !tbaa !4
+  %cmp14 = icmp eq %struct.rtx_def* %7, null
+  br i1 %cmp14, label %if.then15, label %if.end17
+
+if.then15:                                        ; preds = %if.end
+  %8 = load %struct.rtx_def** @note_insn, align 8, !tbaa !4
+  store %struct.rtx_def* %8, %struct.rtx_def** %init_insn, align 8, !tbaa !4
+  %init_set = getelementptr inbounds %struct.iv_class* %6, i64 0, i32 11
+  store %struct.rtx_def* %set, %struct.rtx_def** %init_set, align 8, !tbaa !4
+  br label %if.end17
+
+if.end17:                                         ; preds = %lor.lhs.false2, %lor.lhs.false, %entry, %if.then15, %if.end
+  ret void
+}

@@ -1,0 +1,48 @@
+define float @sub_xcm([3 x float]* nocapture %x, i32 %gnx, i32* %index, %struct.t_atom* %atom, float* nocapture %xcm, i32 %bQ) #0 {
+entry:
+  %call = tail call float @calc_xcm([3 x float]* %x, i32 %gnx, i32* %index, %struct.t_atom* %atom, float* %xcm, i32 %bQ) #6
+  %cmp10 = icmp sgt i32 %gnx, 0
+  br i1 %cmp10, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %tobool = icmp eq i32* %index, null
+  %arrayidx3.i = getelementptr inbounds float* %xcm, i64 1
+  %arrayidx6.i = getelementptr inbounds float* %xcm, i64 2
+  br label %for.body
+
+for.body:                                         ; preds = %cond.end, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %cond.end ]
+  %0 = trunc i64 %indvars.iv to i32
+  br i1 %tobool, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %for.body
+  %arrayidx = getelementptr inbounds i32* %index, i64 %indvars.iv
+  %1 = load i32* %arrayidx, align 4, !tbaa !4
+  br label %cond.end
+
+cond.end:                                         ; preds = %for.body, %cond.true
+  %cond = phi i32 [ %1, %cond.true ], [ %0, %for.body ]
+  %idxprom1 = sext i32 %cond to i64
+  %arraydecay = getelementptr inbounds [3 x float]* %x, i64 %idxprom1, i64 0
+  %2 = load float* %arraydecay, align 4, !tbaa !5
+  %3 = load float* %xcm, align 4, !tbaa !5
+  %sub.i = fsub float %2, %3
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %x, i64 %idxprom1, i64 1
+  %4 = load float* %arrayidx2.i, align 4, !tbaa !5
+  %5 = load float* %arrayidx3.i, align 4, !tbaa !5
+  %sub4.i = fsub float %4, %5
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %x, i64 %idxprom1, i64 2
+  %6 = load float* %arrayidx5.i, align 4, !tbaa !5
+  %7 = load float* %arrayidx6.i, align 4, !tbaa !5
+  %sub7.i = fsub float %6, %7
+  store float %sub.i, float* %arraydecay, align 4, !tbaa !5
+  store float %sub4.i, float* %arrayidx2.i, align 4, !tbaa !5
+  store float %sub7.i, float* %arrayidx5.i, align 4, !tbaa !5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %gnx
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %cond.end, %entry
+  ret float %call
+}

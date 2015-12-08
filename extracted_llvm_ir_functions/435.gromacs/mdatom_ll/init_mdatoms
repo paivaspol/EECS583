@@ -1,0 +1,94 @@
+define void @init_mdatoms(%struct.t_mdatoms* nocapture %md, float %lambda, i32 %bFirst) #0 {
+entry:
+  %conv1 = fsub float 1.000000e+00, %lambda
+  %tobool = icmp eq i32 %bFirst, 0
+  br i1 %tobool, label %lor.lhs.false, label %if.end.thread
+
+if.end.thread:                                    ; preds = %entry
+  store float %lambda, float* @init_mdatoms.lambda0, align 4, !tbaa !4
+  br label %for.cond.preheader
+
+lor.lhs.false:                                    ; preds = %entry
+  %0 = load float* @init_mdatoms.lambda0, align 4, !tbaa !4
+  %sub3 = fsub float %0, %lambda
+  %fabsf = tail call float @fabsf(float %sub3) #2
+  %1 = fpext float %fabsf to double
+  %cmp = fcmp ogt double %1, 1.200000e-38
+  br i1 %cmp, label %for.cond.preheader, label %if.end45
+
+for.cond.preheader:                               ; preds = %lor.lhs.false, %if.end.thread
+  %.ph.in = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 1
+  %.ph = load i32* %.ph.in, align 4
+  %cmp776 = icmp sgt i32 %.ph, 0
+  br i1 %cmp776, label %for.body.lr.ph, label %if.end45
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %bPerturbed = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 9
+  %2 = load i32** %bPerturbed, align 8, !tbaa !3
+  %massA = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 2
+  %massB = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 3
+  %massT = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 4
+  %invmass = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 5
+  %chargeA = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 6
+  %chargeB = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 7
+  %chargeT = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 8
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds i32* %2, i64 %indvars.iv
+  %3 = load i32* %arrayidx, align 4, !tbaa !0
+  %4 = or i32 %3, %bFirst
+  %5 = icmp eq i32 %4, 0
+  br i1 %5, label %for.inc, label %if.then12
+
+if.then12:                                        ; preds = %for.body
+  %6 = load float** %massA, align 8, !tbaa !3
+  %arrayidx14 = getelementptr inbounds float* %6, i64 %indvars.iv
+  %7 = load float* %arrayidx14, align 4, !tbaa !4
+  %mul = fmul float %conv1, %7
+  %8 = load float** %massB, align 8, !tbaa !3
+  %arrayidx16 = getelementptr inbounds float* %8, i64 %indvars.iv
+  %9 = load float* %arrayidx16, align 4, !tbaa !4
+  %mul17 = fmul float %9, %lambda
+  %add = fadd float %mul, %mul17
+  %10 = load float** %massT, align 8, !tbaa !3
+  %arrayidx19 = getelementptr inbounds float* %10, i64 %indvars.iv
+  store float %add, float* %arrayidx19, align 4, !tbaa !4
+  %11 = load float** %invmass, align 8, !tbaa !3
+  %arrayidx21 = getelementptr inbounds float* %11, i64 %indvars.iv
+  %12 = load float* %arrayidx21, align 4, !tbaa !4
+  %conv22 = fpext float %12 to double
+  %cmp23 = fcmp ogt double %conv22, 0x39B64F86CB9CEFB1
+  br i1 %cmp23, label %if.then25, label %if.end34
+
+if.then25:                                        ; preds = %if.then12
+  %conv30 = fdiv float 1.000000e+00, %add
+  store float %conv30, float* %arrayidx21, align 4, !tbaa !4
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.then12, %if.then25
+  %13 = load float** %chargeA, align 8, !tbaa !3
+  %arrayidx36 = getelementptr inbounds float* %13, i64 %indvars.iv
+  %14 = load float* %arrayidx36, align 4, !tbaa !4
+  %mul37 = fmul float %conv1, %14
+  %15 = load float** %chargeB, align 8, !tbaa !3
+  %arrayidx39 = getelementptr inbounds float* %15, i64 %indvars.iv
+  %16 = load float* %arrayidx39, align 4, !tbaa !4
+  %mul40 = fmul float %16, %lambda
+  %add41 = fadd float %mul37, %mul40
+  %17 = load float** %chargeT, align 8, !tbaa !3
+  %arrayidx43 = getelementptr inbounds float* %17, i64 %indvars.iv
+  store float %add41, float* %arrayidx43, align 4, !tbaa !4
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.end34
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %.ph
+  br i1 %exitcond, label %if.end45, label %for.body
+
+if.end45:                                         ; preds = %for.cond.preheader, %for.inc, %lor.lhs.false
+  store float %lambda, float* @init_mdatoms.lambda0, align 4, !tbaa !4
+  ret void
+}

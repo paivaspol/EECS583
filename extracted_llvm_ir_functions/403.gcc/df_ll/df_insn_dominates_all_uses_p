@@ -1,0 +1,60 @@
+define i32 @df_insn_dominates_all_uses_p(%struct.df* nocapture %df, %struct.basic_block_def* nocapture %bb, %struct.rtx_def* nocapture %insn) #4 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !4
+  %idxprom = zext i32 %0 to i64
+  %insns = getelementptr inbounds %struct.df* %df, i64 0, i32 7
+  %1 = load %struct.insn_info** %insns, align 8, !tbaa !3
+  %defs = getelementptr inbounds %struct.insn_info* %1, i64 %idxprom, i32 0
+  %link.010 = load %struct.df_link** %defs, align 8
+  %tobool11 = icmp eq %struct.df_link* %link.010, null
+  br i1 %tobool11, label %return, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %link.012 = phi %struct.df_link* [ %link.0, %for.inc ], [ %link.010, %entry ]
+  %ref = getelementptr inbounds %struct.df_link* %link.012, i64 0, i32 1
+  %2 = load %struct.ref** %ref, align 8, !tbaa !3
+  %chain.i = getelementptr inbounds %struct.ref* %2, i64 0, i32 3
+  %du_link.05.i = load %struct.df_link** %chain.i, align 8
+  %tobool6.i = icmp eq %struct.df_link* %du_link.05.i, null
+  br i1 %tobool6.i, label %for.inc, label %for.body.i
+
+for.body.i:                                       ; preds = %for.body, %for.inc6.i
+  %du_link.07.i = phi %struct.df_link* [ %du_link.0.i, %for.inc6.i ], [ %du_link.05.i, %for.body ]
+  %ref.i = getelementptr inbounds %struct.df_link* %du_link.07.i, i64 0, i32 1
+  %3 = load %struct.ref** %ref.i, align 8, !tbaa !3
+  %chain1.i = getelementptr inbounds %struct.ref* %3, i64 0, i32 3
+  %ud_link.01.i = load %struct.df_link** %chain1.i, align 8
+  %tobool32.i = icmp eq %struct.df_link* %ud_link.01.i, null
+  br i1 %tobool32.i, label %for.inc6.i, label %for.body4.i
+
+for.cond2.i:                                      ; preds = %for.body4.i
+  %next.i = getelementptr inbounds %struct.df_link* %ud_link.03.i, i64 0, i32 0
+  %ud_link.0.i = load %struct.df_link** %next.i, align 8
+  %tobool3.i = icmp eq %struct.df_link* %ud_link.0.i, null
+  br i1 %tobool3.i, label %for.inc6.i, label %for.body4.i
+
+for.body4.i:                                      ; preds = %for.body.i, %for.cond2.i
+  %ud_link.03.i = phi %struct.df_link* [ %ud_link.0.i, %for.cond2.i ], [ %ud_link.01.i, %for.body.i ]
+  %ref5.i = getelementptr inbounds %struct.df_link* %ud_link.03.i, i64 0, i32 1
+  %4 = load %struct.ref** %ref5.i, align 8, !tbaa !3
+  %cmp.i = icmp eq %struct.ref* %4, %2
+  br i1 %cmp.i, label %for.cond2.i, label %return
+
+for.inc6.i:                                       ; preds = %for.cond2.i, %for.body.i
+  %next7.i = getelementptr inbounds %struct.df_link* %du_link.07.i, i64 0, i32 0
+  %du_link.0.i = load %struct.df_link** %next7.i, align 8
+  %tobool.i = icmp eq %struct.df_link* %du_link.0.i, null
+  br i1 %tobool.i, label %for.inc, label %for.body.i
+
+for.inc:                                          ; preds = %for.inc6.i, %for.body
+  %next = getelementptr inbounds %struct.df_link* %link.012, i64 0, i32 0
+  %link.0 = load %struct.df_link** %next, align 8
+  %tobool = icmp eq %struct.df_link* %link.0, null
+  br i1 %tobool, label %return, label %for.body
+
+return:                                           ; preds = %entry, %for.inc, %for.body4.i
+  %retval.0 = phi i32 [ 0, %for.body4.i ], [ 1, %for.inc ], [ 1, %entry ]
+  ret i32 %retval.0
+}

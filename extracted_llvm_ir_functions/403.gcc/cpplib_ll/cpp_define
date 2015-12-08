@@ -1,0 +1,34 @@
+define void @cpp_define(%struct.cpp_reader* %pfile, i8* %str) #0 {
+entry:
+  %call = call i64 @strlen(i8* %str) #11
+  %add = add i64 %call, 3
+  %0 = alloca i8, i64 %add, align 1
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %str, i64 %call, i32 1, i1 false)
+  %call1 = call i8* @strchr(i8* %str, i32 61) #11
+  %tobool = icmp eq i8* %call1, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sub.ptr.lhs.cast = ptrtoint i8* %call1 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %str to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %arrayidx = getelementptr inbounds i8* %0, i64 %sub.ptr.sub
+  store i8 32, i8* %arrayidx, align 1, !tbaa !0
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %inc = add i64 %call, 1
+  %arrayidx2 = getelementptr inbounds i8* %0, i64 %call
+  store i8 32, i8* %arrayidx2, align 1, !tbaa !0
+  %inc3 = add i64 %call, 2
+  %arrayidx4 = getelementptr inbounds i8* %0, i64 %inc
+  store i8 49, i8* %arrayidx4, align 1, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %count.0 = phi i64 [ %call, %if.then ], [ %inc3, %if.else ]
+  %arrayidx5 = getelementptr inbounds i8* %0, i64 %count.0
+  store i8 0, i8* %arrayidx5, align 1, !tbaa !0
+  call fastcc void @run_directive(%struct.cpp_reader* %pfile, i32 0, i8* %0, i64 %count.0) #9
+  ret void
+}

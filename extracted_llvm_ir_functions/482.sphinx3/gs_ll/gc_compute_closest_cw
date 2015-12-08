@@ -1,0 +1,78 @@
+define i32 @gc_compute_closest_cw(%struct.gs_s* nocapture %gs, float* nocapture %feat) #0 {
+entry:
+  %call = tail call double @logs3_to_log(i32 -939524096) #5
+  %n_code = getelementptr inbounds %struct.gs_s* %gs, i64 0, i32 2
+  %0 = load i32* %n_code, align 4, !tbaa !3
+  %cmp58 = icmp sgt i32 %0, 0
+  br i1 %cmp58, label %for.cond1.preheader.lr.ph, label %for.end29
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %n_featlen = getelementptr inbounds %struct.gs_s* %gs, i64 0, i32 4
+  %1 = load i32* %n_featlen, align 4, !tbaa !3
+  %cmp253 = icmp sgt i32 %1, 0
+  %codeword = getelementptr inbounds %struct.gs_s* %gs, i64 0, i32 6
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.cond1.preheader.lr.ph, %for.end
+  %indvars.iv63 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next64, %for.end ]
+  %min.060 = phi double [ 1.800000e+307, %for.cond1.preheader.lr.ph ], [ %min.2, %for.end ]
+  %bst_codeid.059 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %bst_codeid.2, %for.end ]
+  br i1 %cmp253, label %for.body3.lr.ph, label %for.cond1.preheader.for.end_crit_edge
+
+for.cond1.preheader.for.end_crit_edge:            ; preds = %for.cond1.preheader
+  %.pre = or i64 %indvars.iv63, 1
+  br label %for.end
+
+for.body3.lr.ph:                                  ; preds = %for.cond1.preheader
+  %2 = load float*** %codeword, align 8, !tbaa !0
+  %arrayidx6 = getelementptr inbounds float** %2, i64 %indvars.iv63
+  %3 = load float** %arrayidx6, align 8, !tbaa !0
+  %4 = or i64 %indvars.iv63, 1
+  %arrayidx14 = getelementptr inbounds float** %2, i64 %4
+  %5 = load float** %arrayidx14, align 8, !tbaa !0
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3.lr.ph, %for.body3
+  %indvars.iv = phi i64 [ 0, %for.body3.lr.ph ], [ %indvars.iv.next, %for.body3 ]
+  %tmp2.055 = phi double [ 0.000000e+00, %for.body3.lr.ph ], [ %add19, %for.body3 ]
+  %tmp1.054 = phi double [ 0.000000e+00, %for.body3.lr.ph ], [ %add, %for.body3 ]
+  %arrayidx = getelementptr inbounds float* %feat, i64 %indvars.iv
+  %6 = load float* %arrayidx, align 4, !tbaa !4
+  %arrayidx7 = getelementptr inbounds float* %3, i64 %indvars.iv
+  %7 = load float* %arrayidx7, align 4, !tbaa !4
+  %sub = fsub float %6, %7
+  %conv = fpext float %sub to double
+  %mul = fmul double %conv, %conv
+  %add = fadd double %tmp1.054, %mul
+  %arrayidx15 = getelementptr inbounds float* %5, i64 %indvars.iv
+  %8 = load float* %arrayidx15, align 4, !tbaa !4
+  %sub16 = fsub float %6, %8
+  %conv17 = fpext float %sub16 to double
+  %mul18 = fmul double %conv17, %conv17
+  %add19 = fadd double %tmp2.055, %mul18
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %9 = trunc i64 %indvars.iv.next to i32
+  %cmp2 = icmp slt i32 %9, %1
+  br i1 %cmp2, label %for.body3, label %for.end
+
+for.end:                                          ; preds = %for.body3, %for.cond1.preheader.for.end_crit_edge
+  %.pre-phi = phi i64 [ %.pre, %for.cond1.preheader.for.end_crit_edge ], [ %4, %for.body3 ]
+  %tmp2.0.lcssa = phi double [ 0.000000e+00, %for.cond1.preheader.for.end_crit_edge ], [ %add19, %for.body3 ]
+  %tmp1.0.lcssa = phi double [ 0.000000e+00, %for.cond1.preheader.for.end_crit_edge ], [ %add, %for.body3 ]
+  %cmp20 = fcmp olt double %tmp1.0.lcssa, %min.060
+  %10 = trunc i64 %indvars.iv63 to i32
+  %bst_codeid.1 = select i1 %cmp20, i32 %10, i32 %bst_codeid.059
+  %min.1 = select i1 %cmp20, double %tmp1.0.lcssa, double %min.060
+  %cmp22 = fcmp olt double %tmp2.0.lcssa, %min.1
+  %11 = trunc i64 %.pre-phi to i32
+  %bst_codeid.2 = select i1 %cmp22, i32 %11, i32 %bst_codeid.1
+  %min.2 = select i1 %cmp22, double %tmp2.0.lcssa, double %min.1
+  %indvars.iv.next64 = add i64 %indvars.iv63, 2
+  %12 = trunc i64 %indvars.iv.next64 to i32
+  %cmp = icmp slt i32 %12, %0
+  br i1 %cmp, label %for.cond1.preheader, label %for.end29
+
+for.end29:                                        ; preds = %for.end, %entry
+  %bst_codeid.0.lcssa = phi i32 [ 0, %entry ], [ %bst_codeid.2, %for.end ]
+  ret i32 %bst_codeid.0.lcssa
+}

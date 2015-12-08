@@ -1,0 +1,30 @@
+define void @strip_off_ending(i8* nocapture %name, i32 %len) #0 {
+entry:
+  %cmp114 = icmp sgt i32 %len, 2
+  br i1 %cmp114, label %for.body, label %for.end
+
+for.cond:                                         ; preds = %for.body
+  %0 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %0, 6
+  %cmp1 = icmp slt i32 %0, %len
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 2, %entry ]
+  %1 = trunc i64 %indvars.iv to i32
+  %sub = sub nsw i32 %len, %1
+  %idxprom = sext i32 %sub to i64
+  %arrayidx = getelementptr inbounds i8* %name, i64 %idxprom
+  %2 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp2 = icmp eq i8 %2, 46
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp2, label %if.then, label %for.cond
+
+if.then:                                          ; preds = %for.body
+  store i8 0, i8* %arrayidx, align 1, !tbaa !1
+  br label %for.end
+
+for.end:                                          ; preds = %entry, %for.cond, %if.then
+  ret void
+}

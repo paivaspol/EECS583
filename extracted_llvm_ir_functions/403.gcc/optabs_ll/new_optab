@@ -1,0 +1,22 @@
+define internal fastcc noalias %struct.optab* @new_optab() #0 {
+entry:
+  %call = tail call noalias i8* @xmalloc(i64 952) #8
+  %handlers = getelementptr inbounds i8* %call, i64 8
+  %0 = bitcast i8* %handlers to [59 x %struct.anon.3]*
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %insn_code = getelementptr inbounds [59 x %struct.anon.3]* %0, i64 0, i64 %indvars.iv, i32 0
+  store i32 1317, i32* %insn_code, align 4, !tbaa !6
+  %libfunc = getelementptr inbounds [59 x %struct.anon.3]* %0, i64 0, i64 %indvars.iv, i32 1
+  store %struct.rtx_def* null, %struct.rtx_def** %libfunc, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 59
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %1 = bitcast i8* %call to %struct.optab*
+  ret %struct.optab* %1
+}

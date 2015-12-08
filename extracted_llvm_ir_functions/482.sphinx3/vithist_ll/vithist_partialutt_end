@@ -1,0 +1,74 @@
+define i32 @vithist_partialutt_end(%struct.vithist_t* nocapture %vh, %struct.kbcore_t* nocapture %kbc) #0 {
+entry:
+  %n_frm = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 3
+  %0 = load i32* %n_frm, align 4, !tbaa !3
+  %frame_start = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 1
+  %1 = sext i32 %0 to i64
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ %1, %entry ]
+  %f.0.in = phi i32 [ %f.0, %for.body ], [ %0, %entry ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %2 = trunc i64 %indvars.iv to i32
+  %cmp = icmp sgt i32 %2, 0
+  br i1 %cmp, label %for.body, label %return
+
+for.body:                                         ; preds = %for.cond
+  %f.0 = add nsw i32 %f.0.in, -1
+  %3 = load i32** %frame_start, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %3, i64 %indvars.iv.next
+  %4 = load i32* %arrayidx, align 4, !tbaa !3
+  %arrayidx3 = getelementptr inbounds i32* %3, i64 %indvars.iv
+  %5 = load i32* %arrayidx3, align 4, !tbaa !3
+  %cmp4 = icmp slt i32 %4, %5
+  br i1 %cmp4, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.body
+  %cmp5 = icmp sgt i32 %f.0.in, 0
+  %cmp10 = icmp eq i32 %f.0.in, %0
+  %or.cond = and i1 %cmp5, %cmp10
+  br i1 %or.cond, label %for.body17.lr.ph, label %return
+
+for.body17.lr.ph:                                 ; preds = %for.end
+  %lm13 = getelementptr inbounds %struct.kbcore_t* %kbc, i64 0, i32 4
+  %6 = load %struct.lm_s** %lm13, align 8, !tbaa !0
+  %finishlwid = getelementptr inbounds %struct.lm_s* %6, i64 0, i32 6
+  %7 = load i16* %finishlwid, align 2, !tbaa !4
+  %dict14 = getelementptr inbounds %struct.kbcore_t* %kbc, i64 0, i32 2
+  %8 = load %struct.dict_t** %dict14, align 8, !tbaa !0
+  %entry19 = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 0
+  %finishwid = getelementptr inbounds %struct.dict_t* %8, i64 0, i32 12
+  br label %for.body17
+
+for.body17:                                       ; preds = %for.body17, %for.body17.lr.ph
+  %i.059 = phi i32 [ %4, %for.body17.lr.ph ], [ %inc, %for.body17 ]
+  %bestvh.058 = phi i32 [ -1, %for.body17.lr.ph ], [ %i.0.bestvh.0, %for.body17 ]
+  %bestscore.057 = phi i32 [ -2147483648, %for.body17.lr.ph ], [ %add26.bestscore.0, %for.body17 ]
+  %shr = ashr i32 %i.059, 14
+  %and = and i32 %i.059, 16383
+  %idxprom18 = sext i32 %shr to i64
+  %9 = load %struct.vithist_entry_t*** %entry19, align 8, !tbaa !0
+  %arrayidx20 = getelementptr inbounds %struct.vithist_entry_t** %9, i64 %idxprom18
+  %10 = load %struct.vithist_entry_t** %arrayidx20, align 8, !tbaa !0
+  %idx.ext54 = zext i32 %and to i64
+  %score = getelementptr inbounds %struct.vithist_entry_t* %10, i64 %idx.ext54, i32 5
+  %11 = load i32* %score, align 4, !tbaa !3
+  %arrayidx21 = getelementptr inbounds %struct.vithist_entry_t* %10, i64 %idx.ext54, i32 9, i32 0, i32 0, i64 1
+  %12 = load i16* %arrayidx21, align 2, !tbaa !4
+  %arrayidx25 = getelementptr inbounds %struct.vithist_entry_t* %10, i64 %idx.ext54, i32 9, i32 0, i32 0, i64 0
+  %13 = load i16* %arrayidx25, align 2, !tbaa !4
+  %14 = load i32* %finishwid, align 4, !tbaa !3
+  %call = tail call i32 @lm_tg_score(%struct.lm_s* %6, i16 zeroext %12, i16 zeroext %13, i16 zeroext %7, i32 %14) #6
+  %add26 = add nsw i32 %call, %11
+  %cmp27 = icmp slt i32 %bestscore.057, %add26
+  %add26.bestscore.0 = select i1 %cmp27, i32 %add26, i32 %bestscore.057
+  %i.0.bestvh.0 = select i1 %cmp27, i32 %i.059, i32 %bestvh.058
+  %inc = add nsw i32 %i.059, 1
+  %exitcond = icmp eq i32 %inc, %5
+  br i1 %exitcond, label %return, label %for.body17
+
+return:                                           ; preds = %for.end, %for.cond, %for.body17
+  %retval.0 = phi i32 [ -1, %for.end ], [ %i.0.bestvh.0, %for.body17 ], [ -1, %for.cond ]
+  ret i32 %retval.0
+}

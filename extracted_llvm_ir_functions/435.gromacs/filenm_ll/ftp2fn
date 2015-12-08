@@ -1,0 +1,35 @@
+define i8* @ftp2fn(i32 %ftp, i32 %nfile, %struct.t_filenm* nocapture %fnm) #0 {
+entry:
+  %cmp11 = icmp sgt i32 %nfile, 0
+  br i1 %cmp11, label %for.body, label %for.end
+
+for.cond:                                         ; preds = %for.body
+  %0 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %0, %nfile
+  br i1 %cmp, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
+  %ftp1 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv, i32 0
+  %1 = load i32* %ftp1, align 4, !tbaa !3
+  %cmp2 = icmp eq i32 %1, %ftp
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp2, label %if.then, label %for.cond
+
+if.then:                                          ; preds = %for.body
+  %fn = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv, i32 2
+  %2 = load i8** %fn, align 8, !tbaa !0
+  br label %return
+
+for.end:                                          ; preds = %for.cond, %entry
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %idxprom5 = sext i32 %ftp to i64
+  %ext = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %idxprom5, i32 1
+  %4 = load i8** %ext, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([24 x i8]* @.str46, i64 0, i64 0), i8* %4) #6
+  br label %return
+
+return:                                           ; preds = %for.end, %if.then
+  %retval.0 = phi i8* [ %2, %if.then ], [ null, %for.end ]
+  ret i8* %retval.0
+}

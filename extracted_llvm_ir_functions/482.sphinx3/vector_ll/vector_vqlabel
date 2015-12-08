@@ -1,0 +1,75 @@
+define i32 @vector_vqlabel(float* nocapture %vec, float** nocapture %mean, i32 %rows, i32 %cols, double* %sqerr) #0 {
+entry:
+  %0 = load float** %mean, align 8, !tbaa !4
+  %cmp16.i = icmp sgt i32 %cols, 0
+  br i1 %cmp16.i, label %for.body.i, label %for.cond.preheader
+
+for.body.i:                                       ; preds = %entry, %for.body.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %entry ]
+  %d.017.i = phi double [ %add.i, %for.body.i ], [ 0.000000e+00, %entry ]
+  %arrayidx.i = getelementptr inbounds float* %0, i64 %indvars.iv.i
+  %1 = load float* %arrayidx.i, align 4, !tbaa !0
+  %arrayidx2.i = getelementptr inbounds float* %vec, i64 %indvars.iv.i
+  %2 = load float* %arrayidx2.i, align 4, !tbaa !0
+  %sub.i = fsub float %1, %2
+  %mul.i = fmul float %sub.i, %sub.i
+  %conv.i = fpext float %mul.i to double
+  %add.i = fadd double %d.017.i, %conv.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv37 = trunc i64 %indvars.iv.next.i to i32
+  %exitcond38 = icmp eq i32 %lftr.wideiv37, %cols
+  br i1 %exitcond38, label %for.cond.preheader, label %for.body.i
+
+for.cond.preheader:                               ; preds = %for.body.i, %entry
+  %bestd.0.ph = phi double [ 0.000000e+00, %entry ], [ %add.i, %for.body.i ]
+  %cmp30 = icmp sgt i32 %rows, 1
+  br i1 %cmp30, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %vector_dist_eucl.exit29
+  %indvars.iv = phi i64 [ %indvars.iv.next, %vector_dist_eucl.exit29 ], [ 1, %for.cond.preheader ]
+  %bestd.033 = phi double [ %bestd.1, %vector_dist_eucl.exit29 ], [ %bestd.0.ph, %for.cond.preheader ]
+  %besti.031 = phi i32 [ %besti.1, %vector_dist_eucl.exit29 ], [ 0, %for.cond.preheader ]
+  %arrayidx1 = getelementptr inbounds float** %mean, i64 %indvars.iv
+  %3 = load float** %arrayidx1, align 8, !tbaa !4
+  br i1 %cmp16.i, label %for.body.i27, label %vector_dist_eucl.exit29
+
+for.body.i27:                                     ; preds = %for.body, %for.body.i27
+  %indvars.iv.i16 = phi i64 [ %indvars.iv.next.i24, %for.body.i27 ], [ 0, %for.body ]
+  %d.017.i17 = phi double [ %add.i23, %for.body.i27 ], [ 0.000000e+00, %for.body ]
+  %arrayidx.i18 = getelementptr inbounds float* %3, i64 %indvars.iv.i16
+  %4 = load float* %arrayidx.i18, align 4, !tbaa !0
+  %arrayidx2.i19 = getelementptr inbounds float* %vec, i64 %indvars.iv.i16
+  %5 = load float* %arrayidx2.i19, align 4, !tbaa !0
+  %sub.i20 = fsub float %4, %5
+  %mul.i21 = fmul float %sub.i20, %sub.i20
+  %conv.i22 = fpext float %mul.i21 to double
+  %add.i23 = fadd double %d.017.i17, %conv.i22
+  %indvars.iv.next.i24 = add i64 %indvars.iv.i16, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i24 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %cols
+  br i1 %exitcond, label %vector_dist_eucl.exit29, label %for.body.i27
+
+vector_dist_eucl.exit29:                          ; preds = %for.body.i27, %for.body
+  %d.0.lcssa.i28 = phi double [ 0.000000e+00, %for.body ], [ %add.i23, %for.body.i27 ]
+  %cmp3 = fcmp ogt double %bestd.033, %d.0.lcssa.i28
+  %6 = trunc i64 %indvars.iv to i32
+  %besti.1 = select i1 %cmp3, i32 %6, i32 %besti.031
+  %bestd.1 = select i1 %cmp3, double %d.0.lcssa.i28, double %bestd.033
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv35 = trunc i64 %indvars.iv.next to i32
+  %exitcond36 = icmp eq i32 %lftr.wideiv35, %rows
+  br i1 %exitcond36, label %for.end, label %for.body
+
+for.end:                                          ; preds = %vector_dist_eucl.exit29, %for.cond.preheader
+  %bestd.0.lcssa = phi double [ %bestd.0.ph, %for.cond.preheader ], [ %bestd.1, %vector_dist_eucl.exit29 ]
+  %besti.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %besti.1, %vector_dist_eucl.exit29 ]
+  %tobool = icmp eq double* %sqerr, null
+  br i1 %tobool, label %if.end5, label %if.then4
+
+if.then4:                                         ; preds = %for.end
+  store double %bestd.0.lcssa, double* %sqerr, align 8, !tbaa !5
+  br label %if.end5
+
+if.end5:                                          ; preds = %for.end, %if.then4
+  ret i32 %besti.0.lcssa
+}

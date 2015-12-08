@@ -1,0 +1,42 @@
+define double @vector_sum_norm(float* nocapture %vec, i32 %len) #0 {
+entry:
+  %cmp30 = icmp sgt i32 %len, 0
+  br i1 %cmp30, label %for.body, label %if.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv33 = phi i64 [ %indvars.iv.next34, %for.body ], [ 0, %entry ]
+  %sum.031 = phi double [ %add, %for.body ], [ 0.000000e+00, %entry ]
+  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv33
+  %0 = load float* %arrayidx, align 4, !tbaa !0
+  %conv = fpext float %0 to double
+  %add = fadd double %sum.031, %conv
+  %indvars.iv.next34 = add i64 %indvars.iv33, 1
+  %lftr.wideiv35 = trunc i64 %indvars.iv.next34 to i32
+  %exitcond36 = icmp eq i32 %lftr.wideiv35, %len
+  br i1 %exitcond36, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %cmp1 = fcmp une double %add, 0.000000e+00
+  br i1 %cmp1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %for.end
+  %div = fdiv double 1.000000e+00, %add
+  br i1 %cmp30, label %for.body6, label %if.end
+
+for.body6:                                        ; preds = %if.then, %for.body6
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body6 ], [ 0, %if.then ]
+  %arrayidx8 = getelementptr inbounds float* %vec, i64 %indvars.iv
+  %1 = load float* %arrayidx8, align 4, !tbaa !0
+  %conv9 = fpext float %1 to double
+  %mul = fmul double %div, %conv9
+  %conv10 = fptrunc double %mul to float
+  store float %conv10, float* %arrayidx8, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %len
+  br i1 %exitcond, label %if.end, label %for.body6
+
+if.end:                                           ; preds = %entry, %if.then, %for.body6, %for.end
+  %sum.0.lcssa38 = phi double [ %add, %for.end ], [ %add, %for.body6 ], [ %add, %if.then ], [ 0.000000e+00, %entry ]
+  ret double %sum.0.lcssa38
+}

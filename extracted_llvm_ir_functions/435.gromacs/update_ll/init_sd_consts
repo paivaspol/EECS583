@@ -1,0 +1,147 @@
+define void @init_sd_consts(i32 %ngtc, float* nocapture %tau_t, float %dt) #0 {
+entry:
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 258, i32 %ngtc, i32 28) #4
+  %0 = bitcast i8* %call to %struct.t_sdconst*
+  store %struct.t_sdconst* %0, %struct.t_sdconst** @sdc, align 8, !tbaa !0
+  %cmp199 = icmp sgt i32 %ngtc, 0
+  br i1 %cmp199, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.inc.for.body_crit_edge
+  %1 = phi %struct.t_sdconst* [ %.pre, %for.inc.for.body_crit_edge ], [ %0, %entry ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc.for.body_crit_edge ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %tau_t, i64 %indvars.iv
+  %2 = load float* %arrayidx, align 4, !tbaa !3
+  %div = fdiv float %dt, %2
+  %gdt = getelementptr inbounds %struct.t_sdconst* %1, i64 %indvars.iv, i32 0
+  store float %div, float* %gdt, align 4, !tbaa !3
+  %div6 = fmul float %div, 5.000000e-01
+  %conv = fpext float %div6 to double
+  %call7 = tail call double @exp(double %conv) #4
+  %conv8 = fptrunc double %call7 to float
+  %3 = load %struct.t_sdconst** @sdc, align 8, !tbaa !0
+  %eph = getelementptr inbounds %struct.t_sdconst* %3, i64 %indvars.iv, i32 1
+  store float %conv8, float* %eph, align 4, !tbaa !3
+  %gdt13 = getelementptr inbounds %struct.t_sdconst* %3, i64 %indvars.iv, i32 0
+  %4 = load float* %gdt13, align 4, !tbaa !3
+  %div14 = fmul float %4, -5.000000e-01
+  %conv15 = fpext float %div14 to double
+  %call16 = tail call double @exp(double %conv15) #4
+  %conv17 = fptrunc double %call16 to float
+  %5 = load %struct.t_sdconst** @sdc, align 8, !tbaa !0
+  %emh = getelementptr inbounds %struct.t_sdconst* %5, i64 %indvars.iv, i32 2
+  store float %conv17, float* %emh, align 4, !tbaa !3
+  %gdt22 = getelementptr inbounds %struct.t_sdconst* %5, i64 %indvars.iv, i32 0
+  %6 = load float* %gdt22, align 4, !tbaa !3
+  %sub23 = fsub float -0.000000e+00, %6
+  %conv24 = fpext float %sub23 to double
+  %call25 = tail call double @exp(double %conv24) #4
+  %conv26 = fptrunc double %call25 to float
+  %7 = load %struct.t_sdconst** @sdc, align 8, !tbaa !0
+  %em = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 3
+  store float %conv26, float* %em, align 4, !tbaa !3
+  %gdt31 = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 0
+  %8 = load float* %gdt31, align 4, !tbaa !3
+  %conv32 = fpext float %8 to double
+  %cmp33 = fcmp ult double %conv32, 1.000000e-01
+  br i1 %cmp33, label %if.else, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %eph40 = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 1
+  %9 = load float* %eph40, align 4, !tbaa !3
+  %mul.i = fmul float %9, %9
+  %sub42 = fadd float %mul.i, -1.000000e+00
+  %mul = fmul float %8, %sub42
+  %sub46 = fadd float %9, -1.000000e+00
+  %mul.i198 = fmul float %sub46, %sub46
+  %mul48 = fmul float %mul.i198, 4.000000e+00
+  %sub49 = fsub float %mul, %mul48
+  %b = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 4
+  store float %sub49, float* %b, align 4, !tbaa !3
+  %sub55 = fadd float %8, -3.000000e+00
+  %emh58 = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 2
+  %10 = load float* %emh58, align 4, !tbaa !3
+  %mul59 = fmul float %10, 4.000000e+00
+  %add = fadd float %sub55, %mul59
+  %sub63 = fsub float %add, %conv26
+  %c = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 5
+  store float %sub63, float* %c, align 4, !tbaa !3
+  %sub69 = fsub float 2.000000e+00, %9
+  %sub73 = fsub float %sub69, %10
+  %d = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 6
+  store float %sub73, float* %d, align 4, !tbaa !3
+  br label %if.end
+
+if.else:                                          ; preds = %for.body
+  %div79 = fmul float %8, 5.000000e-01
+  %mul80 = fmul float %div79, %div79
+  %mul81 = fmul float %div79, %mul80
+  %mul82 = fmul float %div79, %mul81
+  %conv83 = fpext float %mul82 to double
+  %conv84 = fpext float %div79 to double
+  %mul86 = fmul float %div79, 7.000000e+00
+  %conv87 = fpext float %mul86 to double
+  %div88 = fdiv double %conv87, 9.000000e+00
+  %add89 = fadd double %div88, 0x3FC82D82D82D82D8
+  %mul90 = fmul double %conv84, %add89
+  %add91 = fadd double %mul90, 0x3FD5555555555555
+  %mul92 = fmul double %conv84, %add91
+  %add93 = fadd double %mul92, 0x3FD5555555555555
+  %mul94 = fmul double %conv83, %add93
+  %conv95 = fptrunc double %mul94 to float
+  %b98 = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 4
+  store float %conv95, float* %b98, align 4, !tbaa !3
+  %conv101 = fpext float %mul81 to double
+  %mul105 = fmul float %div79, 3.100000e+01
+  %conv106 = fpext float %mul105 to double
+  %div107 = fdiv double %conv106, 1.260000e+03
+  %add108 = fadd double %div107, 0xBFB5555555555555
+  %mul109 = fmul double %conv84, %add108
+  %add110 = fadd double %mul109, 0x3FCDDDDDDDDDDDDE
+  %mul111 = fmul double %conv84, %add110
+  %add112 = fadd double %mul111, -5.000000e-01
+  %mul113 = fmul double %conv84, %add112
+  %add114 = fadd double %mul113, 0x3FE5555555555555
+  %mul115 = fmul double %conv101, %add114
+  %conv116 = fptrunc double %mul115 to float
+  %c119 = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 5
+  store float %conv116, float* %c119, align 4, !tbaa !3
+  %conv121 = fpext float %mul80 to double
+  %div126 = fdiv double %conv121, 3.600000e+02
+  %sub127 = fsub double 0xBFB5555555555555, %div126
+  %mul128 = fmul double %conv121, %sub127
+  %add129 = fadd double %mul128, -1.000000e+00
+  %mul130 = fmul double %conv121, %add129
+  %conv131 = fptrunc double %mul130 to float
+  %d134 = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 6
+  store float %conv131, float* %d134, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %11 = phi float [ %conv116, %if.else ], [ %sub63, %if.then ]
+  %12 = phi float [ %conv95, %if.else ], [ %sub49, %if.then ]
+  %13 = phi float [ %conv131, %if.else ], [ %sub73, %if.then ]
+  %14 = load %struct._IO_FILE** @debug, align 8, !tbaa !0
+  %tobool = icmp eq %struct._IO_FILE* %14, null
+  br i1 %tobool, label %for.inc, label %if.then135
+
+if.then135:                                       ; preds = %if.end
+  %conv139 = fpext float %12 to double
+  %conv143 = fpext float %11 to double
+  %conv147 = fpext float %13 to double
+  %15 = trunc i64 %indvars.iv to i32
+  %call148 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %14, i8* getelementptr inbounds ([38 x i8]* @.str2, i64 0, i64 0), i32 %15, double %conv139, double %conv143, double %conv147) #4
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.end, %if.then135
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %ngtc
+  br i1 %exitcond, label %for.end, label %for.inc.for.body_crit_edge
+
+for.inc.for.body_crit_edge:                       ; preds = %for.inc
+  %.pre = load %struct.t_sdconst** @sdc, align 8, !tbaa !0
+  br label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

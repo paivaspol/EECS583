@@ -1,0 +1,85 @@
+define void @gaugefix(i32 %gauge_dir, double %relax_boost, i32 %max_gauge_iter, double %gauge_fix_tol, i32 %diffmat, i32 %sumvec, i32 %nvector, i32* nocapture %vector_offset, i32* nocapture %vector_parity, i32 %nantiherm, i32* nocapture %antiherm_offset, i32* nocapture %antiherm_parity) #0 {
+entry:
+  %current_av = alloca double, align 8
+  call void @gaugefixscratch(i32 %diffmat, i32 %sumvec) #6
+  %cmp31 = icmp sgt i32 %max_gauge_iter, 0
+  br i1 %cmp31, label %for.body, label %if.end11
+
+for.body:                                         ; preds = %entry, %for.inc
+  %del_av.034 = phi double [ %del_av.130, %for.inc ], [ undef, %entry ]
+  %old_av.033 = phi double [ %0, %for.inc ], [ undef, %entry ]
+  %gauge_iter.032 = phi i32 [ %inc, %for.inc ], [ 0, %entry ]
+  call void @gaugefixstep(i32 %gauge_dir, double* %current_av, double %relax_boost, i32 %nvector, i32* %vector_offset, i32* %vector_parity, i32 %nantiherm, i32* %antiherm_offset, i32* %antiherm_parity) #6
+  %cmp1 = icmp eq i32 %gauge_iter.032, 0
+  %0 = load double* %current_av, align 8, !tbaa !4
+  br i1 %cmp1, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %sub = fsub double %0, %old_av.033
+  %call = call double @fabs(double %sub) #7
+  %cmp2 = fcmp olt double %call, %gauge_fix_tol
+  br i1 %cmp2, label %for.end, label %if.end4
+
+if.end4:                                          ; preds = %if.then
+  %rem = srem i32 %gauge_iter.032, 20
+  %cmp5 = icmp eq i32 %rem, 19
+  br i1 %cmp5, label %if.then6, label %for.inc
+
+if.then6:                                         ; preds = %if.end4
+  call void @reunitarize() #5
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.end4, %if.then6
+  %del_av.130 = phi double [ %sub, %if.end4 ], [ %sub, %if.then6 ], [ %del_av.034, %for.body ]
+  %inc = add nsw i32 %gauge_iter.032, 1
+  %cmp = icmp slt i32 %inc, %max_gauge_iter
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %if.then
+  %gauge_iter.0.lcssa = phi i32 [ %gauge_iter.032, %if.then ], [ %inc, %for.inc ]
+  %del_av.2 = phi double [ %sub, %if.then ], [ %del_av.130, %for.inc ]
+  %rem8 = srem i32 %gauge_iter.0.lcssa, 20
+  %cmp9 = icmp eq i32 %rem8, 0
+  br i1 %cmp9, label %if.end11, label %if.then10
+
+if.then10:                                        ; preds = %for.end
+  call void @reunitarize() #5
+  br label %if.end11
+
+if.end11:                                         ; preds = %entry, %for.end, %if.then10
+  %del_av.240 = phi double [ %del_av.2, %for.end ], [ %del_av.2, %if.then10 ], [ undef, %entry ]
+  %gauge_iter.0.lcssa39 = phi i32 [ %gauge_iter.0.lcssa, %for.end ], [ %gauge_iter.0.lcssa, %if.then10 ], [ 0, %entry ]
+  %1 = phi double [ %0, %for.end ], [ %0, %if.then10 ], [ undef, %entry ]
+  %2 = load i32* @diffmat_offset, align 4, !tbaa !0
+  %cmp12 = icmp slt i32 %2, 0
+  br i1 %cmp12, label %if.then13, label %if.end14
+
+if.then13:                                        ; preds = %if.end11
+  %3 = load %struct.su3_matrix** @diffmatp, align 8, !tbaa !3
+  %4 = bitcast %struct.su3_matrix* %3 to i8*
+  call void @free(i8* %4) #5
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.then13, %if.end11
+  %5 = load i32* @sumvec_offset, align 4, !tbaa !0
+  %cmp15 = icmp slt i32 %5, 0
+  br i1 %cmp15, label %if.then16, label %if.end17
+
+if.then16:                                        ; preds = %if.end14
+  %6 = load %struct.su3_vector** @sumvecp, align 8, !tbaa !3
+  %7 = bitcast %struct.su3_vector* %6 to i8*
+  call void @free(i8* %7) #5
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.then16, %if.end14
+  %8 = load i32* @this_node, align 4, !tbaa !0
+  %cmp18 = icmp eq i32 %8, 0
+  br i1 %cmp18, label %if.then19, label %if.end21
+
+if.then19:                                        ; preds = %if.end17
+  %call20 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([55 x i8]* @.str2, i64 0, i64 0), i32 %gauge_iter.0.lcssa39, double %1, double %del_av.240) #5
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then19, %if.end17
+  ret void
+}

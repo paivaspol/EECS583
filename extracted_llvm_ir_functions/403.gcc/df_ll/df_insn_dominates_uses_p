@@ -1,0 +1,96 @@
+define i32 @df_insn_dominates_uses_p(%struct.df* nocapture %df, %struct.basic_block_def* nocapture %bb, %struct.rtx_def* nocapture %insn, %struct.bitmap_head_def* %blocks) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !4
+  %idxprom = zext i32 %0 to i64
+  %insns = getelementptr inbounds %struct.df* %df, i64 0, i32 7
+  %1 = load %struct.insn_info** %insns, align 8, !tbaa !3
+  %defs = getelementptr inbounds %struct.insn_info* %1, i64 %idxprom, i32 0
+  %link.021 = load %struct.df_link** %defs, align 8
+  %tobool22 = icmp eq %struct.df_link* %link.021, null
+  br i1 %tobool22, label %return, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %link.023 = phi %struct.df_link* [ %link.0, %for.inc ], [ %link.021, %entry ]
+  %ref = getelementptr inbounds %struct.df_link* %link.023, i64 0, i32 1
+  %2 = load %struct.ref** %ref, align 8, !tbaa !3
+  %insn2 = getelementptr inbounds %struct.ref* %2, i64 0, i32 1
+  %3 = load %struct.rtx_def** %insn2, align 8, !tbaa !3
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0
+  %rtint5 = bitcast %union.rtunion_def* %arrayidx4 to i32*
+  %4 = load i32* %rtint5, align 4, !tbaa !4
+  %idxprom6 = sext i32 %4 to i64
+  %5 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %5, i64 0, i32 4
+  %bb7 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx8 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb7, i64 0, i64 %idxprom6
+  %6 = load %struct.basic_block_def** %arrayidx8, align 8, !tbaa !3
+  %index = getelementptr inbounds %struct.basic_block_def* %6, i64 0, i32 11
+  %7 = load i32* %index, align 4, !tbaa !4
+  %call = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %blocks, i32 %7) #8
+  %tobool9 = icmp eq i32 %call, 0
+  br i1 %tobool9, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body
+  %chain.i = getelementptr inbounds %struct.ref* %2, i64 0, i32 3
+  %du_link.05.i = load %struct.df_link** %chain.i, align 8
+  %tobool6.i = icmp eq %struct.df_link* %du_link.05.i, null
+  br i1 %tobool6.i, label %for.inc, label %for.body.i
+
+for.body.i:                                       ; preds = %land.lhs.true, %for.inc10.i
+  %du_link.07.i = phi %struct.df_link* [ %du_link.0.i, %for.inc10.i ], [ %du_link.05.i, %land.lhs.true ]
+  %ref.i = getelementptr inbounds %struct.df_link* %du_link.07.i, i64 0, i32 1
+  %8 = load %struct.ref** %ref.i, align 8, !tbaa !3
+  %insn.i = getelementptr inbounds %struct.ref* %8, i64 0, i32 1
+  %9 = load %struct.rtx_def** %insn.i, align 8, !tbaa !3
+  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %9, i64 0, i32 1, i64 0
+  %rtint.i = bitcast %union.rtunion_def* %arrayidx.i to i32*
+  %10 = load i32* %rtint.i, align 4, !tbaa !4
+  %idxprom.i = sext i32 %10 to i64
+  %11 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !3
+  %data.i = getelementptr inbounds %struct.varray_head_tag* %11, i64 0, i32 4
+  %bb.i = bitcast %union.varray_data_tag* %data.i to [1 x %struct.basic_block_def*]*
+  %arrayidx1.i = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb.i, i64 0, i64 %idxprom.i
+  %12 = load %struct.basic_block_def** %arrayidx1.i, align 8, !tbaa !3
+  %index.i = getelementptr inbounds %struct.basic_block_def* %12, i64 0, i32 11
+  %13 = load i32* %index.i, align 4, !tbaa !4
+  %call.i = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %blocks, i32 %13) #8
+  %tobool2.i = icmp eq i32 %call.i, 0
+  br i1 %tobool2.i, label %for.inc10.i, label %if.then.i
+
+if.then.i:                                        ; preds = %for.body.i
+  %chain3.i = getelementptr inbounds %struct.ref* %8, i64 0, i32 3
+  %ud_link.01.i = load %struct.df_link** %chain3.i, align 8
+  %tobool52.i = icmp eq %struct.df_link* %ud_link.01.i, null
+  br i1 %tobool52.i, label %for.inc10.i, label %for.body6.i
+
+for.cond4.i:                                      ; preds = %for.body6.i
+  %next.i = getelementptr inbounds %struct.df_link* %ud_link.03.i, i64 0, i32 0
+  %ud_link.0.i = load %struct.df_link** %next.i, align 8
+  %tobool5.i = icmp eq %struct.df_link* %ud_link.0.i, null
+  br i1 %tobool5.i, label %for.inc10.i, label %for.body6.i
+
+for.body6.i:                                      ; preds = %if.then.i, %for.cond4.i
+  %ud_link.03.i = phi %struct.df_link* [ %ud_link.0.i, %for.cond4.i ], [ %ud_link.01.i, %if.then.i ]
+  %ref7.i = getelementptr inbounds %struct.df_link* %ud_link.03.i, i64 0, i32 1
+  %14 = load %struct.ref** %ref7.i, align 8, !tbaa !3
+  %cmp.i = icmp eq %struct.ref* %14, %2
+  br i1 %cmp.i, label %for.cond4.i, label %return
+
+for.inc10.i:                                      ; preds = %for.cond4.i, %if.then.i, %for.body.i
+  %next11.i = getelementptr inbounds %struct.df_link* %du_link.07.i, i64 0, i32 0
+  %du_link.0.i = load %struct.df_link** %next11.i, align 8
+  %tobool.i = icmp eq %struct.df_link* %du_link.0.i, null
+  br i1 %tobool.i, label %for.inc, label %for.body.i
+
+for.inc:                                          ; preds = %for.inc10.i, %land.lhs.true, %for.body
+  %next = getelementptr inbounds %struct.df_link* %link.023, i64 0, i32 0
+  %link.0 = load %struct.df_link** %next, align 8
+  %tobool = icmp eq %struct.df_link* %link.0, null
+  br i1 %tobool, label %return, label %for.body
+
+return:                                           ; preds = %entry, %for.inc, %for.body6.i
+  %retval.0 = phi i32 [ 0, %for.body6.i ], [ 1, %for.inc ], [ 1, %entry ]
+  ret i32 %retval.0
+}

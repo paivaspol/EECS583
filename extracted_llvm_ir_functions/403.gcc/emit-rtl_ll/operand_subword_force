@@ -1,0 +1,41 @@
+define %struct.rtx_def* @operand_subword_force(%struct.rtx_def* %op, i32 %offset, i32 %mode) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @operand_subword(%struct.rtx_def* %op, i32 %offset, i32 1, i32 %mode) #9
+  %tobool = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  switch i32 %mode, label %if.then2 [
+    i32 51, label %if.end8
+    i32 0, label %if.end8
+  ]
+
+if.then2:                                         ; preds = %if.end
+  %0 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp3 = icmp eq i32 %bf.clear, 61
+  br i1 %cmp3, label %if.then4, label %if.else
+
+if.then4:                                         ; preds = %if.then2
+  %call5 = tail call %struct.rtx_def* @copy_to_reg(%struct.rtx_def* %op) #8
+  br label %if.end8
+
+if.else:                                          ; preds = %if.then2
+  %call6 = tail call %struct.rtx_def* @force_reg(i32 %mode, %struct.rtx_def* %op) #8
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.end, %if.end, %if.then4, %if.else
+  %op.addr.0 = phi %struct.rtx_def* [ %call5, %if.then4 ], [ %call6, %if.else ], [ %op, %if.end ], [ %op, %if.end ]
+  %call9 = tail call %struct.rtx_def* @operand_subword(%struct.rtx_def* %op.addr.0, i32 %offset, i32 1, i32 %mode) #9
+  %cmp10 = icmp eq %struct.rtx_def* %call9, null
+  br i1 %cmp10, label %if.then11, label %return
+
+if.then11:                                        ; preds = %if.end8
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 1622, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.operand_subword_force, i64 0, i64 0)) #10
+  unreachable
+
+return:                                           ; preds = %if.end8, %entry
+  %retval.0 = phi %struct.rtx_def* [ %call, %entry ], [ %call9, %if.end8 ]
+  ret %struct.rtx_def* %retval.0
+}

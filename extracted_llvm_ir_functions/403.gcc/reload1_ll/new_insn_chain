@@ -1,0 +1,84 @@
+define %struct.insn_chain* @new_insn_chain() #0 {
+entry:
+  %0 = load %struct.insn_chain** @unused_insn_chains, align 8, !tbaa !3
+  %cmp = icmp eq %struct.insn_chain* %0, null
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %1 = load i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 4), align 8, !tbaa !3
+  %2 = load i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %sub.ptr.lhs.cast = ptrtoint i8* %1 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %2 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp1 = icmp slt i64 %sub.ptr.sub, 264
+  br i1 %cmp1, label %if.then3, label %if.end
+
+if.then3:                                         ; preds = %if.then
+  tail call void @_obstack_newchunk(%struct.obstack* @reload_obstack, i32 264) #7
+  %.pre = load i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 3), align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then3, %if.then
+  %3 = phi i8* [ %.pre, %if.then3 ], [ %2, %if.then ]
+  %add.ptr = getelementptr inbounds i8* %3, i64 264
+  store i8* %add.ptr, i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %4 = load i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 2), align 8, !tbaa !3
+  %cmp6 = icmp eq i8* %add.ptr, %4
+  br i1 %cmp6, label %if.then8, label %if.end9
+
+if.then8:                                         ; preds = %if.end
+  %bf.load = load i8* getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 10), align 8
+  %bf.set = or i8 %bf.load, 2
+  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 10), align 8
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end, %if.then8
+  %sub.ptr.lhs.cast11 = ptrtoint i8* %add.ptr to i64
+  %5 = load i32* getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 6), align 8, !tbaa !0
+  %conv13 = sext i32 %5 to i64
+  %add = add nsw i64 %conv13, %sub.ptr.lhs.cast11
+  %neg = xor i32 %5, -1
+  %conv15 = sext i32 %neg to i64
+  %and = and i64 %add, %conv15
+  %add.ptr16 = getelementptr inbounds i8* null, i64 %and
+  store i8* %add.ptr16, i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %6 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 1), align 8, !tbaa !3
+  %sub.ptr.lhs.cast19 = ptrtoint i8* %add.ptr16 to i64
+  %sub.ptr.rhs.cast20 = ptrtoint %struct._obstack_chunk* %6 to i64
+  %sub.ptr.sub21 = sub i64 %sub.ptr.lhs.cast19, %sub.ptr.rhs.cast20
+  %7 = load i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 4), align 8, !tbaa !3
+  %sub.ptr.lhs.cast24 = ptrtoint i8* %7 to i64
+  %sub.ptr.sub26 = sub i64 %sub.ptr.lhs.cast24, %sub.ptr.rhs.cast20
+  %cmp27 = icmp sgt i64 %sub.ptr.sub21, %sub.ptr.sub26
+  br i1 %cmp27, label %if.then29, label %if.end32
+
+if.then29:                                        ; preds = %if.end9
+  store i8* %7, i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 3), align 8, !tbaa !3
+  br label %if.end32
+
+if.end32:                                         ; preds = %if.then29, %if.end9
+  %8 = phi i8* [ %7, %if.then29 ], [ %add.ptr16, %if.end9 ]
+  store i8* %8, i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 2), align 8, !tbaa !3
+  %9 = bitcast i8* %4 to %struct.insn_chain*
+  %live_throughout = getelementptr inbounds i8* %4, i64 40
+  %10 = bitcast i8* %live_throughout to %struct.bitmap_head_def*
+  %call = tail call %struct.bitmap_head_def* @bitmap_initialize(%struct.bitmap_head_def* %10) #7
+  %dead_or_set = getelementptr inbounds i8* %4, i64 64
+  %11 = bitcast i8* %dead_or_set to %struct.bitmap_head_def*
+  %call35 = tail call %struct.bitmap_head_def* @bitmap_initialize(%struct.bitmap_head_def* %11) #7
+  br label %if.end36
+
+if.else:                                          ; preds = %entry
+  %next = getelementptr inbounds %struct.insn_chain* %0, i64 0, i32 0
+  %12 = load %struct.insn_chain** %next, align 8, !tbaa !3
+  store %struct.insn_chain* %12, %struct.insn_chain** @unused_insn_chains, align 8, !tbaa !3
+  br label %if.end36
+
+if.end36:                                         ; preds = %if.else, %if.end32
+  %c.0 = phi %struct.insn_chain* [ %9, %if.end32 ], [ %0, %if.else ]
+  %is_caller_save_insn = getelementptr inbounds %struct.insn_chain* %c.0, i64 0, i32 11
+  %bf.load37 = load i8* %is_caller_save_insn, align 2
+  %bf.clear44 = and i8 %bf.load37, -16
+  store i8 %bf.clear44, i8* %is_caller_save_insn, align 2
+  ret %struct.insn_chain* %c.0
+}

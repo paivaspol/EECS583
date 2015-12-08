@@ -1,0 +1,103 @@
+define void @write_site_list(%struct._IO_FILE* %fp, %struct.gauge_header* nocapture %gh) #0 {
+entry:
+  %header_bytes = getelementptr inbounds %struct.gauge_header* %gh, i64 0, i32 3
+  %0 = load i32* %header_bytes, align 4, !tbaa !0
+  %conv = sext i32 %0 to i64
+  %1 = load i32* @sites_on_node, align 4, !tbaa !0
+  %conv1 = sext i32 %1 to i64
+  %mul = shl nsw i64 %conv1, 2
+  %2 = load i32* @this_node, align 4, !tbaa !0
+  %conv2 = sext i32 %2 to i64
+  %mul3 = mul i64 %mul, %conv2
+  %add = add i64 %mul3, %conv
+  %call = tail call noalias i8* @calloc(i64 %conv1, i64 4) #9
+  %3 = bitcast i8* %call to i32*
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call6 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([44 x i8]* @.str112, i64 0, i64 0), i32 %2) #9
+  %4 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call7 = tail call i32 @fflush(%struct._IO_FILE* %4) #9
+  tail call void @terminate(i32 1) #9
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %call8 = tail call i32 @g_seek(%struct._IO_FILE* %fp, i64 %add, i32 0) #9
+  %cmp9 = icmp slt i32 %call8, 0
+  br i1 %cmp9, label %if.then11, label %if.end15
+
+if.then11:                                        ; preds = %if.end
+  %5 = load i32* @this_node, align 4, !tbaa !0
+  %call12 = tail call i32* @__errno_location() #10
+  %6 = load i32* %call12, align 4, !tbaa !0
+  %call13 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([53 x i8]* @.str113, i64 0, i64 0), i32 %5, i64 %add, i32 %6) #9
+  %7 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call14 = tail call i32 @fflush(%struct._IO_FILE* %7) #9
+  tail call void @terminate(i32 1) #9
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then11, %if.end
+  %8 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp1650 = icmp sgt i32 %8, 0
+  br i1 %cmp1650, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end15
+  %9 = load %struct.site** @lattice, align 8, !tbaa !3
+  %10 = load i32* @nx, align 4, !tbaa !0
+  %11 = load i32* @ny, align 4, !tbaa !0
+  %12 = load i32* @nz, align 4, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %i.053 = phi i32 [ 0, %for.body.lr.ph ], [ %inc28, %for.body ]
+  %s.051 = phi %struct.site* [ %9, %for.body.lr.ph ], [ %incdec.ptr, %for.body ]
+  %t = getelementptr inbounds %struct.site* %s.051, i64 0, i32 3
+  %13 = load i16* %t, align 2, !tbaa !6
+  %conv18 = sext i16 %13 to i32
+  %mul19 = mul nsw i32 %conv18, %12
+  %z = getelementptr inbounds %struct.site* %s.051, i64 0, i32 2
+  %14 = load i16* %z, align 2, !tbaa !6
+  %conv20 = sext i16 %14 to i32
+  %add21 = add nsw i32 %mul19, %conv20
+  %mul22 = mul nsw i32 %add21, %11
+  %y = getelementptr inbounds %struct.site* %s.051, i64 0, i32 1
+  %15 = load i16* %y, align 2, !tbaa !6
+  %conv23 = sext i16 %15 to i32
+  %add24 = add nsw i32 %mul22, %conv23
+  %mul25 = mul nsw i32 %add24, %10
+  %x = getelementptr inbounds %struct.site* %s.051, i64 0, i32 0
+  %16 = load i16* %x, align 2, !tbaa !6
+  %conv26 = sext i16 %16 to i32
+  %add27 = add nsw i32 %mul25, %conv26
+  %arrayidx = getelementptr inbounds i32* %3, i64 %indvars.iv
+  store i32 %add27, i32* %arrayidx, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc28 = add nsw i32 %i.053, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %s.051, i64 1
+  %cmp16 = icmp slt i32 %inc28, %8
+  br i1 %cmp16, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %if.end15
+  %conv29 = sext i32 %8 to i64
+  %call30 = tail call i64 @g_write(i8* %call, i64 4, i64 %conv29, %struct._IO_FILE* %fp) #9
+  %conv31 = trunc i64 %call30 to i32
+  %17 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp32 = icmp eq i32 %conv31, %17
+  br i1 %cmp32, label %if.end38, label %if.then34
+
+if.then34:                                        ; preds = %for.end
+  %18 = load i32* @this_node, align 4, !tbaa !0
+  %call35 = tail call i32* @__errno_location() #10
+  %19 = load i32* %call35, align 4, !tbaa !0
+  %call36 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([48 x i8]* @.str114, i64 0, i64 0), i32 %18, i32 %19) #9
+  %20 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call37 = tail call i32 @fflush(%struct._IO_FILE* %20) #9
+  tail call void @terminate(i32 1) #9
+  br label %if.end38
+
+if.end38:                                         ; preds = %for.end, %if.then34
+  tail call void @free(i8* %call) #9
+  ret void
+}

@@ -1,0 +1,39 @@
+define %struct.rtx_def* @mem_for_const_double(%struct.rtx_def* %x) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %call = tail call fastcc i32 @const_hash_rtx(i32 %bf.clear, %struct.rtx_def* %x) #10
+  %idxprom = sext i32 %call to i64
+  %1 = load %struct.function** @cfun, align 8, !tbaa !3
+  %varasm = getelementptr inbounds %struct.function* %1, i64 0, i32 4
+  %2 = load %struct.varasm_status** %varasm, align 8, !tbaa !3
+  %x_const_rtx_hash_table = getelementptr inbounds %struct.varasm_status* %2, i64 0, i32 0
+  %3 = load %struct.constant_descriptor*** %x_const_rtx_hash_table, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.constant_descriptor** %3, i64 %idxprom
+  %desc.09 = load %struct.constant_descriptor** %arrayidx, align 8
+  %tobool10 = icmp eq %struct.constant_descriptor* %desc.09, null
+  br i1 %tobool10, label %return, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %next = getelementptr inbounds %struct.constant_descriptor* %desc.011, i64 0, i32 0
+  %desc.0 = load %struct.constant_descriptor** %next, align 8
+  %tobool = icmp eq %struct.constant_descriptor* %desc.0, null
+  br i1 %tobool, label %return, label %for.body
+
+for.body:                                         ; preds = %entry, %for.cond
+  %desc.011 = phi %struct.constant_descriptor* [ %desc.0, %for.cond ], [ %desc.09, %entry ]
+  %call1 = tail call fastcc i32 @compare_constant_rtx(i32 %bf.clear, %struct.rtx_def* %x, %struct.constant_descriptor* %desc.011) #10
+  %tobool2 = icmp eq i32 %call1, 0
+  br i1 %tobool2, label %for.cond, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %rtl = getelementptr inbounds %struct.constant_descriptor* %desc.011, i64 0, i32 2
+  %4 = load %struct.rtx_def** %rtl, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %entry, %for.cond, %if.then
+  %retval.0 = phi %struct.rtx_def* [ %4, %if.then ], [ null, %for.cond ], [ null, %entry ]
+  ret %struct.rtx_def* %retval.0
+}

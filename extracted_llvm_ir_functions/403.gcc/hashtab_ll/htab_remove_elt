@@ -1,0 +1,31 @@
+define void @htab_remove_elt(%struct.htab* nocapture %htab, i8* %element) #1 {
+entry:
+  %hash_f.i = getelementptr inbounds %struct.htab* %htab, i64 0, i32 0
+  %0 = load i32 (i8*)** %hash_f.i, align 8, !tbaa !0
+  %call.i = tail call i32 %0(i8* %element) #8
+  %call1.i = tail call i8** @htab_find_slot_with_hash(%struct.htab* %htab, i8* %element, i32 %call.i, i32 0) #8
+  %1 = load i8** %call1.i, align 8, !tbaa !0
+  %cmp = icmp eq i8* %1, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %del_f = getelementptr inbounds %struct.htab* %htab, i64 0, i32 2
+  %2 = load void (i8*)** %del_f, align 8, !tbaa !0
+  %tobool = icmp eq void (i8*)* %2, null
+  br i1 %tobool, label %if.end3, label %if.then1
+
+if.then1:                                         ; preds = %if.end
+  tail call void %2(i8* %1) #8
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %if.then1
+  store i8* inttoptr (i64 1 to i8*), i8** %call1.i, align 8, !tbaa !0
+  %n_deleted = getelementptr inbounds %struct.htab* %htab, i64 0, i32 6
+  %3 = load i64* %n_deleted, align 8, !tbaa !3
+  %inc = add i64 %3, 1
+  store i64 %inc, i64* %n_deleted, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %entry, %if.end3
+  ret void
+}

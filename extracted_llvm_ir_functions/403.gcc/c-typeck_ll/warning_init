@@ -1,0 +1,19 @@
+define internal fastcc void @warning_init(i8* %msgid) #0 {
+entry:
+  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([3 x i8]* @.str81, i64 0, i64 0), i8* %msgid) #8
+  %call = call fastcc i32 @spelling_length() #7
+  %add = add nsw i32 %call, 1
+  %conv = sext i32 %add to i64
+  %0 = alloca i8, i64 %conv, align 1
+  %call1 = call fastcc i8* @print_spelling(i8* %0) #7
+  %1 = load i8* %call1, align 1, !tbaa !1
+  %tobool = icmp eq i8 %1, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([31 x i8]* @.str111, i64 0, i64 0), i8* %call1) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

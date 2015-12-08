@@ -1,0 +1,198 @@
+define internal fastcc void @load_tg(%struct.lm_s* nocapture %lm, i16 zeroext %lw1, i16 zeroext %lw2) #2 {
+entry:
+  %call = tail call i8* @__ckd_malloc__(i64 32, i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 1087) #8
+  %0 = bitcast i8* %call to %struct.tginfo_s*
+  %w1 = bitcast i8* %call to i16*
+  store i16 %lw1, i16* %w1, align 2, !tbaa !5
+  %tg1 = getelementptr inbounds i8* %call, i64 8
+  %1 = bitcast i8* %tg1 to %struct.tg_t**
+  store %struct.tg_t* null, %struct.tg_t** %1, align 8, !tbaa !0
+  %idxprom = zext i16 %lw2 to i64
+  %tginfo2 = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 13
+  %2 = load %struct.tginfo_s*** %tginfo2, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.tginfo_s** %2, i64 %idxprom
+  %3 = load %struct.tginfo_s** %arrayidx, align 8, !tbaa !0
+  %next = getelementptr inbounds i8* %call, i64 24
+  %4 = bitcast i8* %next to %struct.tginfo_s**
+  store %struct.tginfo_s* %3, %struct.tginfo_s** %4, align 8, !tbaa !0
+  %5 = load %struct.tginfo_s*** %tginfo2, align 8, !tbaa !0
+  %arrayidx5 = getelementptr inbounds %struct.tginfo_s** %5, i64 %idxprom
+  store %struct.tginfo_s* %0, %struct.tginfo_s** %arrayidx5, align 8, !tbaa !0
+  %idxprom6 = zext i16 %lw1 to i64
+  %ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 9
+  %6 = load %struct.ug_t** %ug, align 8, !tbaa !0
+  %firstbg = getelementptr inbounds %struct.ug_t* %6, i64 %idxprom6, i32 3
+  %7 = load i32* %firstbg, align 4, !tbaa !3
+  %add = add i64 %idxprom6, 1
+  %firstbg11 = getelementptr inbounds %struct.ug_t* %6, i64 %add, i32 3
+  %8 = load i32* %firstbg11, align 4, !tbaa !3
+  %sub = sub nsw i32 %8, %7
+  %cmp = icmp sgt i32 %sub, 0
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %membg = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 12
+  %9 = load %struct.membg_t** %membg, align 8, !tbaa !0
+  %bg15 = getelementptr inbounds %struct.membg_t* %9, i64 %idxprom6, i32 0
+  %10 = load %struct.bg_t** %bg15, align 8, !tbaa !0
+  %tobool = icmp eq %struct.bg_t* %10, null
+  br i1 %tobool, label %if.end24, label %if.end24.thread208
+
+if.end24.thread208:                               ; preds = %if.then
+  %used209 = getelementptr inbounds %struct.membg_t* %9, i64 %idxprom6, i32 1
+  store i32 1, i32* %used209, align 4, !tbaa !3
+  br label %land.lhs.true
+
+if.end24:                                         ; preds = %if.then
+  tail call fastcc void @load_bg(%struct.lm_s* %lm, i16 zeroext %lw1) #9
+  %11 = load %struct.membg_t** %membg, align 8, !tbaa !0
+  %used = getelementptr inbounds %struct.membg_t* %11, i64 %idxprom6, i32 1
+  store i32 1, i32* %used, align 4, !tbaa !3
+  br label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end24, %if.end24.thread208
+  %.pn = load %struct.membg_t** %membg, align 8
+  %.in = getelementptr inbounds %struct.membg_t* %.pn, i64 %idxprom6, i32 0
+  %12 = load %struct.bg_t** %.in, align 8
+  %call27 = tail call fastcc i32 @find_bg(%struct.bg_t* %12, i32 %sub, i16 zeroext %lw2) #9
+  %cmp28 = icmp sgt i32 %call27, -1
+  br i1 %cmp28, label %if.then30, label %if.else
+
+if.then30:                                        ; preds = %land.lhs.true
+  %idxprom31 = sext i32 %call27 to i64
+  %bowtid = getelementptr inbounds %struct.bg_t* %12, i64 %idxprom31, i32 2
+  %13 = load i16* %bowtid, align 2, !tbaa !5
+  %idxprom33 = zext i16 %13 to i64
+  %tgbowt = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 16
+  %14 = load %union.lmlog_t** %tgbowt, align 8, !tbaa !0
+  %arrayidx34 = getelementptr inbounds %union.lmlog_t* %14, i64 %idxprom33
+  %l = bitcast %union.lmlog_t* %arrayidx34 to i32*
+  %15 = load i32* %l, align 4, !tbaa !3
+  %bowt = getelementptr inbounds i8* %call, i64 16
+  %16 = bitcast i8* %bowt to i32*
+  store i32 %15, i32* %16, align 4, !tbaa !3
+  %add35 = add nsw i32 %call27, %7
+  %log_bg_seg_sz = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 7
+  %17 = load i32* %log_bg_seg_sz, align 4, !tbaa !3
+  %shr = ashr i32 %add35, %17
+  %idxprom36 = sext i32 %shr to i64
+  %tg_segbase = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 17
+  %18 = load i32** %tg_segbase, align 8, !tbaa !0
+  %arrayidx37 = getelementptr inbounds i32* %18, i64 %idxprom36
+  %19 = load i32* %arrayidx37, align 4, !tbaa !3
+  %firsttg = getelementptr inbounds %struct.bg_t* %12, i64 %idxprom31, i32 3
+  %20 = load i16* %firsttg, align 2, !tbaa !5
+  %conv40 = zext i16 %20 to i32
+  %add41 = add nsw i32 %conv40, %19
+  %add42 = add nsw i32 %add35, 1
+  %shr44 = ashr i32 %add42, %17
+  %idxprom45 = sext i32 %shr44 to i64
+  %arrayidx47 = getelementptr inbounds i32* %18, i64 %idxprom45
+  %21 = load i32* %arrayidx47, align 4, !tbaa !3
+  %add48 = add nsw i32 %call27, 1
+  %idxprom49 = sext i32 %add48 to i64
+  %firsttg51 = getelementptr inbounds %struct.bg_t* %12, i64 %idxprom49, i32 3
+  %22 = load i16* %firsttg51, align 2, !tbaa !5
+  %conv52 = zext i16 %22 to i32
+  %add53 = sub i32 %21, %add41
+  %sub54 = add i32 %add53, %conv52
+  %n_tg = getelementptr inbounds i8* %call, i64 4
+  %23 = bitcast i8* %n_tg to i32*
+  store i32 %sub54, i32* %23, align 4, !tbaa !3
+  %phitmp = sext i32 %add41 to i64
+  br label %if.end57
+
+if.else:                                          ; preds = %entry, %land.lhs.true
+  %bowt55 = getelementptr inbounds i8* %call, i64 16
+  %24 = bitcast i8* %bowt55 to i32*
+  store i32 0, i32* %24, align 4, !tbaa !3
+  %n_tg56 = getelementptr inbounds i8* %call, i64 4
+  %25 = bitcast i8* %n_tg56 to i32*
+  store i32 0, i32* %25, align 4, !tbaa !3
+  br label %if.end57
+
+if.end57:                                         ; preds = %if.else, %if.then30
+  %n.0 = phi i32 [ %sub54, %if.then30 ], [ 0, %if.else ]
+  %t.0 = phi i64 [ %phitmp, %if.then30 ], [ -1, %if.else ]
+  %.b = load i1* @LM_IN_MEMORY, align 1
+  %cmp60 = icmp sgt i32 %n.0, 0
+  br i1 %.b, label %if.then59, label %if.else68
+
+if.then59:                                        ; preds = %if.end57
+  br i1 %cmp60, label %if.then62, label %if.end127
+
+if.then62:                                        ; preds = %if.then59
+  %tg64 = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 11
+  %26 = load %struct.tg_t** %tg64, align 8, !tbaa !0
+  %arrayidx65 = getelementptr inbounds %struct.tg_t* %26, i64 %t.0
+  store %struct.tg_t* %arrayidx65, %struct.tg_t** %1, align 8, !tbaa !0
+  br label %if.end127
+
+if.else68:                                        ; preds = %if.end57
+  br i1 %cmp60, label %if.then71, label %if.end127
+
+if.then71:                                        ; preds = %if.else68
+  %conv72 = sext i32 %n.0 to i64
+  %call73 = tail call i8* @__ckd_calloc__(i64 %conv72, i64 4, i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 1140) #8
+  %27 = bitcast i8* %call73 to %struct.tg_t*
+  store %struct.tg_t* %27, %struct.tg_t** %1, align 8, !tbaa !0
+  %fp = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 21
+  %28 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
+  %tgoff = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 24
+  %29 = load i32* %tgoff, align 4, !tbaa !3
+  %conv75 = sext i32 %29 to i64
+  %mul = shl nsw i64 %t.0, 2
+  %add77 = add i64 %conv75, %mul
+  %call78 = tail call i32 @fseek(%struct._IO_FILE* %28, i64 %add77, i32 0) #8
+  %cmp79 = icmp slt i32 %call78, 0
+  br i1 %cmp79, label %if.then81, label %if.end82
+
+if.then81:                                        ; preds = %if.then71
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 1142, i8* getelementptr inbounds ([13 x i8]* @.str32, i64 0, i64 0)) #8
+  tail call void (i8*, ...)* @_E__fatal_sys_error(i8* getelementptr inbounds ([14 x i8]* @.str33, i64 0, i64 0)) #8
+  br label %if.end82
+
+if.end82:                                         ; preds = %if.then81, %if.then71
+  %30 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
+  %call85 = tail call i64 @fread(i8* %call73, i64 4, i64 %conv72, %struct._IO_FILE* %30) #8
+  %cmp87 = icmp eq i64 %call85, %conv72
+  br i1 %cmp87, label %if.end91, label %if.then89
+
+if.then89:                                        ; preds = %if.end82
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 1145, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #8
+  %31 = load i32* %tgoff, align 4, !tbaa !3
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([28 x i8]* @.str34, i64 0, i64 0), i32 %n.0, i32 %31) #8
+  br label %if.end91
+
+if.end91:                                         ; preds = %if.end82, %if.then89
+  %byteswap = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 22
+  %32 = load i32* %byteswap, align 4, !tbaa !3
+  %tobool92 = icmp eq i32 %32, 0
+  br i1 %tobool92, label %if.end127, label %for.body
+
+for.body:                                         ; preds = %if.end91, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.end91 ]
+  %wid = getelementptr inbounds %struct.tg_t* %27, i64 %indvars.iv, i32 0
+  %33 = load i16* %wid, align 2, !tbaa !5
+  %or = tail call i16 @llvm.bswap.i16(i16 %33)
+  store i16 %or, i16* %wid, align 2, !tbaa !5
+  %probid = getelementptr inbounds %struct.tg_t* %27, i64 %indvars.iv, i32 1
+  %34 = load i16* %probid, align 2, !tbaa !5
+  %or120 = tail call i16 @llvm.bswap.i16(i16 %34)
+  store i16 %or120, i16* %probid, align 2, !tbaa !5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n.0
+  br i1 %exitcond, label %if.end127, label %for.body
+
+if.end127:                                        ; preds = %for.body, %if.end91, %if.else68, %if.then59, %if.then62
+  %n_tg_fill = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 32
+  %35 = load i32* %n_tg_fill, align 4, !tbaa !3
+  %inc128 = add nsw i32 %35, 1
+  store i32 %inc128, i32* %n_tg_fill, align 4, !tbaa !3
+  %n_tg_inmem = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 33
+  %36 = load i32* %n_tg_inmem, align 4, !tbaa !3
+  %add129 = add nsw i32 %36, %n.0
+  store i32 %add129, i32* %n_tg_inmem, align 4, !tbaa !3
+  ret void
+}

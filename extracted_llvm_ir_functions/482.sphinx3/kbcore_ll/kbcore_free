@@ -1,0 +1,74 @@
+define void @kbcore_free(%struct.kbcore_t* %kbcore) #0 {
+entry:
+  %fcb1 = getelementptr inbounds %struct.kbcore_t* %kbcore, i64 0, i32 0
+  %0 = load %struct.feat_s** %fcb1, align 8, !tbaa !0
+  %mdef2 = getelementptr inbounds %struct.kbcore_t* %kbcore, i64 0, i32 1
+  %1 = load %struct.mdef_t** %mdef2, align 8, !tbaa !0
+  %dict3 = getelementptr inbounds %struct.kbcore_t* %kbcore, i64 0, i32 2
+  %2 = load %struct.dict_t** %dict3, align 8, !tbaa !0
+  %dict2pid4 = getelementptr inbounds %struct.kbcore_t* %kbcore, i64 0, i32 3
+  %3 = load %struct.dict2pid_t** %dict2pid4, align 8, !tbaa !0
+  %lm5 = getelementptr inbounds %struct.kbcore_t* %kbcore, i64 0, i32 4
+  %4 = load %struct.lm_s** %lm5, align 8, !tbaa !0
+  tail call void @lm_free(%struct.lm_s* %4) #4
+  tail call void @dict_free(%struct.dict_t* %2) #4
+  %comwt = getelementptr inbounds %struct.dict2pid_t* %3, i64 0, i32 5
+  %5 = load i32** %comwt, align 8, !tbaa !0
+  %6 = bitcast i32* %5 to i8*
+  tail call void @ckd_free(i8* %6) #4
+  %comsseq = getelementptr inbounds %struct.dict2pid_t* %3, i64 0, i32 4
+  %7 = load i16*** %comsseq, align 8, !tbaa !0
+  %8 = bitcast i16** %7 to i8*
+  tail call void @ckd_free(i8* %8) #4
+  %comstate = getelementptr inbounds %struct.dict2pid_t* %3, i64 0, i32 3
+  %9 = load i16*** %comstate, align 8, !tbaa !0
+  %10 = bitcast i16** %9 to i8*
+  tail call void @ckd_free(i8* %10) #4
+  %single_lc = getelementptr inbounds %struct.dict2pid_t* %3, i64 0, i32 2
+  %11 = load i32*** %single_lc, align 8, !tbaa !0
+  %12 = bitcast i32** %11 to i8**
+  tail call void @ckd_free_2d(i8** %12) #4
+  %ldiph_lc = getelementptr inbounds %struct.dict2pid_t* %3, i64 0, i32 1
+  %13 = load i32**** %ldiph_lc, align 8, !tbaa !0
+  %14 = bitcast i32*** %13 to i8***
+  tail call void @ckd_free_3d(i8*** %14) #4
+  %internal = getelementptr inbounds %struct.dict2pid_t* %3, i64 0, i32 0
+  %15 = load i32*** %internal, align 8, !tbaa !0
+  %16 = bitcast i32** %15 to i8*
+  tail call void @ckd_free(i8* %16) #4
+  tail call void @mdef_free(%struct.mdef_t* %1) #4
+  %fillpen = getelementptr inbounds %struct.kbcore_t* %kbcore, i64 0, i32 6
+  %17 = load %struct.fillpen_t** %fillpen, align 8, !tbaa !0
+  tail call void @fillpen_free(%struct.fillpen_t* %17) #4
+  %tmat = getelementptr inbounds %struct.kbcore_t* %kbcore, i64 0, i32 11
+  %18 = load %struct.tmat_t** %tmat, align 8, !tbaa !0
+  tail call void @tmat_free(%struct.tmat_t* %18) #4
+  %svq = getelementptr inbounds %struct.kbcore_t* %kbcore, i64 0, i32 9
+  %19 = load %struct.subvq_t** %svq, align 8, !tbaa !0
+  tail call void @subvq_free(%struct.subvq_t* %19) #4
+  %mgau = getelementptr inbounds %struct.kbcore_t* %kbcore, i64 0, i32 8
+  %20 = load %struct.mgau_model_t** %mgau, align 8, !tbaa !0
+  tail call void @mgau_free(%struct.mgau_model_t* %20) #4
+  %tobool = icmp eq %struct.feat_s* %0, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %name = getelementptr inbounds %struct.feat_s* %0, i64 0, i32 0
+  %21 = load i8** %name, align 8, !tbaa !0
+  tail call void @ckd_free(i8* %21) #4
+  %stream_len = getelementptr inbounds %struct.feat_s* %0, i64 0, i32 4
+  %22 = load i32** %stream_len, align 8, !tbaa !0
+  %23 = bitcast i32* %22 to i8*
+  tail call void @ckd_free(i8* %23) #4
+  %24 = bitcast %struct.feat_s* %0 to i8*
+  tail call void @ckd_free(i8* %24) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  tail call void (...)* @logs_free() #4
+  %25 = load %struct.feat_s** %fcb1, align 8, !tbaa !0
+  tail call void @feat_free(%struct.feat_s* %25) #4
+  %26 = bitcast %struct.kbcore_t* %kbcore to i8*
+  tail call void @ckd_free(i8* %26) #4
+  ret void
+}

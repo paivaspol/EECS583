@@ -1,0 +1,17 @@
+define i32 @floor_log2_wide(i64 %x) #5 {
+entry:
+  %cmp2 = icmp eq i64 %x, 0
+  br i1 %cmp2, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  %log.04 = phi i32 [ %inc, %while.body ], [ -1, %entry ]
+  %x.addr.03 = phi i64 [ %shr, %while.body ], [ %x, %entry ]
+  %inc = add nsw i32 %log.04, 1
+  %shr = lshr i64 %x.addr.03, 1
+  %cmp = icmp eq i64 %shr, 0
+  br i1 %cmp, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  %log.0.lcssa = phi i32 [ -1, %entry ], [ %inc, %while.body ]
+  ret i32 %log.0.lcssa
+}

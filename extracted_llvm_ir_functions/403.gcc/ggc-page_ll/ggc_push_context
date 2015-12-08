@@ -1,0 +1,15 @@
+define void @ggc_push_context() #0 {
+entry:
+  %0 = load i16* getelementptr inbounds (%struct.globals* @G, i64 0, i32 8), align 8, !tbaa !3
+  %inc = add i16 %0, 1
+  store i16 %inc, i16* getelementptr inbounds (%struct.globals* @G, i64 0, i32 8), align 8, !tbaa !3
+  %cmp = icmp eq i16 %inc, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str3, i64 0, i64 0), i32 1156, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.ggc_push_context, i64 0, i64 0)) #9
+  unreachable
+
+if.end:                                           ; preds = %entry
+  ret void
+}

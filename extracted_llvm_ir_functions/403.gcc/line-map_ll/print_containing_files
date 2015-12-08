@@ -1,0 +1,69 @@
+define void @print_containing_files(%struct.line_maps* nocapture %set, %struct.line_map* nocapture %map) #0 {
+entry:
+  %included_from = getelementptr inbounds %struct.line_map* %map, i64 0, i32 3
+  %0 = load i32* %included_from, align 4, !tbaa !0
+  %cmp = icmp slt i32 %0, 0
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %last_listed = getelementptr inbounds %struct.line_maps* %set, i64 0, i32 3
+  %1 = load i32* %last_listed, align 4, !tbaa !0
+  %cmp2 = icmp eq i32 %1, %0
+  br i1 %cmp2, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false
+  store i32 %0, i32* %last_listed, align 4, !tbaa !0
+  %2 = load i32* %included_from, align 4, !tbaa !0
+  %idxprom = sext i32 %2 to i64
+  %maps = getelementptr inbounds %struct.line_maps* %set, i64 0, i32 0
+  %3 = load %struct.line_map** %maps, align 8, !tbaa !4
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
+  %to_file = getelementptr inbounds %struct.line_map* %3, i64 %idxprom, i32 0
+  %5 = load i8** %to_file, align 8, !tbaa !4
+  %arrayidx.sum = add i64 %idxprom, 1
+  %from_line = getelementptr inbounds %struct.line_map* %3, i64 %arrayidx.sum, i32 2
+  %6 = load i32* %from_line, align 4, !tbaa !0
+  %sub = add i32 %6, -1
+  %to_line = getelementptr inbounds %struct.line_map* %3, i64 %idxprom, i32 1
+  %7 = load i32* %to_line, align 4, !tbaa !0
+  %add = add i32 %sub, %7
+  %from_line7 = getelementptr inbounds %struct.line_map* %3, i64 %idxprom, i32 2
+  %8 = load i32* %from_line7, align 4, !tbaa !0
+  %sub8 = sub i32 %add, %8
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([28 x i8]* @.str2, i64 0, i64 0), i8* %5, i32 %sub8) #6
+  %included_from942 = getelementptr inbounds %struct.line_map* %3, i64 %idxprom, i32 3
+  %9 = load i32* %included_from942, align 4, !tbaa !0
+  %lnot43 = icmp sgt i32 %9, -1
+  br i1 %lnot43, label %while.body, label %while.end
+
+while.body:                                       ; preds = %if.end, %while.body
+  %10 = phi i32 [ %17, %while.body ], [ %9, %if.end ]
+  %idxprom12 = sext i32 %10 to i64
+  %11 = load %struct.line_map** %maps, align 8, !tbaa !4
+  %12 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
+  %to_file15 = getelementptr inbounds %struct.line_map* %11, i64 %idxprom12, i32 0
+  %13 = load i8** %to_file15, align 8, !tbaa !4
+  %arrayidx14.sum = add i64 %idxprom12, 1
+  %from_line17 = getelementptr inbounds %struct.line_map* %11, i64 %arrayidx14.sum, i32 2
+  %14 = load i32* %from_line17, align 4, !tbaa !0
+  %sub18 = add i32 %14, -1
+  %to_line19 = getelementptr inbounds %struct.line_map* %11, i64 %idxprom12, i32 1
+  %15 = load i32* %to_line19, align 4, !tbaa !0
+  %add20 = add i32 %sub18, %15
+  %from_line21 = getelementptr inbounds %struct.line_map* %11, i64 %idxprom12, i32 2
+  %16 = load i32* %from_line21, align 4, !tbaa !0
+  %sub22 = sub i32 %add20, %16
+  %call23 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %12, i8* getelementptr inbounds ([30 x i8]* @.str3, i64 0, i64 0), i8* %13, i32 %sub22) #6
+  %included_from9 = getelementptr inbounds %struct.line_map* %11, i64 %idxprom12, i32 3
+  %17 = load i32* %included_from9, align 4, !tbaa !0
+  %lnot = icmp sgt i32 %17, -1
+  br i1 %lnot, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %if.end
+  %18 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
+  %19 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %18)
+  br label %return
+
+return:                                           ; preds = %entry, %lor.lhs.false, %while.end
+  ret void
+}

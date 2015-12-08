@@ -1,0 +1,85 @@
+define internal fastcc void @mark_label_nuses(%struct.rtx_def* nocapture %x) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 67
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 3
+  %rtint = bitcast %union.rtunion_def* %arrayidx2 to i32*
+  %2 = load i32* %rtint, align 4, !tbaa !0
+  %inc = add nsw i32 %2, 1
+  store i32 %inc, i32* %rtint, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %idxprom57 = zext i32 %bf.clear to i64
+  %arrayidx3 = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom57
+  %3 = load i8** %arrayidx3, align 8, !tbaa !4
+  %arrayidx5 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom57
+  %4 = load i8* %arrayidx5, align 1, !tbaa !1
+  %cmp662 = icmp eq i8 %4, 0
+  br i1 %cmp662, label %for.end42, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %5 = zext i8 %4 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %indvars.iv64 = phi i64 [ %5, %for.body.lr.ph ], [ %indvars.iv.next65, %for.cond.backedge ]
+  %indvars.iv.next65 = add i64 %indvars.iv64, -1
+  %arrayidx9 = getelementptr inbounds i8* %3, i64 %indvars.iv.next65
+  %6 = load i8* %arrayidx9, align 1, !tbaa !1
+  switch i8 %6, label %for.cond.backedge [
+    i8 101, label %if.then13
+    i8 69, label %if.then23
+  ]
+
+for.cond.backedge:                                ; preds = %if.then23, %for.body31, %for.body, %if.then13
+  %7 = trunc i64 %indvars.iv.next65 to i32
+  %cmp6 = icmp sgt i32 %7, 0
+  br i1 %cmp6, label %for.body, label %for.end42
+
+if.then13:                                        ; preds = %for.body
+  %arrayidx16 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next65
+  %rtx17 = bitcast %union.rtunion_def* %arrayidx16 to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %rtx17, align 8, !tbaa !4
+  tail call fastcc void @mark_label_nuses(%struct.rtx_def* %8) #9
+  br label %for.cond.backedge
+
+if.then23:                                        ; preds = %for.body
+  %arrayidx26 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next65
+  %rtvec = bitcast %union.rtunion_def* %arrayidx26 to %struct.rtvec_def**
+  %9 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %9, i64 0, i32 0
+  %10 = load i32* %num_elem, align 4, !tbaa !0
+  %cmp2959 = icmp sgt i32 %10, 0
+  br i1 %cmp2959, label %for.body31.lr.ph, label %for.cond.backedge
+
+for.body31.lr.ph:                                 ; preds = %if.then23
+  %11 = sext i32 %10 to i64
+  br label %for.body31
+
+for.body31:                                       ; preds = %for.body31.for.body31_crit_edge, %for.body31.lr.ph
+  %12 = phi %struct.rtvec_def* [ %9, %for.body31.lr.ph ], [ %.pre, %for.body31.for.body31_crit_edge ]
+  %indvars.iv = phi i64 [ %11, %for.body31.lr.ph ], [ %indvars.iv.next, %for.body31.for.body31_crit_edge ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %arrayidx37 = getelementptr inbounds %struct.rtvec_def* %12, i64 0, i32 1, i64 %indvars.iv.next
+  %13 = load %struct.rtx_def** %arrayidx37, align 8, !tbaa !4
+  tail call fastcc void @mark_label_nuses(%struct.rtx_def* %13) #9
+  %14 = trunc i64 %indvars.iv.next to i32
+  %cmp29 = icmp sgt i32 %14, 0
+  br i1 %cmp29, label %for.body31.for.body31_crit_edge, label %for.cond.backedge
+
+for.body31.for.body31_crit_edge:                  ; preds = %for.body31
+  %.pre = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  br label %for.body31
+
+for.end42:                                        ; preds = %for.cond.backedge, %if.end
+  ret void
+}

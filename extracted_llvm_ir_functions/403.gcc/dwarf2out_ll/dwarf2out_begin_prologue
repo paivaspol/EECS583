@@ -1,0 +1,101 @@
+define void @dwarf2out_begin_prologue(i32 %line, i8* %file) #1 {
+entry:
+  %label = alloca [30 x i8], align 16
+  store %union.tree_node* null, %union.tree_node** @current_function_func_begin_label, align 8, !tbaa !4
+  %0 = load i32* @flag_unwind_tables, align 4, !tbaa !0
+  %tobool.i = icmp eq i32 %0, 0
+  br i1 %tobool.i, label %switch.early.test.i, label %if.end
+
+switch.early.test.i:                              ; preds = %entry
+  %1 = load i32* @write_symbols, align 4, !tbaa !3
+  switch i32 %1, label %lor.rhs.i [
+    i32 7, label %if.end
+    i32 4, label %if.end
+  ]
+
+lor.rhs.i:                                        ; preds = %switch.early.test.i
+  %2 = load i32* @flag_exceptions, align 4, !tbaa !0
+  %tobool3.i = icmp eq i32 %2, 0
+  br i1 %tobool3.i, label %if.end23, label %if.end
+
+if.end:                                           ; preds = %lor.rhs.i, %entry, %switch.early.test.i, %switch.early.test.i
+  %3 = load i32* @current_funcdef_number, align 4, !tbaa !0
+  %inc = add i32 %3, 1
+  store i32 %inc, i32* @current_funcdef_number, align 4, !tbaa !0
+  %4 = load %union.tree_node** @current_function_decl, align 8, !tbaa !4
+  call void @function_section(%union.tree_node* %4) #9
+  %arraydecay = getelementptr inbounds [30 x i8]* %label, i64 0, i64 0
+  %5 = load i32* @current_funcdef_number, align 4, !tbaa !0
+  %call1 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i32 %5) #9
+  %6 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  %7 = load i32* @current_funcdef_number, align 4, !tbaa !0
+  %call3 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([8 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i32 %7) #9
+  %call6 = call %union.tree_node* @get_identifier(i8* %arraydecay) #9
+  store %union.tree_node* %call6, %union.tree_node** @current_function_func_begin_label, align 8, !tbaa !4
+  %8 = load i32* @fde_table_in_use, align 4, !tbaa !0
+  %9 = load i32* @fde_table_allocated, align 4, !tbaa !0
+  %cmp = icmp eq i32 %8, %9
+  br i1 %cmp, label %if.then7, label %if.end.if.end9_crit_edge
+
+if.end.if.end9_crit_edge:                         ; preds = %if.end
+  %.pre34 = load %struct.dw_fde_struct** @fde_table, align 8, !tbaa !4
+  br label %if.end9
+
+if.then7:                                         ; preds = %if.end
+  %add = add i32 %8, 256
+  store i32 %add, i32* @fde_table_allocated, align 4, !tbaa !0
+  %10 = load %struct.dw_fde_struct** @fde_table, align 8, !tbaa !4
+  %11 = bitcast %struct.dw_fde_struct* %10 to i8*
+  %conv = zext i32 %add to i64
+  %mul = mul i64 %conv, 40
+  %call8 = call i8* @xrealloc(i8* %11, i64 %mul) #9
+  %12 = bitcast i8* %call8 to %struct.dw_fde_struct*
+  store %struct.dw_fde_struct* %12, %struct.dw_fde_struct** @fde_table, align 8, !tbaa !4
+  %.pre = load i32* @fde_table_in_use, align 4, !tbaa !0
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end.if.end9_crit_edge, %if.then7
+  %13 = phi %struct.dw_fde_struct* [ %12, %if.then7 ], [ %.pre34, %if.end.if.end9_crit_edge ]
+  %14 = phi i32 [ %.pre, %if.then7 ], [ %8, %if.end.if.end9_crit_edge ]
+  %inc10 = add i32 %14, 1
+  store i32 %inc10, i32* @fde_table_in_use, align 4, !tbaa !0
+  %idxprom = zext i32 %14 to i64
+  %call12 = call noalias i8* @xstrdup(i8* %arraydecay) #9
+  %dw_fde_begin = getelementptr inbounds %struct.dw_fde_struct* %13, i64 %idxprom, i32 0
+  store i8* %call12, i8** %dw_fde_begin, align 8, !tbaa !4
+  %dw_fde_current_label = getelementptr inbounds %struct.dw_fde_struct* %13, i64 %idxprom, i32 1
+  %15 = bitcast i8** %dw_fde_current_label to i8*
+  call void @llvm.memset.p0i8.i64(i8* %15, i8 0, i64 24, i32 8, i1 false)
+  %16 = load i32* @current_funcdef_number, align 4, !tbaa !0
+  %funcdef_number = getelementptr inbounds %struct.dw_fde_struct* %13, i64 %idxprom, i32 4
+  store i32 %16, i32* %funcdef_number, align 4, !tbaa !0
+  %17 = load i32* @current_function_nothrow, align 4, !tbaa !0
+  %nothrow = getelementptr inbounds %struct.dw_fde_struct* %13, i64 %idxprom, i32 5
+  %18 = trunc i32 %17 to i8
+  %bf.load = load i8* %nothrow, align 4
+  %bf.value = and i8 %18, 1
+  %bf.clear = and i8 %bf.load, -2
+  %bf.set = or i8 %bf.clear, %bf.value
+  store i8 %bf.set, i8* %nothrow, align 4
+  %19 = load %struct.function** @cfun, align 8, !tbaa !4
+  %uses_eh_lsda = getelementptr inbounds %struct.function* %19, i64 0, i32 56
+  %20 = bitcast [4 x i8]* %uses_eh_lsda to i32*
+  %bf.load13 = load i32* %20, align 8
+  %21 = lshr i32 %bf.load13, 21
+  %bf.value17 = trunc i32 %21 to i8
+  %bf.shl = and i8 %bf.value17, 2
+  %bf.clear18 = and i8 %bf.set, -3
+  %bf.set19 = or i8 %bf.shl, %bf.clear18
+  store i8 %bf.set19, i8* %nothrow, align 4
+  store i64 0, i64* @old_args_size, align 8, !tbaa !6
+  store i64 0, i64* @args_size, align 8, !tbaa !6
+  %tobool21 = icmp eq i8* %file, null
+  br i1 %tobool21, label %if.end23, label %if.then22
+
+if.then22:                                        ; preds = %if.end9
+  call void @dwarf2out_source_line(i32 %line, i8* %file) #10
+  br label %if.end23
+
+if.end23:                                         ; preds = %lor.rhs.i, %if.end9, %if.then22
+  ret void
+}

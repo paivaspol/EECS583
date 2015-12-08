@@ -1,0 +1,35 @@
+define void @deallocate_reload_reg(i32 %r) #0 {
+entry:
+  %idxprom = sext i32 %r to i64
+  %reg_rtx = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom, i32 11
+  %0 = load %struct.rtx_def** %reg_rtx, align 8, !tbaa !3
+  %tobool = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call i32 @true_regnum(%struct.rtx_def* %0) #7
+  store %struct.rtx_def* null, %struct.rtx_def** %reg_rtx, align 8, !tbaa !3
+  %idxprom7 = sext i32 %call to i64
+  %arrayidx8 = getelementptr inbounds [53 x i16]* @spill_reg_order, i64 0, i64 %idxprom7
+  %1 = load i16* %arrayidx8, align 2, !tbaa !5
+  %cmp = icmp sgt i16 %1, -1
+  br i1 %cmp, label %if.then10, label %if.end17
+
+if.then10:                                        ; preds = %if.end
+  %opnum = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom, i32 12
+  %2 = load i32* %opnum, align 8, !tbaa !0
+  %when_needed = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom, i32 17
+  %3 = load i32* %when_needed, align 4, !tbaa !9
+  %mode = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom, i32 5
+  %4 = load i32* %mode, align 4, !tbaa !8
+  tail call fastcc void @clear_reload_reg_in_use(i32 %call, i32 %2, i32 %3, i32 %4) #9
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.then10, %if.end
+  %arrayidx19 = getelementptr inbounds [180 x i32]* @reload_spill_index, i64 0, i64 %idxprom
+  store i32 -1, i32* %arrayidx19, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %if.end17
+  ret void
+}

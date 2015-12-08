@@ -1,0 +1,16 @@
+define void @_fatal_insn_not_found(%struct.rtx_def* %insn, i8* %file, i32 %line, i8* %function) #2 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !3
+  %cmp = icmp slt i32 %0, 0
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call void @_fatal_insn(i8* getelementptr inbounds ([21 x i8]* @.str1, i64 0, i64 0), %struct.rtx_def* %insn, i8* %file, i32 %line, i8* %function) #8
+  unreachable
+
+if.else:                                          ; preds = %entry
+  tail call void @_fatal_insn(i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0), %struct.rtx_def* %insn, i8* %file, i32 %line, i8* %function) #8
+  unreachable
+}

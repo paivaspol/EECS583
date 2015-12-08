@@ -1,0 +1,29 @@
+define i32 @tree_int_cst_msb(%union.tree_node* nocapture %t) #0 {
+entry:
+  %h = alloca i64, align 8
+  %l = alloca i64, align 8
+  %type = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 1
+  %0 = load %union.tree_node** %type, align 8, !tbaa !0
+  %type1 = bitcast %union.tree_node* %0 to %struct.tree_type*
+  %mode = getelementptr inbounds %struct.tree_type* %type1, i64 0, i32 6
+  %1 = bitcast [4 x i8]* %mode to i32*
+  %bf.load = load i32* %1, align 4
+  %bf.lshr = lshr i32 %bf.load, 9
+  %bf.clear = and i32 %bf.lshr, 127
+  %idxprom9 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom9
+  %2 = load i16* %arrayidx, align 2, !tbaa !7
+  %conv = zext i16 %2 to i64
+  %sub = add i64 %conv, -1
+  %int_cst2 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
+  %low = bitcast i32* %int_cst2 to i64*
+  %3 = load i64* %low, align 8, !tbaa !3
+  %high = getelementptr inbounds i32* %int_cst2, i64 2
+  %4 = bitcast i32* %high to i64*
+  %5 = load i64* %4, align 8, !tbaa !3
+  call void @rshift_double(i64 %3, i64 %5, i64 %sub, i32 128, i64* %l, i64* %h, i32 0) #9
+  %6 = load i64* %l, align 8, !tbaa !3
+  %.tr = trunc i64 %6 to i32
+  %conv6 = and i32 %.tr, 1
+  ret i32 %conv6
+}

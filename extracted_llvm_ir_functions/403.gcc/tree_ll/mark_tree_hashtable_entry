@@ -1,0 +1,44 @@
+define internal i32 @mark_tree_hashtable_entry(i8** nocapture %entry1, i8* nocapture %data) #0 {
+entry:
+  %0 = load i8** %entry1, align 8, !tbaa !0
+  %1 = bitcast i8* %0 to %union.tree_node*
+  %cmp = icmp eq i8* %0, null
+  br i1 %cmp, label %do.end10, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %call = tail call i32 @ggc_set_mark(i8* %0) #9
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %do.body2, label %do.end10
+
+do.body2:                                         ; preds = %land.lhs.true
+  %2 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !0
+  %elements_used = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 1
+  %3 = load i64* %elements_used, align 8, !tbaa !3
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 0
+  %4 = load i64* %num_elements, align 8, !tbaa !3
+  %cmp3 = icmp ult i64 %3, %4
+  br i1 %cmp3, label %if.end, label %if.then4
+
+if.then4:                                         ; preds = %do.body2
+  %mul = shl i64 %4, 1
+  %call6 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %2, i64 %mul) #9
+  store %struct.varray_head_tag* %call6, %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !0
+  %elements_used7.phi.trans.insert = getelementptr inbounds %struct.varray_head_tag* %call6, i64 0, i32 1
+  %.pre = load i64* %elements_used7.phi.trans.insert, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %do.body2, %if.then4
+  %5 = phi i64 [ %3, %do.body2 ], [ %.pre, %if.then4 ]
+  %6 = phi %struct.varray_head_tag* [ %2, %do.body2 ], [ %call6, %if.then4 ]
+  %elements_used7 = getelementptr inbounds %struct.varray_head_tag* %6, i64 0, i32 1
+  %inc = add i64 %5, 1
+  store i64 %inc, i64* %elements_used7, align 8, !tbaa !3
+  %data8 = getelementptr inbounds %struct.varray_head_tag* %6, i64 0, i32 4
+  %tree = bitcast %union.varray_data_tag* %data8 to [1 x %union.tree_node*]*
+  %arrayidx = getelementptr inbounds [1 x %union.tree_node*]* %tree, i64 0, i64 %5
+  store %union.tree_node* %1, %union.tree_node** %arrayidx, align 8, !tbaa !0
+  br label %do.end10
+
+do.end10:                                         ; preds = %land.lhs.true, %entry, %if.end
+  ret i32 1
+}

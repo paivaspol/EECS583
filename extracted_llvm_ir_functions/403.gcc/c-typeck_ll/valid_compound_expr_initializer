@@ -1,0 +1,48 @@
+define internal fastcc %union.tree_node* @valid_compound_expr_initializer(%union.tree_node* %value, %union.tree_node* %endtype) #0 {
+entry:
+  %code22 = getelementptr inbounds %union.tree_node* %value, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code22 to i32*
+  %bf.load23 = load i32* %0, align 8
+  %bf.clear24 = and i32 %bf.load23, 255
+  %cmp25 = icmp eq i32 %bf.clear24, 47
+  br i1 %cmp25, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry, %if.end
+  %value.tr26 = phi %union.tree_node* [ %4, %if.end ], [ %value, %entry ]
+  %operands = getelementptr inbounds %union.tree_node* %value.tr26, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  %1 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
+  %call = tail call fastcc %union.tree_node* @valid_compound_expr_initializer(%union.tree_node* %1, %union.tree_node* %endtype) #7
+  %2 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 8, !tbaa !0
+  %cmp1 = icmp eq %union.tree_node* %call, %2
+  br i1 %cmp1, label %return, label %if.end
+
+if.end:                                           ; preds = %if.then
+  %arrayidx5 = getelementptr inbounds i32* %operands, i64 2
+  %3 = bitcast i32* %arrayidx5 to %union.tree_node**
+  %4 = load %union.tree_node** %3, align 8, !tbaa !0
+  %code = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 2
+  %5 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %5, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 47
+  br i1 %cmp, label %if.then, label %if.else
+
+if.else:                                          ; preds = %if.end, %entry
+  %bf.load.lcssa = phi i32 [ %bf.load23, %entry ], [ %bf.load, %if.end ]
+  %value.tr.lcssa = phi %union.tree_node* [ %value, %entry ], [ %4, %if.end ]
+  %bf.clear9 = and i32 %bf.load.lcssa, 512
+  %tobool = icmp eq i32 %bf.clear9, 0
+  br i1 %tobool, label %land.lhs.true, label %return
+
+land.lhs.true:                                    ; preds = %if.else
+  %call10 = tail call %union.tree_node* @initializer_constant_valid_p(%union.tree_node* %value.tr.lcssa, %union.tree_node* %endtype) #8
+  %tobool11 = icmp eq %union.tree_node* %call10, null
+  %6 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 8, !tbaa !0
+  %.value = select i1 %tobool11, %union.tree_node* %6, %union.tree_node* %value.tr.lcssa
+  ret %union.tree_node* %.value
+
+return:                                           ; preds = %if.then, %if.else
+  %retval.0 = phi %union.tree_node* [ %value.tr.lcssa, %if.else ], [ %call, %if.then ]
+  ret %union.tree_node* %retval.0
+}

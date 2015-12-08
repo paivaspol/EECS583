@@ -1,0 +1,33 @@
+define void @emit_stack_restore(i32 %save_level, %struct.rtx_def* %sa, %struct.rtx_def* %after) #1 {
+entry:
+  %cmp = icmp eq %struct.rtx_def* %sa, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.rtx_def* @validize_mem(%struct.rtx_def* %sa) #5
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %sa.addr.0 = phi %struct.rtx_def* [ %call, %if.then ], [ null, %entry ]
+  %tobool = icmp eq %struct.rtx_def* %after, null
+  br i1 %tobool, label %if.else, label %if.then1
+
+if.then1:                                         ; preds = %if.end
+  tail call void @start_sequence() #4
+  %0 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !tbaa !3
+  %call2 = tail call %struct.rtx_def* @gen_move_insn(%struct.rtx_def* %0, %struct.rtx_def* %sa.addr.0) #4
+  %call3 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call2) #4
+  %call4 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  %call5 = tail call %struct.rtx_def* @emit_insn_after(%struct.rtx_def* %call4, %struct.rtx_def* %after) #4
+  br label %if.end8
+
+if.else:                                          ; preds = %if.end
+  %1 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !tbaa !3
+  %call6 = tail call %struct.rtx_def* @gen_move_insn(%struct.rtx_def* %1, %struct.rtx_def* %sa.addr.0) #4
+  %call7 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call6) #4
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.else, %if.then1
+  ret void
+}

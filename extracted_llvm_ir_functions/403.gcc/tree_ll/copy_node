@@ -1,0 +1,52 @@
+define %union.tree_node* @copy_node(%union.tree_node* nocapture %node) #0 {
+entry:
+  %code1 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code1 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %call = tail call i64 @tree_size(%union.tree_node* %node) #10
+  %call2 = tail call i8* @ggc_alloc(i64 %call) #9
+  %1 = bitcast i8* %call2 to %union.tree_node*
+  %2 = bitcast %union.tree_node* %node to i8*
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call2, i8* %2, i64 %call, i32 8, i1 false)
+  %chain = bitcast i8* %call2 to %union.tree_node**
+  store %union.tree_node* null, %union.tree_node** %chain, align 8, !tbaa !0
+  %asm_written_flag = getelementptr inbounds i8* %call2, i64 16
+  %3 = bitcast i8* %asm_written_flag to i32*
+  %bf.load5 = load i32* %3, align 8
+  %bf.clear6 = and i32 %bf.load5, -16385
+  store i32 %bf.clear6, i32* %3, align 8
+  %idxprom31 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom31
+  %4 = load i8* %arrayidx, align 1, !tbaa !1
+  switch i8 %4, label %if.end19 [
+    i8 100, label %if.then
+    i8 116, label %if.then13
+  ]
+
+if.then:                                          ; preds = %entry
+  %5 = load i32* @next_decl_uid, align 4, !tbaa !4
+  %inc = add nsw i32 %5, 1
+  store i32 %inc, i32* @next_decl_uid, align 4, !tbaa !4
+  %uid = getelementptr inbounds i8* %call2, i64 36
+  %6 = bitcast i8* %uid to i32*
+  store i32 %5, i32* %6, align 4, !tbaa !4
+  br label %if.end19
+
+if.then13:                                        ; preds = %entry
+  %7 = load i32* @next_type_uid, align 4, !tbaa !4
+  %inc14 = add nsw i32 %7, 1
+  store i32 %inc14, i32* @next_type_uid, align 4, !tbaa !4
+  %uid15 = getelementptr inbounds i8* %call2, i64 56
+  %8 = bitcast i8* %uid15 to i32*
+  store i32 %7, i32* %8, align 4, !tbaa !4
+  %symtab = getelementptr inbounds i8* %call2, i64 88
+  %pointer = bitcast i8* %symtab to i8**
+  store i8* null, i8** %pointer, align 8, !tbaa !0
+  %address = bitcast i8* %symtab to i32*
+  store i32 0, i32* %address, align 4, !tbaa !4
+  br label %if.end19
+
+if.end19:                                         ; preds = %entry, %if.then13, %if.then
+  ret %union.tree_node* %1
+}

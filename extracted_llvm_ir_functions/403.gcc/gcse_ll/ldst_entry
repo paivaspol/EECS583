@@ -1,0 +1,53 @@
+define internal fastcc %struct.ls_expr* @ldst_entry(%struct.rtx_def* %x) #0 {
+entry:
+  %ptr.024 = load %struct.ls_expr** @pre_ldst_mems, align 8
+  %cmp25 = icmp eq %struct.ls_expr* %ptr.024, null
+  br i1 %cmp25, label %if.then4, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %next.i = getelementptr inbounds %struct.ls_expr* %ptr.026, i64 0, i32 4
+  %ptr.0 = load %struct.ls_expr** %next.i, align 8
+  %cmp = icmp eq %struct.ls_expr* %ptr.0, null
+  br i1 %cmp, label %if.then4, label %for.body
+
+for.body:                                         ; preds = %entry, %for.cond
+  %ptr.026 = phi %struct.ls_expr* [ %ptr.0, %for.cond ], [ %ptr.024, %entry ]
+  %pattern = getelementptr inbounds %struct.ls_expr* %ptr.026, i64 0, i32 1
+  %0 = load %struct.rtx_def** %pattern, align 8, !tbaa !0
+  %call1 = tail call fastcc i32 @expr_equiv_p(%struct.rtx_def* %0, %struct.rtx_def* %x) #7
+  %tobool = icmp eq i32 %call1, 0
+  br i1 %tobool, label %for.cond, label %if.end7
+
+if.then4:                                         ; preds = %for.cond, %entry
+  %call5 = tail call noalias i8* @xmalloc(i64 64) #6
+  %1 = bitcast i8* %call5 to %struct.ls_expr*
+  %2 = load %struct.ls_expr** @pre_ldst_mems, align 8, !tbaa !0
+  %next = getelementptr inbounds i8* %call5, i64 32
+  %3 = bitcast i8* %next to %struct.ls_expr**
+  store %struct.ls_expr* %2, %struct.ls_expr** %3, align 8, !tbaa !0
+  %expr = bitcast i8* %call5 to %struct.expr**
+  store %struct.expr* null, %struct.expr** %expr, align 8, !tbaa !0
+  %pattern6 = getelementptr inbounds i8* %call5, i64 8
+  %4 = bitcast i8* %pattern6 to %struct.rtx_def**
+  store %struct.rtx_def* %x, %struct.rtx_def** %4, align 8, !tbaa !0
+  %loads = getelementptr inbounds i8* %call5, i64 16
+  %reaching_reg = getelementptr inbounds i8* %call5, i64 56
+  %5 = bitcast i8* %reaching_reg to %struct.rtx_def**
+  store %struct.rtx_def* null, %struct.rtx_def** %5, align 8, !tbaa !0
+  %invalid = getelementptr inbounds i8* %call5, i64 40
+  %6 = bitcast i8* %invalid to i32*
+  store i32 0, i32* %6, align 4, !tbaa !3
+  %index = getelementptr inbounds i8* %call5, i64 44
+  %7 = bitcast i8* %index to i32*
+  store i32 0, i32* %7, align 4, !tbaa !3
+  %hash_index = getelementptr inbounds i8* %call5, i64 48
+  %8 = bitcast i8* %hash_index to i32*
+  store i32 0, i32* %8, align 4, !tbaa !3
+  call void @llvm.memset.p0i8.i64(i8* %loads, i8 0, i64 16, i32 8, i1 false)
+  store %struct.ls_expr* %1, %struct.ls_expr** @pre_ldst_mems, align 8, !tbaa !0
+  br label %if.end7
+
+if.end7:                                          ; preds = %for.body, %if.then4
+  %ptr.1 = phi %struct.ls_expr* [ %1, %if.then4 ], [ %ptr.026, %for.body ]
+  ret %struct.ls_expr* %ptr.1
+}

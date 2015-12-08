@@ -1,0 +1,27 @@
+define i8* @fgetline(i8** nocapture %line, i32 %llmax, %struct._IO_FILE* nocapture %in) #0 {
+entry:
+  %0 = load i32* @fgetline.linelengthmax, align 4, !tbaa !3
+  %cmp = icmp slt i32 %0, %llmax
+  br i1 %cmp, label %if.then, label %entry.if.end_crit_edge
+
+entry.if.end_crit_edge:                           ; preds = %entry
+  %.pre5 = load i8** @fgetline.line0, align 8, !tbaa !0
+  br label %if.end
+
+if.then:                                          ; preds = %entry
+  store i32 %llmax, i32* @fgetline.linelengthmax, align 4, !tbaa !3
+  %1 = load i8** @fgetline.line0, align 8, !tbaa !0
+  %call = tail call i8* @save_realloc(i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 190, i8* %1, i32 %llmax) #8
+  store i8* %call, i8** @fgetline.line0, align 8, !tbaa !0
+  %.pre = load i32* @fgetline.linelengthmax, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
+  %2 = phi i8* [ %call, %if.then ], [ %.pre5, %entry.if.end_crit_edge ]
+  %3 = phi i32 [ %.pre, %if.then ], [ %0, %entry.if.end_crit_edge ]
+  %call2 = tail call i8* @fgets(i8* %2, i32 %3, %struct._IO_FILE* %in) #8
+  %4 = load i8** @fgetline.line0, align 8, !tbaa !0
+  store i8* %4, i8** %line, align 8, !tbaa !0
+  tail call void @trim(i8* %4) #8
+  ret i8* %call2
+}

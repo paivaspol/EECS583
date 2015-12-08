@@ -1,0 +1,73 @@
+define internal fastcc float @rms_force(%struct.t_commrec* %cr, [3 x float]* nocapture %f, i32 %ns, %struct.t_shell* nocapture %s, i32 %ndir, float %sf_dir) #0 {
+entry:
+  %ntot = alloca i32, align 4
+  %df2 = alloca float, align 4
+  %add = add nsw i32 %ndir, %ns
+  store i32 %add, i32* %ntot, align 4, !tbaa !3
+  %tobool = icmp eq i32 %add, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  store float %sf_dir, float* %df2, align 4, !tbaa !0
+  %cmp23 = icmp sgt i32 %ns, 0
+  br i1 %cmp23, label %for.body, label %for.end
+
+for.body:                                         ; preds = %if.end, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.end ]
+  %add725 = phi float [ %add7, %for.body ], [ %sf_dir, %if.end ]
+  %shell1 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 1
+  %0 = load i32* %shell1, align 4, !tbaa !3
+  %idxprom2 = sext i32 %0 to i64
+  %arraydecay = getelementptr inbounds [3 x float]* %f, i64 %idxprom2, i64 0
+  %1 = load float* %arraydecay, align 4, !tbaa !0
+  %mul.i = fmul float %1, %1
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %f, i64 %idxprom2, i64 1
+  %2 = load float* %arrayidx2.i, align 4, !tbaa !0
+  %mul4.i = fmul float %2, %2
+  %add.i = fadd float %mul.i, %mul4.i
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %f, i64 %idxprom2, i64 2
+  %3 = load float* %arrayidx5.i, align 4, !tbaa !0
+  %mul7.i = fmul float %3, %3
+  %add8.i = fadd float %add.i, %mul7.i
+  %add7 = fadd float %add725, %add8.i
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %ns
+  br i1 %exitcond, label %for.cond.for.end_crit_edge, label %for.body
+
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  store float %add7, float* %df2, align 4, !tbaa !0
+  br label %for.end
+
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %if.end
+  %4 = phi float [ %add7, %for.cond.for.end_crit_edge ], [ %sf_dir, %if.end ]
+  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
+  %5 = load i32* %nnodes, align 4, !tbaa !3
+  %cmp8 = icmp sgt i32 %5, 1
+  br i1 %cmp8, label %if.then10, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %for.end
+  %nthreads = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5
+  %6 = load i32* %nthreads, align 4, !tbaa !3
+  %cmp9 = icmp sgt i32 %6, 1
+  br i1 %cmp9, label %if.then10, label %if.end11
+
+if.then10:                                        ; preds = %lor.lhs.false, %for.end
+  call void @gmx_sumf(i32 1, float* %df2, %struct.t_commrec* %cr) #5
+  call void @gmx_sumi(i32 1, i32* %ntot, %struct.t_commrec* %cr) #5
+  %.pre = load float* %df2, align 4, !tbaa !0
+  %.pre26 = load i32* %ntot, align 4, !tbaa !3
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.then10, %lor.lhs.false
+  %7 = phi i32 [ %.pre26, %if.then10 ], [ %add, %lor.lhs.false ]
+  %8 = phi float [ %.pre, %if.then10 ], [ %4, %lor.lhs.false ]
+  %conv = sitofp i32 %7 to float
+  %div = fdiv float %8, %conv
+  %conv14 = call float @sqrtf(float %div) #3
+  br label %return
+
+return:                                           ; preds = %entry, %if.end11
+  %retval.0 = phi float [ %conv14, %if.end11 ], [ 0.000000e+00, %entry ]
+  ret float %retval.0
+}

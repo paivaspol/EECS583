@@ -1,0 +1,12 @@
+define void @_fatal_insn(i8* %msgid, %struct.rtx_def* %insn, i8* %file, i32 %line, i8* %function) #2 {
+entry:
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* %msgid) #6
+  %0 = load %struct.diagnostic_context** @global_dc, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.diagnostic_context* %0, i64 0, i32 0, i32 0, i32 9, i64 3
+  %1 = load i32* %arrayidx, align 4, !tbaa !3
+  %dec = add nsw i32 %1, -1
+  store i32 %dec, i32* %arrayidx, align 4, !tbaa !3
+  tail call void @debug_rtx(%struct.rtx_def* %insn) #6
+  tail call void @fancy_abort(i8* %file, i32 %line, i8* %function) #7
+  unreachable
+}

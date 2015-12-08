@@ -1,0 +1,21 @@
+define void @clear_reg_alias_info(%struct.rtx_def* %reg) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtuint, align 4, !tbaa !4
+  %1 = load i32* @reg_known_value_size, align 4, !tbaa !4
+  %cmp = icmp ult i32 %0, %1
+  %cmp1 = icmp ugt i32 %0, 52
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %idxprom = zext i32 %0 to i64
+  %2 = load %struct.rtx_def*** @reg_known_value, align 8, !tbaa !0
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def** %2, i64 %idxprom
+  store %struct.rtx_def* %reg, %struct.rtx_def** %arrayidx2, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  ret void
+}

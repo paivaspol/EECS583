@@ -1,0 +1,117 @@
+define void @init_branch_prob(i8* nocapture %filename) #0 {
+entry:
+  %buf.i = alloca [20 x i8], align 16
+  %len = alloca i64, align 8
+  %0 = load i32* @flag_test_coverage, align 4, !tbaa !0
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.end17, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = call i64 @strlen(i8* %filename) #9
+  %conv = trunc i64 %call to i32
+  %add = shl i64 %call, 32
+  %sext = add i64 %add, 17179869184
+  %conv2 = ashr exact i64 %sext, 32
+  %1 = alloca i8, i64 %conv2, align 1
+  %call3 = call i8* @strcpy(i8* %1, i8* %filename) #7
+  call void @strip_off_ending(i8* %1, i32 %conv) #7
+  %strlen61 = call i64 @strlen(i8* %1)
+  %endptr62 = getelementptr i8* %1, i64 %strlen61
+  %2 = bitcast i8* %endptr62 to i32*
+  store i32 6447662, i32* %2, align 1
+  %call5 = call %struct._IO_FILE* @fopen(i8* %1, i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0)) #7
+  store %struct._IO_FILE* %call5, %struct._IO_FILE** @bb_file, align 8, !tbaa !3
+  %cmp = icmp eq %struct._IO_FILE* %call5, null
+  br i1 %cmp, label %if.then7, label %if.end
+
+if.then7:                                         ; preds = %if.then
+  call void (i8*, ...)* @fatal_io_error(i8* getelementptr inbounds ([14 x i8]* @.str8, i64 0, i64 0), i8* %1) #8
+  unreachable
+
+if.end:                                           ; preds = %if.then
+  %sext63 = add i64 %add, 21474836480
+  %conv9 = ashr exact i64 %sext63, 32
+  %3 = alloca i8, i64 %conv9, align 1
+  %call10 = call i8* @strcpy(i8* %3, i8* %filename) #7
+  call void @strip_off_ending(i8* %3, i32 %conv) #7
+  %strlen64 = call i64 @strlen(i8* %3)
+  %endptr65 = getelementptr i8* %3, i64 %strlen64
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %endptr65, i8* getelementptr inbounds ([5 x i8]* @.str9, i64 0, i64 0), i64 5, i32 1, i1 false)
+  %call12 = call %struct._IO_FILE* @fopen(i8* %3, i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0)) #7
+  store %struct._IO_FILE* %call12, %struct._IO_FILE** @bbg_file, align 8, !tbaa !3
+  %cmp13 = icmp eq %struct._IO_FILE* %call12, null
+  br i1 %cmp13, label %if.then15, label %if.end16
+
+if.then15:                                        ; preds = %if.end
+  call void (i8*, ...)* @fatal_io_error(i8* getelementptr inbounds ([14 x i8]* @.str8, i64 0, i64 0), i8* %3) #8
+  unreachable
+
+if.end16:                                         ; preds = %if.end
+  store i8* null, i8** @last_bb_file_name, align 8, !tbaa !3
+  br label %if.end17
+
+if.end17:                                         ; preds = %entry, %if.end16
+  %4 = load i32* @flag_branch_probabilities, align 4, !tbaa !0
+  %tobool18 = icmp eq i32 %4, 0
+  br i1 %tobool18, label %if.end34, label %if.then19
+
+if.then19:                                        ; preds = %if.end17
+  %call20 = call i64 @strlen(i8* %filename) #9
+  store i64 %call20, i64* %len, align 8, !tbaa !4
+  %add21 = add nsw i64 %call20, 4
+  %5 = alloca i8, i64 %add21, align 1
+  %call22 = call i8* @strcpy(i8* %5, i8* %filename) #7
+  %conv23 = trunc i64 %call20 to i32
+  call void @strip_off_ending(i8* %5, i32 %conv23) #7
+  %strlen = call i64 @strlen(i8* %5)
+  %endptr = getelementptr i8* %5, i64 %strlen
+  %6 = bitcast i8* %endptr to i32*
+  store i32 6382638, i32* %6, align 1
+  %call25 = call %struct._IO_FILE* @fopen(i8* %5, i8* getelementptr inbounds ([3 x i8]* @.str11, i64 0, i64 0)) #7
+  store %struct._IO_FILE* %call25, %struct._IO_FILE** @da_file, align 8, !tbaa !3
+  %cmp26 = icmp eq %struct._IO_FILE* %call25, null
+  br i1 %cmp26, label %if.end29, label %if.then31
+
+if.end29:                                         ; preds = %if.then19
+  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([55 x i8]* @.str12, i64 0, i64 0), i8* %5) #7
+  %.pr = load %struct._IO_FILE** @da_file, align 8, !tbaa !3
+  %tobool30 = icmp eq %struct._IO_FILE* %.pr, null
+  br i1 %tobool30, label %if.end34, label %if.then31
+
+if.then31:                                        ; preds = %if.then19, %if.end29
+  %7 = phi %struct._IO_FILE* [ %.pr, %if.end29 ], [ %call25, %if.then19 ]
+  %8 = call fastcc i32 @__read_long(i64* %len, %struct._IO_FILE* %7) #6
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.end29, %if.end17, %if.then31
+  %9 = load i32* @profile_arc_flag, align 4, !tbaa !0
+  %tobool35 = icmp eq i32 %9, 0
+  br i1 %tobool35, label %if.end37, label %if.then36
+
+if.then36:                                        ; preds = %if.end34
+  %10 = getelementptr inbounds [20 x i8]* %buf.i, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 20, i8* %10) #5
+  %call.i = call i32 (i8*, i8*, ...)* @sprintf(i8* %10, i8* getelementptr inbounds ([7 x i8]* @.str27, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str28, i64 0, i64 0), i32 2) #7
+  %11 = load i32* @target_flags, align 4, !tbaa !0
+  %and.i = lshr i32 %11, 25
+  %12 = and i32 %and.i, 1
+  %13 = or i32 %12, 4
+  %call2.i = call i8* @ggc_alloc_string(i8* %10, i32 -1) #7
+  %call3.i = call %struct.rtx_def* @gen_rtx_fmt_s(i32 68, i32 %13, i8* %call2.i) #7
+  store %struct.rtx_def* %call3.i, %struct.rtx_def** @profiler_label, align 8, !tbaa !3
+  call void @ggc_add_rtx_root(%struct.rtx_def** @profiler_label, i32 1) #7
+  call void @llvm.lifetime.end(i64 20, i8* %10) #5
+  br label %if.end37
+
+if.end37:                                         ; preds = %if.end34, %if.then36
+  store i32 0, i32* @total_num_blocks, align 4, !tbaa !0
+  store i32 0, i32* @total_num_edges, align 4, !tbaa !0
+  store i32 0, i32* @total_num_edges_ignored, align 4, !tbaa !0
+  store i32 0, i32* @total_num_edges_instrumented, align 4, !tbaa !0
+  store i32 0, i32* @total_num_blocks_created, align 4, !tbaa !0
+  store i32 0, i32* @total_num_passes, align 4, !tbaa !0
+  store i32 0, i32* @total_num_times_called, align 4, !tbaa !0
+  store i32 0, i32* @total_num_branches, align 4, !tbaa !0
+  call void @llvm.memset.p0i8.i64(i8* bitcast ([20 x i32]* @total_hist_br_prob to i8*), i8 0, i64 80, i32 16, i1 false)
+  ret void
+}

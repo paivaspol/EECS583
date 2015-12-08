@@ -1,0 +1,19 @@
+define void @write_checksum(i32 %parallel, %struct.gauge_file* %gf) #0 {
+entry:
+  %myname = alloca [15 x i8], align 1
+  %0 = getelementptr inbounds [15 x i8]* %myname, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* getelementptr inbounds ([15 x i8]* @write_checksum.myname, i64 0, i64 0), i64 15, i32 1, i1 false)
+  %fp = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 0
+  %1 = load %struct._IO_FILE** %fp, align 8, !tbaa !3
+  %sum29 = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 6, i32 1
+  %2 = bitcast i32* %sum29 to i8*
+  call void @pswrite_data(i32 %parallel, %struct._IO_FILE* %1, i8* %2, i64 4, i8* %0, i8* getelementptr inbounds ([9 x i8]* @.str40, i64 0, i64 0)) #8
+  %3 = load %struct._IO_FILE** %fp, align 8, !tbaa !3
+  %sum31 = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 6, i32 0
+  %4 = bitcast i32* %sum31 to i8*
+  call void @pswrite_data(i32 %parallel, %struct._IO_FILE* %3, i8* %4, i64 4, i8* %0, i8* getelementptr inbounds ([9 x i8]* @.str40, i64 0, i64 0)) #8
+  %5 = load i32* %sum29, align 4, !tbaa !0
+  %6 = load i32* %sum31, align 4, !tbaa !0
+  %call = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str43, i64 0, i64 0), i32 %5, i32 %6) #9
+  ret void
+}

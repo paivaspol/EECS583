@@ -1,0 +1,25 @@
+define void @translate_view(%struct.t_3dview* nocapture %view, i32 %axis, i32 %bPositive) #0 {
+entry:
+  %tobool = icmp eq i32 %bPositive, 0
+  %idxprom = sext i32 %axis to i64
+  %arrayidx2 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 %idxprom, i64 %idxprom
+  %0 = load float* %arrayidx2, align 4, !tbaa !0
+  %div = fmul float %0, 1.250000e-01
+  %arrayidx4 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 2, i64 %idxprom
+  %1 = load float* %arrayidx4, align 4, !tbaa !0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %add = fadd float %1, %div
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %sub = fsub float %1, %div
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %storemerge = phi float [ %sub, %if.else ], [ %add, %if.then ]
+  store float %storemerge, float* %arrayidx4, align 4, !tbaa !0
+  tail call void @calculate_view(%struct.t_3dview* %view) #5
+  ret void
+}

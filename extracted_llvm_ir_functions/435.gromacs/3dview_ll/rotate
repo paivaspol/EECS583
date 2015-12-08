@@ -1,0 +1,104 @@
+define void @rotate(i32 %axis, float %angle, [4 x float]* nocapture %A) #0 {
+entry:
+  br label %for.cond1.preheader.i
+
+for.cond1.preheader.i:                            ; preds = %for.inc11.i, %entry
+  %indvars.iv21.i = phi i64 [ 0, %entry ], [ %indvars.iv.next22.i, %for.inc11.i ]
+  %0 = trunc i64 %indvars.iv21.i to i32
+  br label %for.body3.i
+
+for.body3.i:                                      ; preds = %for.body3.i, %for.cond1.preheader.i
+  %indvars.iv.i = phi i64 [ 0, %for.cond1.preheader.i ], [ %indvars.iv.next.i, %for.body3.i ]
+  %1 = trunc i64 %indvars.iv.i to i32
+  %cmp4.i = icmp eq i32 %0, %1
+  %arrayidx6.i = getelementptr inbounds [4 x float]* %A, i64 %indvars.iv21.i, i64 %indvars.iv.i
+  %..i = select i1 %cmp4.i, float 1.000000e+00, float 0.000000e+00
+  store float %..i, float* %arrayidx6.i, align 4, !tbaa !0
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.inc11.i, label %for.body3.i
+
+for.inc11.i:                                      ; preds = %for.body3.i
+  %indvars.iv.next22.i = add i64 %indvars.iv21.i, 1
+  %lftr.wideiv86 = trunc i64 %indvars.iv.next22.i to i32
+  %exitcond87 = icmp eq i32 %lftr.wideiv86, 4
+  br i1 %exitcond87, label %unity_m4.exit, label %for.cond1.preheader.i
+
+unity_m4.exit:                                    ; preds = %for.inc11.i
+  switch i32 %axis, label %sw.default [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb18
+    i32 2, label %sw.bb40
+  ]
+
+sw.bb:                                            ; preds = %unity_m4.exit
+  %conv = fpext float %angle to double
+  %call = tail call double @cos(double %conv) #4
+  %conv1 = fptrunc double %call to float
+  %arrayidx2 = getelementptr inbounds [4 x float]* %A, i64 1, i64 1
+  store float %conv1, float* %arrayidx2, align 4, !tbaa !0
+  %call4 = tail call double @sin(double %conv) #4
+  %2 = fptrunc double %call4 to float
+  %conv5 = fsub float -0.000000e+00, %2
+  %arrayidx7 = getelementptr inbounds [4 x float]* %A, i64 1, i64 2
+  store float %conv5, float* %arrayidx7, align 4, !tbaa !0
+  %call9 = tail call double @sin(double %conv) #4
+  %conv10 = fptrunc double %call9 to float
+  %arrayidx12 = getelementptr inbounds [4 x float]* %A, i64 2, i64 1
+  store float %conv10, float* %arrayidx12, align 4, !tbaa !0
+  %call14 = tail call double @cos(double %conv) #4
+  %conv15 = fptrunc double %call14 to float
+  %arrayidx17 = getelementptr inbounds [4 x float]* %A, i64 2, i64 2
+  store float %conv15, float* %arrayidx17, align 4, !tbaa !0
+  br label %sw.epilog
+
+sw.bb18:                                          ; preds = %unity_m4.exit
+  %conv19 = fpext float %angle to double
+  %call20 = tail call double @cos(double %conv19) #4
+  %conv21 = fptrunc double %call20 to float
+  %arrayidx23 = getelementptr inbounds [4 x float]* %A, i64 0, i64 0
+  store float %conv21, float* %arrayidx23, align 4, !tbaa !0
+  %call25 = tail call double @sin(double %conv19) #4
+  %conv26 = fptrunc double %call25 to float
+  %arrayidx28 = getelementptr inbounds [4 x float]* %A, i64 0, i64 2
+  store float %conv26, float* %arrayidx28, align 4, !tbaa !0
+  %call30 = tail call double @sin(double %conv19) #4
+  %3 = fptrunc double %call30 to float
+  %conv32 = fsub float -0.000000e+00, %3
+  %arrayidx34 = getelementptr inbounds [4 x float]* %A, i64 2, i64 0
+  store float %conv32, float* %arrayidx34, align 4, !tbaa !0
+  %call36 = tail call double @cos(double %conv19) #4
+  %conv37 = fptrunc double %call36 to float
+  %arrayidx39 = getelementptr inbounds [4 x float]* %A, i64 2, i64 2
+  store float %conv37, float* %arrayidx39, align 4, !tbaa !0
+  br label %sw.epilog
+
+sw.bb40:                                          ; preds = %unity_m4.exit
+  %conv41 = fpext float %angle to double
+  %call42 = tail call double @cos(double %conv41) #4
+  %conv43 = fptrunc double %call42 to float
+  %arrayidx45 = getelementptr inbounds [4 x float]* %A, i64 0, i64 0
+  store float %conv43, float* %arrayidx45, align 4, !tbaa !0
+  %call47 = tail call double @sin(double %conv41) #4
+  %4 = fptrunc double %call47 to float
+  %conv49 = fsub float -0.000000e+00, %4
+  %arrayidx51 = getelementptr inbounds [4 x float]* %A, i64 0, i64 1
+  store float %conv49, float* %arrayidx51, align 4, !tbaa !0
+  %call53 = tail call double @sin(double %conv41) #4
+  %conv54 = fptrunc double %call53 to float
+  %arrayidx56 = getelementptr inbounds [4 x float]* %A, i64 1, i64 0
+  store float %conv54, float* %arrayidx56, align 4, !tbaa !0
+  %call58 = tail call double @cos(double %conv41) #4
+  %conv59 = fptrunc double %call58 to float
+  %arrayidx61 = getelementptr inbounds [4 x float]* %A, i64 1, i64 1
+  store float %conv59, float* %arrayidx61, align 4, !tbaa !0
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %unity_m4.exit
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([24 x i8]* @.str4, i64 0, i64 0), i32 %axis) #4
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %sw.default, %sw.bb40, %sw.bb18, %sw.bb
+  ret void
+}

@@ -1,0 +1,54 @@
+define %struct.rtx_def* @gen_prefetch(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1, %struct.rtx_def* %operand2) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %rtwint = getelementptr inbounds %struct.rtx_def* %operand1, i64 0, i32 1, i64 0, i32 0
+  %0 = load i64* %rtwint, align 8, !tbaa !4
+  %conv = trunc i64 %0 to i32
+  %1 = icmp ugt i32 %conv, 1
+  br i1 %1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 19621, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.gen_prefetch, i64 0, i64 0)) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %rtwint8 = getelementptr inbounds %struct.rtx_def* %operand2, i64 0, i32 1, i64 0, i32 0
+  %2 = load i64* %rtwint8, align 8, !tbaa !4
+  %conv9 = trunc i64 %2 to i32
+  %3 = icmp ugt i32 %conv9, 3
+  br i1 %3, label %if.then17, label %if.end18
+
+if.then17:                                        ; preds = %if.end
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 19623, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.gen_prefetch, i64 0, i64 0)) #5
+  unreachable
+
+if.end18:                                         ; preds = %if.end
+  %4 = load i32* @target_flags, align 4, !tbaa !3
+  %and = and i32 %4, 1048576
+  %cmp19 = icmp eq i32 %and, 0
+  br i1 %cmp19, label %if.else, label %land.lhs.true21
+
+land.lhs.true21:                                  ; preds = %if.end18
+  %5 = load i32* @x86_prefetch_sse, align 4, !tbaa !3
+  %tobool = icmp eq i32 %5, 0
+  %cmp.not = icmp ne i32 %conv, 0
+  %brmerge = or i1 %tobool, %cmp.not
+  br i1 %brmerge, label %if.then24, label %if.else
+
+if.then24:                                        ; preds = %land.lhs.true21
+  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 3) #4
+  br label %if.end27
+
+if.else:                                          ; preds = %land.lhs.true21, %if.end18
+  %6 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.else, %if.then24
+  %operands.sroa.2.0 = phi %struct.rtx_def* [ %call, %if.then24 ], [ %operand2, %if.else ]
+  %operands.sroa.1.0 = phi %struct.rtx_def* [ %operand1, %if.then24 ], [ %6, %if.else ]
+  %call31 = tail call %struct.rtx_def* @gen_rtx_fmt_eee(i32 46, i32 0, %struct.rtx_def* %operand0, %struct.rtx_def* %operands.sroa.1.0, %struct.rtx_def* %operands.sroa.2.0) #4
+  %call32 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call31) #4
+  %call33 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  ret %struct.rtx_def* %call33
+}

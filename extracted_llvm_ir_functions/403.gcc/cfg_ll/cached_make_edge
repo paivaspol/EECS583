@@ -1,0 +1,174 @@
+define %struct.edge_def* @cached_make_edge(%struct.simple_bitmap_def** %edge_cache, %struct.basic_block_def* %src, %struct.basic_block_def* %dst, i32 %flags) #0 {
+entry:
+  %cmp1 = icmp ne %struct.basic_block_def* %dst, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1)
+  %notlhs = icmp ne %struct.simple_bitmap_def** %edge_cache, null
+  %notrhs = icmp ne %struct.basic_block_def* %src, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0)
+  %not.or.cond = and i1 %notrhs, %notlhs
+  %.cmp1 = and i1 %cmp1, %not.or.cond
+  br i1 %.cmp1, label %sw.default, label %sw.bb
+
+sw.default:                                       ; preds = %entry
+  %index = getelementptr inbounds %struct.basic_block_def* %dst, i64 0, i32 11
+  %0 = load i32* %index, align 4, !tbaa !3
+  %div = lshr i32 %0, 6
+  %idxprom = zext i32 %div to i64
+  %index2 = getelementptr inbounds %struct.basic_block_def* %src, i64 0, i32 11
+  %1 = load i32* %index2, align 4, !tbaa !3
+  %idxprom3 = sext i32 %1 to i64
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def** %edge_cache, i64 %idxprom3
+  %2 = load %struct.simple_bitmap_def** %arrayidx, align 8, !tbaa !0
+  %arrayidx4 = getelementptr inbounds %struct.simple_bitmap_def* %2, i64 0, i32 3, i64 %idxprom
+  %3 = load i64* %arrayidx4, align 8, !tbaa !4
+  %rem = and i32 %0, 63
+  %sh_prom = zext i32 %rem to i64
+  %4 = shl i64 1, %sh_prom
+  %and130 = and i64 %3, %4
+  %tobool6 = icmp eq i64 %and130, 0
+  br i1 %tobool6, label %sw.epilog, label %if.end
+
+if.end:                                           ; preds = %sw.default
+  %cmp7 = icmp eq i32 %flags, 0
+  br i1 %cmp7, label %return, label %sw.bb
+
+sw.bb:                                            ; preds = %entry, %if.end
+  %succ = getelementptr inbounds %struct.basic_block_def* %src, i64 0, i32 5
+  %e.0132 = load %struct.edge_def** %succ, align 8
+  %tobool10133 = icmp eq %struct.edge_def* %e.0132, null
+  br i1 %tobool10133, label %sw.epilog, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %succ_next = getelementptr inbounds %struct.edge_def* %e.0134, i64 0, i32 1
+  %e.0 = load %struct.edge_def** %succ_next, align 8
+  %tobool10 = icmp eq %struct.edge_def* %e.0, null
+  br i1 %tobool10, label %sw.epilog, label %for.body
+
+for.body:                                         ; preds = %sw.bb, %for.cond
+  %e.0134 = phi %struct.edge_def* [ %e.0, %for.cond ], [ %e.0132, %sw.bb ]
+  %dest = getelementptr inbounds %struct.edge_def* %e.0134, i64 0, i32 3
+  %5 = load %struct.basic_block_def** %dest, align 8, !tbaa !0
+  %cmp11 = icmp eq %struct.basic_block_def* %5, %dst
+  br i1 %cmp11, label %if.then12, label %for.cond
+
+if.then12:                                        ; preds = %for.body
+  %flags13 = getelementptr inbounds %struct.edge_def* %e.0134, i64 0, i32 6
+  %6 = load i32* %flags13, align 4, !tbaa !3
+  %or = or i32 %6, %flags
+  store i32 %or, i32* %flags13, align 4, !tbaa !3
+  br label %return
+
+sw.epilog:                                        ; preds = %sw.bb, %for.cond, %sw.default
+  %7 = load %struct.edge_def** @first_deleted_edge, align 8, !tbaa !0
+  %tobool15 = icmp eq %struct.edge_def* %7, null
+  br i1 %tobool15, label %if.else, label %if.then16
+
+if.then16:                                        ; preds = %sw.epilog
+  %succ_next17 = getelementptr inbounds %struct.edge_def* %7, i64 0, i32 1
+  %8 = load %struct.edge_def** %succ_next17, align 8, !tbaa !0
+  store %struct.edge_def* %8, %struct.edge_def** @first_deleted_edge, align 8, !tbaa !0
+  br label %if.end54
+
+if.else:                                          ; preds = %sw.epilog
+  %9 = load i8** getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 4), align 8, !tbaa !0
+  %10 = load i8** getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint i8* %9 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %10 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp18 = icmp slt i64 %sub.ptr.sub, 64
+  br i1 %cmp18, label %if.then20, label %if.end21
+
+if.then20:                                        ; preds = %if.else
+  tail call void @_obstack_newchunk(%struct.obstack* @flow_obstack, i32 64) #5
+  %.pre = load i8** getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then20, %if.else
+  %11 = phi i8* [ %.pre, %if.then20 ], [ %10, %if.else ]
+  %add.ptr = getelementptr inbounds i8* %11, i64 64
+  store i8* %add.ptr, i8** getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %12 = load i8** getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 2), align 8, !tbaa !0
+  %cmp24 = icmp eq i8* %add.ptr, %12
+  br i1 %cmp24, label %if.then26, label %if.end27
+
+if.then26:                                        ; preds = %if.end21
+  %bf.load = load i8* getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 10), align 8
+  %bf.set = or i8 %bf.load, 2
+  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 10), align 8
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.end21, %if.then26
+  %sub.ptr.lhs.cast29 = ptrtoint i8* %add.ptr to i64
+  %13 = load i32* getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 6), align 8, !tbaa !3
+  %conv31 = sext i32 %13 to i64
+  %add = add nsw i64 %conv31, %sub.ptr.lhs.cast29
+  %neg = xor i32 %13, -1
+  %conv33 = sext i32 %neg to i64
+  %and34 = and i64 %add, %conv33
+  %add.ptr35 = getelementptr inbounds i8* null, i64 %and34
+  store i8* %add.ptr35, i8** getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %14 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 1), align 8, !tbaa !0
+  %sub.ptr.lhs.cast38 = ptrtoint i8* %add.ptr35 to i64
+  %sub.ptr.rhs.cast39 = ptrtoint %struct._obstack_chunk* %14 to i64
+  %sub.ptr.sub40 = sub i64 %sub.ptr.lhs.cast38, %sub.ptr.rhs.cast39
+  %15 = load i8** getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 4), align 8, !tbaa !0
+  %sub.ptr.lhs.cast43 = ptrtoint i8* %15 to i64
+  %sub.ptr.sub45 = sub i64 %sub.ptr.lhs.cast43, %sub.ptr.rhs.cast39
+  %cmp46 = icmp sgt i64 %sub.ptr.sub40, %sub.ptr.sub45
+  br i1 %cmp46, label %if.then48, label %if.end51
+
+if.then48:                                        ; preds = %if.end27
+  store i8* %15, i8** getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end51
+
+if.end51:                                         ; preds = %if.then48, %if.end27
+  %16 = phi i8* [ %15, %if.then48 ], [ %add.ptr35, %if.end27 ]
+  store i8* %16, i8** getelementptr inbounds (%struct.obstack* @flow_obstack, i64 0, i32 2), align 8, !tbaa !0
+  %17 = bitcast i8* %12 to %struct.edge_def*
+  tail call void @llvm.memset.p0i8.i64(i8* %12, i8 0, i64 64, i32 8, i1 false)
+  br label %if.end54
+
+if.end54:                                         ; preds = %if.end51, %if.then16
+  %e.1 = phi %struct.edge_def* [ %7, %if.then16 ], [ %17, %if.end51 ]
+  %18 = load i32* @n_edges, align 4, !tbaa !3
+  %inc = add nsw i32 %18, 1
+  store i32 %inc, i32* @n_edges, align 4, !tbaa !3
+  %succ55 = getelementptr inbounds %struct.basic_block_def* %src, i64 0, i32 5
+  %19 = load %struct.edge_def** %succ55, align 8, !tbaa !0
+  %succ_next56 = getelementptr inbounds %struct.edge_def* %e.1, i64 0, i32 1
+  store %struct.edge_def* %19, %struct.edge_def** %succ_next56, align 8, !tbaa !0
+  %pred = getelementptr inbounds %struct.basic_block_def* %dst, i64 0, i32 4
+  %20 = load %struct.edge_def** %pred, align 8, !tbaa !0
+  %pred_next = getelementptr inbounds %struct.edge_def* %e.1, i64 0, i32 0
+  store %struct.edge_def* %20, %struct.edge_def** %pred_next, align 8, !tbaa !0
+  %src57 = getelementptr inbounds %struct.edge_def* %e.1, i64 0, i32 2
+  store %struct.basic_block_def* %src, %struct.basic_block_def** %src57, align 8, !tbaa !0
+  %dest58 = getelementptr inbounds %struct.edge_def* %e.1, i64 0, i32 3
+  store %struct.basic_block_def* %dst, %struct.basic_block_def** %dest58, align 8, !tbaa !0
+  %flags59 = getelementptr inbounds %struct.edge_def* %e.1, i64 0, i32 6
+  store i32 %flags, i32* %flags59, align 4, !tbaa !3
+  store %struct.edge_def* %e.1, %struct.edge_def** %succ55, align 8, !tbaa !0
+  store %struct.edge_def* %e.1, %struct.edge_def** %pred, align 8, !tbaa !0
+  br i1 %.cmp1, label %if.then63, label %return
+
+if.then63:                                        ; preds = %if.end54
+  %index64 = getelementptr inbounds %struct.basic_block_def* %dst, i64 0, i32 11
+  %21 = load i32* %index64, align 4, !tbaa !3
+  %rem65 = and i32 %21, 63
+  %sh_prom66 = zext i32 %rem65 to i64
+  %shl = shl i64 1, %sh_prom66
+  %div68 = lshr i32 %21, 6
+  %idxprom69 = zext i32 %div68 to i64
+  %index70 = getelementptr inbounds %struct.basic_block_def* %src, i64 0, i32 11
+  %22 = load i32* %index70, align 4, !tbaa !3
+  %idxprom71 = sext i32 %22 to i64
+  %arrayidx72 = getelementptr inbounds %struct.simple_bitmap_def** %edge_cache, i64 %idxprom71
+  %23 = load %struct.simple_bitmap_def** %arrayidx72, align 8, !tbaa !0
+  %arrayidx74 = getelementptr inbounds %struct.simple_bitmap_def* %23, i64 0, i32 3, i64 %idxprom69
+  %24 = load i64* %arrayidx74, align 8, !tbaa !4
+  %or75 = or i64 %24, %shl
+  store i64 %or75, i64* %arrayidx74, align 8, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %if.end54, %if.then63, %if.end, %if.then12
+  %retval.0 = phi %struct.edge_def* [ null, %if.then12 ], [ null, %if.end ], [ %e.1, %if.then63 ], [ %e.1, %if.end54 ]
+  ret %struct.edge_def* %retval.0
+}

@@ -1,0 +1,329 @@
+define i32 @feat_s2mfc2feat_block(%struct.feat_s* %fcb, float** %uttcep, i32 %nfr, i32 %beginutt, i32 %endutt, float*** nocapture %ofeat) #0 {
+entry:
+  %window_size = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 5
+  %0 = load i32* %window_size, align 4, !tbaa !3
+  %sub = sub i32 0, %0
+  %cepsize1 = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 1
+  %1 = load i32* %cepsize1, align 4, !tbaa !3
+  %cmp = icmp slt i32 %1, 1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 964, i8* getelementptr inbounds ([12 x i8]* @.str38, i64 0, i64 0)) #7
+  %2 = load i32* %cepsize1, align 4, !tbaa !3
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([17 x i8]* @.str56, i64 0, i64 0), i32 %2) #7
+  %.pre = load i32* %cepsize1, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %3 = phi i32 [ %.pre, %if.then ], [ %1, %entry ]
+  %4 = load float*** @feat_s2mfc2feat_block.cepbuf, align 8, !tbaa !0
+  %cmp4 = icmp eq float** %4, null
+  br i1 %cmp4, label %if.then5, label %if.end8
+
+if.then5:                                         ; preds = %if.end
+  %call = tail call i8** @__ckd_calloc_2d__(i32 256, i32 %3, i32 4, i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 968) #7
+  %5 = bitcast i8** %call to float**
+  store float** %5, float*** @feat_s2mfc2feat_block.cepbuf, align 8, !tbaa !0
+  %tobool = icmp eq i8** %call, null
+  br i1 %tobool, label %if.then6, label %if.end7
+
+if.then6:                                         ; preds = %if.then5
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 969, i8* getelementptr inbounds ([12 x i8]* @.str38, i64 0, i64 0)) #7
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([52 x i8]* @.str65, i64 0, i64 0), i32 256, i32 %3, i64 4) #7
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.then5, %if.then6
+  tail call void @_E__pr_info_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 971, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #7
+  tail call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([43 x i8]* @.str66, i64 0, i64 0), i32 256) #7
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.end7, %if.end
+  %beginutt.addr.0 = phi i32 [ 1, %if.end7 ], [ %beginutt, %if.end ]
+  %6 = load float*** @feat_s2mfc2feat_block.tmpcepbuf, align 8, !tbaa !0
+  %cmp9 = icmp eq float** %6, null
+  br i1 %cmp9, label %if.then10, label %if.end17
+
+if.then10:                                        ; preds = %if.end8
+  %mul = shl nsw i32 %0, 1
+  %add212 = or i32 %mul, 1
+  %call11 = tail call i8** @__ckd_calloc_2d__(i32 %add212, i32 %3, i32 4, i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 975) #7
+  %7 = bitcast i8** %call11 to float**
+  store float** %7, float*** @feat_s2mfc2feat_block.tmpcepbuf, align 8, !tbaa !0
+  %tobool12 = icmp eq i8** %call11, null
+  br i1 %tobool12, label %if.then13, label %if.end17
+
+if.then13:                                        ; preds = %if.then10
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 976, i8* getelementptr inbounds ([12 x i8]* @.str38, i64 0, i64 0)) #7
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([55 x i8]* @.str67, i64 0, i64 0), i32 %add212, i32 %3, i64 4) #7
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.then10, %if.then13, %if.end8
+  %cmn = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 6
+  %8 = load i32* %cmn, align 4, !tbaa !3
+  %tobool18 = icmp eq i32 %8, 0
+  br i1 %tobool18, label %if.end21, label %if.then19
+
+if.then19:                                        ; preds = %if.end17
+  %varnorm = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 7
+  %9 = load i32* %varnorm, align 4, !tbaa !3
+  %10 = load i32* %cepsize1, align 4, !tbaa !3
+  tail call void @cmn_prior(float** %uttcep, i32 %9, i32 %nfr, i32 %10, i32 %endutt) #7
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.end17, %if.then19
+  %tobool22 = icmp eq i32 %beginutt.addr.0, 0
+  br i1 %tobool22, label %if.end39, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.end21
+  %cmp24225 = icmp sgt i32 %0, 0
+  br i1 %cmp24225, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %cmp26 = icmp slt i32 %0, %nfr
+  %conv = sext i32 %3 to i64
+  %mul32 = shl nsw i64 %conv, 2
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv236 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next237.pre-phi, %for.inc ]
+  %11 = load float*** @feat_s2mfc2feat_block.cepbuf, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds float** %11, i64 %indvars.iv236
+  %12 = load float** %arrayidx, align 8, !tbaa !0
+  %13 = bitcast float* %12 to i8*
+  br i1 %cmp26, label %if.then27, label %if.else
+
+if.then27:                                        ; preds = %for.body
+  %14 = add nsw i64 %indvars.iv236, 1
+  %arrayidx31 = getelementptr inbounds float** %uttcep, i64 %14
+  %15 = load float** %arrayidx31, align 8, !tbaa !0
+  %16 = bitcast float* %15 to i8*
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %13, i8* %16, i64 %mul32, i32 4, i1 false)
+  br label %for.inc
+
+if.else:                                          ; preds = %for.body
+  %17 = load float** %uttcep, align 8, !tbaa !0
+  %18 = bitcast float* %17 to i8*
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %13, i8* %18, i64 %mul32, i32 4, i1 false)
+  %indvars.iv.next237.pre = add i64 %indvars.iv236, 1
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then27, %if.else
+  %indvars.iv.next237.pre-phi = phi i64 [ %14, %if.then27 ], [ %indvars.iv.next237.pre, %if.else ]
+  %lftr.wideiv239 = trunc i64 %indvars.iv.next237.pre-phi to i32
+  %exitcond240 = icmp eq i32 %lftr.wideiv239, %0
+  br i1 %exitcond240, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %rem = srem i32 %0, 256
+  store i32 %rem, i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  store i32 %rem, i32* @feat_s2mfc2feat_block.curpos, align 4, !tbaa !3
+  br label %if.end39
+
+if.end39:                                         ; preds = %if.end21, %for.end
+  %residualvecs.0 = phi i32 [ %sub, %for.end ], [ 0, %if.end21 ]
+  %cmp41223 = icmp sgt i32 %nfr, 0
+  br i1 %cmp41223, label %for.body43.lr.ph, label %for.end54
+
+for.body43.lr.ph:                                 ; preds = %if.end39
+  %conv49 = sext i32 %3 to i64
+  %mul50 = shl nsw i64 %conv49, 2
+  %.pre243 = load i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  br label %for.body43
+
+for.body43:                                       ; preds = %for.body43, %for.body43.lr.ph
+  %19 = phi i32 [ %.pre243, %for.body43.lr.ph ], [ %rem51, %for.body43 ]
+  %indvars.iv232 = phi i64 [ 0, %for.body43.lr.ph ], [ %indvars.iv.next233, %for.body43 ]
+  %inc44 = add nsw i32 %19, 1
+  store i32 %inc44, i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  %idxprom45 = sext i32 %19 to i64
+  %20 = load float*** @feat_s2mfc2feat_block.cepbuf, align 8, !tbaa !0
+  %arrayidx46 = getelementptr inbounds float** %20, i64 %idxprom45
+  %21 = load float** %arrayidx46, align 8, !tbaa !0
+  %22 = bitcast float* %21 to i8*
+  %arrayidx48 = getelementptr inbounds float** %uttcep, i64 %indvars.iv232
+  %23 = load float** %arrayidx48, align 8, !tbaa !0
+  %24 = bitcast float* %23 to i8*
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %22, i8* %24, i64 %mul50, i32 4, i1 false)
+  %25 = load i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  %rem51 = srem i32 %25, 256
+  store i32 %rem51, i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  %indvars.iv.next233 = add i64 %indvars.iv232, 1
+  %lftr.wideiv234 = trunc i64 %indvars.iv.next233 to i32
+  %exitcond235 = icmp eq i32 %lftr.wideiv234, %nfr
+  br i1 %exitcond235, label %for.end54, label %for.body43
+
+for.end54:                                        ; preds = %for.body43, %if.end39
+  %tobool55 = icmp eq i32 %endutt, 0
+  br i1 %tobool55, label %if.end99, label %if.then56
+
+if.then56:                                        ; preds = %for.end54
+  %cmp61218 = icmp sgt i32 %0, 0
+  br i1 %cmp41223, label %for.cond60.preheader, label %if.else76
+
+for.cond60.preheader:                             ; preds = %if.then56
+  br i1 %cmp61218, label %for.body63.lr.ph, label %if.end97
+
+for.body63.lr.ph:                                 ; preds = %for.cond60.preheader
+  %sub67 = add nsw i32 %nfr, -1
+  %idxprom68 = sext i32 %sub67 to i64
+  %arrayidx69 = getelementptr inbounds float** %uttcep, i64 %idxprom68
+  %conv70 = sext i32 %3 to i64
+  %mul71 = shl nsw i64 %conv70, 2
+  %.pre242 = load i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  br label %for.body63
+
+for.body63:                                       ; preds = %for.body63.for.body63_crit_edge, %for.body63.lr.ph
+  %26 = phi i32 [ %.pre242, %for.body63.lr.ph ], [ %rem72, %for.body63.for.body63_crit_edge ]
+  %i.2219 = phi i32 [ 1, %for.body63.lr.ph ], [ %phitmp245, %for.body63.for.body63_crit_edge ]
+  %inc64 = add nsw i32 %26, 1
+  store i32 %inc64, i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  %idxprom65 = sext i32 %26 to i64
+  %27 = load float*** @feat_s2mfc2feat_block.cepbuf, align 8, !tbaa !0
+  %arrayidx66 = getelementptr inbounds float** %27, i64 %idxprom65
+  %28 = load float** %arrayidx66, align 8, !tbaa !0
+  %29 = bitcast float* %28 to i8*
+  %30 = load float** %arrayidx69, align 8, !tbaa !0
+  %31 = bitcast float* %30 to i8*
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %29, i8* %31, i64 %mul71, i32 4, i1 false)
+  %32 = load i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  %rem72 = srem i32 %32, 256
+  store i32 %rem72, i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  %exitcond230 = icmp eq i32 %i.2219, %0
+  br i1 %exitcond230, label %if.end97, label %for.body63.for.body63_crit_edge
+
+for.body63.for.body63_crit_edge:                  ; preds = %for.body63
+  %phitmp245 = add i32 %i.2219, 1
+  br label %for.body63
+
+if.else76:                                        ; preds = %if.then56
+  br i1 %cmp61218, label %for.body85.lr.ph, label %if.end97
+
+for.body85.lr.ph:                                 ; preds = %if.else76
+  %33 = load i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  %sub77 = shl i32 %33, 16
+  %sext = add i32 %sub77, -65536
+  %conv79 = ashr exact i32 %sext, 16
+  %rem80 = srem i32 %conv79, 256
+  %conv81 = zext i32 %rem80 to i64
+  %sext211 = shl i64 %conv81, 48
+  %idxprom89 = ashr exact i64 %sext211, 48
+  %conv91 = sext i32 %3 to i64
+  %mul92 = shl nsw i64 %conv91, 2
+  br label %for.body85
+
+for.body85:                                       ; preds = %for.body85.for.body85_crit_edge, %for.body85.lr.ph
+  %34 = phi i32 [ %33, %for.body85.lr.ph ], [ %rem93, %for.body85.for.body85_crit_edge ]
+  %i.3222 = phi i32 [ 1, %for.body85.lr.ph ], [ %phitmp, %for.body85.for.body85_crit_edge ]
+  %inc86 = add nsw i32 %34, 1
+  store i32 %inc86, i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  %idxprom87 = sext i32 %34 to i64
+  %35 = load float*** @feat_s2mfc2feat_block.cepbuf, align 8, !tbaa !0
+  %arrayidx88 = getelementptr inbounds float** %35, i64 %idxprom87
+  %36 = load float** %arrayidx88, align 8, !tbaa !0
+  %37 = bitcast float* %36 to i8*
+  %arrayidx90 = getelementptr inbounds float** %35, i64 %idxprom89
+  %38 = load float** %arrayidx90, align 8, !tbaa !0
+  %39 = bitcast float* %38 to i8*
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %37, i8* %39, i64 %mul92, i32 4, i1 false)
+  %40 = load i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  %rem93 = srem i32 %40, 256
+  store i32 %rem93, i32* @feat_s2mfc2feat_block.bufpos, align 4, !tbaa !3
+  %exitcond231 = icmp eq i32 %i.3222, %0
+  br i1 %exitcond231, label %if.end97, label %for.body85.for.body85_crit_edge
+
+for.body85.for.body85_crit_edge:                  ; preds = %for.body85
+  %phitmp = add i32 %i.3222, 1
+  br label %for.body85
+
+if.end97:                                         ; preds = %if.else76, %for.body85, %for.cond60.preheader, %for.body63
+  %add98 = add nsw i32 %residualvecs.0, %0
+  br label %if.end99
+
+if.end99:                                         ; preds = %for.end54, %if.end97
+  %residualvecs.1 = phi i32 [ %add98, %if.end97 ], [ %residualvecs.0, %for.end54 ]
+  %add100 = add i32 %residualvecs.1, %nfr
+  %cmp102215 = icmp sgt i32 %add100, 0
+  br i1 %cmp102215, label %for.body104.lr.ph, label %for.end144
+
+for.body104.lr.ph:                                ; preds = %if.end99
+  %cmp114213 = icmp slt i32 %0, %sub
+  %compute_feat = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 9
+  %idx.ext = sext i32 %0 to i64
+  %conv125 = sext i32 %3 to i64
+  %mul126 = shl nsw i64 %conv125, 2
+  %sub108 = sub i32 255, %0
+  %41 = sext i32 %sub to i64
+  %.pre241 = load i32* @feat_s2mfc2feat_block.curpos, align 4, !tbaa !3
+  br label %for.body104
+
+for.body104:                                      ; preds = %if.end138, %for.body104.lr.ph
+  %42 = phi i32 [ %.pre241, %for.body104.lr.ph ], [ %rem140, %if.end138 ]
+  %indvars.iv228 = phi i64 [ 0, %for.body104.lr.ph ], [ %indvars.iv.next229, %if.end138 ]
+  %cmp105 = icmp slt i32 %42, %0
+  %cmp109 = icmp sgt i32 %42, %sub108
+  %or.cond = or i1 %cmp105, %cmp109
+  br i1 %or.cond, label %if.then111, label %if.else132
+
+if.then111:                                       ; preds = %for.body104
+  br i1 %cmp114213, label %for.end129, label %for.body116
+
+for.body116:                                      ; preds = %if.then111, %for.body116.for.body116_crit_edge
+  %43 = phi i32 [ %.pre244, %for.body116.for.body116_crit_edge ], [ %42, %if.then111 ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body116.for.body116_crit_edge ], [ %41, %if.then111 ]
+  %44 = trunc i64 %indvars.iv to i32
+  %add117 = add i32 %44, 256
+  %add118 = add i32 %add117, %43
+  %rem119 = srem i32 %add118, 256
+  %45 = add nsw i64 %indvars.iv, %idx.ext
+  %46 = load float*** @feat_s2mfc2feat_block.tmpcepbuf, align 8, !tbaa !0
+  %arrayidx122 = getelementptr inbounds float** %46, i64 %45
+  %47 = load float** %arrayidx122, align 8, !tbaa !0
+  %48 = bitcast float* %47 to i8*
+  %idxprom123 = sext i32 %rem119 to i64
+  %49 = load float*** @feat_s2mfc2feat_block.cepbuf, align 8, !tbaa !0
+  %arrayidx124 = getelementptr inbounds float** %49, i64 %idxprom123
+  %50 = load float** %arrayidx124, align 8, !tbaa !0
+  %51 = bitcast float* %50 to i8*
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %48, i8* %51, i64 %mul126, i32 4, i1 false)
+  %cmp114 = icmp slt i32 %44, %0
+  br i1 %cmp114, label %for.body116.for.body116_crit_edge, label %for.end129
+
+for.body116.for.body116_crit_edge:                ; preds = %for.body116
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %.pre244 = load i32* @feat_s2mfc2feat_block.curpos, align 4, !tbaa !3
+  br label %for.body116
+
+for.end129:                                       ; preds = %for.body116, %if.then111
+  %52 = load void (%struct.feat_s*, float**, float**)** %compute_feat, align 8, !tbaa !0
+  %53 = load float*** @feat_s2mfc2feat_block.tmpcepbuf, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds float** %53, i64 %idx.ext
+  %arrayidx131 = getelementptr inbounds float*** %ofeat, i64 %indvars.iv228
+  %54 = load float*** %arrayidx131, align 8, !tbaa !0
+  tail call void %52(%struct.feat_s* %fcb, float** %add.ptr, float** %54) #7
+  br label %if.end138
+
+if.else132:                                       ; preds = %for.body104
+  %55 = load void (%struct.feat_s*, float**, float**)** %compute_feat, align 8, !tbaa !0
+  %56 = load float*** @feat_s2mfc2feat_block.cepbuf, align 8, !tbaa !0
+  %idx.ext134 = sext i32 %42 to i64
+  %add.ptr135 = getelementptr inbounds float** %56, i64 %idx.ext134
+  %arrayidx137 = getelementptr inbounds float*** %ofeat, i64 %indvars.iv228
+  %57 = load float*** %arrayidx137, align 8, !tbaa !0
+  tail call void %55(%struct.feat_s* %fcb, float** %add.ptr135, float** %57) #7
+  br label %if.end138
+
+if.end138:                                        ; preds = %if.else132, %for.end129
+  %58 = load i32* @feat_s2mfc2feat_block.curpos, align 4, !tbaa !3
+  %inc139 = add nsw i32 %58, 1
+  %rem140 = srem i32 %inc139, 256
+  store i32 %rem140, i32* @feat_s2mfc2feat_block.curpos, align 4, !tbaa !3
+  %indvars.iv.next229 = add i64 %indvars.iv228, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next229 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %add100
+  br i1 %exitcond, label %for.end144, label %for.body104
+
+for.end144:                                       ; preds = %if.end138, %if.end99
+  %nfeatvec.0.lcssa = phi i32 [ 0, %if.end99 ], [ %add100, %if.end138 ]
+  ret i32 %nfeatvec.0.lcssa
+}

@@ -1,0 +1,46 @@
+define void @printpath(i32* nocapture %path, i32 %length) #0 {
+entry:
+  %0 = load i32* @this_node, align 4, !tbaa !3
+  %cmp = icmp eq i32 %0, 0
+  br i1 %cmp, label %if.then, label %for.cond
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str9, i64 0, i64 0)) #5
+  br label %for.condthread-pre-split
+
+for.condthread-pre-split:                         ; preds = %for.inc, %if.then
+  %i.0.ph = phi i32 [ 0, %if.then ], [ %inc, %for.inc ]
+  %.pr = load i32* @this_node, align 4, !tbaa !3
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.condthread-pre-split, %entry
+  %1 = phi i32 [ %.pr, %for.condthread-pre-split ], [ %0, %entry ]
+  %i.0 = phi i32 [ %i.0.ph, %for.condthread-pre-split ], [ 0, %entry ]
+  %cmp1 = icmp slt i32 %i.0, %length
+  %cmp2 = icmp eq i32 %1, 0
+  br i1 %cmp1, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond
+  br i1 %cmp2, label %if.then3, label %for.inc
+
+if.then3:                                         ; preds = %for.body
+  %idxprom = sext i32 %i.0 to i64
+  %arrayidx = getelementptr inbounds i32* %path, i64 %idxprom
+  %2 = load i32* %arrayidx, align 4, !tbaa !3
+  %call4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str10, i64 0, i64 0), i32 %2) #5
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then3
+  %inc = add nsw i32 %i.0, 1
+  br label %for.condthread-pre-split
+
+for.end:                                          ; preds = %for.cond
+  br i1 %cmp2, label %if.then7, label %if.end9
+
+if.then7:                                         ; preds = %for.end
+  %call8 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([13 x i8]* @.str13, i64 0, i64 0), i32 %length) #5
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.then7, %for.end
+  ret void
+}

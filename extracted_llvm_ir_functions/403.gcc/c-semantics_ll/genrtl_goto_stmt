@@ -1,0 +1,41 @@
+define void @genrtl_goto_stmt(%union.tree_node* %destination) #0 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %destination, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %if.end10 [
+    i32 1, label %if.then
+    i32 31, label %if.then6
+  ]
+
+if.then:                                          ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 304, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.genrtl_goto_stmt, i64 0, i64 0)) #8
+  unreachable
+
+if.then6:                                         ; preds = %entry
+  %bf.set = or i32 %bf.load, 65536
+  store i32 %bf.set, i32* %0, align 8
+  br label %if.end10
+
+if.end10:                                         ; preds = %entry, %if.then6
+  %1 = load i8** @input_filename, align 8, !tbaa !0
+  %2 = load i32* @lineno, align 4, !tbaa !4
+  %call = tail call %struct.rtx_def* @emit_line_note(i8* %1, i32 %2) #5
+  %bf.load13 = load i32* %0, align 8
+  %bf.clear14 = and i32 %bf.load13, 255
+  %cmp15 = icmp eq i32 %bf.clear14, 31
+  br i1 %cmp15, label %if.then16, label %if.else
+
+if.then16:                                        ; preds = %if.end10
+  %call17 = tail call %struct.rtx_def* @label_rtx(%union.tree_node* %destination) #5
+  tail call void @expand_goto(%union.tree_node* %destination) #5
+  br label %if.end18
+
+if.else:                                          ; preds = %if.end10
+  tail call void @expand_computed_goto(%union.tree_node* %destination) #5
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.else, %if.then16
+  ret void
+}

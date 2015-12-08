@@ -1,0 +1,124 @@
+define void @check_grid(%struct._IO_FILE* nocapture %log, %struct.t_grid* nocapture %grid) #0 {
+entry:
+  %nrx = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 1
+  %0 = load i32* %nrx, align 4, !tbaa !3
+  %cmp76 = icmp sgt i32 %0, 0
+  br i1 %cmp76, label %for.cond1.preheader.lr.ph, label %for.end35
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %nry = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 2
+  %nrz = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 3
+  %index = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 9
+  %nra12 = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 10
+  %ncells = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 4
+  %.pre = load i32* %nry, align 4, !tbaa !3
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.cond1.preheader.lr.ph, %for.inc33
+  %1 = phi i32 [ %0, %for.cond1.preheader.lr.ph ], [ %19, %for.inc33 ]
+  %2 = phi i32 [ %.pre, %for.cond1.preheader.lr.ph ], [ %20, %for.inc33 ]
+  %ix.079 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %inc34, %for.inc33 ]
+  %cci.078 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %cci.1.lcssa, %for.inc33 ]
+  %ci.077 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %ci.1.lcssa, %for.inc33 ]
+  %cmp269 = icmp sgt i32 %2, 0
+  br i1 %cmp269, label %for.cond4.preheader.lr.ph, label %for.inc33
+
+for.cond4.preheader.lr.ph:                        ; preds = %for.cond1.preheader
+  %.pre82 = load i32* %nrz, align 4, !tbaa !3
+  br label %for.cond4.preheader
+
+for.cond4.preheader:                              ; preds = %for.cond4.preheader.lr.ph, %for.inc30
+  %3 = phi i32 [ %2, %for.cond4.preheader.lr.ph ], [ %17, %for.inc30 ]
+  %4 = phi i32 [ %.pre82, %for.cond4.preheader.lr.ph ], [ %18, %for.inc30 ]
+  %cci.173 = phi i32 [ %cci.078, %for.cond4.preheader.lr.ph ], [ %cci.2.lcssa, %for.inc30 ]
+  %ci.172 = phi i32 [ %ci.077, %for.cond4.preheader.lr.ph ], [ %ci.2.lcssa, %for.inc30 ]
+  %iy.070 = phi i32 [ 0, %for.cond4.preheader.lr.ph ], [ %inc31, %for.inc30 ]
+  %cmp564 = icmp sgt i32 %4, 0
+  br i1 %cmp564, label %for.body6.lr.ph, label %for.inc30
+
+for.body6.lr.ph:                                  ; preds = %for.cond4.preheader
+  %5 = sext i32 %ci.172 to i64
+  br label %for.body6
+
+for.body6:                                        ; preds = %for.body6.lr.ph, %for.inc
+  %6 = phi i32 [ %4, %for.body6.lr.ph ], [ %16, %for.inc ]
+  %indvars.iv = phi i64 [ %5, %for.body6.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %cci.267 = phi i32 [ %cci.173, %for.body6.lr.ph ], [ %add25, %for.inc ]
+  %ci.266 = phi i32 [ %ci.172, %for.body6.lr.ph ], [ %inc29, %for.inc ]
+  %iz.065 = phi i32 [ 0, %for.body6.lr.ph ], [ %inc, %for.inc ]
+  %7 = trunc i64 %indvars.iv to i32
+  %cmp7 = icmp sgt i32 %7, 0
+  br i1 %cmp7, label %if.then, label %if.end19
+
+if.then:                                          ; preds = %for.body6
+  %8 = load i32** %index, align 8, !tbaa !4
+  %arrayidx = getelementptr inbounds i32* %8, i64 %indvars.iv
+  %9 = load i32* %arrayidx, align 4, !tbaa !3
+  %idxprom8 = sext i32 %cci.267 to i64
+  %arrayidx10 = getelementptr inbounds i32* %8, i64 %idxprom8
+  %10 = load i32* %arrayidx10, align 4, !tbaa !3
+  %sub = sub nsw i32 %9, %10
+  %11 = load i32** %nra12, align 8, !tbaa !4
+  %arrayidx13 = getelementptr inbounds i32* %11, i64 %idxprom8
+  %12 = load i32* %arrayidx13, align 4, !tbaa !3
+  %cmp14 = icmp eq i32 %sub, %12
+  br i1 %cmp14, label %if.end19, label %if.then15
+
+if.then15:                                        ; preds = %if.then
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([29 x i8]* @.str14, i64 0, i64 0), i32 %sub, i32 %12, i32 %cci.267) #5
+  %.pre84 = load i32* %nrz, align 4, !tbaa !3
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.then, %for.body6, %if.then15
+  %13 = phi i32 [ %.pre84, %if.then15 ], [ %6, %for.body6 ], [ %6, %if.then ]
+  %14 = load i32* %nry, align 4, !tbaa !3
+  %mul22 = mul i32 %14, %ix.079
+  %tmp = add i32 %mul22, %iy.070
+  %tmp63 = mul i32 %tmp, %13
+  %add25 = add i32 %tmp63, %iz.065
+  %15 = load i32* %ncells, align 4, !tbaa !3
+  tail call fastcc void @_range_check(i8* getelementptr inbounds ([4 x i8]* @.str15, i64 0, i64 0), i32 %add25, i32 %15, i32 340) #6
+  %cmp26 = icmp eq i32 %add25, %7
+  br i1 %cmp26, label %for.inc, label %if.then27
+
+if.then27:                                        ; preds = %if.end19
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([18 x i8]* @.str16, i64 0, i64 0), i32 %7, i32 %add25) #5
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.end19, %if.then27
+  %inc = add nsw i32 %iz.065, 1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc29 = add nsw i32 %ci.266, 1
+  %16 = load i32* %nrz, align 4, !tbaa !3
+  %cmp5 = icmp slt i32 %inc, %16
+  br i1 %cmp5, label %for.body6, label %for.cond4.for.inc30_crit_edge
+
+for.cond4.for.inc30_crit_edge:                    ; preds = %for.inc
+  %.pre83 = load i32* %nry, align 4, !tbaa !3
+  br label %for.inc30
+
+for.inc30:                                        ; preds = %for.cond4.for.inc30_crit_edge, %for.cond4.preheader
+  %17 = phi i32 [ %.pre83, %for.cond4.for.inc30_crit_edge ], [ %3, %for.cond4.preheader ]
+  %18 = phi i32 [ %16, %for.cond4.for.inc30_crit_edge ], [ %4, %for.cond4.preheader ]
+  %cci.2.lcssa = phi i32 [ %add25, %for.cond4.for.inc30_crit_edge ], [ %cci.173, %for.cond4.preheader ]
+  %ci.2.lcssa = phi i32 [ %inc29, %for.cond4.for.inc30_crit_edge ], [ %ci.172, %for.cond4.preheader ]
+  %inc31 = add nsw i32 %iy.070, 1
+  %cmp2 = icmp slt i32 %inc31, %17
+  br i1 %cmp2, label %for.cond4.preheader, label %for.cond1.for.inc33_crit_edge
+
+for.cond1.for.inc33_crit_edge:                    ; preds = %for.inc30
+  %.pre81 = load i32* %nrx, align 4, !tbaa !3
+  br label %for.inc33
+
+for.inc33:                                        ; preds = %for.cond1.for.inc33_crit_edge, %for.cond1.preheader
+  %19 = phi i32 [ %.pre81, %for.cond1.for.inc33_crit_edge ], [ %1, %for.cond1.preheader ]
+  %20 = phi i32 [ %17, %for.cond1.for.inc33_crit_edge ], [ %2, %for.cond1.preheader ]
+  %cci.1.lcssa = phi i32 [ %cci.2.lcssa, %for.cond1.for.inc33_crit_edge ], [ %cci.078, %for.cond1.preheader ]
+  %ci.1.lcssa = phi i32 [ %ci.2.lcssa, %for.cond1.for.inc33_crit_edge ], [ %ci.077, %for.cond1.preheader ]
+  %inc34 = add nsw i32 %ix.079, 1
+  %cmp = icmp slt i32 %inc34, %19
+  br i1 %cmp, label %for.cond1.preheader, label %for.end35
+
+for.end35:                                        ; preds = %for.inc33, %entry
+  ret void
+}

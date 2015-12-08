@@ -1,0 +1,59 @@
+define i32 @setup() #0 {
+entry:
+  %call = tail call i32 @initial_set() #5
+  %0 = load i32* @iseed, align 4, !tbaa !0
+  %1 = load i32* @volume, align 4, !tbaa !0
+  %call1 = tail call i32 (...)* @mynode() #6
+  %add = add nsw i32 %call1, %1
+  tail call void @initialize_prn(%struct.double_prn* @node_prn, i32 %0, i32 %add) #6
+  tail call void @setup_layout() #6
+  tail call void (...)* @make_lattice() #6
+  %2 = load i32* @this_node, align 4, !tbaa !0
+  %cmp = icmp eq i32 %2, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %puts21 = tail call i32 @puts(i8* getelementptr inbounds ([13 x i8]* @str30, i64 0, i64 0))
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %3 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call3 = tail call i32 @fflush(%struct._IO_FILE* %3) #6
+  tail call void (...)* @make_nn_gathers() #6
+  %4 = load i32* @this_node, align 4, !tbaa !0
+  %cmp4 = icmp eq i32 %4, 0
+  br i1 %cmp4, label %if.then5, label %if.end7
+
+if.then5:                                         ; preds = %if.end
+  %puts20 = tail call i32 @puts(i8* getelementptr inbounds ([16 x i8]* @str29, i64 0, i64 0))
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.then5, %if.end
+  %5 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call8 = tail call i32 @fflush(%struct._IO_FILE* %5) #6
+  tail call void @make_3n_gathers() #5
+  %6 = load i32* @this_node, align 4, !tbaa !0
+  %cmp9 = icmp eq i32 %6, 0
+  br i1 %cmp9, label %if.then10, label %if.end12
+
+if.then10:                                        ; preds = %if.end7
+  %puts19 = tail call i32 @puts(i8* getelementptr inbounds ([17 x i8]* @str28, i64 0, i64 0))
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.then10, %if.end7
+  %7 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call13 = tail call i32 @fflush(%struct._IO_FILE* %7) #6
+  tail call void (...)* @phaseset() #6
+  %8 = load i32* @this_node, align 4, !tbaa !0
+  %cmp14 = icmp eq i32 %8, 0
+  br i1 %cmp14, label %if.then15, label %if.end17
+
+if.then15:                                        ; preds = %if.end12
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([15 x i8]* @str, i64 0, i64 0))
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.then15, %if.end12
+  %9 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call18 = tail call i32 @fflush(%struct._IO_FILE* %9) #6
+  ret i32 %call
+}

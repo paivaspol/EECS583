@@ -1,0 +1,116 @@
+define internal fastcc void @e53toe(i16* nocapture %pe, i16* nocapture %y) #0 {
+entry:
+  %yy = alloca [9 x i16], align 16
+  %arraydecay = getelementptr inbounds [9 x i16]* %yy, i64 0, i64 0
+  %xi4.i = bitcast [9 x i16]* %yy to i8*
+  call void @llvm.memset.p0i8.i64(i8* %xi4.i, i8 0, i64 18, i32 16, i1 false) #1
+  %add.ptr = getelementptr inbounds i16* %pe, i64 3
+  %0 = load i16* %add.ptr, align 2, !tbaa !0
+  %.lobit = ashr i16 %0, 15
+  store i16 %.lobit, i16* %arraydecay, align 16, !tbaa !0
+  %and3 = and i16 %0, 15
+  %or = or i16 %and3, 16
+  %arrayidx5 = getelementptr inbounds [9 x i16]* %yy, i64 0, i64 2
+  store i16 %or, i16* %arrayidx5, align 4, !tbaa !0
+  %and7 = and i16 %0, 32752
+  %cmp = icmp eq i16 %and7, 32752
+  br i1 %cmp, label %if.then11, label %if.end41
+
+if.then11:                                        ; preds = %entry
+  %cmp15 = icmp eq i16 %and3, 0
+  br i1 %cmp15, label %lor.lhs.false, label %if.then31
+
+lor.lhs.false:                                    ; preds = %if.then11
+  %arrayidx17 = getelementptr inbounds i16* %pe, i64 2
+  %1 = load i16* %arrayidx17, align 2, !tbaa !0
+  %cmp19 = icmp eq i16 %1, 0
+  br i1 %cmp19, label %lor.lhs.false21, label %if.then31
+
+lor.lhs.false21:                                  ; preds = %lor.lhs.false
+  %arrayidx22 = getelementptr inbounds i16* %pe, i64 1
+  %2 = load i16* %arrayidx22, align 2, !tbaa !0
+  %cmp24 = icmp eq i16 %2, 0
+  br i1 %cmp24, label %lor.lhs.false26, label %if.then31
+
+lor.lhs.false26:                                  ; preds = %lor.lhs.false21
+  %3 = load i16* %pe, align 2, !tbaa !0
+  %cmp29 = icmp eq i16 %3, 0
+  br i1 %cmp29, label %if.end36, label %if.then31
+
+if.then31:                                        ; preds = %lor.lhs.false26, %lor.lhs.false21, %lor.lhs.false, %if.then11
+  %cmp34 = icmp ne i16 %.lobit, 0
+  %conv35 = zext i1 %cmp34 to i16
+  %scevgep.i = getelementptr i16* %y, i64 5
+  %4 = bitcast i16* %y to i64*
+  store i64 0, i64* %4, align 2
+  %scevgep8.i = getelementptr i16* %y, i64 4
+  store i16 -16384, i16* %scevgep8.i, align 2, !tbaa !0
+  %shl.i = shl nuw i16 %conv35, 15
+  %or.i = or i16 %shl.i, 32767
+  store i16 %or.i, i16* %scevgep.i, align 2, !tbaa !0
+  br label %return
+
+if.end36:                                         ; preds = %lor.lhs.false26
+  %x4.i = bitcast i16* %y to i8*
+  call void @llvm.memset.p0i8.i64(i8* %x4.i, i8 0, i64 10, i32 2, i1 false) #1
+  call void @llvm.memset.p0i8.i64(i8* %x4.i, i8 0, i64 10, i32 2, i1 false) #1
+  %scevgep.i103 = getelementptr i16* %y, i64 5
+  %tobool38 = icmp eq i16 %.lobit, 0
+  %. = select i1 %tobool38, i16 32767, i16 -1
+  store i16 %., i16* %scevgep.i103, align 2, !tbaa !0
+  ret void
+
+if.end41:                                         ; preds = %entry
+  %shr101 = lshr exact i16 %and7, 4
+  %cmp45 = icmp eq i16 %shr101, 0
+  br i1 %cmp45, label %if.then47, label %if.end52
+
+if.then47:                                        ; preds = %if.end41
+  store i16 %and3, i16* %arrayidx5, align 4, !tbaa !0
+  br label %if.end52
+
+if.end52:                                         ; preds = %if.then47, %if.end41
+  %denorm.0 = phi i1 [ true, %if.then47 ], [ false, %if.end41 ]
+  %add = add i16 %shr101, 15360
+  %arrayidx55 = getelementptr inbounds [9 x i16]* %yy, i64 0, i64 1
+  store i16 %add, i16* %arrayidx55, align 2, !tbaa !0
+  %arrayidx56 = getelementptr inbounds [9 x i16]* %yy, i64 0, i64 3
+  %incdec.ptr = getelementptr inbounds i16* %pe, i64 2
+  %5 = load i16* %incdec.ptr, align 2, !tbaa !0
+  %incdec.ptr57 = getelementptr inbounds [9 x i16]* %yy, i64 0, i64 4
+  store i16 %5, i16* %arrayidx56, align 2, !tbaa !0
+  %incdec.ptr58 = getelementptr inbounds i16* %pe, i64 1
+  %6 = load i16* %incdec.ptr58, align 2, !tbaa !0
+  %incdec.ptr59 = getelementptr inbounds [9 x i16]* %yy, i64 0, i64 5
+  store i16 %6, i16* %incdec.ptr57, align 8, !tbaa !0
+  %7 = load i16* %pe, align 2, !tbaa !0
+  store i16 %7, i16* %incdec.ptr59, align 2, !tbaa !0
+  %call = call fastcc i32 @eshift(i16* %arraydecay, i32 -5) #6
+  br i1 %denorm.0, label %if.then64, label %if.end78
+
+if.then64:                                        ; preds = %if.end52
+  %call66 = call fastcc i32 @enormlz(i16* %arraydecay) #6
+  %cmp67 = icmp sgt i32 %call66, 80
+  br i1 %cmp67, label %if.then69, label %if.else
+
+if.then69:                                        ; preds = %if.then64
+  %scevgep7.i = bitcast i16* %arrayidx55 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %scevgep7.i, i8 0, i64 16, i32 2, i1 false) #1
+  br label %if.end78
+
+if.else:                                          ; preds = %if.then64
+  %8 = load i16* %arrayidx55, align 2, !tbaa !0
+  %conv74 = zext i16 %8 to i32
+  %sub.neg = sub i32 -65535, %call66
+  %sub75 = add i32 %sub.neg, %conv74
+  %conv76 = trunc i32 %sub75 to i16
+  store i16 %conv76, i16* %arrayidx55, align 2, !tbaa !0
+  br label %if.end78
+
+if.end78:                                         ; preds = %if.then69, %if.else, %if.end52
+  call fastcc void @emovo(i16* %arraydecay, i16* %y) #6
+  br label %return
+
+return:                                           ; preds = %if.end78, %if.then31
+  ret void
+}

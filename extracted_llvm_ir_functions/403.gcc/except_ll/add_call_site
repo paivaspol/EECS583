@@ -1,0 +1,52 @@
+define internal fastcc i32 @add_call_site(%struct.rtx_def* %landing_pad, i32 %action) #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh = getelementptr inbounds %struct.function* %0, i64 0, i32 0
+  %1 = load %struct.eh_status** %eh, align 8, !tbaa !3
+  %call_site_data = getelementptr inbounds %struct.eh_status* %1, i64 0, i32 12
+  %2 = load %struct.call_site_record** %call_site_data, align 8, !tbaa !3
+  %call_site_data_used = getelementptr inbounds %struct.eh_status* %1, i64 0, i32 13
+  %3 = load i32* %call_site_data_used, align 4, !tbaa !0
+  %call_site_data_size = getelementptr inbounds %struct.eh_status* %1, i64 0, i32 14
+  %4 = load i32* %call_site_data_size, align 4, !tbaa !0
+  %cmp = icmp slt i32 %3, %4
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %tobool = icmp eq i32 %4, 0
+  %mul = shl nsw i32 %4, 1
+  %.mul = select i1 %tobool, i32 64, i32 %mul
+  %5 = bitcast %struct.call_site_record* %2 to i8*
+  %conv = sext i32 %.mul to i64
+  %mul3 = shl nsw i64 %conv, 4
+  %call = tail call i8* @xrealloc(i8* %5, i64 %mul3) #6
+  %6 = bitcast i8* %call to %struct.call_site_record*
+  %7 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh4 = getelementptr inbounds %struct.function* %7, i64 0, i32 0
+  %8 = load %struct.eh_status** %eh4, align 8, !tbaa !3
+  %call_site_data5 = getelementptr inbounds %struct.eh_status* %8, i64 0, i32 12
+  store %struct.call_site_record* %6, %struct.call_site_record** %call_site_data5, align 8, !tbaa !3
+  %9 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh6 = getelementptr inbounds %struct.function* %9, i64 0, i32 0
+  %10 = load %struct.eh_status** %eh6, align 8, !tbaa !3
+  %call_site_data_size7 = getelementptr inbounds %struct.eh_status* %10, i64 0, i32 14
+  store i32 %.mul, i32* %call_site_data_size7, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %data.0 = phi %struct.call_site_record* [ %6, %if.then ], [ %2, %entry ]
+  %idxprom = sext i32 %3 to i64
+  %landing_pad8 = getelementptr inbounds %struct.call_site_record* %data.0, i64 %idxprom, i32 0
+  store %struct.rtx_def* %landing_pad, %struct.rtx_def** %landing_pad8, align 8, !tbaa !3
+  %action11 = getelementptr inbounds %struct.call_site_record* %data.0, i64 %idxprom, i32 1
+  store i32 %action, i32* %action11, align 4, !tbaa !0
+  %add = add nsw i32 %3, 1
+  %11 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh12 = getelementptr inbounds %struct.function* %11, i64 0, i32 0
+  %12 = load %struct.eh_status** %eh12, align 8, !tbaa !3
+  %call_site_data_used13 = getelementptr inbounds %struct.eh_status* %12, i64 0, i32 13
+  store i32 %add, i32* %call_site_data_used13, align 4, !tbaa !0
+  %13 = load i32* @call_site_base, align 4, !tbaa !0
+  %add14 = add nsw i32 %13, %3
+  ret i32 %add14
+}

@@ -1,0 +1,23 @@
+define void @sbitmap_vector_zero(%struct.simple_bitmap_def** nocapture %bmap, i32 %n_vecs) #0 {
+entry:
+  %cmp3 = icmp eq i32 %n_vecs, 0
+  br i1 %cmp3, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def** %bmap, i64 %indvars.iv
+  %0 = load %struct.simple_bitmap_def** %arrayidx, align 8, !tbaa !3
+  %arraydecay.i = getelementptr inbounds %struct.simple_bitmap_def* %0, i64 0, i32 3, i64 0
+  %1 = bitcast i64* %arraydecay.i to i8*
+  %bytes.i = getelementptr inbounds %struct.simple_bitmap_def* %0, i64 0, i32 2
+  %2 = load i32* %bytes.i, align 4, !tbaa !0
+  %conv.i = zext i32 %2 to i64
+  tail call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 %conv.i, i32 1, i1 false) #2
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n_vecs
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

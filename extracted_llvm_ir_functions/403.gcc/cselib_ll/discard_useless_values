@@ -1,0 +1,46 @@
+define internal i32 @discard_useless_values(i8** %x, i8* nocapture %info) #1 {
+entry:
+  %0 = load i8** %x, align 8, !tbaa !0
+  %locs = getelementptr inbounds i8* %0, i64 16
+  %1 = bitcast i8* %locs to %struct.elt_loc_list**
+  %2 = load %struct.elt_loc_list** %1, align 8, !tbaa !0
+  %cmp = icmp eq %struct.elt_loc_list* %2, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %3 = bitcast i8* %0 to %struct.cselib_val_struct*
+  %4 = load %struct.htab** @hash_table, align 8, !tbaa !0
+  tail call void @htab_clear_slot(%struct.htab* %4, i8** %x) #10
+  %addr_list.i = getelementptr inbounds i8* %0, i64 24
+  %5 = bitcast i8* %addr_list.i to %struct.elt_list**
+  %6 = load %struct.elt_list** %5, align 8, !tbaa !0
+  %tobool5.i = icmp eq %struct.elt_list* %6, null
+  br i1 %tobool5.i, label %unchain_one_value.exit, label %while.body.i
+
+while.body.i:                                     ; preds = %if.then, %while.body.i
+  %7 = phi %struct.elt_list* [ %10, %while.body.i ], [ %6, %if.then ]
+  %next.i.i = getelementptr inbounds %struct.elt_list* %7, i64 0, i32 0
+  %8 = load %struct.elt_list** %next.i.i, align 8, !tbaa !0
+  store %struct.elt_list* %8, %struct.elt_list** %5, align 8, !tbaa !0
+  %9 = load %struct.elt_list** @empty_elt_lists, align 8, !tbaa !0
+  store %struct.elt_list* %9, %struct.elt_list** %next.i.i, align 8, !tbaa !0
+  store %struct.elt_list* %7, %struct.elt_list** @empty_elt_lists, align 8, !tbaa !0
+  %10 = load %struct.elt_list** %5, align 8, !tbaa !0
+  %tobool.i = icmp eq %struct.elt_list* %10, null
+  br i1 %tobool.i, label %unchain_one_value.exit, label %while.body.i
+
+unchain_one_value.exit:                           ; preds = %while.body.i, %if.then
+  %11 = load %struct.cselib_val_struct** @empty_vals, align 8, !tbaa !0
+  %12 = getelementptr inbounds i8* %0, i64 8
+  %13 = bitcast i8* %12 to %struct.rtx_def**
+  %.c.i = bitcast %struct.cselib_val_struct* %11 to %struct.rtx_def*
+  store %struct.rtx_def* %.c.i, %struct.rtx_def** %13, align 8, !tbaa !0
+  store %struct.cselib_val_struct* %3, %struct.cselib_val_struct** @empty_vals, align 8, !tbaa !0
+  %14 = load i32* @n_useless_values, align 4, !tbaa !3
+  %dec = add nsw i32 %14, -1
+  store i32 %dec, i32* @n_useless_values, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %unchain_one_value.exit, %entry
+  ret i32 1
+}

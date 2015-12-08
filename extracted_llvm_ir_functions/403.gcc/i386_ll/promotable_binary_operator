@@ -1,0 +1,27 @@
+define i32 @promotable_binary_operator(%struct.rtx_def* nocapture %op, i32 %mode) #2 {
+entry:
+  %0 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.default [
+    i32 78, label %sw.bb
+    i32 75, label %return
+    i32 83, label %return
+    i32 84, label %return
+    i32 85, label %return
+    i32 87, label %return
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %1 = load i32* @ix86_cpu, align 4, !tbaa !3
+  %cmp = icmp ugt i32 %1, 1
+  %conv = zext i1 %cmp to i32
+  br label %return
+
+sw.default:                                       ; preds = %entry
+  br label %return
+
+return:                                           ; preds = %entry, %entry, %entry, %entry, %entry, %sw.default, %sw.bb
+  %retval.0 = phi i32 [ 0, %sw.default ], [ %conv, %sw.bb ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ]
+  ret i32 %retval.0
+}

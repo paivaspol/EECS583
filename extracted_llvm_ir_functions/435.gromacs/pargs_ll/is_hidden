@@ -1,0 +1,18 @@
+define i32 @is_hidden(%struct.t_pargs* nocapture %pa) #0 {
+entry:
+  %desc = getelementptr inbounds %struct.t_pargs* %pa, i64 0, i32 4
+  %0 = load i8** %desc, align 8, !tbaa !0
+  %call = tail call i8* @strstr(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str, i64 0, i64 0)) #7
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %lor.rhs, label %lor.end
+
+lor.rhs:                                          ; preds = %entry
+  %call2 = tail call i8* @strstr(i8* %0, i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0)) #7
+  %cmp3 = icmp ne i8* %call2, null
+  br label %lor.end
+
+lor.end:                                          ; preds = %entry, %lor.rhs
+  %1 = phi i1 [ true, %entry ], [ %cmp3, %lor.rhs ]
+  %lor.ext = zext i1 %1 to i32
+  ret i32 %lor.ext
+}

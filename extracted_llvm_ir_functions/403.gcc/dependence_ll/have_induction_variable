@@ -1,0 +1,72 @@
+define internal fastcc i32 @have_induction_variable(%union.tree_node* %outer_loop, i8* nocapture %ind_var) #3 {
+entry:
+  %0 = load %struct.varray_head_tag** @loop_chain, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %0, i64 0, i32 4
+  %arrayidx = bitcast %union.varray_data_tag* %data to i8**
+  %loop_ptr.0.in34 = load i8** %arrayidx, align 8
+  %tobool35 = icmp eq i8* %loop_ptr.0.in34, null
+  br i1 %tobool35, label %return, label %land.rhs.lr.ph
+
+land.rhs.lr.ph:                                   ; preds = %entry
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %0, i64 0, i32 0
+  %1 = load i64* %num_elements, align 8, !tbaa !3
+  %2 = load %struct.varray_head_tag** @induction_chain, align 8, !tbaa !0
+  %num_elements9 = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 0
+  %generic20 = bitcast %union.varray_data_tag* %data to [1 x i8*]*
+  br label %land.rhs
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.inc17
+  %loop_ptr.0.in40 = phi i8* [ %loop_ptr.0.in34, %land.rhs.lr.ph ], [ %loop_ptr.0.in, %for.inc17 ]
+  %loop_idx.036 = phi i32 [ 0, %land.rhs.lr.ph ], [ %inc, %for.inc17 ]
+  %conv = zext i32 %loop_idx.036 to i64
+  %cmp = icmp ult i64 %conv, %1
+  br i1 %cmp, label %for.body, label %return
+
+for.body:                                         ; preds = %land.rhs
+  %outer_loop2 = bitcast i8* %loop_ptr.0.in40 to %union.tree_node**
+  %3 = load %union.tree_node** %outer_loop2, align 8, !tbaa !0
+  %cmp3 = icmp eq %union.tree_node* %3, %outer_loop
+  br i1 %cmp3, label %if.then, label %for.inc17
+
+if.then:                                          ; preds = %for.body
+  %ind = getelementptr inbounds i8* %loop_ptr.0.in40, i64 32
+  %4 = bitcast i8* %ind to %struct.induction**
+  %ind_ptr.030 = load %struct.induction** %4, align 8
+  %tobool631 = icmp eq %struct.induction* %ind_ptr.030, null
+  br i1 %tobool631, label %for.inc17, label %land.rhs7.lr.ph
+
+land.rhs7.lr.ph:                                  ; preds = %if.then
+  %5 = load i64* %num_elements9, align 8, !tbaa !3
+  %cmp10 = icmp eq i64 %5, 0
+  br i1 %cmp10, label %for.inc17, label %for.body13
+
+for.cond5:                                        ; preds = %for.body13
+  %next = getelementptr inbounds %struct.induction* %ind_ptr.032, i64 0, i32 4
+  %ind_ptr.0 = load %struct.induction** %next, align 8
+  %tobool6 = icmp eq %struct.induction* %ind_ptr.0, null
+  br i1 %tobool6, label %for.inc17, label %for.body13
+
+for.body13:                                       ; preds = %for.cond5, %land.rhs7.lr.ph
+  %ind_ptr.032 = phi %struct.induction* [ %ind_ptr.0, %for.cond5 ], [ %ind_ptr.030, %land.rhs7.lr.ph ]
+  %variable = getelementptr inbounds %struct.induction* %ind_ptr.032, i64 0, i32 0
+  %6 = load i8** %variable, align 8, !tbaa !0
+  %call = tail call i32 @strcmp(i8* %6, i8* %ind_var) #8
+  %tobool14 = icmp eq i32 %call, 0
+  br i1 %tobool14, label %if.then15, label %for.cond5
+
+if.then15:                                        ; preds = %for.body13
+  %add = add i32 %loop_idx.036, 1
+  br label %return
+
+for.inc17:                                        ; preds = %if.then, %land.rhs7.lr.ph, %for.cond5, %for.body
+  %inc = add i32 %loop_idx.036, 1
+  %idxprom18 = zext i32 %inc to i64
+  %arrayidx21 = getelementptr inbounds [1 x i8*]* %generic20, i64 0, i64 %idxprom18
+  %loop_ptr.0.in = load i8** %arrayidx21, align 8
+  %tobool = icmp eq i8* %loop_ptr.0.in, null
+  br i1 %tobool, label %return, label %land.rhs
+
+return:                                           ; preds = %entry, %land.rhs, %for.inc17, %if.then15
+  %retval.0 = phi i32 [ %add, %if.then15 ], [ -1, %for.inc17 ], [ -1, %land.rhs ], [ -1, %entry ]
+  ret i32 %retval.0
+}

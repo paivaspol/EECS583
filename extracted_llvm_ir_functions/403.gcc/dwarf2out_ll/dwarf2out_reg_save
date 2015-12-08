@@ -1,0 +1,12 @@
+define void @dwarf2out_reg_save(i8* %label, i32 %reg, i64 %offset) #1 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  %idxprom = zext i32 %reg to i64
+  %svr4_dbx_register_map.dbx64_register_map = select i1 %tobool, [53 x i32]* @svr4_dbx_register_map, [53 x i32]* @dbx64_register_map
+  %cond.in = getelementptr inbounds [53 x i32]* %svr4_dbx_register_map.dbx64_register_map, i64 0, i64 %idxprom
+  %cond = load i32* %cond.in, align 4
+  tail call fastcc void @reg_save(i8* %label, i32 %cond, i32 -1, i64 %offset) #10
+  ret void
+}

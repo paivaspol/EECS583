@@ -1,0 +1,54 @@
+define internal i32 @mem_attrs_htab_eq(i8* nocapture %x, i8* nocapture %y) #5 {
+entry:
+  %alias = bitcast i8* %x to i64*
+  %0 = load i64* %alias, align 8, !tbaa !3
+  %alias1 = bitcast i8* %y to i64*
+  %1 = load i64* %alias1, align 8, !tbaa !3
+  %cmp = icmp eq i64 %0, %1
+  br i1 %cmp, label %land.lhs.true, label %land.end
+
+land.lhs.true:                                    ; preds = %entry
+  %expr = getelementptr inbounds i8* %x, i64 8
+  %2 = bitcast i8* %expr to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !4
+  %expr2 = getelementptr inbounds i8* %y, i64 8
+  %4 = bitcast i8* %expr2 to %union.tree_node**
+  %5 = load %union.tree_node** %4, align 8, !tbaa !4
+  %cmp3 = icmp eq %union.tree_node* %3, %5
+  br i1 %cmp3, label %land.lhs.true4, label %land.end
+
+land.lhs.true4:                                   ; preds = %land.lhs.true
+  %offset = getelementptr inbounds i8* %x, i64 16
+  %6 = bitcast i8* %offset to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %6, align 8, !tbaa !4
+  %offset5 = getelementptr inbounds i8* %y, i64 16
+  %8 = bitcast i8* %offset5 to %struct.rtx_def**
+  %9 = load %struct.rtx_def** %8, align 8, !tbaa !4
+  %cmp6 = icmp eq %struct.rtx_def* %7, %9
+  br i1 %cmp6, label %land.lhs.true7, label %land.end
+
+land.lhs.true7:                                   ; preds = %land.lhs.true4
+  %size = getelementptr inbounds i8* %x, i64 24
+  %10 = bitcast i8* %size to %struct.rtx_def**
+  %11 = load %struct.rtx_def** %10, align 8, !tbaa !4
+  %size8 = getelementptr inbounds i8* %y, i64 24
+  %12 = bitcast i8* %size8 to %struct.rtx_def**
+  %13 = load %struct.rtx_def** %12, align 8, !tbaa !4
+  %cmp9 = icmp eq %struct.rtx_def* %11, %13
+  br i1 %cmp9, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %land.lhs.true7
+  %align = getelementptr inbounds i8* %x, i64 32
+  %14 = bitcast i8* %align to i32*
+  %15 = load i32* %14, align 4, !tbaa !0
+  %align10 = getelementptr inbounds i8* %y, i64 32
+  %16 = bitcast i8* %align10 to i32*
+  %17 = load i32* %16, align 4, !tbaa !0
+  %cmp11 = icmp eq i32 %15, %17
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %land.lhs.true7, %land.lhs.true4, %land.lhs.true, %entry
+  %18 = phi i1 [ false, %land.lhs.true7 ], [ false, %land.lhs.true4 ], [ false, %land.lhs.true ], [ false, %entry ], [ %cmp11, %land.rhs ]
+  %land.ext = zext i1 %18 to i32
+  ret i32 %land.ext
+}

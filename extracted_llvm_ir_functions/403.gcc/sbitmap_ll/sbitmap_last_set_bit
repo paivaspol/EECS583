@@ -1,0 +1,36 @@
+define i32 @sbitmap_last_set_bit(%struct.simple_bitmap_def* nocapture %bmap) #3 {
+entry:
+  %size = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 1
+  %0 = load i32* %size, align 4, !tbaa !0
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.body, %entry
+  %i.0.in = phi i32 [ %0, %entry ], [ %i.0, %for.body ]
+  %i.0 = add i32 %i.0.in, -1
+  %cmp = icmp sgt i32 %i.0, -1
+  br i1 %cmp, label %for.body, label %return
+
+for.body:                                         ; preds = %for.cond
+  %idxprom = sext i32 %i.0 to i64
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def* %bmap, i64 0, i32 3, i64 %idxprom
+  %1 = load i64* %arrayidx, align 8, !tbaa !4
+  %cmp1 = icmp eq i64 %1, 0
+  br i1 %cmp1, label %for.cond, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %mul = shl i32 %i.0.in, 6
+  br label %while.body
+
+while.body:                                       ; preds = %while.body, %if.then
+  %index.0.in = phi i32 [ %mul, %if.then ], [ %index.0, %while.body ]
+  %mask.0 = phi i64 [ -9223372036854775808, %if.then ], [ %shr, %while.body ]
+  %index.0 = add i32 %index.0.in, -1
+  %and = and i64 %mask.0, %1
+  %cmp3 = icmp eq i64 %and, 0
+  %shr = lshr i64 %mask.0, 1
+  br i1 %cmp3, label %while.body, label %return
+
+return:                                           ; preds = %for.cond, %while.body
+  %retval.0 = phi i32 [ %index.0, %while.body ], [ -1, %for.cond ]
+  ret i32 %retval.0
+}

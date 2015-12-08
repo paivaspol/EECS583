@@ -1,0 +1,10 @@
+define i32 @mode_dependent_address_p(%struct.rtx_def* nocapture %addr) #2 {
+entry:
+  %0 = bitcast %struct.rtx_def* %addr to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %bf.clear.off = add i32 %bf.clear, -98
+  %switch = icmp ult i32 %bf.clear.off, 2
+  %. = zext i1 %switch to i32
+  ret i32 %.
+}

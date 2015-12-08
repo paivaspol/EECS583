@@ -1,0 +1,31 @@
+define i32 @do_float_handler(void (i8*)* nocapture %fn, i8* %data) #0 {
+entry:
+  %buf = alloca [1 x %struct.__jmp_buf_tag], align 16
+  %0 = bitcast [1 x %struct.__jmp_buf_tag]* %buf to i8*
+  call void @llvm.lifetime.start(i64 200, i8* %0) #6
+  %arraydecay = getelementptr inbounds [1 x %struct.__jmp_buf_tag]* %buf, i64 0, i64 0
+  %call = call i32 @_setjmp(%struct.__jmp_buf_tag* %arraydecay) #14
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %cleanup
+
+if.end:                                           ; preds = %entry
+  store i32 1, i32* @float_handled, align 4, !tbaa !0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast ([1 x %struct.__jmp_buf_tag]* @float_handler to i8*), i8* %0, i64 200, i32 16, i1 false) #6
+  %.b.i = load i1* @float_handler_set, align 1
+  br i1 %.b.i, label %set_float_handler.exit, label %if.then3.i
+
+if.then3.i:                                       ; preds = %if.end
+  %call.i = call void (i32)* (i32, void (i32)*)* @signal(i32 8, void (i32)* @float_signal) #11
+  store i1 true, i1* @float_handler_set, align 1
+  br label %set_float_handler.exit
+
+set_float_handler.exit:                           ; preds = %if.end, %if.then3.i
+  call void %fn(i8* %data) #11
+  br label %cleanup
+
+cleanup:                                          ; preds = %entry, %set_float_handler.exit
+  %retval.0 = phi i32 [ 1, %set_float_handler.exit ], [ 0, %entry ]
+  store i32 0, i32* @float_handled, align 4, !tbaa !0
+  call void @llvm.lifetime.end(i64 200, i8* %0) #6
+  ret i32 %retval.0
+}

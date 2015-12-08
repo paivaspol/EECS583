@@ -1,0 +1,30 @@
+define internal i32 @ehspec_filter_hash(i8* nocapture %pentry) #2 {
+entry:
+  %t = bitcast i8* %pentry to %union.tree_node**
+  %list.08 = load %union.tree_node** %t, align 8
+  %tobool9 = icmp eq %union.tree_node* %list.08, null
+  br i1 %tobool9, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %list.011 = phi %union.tree_node* [ %list.0, %for.body ], [ %list.08, %entry ]
+  %h.010 = phi i32 [ %conv4, %for.body ], [ 0, %entry ]
+  %shl = shl i32 %h.010, 5
+  %shr = lshr i32 %h.010, 27
+  %add = or i32 %shl, %shr
+  %conv = zext i32 %add to i64
+  %value = getelementptr inbounds %union.tree_node* %list.011, i64 0, i32 0, i32 2
+  %0 = bitcast i32* %value to %union.tree_node**
+  %1 = load %union.tree_node** %0, align 8, !tbaa !3
+  %2 = ptrtoint %union.tree_node* %1 to i64
+  %and = and i64 %2, 262143
+  %add3 = add i64 %and, %conv
+  %conv4 = trunc i64 %add3 to i32
+  %chain = getelementptr inbounds %union.tree_node* %list.011, i64 0, i32 0, i32 0, i32 0
+  %list.0 = load %union.tree_node** %chain, align 8
+  %tobool = icmp eq %union.tree_node* %list.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %h.0.lcssa = phi i32 [ 0, %entry ], [ %conv4, %for.body ]
+  ret i32 %h.0.lcssa
+}

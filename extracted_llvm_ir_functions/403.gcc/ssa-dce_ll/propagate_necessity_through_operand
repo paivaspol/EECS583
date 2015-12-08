@@ -1,0 +1,75 @@
+define internal i32 @propagate_necessity_through_operand(%struct.rtx_def** nocapture %current_rtx, i8* nocapture %data) #0 {
+entry:
+  %0 = load %struct.rtx_def** %current_rtx, align 8, !tbaa !0
+  %1 = bitcast i8* %data to %struct.varray_head_tag**
+  %cmp = icmp eq %struct.rtx_def* %0, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %2 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cond = icmp eq i32 %bf.clear, 61
+  br i1 %cond, label %sw.bb, label %return
+
+sw.bb:                                            ; preds = %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp1 = icmp ugt i32 %3, 52
+  %.off = add i32 %3, -16
+  %switch = icmp ult i32 %.off, 2
+  %or.cond = or i1 %cmp1, %switch
+  br i1 %or.cond, label %if.then11, label %return
+
+if.then11:                                        ; preds = %sw.bb
+  %idxprom = zext i32 %3 to i64
+  %4 = load %struct.varray_head_tag** @ssa_definition, align 8, !tbaa !0
+  %data15 = getelementptr inbounds %struct.varray_head_tag* %4, i64 0, i32 4
+  %rtx = bitcast %union.varray_data_tag* %data15 to [1 x %struct.rtx_def*]*
+  %arrayidx16 = getelementptr inbounds [1 x %struct.rtx_def*]* %rtx, i64 0, i64 %idxprom
+  %5 = load %struct.rtx_def** %arrayidx16, align 8, !tbaa !0
+  %cmp17 = icmp eq %struct.rtx_def* %5, null
+  br i1 %cmp17, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then11
+  %6 = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load18 = load i32* %6, align 8
+  %bf.clear19 = and i32 %bf.load18, 268435456
+  %tobool = icmp eq i32 %bf.clear19, 0
+  br i1 %tobool, label %return, label %if.then20
+
+if.then20:                                        ; preds = %land.lhs.true
+  %bf.clear22 = and i32 %bf.load18, -268435457
+  store i32 %bf.clear22, i32* %6, align 8
+  %7 = load %struct.varray_head_tag** %1, align 8, !tbaa !0
+  %elements_used = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 1
+  %8 = load i64* %elements_used, align 8, !tbaa !4
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 0
+  %9 = load i64* %num_elements, align 8, !tbaa !4
+  %cmp23 = icmp ult i64 %8, %9
+  br i1 %cmp23, label %if.end26, label %if.then24
+
+if.then24:                                        ; preds = %if.then20
+  %mul = shl i64 %9, 1
+  %call = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %7, i64 %mul) #6
+  store %struct.varray_head_tag* %call, %struct.varray_head_tag** %1, align 8, !tbaa !0
+  %elements_used27.phi.trans.insert = getelementptr inbounds %struct.varray_head_tag* %call, i64 0, i32 1
+  %.pre = load i64* %elements_used27.phi.trans.insert, align 8, !tbaa !4
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.then20, %if.then24
+  %10 = phi i64 [ %8, %if.then20 ], [ %.pre, %if.then24 ]
+  %11 = phi %struct.varray_head_tag* [ %7, %if.then20 ], [ %call, %if.then24 ]
+  %elements_used27 = getelementptr inbounds %struct.varray_head_tag* %11, i64 0, i32 1
+  %inc = add i64 %10, 1
+  store i64 %inc, i64* %elements_used27, align 8, !tbaa !4
+  %data28 = getelementptr inbounds %struct.varray_head_tag* %11, i64 0, i32 4
+  %rtx29 = bitcast %union.varray_data_tag* %data28 to [1 x %struct.rtx_def*]*
+  %arrayidx30 = getelementptr inbounds [1 x %struct.rtx_def*]* %rtx29, i64 0, i64 %10
+  store %struct.rtx_def* %5, %struct.rtx_def** %arrayidx30, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %sw.bb, %if.end, %if.end26, %if.then11, %land.lhs.true, %entry
+  ret i32 0
+}

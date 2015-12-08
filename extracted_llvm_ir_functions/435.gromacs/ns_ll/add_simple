@@ -1,0 +1,34 @@
+define internal fastcc void @add_simple(%struct.t_ns_buf* nocapture %nsbuf, i32 %nrj, i32 %cg_j, i32* nocapture %bHaveLJ, i32 %ngid, %struct.t_mdatoms* nocapture %md, i32 %icg, i32 %jgid, %struct.t_block* nocapture %cgs, i64* nocapture %bexcl, i32 %shift, %struct.t_forcerec* %fr) #0 {
+entry:
+  %ncg = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 0
+  %0 = load i32* %ncg, align 4, !tbaa !0
+  %cmp = icmp sgt i32 %0, 1023
+  br i1 %cmp, label %if.then, label %entry.if.end_crit_edge
+
+entry.if.end_crit_edge:                           ; preds = %entry
+  %nj5.pre = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 1
+  br label %if.end
+
+if.then:                                          ; preds = %entry
+  %arraydecay = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 2, i64 0
+  %index = getelementptr inbounds %struct.t_block* %cgs, i64 0, i32 2
+  %1 = load i32** %index, align 8, !tbaa !3
+  tail call fastcc void @put_in_list(i32* %bHaveLJ, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %0, i32* %arraydecay, i32* %1, i64* %bexcl, i32 %shift, %struct.t_forcerec* %fr, i32 0, i32 0, i32 0) #7
+  %nj = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 1
+  store i32 0, i32* %nj, align 4, !tbaa !0
+  store i32 0, i32* %ncg, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
+  %nj5.pre-phi = phi i32* [ %nj5.pre, %entry.if.end_crit_edge ], [ %nj, %if.then ]
+  %2 = phi i32 [ %0, %entry.if.end_crit_edge ], [ 0, %if.then ]
+  %inc = add nsw i32 %2, 1
+  store i32 %inc, i32* %ncg, align 4, !tbaa !0
+  %idxprom = sext i32 %2 to i64
+  %arrayidx = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 2, i64 %idxprom
+  store i32 %cg_j, i32* %arrayidx, align 4, !tbaa !0
+  %3 = load i32* %nj5.pre-phi, align 4, !tbaa !0
+  %add = add nsw i32 %3, %nrj
+  store i32 %add, i32* %nj5.pre-phi, align 4, !tbaa !0
+  ret void
+}

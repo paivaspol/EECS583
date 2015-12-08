@@ -1,0 +1,22 @@
+define %struct.ht* @ht_create(i32 %order) #0 {
+entry:
+  %shl = shl i32 1, %order
+  %call = tail call noalias i8* @xmalloc(i64 128) #6
+  %0 = bitcast i8* %call to %struct.ht*
+  tail call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 128, i32 8, i1 false)
+  %stack = bitcast i8* %call to %struct.obstack*
+  %call.i = tail call i32 @_obstack_begin(%struct.obstack* %stack, i32 0, i32 0, i8* (i64)* @xmalloc, void (i8*)* @free) #6
+  %alignment_mask = getelementptr inbounds i8* %call, i64 48
+  %1 = bitcast i8* %alignment_mask to i32*
+  store i32 0, i32* %1, align 4, !tbaa !0
+  %conv = zext i32 %shl to i64
+  %call2 = tail call noalias i8* @xcalloc(i64 %conv, i64 8) #6
+  %2 = bitcast i8* %call2 to %struct.ht_identifier**
+  %entries = getelementptr inbounds i8* %call, i64 88
+  %3 = bitcast i8* %entries to %struct.ht_identifier***
+  store %struct.ht_identifier** %2, %struct.ht_identifier*** %3, align 8, !tbaa !3
+  %nslots3 = getelementptr inbounds i8* %call, i64 104
+  %4 = bitcast i8* %nslots3 to i32*
+  store i32 %shl, i32* %4, align 4, !tbaa !0
+  ret %struct.ht* %0
+}

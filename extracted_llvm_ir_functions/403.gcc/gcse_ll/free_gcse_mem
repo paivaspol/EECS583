@@ -1,0 +1,53 @@
+define internal fastcc void @free_gcse_mem() #0 {
+entry:
+  %0 = load i32** @uid_cuid, align 8, !tbaa !0
+  %1 = bitcast i32* %0 to i8*
+  tail call void @free(i8* %1) #6
+  %2 = load %struct.rtx_def*** @cuid_insn, align 8, !tbaa !0
+  %3 = bitcast %struct.rtx_def** %2 to i8*
+  tail call void @free(i8* %3) #6
+  %4 = load %struct.bitmap_head_def** @reg_set_bitmap, align 8, !tbaa !0
+  %tobool = icmp eq %struct.bitmap_head_def* %4, null
+  br i1 %tobool, label %do.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %4) #6
+  %5 = load %struct.bitmap_head_def** @reg_set_bitmap, align 8, !tbaa !0
+  %6 = bitcast %struct.bitmap_head_def* %5 to i8*
+  tail call void @free(i8* %6) #6
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** @reg_set_bitmap, align 8, !tbaa !0
+  br label %do.end
+
+do.end:                                           ; preds = %entry, %if.then
+  %7 = load %struct.simple_bitmap_def*** @reg_set_in_block, align 8, !tbaa !0
+  %8 = bitcast %struct.simple_bitmap_def** %7 to i8*
+  tail call void @free(i8* %8) #6
+  tail call fastcc void @free_modify_mem_tables() #7
+  %9 = load %struct.bitmap_head_def** @modify_mem_list_set, align 8, !tbaa !0
+  %tobool2 = icmp eq %struct.bitmap_head_def* %9, null
+  br i1 %tobool2, label %do.body6, label %if.then3
+
+if.then3:                                         ; preds = %do.end
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %9) #6
+  %10 = load %struct.bitmap_head_def** @modify_mem_list_set, align 8, !tbaa !0
+  %11 = bitcast %struct.bitmap_head_def* %10 to i8*
+  tail call void @free(i8* %11) #6
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** @modify_mem_list_set, align 8, !tbaa !0
+  br label %do.body6
+
+do.body6:                                         ; preds = %do.end, %if.then3
+  %12 = load %struct.bitmap_head_def** @canon_modify_mem_list_set, align 8, !tbaa !0
+  %tobool7 = icmp eq %struct.bitmap_head_def* %12, null
+  br i1 %tobool7, label %do.end10, label %if.then8
+
+if.then8:                                         ; preds = %do.body6
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %12) #6
+  %13 = load %struct.bitmap_head_def** @canon_modify_mem_list_set, align 8, !tbaa !0
+  %14 = bitcast %struct.bitmap_head_def* %13 to i8*
+  tail call void @free(i8* %14) #6
+  store %struct.bitmap_head_def* null, %struct.bitmap_head_def** @canon_modify_mem_list_set, align 8, !tbaa !0
+  br label %do.end10
+
+do.end10:                                         ; preds = %do.body6, %if.then8
+  ret void
+}

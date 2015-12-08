@@ -1,0 +1,131 @@
+define internal fastcc void @instantiate_decl(%struct.rtx_def* %x, i64 %size, i32 %valid_only) #0 {
+entry:
+  %addr = alloca %struct.rtx_def*, align 8
+  %cmp = icmp eq %struct.rtx_def* %x, null
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp1 = icmp eq i32 %bf.clear, 66
+  br i1 %cmp1, label %if.end, label %return
+
+if.end:                                           ; preds = %lor.lhs.false
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  store %struct.rtx_def* %1, %struct.rtx_def** %addr, align 8, !tbaa !0
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load2 = load i32* %2, align 8
+  %bf.clear3 = and i32 %bf.load2, 65535
+  switch i32 %bf.clear3, label %if.end57 [
+    i32 67, label %return
+    i32 68, label %return
+    i32 54, label %return
+    i32 55, label %return
+    i32 58, label %return
+    i32 134, label %return
+    i32 56, label %return
+    i32 140, label %return
+    i32 70, label %land.lhs.true
+    i32 61, label %land.lhs.true47
+  ]
+
+land.lhs.true:                                    ; preds = %if.end
+  %arrayidx38 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtx39 = bitcast %union.rtunion_def* %arrayidx38 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx39, align 8, !tbaa !0
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load40 = load i32* %4, align 8
+  %bf.clear41 = and i32 %bf.load40, 65535
+  %cmp42 = icmp eq i32 %bf.clear41, 61
+  br i1 %cmp42, label %return, label %if.end57
+
+land.lhs.true47:                                  ; preds = %if.end
+  %arrayidx49 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx49 to i32*
+  %5 = load i32* %rtuint, align 4, !tbaa !4
+  %.off = add i32 %5, -53
+  %6 = icmp ugt i32 %.off, 4
+  br i1 %6, label %return, label %if.end57
+
+if.end57:                                         ; preds = %if.end, %land.lhs.true, %land.lhs.true47
+  %tobool = icmp eq i32 %valid_only, 0
+  br i1 %tobool, label %if.end96.critedge, label %if.then58
+
+if.then58:                                        ; preds = %if.end57
+  %call = call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %1) #10
+  store %struct.rtx_def* %call, %struct.rtx_def** %addr, align 8, !tbaa !0
+  %call60 = call fastcc i32 @instantiate_virtual_regs_1(%struct.rtx_def** %addr, %struct.rtx_def* null, i32 0) #9
+  %cmp63 = icmp sgt i64 %size, -1
+  br i1 %cmp63, label %if.then64, label %if.end96
+
+if.then64:                                        ; preds = %if.then58
+  %7 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !tbaa !3
+  %cmp65117 = icmp eq i32 %7, 0
+  br i1 %cmp65117, label %for.end, label %land.rhs
+
+land.rhs:                                         ; preds = %if.then64, %for.inc
+  %mode.0118 = phi i32 [ %conv75, %for.inc ], [ %7, %if.then64 ]
+  %idxprom = sext i32 %mode.0118 to i64
+  %arrayidx66 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom
+  %8 = load i8* %arrayidx66, align 1, !tbaa !1
+  %conv = zext i8 %8 to i64
+  %cmp67 = icmp ugt i64 %conv, %size
+  br i1 %cmp67, label %for.end, label %for.body
+
+for.body:                                         ; preds = %land.rhs
+  %9 = load %struct.rtx_def** %addr, align 8, !tbaa !0
+  %call69 = call i32 @memory_address_p(i32 %mode.0118, %struct.rtx_def* %9) #10
+  %tobool70 = icmp eq i32 %call69, 0
+  br i1 %tobool70, label %return, label %for.inc
+
+for.inc:                                          ; preds = %for.body
+  %arrayidx74 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom
+  %10 = load i8* %arrayidx74, align 1, !tbaa !1
+  %conv75 = zext i8 %10 to i32
+  %cmp65 = icmp eq i8 %10, 0
+  br i1 %cmp65, label %for.end, label %land.rhs
+
+for.end:                                          ; preds = %for.inc, %land.rhs, %if.then64
+  %11 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 2), align 4, !tbaa !3
+  %cmp77114 = icmp eq i32 %11, 0
+  br i1 %cmp77114, label %if.end96, label %land.rhs79
+
+land.rhs79:                                       ; preds = %for.end, %for.inc91
+  %mode.1115 = phi i32 [ %conv94, %for.inc91 ], [ %11, %for.end ]
+  %idxprom80 = sext i32 %mode.1115 to i64
+  %arrayidx81 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom80
+  %12 = load i8* %arrayidx81, align 1, !tbaa !1
+  %conv82 = zext i8 %12 to i64
+  %cmp83 = icmp ugt i64 %conv82, %size
+  br i1 %cmp83, label %if.end96, label %for.body86
+
+for.body86:                                       ; preds = %land.rhs79
+  %13 = load %struct.rtx_def** %addr, align 8, !tbaa !0
+  %call87 = call i32 @memory_address_p(i32 %mode.1115, %struct.rtx_def* %13) #10
+  %tobool88 = icmp eq i32 %call87, 0
+  br i1 %tobool88, label %return, label %for.inc91
+
+for.inc91:                                        ; preds = %for.body86
+  %arrayidx93 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom80
+  %14 = load i8* %arrayidx93, align 1, !tbaa !1
+  %conv94 = zext i8 %14 to i32
+  %cmp77 = icmp eq i8 %14, 0
+  br i1 %cmp77, label %if.end96, label %land.rhs79
+
+if.end96.critedge:                                ; preds = %if.end57
+  %call60.c = call fastcc i32 @instantiate_virtual_regs_1(%struct.rtx_def** %addr, %struct.rtx_def* null, i32 0) #9
+  br label %if.end96
+
+if.end96:                                         ; preds = %for.end, %land.rhs79, %for.inc91, %if.end96.critedge, %if.then58
+  %15 = load %struct.rtx_def** %addr, align 8, !tbaa !0
+  %16 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0
+  %.c = ptrtoint %struct.rtx_def* %15 to i64
+  store i64 %.c, i64* %16, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %for.body, %for.body86, %lor.lhs.false, %land.lhs.true, %land.lhs.true47, %entry, %if.end96
+  ret void
+}

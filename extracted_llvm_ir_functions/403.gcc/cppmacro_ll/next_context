@@ -1,0 +1,27 @@
+define internal fastcc %struct.cpp_context* @next_context(%struct.cpp_reader* nocapture %pfile) #0 {
+entry:
+  %context = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 10
+  %0 = load %struct.cpp_context** %context, align 8, !tbaa !3
+  %next = getelementptr inbounds %struct.cpp_context* %0, i64 0, i32 0
+  %1 = load %struct.cpp_context** %next, align 8, !tbaa !3
+  %cmp = icmp eq %struct.cpp_context* %1, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call noalias i8* @xmalloc(i64 56) #7
+  %2 = bitcast i8* %call to %struct.cpp_context*
+  %3 = load %struct.cpp_context** %context, align 8, !tbaa !3
+  %prev = getelementptr inbounds i8* %call, i64 8
+  %4 = bitcast i8* %prev to %struct.cpp_context**
+  store %struct.cpp_context* %3, %struct.cpp_context** %4, align 8, !tbaa !3
+  %next2 = bitcast i8* %call to %struct.cpp_context**
+  store %struct.cpp_context* null, %struct.cpp_context** %next2, align 8, !tbaa !3
+  %next4 = getelementptr inbounds %struct.cpp_context* %3, i64 0, i32 0
+  store %struct.cpp_context* %2, %struct.cpp_context** %next4, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %result.0 = phi %struct.cpp_context* [ %2, %if.then ], [ %1, %entry ]
+  store %struct.cpp_context* %result.0, %struct.cpp_context** %context, align 8, !tbaa !3
+  ret %struct.cpp_context* %result.0
+}

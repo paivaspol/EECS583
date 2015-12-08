@@ -1,0 +1,16 @@
+define i32 @long_memory_operand(%struct.rtx_def* %op, i32 %mode) #1 {
+entry:
+  %call = tail call i32 @memory_operand(%struct.rtx_def* %op, i32 %mode) #9
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call1 = tail call fastcc i32 @memory_address_length(%struct.rtx_def* %op) #10
+  %cmp = icmp ne i32 %call1, 0
+  %conv = zext i1 %cmp to i32
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ %conv, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0
+}

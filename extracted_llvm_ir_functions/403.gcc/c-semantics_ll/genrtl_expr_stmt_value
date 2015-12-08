@@ -1,0 +1,38 @@
+define void @genrtl_expr_stmt_value(%union.tree_node* %expr, i32 %want_value, i32 %maybe_last) #0 {
+entry:
+  %cmp = icmp eq %union.tree_node* %expr, null
+  br i1 %cmp, label %if.end10, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = load i8** @input_filename, align 8, !tbaa !0
+  %1 = load i32* @lineno, align 4, !tbaa !4
+  %call = tail call %struct.rtx_def* @emit_line_note(i8* %0, i32 %1) #5
+  %call1 = tail call i32 @stmts_are_full_exprs_p() #5
+  %tobool = icmp eq i32 %call1, 0
+  br i1 %tobool, label %if.end, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  tail call void @expand_start_target_temps() #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then2
+  %2 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 8, !tbaa !0
+  %cmp3 = icmp eq %union.tree_node* %2, %expr
+  br i1 %cmp3, label %if.end5, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  tail call void @expand_expr_stmt_value(%union.tree_node* %expr, i32 %want_value, i32 %maybe_last) #5
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.end, %if.then4
+  %call6 = tail call i32 @stmts_are_full_exprs_p() #5
+  %tobool7 = icmp eq i32 %call6, 0
+  br i1 %tobool7, label %if.end10, label %if.then8
+
+if.then8:                                         ; preds = %if.end5
+  tail call void @expand_end_target_temps() #5
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.end5, %entry, %if.then8
+  ret void
+}

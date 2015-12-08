@@ -1,0 +1,31 @@
+define internal fastcc i64 @sext_for_mode(i32 %mode, i64 %value) #5 {
+entry:
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i64]* @mode_mask_array, i64 0, i64 %idxprom
+  %0 = load i64* %arrayidx, align 8, !tbaa !4
+  %and = and i64 %0, %value
+  %arrayidx2 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom
+  %1 = load i16* %arrayidx2, align 2, !tbaa !5
+  %cmp = icmp ne i16 %1, 0
+  %cmp4 = icmp ult i16 %1, 64
+  %or.cond = and i1 %cmp, %cmp4
+  br i1 %or.cond, label %land.lhs.true6, label %if.end
+
+land.lhs.true6:                                   ; preds = %entry
+  %conv = zext i16 %1 to i64
+  %sub = add i64 %conv, 4294967295
+  %sh_prom = and i64 %sub, 4294967295
+  %shl = shl i64 1, %sh_prom
+  %and7 = and i64 %shl, %and
+  %cmp8 = icmp eq i64 %and7, 0
+  br i1 %cmp8, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true6
+  %shl11 = shl i64 -1, %conv
+  %or = or i64 %shl11, %and
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true6, %if.then, %entry
+  %cval.0 = phi i64 [ %or, %if.then ], [ %and, %land.lhs.true6 ], [ %and, %entry ]
+  ret i64 %cval.0
+}

@@ -1,0 +1,53 @@
+define internal fastcc void @push_array_bounds(i32 %bounds) #0 {
+entry:
+  %0 = load %struct.spelling** @spelling, align 8, !tbaa !0
+  %1 = load %struct.spelling** @spelling_base, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint %struct.spelling* %0 to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.spelling* %1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %sub.ptr.div11 = lshr exact i64 %sub.ptr.sub, 4
+  %conv = trunc i64 %sub.ptr.div11 to i32
+  %2 = load i32* @spelling_size, align 4, !tbaa !3
+  %cmp = icmp slt i32 %conv, %2
+  br i1 %cmp, label %if.end9, label %if.then
+
+if.then:                                          ; preds = %entry
+  %add = add nsw i32 %2, 10
+  store i32 %add, i32* @spelling_size, align 4, !tbaa !3
+  %cmp2 = icmp eq %struct.spelling* %1, null
+  br i1 %cmp2, label %if.then4, label %if.else
+
+if.then4:                                         ; preds = %if.then
+  %conv5 = sext i32 %add to i64
+  %mul = shl nsw i64 %conv5, 4
+  %call = tail call noalias i8* @xmalloc(i64 %mul) #8
+  br label %if.end
+
+if.else:                                          ; preds = %if.then
+  %3 = bitcast %struct.spelling* %1 to i8*
+  %conv6 = sext i32 %add to i64
+  %mul7 = shl nsw i64 %conv6, 4
+  %call8 = tail call i8* @xrealloc(i8* %3, i64 %mul7) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then4
+  %storemerge.in = phi i8* [ %call8, %if.else ], [ %call, %if.then4 ]
+  %storemerge = bitcast i8* %storemerge.in to %struct.spelling*
+  store %struct.spelling* %storemerge, %struct.spelling** @spelling_base, align 8, !tbaa !0
+  %sext = shl i64 %sub.ptr.sub, 28
+  %idx.ext = ashr exact i64 %sext, 32
+  %add.ptr = getelementptr inbounds %struct.spelling* %storemerge, i64 %idx.ext
+  store %struct.spelling* %add.ptr, %struct.spelling** @spelling, align 8, !tbaa !0
+  br label %if.end9
+
+if.end9:                                          ; preds = %entry, %if.end
+  %4 = phi %struct.spelling* [ %0, %entry ], [ %add.ptr, %if.end ]
+  %kind = getelementptr inbounds %struct.spelling* %4, i64 0, i32 0
+  store i32 3, i32* %kind, align 4, !tbaa !3
+  %u = getelementptr inbounds %struct.spelling* %4, i64 0, i32 1
+  %i = bitcast %union.anon.4* %u to i32*
+  store i32 %bounds, i32* %i, align 4, !tbaa !3
+  %incdec.ptr = getelementptr inbounds %struct.spelling* %4, i64 1
+  store %struct.spelling* %incdec.ptr, %struct.spelling** @spelling, align 8, !tbaa !0
+  ret void
+}

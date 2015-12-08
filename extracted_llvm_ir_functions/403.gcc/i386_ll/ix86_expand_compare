@@ -1,0 +1,48 @@
+define %struct.rtx_def* @ix86_expand_compare(i32 %code, %struct.rtx_def** %second_test, %struct.rtx_def** %bypass_test) #1 {
+entry:
+  %0 = load %struct.rtx_def** @ix86_compare_op0, align 8, !tbaa !4
+  %1 = load %struct.rtx_def** @ix86_compare_op1, align 8, !tbaa !4
+  %tobool = icmp eq %struct.rtx_def** %second_test, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  store %struct.rtx_def* null, %struct.rtx_def** %second_test, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %tobool1 = icmp eq %struct.rtx_def** %bypass_test, null
+  br i1 %tobool1, label %if.end3, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  store %struct.rtx_def* null, %struct.rtx_def** %bypass_test, align 8, !tbaa !4
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %if.then2
+  %2 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %idxprom12 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom12
+  %3 = load i32* %arrayidx, align 4, !tbaa !9
+  %cmp = icmp eq i32 %3, 2
+  br i1 %cmp, label %if.then4, label %if.else
+
+if.then4:                                         ; preds = %if.end3
+  %call = tail call fastcc %struct.rtx_def* @ix86_expand_fp_compare(i32 %code, %struct.rtx_def* %0, %struct.rtx_def* %1, %struct.rtx_def* null, %struct.rtx_def** %second_test, %struct.rtx_def** %bypass_test) #10
+  br label %if.end6
+
+if.else:                                          ; preds = %if.end3
+  %call.i = tail call i32 @ix86_cc_mode(i32 %code, %struct.rtx_def* %0, %struct.rtx_def* %1) #9
+  %call2.i = tail call %struct.rtx_def* @gen_rtx_REG(i32 %call.i, i32 17) #9
+  %call3.i = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 74, i32 %call.i, %struct.rtx_def* %0, %struct.rtx_def* %1) #9
+  %call4.i = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %call2.i, %struct.rtx_def* %call3.i) #9
+  %call5.i = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call4.i) #9
+  %4 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !4
+  %call6.i = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 %code, i32 0, %struct.rtx_def* %call2.i, %struct.rtx_def* %4) #9
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.else, %if.then4
+  %ret.0 = phi %struct.rtx_def* [ %call, %if.then4 ], [ %call6.i, %if.else ]
+  ret %struct.rtx_def* %ret.0
+}

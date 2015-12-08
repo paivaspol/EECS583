@@ -1,0 +1,19 @@
+define void @move_block_to_reg(i32 %regno, %struct.rtx_def* %x, i32 %nregs, i32 %mode) #0 {
+entry:
+  %0 = icmp sgt i32 %nregs, 0
+  br i1 %0, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %i.042 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %1 = load i32* @word_mode, align 4, !tbaa !6
+  %add = add nsw i32 %i.042, %regno
+  %call33 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %1, i32 %add) #8
+  %call34 = tail call %struct.rtx_def* @operand_subword_force(%struct.rtx_def* %x, i32 %i.042, i32 %mode) #8
+  %call35 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call33, %struct.rtx_def* %call34) #10
+  %inc = add nsw i32 %i.042, 1
+  %exitcond = icmp eq i32 %inc, %nregs
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %entry, %for.body
+  ret void
+}

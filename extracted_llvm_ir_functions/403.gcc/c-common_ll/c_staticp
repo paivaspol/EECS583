@@ -1,0 +1,30 @@
+define i32 @c_staticp(%union.tree_node* nocapture %exp) #4 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 170
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %operands = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  %1 = load %union.tree_node** %arrayidx, align 8, !tbaa !3
+  %operands3 = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 2
+  %arrayidx4 = bitcast i32* %operands3 to %union.tree_node**
+  %2 = load %union.tree_node** %arrayidx4, align 8, !tbaa !3
+  %static_flag = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %static_flag to i32*
+  %bf.load6 = load i32* %3, align 8
+  %bf.clear7 = and i32 %bf.load6, 262144
+  %tobool = icmp eq i32 %bf.clear7, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %land.lhs.true, %entry
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %if.end
+  %retval.0 = phi i32 [ 0, %if.end ], [ 1, %land.lhs.true ]
+  ret i32 %retval.0
+}

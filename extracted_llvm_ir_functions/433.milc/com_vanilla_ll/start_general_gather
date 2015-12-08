@@ -1,0 +1,120 @@
+define noalias %struct.msg_tag* @start_general_gather(i32 %field, i32 %size, i32* nocapture %displacement, i32 %parity, i8** nocapture %dest) #1 {
+entry:
+  %0 = load i32* @g_gather_flag, align 4, !tbaa !3
+  %cmp = icmp eq i32 %0, 0
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([48 x i8]* @.str8, i64 0, i64 0), i32 0) #8
+  tail call void @exit(i32 1) #10
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %cmp2 = icmp eq i32 %parity, 1
+  %2 = load i32* @even_sites_on_node, align 4, !tbaa !3
+  %cond = select i1 %cmp2, i32 %2, i32 0
+  %cmp3 = icmp eq i32 %parity, 2
+  %3 = load i32* @sites_on_node, align 4, !tbaa !3
+  %cond776 = select i1 %cmp3, i32 %2, i32 %3
+  %cmp877 = icmp slt i32 %cond, %cond776
+  br i1 %cmp877, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %4 = load %struct.site** @lattice, align 8, !tbaa !0
+  %idxprom = sext i32 %cond to i64
+  %arrayidx = getelementptr inbounds %struct.site* %4, i64 %idxprom
+  %arrayidx17 = getelementptr inbounds i32* %displacement, i64 1
+  %arrayidx30 = getelementptr inbounds i32* %displacement, i64 2
+  %arrayidx43 = getelementptr inbounds i32* %displacement, i64 3
+  %idx.ext = sext i32 %field to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end55
+  %indvars.iv = phi i64 [ %idxprom, %for.body.lr.ph ], [ %indvars.iv.next, %if.end55 ]
+  %s.079 = phi %struct.site* [ %arrayidx, %for.body.lr.ph ], [ %incdec.ptr, %if.end55 ]
+  %5 = load i32* %displacement, align 4, !tbaa !3
+  %cmp10 = icmp eq i32 %5, 0
+  %x = getelementptr inbounds %struct.site* %s.079, i64 0, i32 0
+  %6 = load i16* %x, align 2, !tbaa !4
+  %conv = sext i16 %6 to i32
+  br i1 %cmp10, label %if.end16, label %if.then11
+
+if.then11:                                        ; preds = %for.body
+  %add = add nsw i32 %conv, %5
+  %7 = load i32* @nx, align 4, !tbaa !3
+  %add13 = add nsw i32 %add, %7
+  %rem = srem i32 %add13, %7
+  br label %if.end16
+
+if.end16:                                         ; preds = %for.body, %if.then11
+  %tx.0 = phi i32 [ %rem, %if.then11 ], [ %conv, %for.body ]
+  %8 = load i32* %arrayidx17, align 4, !tbaa !3
+  %cmp18 = icmp eq i32 %8, 0
+  %y = getelementptr inbounds %struct.site* %s.079, i64 0, i32 1
+  %9 = load i16* %y, align 2, !tbaa !4
+  %conv21 = sext i16 %9 to i32
+  br i1 %cmp18, label %if.end29, label %if.then20
+
+if.then20:                                        ; preds = %if.end16
+  %add23 = add nsw i32 %conv21, %8
+  %10 = load i32* @ny, align 4, !tbaa !3
+  %add24 = add nsw i32 %add23, %10
+  %rem25 = srem i32 %add24, %10
+  br label %if.end29
+
+if.end29:                                         ; preds = %if.end16, %if.then20
+  %ty.0 = phi i32 [ %rem25, %if.then20 ], [ %conv21, %if.end16 ]
+  %11 = load i32* %arrayidx30, align 4, !tbaa !3
+  %cmp31 = icmp eq i32 %11, 0
+  %z = getelementptr inbounds %struct.site* %s.079, i64 0, i32 2
+  %12 = load i16* %z, align 2, !tbaa !4
+  %conv34 = sext i16 %12 to i32
+  br i1 %cmp31, label %if.end42, label %if.then33
+
+if.then33:                                        ; preds = %if.end29
+  %add36 = add nsw i32 %conv34, %11
+  %13 = load i32* @nz, align 4, !tbaa !3
+  %add37 = add nsw i32 %add36, %13
+  %rem38 = srem i32 %add37, %13
+  br label %if.end42
+
+if.end42:                                         ; preds = %if.end29, %if.then33
+  %tz.0 = phi i32 [ %rem38, %if.then33 ], [ %conv34, %if.end29 ]
+  %14 = load i32* %arrayidx43, align 4, !tbaa !3
+  %cmp44 = icmp eq i32 %14, 0
+  %t = getelementptr inbounds %struct.site* %s.079, i64 0, i32 3
+  %15 = load i16* %t, align 2, !tbaa !4
+  %conv47 = sext i16 %15 to i32
+  br i1 %cmp44, label %if.end55, label %if.then46
+
+if.then46:                                        ; preds = %if.end42
+  %add49 = add nsw i32 %conv47, %14
+  %16 = load i32* @nt, align 4, !tbaa !3
+  %add50 = add nsw i32 %add49, %16
+  %rem51 = srem i32 %add50, %16
+  br label %if.end55
+
+if.end55:                                         ; preds = %if.end42, %if.then46
+  %tt.0 = phi i32 [ %rem51, %if.then46 ], [ %conv47, %if.end42 ]
+  %call56 = tail call i32 @node_index(i32 %tx.0, i32 %ty.0, i32 %tz.0, i32 %tt.0) #8
+  %idxprom57 = sext i32 %call56 to i64
+  %17 = load %struct.site** @lattice, align 8, !tbaa !0
+  %arrayidx58 = getelementptr inbounds %struct.site* %17, i64 %idxprom57
+  %18 = bitcast %struct.site* %arrayidx58 to i8*
+  %add.ptr = getelementptr inbounds i8* %18, i64 %idx.ext
+  %arrayidx60 = getelementptr inbounds i8** %dest, i64 %indvars.iv
+  store i8* %add.ptr, i8** %arrayidx60, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %s.079, i64 1
+  %19 = load i32* @even_sites_on_node, align 4, !tbaa !3
+  %20 = load i32* @sites_on_node, align 4, !tbaa !3
+  %cond7 = select i1 %cmp3, i32 %19, i32 %20
+  %21 = trunc i64 %indvars.iv.next to i32
+  %cmp8 = icmp slt i32 %21, %cond7
+  br i1 %cmp8, label %for.body, label %for.end
+
+for.end:                                          ; preds = %if.end55, %if.end
+  store i32 1, i32* @g_gather_flag, align 4, !tbaa !3
+  ret %struct.msg_tag* null
+}

@@ -1,0 +1,11 @@
+define void @expand_builtin_unwind_init() #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !3
+  %has_nonlocal_label = getelementptr inbounds %struct.function* %0, i64 0, i32 56
+  %1 = bitcast [4 x i8]* %has_nonlocal_label to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.set = or i32 %bf.load, 256
+  store i32 %bf.set, i32* %1, align 8
+  tail call void @ix86_setup_frame_addresses() #6
+  ret void
+}

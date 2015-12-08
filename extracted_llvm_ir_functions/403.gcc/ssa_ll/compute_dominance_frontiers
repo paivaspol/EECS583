@@ -1,0 +1,10 @@
+define void @compute_dominance_frontiers(%struct.simple_bitmap_def** nocapture %frontiers, i32* nocapture %idom) #0 {
+entry:
+  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %call = tail call %struct.simple_bitmap_def* @sbitmap_alloc(i32 %0) #6
+  tail call void @sbitmap_zero(%struct.simple_bitmap_def* %call) #6
+  tail call fastcc void @compute_dominance_frontiers_1(%struct.simple_bitmap_def** %frontiers, i32* %idom, i32 0, %struct.simple_bitmap_def* %call) #7
+  %1 = bitcast %struct.simple_bitmap_def* %call to i8*
+  tail call void @free(i8* %1) #6
+  ret void
+}

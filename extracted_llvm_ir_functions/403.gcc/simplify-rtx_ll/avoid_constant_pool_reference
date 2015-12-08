@@ -1,0 +1,37 @@
+define %struct.rtx_def* @avoid_constant_pool_reference(%struct.rtx_def* %x) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load1 = load i32* %2, align 8
+  %3 = and i32 %bf.load1, 67174399
+  %4 = icmp eq i32 %3, 67108932
+  br i1 %4, label %if.end7, label %return
+
+if.end7:                                          ; preds = %if.end
+  %call = tail call %struct.rtx_def* @get_pool_constant(%struct.rtx_def* %1) #4
+  %call8 = tail call i32 @get_pool_mode(%struct.rtx_def* %1) #4
+  %bf.load9 = load i32* %0, align 8
+  %bf.lshr10 = lshr i32 %bf.load9, 16
+  %bf.clear11 = and i32 %bf.lshr10, 255
+  %cmp12 = icmp eq i32 %call8, %bf.clear11
+  br i1 %cmp12, label %return, label %if.then13
+
+if.then13:                                        ; preds = %if.end7
+  %call17 = tail call %struct.rtx_def* @simplify_subreg(i32 %bf.clear11, %struct.rtx_def* %call, i32 %call8, i32 0) #5
+  %tobool18 = icmp ne %struct.rtx_def* %call17, null
+  %cond = select i1 %tobool18, %struct.rtx_def* %call17, %struct.rtx_def* %x
+  br label %return
+
+return:                                           ; preds = %if.end, %if.end7, %entry, %if.then13
+  %retval.0 = phi %struct.rtx_def* [ %cond, %if.then13 ], [ %x, %entry ], [ %x, %if.end ], [ %call, %if.end7 ]
+  ret %struct.rtx_def* %retval.0
+}

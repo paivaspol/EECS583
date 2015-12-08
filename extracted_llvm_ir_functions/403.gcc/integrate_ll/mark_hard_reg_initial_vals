@@ -1,0 +1,62 @@
+define void @mark_hard_reg_initial_vals(%struct.function* nocapture %fun) #0 {
+entry:
+  %hard_reg_initial_vals = getelementptr inbounds %struct.function* %fun, i64 0, i32 17
+  %0 = load %struct.initial_value_struct** %hard_reg_initial_vals, align 8, !tbaa !0
+  %cmp = icmp eq %struct.initial_value_struct* %0, null
+  br i1 %cmp, label %for.end, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %num_entries = getelementptr inbounds %struct.initial_value_struct* %0, i64 0, i32 0
+  %1 = load i32* %num_entries, align 4, !tbaa !3
+  %cmp127 = icmp sgt i32 %1, 0
+  br i1 %cmp127, label %do.body.lr.ph, label %for.end
+
+do.body.lr.ph:                                    ; preds = %for.cond.preheader
+  %entries = getelementptr inbounds %struct.initial_value_struct* %0, i64 0, i32 2
+  br label %do.body
+
+do.body:                                          ; preds = %for.inc, %do.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %do.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %2 = load %struct.initial_value_pair** %entries, align 8, !tbaa !0
+  %hard_reg = getelementptr inbounds %struct.initial_value_pair* %2, i64 %indvars.iv, i32 0
+  %3 = load %struct.rtx_def** %hard_reg, align 8, !tbaa !0
+  %cmp2 = icmp eq %struct.rtx_def* %3, null
+  br i1 %cmp2, label %do.body5, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %do.body
+  %4 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 0, i64 0
+  %call = tail call i32 @ggc_set_mark(i8* %4) #7
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then3, label %do.body5
+
+if.then3:                                         ; preds = %land.lhs.true
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %3) #7
+  br label %do.body5
+
+do.body5:                                         ; preds = %land.lhs.true, %do.body, %if.then3
+  %5 = load %struct.initial_value_pair** %entries, align 8, !tbaa !0
+  %pseudo = getelementptr inbounds %struct.initial_value_pair* %5, i64 %indvars.iv, i32 1
+  %6 = load %struct.rtx_def** %pseudo, align 8, !tbaa !0
+  %cmp10 = icmp eq %struct.rtx_def* %6, null
+  br i1 %cmp10, label %for.inc, label %land.lhs.true11
+
+land.lhs.true11:                                  ; preds = %do.body5
+  %7 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 0, i64 0
+  %call12 = tail call i32 @ggc_set_mark(i8* %7) #7
+  %tobool13 = icmp eq i32 %call12, 0
+  br i1 %tobool13, label %if.then14, label %for.inc
+
+if.then14:                                        ; preds = %land.lhs.true11
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %6) #7
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true11, %do.body5, %if.then14
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %8 = load i32* %num_entries, align 4, !tbaa !3
+  %9 = trunc i64 %indvars.iv.next to i32
+  %cmp1 = icmp slt i32 %9, %8
+  br i1 %cmp1, label %do.body, label %for.end
+
+for.end:                                          ; preds = %for.cond.preheader, %for.inc, %entry
+  ret void
+}

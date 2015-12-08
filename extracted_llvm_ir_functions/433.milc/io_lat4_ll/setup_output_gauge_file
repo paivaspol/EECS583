@@ -1,0 +1,102 @@
+define noalias %struct.gauge_file* @setup_output_gauge_file() #0 {
+entry:
+  %myname = alloca [24 x i8], align 16
+  %time_stamp = alloca i64, align 8
+  %0 = getelementptr inbounds [24 x i8]* %myname, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* getelementptr inbounds ([24 x i8]* @setup_output_gauge_file.myname, i64 0, i64 0), i64 24, i32 16, i1 false)
+  %call = call noalias i8* @calloc(i64 1, i64 56) #9
+  %1 = bitcast i8* %call to %struct.gauge_file*
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call1 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str36, i64 0, i64 0), i8* %0) #9
+  call void @terminate(i32 1) #9
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %call2 = call noalias i8* @calloc(i64 1, i64 92) #9
+  %2 = bitcast i8* %call2 to %struct.gauge_header*
+  %cmp3 = icmp eq i8* %call2, null
+  br i1 %cmp3, label %if.then4, label %if.end7
+
+if.then4:                                         ; preds = %if.end
+  %call6 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str37, i64 0, i64 0), i8* %0) #9
+  call void @terminate(i32 1) #9
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.then4, %if.end
+  %header = getelementptr inbounds i8* %call, i64 8
+  %3 = bitcast i8* %header to %struct.gauge_header**
+  store %struct.gauge_header* %2, %struct.gauge_header** %3, align 8, !tbaa !3
+  %check = getelementptr inbounds i8* %call, i64 44
+  %sum29 = getelementptr inbounds i8* %call, i64 48
+  %4 = bitcast i8* %sum29 to i32*
+  store i32 0, i32* %4, align 4, !tbaa !0
+  %sum31 = bitcast i8* %check to i32*
+  store i32 0, i32* %sum31, align 4, !tbaa !0
+  %magic_number = bitcast i8* %call2 to i32*
+  store i32 20103, i32* %magic_number, align 4, !tbaa !0
+  %5 = load i32* @nx, align 4, !tbaa !0
+  %dims = getelementptr inbounds i8* %call2, i64 68
+  %arrayidx = bitcast i8* %dims to i32*
+  store i32 %5, i32* %arrayidx, align 4, !tbaa !0
+  %6 = load i32* @ny, align 4, !tbaa !0
+  %arrayidx10 = getelementptr inbounds i8* %call2, i64 72
+  %7 = bitcast i8* %arrayidx10 to i32*
+  store i32 %6, i32* %7, align 4, !tbaa !0
+  %8 = load i32* @nz, align 4, !tbaa !0
+  %arrayidx12 = getelementptr inbounds i8* %call2, i64 76
+  %9 = bitcast i8* %arrayidx12 to i32*
+  store i32 %8, i32* %9, align 4, !tbaa !0
+  %10 = load i32* @nt, align 4, !tbaa !0
+  %arrayidx14 = getelementptr inbounds i8* %call2, i64 80
+  %11 = bitcast i8* %arrayidx14 to i32*
+  store i32 %10, i32* %11, align 4, !tbaa !0
+  %12 = load i32* @this_node, align 4, !tbaa !0
+  %cmp15 = icmp eq i32 %12, 0
+  br i1 %cmp15, label %if.then16, label %if.end7.if.end45_crit_edge
+
+if.end7.if.end45_crit_edge:                       ; preds = %if.end7
+  %time_stamp46.pre = getelementptr inbounds i8* %call2, i64 4
+  br label %if.end45
+
+if.then16:                                        ; preds = %if.end7
+  %call17 = call i64 @time(i64* %time_stamp) #9
+  %time_stamp18 = getelementptr inbounds i8* %call2, i64 4
+  %call20 = call i8* @ctime(i64* %time_stamp) #9
+  %call21 = call i8* @strcpy(i8* %time_stamp18, i8* %call20) #9
+  %call24 = call i64 @strlen(i8* %time_stamp18) #7
+  %add = add i64 %call24, 1
+  %conv = trunc i64 %add to i32
+  %cmp2569 = icmp slt i32 %conv, 64
+  br i1 %cmp2569, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.then16
+  %sext = shl i64 %add, 32
+  %13 = ashr exact i64 %sext, 32
+  %14 = add i64 %13, 4
+  %scevgep = getelementptr i8* %call2, i64 %14
+  %15 = sub i64 62, %call24
+  %16 = and i64 %15, 4294967295
+  %17 = add i64 %16, 1
+  call void @llvm.memset.p0i8.i64(i8* %scevgep, i8 0, i64 %17, i32 1, i1 false)
+  br label %for.end
+
+for.end:                                          ; preds = %for.body.lr.ph, %if.then16
+  %call31 = call i64 @strlen(i8* %time_stamp18) #7
+  %time_stamp18.sum = add i64 %call31, 3
+  %arrayidx33 = getelementptr inbounds i8* %call2, i64 %time_stamp18.sum
+  %18 = load i8* %arrayidx33, align 1, !tbaa !1
+  %cmp35 = icmp eq i8 %18, 10
+  br i1 %cmp35, label %if.then37, label %if.end45
+
+if.then37:                                        ; preds = %for.end
+  store i8 0, i8* %arrayidx33, align 1, !tbaa !1
+  br label %if.end45
+
+if.end45:                                         ; preds = %if.end7.if.end45_crit_edge, %for.end, %if.then37
+  %time_stamp46.pre-phi = phi i8* [ %time_stamp46.pre, %if.end7.if.end45_crit_edge ], [ %time_stamp18, %for.end ], [ %time_stamp18, %if.then37 ]
+  call void @broadcast_bytes(i8* %time_stamp46.pre-phi, i32 64) #9
+  ret %struct.gauge_file* %1
+}

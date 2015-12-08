@@ -1,0 +1,19 @@
+define double @htab_collisions(%struct.htab* nocapture %htab) #6 {
+entry:
+  %searches = getelementptr inbounds %struct.htab* %htab, i64 0, i32 7
+  %0 = load i32* %searches, align 4, !tbaa !4
+  %cmp = icmp eq i32 %0, 0
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %collisions = getelementptr inbounds %struct.htab* %htab, i64 0, i32 8
+  %1 = load i32* %collisions, align 4, !tbaa !4
+  %conv = uitofp i32 %1 to double
+  %conv2 = uitofp i32 %0 to double
+  %div = fdiv double %conv, %conv2
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi double [ %div, %if.end ], [ 0.000000e+00, %entry ]
+  ret double %retval.0
+}

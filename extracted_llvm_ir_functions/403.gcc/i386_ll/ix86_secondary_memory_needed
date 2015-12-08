@@ -1,0 +1,76 @@
+define i32 @ix86_secondary_memory_needed(i32 %class1, i32 %class2, i32 %mode, i32 %strict) #1 {
+entry:
+  %call = tail call i32 @reg_classes_intersect_p(i32 %class1, i32 15) #9
+  %call1 = tail call i32 @reg_class_subset_p(i32 %class1, i32 15) #9
+  %cmp = icmp eq i32 %call, %call1
+  br i1 %cmp, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %entry
+  %call2 = tail call i32 @reg_classes_intersect_p(i32 %class2, i32 15) #9
+  %call3 = tail call i32 @reg_class_subset_p(i32 %class2, i32 15) #9
+  %cmp4 = icmp eq i32 %call2, %call3
+  br i1 %cmp4, label %lor.lhs.false5, label %if.then
+
+lor.lhs.false5:                                   ; preds = %lor.lhs.false
+  %call6 = tail call i32 @reg_classes_intersect_p(i32 16, i32 %class1) #9
+  %call7 = tail call i32 @reg_class_subset_p(i32 %class1, i32 16) #9
+  %cmp8 = icmp eq i32 %call6, %call7
+  br i1 %cmp8, label %lor.lhs.false9, label %if.then
+
+lor.lhs.false9:                                   ; preds = %lor.lhs.false5
+  %call10 = tail call i32 @reg_classes_intersect_p(i32 16, i32 %class2) #9
+  %call11 = tail call i32 @reg_class_subset_p(i32 %class2, i32 16) #9
+  %cmp12 = icmp eq i32 %call10, %call11
+  br i1 %cmp12, label %lor.lhs.false13, label %if.then
+
+lor.lhs.false13:                                  ; preds = %lor.lhs.false9
+  %call14 = tail call i32 @reg_classes_intersect_p(i32 17, i32 %class1) #9
+  %call15 = tail call i32 @reg_class_subset_p(i32 %class1, i32 17) #9
+  %cmp16 = icmp eq i32 %call14, %call15
+  br i1 %cmp16, label %lor.lhs.false17, label %if.then
+
+lor.lhs.false17:                                  ; preds = %lor.lhs.false13
+  %call18 = tail call i32 @reg_classes_intersect_p(i32 17, i32 %class2) #9
+  %call19 = tail call i32 @reg_class_subset_p(i32 %class2, i32 17) #9
+  %cmp20 = icmp eq i32 %call18, %call19
+  br i1 %cmp20, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false17, %lor.lhs.false13, %lor.lhs.false9, %lor.lhs.false5, %lor.lhs.false, %entry
+  %tobool = icmp eq i32 %strict, 0
+  br i1 %tobool, label %return, label %if.then21
+
+if.then21:                                        ; preds = %if.then
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 12336, i8* getelementptr inbounds ([29 x i8]* @__FUNCTION__.ix86_secondary_memory_needed, i64 0, i64 0)) #11
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false17
+  %call22 = tail call i32 @reg_class_subset_p(i32 %class1, i32 15) #9
+  %call23 = tail call i32 @reg_class_subset_p(i32 %class2, i32 15) #9
+  %cmp24 = icmp eq i32 %call22, %call23
+  br i1 %cmp24, label %lor.lhs.false25, label %lor.end
+
+lor.lhs.false25:                                  ; preds = %if.end
+  %call26 = tail call i32 @reg_class_subset_p(i32 %class1, i32 16) #9
+  %call27 = tail call i32 @reg_class_subset_p(i32 %class2, i32 16) #9
+  %cmp28 = icmp eq i32 %call26, %call27
+  %cmp29 = icmp eq i32 %mode, 4
+  %or.cond = or i1 %cmp28, %cmp29
+  br i1 %or.cond, label %lor.rhs, label %lor.end
+
+lor.rhs:                                          ; preds = %lor.lhs.false25
+  %call30 = tail call i32 @reg_class_subset_p(i32 %class1, i32 17) #9
+  %call31 = tail call i32 @reg_class_subset_p(i32 %class2, i32 17) #9
+  %cmp33 = icmp ne i32 %mode, 4
+  %not.cmp32 = icmp ne i32 %call30, %call31
+  %.cmp33 = and i1 %cmp33, %not.cmp32
+  br label %lor.end
+
+lor.end:                                          ; preds = %lor.rhs, %lor.lhs.false25, %if.end
+  %0 = phi i1 [ true, %if.end ], [ true, %lor.lhs.false25 ], [ %.cmp33, %lor.rhs ]
+  %lor.ext = zext i1 %0 to i32
+  br label %return
+
+return:                                           ; preds = %if.then, %lor.end
+  %retval.0 = phi i32 [ %lor.ext, %lor.end ], [ 1, %if.then ]
+  ret i32 %retval.0
+}

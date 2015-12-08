@@ -1,0 +1,68 @@
+define void @dump_conf(%struct.t_pull* nocapture %pull, [3 x float]* %x, [3 x float]* %box, %struct.t_topology* %top, i32 %nout, float %time) #0 {
+entry:
+  %buf = alloca [128 x i8], align 16
+  %buf2 = alloca [128 x i8], align 16
+  %0 = getelementptr inbounds [128 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 128, i8* %0) #1
+  %1 = getelementptr inbounds [128 x i8]* %buf2, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 128, i8* %1) #1
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([11 x i8]* @.str, i64 0, i64 0), i32 %nout) #4
+  %n = getelementptr inbounds %struct.t_pull* %pull, i64 0, i32 1, i32 0
+  %2 = load i32* %n, align 4, !tbaa !0
+  %cmp = icmp eq i32 %2, 2
+  %x_unc = getelementptr inbounds %struct.t_pull* %pull, i64 0, i32 1, i32 9
+  %3 = load [3 x float]** %x_unc, align 8, !tbaa !3
+  %arraydecay5 = getelementptr inbounds [3 x float]* %3, i64 0, i64 0
+  %x_unc6 = getelementptr inbounds %struct.t_pull* %pull, i64 0, i32 2, i32 9
+  %4 = load [3 x float]** %x_unc6, align 8, !tbaa !3
+  %arraydecay8 = getelementptr inbounds [3 x float]* %4, i64 0, i64 0
+  %5 = load float* %arraydecay5, align 4, !tbaa !4
+  %6 = load float* %arraydecay8, align 4, !tbaa !4
+  %sub.i = fsub float %5, %6
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %3, i64 0, i64 1
+  %7 = load float* %arrayidx2.i, align 4, !tbaa !4
+  %arrayidx3.i = getelementptr inbounds [3 x float]* %4, i64 0, i64 1
+  %8 = load float* %arrayidx3.i, align 4, !tbaa !4
+  %sub4.i = fsub float %7, %8
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %3, i64 0, i64 2
+  %9 = load float* %arrayidx5.i, align 4, !tbaa !4
+  %arrayidx6.i = getelementptr inbounds [3 x float]* %4, i64 0, i64 2
+  %10 = load float* %arrayidx6.i, align 4, !tbaa !4
+  %sub7.i = fsub float %9, %10
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %arraydecay13 = getelementptr inbounds [3 x float]* %3, i64 1, i64 0
+  %11 = load float* %arraydecay13, align 4, !tbaa !4
+  %sub.i59 = fsub float %11, %6
+  %arrayidx2.i60 = getelementptr inbounds [3 x float]* %3, i64 1, i64 1
+  %12 = load float* %arrayidx2.i60, align 4, !tbaa !4
+  %sub4.i62 = fsub float %12, %8
+  %arrayidx5.i63 = getelementptr inbounds [3 x float]* %3, i64 1, i64 2
+  %13 = load float* %arrayidx5.i63, align 4, !tbaa !4
+  %sub7.i65 = fsub float %13, %10
+  %conv = fpext float %sub.i to double
+  %conv22 = fpext float %sub4.i to double
+  %conv24 = fpext float %sub7.i to double
+  %conv26 = fpext float %sub.i59 to double
+  %conv28 = fpext float %sub4.i62 to double
+  %conv30 = fpext float %sub7.i65 to double
+  %conv31 = fpext float %time to double
+  %call32 = call i32 (i8*, i8*, ...)* @sprintf(i8* %1, i8* getelementptr inbounds ([50 x i8]* @.str1, i64 0, i64 0), double %conv, double %conv22, double %conv24, double %conv26, double %conv28, double %conv30, double %conv31) #4
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %conv44 = fpext float %sub.i to double
+  %conv46 = fpext float %sub4.i to double
+  %conv48 = fpext float %sub7.i to double
+  %conv49 = fpext float %time to double
+  %call50 = call i32 (i8*, i8*, ...)* @sprintf(i8* %1, i8* getelementptr inbounds ([29 x i8]* @.str2, i64 0, i64 0), double %conv44, double %conv46, double %conv48, double %conv49) #4
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %atoms = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 2
+  call void @write_sto_conf(i8* %0, i8* %1, %struct.t_atoms* %atoms, [3 x float]* %x, [3 x float]* null, [3 x float]* %box) #4
+  call void @llvm.lifetime.end(i64 128, i8* %1) #1
+  call void @llvm.lifetime.end(i64 128, i8* %0) #1
+  ret void
+}

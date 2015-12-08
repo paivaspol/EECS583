@@ -1,0 +1,762 @@
+define %struct.lextree_t* @lextree_build(%struct.kbcore_t* nocapture %kbc, %struct.wordprob_t* nocapture %wordprob, i32 %n_word, i8* %lc) #0 {
+entry:
+  %mdef1 = getelementptr inbounds %struct.kbcore_t* %kbc, i64 0, i32 1
+  %0 = load %struct.mdef_t** %mdef1, align 8, !tbaa !0
+  %dict2 = getelementptr inbounds %struct.kbcore_t* %kbc, i64 0, i32 2
+  %1 = load %struct.dict_t** %dict2, align 8, !tbaa !0
+  %tmat3 = getelementptr inbounds %struct.kbcore_t* %kbc, i64 0, i32 11
+  %2 = load %struct.tmat_t** %tmat3, align 8, !tbaa !0
+  %dict2pid = getelementptr inbounds %struct.kbcore_t* %kbc, i64 0, i32 3
+  %3 = load %struct.dict2pid_t** %dict2pid, align 8, !tbaa !0
+  %n_ciphone = getelementptr inbounds %struct.mdef_t* %0, i64 0, i32 0
+  %4 = load i32* %n_ciphone, align 4, !tbaa !3
+  %n_sseq4 = getelementptr inbounds %struct.mdef_t* %0, i64 0, i32 10
+  %5 = load i32* %n_sseq4, align 4, !tbaa !3
+  %n_emit_state = getelementptr inbounds %struct.mdef_t* %0, i64 0, i32 2
+  %6 = load i32* %n_emit_state, align 4, !tbaa !3
+  %call = tail call i8* @__ckd_calloc__(i64 1, i64 64, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 115) #4
+  %7 = bitcast i8* %call to %struct.lextree_t*
+  %root = getelementptr inbounds i8* %call, i64 8
+  %8 = bitcast i8* %root to %struct.gnode_s**
+  store %struct.gnode_s* null, %struct.gnode_s** %8, align 8, !tbaa !0
+  %conv = sext i32 %5 to i64
+  %call5 = tail call i8* @__ckd_calloc__(i64 %conv, i64 8, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 119) #4
+  %9 = bitcast i8* %call5 to %struct.lextree_node_t**
+  %call7 = tail call i8* @__ckd_calloc__(i64 %conv, i64 8, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 122) #4
+  %10 = bitcast i8* %call7 to i32**
+  %cmp867 = icmp sgt i32 %5, 0
+  br i1 %cmp867, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %add = add nsw i32 %4, 31
+  %shr = ashr i32 %add, 5
+  %conv9 = sext i32 %shr to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv931 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next932, %for.body ]
+  %call10 = tail call i8* @__ckd_calloc__(i64 %conv9, i64 4, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 124) #4
+  %11 = bitcast i8* %call10 to i32*
+  %arrayidx = getelementptr inbounds i32** %10, i64 %indvars.iv931
+  store i32* %11, i32** %arrayidx, align 8, !tbaa !0
+  %indvars.iv.next932 = add i64 %indvars.iv931, 1
+  %lftr.wideiv933 = trunc i64 %indvars.iv.next932 to i32
+  %exitcond934 = icmp eq i32 %lftr.wideiv933, %5
+  br i1 %exitcond934, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %tobool = icmp ne i8* %lc, null
+  br i1 %tobool, label %for.cond14, label %if.then
+
+if.then:                                          ; preds = %for.end
+  %n_lc11 = getelementptr inbounds i8* %call, i64 24
+  %12 = bitcast i8* %n_lc11 to i32*
+  store i32 0, i32* %12, align 4, !tbaa !3
+  %lcroot12 = getelementptr inbounds i8* %call, i64 16
+  %13 = bitcast i8* %lcroot12 to %struct.lextree_lcroot_t**
+  store %struct.lextree_lcroot_t* null, %struct.lextree_lcroot_t** %13, align 8, !tbaa !0
+  %call13 = tail call i8* @__ckd_calloc__(i64 1, i64 8, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 135) #4
+  br label %if.end
+
+for.cond14:                                       ; preds = %for.end, %for.cond14
+  %indvars.iv929 = phi i64 [ %indvars.iv.next930, %for.cond14 ], [ 0, %for.end ]
+  %indvars.iv925 = phi i32 [ %indvars.iv.next926, %for.cond14 ], [ 0, %for.end ]
+  %arrayidx16 = getelementptr inbounds i8* %lc, i64 %indvars.iv929
+  %14 = load i8* %arrayidx16, align 1, !tbaa !1
+  %cmp18 = icmp sgt i8 %14, -1
+  %indvars.iv.next930 = add i64 %indvars.iv929, 1
+  %indvars.iv.next926 = add i32 %indvars.iv925, 1
+  br i1 %cmp18, label %for.cond14, label %for.end23
+
+for.end23:                                        ; preds = %for.cond14
+  %n_lc24 = getelementptr inbounds i8* %call, i64 24
+  %15 = bitcast i8* %n_lc24 to i32*
+  store i32 %indvars.iv925, i32* %15, align 4, !tbaa !3
+  %call26 = tail call i8* @__ckd_calloc__(i64 %indvars.iv929, i64 16, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 141) #4
+  %16 = bitcast i8* %call26 to %struct.lextree_lcroot_t*
+  %lcroot27 = getelementptr inbounds i8* %call, i64 16
+  %17 = bitcast i8* %lcroot27 to %struct.lextree_lcroot_t**
+  store %struct.lextree_lcroot_t* %16, %struct.lextree_lcroot_t** %17, align 8, !tbaa !0
+  %cmp29865 = icmp sgt i32 %indvars.iv925, 0
+  br i1 %cmp29865, label %for.body31, label %for.end42
+
+for.body31:                                       ; preds = %for.end23, %for.body31
+  %indvars.iv923 = phi i64 [ %indvars.iv.next924, %for.body31 ], [ 0, %for.end23 ]
+  %arrayidx33 = getelementptr inbounds i8* %lc, i64 %indvars.iv923
+  %18 = load i8* %arrayidx33, align 1, !tbaa !1
+  %lc36 = getelementptr inbounds %struct.lextree_lcroot_t* %16, i64 %indvars.iv923, i32 0
+  store i8 %18, i8* %lc36, align 1, !tbaa !1
+  %root39 = getelementptr inbounds %struct.lextree_lcroot_t* %16, i64 %indvars.iv923, i32 1
+  store %struct.gnode_s* null, %struct.gnode_s** %root39, align 8, !tbaa !0
+  %indvars.iv.next924 = add i64 %indvars.iv923, 1
+  %lftr.wideiv927 = trunc i64 %indvars.iv.next924 to i32
+  %exitcond928 = icmp eq i32 %lftr.wideiv927, %indvars.iv925
+  br i1 %exitcond928, label %for.end42, label %for.body31
+
+for.end42:                                        ; preds = %for.body31, %for.end23
+  %call44 = tail call i8* @__ckd_calloc__(i64 %indvars.iv929, i64 8, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 149) #4
+  br label %if.end
+
+if.end:                                           ; preds = %for.end42, %if.then
+  %parent.0.in = phi i8* [ %call44, %for.end42 ], [ %call13, %if.then ]
+  %n_lc.1 = phi i32 [ %indvars.iv925, %for.end42 ], [ 0, %if.then ]
+  %lcroot.0 = phi %struct.lextree_lcroot_t* [ %16, %for.end42 ], [ null, %if.then ]
+  %parent.0 = bitcast i8* %parent.0.in to %struct.lextree_node_t**
+  %cmp46859 = icmp sgt i32 %n_word, 0
+  br i1 %cmp46859, label %for.body48.lr.ph, label %for.end483
+
+for.body48.lr.ph:                                 ; preds = %if.end
+  %word = getelementptr inbounds %struct.dict_t* %1, i64 0, i32 4
+  %internal = getelementptr inbounds %struct.dict2pid_t* %3, i64 0, i32 0
+  %phone = getelementptr inbounds %struct.mdef_t* %0, i64 0, i32 8
+  %tp = getelementptr inbounds %struct.tmat_t* %2, i64 0, i32 0
+  %cmp90850 = icmp sgt i32 %n_lc.1, 0
+  %single_lc = getelementptr inbounds %struct.dict2pid_t* %3, i64 0, i32 2
+  %ldiph_lc224 = getelementptr inbounds %struct.dict2pid_t* %3, i64 0, i32 1
+  br label %for.body48
+
+for.body48:                                       ; preds = %for.inc481, %for.body48.lr.ph
+  %indvars.iv919 = phi i64 [ 0, %for.body48.lr.ph ], [ %indvars.iv.next920, %for.inc481 ]
+  %gn.0862 = phi %struct.gnode_s* [ null, %for.body48.lr.ph ], [ %gn.7, %for.inc481 ]
+  %ln.0861 = phi %struct.lextree_node_t* [ null, %for.body48.lr.ph ], [ %ln.15, %for.inc481 ]
+  %n_node.0860 = phi i32 [ 0, %for.body48.lr.ph ], [ %n_node.9, %for.inc481 ]
+  %wid51 = getelementptr inbounds %struct.wordprob_t* %wordprob, i64 %indvars.iv919, i32 0
+  %19 = load i32* %wid51, align 4, !tbaa !3
+  %prob54 = getelementptr inbounds %struct.wordprob_t* %wordprob, i64 %indvars.iv919, i32 1
+  %20 = load i32* %prob54, align 4, !tbaa !3
+  %idxprom55 = sext i32 %19 to i64
+  %21 = load %struct.dictword_t** %word, align 8, !tbaa !0
+  %pronlen57 = getelementptr inbounds %struct.dictword_t* %21, i64 %idxprom55, i32 2
+  %22 = load i32* %pronlen57, align 4, !tbaa !3
+  %cmp58 = icmp eq i32 %22, 1
+  br i1 %cmp58, label %if.then60, label %if.else154
+
+if.then60:                                        ; preds = %for.body48
+  %ciphone = getelementptr inbounds %struct.dictword_t* %21, i64 %idxprom55, i32 1
+  %23 = load i8** %ciphone, align 8, !tbaa !0
+  %24 = load i8* %23, align 1, !tbaa !1
+  %conv65 = sext i8 %24 to i32
+  br i1 %tobool, label %for.cond89.preheader, label %if.then67
+
+for.cond89.preheader:                             ; preds = %if.then60
+  br i1 %cmp90850, label %for.body92.lr.ph, label %for.inc481
+
+for.body92.lr.ph:                                 ; preds = %for.cond89.preheader
+  %idxprom97 = sext i8 %24 to i64
+  br label %for.body92
+
+if.then67:                                        ; preds = %if.then60
+  %25 = load i32*** %internal, align 8, !tbaa !0
+  %arrayidx69 = getelementptr inbounds i32** %25, i64 %idxprom55
+  %26 = load i32** %arrayidx69, align 8, !tbaa !0
+  %27 = load i32* %26, align 4, !tbaa !3
+  %call77 = tail call fastcc %struct.lextree_node_t* @lextree_node_alloc(i32 %19, i32 %20, i32 1, i32 %27, i32 %6, i32 %conv65) #5
+  %idxprom78 = sext i8 %24 to i64
+  %28 = load %struct.phone_t** %phone, align 8, !tbaa !0
+  %tmat80 = getelementptr inbounds %struct.phone_t* %28, i64 %idxprom78, i32 1
+  %29 = load i32* %tmat80, align 4, !tbaa !3
+  %idxprom81 = sext i32 %29 to i64
+  %30 = load i32**** %tp, align 8, !tbaa !0
+  %arrayidx82 = getelementptr inbounds i32*** %30, i64 %idxprom81
+  %31 = load i32*** %arrayidx82, align 8, !tbaa !0
+  %tp83 = getelementptr inbounds %struct.lextree_node_t* %call77, i64 0, i32 0, i32 3
+  store i32** %31, i32*** %tp83, align 8, !tbaa !0
+  %32 = load %struct.gnode_s** %8, align 8, !tbaa !0
+  %33 = bitcast %struct.lextree_node_t* %call77 to i8*
+  %call85 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %32, i8* %33) #4
+  store %struct.gnode_s* %call85, %struct.gnode_s** %8, align 8, !tbaa !0
+  %inc87 = add nsw i32 %n_node.0860, 1
+  br label %for.inc481
+
+for.body92:                                       ; preds = %for.inc150, %for.body92.lr.ph
+  %indvars.iv915 = phi i64 [ 0, %for.body92.lr.ph ], [ %indvars.iv.next916, %for.inc150 ]
+  %ln.1855 = phi %struct.lextree_node_t* [ %ln.0861, %for.body92.lr.ph ], [ %ln.2, %for.inc150 ]
+  %n_node.1853 = phi i32 [ %n_node.0860, %for.body92.lr.ph ], [ %n_node.2, %for.inc150 ]
+  %np.0851 = phi i32 [ 0, %for.body92.lr.ph ], [ %np.1, %for.inc150 ]
+  %arrayidx94 = getelementptr inbounds i8* %lc, i64 %indvars.iv915
+  %34 = load i8* %arrayidx94, align 1, !tbaa !1
+  %idxprom96 = sext i8 %34 to i64
+  %35 = load i32*** %single_lc, align 8, !tbaa !0
+  %arrayidx98 = getelementptr inbounds i32** %35, i64 %idxprom97
+  %36 = load i32** %arrayidx98, align 8, !tbaa !0
+  %arrayidx99 = getelementptr inbounds i32* %36, i64 %idxprom96
+  %37 = load i32* %arrayidx99, align 4, !tbaa !3
+  %cmp101848 = icmp sgt i32 %np.0851, 0
+  br i1 %cmp101848, label %land.rhs, label %if.then114
+
+for.cond100:                                      ; preds = %land.rhs
+  %inc110 = add nsw i32 %k.0849, 1
+  %38 = trunc i64 %indvars.iv.next914 to i32
+  %cmp101 = icmp slt i32 %38, %np.0851
+  br i1 %cmp101, label %land.rhs, label %if.then114
+
+land.rhs:                                         ; preds = %for.body92, %for.cond100
+  %indvars.iv913 = phi i64 [ %indvars.iv.next914, %for.cond100 ], [ 0, %for.body92 ]
+  %k.0849 = phi i32 [ %inc110, %for.cond100 ], [ 0, %for.body92 ]
+  %arrayidx104 = getelementptr inbounds %struct.lextree_node_t** %parent.0, i64 %indvars.iv913
+  %39 = load %struct.lextree_node_t** %arrayidx104, align 8, !tbaa !0
+  %ssid105 = getelementptr inbounds %struct.lextree_node_t* %39, i64 0, i32 4
+  %40 = load i32* %ssid105, align 4, !tbaa !3
+  %cmp106 = icmp eq i32 %40, %37
+  %indvars.iv.next914 = add i64 %indvars.iv913, 1
+  br i1 %cmp106, label %if.else139, label %for.cond100
+
+if.then114:                                       ; preds = %for.cond100, %for.body92
+  %call115 = tail call fastcc %struct.lextree_node_t* @lextree_node_alloc(i32 %19, i32 %20, i32 1, i32 %37, i32 %6, i32 %conv65) #5
+  %41 = load %struct.phone_t** %phone, align 8, !tbaa !0
+  %tmat119 = getelementptr inbounds %struct.phone_t* %41, i64 %idxprom97, i32 1
+  %42 = load i32* %tmat119, align 4, !tbaa !3
+  %idxprom120 = sext i32 %42 to i64
+  %43 = load i32**** %tp, align 8, !tbaa !0
+  %arrayidx122 = getelementptr inbounds i32*** %43, i64 %idxprom120
+  %44 = load i32*** %arrayidx122, align 8, !tbaa !0
+  %tp124 = getelementptr inbounds %struct.lextree_node_t* %call115, i64 0, i32 0, i32 3
+  store i32** %44, i32*** %tp124, align 8, !tbaa !0
+  %45 = load %struct.gnode_s** %8, align 8, !tbaa !0
+  %46 = bitcast %struct.lextree_node_t* %call115 to i8*
+  %call126 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %45, i8* %46) #4
+  store %struct.gnode_s* %call126, %struct.gnode_s** %8, align 8, !tbaa !0
+  %inc128 = add nsw i32 %n_node.1853, 1
+  %root131 = getelementptr inbounds %struct.lextree_lcroot_t* %lcroot.0, i64 %indvars.iv915, i32 1
+  %47 = load %struct.gnode_s** %root131, align 8, !tbaa !0
+  %call132 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %47, i8* %46) #4
+  store %struct.gnode_s* %call132, %struct.gnode_s** %root131, align 8, !tbaa !0
+  %inc136 = add nsw i32 %np.0851, 1
+  %idxprom137 = sext i32 %np.0851 to i64
+  %arrayidx138 = getelementptr inbounds %struct.lextree_node_t** %parent.0, i64 %idxprom137
+  store %struct.lextree_node_t* %call115, %struct.lextree_node_t** %arrayidx138, align 8, !tbaa !0
+  br label %for.inc150
+
+if.else139:                                       ; preds = %land.rhs
+  %root142 = getelementptr inbounds %struct.lextree_lcroot_t* %lcroot.0, i64 %indvars.iv915, i32 1
+  %48 = load %struct.gnode_s** %root142, align 8, !tbaa !0
+  %idxprom143 = sext i32 %k.0849 to i64
+  %arrayidx144 = getelementptr inbounds %struct.lextree_node_t** %parent.0, i64 %idxprom143
+  %49 = load %struct.lextree_node_t** %arrayidx144, align 8, !tbaa !0
+  %50 = bitcast %struct.lextree_node_t* %49 to i8*
+  %call145 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %48, i8* %50) #4
+  store %struct.gnode_s* %call145, %struct.gnode_s** %root142, align 8, !tbaa !0
+  br label %for.inc150
+
+for.inc150:                                       ; preds = %if.then114, %if.else139
+  %np.1 = phi i32 [ %inc136, %if.then114 ], [ %np.0851, %if.else139 ]
+  %n_node.2 = phi i32 [ %inc128, %if.then114 ], [ %n_node.1853, %if.else139 ]
+  %ln.2 = phi %struct.lextree_node_t* [ %call115, %if.then114 ], [ %ln.1855, %if.else139 ]
+  %indvars.iv.next916 = add i64 %indvars.iv915, 1
+  %lftr.wideiv917 = trunc i64 %indvars.iv.next916 to i32
+  %exitcond918 = icmp eq i32 %lftr.wideiv917, %n_lc.1
+  br i1 %exitcond918, label %for.inc481, label %for.body92
+
+if.else154:                                       ; preds = %for.body48
+  br i1 %tobool, label %if.else209, label %if.then156
+
+if.then156:                                       ; preds = %if.else154
+  %51 = load i32*** %internal, align 8, !tbaa !0
+  %arrayidx159 = getelementptr inbounds i32** %51, i64 %idxprom55
+  %52 = load i32** %arrayidx159, align 8, !tbaa !0
+  %53 = load i32* %52, align 4, !tbaa !3
+  %ciphone164 = getelementptr inbounds %struct.dictword_t* %21, i64 %idxprom55, i32 1
+  %54 = load i8** %ciphone164, align 8, !tbaa !0
+  %55 = load i8* %54, align 1, !tbaa !1
+  %conv166 = sext i8 %55 to i32
+  %gn.1781 = load %struct.gnode_s** %8, align 8
+  %tobool169782 = icmp eq %struct.gnode_s* %gn.1781, null
+  br i1 %tobool169782, label %if.then185, label %for.body170
+
+for.body170:                                      ; preds = %if.then156, %for.inc182
+  %gn.1783 = phi %struct.gnode_s* [ %gn.1, %for.inc182 ], [ %gn.1781, %if.then156 ]
+  %ptr = getelementptr inbounds %struct.gnode_s* %gn.1783, i64 0, i32 0, i32 0
+  %56 = load i8** %ptr, align 8, !tbaa !0
+  %57 = bitcast i8* %56 to %struct.lextree_node_t*
+  %ssid171 = getelementptr inbounds i8* %56, i64 56
+  %58 = bitcast i8* %ssid171 to i32*
+  %59 = load i32* %58, align 4, !tbaa !3
+  %cmp172 = icmp eq i32 %59, %53
+  br i1 %cmp172, label %land.lhs.true, label %for.inc182
+
+land.lhs.true:                                    ; preds = %for.body170
+  %60 = getelementptr inbounds i8* %56, i64 73
+  %61 = load i8* %60, align 1, !tbaa !1
+  %tobool175 = icmp eq i8 %61, 0
+  br i1 %tobool175, label %for.inc182, label %land.lhs.true176
+
+land.lhs.true176:                                 ; preds = %land.lhs.true
+  %wid177 = getelementptr inbounds i8* %56, i64 48
+  %62 = bitcast i8* %wid177 to i32*
+  %63 = load i32* %62, align 4, !tbaa !3
+  %cmp178 = icmp slt i32 %63, 0
+  br i1 %cmp178, label %if.else200, label %for.inc182
+
+for.inc182:                                       ; preds = %land.lhs.true, %for.body170, %land.lhs.true176
+  %next = getelementptr inbounds %struct.gnode_s* %gn.1783, i64 0, i32 1
+  %gn.1 = load %struct.gnode_s** %next, align 8
+  %tobool169 = icmp eq %struct.gnode_s* %gn.1, null
+  br i1 %tobool169, label %if.then185, label %for.body170
+
+if.then185:                                       ; preds = %if.then156, %for.inc182
+  %call186 = tail call fastcc %struct.lextree_node_t* @lextree_node_alloc(i32 -1, i32 %20, i32 1, i32 %53, i32 %6, i32 %conv166) #5
+  %idxprom187 = sext i8 %55 to i64
+  %64 = load %struct.phone_t** %phone, align 8, !tbaa !0
+  %tmat190 = getelementptr inbounds %struct.phone_t* %64, i64 %idxprom187, i32 1
+  %65 = load i32* %tmat190, align 4, !tbaa !3
+  %idxprom191 = sext i32 %65 to i64
+  %66 = load i32**** %tp, align 8, !tbaa !0
+  %arrayidx193 = getelementptr inbounds i32*** %66, i64 %idxprom191
+  %67 = load i32*** %arrayidx193, align 8, !tbaa !0
+  %tp195 = getelementptr inbounds %struct.lextree_node_t* %call186, i64 0, i32 0, i32 3
+  store i32** %67, i32*** %tp195, align 8, !tbaa !0
+  %68 = load %struct.gnode_s** %8, align 8, !tbaa !0
+  %69 = bitcast %struct.lextree_node_t* %call186 to i8*
+  %call197 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %68, i8* %69) #4
+  store %struct.gnode_s* %call197, %struct.gnode_s** %8, align 8, !tbaa !0
+  %inc199 = add nsw i32 %n_node.0860, 1
+  br label %if.end207
+
+if.else200:                                       ; preds = %land.lhs.true176
+  %prob201 = getelementptr inbounds i8* %56, i64 52
+  %70 = bitcast i8* %prob201 to i32*
+  %71 = load i32* %70, align 4, !tbaa !3
+  %cmp202 = icmp slt i32 %71, %20
+  br i1 %cmp202, label %if.then204, label %if.end207
+
+if.then204:                                       ; preds = %if.else200
+  store i32 %20, i32* %70, align 4, !tbaa !3
+  br label %if.end207
+
+if.end207:                                        ; preds = %if.else200, %if.then204, %if.then185
+  %gn.1777 = phi %struct.gnode_s* [ %gn.1783, %if.then204 ], [ %gn.1783, %if.else200 ], [ null, %if.then185 ]
+  %n_node.3 = phi i32 [ %n_node.0860, %if.then204 ], [ %n_node.0860, %if.else200 ], [ %inc199, %if.then185 ]
+  %ln.5 = phi %struct.lextree_node_t* [ %57, %if.then204 ], [ %57, %if.else200 ], [ %call186, %if.then185 ]
+  store %struct.lextree_node_t* %ln.5, %struct.lextree_node_t** %parent.0, align 8, !tbaa !0
+  br label %for.cond324.preheader
+
+if.else209:                                       ; preds = %if.else154
+  %ciphone213 = getelementptr inbounds %struct.dictword_t* %21, i64 %idxprom55, i32 1
+  %72 = load i8** %ciphone213, align 8, !tbaa !0
+  %73 = load i8* %72, align 1, !tbaa !1
+  %conv215 = sext i8 %73 to i32
+  %arrayidx220 = getelementptr inbounds i8* %72, i64 1
+  %74 = load i8* %arrayidx220, align 1, !tbaa !1
+  %idxprom222 = sext i8 %74 to i64
+  %idxprom223 = sext i8 %73 to i64
+  %75 = load i32**** %ldiph_lc224, align 8, !tbaa !0
+  %arrayidx225 = getelementptr inbounds i32*** %75, i64 %idxprom223
+  %76 = load i32*** %arrayidx225, align 8, !tbaa !0
+  %arrayidx226 = getelementptr inbounds i32** %76, i64 %idxprom222
+  %77 = load i32** %arrayidx226, align 8, !tbaa !0
+  br i1 %cmp90850, label %for.body230, label %for.cond324.preheader
+
+for.body230:                                      ; preds = %if.else209, %for.inc320
+  %indvars.iv877 = phi i64 [ %indvars.iv.next878, %for.inc320 ], [ 0, %if.else209 ]
+  %n_node.4790 = phi i32 [ %n_node.5, %for.inc320 ], [ %n_node.0860, %if.else209 ]
+  %np.2788 = phi i32 [ %np.3, %for.inc320 ], [ 0, %if.else209 ]
+  %arrayidx232 = getelementptr inbounds i8* %lc, i64 %indvars.iv877
+  %78 = load i8* %arrayidx232, align 1, !tbaa !1
+  %idxprom234 = sext i8 %78 to i64
+  %arrayidx235 = getelementptr inbounds i32* %77, i64 %idxprom234
+  %79 = load i32* %arrayidx235, align 4, !tbaa !3
+  %idxprom236 = sext i32 %79 to i64
+  %arrayidx237 = getelementptr inbounds %struct.lextree_node_t** %9, i64 %idxprom236
+  %80 = load %struct.lextree_node_t** %arrayidx237, align 8, !tbaa !0
+  %tobool238 = icmp eq %struct.lextree_node_t* %80, null
+  br i1 %tobool238, label %if.then239, label %if.else256
+
+if.then239:                                       ; preds = %for.body230
+  %call240 = tail call fastcc %struct.lextree_node_t* @lextree_node_alloc(i32 -1, i32 %20, i32 0, i32 %79, i32 %6, i32 %conv215) #5
+  %81 = load %struct.phone_t** %phone, align 8, !tbaa !0
+  %tmat244 = getelementptr inbounds %struct.phone_t* %81, i64 %idxprom223, i32 1
+  %82 = load i32* %tmat244, align 4, !tbaa !3
+  %idxprom245 = sext i32 %82 to i64
+  %83 = load i32**** %tp, align 8, !tbaa !0
+  %arrayidx247 = getelementptr inbounds i32*** %83, i64 %idxprom245
+  %84 = load i32*** %arrayidx247, align 8, !tbaa !0
+  %tp249 = getelementptr inbounds %struct.lextree_node_t* %call240, i64 0, i32 0, i32 3
+  store i32** %84, i32*** %tp249, align 8, !tbaa !0
+  %85 = load %struct.gnode_s** %8, align 8, !tbaa !0
+  %86 = bitcast %struct.lextree_node_t* %call240 to i8*
+  %call251 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %85, i8* %86) #4
+  store %struct.gnode_s* %call251, %struct.gnode_s** %8, align 8, !tbaa !0
+  %inc253 = add nsw i32 %n_node.4790, 1
+  store %struct.lextree_node_t* %call240, %struct.lextree_node_t** %arrayidx237, align 8, !tbaa !0
+  br label %if.end263
+
+if.else256:                                       ; preds = %for.body230
+  %prob257 = getelementptr inbounds %struct.lextree_node_t* %80, i64 0, i32 3
+  %87 = load i32* %prob257, align 4, !tbaa !3
+  %cmp258 = icmp slt i32 %87, %20
+  br i1 %cmp258, label %if.then260, label %if.end263
+
+if.then260:                                       ; preds = %if.else256
+  store i32 %20, i32* %prob257, align 4, !tbaa !3
+  br label %if.end263
+
+if.end263:                                        ; preds = %if.else256, %if.then260, %if.then239
+  %n_node.5 = phi i32 [ %n_node.4790, %if.then260 ], [ %n_node.4790, %if.else256 ], [ %inc253, %if.then239 ]
+  %ln.7 = phi %struct.lextree_node_t* [ %80, %if.then260 ], [ %80, %if.else256 ], [ %call240, %if.then239 ]
+  %88 = load i8* %arrayidx232, align 1, !tbaa !1
+  %conv266 = sext i8 %88 to i32
+  %shr267 = ashr i32 %conv266, 5
+  %idxprom268 = sext i32 %shr267 to i64
+  %arrayidx270 = getelementptr inbounds i32** %10, i64 %idxprom236
+  %89 = load i32** %arrayidx270, align 8, !tbaa !0
+  %arrayidx271 = getelementptr inbounds i32* %89, i64 %idxprom268
+  %90 = load i32* %arrayidx271, align 4, !tbaa !3
+  %and = and i32 %conv266, 31
+  %shl = shl i32 1, %and
+  %and275 = and i32 %shl, %90
+  %tobool276 = icmp eq i32 %and275, 0
+  br i1 %tobool276, label %if.then277, label %for.cond299.preheader
+
+if.then277:                                       ; preds = %if.end263
+  %root280 = getelementptr inbounds %struct.lextree_lcroot_t* %lcroot.0, i64 %indvars.iv877, i32 1
+  %91 = load %struct.gnode_s** %root280, align 8, !tbaa !0
+  %92 = bitcast %struct.lextree_node_t* %ln.7 to i8*
+  %call281 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %91, i8* %92) #4
+  store %struct.gnode_s* %call281, %struct.gnode_s** %root280, align 8, !tbaa !0
+  %93 = load i8* %arrayidx232, align 1, !tbaa !1
+  %conv287 = sext i8 %93 to i32
+  %and288 = and i32 %conv287, 31
+  %shl289 = shl i32 1, %and288
+  %shr293 = ashr i32 %conv287, 5
+  %idxprom294 = sext i32 %shr293 to i64
+  %94 = load i32** %arrayidx270, align 8, !tbaa !0
+  %arrayidx297 = getelementptr inbounds i32* %94, i64 %idxprom294
+  %95 = load i32* %arrayidx297, align 4, !tbaa !3
+  %or = or i32 %shl289, %95
+  store i32 %or, i32* %arrayidx297, align 4, !tbaa !3
+  br label %for.cond299.preheader
+
+for.cond299.preheader:                            ; preds = %if.end263, %if.then277
+  %cmp300785 = icmp sgt i32 %np.2788, 0
+  br i1 %cmp300785, label %land.rhs302, label %if.then315
+
+for.cond299:                                      ; preds = %land.rhs302
+  %96 = trunc i64 %indvars.iv.next876 to i32
+  %cmp300 = icmp slt i32 %96, %np.2788
+  br i1 %cmp300, label %land.rhs302, label %if.then315
+
+land.rhs302:                                      ; preds = %for.cond299.preheader, %for.cond299
+  %indvars.iv875 = phi i64 [ %indvars.iv.next876, %for.cond299 ], [ 0, %for.cond299.preheader ]
+  %arrayidx304 = getelementptr inbounds %struct.lextree_node_t** %parent.0, i64 %indvars.iv875
+  %97 = load %struct.lextree_node_t** %arrayidx304, align 8, !tbaa !0
+  %ssid305 = getelementptr inbounds %struct.lextree_node_t* %97, i64 0, i32 4
+  %98 = load i32* %ssid305, align 4, !tbaa !3
+  %cmp306 = icmp eq i32 %98, %79
+  %indvars.iv.next876 = add i64 %indvars.iv875, 1
+  br i1 %cmp306, label %for.inc320, label %for.cond299
+
+if.then315:                                       ; preds = %for.cond299, %for.cond299.preheader
+  %inc316 = add nsw i32 %np.2788, 1
+  %idxprom317 = sext i32 %np.2788 to i64
+  %arrayidx318 = getelementptr inbounds %struct.lextree_node_t** %parent.0, i64 %idxprom317
+  store %struct.lextree_node_t* %ln.7, %struct.lextree_node_t** %arrayidx318, align 8, !tbaa !0
+  br label %for.inc320
+
+for.inc320:                                       ; preds = %land.rhs302, %if.then315
+  %np.3 = phi i32 [ %inc316, %if.then315 ], [ %np.2788, %land.rhs302 ]
+  %indvars.iv.next878 = add i64 %indvars.iv877, 1
+  %lftr.wideiv879 = trunc i64 %indvars.iv.next878 to i32
+  %exitcond880 = icmp eq i32 %lftr.wideiv879, %n_lc.1
+  br i1 %exitcond880, label %for.cond324.preheader, label %for.body230
+
+for.cond324.preheader:                            ; preds = %if.else209, %for.inc320, %if.end207
+  %np.5.ph = phi i32 [ 1, %if.end207 ], [ 0, %if.else209 ], [ %np.3, %for.inc320 ]
+  %n_node.7.ph = phi i32 [ %n_node.3, %if.end207 ], [ %n_node.0860, %if.else209 ], [ %n_node.5, %for.inc320 ]
+  %ln.9.ph = phi %struct.lextree_node_t* [ %ln.5, %if.end207 ], [ %ln.0861, %if.else209 ], [ %ln.7, %for.inc320 ]
+  %gn.3.ph = phi %struct.gnode_s* [ %gn.1777, %if.end207 ], [ %gn.0862, %if.else209 ], [ %gn.0862, %for.inc320 ]
+  %sub = add i32 %22, -1
+  %cmp325827 = icmp sgt i32 %sub, 1
+  %99 = load i32*** %internal, align 8, !tbaa !0
+  %arrayidx331828 = getelementptr inbounds i32** %99, i64 %idxprom55
+  %100 = load i32** %arrayidx331828, align 8, !tbaa !0
+  %arrayidx332829 = getelementptr inbounds i32* %100, i64 1
+  %101 = load i32* %arrayidx332829, align 4, !tbaa !3
+  %102 = load %struct.dictword_t** %word, align 8, !tbaa !0
+  %ciphone337830 = getelementptr inbounds %struct.dictword_t* %102, i64 %idxprom55, i32 1
+  %103 = load i8** %ciphone337830, align 8, !tbaa !0
+  %arrayidx338831 = getelementptr inbounds i8* %103, i64 1
+  %104 = load i8* %arrayidx338831, align 1, !tbaa !1
+  %conv339832 = sext i8 %104 to i32
+  br i1 %cmp325827, label %for.cond340.preheader, label %for.end442
+
+for.cond340.preheader:                            ; preds = %for.cond324.preheader, %if.end438
+  %indvars.iv904 = phi i64 [ %indvars.iv.next905, %if.end438 ], [ 1, %for.cond324.preheader ]
+  %conv339838 = phi i32 [ %conv339, %if.end438 ], [ %conv339832, %for.cond324.preheader ]
+  %105 = phi i8 [ %140, %if.end438 ], [ %104, %for.cond324.preheader ]
+  %106 = phi i32 [ %137, %if.end438 ], [ %101, %for.cond324.preheader ]
+  %gn.3836 = phi %struct.gnode_s* [ %gn.6772, %if.end438 ], [ %gn.3.ph, %for.cond324.preheader ]
+  %ln.9835 = phi %struct.lextree_node_t* [ %ln.14, %if.end438 ], [ %ln.9.ph, %for.cond324.preheader ]
+  %n_node.7834 = phi i32 [ %n_node.8, %if.end438 ], [ %n_node.7.ph, %for.cond324.preheader ]
+  %np.5833 = phi i32 [ 1, %if.end438 ], [ %np.5.ph, %for.cond324.preheader ]
+  %cmp341810 = icmp sgt i32 %np.5833, 0
+  br i1 %cmp341810, label %for.body343, label %for.end367
+
+for.body343:                                      ; preds = %for.inc365, %for.cond340.preheader
+  %indvars.iv887 = phi i64 [ 0, %for.cond340.preheader ], [ %indvars.iv.next888, %for.inc365 ]
+  %j.2812 = phi i32 [ 0, %for.cond340.preheader ], [ %inc366, %for.inc365 ]
+  %arrayidx345 = getelementptr inbounds %struct.lextree_node_t** %parent.0, i64 %indvars.iv887
+  %107 = load %struct.lextree_node_t** %arrayidx345, align 8, !tbaa !0
+  %children = getelementptr inbounds %struct.lextree_node_t* %107, i64 0, i32 1
+  %gn.5800 = load %struct.gnode_s** %children, align 8
+  %tobool347801 = icmp eq %struct.gnode_s* %gn.5800, null
+  br i1 %tobool347801, label %for.inc365, label %for.body348
+
+for.body348:                                      ; preds = %for.body343, %for.inc359
+  %gn.5802 = phi %struct.gnode_s* [ %gn.5, %for.inc359 ], [ %gn.5800, %for.body343 ]
+  %ptr350 = getelementptr inbounds %struct.gnode_s* %gn.5802, i64 0, i32 0, i32 0
+  %108 = load i8** %ptr350, align 8, !tbaa !0
+  %ssid351 = getelementptr inbounds i8* %108, i64 56
+  %109 = bitcast i8* %ssid351 to i32*
+  %110 = load i32* %109, align 4, !tbaa !3
+  %cmp352 = icmp eq i32 %110, %106
+  br i1 %cmp352, label %land.lhs.true354, label %for.inc359
+
+land.lhs.true354:                                 ; preds = %for.body348
+  %111 = bitcast i8* %108 to %struct.lextree_node_t*
+  %112 = getelementptr inbounds i8* %108, i64 73
+  %113 = load i8* %112, align 1, !tbaa !1
+  %tobool356 = icmp eq i8 %113, 0
+  br i1 %tobool356, label %if.else395, label %for.inc359
+
+for.inc359:                                       ; preds = %land.lhs.true354, %for.body348
+  %next360 = getelementptr inbounds %struct.gnode_s* %gn.5802, i64 0, i32 1
+  %gn.5 = load %struct.gnode_s** %next360, align 8
+  %tobool347 = icmp eq %struct.gnode_s* %gn.5, null
+  br i1 %tobool347, label %for.inc365, label %for.body348
+
+for.inc365:                                       ; preds = %for.body343, %for.inc359
+  %indvars.iv.next888 = add i64 %indvars.iv887, 1
+  %inc366 = add nsw i32 %j.2812, 1
+  %114 = trunc i64 %indvars.iv.next888 to i32
+  %cmp341 = icmp slt i32 %114, %np.5833
+  br i1 %cmp341, label %for.body343, label %if.then369
+
+for.end367:                                       ; preds = %for.cond340.preheader
+  %tobool368 = icmp eq %struct.gnode_s* %gn.3836, null
+  br i1 %tobool368, label %if.then369, label %if.else395
+
+if.then369:                                       ; preds = %for.inc365, %for.end367
+  %call370 = tail call fastcc %struct.lextree_node_t* @lextree_node_alloc(i32 -1, i32 %20, i32 0, i32 %106, i32 %6, i32 %conv339838) #5
+  %idxprom371 = sext i8 %105 to i64
+  %115 = load %struct.phone_t** %phone, align 8, !tbaa !0
+  %tmat374 = getelementptr inbounds %struct.phone_t* %115, i64 %idxprom371, i32 1
+  %116 = load i32* %tmat374, align 4, !tbaa !3
+  %idxprom375 = sext i32 %116 to i64
+  %117 = load i32**** %tp, align 8, !tbaa !0
+  %arrayidx377 = getelementptr inbounds i32*** %117, i64 %idxprom375
+  %118 = load i32*** %arrayidx377, align 8, !tbaa !0
+  %tp379 = getelementptr inbounds %struct.lextree_node_t* %call370, i64 0, i32 0, i32 3
+  store i32** %118, i32*** %tp379, align 8, !tbaa !0
+  br i1 %cmp341810, label %for.body383.lr.ph, label %for.end393
+
+for.body383.lr.ph:                                ; preds = %if.then369
+  %119 = bitcast %struct.lextree_node_t* %call370 to i8*
+  br label %for.body383
+
+for.body383:                                      ; preds = %for.body383, %for.body383.lr.ph
+  %indvars.iv889 = phi i64 [ 0, %for.body383.lr.ph ], [ %indvars.iv.next890, %for.body383 ]
+  %arrayidx385 = getelementptr inbounds %struct.lextree_node_t** %parent.0, i64 %indvars.iv889
+  %120 = load %struct.lextree_node_t** %arrayidx385, align 8, !tbaa !0
+  %children386 = getelementptr inbounds %struct.lextree_node_t* %120, i64 0, i32 1
+  %121 = load %struct.gnode_s** %children386, align 8, !tbaa !0
+  %call387 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %121, i8* %119) #4
+  %122 = load %struct.lextree_node_t** %arrayidx385, align 8, !tbaa !0
+  %children390 = getelementptr inbounds %struct.lextree_node_t* %122, i64 0, i32 1
+  store %struct.gnode_s* %call387, %struct.gnode_s** %children390, align 8, !tbaa !0
+  %indvars.iv.next890 = add i64 %indvars.iv889, 1
+  %lftr.wideiv891 = trunc i64 %indvars.iv.next890 to i32
+  %exitcond892 = icmp eq i32 %lftr.wideiv891, %np.5833
+  br i1 %exitcond892, label %for.end393, label %for.body383
+
+for.end393:                                       ; preds = %for.body383, %if.then369
+  %inc394 = add nsw i32 %n_node.7834, 1
+  br label %if.end438
+
+if.else395:                                       ; preds = %land.lhs.true354, %for.end367
+  %j.2809 = phi i32 [ 0, %for.end367 ], [ %j.2812, %land.lhs.true354 ]
+  %gn.6773 = phi %struct.gnode_s* [ %gn.3836, %for.end367 ], [ %gn.5802, %land.lhs.true354 ]
+  %ln.13771 = phi %struct.lextree_node_t* [ %ln.9835, %for.end367 ], [ %111, %land.lhs.true354 ]
+  %prob396 = getelementptr inbounds %struct.lextree_node_t* %ln.13771, i64 0, i32 3
+  %123 = load i32* %prob396, align 4, !tbaa !3
+  %cmp397 = icmp slt i32 %123, %20
+  br i1 %cmp397, label %if.then399, label %for.cond402.preheader
+
+if.then399:                                       ; preds = %if.else395
+  store i32 %20, i32* %prob396, align 4, !tbaa !3
+  br label %for.cond402.preheader
+
+for.cond402.preheader:                            ; preds = %if.then399, %if.else395
+  %cmp403820 = icmp sgt i32 %j.2809, 0
+  br i1 %cmp403820, label %for.body405.lr.ph, label %for.cond417.loopexit
+
+for.body405.lr.ph:                                ; preds = %for.cond402.preheader
+  %124 = bitcast %struct.lextree_node_t* %ln.13771 to i8*
+  br label %for.body405
+
+for.body405:                                      ; preds = %for.body405, %for.body405.lr.ph
+  %indvars.iv893 = phi i64 [ 0, %for.body405.lr.ph ], [ %indvars.iv.next894, %for.body405 ]
+  %arrayidx407 = getelementptr inbounds %struct.lextree_node_t** %parent.0, i64 %indvars.iv893
+  %125 = load %struct.lextree_node_t** %arrayidx407, align 8, !tbaa !0
+  %children408 = getelementptr inbounds %struct.lextree_node_t* %125, i64 0, i32 1
+  %126 = load %struct.gnode_s** %children408, align 8, !tbaa !0
+  %call409 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %126, i8* %124) #4
+  %127 = load %struct.lextree_node_t** %arrayidx407, align 8, !tbaa !0
+  %children412 = getelementptr inbounds %struct.lextree_node_t* %127, i64 0, i32 1
+  store %struct.gnode_s* %call409, %struct.gnode_s** %children412, align 8, !tbaa !0
+  %indvars.iv.next894 = add i64 %indvars.iv893, 1
+  %lftr.wideiv895 = trunc i64 %indvars.iv.next894 to i32
+  %exitcond896 = icmp eq i32 %lftr.wideiv895, %j.2809
+  br i1 %exitcond896, label %for.cond417.loopexit, label %for.body405
+
+for.cond417.loopexit:                             ; preds = %for.body405, %for.cond402.preheader
+  %j.5822 = add i32 %j.2809, 1
+  %cmp418823 = icmp slt i32 %j.5822, %np.5833
+  br i1 %cmp418823, label %for.body420.lr.ph, label %if.end438
+
+for.body420.lr.ph:                                ; preds = %for.cond417.loopexit
+  %128 = bitcast %struct.lextree_node_t* %ln.13771 to i8*
+  %129 = sext i32 %j.5822 to i64
+  br label %for.body420
+
+for.body420:                                      ; preds = %for.cond417.backedge, %for.body420.lr.ph
+  %indvars.iv897 = phi i64 [ %129, %for.body420.lr.ph ], [ %indvars.iv.next898, %for.cond417.backedge ]
+  %j.5824 = phi i32 [ %j.5822, %for.body420.lr.ph ], [ %j.5, %for.cond417.backedge ]
+  %arrayidx422 = getelementptr inbounds %struct.lextree_node_t** %parent.0, i64 %indvars.iv897
+  %130 = load %struct.lextree_node_t** %arrayidx422, align 8, !tbaa !0
+  %children423 = getelementptr inbounds %struct.lextree_node_t* %130, i64 0, i32 1
+  %131 = load %struct.gnode_s** %children423, align 8, !tbaa !0
+  %call424 = tail call i32 @glist_chkdup_ptr(%struct.gnode_s* %131, i8* %128) #4
+  %tobool425 = icmp eq i32 %call424, 0
+  br i1 %tobool425, label %if.then426, label %for.cond417.backedge
+
+for.cond417.backedge:                             ; preds = %for.body420, %if.then426
+  %j.5 = add nsw i32 %j.5824, 1
+  %indvars.iv.next898 = add i64 %indvars.iv897, 1
+  %exitcond900 = icmp eq i32 %j.5, %np.5833
+  br i1 %exitcond900, label %if.end438, label %for.body420
+
+if.then426:                                       ; preds = %for.body420
+  %132 = load %struct.lextree_node_t** %arrayidx422, align 8, !tbaa !0
+  %children429 = getelementptr inbounds %struct.lextree_node_t* %132, i64 0, i32 1
+  %133 = load %struct.gnode_s** %children429, align 8, !tbaa !0
+  %call430 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %133, i8* %128) #4
+  %134 = load %struct.lextree_node_t** %arrayidx422, align 8, !tbaa !0
+  %children433 = getelementptr inbounds %struct.lextree_node_t* %134, i64 0, i32 1
+  store %struct.gnode_s* %call430, %struct.gnode_s** %children433, align 8, !tbaa !0
+  br label %for.cond417.backedge
+
+if.end438:                                        ; preds = %for.cond417.loopexit, %for.cond417.backedge, %for.end393
+  %gn.6772 = phi %struct.gnode_s* [ null, %for.end393 ], [ %gn.6773, %for.cond417.backedge ], [ %gn.6773, %for.cond417.loopexit ]
+  %n_node.8 = phi i32 [ %inc394, %for.end393 ], [ %n_node.7834, %for.cond417.backedge ], [ %n_node.7834, %for.cond417.loopexit ]
+  %ln.14 = phi %struct.lextree_node_t* [ %call370, %for.end393 ], [ %ln.13771, %for.cond417.backedge ], [ %ln.13771, %for.cond417.loopexit ]
+  store %struct.lextree_node_t* %ln.14, %struct.lextree_node_t** %parent.0, align 8, !tbaa !0
+  %indvars.iv.next905 = add i64 %indvars.iv904, 1
+  %135 = load i32*** %internal, align 8, !tbaa !0
+  %arrayidx331 = getelementptr inbounds i32** %135, i64 %idxprom55
+  %136 = load i32** %arrayidx331, align 8, !tbaa !0
+  %arrayidx332 = getelementptr inbounds i32* %136, i64 %indvars.iv.next905
+  %137 = load i32* %arrayidx332, align 4, !tbaa !3
+  %138 = load %struct.dictword_t** %word, align 8, !tbaa !0
+  %ciphone337 = getelementptr inbounds %struct.dictword_t* %138, i64 %idxprom55, i32 1
+  %139 = load i8** %ciphone337, align 8, !tbaa !0
+  %arrayidx338 = getelementptr inbounds i8* %139, i64 %indvars.iv.next905
+  %140 = load i8* %arrayidx338, align 1, !tbaa !1
+  %conv339 = sext i8 %140 to i32
+  %lftr.wideiv906 = trunc i64 %indvars.iv.next905 to i32
+  %exitcond907 = icmp eq i32 %lftr.wideiv906, %sub
+  br i1 %exitcond907, label %for.end442, label %for.cond340.preheader
+
+for.end442:                                       ; preds = %if.end438, %for.cond324.preheader
+  %conv339.lcssa = phi i32 [ %conv339832, %for.cond324.preheader ], [ %conv339, %if.end438 ]
+  %.lcssa826 = phi i8 [ %104, %for.cond324.preheader ], [ %140, %if.end438 ]
+  %.lcssa825 = phi i32 [ %101, %for.cond324.preheader ], [ %137, %if.end438 ]
+  %gn.3.lcssa = phi %struct.gnode_s* [ %gn.3.ph, %for.cond324.preheader ], [ %gn.6772, %if.end438 ]
+  %n_node.7.lcssa = phi i32 [ %n_node.7.ph, %for.cond324.preheader ], [ %n_node.8, %if.end438 ]
+  %np.5.lcssa = phi i32 [ %np.5.ph, %for.cond324.preheader ], [ 1, %if.end438 ]
+  %call455 = tail call fastcc %struct.lextree_node_t* @lextree_node_alloc(i32 %19, i32 %20, i32 1, i32 %.lcssa825, i32 %6, i32 %conv339.lcssa) #5
+  %idxprom456 = sext i8 %.lcssa826 to i64
+  %141 = load %struct.phone_t** %phone, align 8, !tbaa !0
+  %tmat459 = getelementptr inbounds %struct.phone_t* %141, i64 %idxprom456, i32 1
+  %142 = load i32* %tmat459, align 4, !tbaa !3
+  %idxprom460 = sext i32 %142 to i64
+  %143 = load i32**** %tp, align 8, !tbaa !0
+  %arrayidx462 = getelementptr inbounds i32*** %143, i64 %idxprom460
+  %144 = load i32*** %arrayidx462, align 8, !tbaa !0
+  %tp464 = getelementptr inbounds %struct.lextree_node_t* %call455, i64 0, i32 0, i32 3
+  store i32** %144, i32*** %tp464, align 8, !tbaa !0
+  %cmp466845 = icmp sgt i32 %np.5.lcssa, 0
+  br i1 %cmp466845, label %for.body468.lr.ph, label %for.end478
+
+for.body468.lr.ph:                                ; preds = %for.end442
+  %145 = bitcast %struct.lextree_node_t* %call455 to i8*
+  br label %for.body468
+
+for.body468:                                      ; preds = %for.body468, %for.body468.lr.ph
+  %indvars.iv908 = phi i64 [ 0, %for.body468.lr.ph ], [ %indvars.iv.next909, %for.body468 ]
+  %arrayidx470 = getelementptr inbounds %struct.lextree_node_t** %parent.0, i64 %indvars.iv908
+  %146 = load %struct.lextree_node_t** %arrayidx470, align 8, !tbaa !0
+  %children471 = getelementptr inbounds %struct.lextree_node_t* %146, i64 0, i32 1
+  %147 = load %struct.gnode_s** %children471, align 8, !tbaa !0
+  %call472 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %147, i8* %145) #4
+  %148 = load %struct.lextree_node_t** %arrayidx470, align 8, !tbaa !0
+  %children475 = getelementptr inbounds %struct.lextree_node_t* %148, i64 0, i32 1
+  store %struct.gnode_s* %call472, %struct.gnode_s** %children475, align 8, !tbaa !0
+  %indvars.iv.next909 = add i64 %indvars.iv908, 1
+  %lftr.wideiv910 = trunc i64 %indvars.iv.next909 to i32
+  %exitcond911 = icmp eq i32 %lftr.wideiv910, %np.5.lcssa
+  br i1 %exitcond911, label %for.end478, label %for.body468
+
+for.end478:                                       ; preds = %for.body468, %for.end442
+  %inc479 = add nsw i32 %n_node.7.lcssa, 1
+  br label %for.inc481
+
+for.inc481:                                       ; preds = %for.cond89.preheader, %for.inc150, %for.end478, %if.then67
+  %n_node.9 = phi i32 [ %inc87, %if.then67 ], [ %inc479, %for.end478 ], [ %n_node.0860, %for.cond89.preheader ], [ %n_node.2, %for.inc150 ]
+  %ln.15 = phi %struct.lextree_node_t* [ %call77, %if.then67 ], [ %call455, %for.end478 ], [ %ln.0861, %for.cond89.preheader ], [ %ln.2, %for.inc150 ]
+  %gn.7 = phi %struct.gnode_s* [ %gn.0862, %if.then67 ], [ %gn.3.lcssa, %for.end478 ], [ %gn.0862, %for.cond89.preheader ], [ %gn.0862, %for.inc150 ]
+  %indvars.iv.next920 = add i64 %indvars.iv919, 1
+  %lftr.wideiv921 = trunc i64 %indvars.iv.next920 to i32
+  %exitcond922 = icmp eq i32 %lftr.wideiv921, %n_word
+  br i1 %exitcond922, label %for.end483, label %for.body48
+
+for.end483:                                       ; preds = %for.inc481, %if.end
+  %n_node.0.lcssa = phi i32 [ 0, %if.end ], [ %n_node.9, %for.inc481 ]
+  %n_node484 = getelementptr inbounds i8* %call, i64 28
+  %149 = bitcast i8* %n_node484 to i32*
+  store i32 %n_node.0.lcssa, i32* %149, align 4, !tbaa !3
+  %conv485 = sext i32 %n_node.0.lcssa to i64
+  %call486 = tail call i8* @__ckd_calloc__(i64 %conv485, i64 8, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 329) #4
+  %150 = bitcast i8* %call486 to %struct.lextree_node_t**
+  %active = getelementptr inbounds i8* %call, i64 32
+  %151 = bitcast i8* %active to %struct.lextree_node_t***
+  store %struct.lextree_node_t** %150, %struct.lextree_node_t*** %151, align 8, !tbaa !0
+  %call488 = tail call i8* @__ckd_calloc__(i64 %conv485, i64 8, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 330) #4
+  %152 = bitcast i8* %call488 to %struct.lextree_node_t**
+  %next_active = getelementptr inbounds i8* %call, i64 40
+  %153 = bitcast i8* %next_active to %struct.lextree_node_t***
+  store %struct.lextree_node_t** %152, %struct.lextree_node_t*** %153, align 8, !tbaa !0
+  %n_active = getelementptr inbounds i8* %call, i64 48
+  %154 = bitcast i8* %n_active to i32*
+  store i32 0, i32* %154, align 4, !tbaa !3
+  %n_next_active = getelementptr inbounds i8* %call, i64 52
+  %155 = bitcast i8* %n_next_active to i32*
+  store i32 0, i32* %155, align 4, !tbaa !3
+  tail call void @ckd_free(i8* %call5) #4
+  br i1 %cmp867, label %for.body492, label %for.end497
+
+for.body492:                                      ; preds = %for.end483, %for.body492
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body492 ], [ 0, %for.end483 ]
+  %arrayidx494 = getelementptr inbounds i32** %10, i64 %indvars.iv
+  %156 = load i32** %arrayidx494, align 8, !tbaa !0
+  %157 = bitcast i32* %156 to i8*
+  tail call void @ckd_free(i8* %157) #4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %5
+  br i1 %exitcond, label %for.end497, label %for.body492
+
+for.end497:                                       ; preds = %for.body492, %for.end483
+  tail call void @ckd_free(i8* %call7) #4
+  tail call void @ckd_free(i8* %parent.0.in) #4
+  ret %struct.lextree_t* %7
+}

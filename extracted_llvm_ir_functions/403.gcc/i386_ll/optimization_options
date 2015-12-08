@@ -1,0 +1,34 @@
+define void @optimization_options(i32 %level, i32 %size) #1 {
+entry:
+  %cmp = icmp sgt i32 %level, 1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  store i32 0, i32* @flag_schedule_insns, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp ne i32 %and, 0
+  %1 = load i32* @optimize, align 4, !tbaa !0
+  %cmp1 = icmp sgt i32 %1, 0
+  %or.cond = and i1 %tobool, %cmp1
+  br i1 %or.cond, label %if.then2, label %if.end3
+
+if.then2:                                         ; preds = %if.end
+  store i32 1, i32* @flag_omit_frame_pointer, align 4, !tbaa !0
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.then2, %if.end
+  %tobool5 = icmp eq i32 %and, 0
+  br i1 %tobool5, label %if.end7, label %if.then6
+
+if.then6:                                         ; preds = %if.end3
+  store i32 0, i32* @flag_pcc_struct_return, align 4, !tbaa !0
+  store i32 1, i32* @flag_asynchronous_unwind_tables, align 4, !tbaa !0
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end3, %if.then6
+  ret void
+}

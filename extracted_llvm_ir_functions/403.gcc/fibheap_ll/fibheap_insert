@@ -1,0 +1,73 @@
+define %struct.fibnode* @fibheap_insert(%struct.fibheap* nocapture %heap, i64 %key, i8* %data) #0 {
+entry:
+  %call.i = tail call noalias i8* @xcalloc(i64 1, i64 56) #5
+  %0 = bitcast i8* %call.i to %struct.fibnode*
+  %left.i = getelementptr inbounds i8* %call.i, i64 16
+  %1 = bitcast i8* %left.i to %struct.fibnode**
+  store %struct.fibnode* %0, %struct.fibnode** %1, align 8, !tbaa !0
+  %right.i = getelementptr inbounds i8* %call.i, i64 24
+  %2 = bitcast i8* %right.i to %struct.fibnode**
+  store %struct.fibnode* %0, %struct.fibnode** %2, align 8, !tbaa !0
+  %data1 = getelementptr inbounds i8* %call.i, i64 40
+  %3 = bitcast i8* %data1 to i8**
+  store i8* %data, i8** %3, align 8, !tbaa !0
+  %key2 = getelementptr inbounds i8* %call.i, i64 32
+  %4 = bitcast i8* %key2 to i64*
+  store i64 %key, i64* %4, align 8, !tbaa !3
+  %root.i = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 2
+  %5 = load %struct.fibnode** %root.i, align 8, !tbaa !0
+  %cmp.i = icmp eq %struct.fibnode* %5, null
+  br i1 %cmp.i, label %if.then.i, label %if.end.i
+
+if.then.i:                                        ; preds = %entry
+  store %struct.fibnode* %0, %struct.fibnode** %root.i, align 8, !tbaa !0
+  store %struct.fibnode* %0, %struct.fibnode** %1, align 8, !tbaa !0
+  store %struct.fibnode* %0, %struct.fibnode** %2, align 8, !tbaa !0
+  br label %fibheap_ins_root.exit
+
+if.end.i:                                         ; preds = %entry
+  %right.i19 = getelementptr inbounds %struct.fibnode* %5, i64 0, i32 3
+  %6 = load %struct.fibnode** %right.i19, align 8, !tbaa !0
+  %cmp.i20 = icmp eq %struct.fibnode* %6, %5
+  br i1 %cmp.i20, label %if.then.i22, label %if.else.i
+
+if.then.i22:                                      ; preds = %if.end.i
+  store %struct.fibnode* %0, %struct.fibnode** %right.i19, align 8, !tbaa !0
+  %left.i21 = getelementptr inbounds %struct.fibnode* %5, i64 0, i32 2
+  store %struct.fibnode* %0, %struct.fibnode** %left.i21, align 8, !tbaa !0
+  store %struct.fibnode* %5, %struct.fibnode** %2, align 8, !tbaa !0
+  store %struct.fibnode* %5, %struct.fibnode** %1, align 8, !tbaa !0
+  br label %fibheap_ins_root.exit
+
+if.else.i:                                        ; preds = %if.end.i
+  store %struct.fibnode* %6, %struct.fibnode** %2, align 8, !tbaa !0
+  %7 = load %struct.fibnode** %right.i19, align 8, !tbaa !0
+  %left7.i = getelementptr inbounds %struct.fibnode* %7, i64 0, i32 2
+  store %struct.fibnode* %0, %struct.fibnode** %left7.i, align 8, !tbaa !0
+  store %struct.fibnode* %0, %struct.fibnode** %right.i19, align 8, !tbaa !0
+  store %struct.fibnode* %5, %struct.fibnode** %1, align 8, !tbaa !0
+  br label %fibheap_ins_root.exit
+
+fibheap_ins_root.exit:                            ; preds = %if.else.i, %if.then.i22, %if.then.i
+  %min = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 1
+  %8 = load %struct.fibnode** %min, align 8, !tbaa !0
+  %cmp = icmp eq %struct.fibnode* %8, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %fibheap_ins_root.exit
+  %key5 = getelementptr inbounds %struct.fibnode* %8, i64 0, i32 4
+  %9 = load i64* %key5, align 8, !tbaa !3
+  %cmp6 = icmp sgt i64 %9, %key
+  br i1 %cmp6, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false, %fibheap_ins_root.exit
+  store %struct.fibnode* %0, %struct.fibnode** %min, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %lor.lhs.false
+  %nodes = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 0
+  %10 = load i64* %nodes, align 8, !tbaa !3
+  %inc = add i64 %10, 1
+  store i64 %inc, i64* %nodes, align 8, !tbaa !3
+  ret %struct.fibnode* %0
+}

@@ -1,0 +1,12 @@
+define void @dump_int(%struct.dump_info* nocapture %di, i8* %field, i32 %i) #0 {
+entry:
+  tail call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8
+  %stream = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 0
+  %0 = load %struct._IO_FILE** %stream, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* %field, i32 %i) #7
+  %column = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 4
+  %1 = load i32* %column, align 4, !tbaa !4
+  %add = add i32 %1, 14
+  store i32 %add, i32* %column, align 4, !tbaa !4
+  ret void
+}

@@ -1,0 +1,43 @@
+define void @free_temps_for_rtl_expr(%union.tree_node* %t) #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_temp_slots = getelementptr inbounds %struct.function* %0, i64 0, i32 39
+  %p.09 = load %struct.temp_slot** %x_temp_slots, align 8
+  %tobool10 = icmp eq %struct.temp_slot* %p.09, null
+  br i1 %tobool10, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %p.011 = phi %struct.temp_slot* [ %p.0, %for.inc ], [ %p.09, %entry ]
+  %rtl_expr = getelementptr inbounds %struct.temp_slot* %p.011, i64 0, i32 6
+  %1 = load %union.tree_node** %rtl_expr, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %1, %t
+  br i1 %cmp, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body
+  %2 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_temp_slot_level = getelementptr inbounds %struct.function* %2, i64 0, i32 40
+  %3 = load i32* %x_temp_slot_level, align 4, !tbaa !4
+  %level = getelementptr inbounds %struct.temp_slot* %p.011, i64 0, i32 9
+  %4 = load i32* %level, align 4, !tbaa !4
+  %cmp1 = icmp sgt i32 %3, %4
+  br i1 %cmp1, label %if.else, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %in_use = getelementptr inbounds %struct.temp_slot* %p.011, i64 0, i32 7
+  store i8 0, i8* %in_use, align 1, !tbaa !1
+  br label %for.inc
+
+if.else:                                          ; preds = %if.then
+  store %union.tree_node* null, %union.tree_node** %rtl_expr, align 8, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.else, %if.then2
+  %next = getelementptr inbounds %struct.temp_slot* %p.011, i64 0, i32 0
+  %p.0 = load %struct.temp_slot** %next, align 8
+  %tobool = icmp eq %struct.temp_slot* %p.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  tail call void @combine_temp_slots() #9
+  ret void
+}

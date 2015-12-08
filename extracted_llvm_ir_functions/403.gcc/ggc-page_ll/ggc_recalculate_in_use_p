@@ -1,0 +1,76 @@
+define internal fastcc void @ggc_recalculate_in_use_p(%struct.page_entry* nocapture %p) #0 {
+entry:
+  %order = getelementptr inbounds %struct.page_entry* %p, i64 0, i32 8
+  %0 = load i8* %order, align 1, !tbaa !1
+  %idxprom = zext i8 %0 to i64
+  %arrayidx = getelementptr inbounds [66 x i32]* @objects_per_page_table, i64 0, i64 %idxprom
+  %1 = load i32* %arrayidx, align 4, !tbaa !5
+  %add = add i32 %1, 1
+  %conv = zext i32 %add to i64
+  %conv1 = trunc i32 %add to i16
+  %num_free_objects = getelementptr inbounds %struct.page_entry* %p, i64 0, i32 6
+  store i16 %conv1, i16* %num_free_objects, align 2, !tbaa !3
+  %sub = add i64 %conv, 63
+  %div = lshr i64 %sub, 6
+  %cmp44 = icmp eq i64 %div, 0
+  br i1 %cmp44, label %for.end22, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %save_in_use_p = getelementptr inbounds %struct.page_entry* %p, i64 0, i32 4
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc21
+  %conv246 = phi i64 [ 0, %for.body.lr.ph ], [ %conv2, %for.inc21 ]
+  %i.045 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc21 ]
+  %2 = load i64** %save_in_use_p, align 8, !tbaa !0
+  %arrayidx9 = getelementptr inbounds i64* %2, i64 %conv246
+  %3 = load i64* %arrayidx9, align 8, !tbaa !4
+  %arrayidx11 = getelementptr inbounds %struct.page_entry* %p, i64 0, i32 9, i64 %conv246
+  %4 = load i64* %arrayidx11, align 8, !tbaa !4
+  %or = or i64 %4, %3
+  store i64 %or, i64* %arrayidx11, align 8, !tbaa !4
+  %tobool42 = icmp eq i64 %or, 0
+  br i1 %tobool42, label %for.inc21, label %for.body16.lr.ph
+
+for.body16.lr.ph:                                 ; preds = %for.body
+  %num_free_objects.promoted = load i16* %num_free_objects, align 2, !tbaa !3
+  br label %for.body16
+
+for.body16:                                       ; preds = %for.body16.lr.ph, %for.body16
+  %5 = phi i16 [ %num_free_objects.promoted, %for.body16.lr.ph ], [ %conv20, %for.body16 ]
+  %j.043 = phi i64 [ %or, %for.body16.lr.ph ], [ %shr, %for.body16 ]
+  %and = and i64 %j.043, 1
+  %conv18 = zext i16 %5 to i64
+  %sub19 = sub i64 %conv18, %and
+  %conv20 = trunc i64 %sub19 to i16
+  %shr = lshr i64 %j.043, 1
+  %tobool = icmp eq i64 %shr, 0
+  br i1 %tobool, label %for.cond15.for.inc21_crit_edge, label %for.body16
+
+for.cond15.for.inc21_crit_edge:                   ; preds = %for.body16
+  store i16 %conv20, i16* %num_free_objects, align 2, !tbaa !3
+  br label %for.inc21
+
+for.inc21:                                        ; preds = %for.cond15.for.inc21_crit_edge, %for.body
+  %inc = add i32 %i.045, 1
+  %conv2 = zext i32 %inc to i64
+  %cmp = icmp ult i64 %conv2, %div
+  br i1 %cmp, label %for.body, label %for.cond.for.end22_crit_edge
+
+for.cond.for.end22_crit_edge:                     ; preds = %for.inc21
+  %.pre = load i16* %num_free_objects, align 2, !tbaa !3
+  br label %for.end22
+
+for.end22:                                        ; preds = %entry, %for.cond.for.end22_crit_edge
+  %6 = phi i16 [ %conv1, %entry ], [ %.pre, %for.cond.for.end22_crit_edge ]
+  %conv24 = zext i16 %6 to i64
+  %cmp25 = icmp ult i64 %conv24, %conv
+  br i1 %cmp25, label %if.end, label %if.then
+
+if.then:                                          ; preds = %for.end22
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str3, i64 0, i64 0), i32 1194, i8* getelementptr inbounds ([25 x i8]* @__FUNCTION__.ggc_recalculate_in_use_p, i64 0, i64 0)) #9
+  unreachable
+
+if.end:                                           ; preds = %for.end22
+  ret void
+}

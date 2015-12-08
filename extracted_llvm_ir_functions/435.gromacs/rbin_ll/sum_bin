@@ -1,0 +1,31 @@
+define void @sum_bin(%struct.t_bin* nocapture %b, %struct.t_commrec* %cr) #0 {
+entry:
+  %nreal = getelementptr inbounds %struct.t_bin* %b, i64 0, i32 0
+  %0 = load i32* %nreal, align 4, !tbaa !0
+  %maxreal = getelementptr inbounds %struct.t_bin* %b, i64 0, i32 1
+  %1 = load i32* %maxreal, align 4, !tbaa !0
+  %cmp9 = icmp slt i32 %0, %1
+  %rbuf = getelementptr inbounds %struct.t_bin* %b, i64 0, i32 2
+  br i1 %cmp9, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %2 = load double** %rbuf, align 8, !tbaa !3
+  %3 = sext i32 %0 to i64
+  %scevgep = getelementptr double* %2, i64 %3
+  %scevgep11 = bitcast double* %scevgep to i8*
+  %4 = add i32 %0, 1
+  %5 = icmp sgt i32 %1, %4
+  %smax = select i1 %5, i32 %1, i32 %4
+  %6 = add i32 %smax, -1
+  %7 = sub i32 %6, %0
+  %8 = zext i32 %7 to i64
+  %9 = shl nuw nsw i64 %8, 3
+  %10 = add i64 %9, 8
+  call void @llvm.memset.p0i8.i64(i8* %scevgep11, i8 0, i64 %10, i32 8, i1 false)
+  br label %for.end
+
+for.end:                                          ; preds = %entry, %for.body.lr.ph
+  %11 = load double** %rbuf, align 8, !tbaa !3
+  tail call void @gmx_sumd(i32 %1, double* %11, %struct.t_commrec* %cr) #3
+  ret void
+}

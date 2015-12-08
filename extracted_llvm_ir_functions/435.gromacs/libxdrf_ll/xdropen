@@ -1,0 +1,90 @@
+define i32 @xdropen(%struct.XDR* %xdrs, i8* nocapture %filename, i8* nocapture %type) #0 {
+entry:
+  %newtype = alloca [5 x i8], align 4
+  %.b = load i1* @xdropen.init_done, align 1
+  br i1 %.b, label %land.rhs, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  call void @llvm.memset.p0i8.i64(i8* bitcast (%struct.XDR** getelementptr inbounds ([20 x %struct.XDR*]* @xdridptr, i64 0, i64 1) to i8*), i8 0, i64 152, i32 8, i1 false)
+  store i1 true, i1* @xdropen.init_done, align 1
+  br label %land.rhs
+
+while.cond:                                       ; preds = %land.rhs
+  %0 = trunc i64 %indvars.iv.next to i32
+  %cmp2 = icmp slt i32 %0, 20
+  br i1 %cmp2, label %land.rhs, label %while.end
+
+land.rhs:                                         ; preds = %while.cond, %for.cond.preheader, %entry
+  %indvars.iv = phi i64 [ 1, %entry ], [ 1, %for.cond.preheader ], [ %indvars.iv.next, %while.cond ]
+  %xdrid.183 = phi i32 [ 1, %entry ], [ 1, %for.cond.preheader ], [ %inc6, %while.cond ]
+  %arrayidx4 = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %indvars.iv
+  %1 = load %struct.XDR** %arrayidx4, align 8, !tbaa !0
+  %cmp5 = icmp eq %struct.XDR* %1, null
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc6 = add nsw i32 %xdrid.183, 1
+  br i1 %cmp5, label %if.end9, label %while.cond
+
+while.end:                                        ; preds = %while.cond
+  %cmp7 = icmp eq i32 %inc6, 20
+  br i1 %cmp7, label %return, label %if.end9
+
+if.end9:                                          ; preds = %land.rhs, %while.end
+  %xdrid.182 = phi i32 [ %inc6, %while.end ], [ %xdrid.183, %land.rhs ]
+  %2 = load i8* %type, align 1, !tbaa !1
+  switch i8 %2, label %if.else26 [
+    i8 119, label %if.then15
+    i8 87, label %if.then15
+    i8 97, label %if.then23
+    i8 65, label %if.then23
+  ]
+
+if.then15:                                        ; preds = %if.end9, %if.end9
+  %3 = bitcast [5 x i8]* %newtype to i32*
+  store i32 2843255, i32* %3, align 4
+  br label %if.end30
+
+if.then23:                                        ; preds = %if.end9, %if.end9
+  %4 = bitcast [5 x i8]* %newtype to i32*
+  store i32 2843233, i32* %4, align 4
+  br label %if.end30
+
+if.else26:                                        ; preds = %if.end9
+  %5 = bitcast [5 x i8]* %newtype to i32*
+  store i32 2843250, i32* %5, align 4
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.then23, %if.else26, %if.then15
+  %lmode.0 = phi i32 [ 0, %if.then15 ], [ 0, %if.then23 ], [ 1, %if.else26 ]
+  %arraydecay31 = getelementptr inbounds [5 x i8]* %newtype, i64 0, i64 0
+  %call32 = call %struct._IO_FILE* @fopen(i8* %filename, i8* %arraydecay31) #5
+  %idxprom33 = sext i32 %xdrid.182 to i64
+  %arrayidx34 = getelementptr inbounds [20 x %struct._IO_FILE*]* @xdrfiles, i64 0, i64 %idxprom33
+  store %struct._IO_FILE* %call32, %struct._IO_FILE** %arrayidx34, align 8, !tbaa !0
+  %cmp37 = icmp eq %struct._IO_FILE* %call32, null
+  br i1 %cmp37, label %return, label %if.end40
+
+if.end40:                                         ; preds = %if.end30
+  %6 = load i8* %type, align 1, !tbaa !1
+  %arrayidx42 = getelementptr inbounds [20 x i8]* @xdrmodes, i64 0, i64 %idxprom33
+  store i8 %6, i8* %arrayidx42, align 1, !tbaa !1
+  %cmp43 = icmp eq %struct.XDR* %xdrs, null
+  br i1 %cmp43, label %if.then45, label %if.else53
+
+if.then45:                                        ; preds = %if.end40
+  %call46 = call noalias i8* @malloc(i64 48) #5
+  %7 = bitcast i8* %call46 to %struct.XDR*
+  %arrayidx48 = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %idxprom33
+  store %struct.XDR* %7, %struct.XDR** %arrayidx48, align 8, !tbaa !0
+  call void @xdrstdio_create(%struct.XDR* %7, %struct._IO_FILE* %call32, i32 %lmode.0) #5
+  br label %return
+
+if.else53:                                        ; preds = %if.end40
+  %arrayidx55 = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %idxprom33
+  store %struct.XDR* %xdrs, %struct.XDR** %arrayidx55, align 8, !tbaa !0
+  call void @xdrstdio_create(%struct.XDR* %xdrs, %struct._IO_FILE* %call32, i32 %lmode.0) #5
+  br label %return
+
+return:                                           ; preds = %if.then45, %if.else53, %if.end30, %while.end
+  %retval.0 = phi i32 [ 0, %while.end ], [ 0, %if.end30 ], [ %xdrid.182, %if.else53 ], [ %xdrid.182, %if.then45 ]
+  ret i32 %retval.0
+}

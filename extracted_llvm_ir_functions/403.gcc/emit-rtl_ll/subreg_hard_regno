@@ -1,0 +1,70 @@
+define i32 @subreg_hard_regno(%struct.rtx_def* %x, i32 %check_mode) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %fld = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %bf.clear2 = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear2, 63
+  br i1 %cmp, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %entry
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load3 = load i32* %2, align 8
+  %bf.clear4 = and i32 %bf.load3, 65535
+  %cmp5 = icmp eq i32 %bf.clear4, 61
+  br i1 %cmp5, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 796, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.subreg_hard_regno, i64 0, i64 0)) #10
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx7 to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp8 = icmp ugt i32 %3, 52
+  br i1 %cmp8, label %if.then9, label %if.end10
+
+if.then9:                                         ; preds = %if.end
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 799, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.subreg_hard_regno, i64 0, i64 0)) #10
+  unreachable
+
+if.end10:                                         ; preds = %if.end
+  %tobool = icmp eq i32 %check_mode, 0
+  br i1 %tobool, label %if.end16, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end10
+  %bf.lshr12 = lshr i32 %bf.load3, 16
+  %bf.clear13 = and i32 %bf.lshr12, 255
+  %call = tail call i32 @ix86_hard_regno_mode_ok(i32 %3, i32 %bf.clear13) #8
+  %tobool14 = icmp eq i32 %call, 0
+  br i1 %tobool14, label %if.then15, label %if.end16
+
+if.then15:                                        ; preds = %land.lhs.true
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 801, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.subreg_hard_regno, i64 0, i64 0)) #10
+  unreachable
+
+if.end16:                                         ; preds = %land.lhs.true, %if.end10
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
+  %rtuint19 = bitcast %union.rtunion_def* %arrayidx18 to i32*
+  %4 = load i32* %rtuint19, align 4, !tbaa !0
+  %idxprom33 = zext i32 %bf.clear to i64
+  %arrayidx20 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom33
+  %5 = load i8* %arrayidx20, align 1, !tbaa !1
+  %conv = zext i8 %5 to i32
+  %rem = urem i32 %4, %conv
+  %cmp21 = icmp eq i32 %rem, 0
+  br i1 %cmp21, label %if.end24, label %if.then23
+
+if.then23:                                        ; preds = %if.end16
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 806, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.subreg_hard_regno, i64 0, i64 0)) #10
+  unreachable
+
+if.end24:                                         ; preds = %if.end16
+  %call25 = tail call i32 @subreg_regno(%struct.rtx_def* %x) #8
+  ret i32 %call25
+}

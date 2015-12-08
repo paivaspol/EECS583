@@ -1,0 +1,125 @@
+define void @calc_nsbshift(%struct._IO_FILE* %fp, %struct.t_nsborder* nocapture %nsb) #0 {
+entry:
+  %bshift = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 6
+  store i32 0, i32* %bshift, align 4, !tbaa !0
+  %nnodes = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 1
+  %0 = load i32* %nnodes, align 4, !tbaa !0
+  %cmp116 = icmp sgt i32 %0, 1
+  br i1 %cmp116, label %for.body, label %for.end15
+
+for.body:                                         ; preds = %entry, %for.end
+  %1 = phi i32 [ %.sub9, %for.end ], [ 0, %entry ]
+  %indvars.iv130 = phi i64 [ %indvars.iv.next131, %for.end ], [ 1, %entry ]
+  %i.0117 = phi i32 [ %inc, %for.end ], [ 1, %entry ]
+  %2 = add nsw i64 %indvars.iv130, -1
+  %arrayidx = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 10, i64 %2
+  %3 = load i32* %arrayidx, align 4, !tbaa !0
+  br label %for.cond1
+
+for.cond1:                                        ; preds = %land.rhs, %for.body
+  %indvars.iv126 = phi i64 [ %indvars.iv.next127, %land.rhs ], [ %indvars.iv130, %for.body ]
+  %nshift.0 = phi i32 [ %sub3, %land.rhs ], [ %i.0117, %for.body ]
+  %4 = trunc i64 %indvars.iv126 to i32
+  %cmp2 = icmp sgt i32 %4, 0
+  br i1 %cmp2, label %land.rhs, label %for.end
+
+land.rhs:                                         ; preds = %for.cond1
+  %sub3 = add nsw i32 %nshift.0, -1
+  %idxprom4 = sext i32 %sub3 to i64
+  %arrayidx5 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 9, i64 %idxprom4
+  %5 = load i32* %arrayidx5, align 4, !tbaa !0
+  %cmp6 = icmp sgt i32 %5, %3
+  %indvars.iv.next127 = add i64 %indvars.iv126, -1
+  br i1 %cmp6, label %for.cond1, label %for.end
+
+for.end:                                          ; preds = %for.cond1, %land.rhs
+  %6 = trunc i64 %indvars.iv130 to i32
+  %sub9 = sub nsw i32 %6, %nshift.0
+  %cmp10 = icmp sgt i32 %1, %sub9
+  %.sub9 = select i1 %cmp10, i32 %1, i32 %sub9
+  store i32 %.sub9, i32* %bshift, align 4, !tbaa !0
+  %indvars.iv.next131 = add i64 %indvars.iv130, 1
+  %inc = add nsw i32 %i.0117, 1
+  %7 = trunc i64 %indvars.iv.next131 to i32
+  %cmp = icmp slt i32 %7, %0
+  br i1 %cmp, label %for.body, label %for.end15
+
+for.end15:                                        ; preds = %for.end, %entry
+  %add = add nsw i32 %0, 1
+  %div = sdiv i32 %add, 2
+  %shift = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 5
+  store i32 %div, i32* %shift, align 4, !tbaa !0
+  %cmp19114 = icmp sgt i32 %0, 0
+  br i1 %cmp19114, label %for.body20.lr.ph, label %for.end56
+
+for.body20.lr.ph:                                 ; preds = %for.end15
+  %cgtotal = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 2
+  %tobool = icmp eq %struct._IO_FILE* %fp, null
+  br label %for.body20
+
+for.body20:                                       ; preds = %if.end, %for.body20.lr.ph
+  %indvars.iv122 = phi i64 [ 0, %for.body20.lr.ph ], [ %indvars.iv.next123, %if.end ]
+  %arrayidx23 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 9, i64 %indvars.iv122
+  %8 = load i32* %arrayidx23, align 4, !tbaa !0
+  %sub24 = add nsw i32 %8, -1
+  %9 = load i32* %cgtotal, align 4, !tbaa !0
+  %call = tail call i32 @calc_naaj(i32 %sub24, i32 %9) #4
+  %add25 = add nsw i32 %call, %sub24
+  %10 = load i32* %cgtotal, align 4, !tbaa !0
+  %rem = srem i32 %add25, %10
+  %11 = load i32* %nnodes, align 4, !tbaa !0
+  %cmp29112 = icmp sgt i32 %11, 0
+  br i1 %cmp29112, label %land.rhs30, label %for.end39
+
+for.cond27:                                       ; preds = %land.rhs30
+  %12 = trunc i64 %indvars.iv.next to i32
+  %cmp29 = icmp slt i32 %12, %11
+  br i1 %cmp29, label %land.rhs30, label %for.end39
+
+land.rhs30:                                       ; preds = %for.body20, %for.cond27
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond27 ], [ 0, %for.body20 ]
+  %nshift.1113 = phi i32 [ %inc38, %for.cond27 ], [ 0, %for.body20 ]
+  %arrayidx33 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 9, i64 %indvars.iv
+  %13 = load i32* %arrayidx33, align 4, !tbaa !0
+  %cmp34 = icmp sgt i32 %rem, %13
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc38 = add nsw i32 %nshift.1113, 1
+  br i1 %cmp34, label %for.cond27, label %for.end39
+
+for.end39:                                        ; preds = %for.cond27, %land.rhs30, %for.body20
+  %nshift.1.lcssa = phi i32 [ 0, %for.body20 ], [ %nshift.1113, %land.rhs30 ], [ %inc38, %for.cond27 ]
+  %14 = trunc i64 %indvars.iv122 to i32
+  %sub40 = sub i32 %nshift.1.lcssa, %14
+  %add42 = add nsw i32 %sub40, %11
+  %rem44 = srem i32 %add42, %11
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %for.end39
+  %call45 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 %14, i32 %sub24, i32 %rem, i32 %rem44) #4
+  %.pre = load i32* %nnodes, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %for.end39, %if.then
+  %15 = phi i32 [ %11, %for.end39 ], [ %.pre, %if.then ]
+  %16 = load i32* %shift, align 4, !tbaa !0
+  %cmp47 = icmp sgt i32 %rem44, %16
+  %rem44. = select i1 %cmp47, i32 %rem44, i32 %16
+  store i32 %rem44., i32* %shift, align 4, !tbaa !0
+  %indvars.iv.next123 = add i64 %indvars.iv122, 1
+  %17 = trunc i64 %indvars.iv.next123 to i32
+  %cmp19 = icmp slt i32 %17, %15
+  br i1 %cmp19, label %for.body20, label %for.end56
+
+for.end56:                                        ; preds = %if.end, %for.end15
+  %18 = phi i32 [ %div, %for.end15 ], [ %rem44., %if.end ]
+  %tobool57 = icmp eq %struct._IO_FILE* %fp, null
+  br i1 %tobool57, label %if.end62, label %if.then58
+
+if.then58:                                        ; preds = %for.end56
+  %19 = load i32* %bshift, align 4, !tbaa !0
+  %call61 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([35 x i8]* @.str1, i64 0, i64 0), i32 %18, i32 %19) #4
+  br label %if.end62
+
+if.end62:                                         ; preds = %for.end56, %if.then58
+  ret void
+}

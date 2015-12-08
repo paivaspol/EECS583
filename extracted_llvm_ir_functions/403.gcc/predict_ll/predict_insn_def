@@ -1,0 +1,11 @@
+define void @predict_insn_def(%struct.rtx_def* %insn, i32 %predictor, i32 %taken) #0 {
+entry:
+  %idxprom = sext i32 %predictor to i64
+  %hitrate = getelementptr inbounds [20 x %struct.predictor_info]* @predictor_info, i64 0, i64 %idxprom, i32 1
+  %0 = load i32* %hitrate, align 8, !tbaa !3
+  %cmp = icmp eq i32 %taken, 1
+  %sub = sub nsw i32 10000, %0
+  %.sub = select i1 %cmp, i32 %0, i32 %sub
+  tail call void @predict_insn(%struct.rtx_def* %insn, i32 %predictor, i32 %.sub) #7
+  ret void
+}

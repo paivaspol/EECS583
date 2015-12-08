@@ -1,0 +1,28 @@
+define void @identify_blocks() #0 {
+entry:
+  %n_blocks = alloca i32, align 4
+  %0 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %initial = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 12
+  %1 = load %union.tree_node** %initial, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %1, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = call fastcc %union.tree_node** @get_block_vector(%union.tree_node* %1, i32* %n_blocks) #9
+  %2 = load i32* %n_blocks, align 4, !tbaa !4
+  %conv = sext i32 %2 to i64
+  %mul = shl nsw i64 %conv, 3
+  %call1 = call noalias i8* @xmalloc(i64 %mul) #10
+  %3 = bitcast i8* %call1 to %union.tree_node**
+  %call2 = call %struct.rtx_def* @get_insns() #10
+  %add.ptr = getelementptr inbounds %union.tree_node** %call, i64 1
+  %add.ptr3 = getelementptr inbounds %union.tree_node** %call, i64 %conv
+  %call4 = call fastcc %union.tree_node** @identify_blocks_1(%struct.rtx_def* %call2, %union.tree_node** %add.ptr, %union.tree_node** %add.ptr3, %union.tree_node** %3) #9
+  %4 = bitcast %union.tree_node** %call to i8*
+  call void @free(i8* %4) #10
+  call void @free(i8* %call1) #10
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  ret void
+}

@@ -1,0 +1,23 @@
+define i32 @exact_log2_wide(i64 %x) #5 {
+entry:
+  %cmp = icmp eq i64 %x, 0
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %sub = sub i64 0, %x
+  %and = and i64 %x, %sub
+  %cmp1 = icmp eq i64 %and, %x
+  br i1 %cmp1, label %while.cond, label %return
+
+while.cond:                                       ; preds = %lor.lhs.false, %while.cond
+  %x.addr.0 = phi i64 [ %shr, %while.cond ], [ %x, %lor.lhs.false ]
+  %log.0 = phi i32 [ %inc, %while.cond ], [ 0, %lor.lhs.false ]
+  %shr = lshr i64 %x.addr.0, 1
+  %cmp2 = icmp eq i64 %shr, 0
+  %inc = add nsw i32 %log.0, 1
+  br i1 %cmp2, label %return, label %while.cond
+
+return:                                           ; preds = %while.cond, %entry, %lor.lhs.false
+  %retval.0 = phi i32 [ -1, %lor.lhs.false ], [ -1, %entry ], [ %log.0, %while.cond ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,38 @@
+define internal fastcc %union.tree_node* @block_ultimate_origin(%union.tree_node* %block) #0 {
+entry:
+  %abstract_origin = getelementptr inbounds %union.tree_node* %block, i64 0, i32 0, i32 6
+  %0 = bitcast %union.anon* %abstract_origin to %union.tree_node**
+  %1 = load %union.tree_node** %0, align 8, !tbaa !4
+  %abstract_flag = getelementptr inbounds %union.tree_node* %block, i64 0, i32 0, i32 1
+  %2 = bitcast i8** %abstract_flag to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 2
+  %tobool = icmp ne i32 %bf.clear, 0
+  %cmp = icmp eq %union.tree_node* %1, %block
+  %or.cond = and i1 %tobool, %cmp
+  %cmp3 = icmp eq %union.tree_node* %1, null
+  %or.cond22 = or i1 %or.cond, %cmp3
+  br i1 %or.cond22, label %return, label %do.body
+
+do.body:                                          ; preds = %entry, %cond.end
+  %lookahead.0 = phi %union.tree_node* [ %5, %cond.end ], [ %1, %entry ]
+  %code = getelementptr inbounds %union.tree_node* %lookahead.0, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %code to i32*
+  %bf.load5 = load i32* %3, align 8
+  %bf.clear6 = and i32 %bf.load5, 255
+  %cmp7 = icmp eq i32 %bf.clear6, 4
+  br i1 %cmp7, label %cond.end, label %return
+
+cond.end:                                         ; preds = %do.body
+  %abstract_origin9 = getelementptr inbounds %union.tree_node* %lookahead.0, i64 0, i32 0, i32 6
+  %4 = bitcast %union.anon* %abstract_origin9 to %union.tree_node**
+  %5 = load %union.tree_node** %4, align 8, !tbaa !4
+  %cmp10 = icmp eq %union.tree_node* %5, null
+  %cmp11 = icmp eq %union.tree_node* %5, %lookahead.0
+  %or.cond21 = or i1 %cmp10, %cmp11
+  br i1 %or.cond21, label %return, label %do.body
+
+return:                                           ; preds = %do.body, %cond.end, %entry
+  %retval.0 = phi %union.tree_node* [ null, %entry ], [ %lookahead.0, %cond.end ], [ %lookahead.0, %do.body ]
+  ret %union.tree_node* %retval.0
+}

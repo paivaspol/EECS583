@@ -1,0 +1,16 @@
+define i32 @validate_replace_src(%struct.rtx_def* %from, %struct.rtx_def* %to, %struct.rtx_def* %insn) #0 {
+entry:
+  %d = alloca %struct.validate_replace_src_data, align 8
+  %from1 = getelementptr inbounds %struct.validate_replace_src_data* %d, i64 0, i32 0
+  store %struct.rtx_def* %from, %struct.rtx_def** %from1, align 8, !tbaa !3
+  %to2 = getelementptr inbounds %struct.validate_replace_src_data* %d, i64 0, i32 1
+  store %struct.rtx_def* %to, %struct.rtx_def** %to2, align 8, !tbaa !3
+  %insn3 = getelementptr inbounds %struct.validate_replace_src_data* %d, i64 0, i32 2
+  store %struct.rtx_def* %insn, %struct.rtx_def** %insn3, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = bitcast %struct.validate_replace_src_data* %d to i8*
+  call void @note_uses(%struct.rtx_def** %rtx, void (%struct.rtx_def**, i8*)* @validate_replace_src_1, i8* %0) #6
+  %call = call i32 @apply_change_group() #7
+  ret i32 %call
+}

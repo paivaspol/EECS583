@@ -1,0 +1,88 @@
+define internal fastcc void @clear_table(i32 %clear_all) #1 {
+entry:
+  %tobool = icmp eq i32 %clear_all, 0
+  br i1 %tobool, label %for.cond1.preheader, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %0 = load i32* @cselib_nregs, align 4, !tbaa !3
+  %cmp40 = icmp eq i32 %0, 0
+  br i1 %cmp40, label %if.end.loopexit39, label %for.body
+
+for.cond1.preheader:                              ; preds = %entry
+  %1 = load %struct.varray_head_tag** @used_regs, align 8, !tbaa !0
+  %elements_used35 = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 1
+  %2 = load i64* %elements_used35, align 8, !tbaa !4
+  %cmp236 = icmp eq i64 %2, 0
+  br i1 %cmp236, label %if.end, label %for.body4
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %3 = load %struct.varray_head_tag** @reg_values, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 4
+  %te = bitcast %union.varray_data_tag* %data to [1 x %struct.elt_list*]*
+  %arrayidx = getelementptr inbounds [1 x %struct.elt_list*]* %te, i64 0, i64 %indvars.iv
+  store %struct.elt_list* null, %struct.elt_list** %arrayidx, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %4 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp ult i32 %4, %0
+  br i1 %cmp, label %for.body, label %if.end.loopexit39
+
+for.body4:                                        ; preds = %for.cond1.preheader, %for.body4
+  %5 = phi %struct.varray_head_tag* [ %8, %for.body4 ], [ %1, %for.cond1.preheader ]
+  %conv38 = phi i64 [ %conv, %for.body4 ], [ 0, %for.cond1.preheader ]
+  %i.137 = phi i32 [ %inc13, %for.body4 ], [ 0, %for.cond1.preheader ]
+  %data6 = getelementptr inbounds %struct.varray_head_tag* %5, i64 0, i32 4
+  %u = bitcast %union.varray_data_tag* %data6 to [1 x i32]*
+  %arrayidx7 = getelementptr inbounds [1 x i32]* %u, i64 0, i64 %conv38
+  %6 = load i32* %arrayidx7, align 4, !tbaa !3
+  %idxprom8 = zext i32 %6 to i64
+  %7 = load %struct.varray_head_tag** @reg_values, align 8, !tbaa !0
+  %data9 = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 4
+  %te10 = bitcast %union.varray_data_tag* %data9 to [1 x %struct.elt_list*]*
+  %arrayidx11 = getelementptr inbounds [1 x %struct.elt_list*]* %te10, i64 0, i64 %idxprom8
+  store %struct.elt_list* null, %struct.elt_list** %arrayidx11, align 8, !tbaa !0
+  %inc13 = add i32 %i.137, 1
+  %conv = zext i32 %inc13 to i64
+  %8 = load %struct.varray_head_tag** @used_regs, align 8, !tbaa !0
+  %elements_used = getelementptr inbounds %struct.varray_head_tag* %8, i64 0, i32 1
+  %9 = load i64* %elements_used, align 8, !tbaa !4
+  %cmp2 = icmp ult i64 %conv, %9
+  br i1 %cmp2, label %for.body4, label %if.end
+
+if.end.loopexit39:                                ; preds = %for.body, %for.cond.preheader
+  %.pre = load %struct.varray_head_tag** @used_regs, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %for.cond1.preheader, %for.body4, %if.end.loopexit39
+  %10 = phi %struct.varray_head_tag* [ %.pre, %if.end.loopexit39 ], [ %1, %for.cond1.preheader ], [ %8, %for.body4 ]
+  store i32 0, i32* @max_value_regs, align 4, !tbaa !3
+  %elements_used15 = getelementptr inbounds %struct.varray_head_tag* %10, i64 0, i32 1
+  store i64 0, i64* %elements_used15, align 8, !tbaa !4
+  %11 = load %struct.htab** @hash_table, align 8, !tbaa !0
+  tail call void @htab_empty(%struct.htab* %11) #10
+  %12 = load i8** @cselib_startobj, align 8, !tbaa !0
+  %13 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 1), align 8, !tbaa !0
+  %14 = bitcast %struct._obstack_chunk* %13 to i8*
+  %cmp16 = icmp ugt i8* %12, %14
+  %15 = load i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 4), align 8, !tbaa !0
+  %cmp18 = icmp ult i8* %12, %15
+  %or.cond = and i1 %cmp16, %cmp18
+  br i1 %or.cond, label %if.then20, label %if.else21
+
+if.then20:                                        ; preds = %if.end
+  store i8* %12, i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 2), align 8, !tbaa !0
+  store i8* %12, i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end22
+
+if.else21:                                        ; preds = %if.end
+  tail call void @obstack_free(%struct.obstack* @cselib_obstack, i8* %12) #10
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.else21, %if.then20
+  store %struct.cselib_val_struct* null, %struct.cselib_val_struct** @empty_vals, align 8, !tbaa !0
+  store %struct.elt_list* null, %struct.elt_list** @empty_elt_lists, align 8, !tbaa !0
+  store %struct.elt_loc_list* null, %struct.elt_loc_list** @empty_elt_loc_lists, align 8, !tbaa !0
+  store i32 0, i32* @n_useless_values, align 4, !tbaa !3
+  store i32 0, i32* @next_unknown_value, align 4, !tbaa !3
+  ret void
+}

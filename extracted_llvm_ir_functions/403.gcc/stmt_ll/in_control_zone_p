@@ -1,0 +1,27 @@
+define i32 @in_control_zone_p() #3 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %stmt = getelementptr inbounds %struct.function* %0, i64 0, i32 1
+  %1 = load %struct.stmt_status** %stmt, align 8, !tbaa !0
+  %x_cond_stack = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 2
+  %2 = load %struct.nesting** %x_cond_stack, align 8, !tbaa !0
+  %tobool = icmp eq %struct.nesting* %2, null
+  br i1 %tobool, label %lor.lhs.false, label %lor.end
+
+lor.lhs.false:                                    ; preds = %entry
+  %x_loop_stack = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 3
+  %3 = load %struct.nesting** %x_loop_stack, align 8, !tbaa !0
+  %tobool2 = icmp eq %struct.nesting* %3, null
+  br i1 %tobool2, label %lor.rhs, label %lor.end
+
+lor.rhs:                                          ; preds = %lor.lhs.false
+  %x_case_stack = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 4
+  %4 = load %struct.nesting** %x_case_stack, align 8, !tbaa !0
+  %tobool4 = icmp ne %struct.nesting* %4, null
+  br label %lor.end
+
+lor.end:                                          ; preds = %lor.lhs.false, %entry, %lor.rhs
+  %5 = phi i1 [ true, %lor.lhs.false ], [ true, %entry ], [ %tobool4, %lor.rhs ]
+  %lor.ext = zext i1 %5 to i32
+  ret i32 %lor.ext
+}

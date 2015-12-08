@@ -1,0 +1,38 @@
+define i8** @get_symtab_handle(%struct.t_symtab* nocapture %symtab, i32 %name) #0 {
+entry:
+  %symbuf1 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 1
+  %symbuf.012 = load %struct.symbuf** %symbuf1, align 8
+  %cmp13 = icmp eq %struct.symbuf* %symbuf.012, null
+  br i1 %cmp13, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %if.else
+  %symbuf.015 = phi %struct.symbuf* [ %symbuf.0, %if.else ], [ %symbuf.012, %entry ]
+  %name.addr.014 = phi i32 [ %sub, %if.else ], [ %name, %entry ]
+  %bufsize = getelementptr inbounds %struct.symbuf* %symbuf.015, i64 0, i32 0
+  %0 = load i32* %bufsize, align 4, !tbaa !3
+  %cmp2 = icmp slt i32 %name.addr.014, %0
+  br i1 %cmp2, label %if.then, label %if.else
+
+if.then:                                          ; preds = %while.body
+  %idxprom = sext i32 %name.addr.014 to i64
+  %buf = getelementptr inbounds %struct.symbuf* %symbuf.015, i64 0, i32 1
+  %1 = load i8*** %buf, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8** %1, i64 %idxprom
+  br label %return
+
+if.else:                                          ; preds = %while.body
+  %sub = sub nsw i32 %name.addr.014, %0
+  %next = getelementptr inbounds %struct.symbuf* %symbuf.015, i64 0, i32 2
+  %symbuf.0 = load %struct.symbuf** %next, align 8
+  %cmp = icmp eq %struct.symbuf* %symbuf.0, null
+  br i1 %cmp, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.else, %entry
+  %name.addr.0.lcssa = phi i32 [ %name, %entry ], [ %sub, %if.else ]
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([38 x i8]* @.str1, i64 0, i64 0), i32 %name.addr.0.lcssa) #5
+  br label %return
+
+return:                                           ; preds = %while.end, %if.then
+  %retval.0 = phi i8** [ %arrayidx, %if.then ], [ null, %while.end ]
+  ret i8** %retval.0
+}

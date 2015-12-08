@@ -1,0 +1,125 @@
+define internal fastcc i32 @set_designator(i32 %array) #0 {
+entry:
+  %0 = load %union.tree_node** @constructor_type, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %0, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %.b = load i1* @designator_errorneous, align 1
+  br i1 %.b, label %return, label %if.end2
+
+if.end2:                                          ; preds = %if.end
+  %1 = load i32* @designator_depth, align 4, !tbaa !3
+  %tobool3 = icmp eq i32 %1, 0
+  br i1 %tobool3, label %if.then4, label %if.end9
+
+if.then4:                                         ; preds = %if.end2
+  %2 = load %struct.constructor_range_stack** @constructor_range_stack, align 8, !tbaa !0
+  %tobool5 = icmp eq %struct.constructor_range_stack* %2, null
+  br i1 %tobool5, label %while.cond.preheader, label %if.then6
+
+while.cond.preheader:                             ; preds = %if.then4
+  %3 = load %struct.constructor_stack** @constructor_stack, align 8, !tbaa !0
+  %implicit59 = getelementptr inbounds %struct.constructor_stack* %3, i64 0, i32 16
+  %4 = load i8* %implicit59, align 1, !tbaa !1
+  %tobool860 = icmp eq i8 %4, 0
+  br i1 %tobool860, label %while.end, label %while.body
+
+if.then6:                                         ; preds = %if.then4
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str7, i64 0, i64 0), i32 5645, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.set_designator, i64 0, i64 0)) #9
+  unreachable
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %call = tail call %union.tree_node* @pop_init_level(i32 1) #7
+  tail call void @process_init_element(%union.tree_node* %call) #7
+  %5 = load %struct.constructor_stack** @constructor_stack, align 8, !tbaa !0
+  %implicit = getelementptr inbounds %struct.constructor_stack* %5, i64 0, i32 16
+  %6 = load i8* %implicit, align 1, !tbaa !1
+  %tobool8 = icmp eq i8 %6, 0
+  br i1 %tobool8, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  store i32 1, i32* @constructor_designated, align 4, !tbaa !3
+  br label %return
+
+if.end9:                                          ; preds = %if.end2
+  %7 = load i32* @constructor_no_implicit, align 4, !tbaa !3
+  %tobool10 = icmp eq i32 %7, 0
+  br i1 %tobool10, label %if.end12, label %if.then11
+
+if.then11:                                        ; preds = %if.end9
+  tail call void @error_init(i8* getelementptr inbounds ([40 x i8]* @.str153, i64 0, i64 0)) #7
+  br label %return
+
+if.end12:                                         ; preds = %if.end9
+  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
+  %8 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %8, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %if.else35 [
+    i32 20, label %if.then19
+    i32 21, label %if.then19
+    i32 18, label %if.then30
+  ]
+
+if.then19:                                        ; preds = %if.end12, %if.end12
+  %9 = load %union.tree_node** @constructor_fields, align 8, !tbaa !0
+  %type = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1
+  %10 = load %union.tree_node** %type, align 8, !tbaa !0
+  %11 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 8, !tbaa !0
+  %cmp21 = icmp eq %union.tree_node* %10, %11
+  br i1 %cmp21, label %if.end37, label %if.then22
+
+if.then22:                                        ; preds = %if.then19
+  %12 = getelementptr inbounds %union.tree_node* %10, i64 0, i32 0, i32 15
+  %13 = load %union.tree_node** %12, align 8, !tbaa !0
+  br label %if.end37
+
+if.then30:                                        ; preds = %if.end12
+  %type32 = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 1
+  %14 = load %union.tree_node** %type32, align 8, !tbaa !0
+  %15 = getelementptr inbounds %union.tree_node* %14, i64 0, i32 0, i32 15
+  %16 = load %union.tree_node** %15, align 8, !tbaa !0
+  br label %if.end37
+
+if.else35:                                        ; preds = %if.end12
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str7, i64 0, i64 0), i32 5673, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.set_designator, i64 0, i64 0)) #9
+  unreachable
+
+if.end37:                                         ; preds = %if.then19, %if.then22, %if.then30
+  %subtype.0 = phi %union.tree_node* [ %13, %if.then22 ], [ %10, %if.then19 ], [ %16, %if.then30 ]
+  %code39 = getelementptr inbounds %union.tree_node* %subtype.0, i64 0, i32 0, i32 0, i32 2
+  %17 = bitcast [4 x i8]* %code39 to i32*
+  %bf.load40 = load i32* %17, align 8
+  %bf.clear41 = and i32 %bf.load40, 255
+  %tobool42 = icmp ne i32 %array, 0
+  %tobool42.not = xor i1 %tobool42, true
+  %cmp43 = icmp eq i32 %bf.clear41, 18
+  %or.cond = or i1 %cmp43, %tobool42.not
+  br i1 %or.cond, label %if.else45, label %if.then44
+
+if.then44:                                        ; preds = %if.end37
+  tail call void @error_init(i8* getelementptr inbounds ([37 x i8]* @.str122, i64 0, i64 0)) #7
+  br label %return
+
+if.else45:                                        ; preds = %if.end37
+  br i1 %tobool42, label %if.end53, label %land.lhs.true47
+
+land.lhs.true47:                                  ; preds = %if.else45
+  %bf.clear41.off = add i32 %bf.clear41, -20
+  %18 = icmp ugt i32 %bf.clear41.off, 1
+  br i1 %18, label %if.then51, label %if.end53
+
+if.then51:                                        ; preds = %land.lhs.true47
+  tail call void @error_init(i8* getelementptr inbounds ([46 x i8]* @.str126, i64 0, i64 0)) #7
+  br label %return
+
+if.end53:                                         ; preds = %if.else45, %land.lhs.true47
+  store i32 1, i32* @constructor_designated, align 4, !tbaa !3
+  tail call void @push_init_level(i32 2) #7
+  br label %return
+
+return:                                           ; preds = %if.end, %entry, %if.end53, %if.then51, %if.then44, %if.then11, %while.end
+  %retval.0 = phi i32 [ 1, %if.then11 ], [ 1, %if.then44 ], [ 0, %if.end53 ], [ 1, %if.then51 ], [ 0, %while.end ], [ 1, %entry ], [ 1, %if.end ]
+  ret i32 %retval.0
+}

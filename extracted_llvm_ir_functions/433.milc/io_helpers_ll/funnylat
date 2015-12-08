@@ -1,0 +1,93 @@
+define void @funnylat() #0 {
+entry:
+  %0 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp105 = icmp sgt i32 %0, 0
+  br i1 %cmp105, label %for.cond1.preheader.lr.ph, label %for.end74
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %1 = load %struct.site** @lattice, align 8, !tbaa !4
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.cond1.preheader.lr.ph, %for.inc72
+  %i.0107 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %inc73, %for.inc72 ]
+  %sit.0106 = phi %struct.site* [ %1, %for.cond1.preheader.lr.ph ], [ %incdec.ptr, %for.inc72 ]
+  %x = getelementptr inbounds %struct.site* %sit.0106, i64 0, i32 0
+  %y = getelementptr inbounds %struct.site* %sit.0106, i64 0, i32 1
+  %z = getelementptr inbounds %struct.site* %sit.0106, i64 0, i32 2
+  %t = getelementptr inbounds %struct.site* %sit.0106, i64 0, i32 3
+  br label %for.cond4.preheader
+
+for.cond4.preheader:                              ; preds = %for.end16, %for.cond1.preheader
+  %indvars.iv112 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next113, %for.end16 ]
+  br label %for.cond7.preheader
+
+for.cond7.preheader:                              ; preds = %for.inc14, %for.cond4.preheader
+  %indvars.iv108 = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next109, %for.inc14 ]
+  br label %for.body9
+
+for.body9:                                        ; preds = %for.body9, %for.cond7.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond7.preheader ], [ %indvars.iv.next, %for.body9 ]
+  %call = tail call { double, double } @cmplx(double 0.000000e+00, double 0.000000e+00) #5
+  %2 = extractvalue { double, double } %call, 0
+  %3 = extractvalue { double, double } %call, 1
+  %coerce.sroa.0.0.idx = getelementptr inbounds %struct.site* %sit.0106, i64 0, i32 8, i64 %indvars.iv112, i32 0, i64 %indvars.iv108, i64 %indvars.iv, i32 0
+  store double %2, double* %coerce.sroa.0.0.idx, align 8
+  %coerce.sroa.1.8.idx75 = getelementptr inbounds %struct.site* %sit.0106, i64 0, i32 8, i64 %indvars.iv112, i32 0, i64 %indvars.iv108, i64 %indvars.iv, i32 1
+  store double %3, double* %coerce.sroa.1.8.idx75, align 8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc14, label %for.body9
+
+for.inc14:                                        ; preds = %for.body9
+  %indvars.iv.next109 = add i64 %indvars.iv108, 1
+  %lftr.wideiv110 = trunc i64 %indvars.iv.next109 to i32
+  %exitcond111 = icmp eq i32 %lftr.wideiv110, 3
+  br i1 %exitcond111, label %for.end16, label %for.cond7.preheader
+
+for.end16:                                        ; preds = %for.inc14
+  %4 = trunc i64 %indvars.iv112 to i32
+  %conv = sitofp i32 %4 to double
+  %real = getelementptr inbounds %struct.site* %sit.0106, i64 0, i32 8, i64 %indvars.iv112, i32 0, i64 0, i64 0, i32 0
+  store double %conv, double* %real, align 8, !tbaa !3
+  %5 = load i16* %x, align 2, !tbaa !5
+  %conv23 = sext i16 %5 to i32
+  %mul = mul nsw i32 %conv23, 10
+  %conv24 = sitofp i32 %mul to double
+  %real31 = getelementptr inbounds %struct.site* %sit.0106, i64 0, i32 8, i64 %indvars.iv112, i32 0, i64 1, i64 1, i32 0
+  store double %conv24, double* %real31, align 8, !tbaa !3
+  %6 = load i16* %y, align 2, !tbaa !5
+  %conv32 = sext i16 %6 to i32
+  %mul33 = mul nsw i32 %conv32, 100
+  %conv34 = sitofp i32 %mul33 to double
+  %real41 = getelementptr inbounds %struct.site* %sit.0106, i64 0, i32 8, i64 %indvars.iv112, i32 0, i64 2, i64 2, i32 0
+  store double %conv34, double* %real41, align 8, !tbaa !3
+  %imag = getelementptr inbounds %struct.site* %sit.0106, i64 0, i32 8, i64 %indvars.iv112, i32 0, i64 0, i64 0, i32 1
+  store double %conv, double* %imag, align 8, !tbaa !3
+  %7 = load i16* %z, align 2, !tbaa !5
+  %conv49 = sext i16 %7 to i32
+  %mul50 = mul nsw i32 %conv49, 10
+  %conv51 = sitofp i32 %mul50 to double
+  %imag58 = getelementptr inbounds %struct.site* %sit.0106, i64 0, i32 8, i64 %indvars.iv112, i32 0, i64 1, i64 1, i32 1
+  store double %conv51, double* %imag58, align 8, !tbaa !3
+  %8 = load i16* %t, align 2, !tbaa !5
+  %conv59 = sext i16 %8 to i32
+  %mul60 = mul nsw i32 %conv59, 100
+  %conv61 = sitofp i32 %mul60 to double
+  %imag68 = getelementptr inbounds %struct.site* %sit.0106, i64 0, i32 8, i64 %indvars.iv112, i32 0, i64 2, i64 2, i32 1
+  store double %conv61, double* %imag68, align 8, !tbaa !3
+  %indvars.iv.next113 = add i64 %indvars.iv112, 1
+  %lftr.wideiv114 = trunc i64 %indvars.iv.next113 to i32
+  %exitcond115 = icmp eq i32 %lftr.wideiv114, 4
+  br i1 %exitcond115, label %for.inc72, label %for.cond4.preheader
+
+for.inc72:                                        ; preds = %for.end16
+  %inc73 = add nsw i32 %i.0107, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %sit.0106, i64 1
+  %9 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp = icmp slt i32 %inc73, %9
+  br i1 %cmp, label %for.cond1.preheader, label %for.end74
+
+for.end74:                                        ; preds = %for.inc72, %entry
+  ret void
+}

@@ -1,0 +1,35 @@
+define internal fastcc float @box_weight(i32* nocapture %nbox, [3 x float]* nocapture %box) #2 {
+entry:
+  %lx = alloca [3 x float], align 4
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arrayidx2 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv, i64 %indvars.iv
+  %0 = load float* %arrayidx2, align 4, !tbaa !3
+  %arrayidx4 = getelementptr inbounds i32* %nbox, i64 %indvars.iv
+  %1 = load i32* %arrayidx4, align 4, !tbaa !0
+  %conv = sitofp i32 %1 to float
+  %div = fdiv float %0, %conv
+  %arrayidx6 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 %indvars.iv
+  store float %div, float* %arrayidx6, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %arrayidx7 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 0
+  %2 = load float* %arrayidx7, align 4, !tbaa !3
+  %arrayidx8 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 1
+  %3 = load float* %arrayidx8, align 4, !tbaa !3
+  %mul = fmul float %2, %3
+  %arrayidx10 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 2
+  %4 = load float* %arrayidx10, align 4, !tbaa !3
+  %mul11 = fmul float %2, %4
+  %add = fadd float %mul, %mul11
+  %mul14 = fmul float %3, %4
+  %add15 = fadd float %mul14, %add
+  %mul16 = fmul float %add15, 2.000000e+00
+  ret float %mul16
+}

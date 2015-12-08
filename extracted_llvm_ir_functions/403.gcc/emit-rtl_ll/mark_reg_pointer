@@ -1,0 +1,56 @@
+define void @mark_reg_pointer(%struct.rtx_def* nocapture %reg, i32 %align) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %reg to i32*
+  %bf.load = load i32* %0, align 8
+  %tobool = icmp slt i32 %bf.load, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %bf.set = or i32 %bf.load, -2147483648
+  store i32 %bf.set, i32* %0, align 8
+  %tobool2 = icmp eq i32 %align, 0
+  br i1 %tobool2, label %if.end25, label %if.then3
+
+if.then3:                                         ; preds = %if.then
+  %conv = trunc i32 %align to i8
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !0
+  %idxprom = zext i32 %1 to i64
+  %2 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit = getelementptr inbounds %struct.function* %2, i64 0, i32 3
+  %3 = load %struct.emit_status** %emit, align 8, !tbaa !4
+  %regno_pointer_align = getelementptr inbounds %struct.emit_status* %3, i64 0, i32 10
+  %4 = load i8** %regno_pointer_align, align 8, !tbaa !4
+  %arrayidx4 = getelementptr inbounds i8* %4, i64 %idxprom
+  store i8 %conv, i8* %arrayidx4, align 1, !tbaa !1
+  br label %if.end25
+
+if.else:                                          ; preds = %entry
+  %tobool5 = icmp eq i32 %align, 0
+  br i1 %tobool5, label %if.end25, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.else
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint8 = bitcast %union.rtunion_def* %arrayidx7 to i32*
+  %5 = load i32* %rtuint8, align 4, !tbaa !0
+  %idxprom9 = zext i32 %5 to i64
+  %6 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit10 = getelementptr inbounds %struct.function* %6, i64 0, i32 3
+  %7 = load %struct.emit_status** %emit10, align 8, !tbaa !4
+  %regno_pointer_align11 = getelementptr inbounds %struct.emit_status* %7, i64 0, i32 10
+  %8 = load i8** %regno_pointer_align11, align 8, !tbaa !4
+  %arrayidx12 = getelementptr inbounds i8* %8, i64 %idxprom9
+  %9 = load i8* %arrayidx12, align 1, !tbaa !1
+  %conv13 = zext i8 %9 to i32
+  %cmp = icmp sgt i32 %conv13, %align
+  br i1 %cmp, label %if.then15, label %if.end25
+
+if.then15:                                        ; preds = %land.lhs.true
+  %conv16 = trunc i32 %align to i8
+  store i8 %conv16, i8* %arrayidx12, align 1, !tbaa !1
+  br label %if.end25
+
+if.end25:                                         ; preds = %if.else, %if.then, %land.lhs.true, %if.then15, %if.then3
+  ret void
+}

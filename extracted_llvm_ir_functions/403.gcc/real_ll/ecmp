@@ -1,0 +1,113 @@
+define internal fastcc i32 @ecmp(i16* nocapture %a, i16* nocapture %b) #0 {
+entry:
+  %ai = alloca [9 x i16], align 16
+  %bi = alloca [9 x i16], align 16
+  %arrayidx.i = getelementptr inbounds i16* %a, i64 5
+  %0 = load i16* %arrayidx.i, align 2, !tbaa !0
+  %and.i = and i16 %0, 32767
+  %cmp.i = icmp eq i16 %and.i, 32767
+  br i1 %cmp.i, label %for.body.i, label %lor.lhs.false
+
+for.body.i:                                       ; preds = %entry, %for.inc.i
+  %i.012.i = phi i32 [ %inc.i, %for.inc.i ], [ 0, %entry ]
+  %x.addr.011.i = phi i16* [ %incdec.ptr.i, %for.inc.i ], [ %a, %entry ]
+  %1 = load i16* %x.addr.011.i, align 2, !tbaa !0
+  %cmp5.i = icmp eq i16 %1, 0
+  br i1 %cmp5.i, label %for.inc.i, label %return
+
+for.inc.i:                                        ; preds = %for.body.i
+  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1
+  %inc.i = add nsw i32 %i.012.i, 1
+  %cmp2.i = icmp slt i32 %inc.i, 5
+  br i1 %cmp2.i, label %for.body.i, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %for.inc.i, %entry
+  %arrayidx.i64 = getelementptr inbounds i16* %b, i64 5
+  %2 = load i16* %arrayidx.i64, align 2, !tbaa !0
+  %and.i65 = and i16 %2, 32767
+  %cmp.i66 = icmp eq i16 %and.i65, 32767
+  br i1 %cmp.i66, label %for.body.i70, label %if.end
+
+for.body.i70:                                     ; preds = %lor.lhs.false, %for.inc.i74
+  %i.012.i67 = phi i32 [ %inc.i72, %for.inc.i74 ], [ 0, %lor.lhs.false ]
+  %x.addr.011.i68 = phi i16* [ %incdec.ptr.i71, %for.inc.i74 ], [ %b, %lor.lhs.false ]
+  %3 = load i16* %x.addr.011.i68, align 2, !tbaa !0
+  %cmp5.i69 = icmp eq i16 %3, 0
+  br i1 %cmp5.i69, label %for.inc.i74, label %return
+
+for.inc.i74:                                      ; preds = %for.body.i70
+  %incdec.ptr.i71 = getelementptr inbounds i16* %x.addr.011.i68, i64 1
+  %inc.i72 = add nsw i32 %i.012.i67, 1
+  %cmp2.i73 = icmp slt i32 %inc.i72, 5
+  br i1 %cmp2.i73, label %for.body.i70, label %if.end
+
+if.end:                                           ; preds = %for.inc.i74, %lor.lhs.false
+  %arraydecay = getelementptr inbounds [9 x i16]* %ai, i64 0, i64 0
+  call fastcc void @emovi(i16* %a, i16* %arraydecay) #6
+  %arraydecay4 = getelementptr inbounds [9 x i16]* %bi, i64 0, i64 0
+  call fastcc void @emovi(i16* %b, i16* %arraydecay4) #6
+  %4 = load i16* %arraydecay, align 16, !tbaa !0
+  %5 = load i16* %arraydecay4, align 16, !tbaa !0
+  %cmp = icmp eq i16 %4, %5
+  br i1 %cmp, label %if.end27, label %for.body
+
+for.cond:                                         ; preds = %if.end15
+  %6 = trunc i64 %indvars.iv.next to i32
+  %cmp9 = icmp slt i32 %6, 8
+  br i1 %cmp9, label %for.body, label %return
+
+for.body:                                         ; preds = %if.end, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 1, %if.end ]
+  %arrayidx = getelementptr inbounds [9 x i16]* %ai, i64 0, i64 %indvars.iv
+  %7 = load i16* %arrayidx, align 2, !tbaa !0
+  %cmp12 = icmp eq i16 %7, 0
+  br i1 %cmp12, label %if.end15, label %nzro
+
+if.end15:                                         ; preds = %for.body
+  %arrayidx17 = getelementptr inbounds [9 x i16]* %bi, i64 0, i64 %indvars.iv
+  %8 = load i16* %arrayidx17, align 2, !tbaa !0
+  %cmp19 = icmp eq i16 %8, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp19, label %for.cond, label %nzro
+
+nzro:                                             ; preds = %if.end15, %for.body
+  %cmp24 = icmp eq i16 %4, 0
+  %. = select i1 %cmp24, i32 1, i32 -1
+  br label %return
+
+if.end27:                                         ; preds = %if.end
+  %cmp29 = icmp eq i16 %4, 0
+  %.63 = select i1 %cmp29, i32 1, i32 -1
+  br label %do.body
+
+do.body:                                          ; preds = %do.cond.do.body_crit_edge, %if.end27
+  %9 = phi i16 [ %4, %if.end27 ], [ %.pre93, %do.cond.do.body_crit_edge ]
+  %10 = phi i16 [ %4, %if.end27 ], [ %.pre, %do.cond.do.body_crit_edge ]
+  %p.0 = phi i16* [ %arraydecay, %if.end27 ], [ %incdec.ptr, %do.cond.do.body_crit_edge ]
+  %q.0 = phi i16* [ %arraydecay4, %if.end27 ], [ %incdec.ptr35, %do.cond.do.body_crit_edge ]
+  %i.1 = phi i32 [ 7, %if.end27 ], [ %phitmp, %do.cond.do.body_crit_edge ]
+  %cmp37 = icmp eq i16 %10, %9
+  br i1 %cmp37, label %do.cond, label %diff
+
+do.cond:                                          ; preds = %do.body
+  %incdec.ptr35 = getelementptr inbounds i16* %q.0, i64 1
+  %incdec.ptr = getelementptr inbounds i16* %p.0, i64 1
+  %cmp41 = icmp sgt i32 %i.1, 0
+  br i1 %cmp41, label %do.cond.do.body_crit_edge, label %return
+
+do.cond.do.body_crit_edge:                        ; preds = %do.cond
+  %.pre = load i16* %incdec.ptr, align 2, !tbaa !0
+  %.pre93 = load i16* %incdec.ptr35, align 2, !tbaa !0
+  %phitmp = add i32 %i.1, -1
+  br label %do.body
+
+diff:                                             ; preds = %do.body
+  %cmp47 = icmp ugt i16 %10, %9
+  %sub = sub nsw i32 0, %.63
+  %.63.sub = select i1 %cmp47, i32 %.63, i32 %sub
+  ret i32 %.63.sub
+
+return:                                           ; preds = %for.body.i, %for.body.i70, %for.cond, %do.cond, %nzro
+  %retval.0 = phi i32 [ %., %nzro ], [ 0, %do.cond ], [ 0, %for.cond ], [ -2, %for.body.i70 ], [ -2, %for.body.i ]
+  ret i32 %retval.0
+}

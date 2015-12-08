@@ -1,0 +1,34 @@
+define void @add_insn_mem_dependence(%struct.deps* nocapture %deps, %struct.rtx_def** nocapture %insn_list, %struct.rtx_def** nocapture %mem_list, %struct.rtx_def* %insn, %struct.rtx_def* %mem) #1 {
+entry:
+  %0 = load %struct.rtx_def** %insn_list, align 8, !tbaa !0
+  %call = tail call %struct.rtx_def* @alloc_INSN_LIST(%struct.rtx_def* %insn, %struct.rtx_def* %0) #7
+  store %struct.rtx_def* %call, %struct.rtx_def** %insn_list, align 8, !tbaa !0
+  %1 = load %struct.sched_info** @current_sched_info, align 8, !tbaa !0
+  %use_cselib = getelementptr inbounds %struct.sched_info* %1, i64 0, i32 12
+  %bf.load = load i8* %use_cselib, align 8
+  %bf.clear = and i8 %bf.load, 2
+  %tobool = icmp eq i8 %bf.clear, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call %struct.rtx_def* @shallow_copy_rtx(%struct.rtx_def* %mem) #7
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call1, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %call2 = tail call %struct.rtx_def* @cselib_subst_to_values(%struct.rtx_def* %2) #7
+  %3 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0
+  %call2.c = ptrtoint %struct.rtx_def* %call2 to i64
+  store i64 %call2.c, i64* %3, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %mem.addr.0 = phi %struct.rtx_def* [ %call1, %if.then ], [ %mem, %entry ]
+  %4 = load %struct.rtx_def** %mem_list, align 8, !tbaa !0
+  %call6 = tail call %struct.rtx_def* @alloc_EXPR_LIST(i32 0, %struct.rtx_def* %mem.addr.0, %struct.rtx_def* %4) #7
+  store %struct.rtx_def* %call6, %struct.rtx_def** %mem_list, align 8, !tbaa !0
+  %pending_lists_length = getelementptr inbounds %struct.deps* %deps, i64 0, i32 4
+  %5 = load i32* %pending_lists_length, align 4, !tbaa !3
+  %inc = add nsw i32 %5, 1
+  store i32 %inc, i32* %pending_lists_length, align 4, !tbaa !3
+  ret void
+}

@@ -1,0 +1,27 @@
+define internal void @status_warning(i32* %status, i8* %msgid, ...) #0 {
+entry:
+  %dc = alloca %struct.diagnostic_context, align 8
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %0 = bitcast %struct.diagnostic_context* %dc to i8*
+  call void @llvm.lifetime.start(i64 376, i8* %0) #3
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %tobool = icmp eq i32* %status, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  store i32 1, i32* %status, align 4, !tbaa !0
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %1 = load i8** @input_filename, align 8, !tbaa !3
+  %2 = load i32* @lineno, align 4, !tbaa !0
+  call void @set_diagnostic_context(%struct.diagnostic_context* %dc, i8* %msgid, [1 x %struct.__va_list_tag]* %ap, i8* %1, i32 %2, i32 1) #8
+  call void @report_diagnostic(%struct.diagnostic_context* %dc) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  call void @llvm.va_end(i8* %arraydecay1)
+  call void @llvm.lifetime.end(i64 376, i8* %0) #3
+  ret void
+}

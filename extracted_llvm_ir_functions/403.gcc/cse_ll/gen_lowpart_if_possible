@@ -1,0 +1,27 @@
+define %struct.rtx_def* @gen_lowpart_if_possible(i32 %mode, %struct.rtx_def* %x) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @gen_lowpart_common(i32 %mode, %struct.rtx_def* %x) #6
+  %tobool = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool, label %if.else, label %return
+
+if.else:                                          ; preds = %entry
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  br i1 %cmp, label %if.then1, label %return
+
+if.then1:                                         ; preds = %if.else
+  %call2 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %x, i32 %mode, i64 0, i32 0, i32 1) #6
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call2, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %call3 = tail call i32 @memory_address_p(i32 %mode, %struct.rtx_def* %1) #6
+  %tobool4 = icmp eq i32 %call3, 0
+  %.call2 = select i1 %tobool4, %struct.rtx_def* null, %struct.rtx_def* %call2
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then1, %entry
+  %retval.0 = phi %struct.rtx_def* [ %call, %entry ], [ %.call2, %if.then1 ], [ null, %if.else ]
+  ret %struct.rtx_def* %retval.0
+}

@@ -1,0 +1,114 @@
+define internal fastcc void @triphone_add(%struct.mdef_t* nocapture %m, i8 signext %ci, i8 signext %lc, i8 signext %rc, i32 %wpos, i32 %p) #0 {
+entry:
+  %buf = alloca [4096 x i8], align 16
+  %idxprom = sext i32 %p to i64
+  %phone = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 8
+  %0 = load %struct.phone_t** %phone, align 8, !tbaa !3
+  %ci1 = getelementptr inbounds %struct.phone_t* %0, i64 %idxprom, i32 2
+  store i8 %ci, i8* %ci1, align 1, !tbaa !1
+  %1 = load %struct.phone_t** %phone, align 8, !tbaa !3
+  %lc5 = getelementptr inbounds %struct.phone_t* %1, i64 %idxprom, i32 3
+  store i8 %lc, i8* %lc5, align 1, !tbaa !1
+  %2 = load %struct.phone_t** %phone, align 8, !tbaa !3
+  %rc9 = getelementptr inbounds %struct.phone_t* %2, i64 %idxprom, i32 4
+  store i8 %rc, i8* %rc9, align 1, !tbaa !1
+  %3 = load %struct.phone_t** %phone, align 8, !tbaa !3
+  %wpos13 = getelementptr inbounds %struct.phone_t* %3, i64 %idxprom, i32 5
+  store i32 %wpos, i32* %wpos13, align 4, !tbaa !1
+  %n_ciphone = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 0
+  %4 = load i32* %n_ciphone, align 4, !tbaa !0
+  %cmp = icmp sgt i32 %4, %p
+  br i1 %cmp, label %if.end48, label %if.then
+
+if.then:                                          ; preds = %entry
+  %idxprom14 = sext i8 %ci to i64
+  %idxprom15 = zext i32 %wpos to i64
+  %wpos_ci_lclist = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 15
+  %5 = load %struct.ph_lc_s**** %wpos_ci_lclist, align 8, !tbaa !3
+  %arrayidx16 = getelementptr inbounds %struct.ph_lc_s*** %5, i64 %idxprom15
+  %6 = load %struct.ph_lc_s*** %arrayidx16, align 8, !tbaa !3
+  %arrayidx17 = getelementptr inbounds %struct.ph_lc_s** %6, i64 %idxprom14
+  %7 = load %struct.ph_lc_s** %arrayidx17, align 8, !tbaa !3
+  %tobool7.i = icmp eq %struct.ph_lc_s* %7, null
+  br i1 %tobool7.i, label %if.then20, label %land.rhs.i
+
+land.rhs.i:                                       ; preds = %if.then, %for.inc.i
+  %lcptr.08.i = phi %struct.ph_lc_s* [ %9, %for.inc.i ], [ %7, %if.then ]
+  %lc1.i = getelementptr inbounds %struct.ph_lc_s* %lcptr.08.i, i64 0, i32 0
+  %8 = load i8* %lc1.i, align 1, !tbaa !1
+  %cmp.i = icmp eq i8 %8, %lc
+  br i1 %cmp.i, label %if.end, label %for.inc.i
+
+for.inc.i:                                        ; preds = %land.rhs.i
+  %next.i = getelementptr inbounds %struct.ph_lc_s* %lcptr.08.i, i64 0, i32 2
+  %9 = load %struct.ph_lc_s** %next.i, align 8, !tbaa !3
+  %tobool.i = icmp eq %struct.ph_lc_s* %9, null
+  br i1 %tobool.i, label %if.then20, label %land.rhs.i
+
+if.then20:                                        ; preds = %for.inc.i, %if.then
+  %call21 = call i8* @__ckd_calloc__(i64 1, i64 24, i8* getelementptr inbounds ([52 x i8]* @.str14, i64 0, i64 0), i32 182) #7
+  %10 = bitcast i8* %call21 to %struct.ph_lc_s*
+  store i8 %lc, i8* %call21, align 1, !tbaa !1
+  %11 = load %struct.ph_lc_s**** %wpos_ci_lclist, align 8, !tbaa !3
+  %arrayidx27 = getelementptr inbounds %struct.ph_lc_s*** %11, i64 %idxprom15
+  %12 = load %struct.ph_lc_s*** %arrayidx27, align 8, !tbaa !3
+  %arrayidx28 = getelementptr inbounds %struct.ph_lc_s** %12, i64 %idxprom14
+  %13 = load %struct.ph_lc_s** %arrayidx28, align 8, !tbaa !3
+  %next = getelementptr inbounds i8* %call21, i64 16
+  %14 = bitcast i8* %next to %struct.ph_lc_s**
+  store %struct.ph_lc_s* %13, %struct.ph_lc_s** %14, align 8, !tbaa !3
+  %15 = load %struct.ph_lc_s**** %wpos_ci_lclist, align 8, !tbaa !3
+  %arrayidx33 = getelementptr inbounds %struct.ph_lc_s*** %15, i64 %idxprom15
+  %16 = load %struct.ph_lc_s*** %arrayidx33, align 8, !tbaa !3
+  %arrayidx34 = getelementptr inbounds %struct.ph_lc_s** %16, i64 %idxprom14
+  store %struct.ph_lc_s* %10, %struct.ph_lc_s** %arrayidx34, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %land.rhs.i, %if.then20
+  %lcptr.0 = phi %struct.ph_lc_s* [ %10, %if.then20 ], [ %lcptr.08.i, %land.rhs.i ]
+  %rclist = getelementptr inbounds %struct.ph_lc_s* %lcptr.0, i64 0, i32 1
+  %17 = load %struct.ph_rc_s** %rclist, align 8, !tbaa !3
+  %tobool7.i81 = icmp eq %struct.ph_rc_s* %17, null
+  br i1 %tobool7.i81, label %if.end41, label %land.rhs.i83
+
+land.rhs.i83:                                     ; preds = %if.end, %for.inc.i86
+  %rcptr.08.i = phi %struct.ph_rc_s* [ %19, %for.inc.i86 ], [ %17, %if.end ]
+  %rc1.i = getelementptr inbounds %struct.ph_rc_s* %rcptr.08.i, i64 0, i32 0
+  %18 = load i8* %rc1.i, align 1, !tbaa !1
+  %cmp.i82 = icmp eq i8 %18, %rc
+  br i1 %cmp.i82, label %if.then38, label %for.inc.i86
+
+for.inc.i86:                                      ; preds = %land.rhs.i83
+  %next.i84 = getelementptr inbounds %struct.ph_rc_s* %rcptr.08.i, i64 0, i32 2
+  %19 = load %struct.ph_rc_s** %next.i84, align 8, !tbaa !3
+  %tobool.i85 = icmp eq %struct.ph_rc_s* %19, null
+  br i1 %tobool.i85, label %if.end41, label %land.rhs.i83
+
+if.then38:                                        ; preds = %land.rhs.i83
+  %20 = getelementptr inbounds [4096 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %20) #1
+  %pid = getelementptr inbounds %struct.ph_rc_s* %rcptr.08.i, i64 0, i32 1
+  %21 = load i32* %pid, align 4, !tbaa !0
+  %call39 = call i32 @mdef_phone_str(%struct.mdef_t* %m, i32 %21, i8* %20) #8
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str14, i64 0, i64 0), i64 191, i8* getelementptr inbounds ([12 x i8]* @.str15, i64 0, i64 0)) #7
+  call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([24 x i8]* @.str71, i64 0, i64 0), i8* %20) #7
+  call void @llvm.lifetime.end(i64 4096, i8* %20) #1
+  br label %if.end41
+
+if.end41:                                         ; preds = %for.inc.i86, %if.end, %if.then38
+  %call42 = call i8* @__ckd_calloc__(i64 1, i64 16, i8* getelementptr inbounds ([52 x i8]* @.str14, i64 0, i64 0), i32 194) #7
+  %22 = bitcast i8* %call42 to %struct.ph_rc_s*
+  store i8 %rc, i8* %call42, align 1, !tbaa !1
+  %pid44 = getelementptr inbounds i8* %call42, i64 4
+  %23 = bitcast i8* %pid44 to i32*
+  store i32 %p, i32* %23, align 4, !tbaa !0
+  %24 = load %struct.ph_rc_s** %rclist, align 8, !tbaa !3
+  %next46 = getelementptr inbounds i8* %call42, i64 8
+  %25 = bitcast i8* %next46 to %struct.ph_rc_s**
+  store %struct.ph_rc_s* %24, %struct.ph_rc_s** %25, align 8, !tbaa !3
+  store %struct.ph_rc_s* %22, %struct.ph_rc_s** %rclist, align 8, !tbaa !3
+  br label %if.end48
+
+if.end48:                                         ; preds = %entry, %if.end41
+  ret void
+}

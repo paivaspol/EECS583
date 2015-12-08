@@ -1,0 +1,179 @@
+define internal fastcc void @verify_local_live_at_start(%struct.bitmap_head_def* %new_live_at_start, %struct.basic_block_def* %bb) #0 {
+entry:
+  %regno.addr.i = alloca i32, align 4
+  %0 = load i32* @reload_completed, align 4, !tbaa !0
+  %tobool = icmp eq i32 %0, 0
+  %global_live_at_start8 = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 8
+  %1 = load %struct.bitmap_head_def** %global_live_at_start8, align 8, !tbaa !3
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = call i32 @bitmap_equal_p(%struct.bitmap_head_def* %new_live_at_start, %struct.bitmap_head_def* %1) #6
+  %tobool1 = icmp eq i32 %call, 0
+  br i1 %tobool1, label %if.then2, label %if.end51
+
+if.then2:                                         ; preds = %if.then
+  %2 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !3
+  %tobool3 = icmp eq %struct._IO_FILE* %2, null
+  br i1 %tobool3, label %if.end, label %if.then4
+
+if.then4:                                         ; preds = %if.then2
+  %index = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 11
+  %3 = load i32* %index, align 4, !tbaa !0
+  %call5 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([48 x i8]* @.str9, i64 0, i64 0), i32 %3) #6
+  %4 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !3
+  call void @debug_bitmap_file(%struct._IO_FILE* %4, %struct.bitmap_head_def* %new_live_at_start) #6
+  %5 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !3
+  %6 = call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str10, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %5)
+  %7 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !3
+  call void @dump_bb(%struct.basic_block_def* %bb, %struct._IO_FILE* %7) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.then2, %if.then4
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str3, i64 0, i64 0), i32 583, i8* getelementptr inbounds ([27 x i8]* @__FUNCTION__.verify_local_live_at_start, i64 0, i64 0)) #7
+  unreachable
+
+if.else:                                          ; preds = %entry
+  %call9 = call i32 @bitmap_operation(%struct.bitmap_head_def* %new_live_at_start, %struct.bitmap_head_def* %new_live_at_start, %struct.bitmap_head_def* %1, i32 3) #6
+  %first = getelementptr inbounds %struct.bitmap_head_def* %new_live_at_start, i64 0, i32 0
+  %ptr_.185 = load %struct.bitmap_element_def** %first, align 8
+  %cmp1686 = icmp eq %struct.bitmap_element_def* %ptr_.185, null
+  br i1 %cmp1686, label %if.end51, label %for.cond17.preheader.lr.ph
+
+for.cond17.preheader.lr.ph:                       ; preds = %if.else
+  %8 = bitcast i32* %regno.addr.i to i8*
+  %head1.i = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 0
+  %end2.i = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 1
+  br label %for.cond17.preheader
+
+for.cond17.preheader:                             ; preds = %for.cond17.preheader.lr.ph, %for.end47
+  %ptr_.187 = phi %struct.bitmap_element_def* [ %ptr_.185, %for.cond17.preheader.lr.ph ], [ %ptr_.1, %for.end47 ]
+  %indx28 = getelementptr inbounds %struct.bitmap_element_def* %ptr_.187, i64 0, i32 2
+  br label %for.body19
+
+for.body19:                                       ; preds = %for.cond17.preheader, %if.end44
+  %indvars.iv90 = phi i64 [ 0, %for.cond17.preheader ], [ %indvars.iv.next91, %if.end44 ]
+  %arrayidx = getelementptr inbounds %struct.bitmap_element_def* %ptr_.187, i64 0, i32 3, i64 %indvars.iv90
+  %9 = load i64* %arrayidx, align 8, !tbaa !4
+  %cmp20 = icmp eq i64 %9, 0
+  br i1 %cmp20, label %if.end44, label %for.cond22.preheader
+
+for.cond22.preheader:                             ; preds = %for.body19
+  %10 = shl i64 %indvars.iv90, 6
+  br label %for.body24
+
+for.body24:                                       ; preds = %for.cond22.preheader, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.cond22.preheader ], [ %indvars.iv.next, %for.inc ]
+  %word_.083 = phi i64 [ %9, %for.cond22.preheader ], [ %word_.1, %for.inc ]
+  %shl = shl i64 1, %indvars.iv
+  %and = and i64 %shl, %word_.083
+  %cmp25 = icmp eq i64 %and, 0
+  br i1 %cmp25, label %for.inc, label %if.then26
+
+if.then26:                                        ; preds = %for.body24
+  %neg = xor i64 %shl, -1
+  %and27 = and i64 %word_.083, %neg
+  %11 = load i32* %indx28, align 4, !tbaa !0
+  %mul = shl i32 %11, 7
+  %12 = add i64 %indvars.iv, %10
+  %13 = trunc i64 %12 to i32
+  %add30 = add i32 %13, %mul
+  %14 = load %struct.bitmap_head_def** %global_live_at_start8, align 8, !tbaa !3
+  %call32 = call i32 @bitmap_bit_p(%struct.bitmap_head_def* %14, i32 %add30) #6
+  %tobool33 = icmp eq i32 %call32, 0
+  br i1 %tobool33, label %if.end39, label %if.then34
+
+if.then34:                                        ; preds = %if.then26
+  %15 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !3
+  %tobool35 = icmp eq %struct._IO_FILE* %15, null
+  br i1 %tobool35, label %if.end38, label %if.then36
+
+if.then36:                                        ; preds = %if.then34
+  %call37 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %15, i8* getelementptr inbounds ([32 x i8]* @.str11, i64 0, i64 0), i32 %add30) #6
+  %16 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !3
+  call void @dump_bb(%struct.basic_block_def* %bb, %struct._IO_FILE* %16) #6
+  br label %if.end38
+
+if.end38:                                         ; preds = %if.then34, %if.then36
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str3, i64 0, i64 0), i32 604, i8* getelementptr inbounds ([27 x i8]* @__FUNCTION__.verify_local_live_at_start, i64 0, i64 0)) #7
+  unreachable
+
+if.end39:                                         ; preds = %if.then26
+  call void @llvm.lifetime.start(i64 4, i8* %8) #3
+  store i32 %add30, i32* %regno.addr.i, align 4, !tbaa !0
+  %17 = load %struct.rtx_def** %end2.i, align 8, !tbaa !3
+  br label %while.body.i
+
+while.body.i:                                     ; preds = %if.end16.i, %if.end39
+  %head.0.in.i = phi %struct.rtx_def** [ %head1.i, %if.end39 ], [ %rtx19.i, %if.end16.i ]
+  %head.0.i = load %struct.rtx_def** %head.0.in.i, align 8
+  %18 = bitcast %struct.rtx_def* %head.0.i to i32*
+  %bf.load.i = load i32* %18, align 8
+  %bf.clear.i = and i32 %bf.load.i, 65535
+  %idxprom29.i = zext i32 %bf.clear.i to i64
+  %arrayidx.i = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom29.i
+  %19 = load i8* %arrayidx.i, align 1, !tbaa !1
+  %cmp.i = icmp eq i8 %19, 105
+  br i1 %cmp.i, label %if.then.i, label %if.end12.i
+
+if.then.i:                                        ; preds = %while.body.i
+  %arrayidx4.i = getelementptr inbounds %struct.rtx_def* %head.0.i, i64 0, i32 1, i64 3
+  %rtx.i = bitcast %union.rtunion_def* %arrayidx4.i to %struct.rtx_def**
+  %call.i = call i32 @for_each_rtx(%struct.rtx_def** %rtx.i, i32 (%struct.rtx_def**, i8*)* @verify_wide_reg_1, i8* %8) #6
+  switch i32 %call.i, label %if.end12.i [
+    i32 1, label %verify_wide_reg.exit
+    i32 2, label %while.end.i
+  ]
+
+if.end12.i:                                       ; preds = %if.then.i, %while.body.i
+  %cmp13.i = icmp eq %struct.rtx_def* %head.0.i, %17
+  br i1 %cmp13.i, label %while.end.i, label %if.end16.i
+
+if.end16.i:                                       ; preds = %if.end12.i
+  %arrayidx18.i = getelementptr inbounds %struct.rtx_def* %head.0.i, i64 0, i32 1, i64 2
+  %rtx19.i = bitcast %union.rtunion_def* %arrayidx18.i to %struct.rtx_def**
+  br label %while.body.i
+
+while.end.i:                                      ; preds = %if.end12.i, %if.then.i
+  %20 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !3
+  %tobool.i = icmp eq %struct._IO_FILE* %20, null
+  br i1 %tobool.i, label %if.end22.i, label %if.then20.i
+
+if.then20.i:                                      ; preds = %while.end.i
+  %21 = load i32* %regno.addr.i, align 4, !tbaa !0
+  %call21.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %20, i8* getelementptr inbounds ([32 x i8]* @.str11, i64 0, i64 0), i32 %21) #6
+  %22 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !3
+  call void @dump_bb(%struct.basic_block_def* %bb, %struct._IO_FILE* %22) #6
+  br label %if.end22.i
+
+if.end22.i:                                       ; preds = %if.then20.i, %while.end.i
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str3, i64 0, i64 0), i32 557, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.verify_wide_reg, i64 0, i64 0)) #7
+  unreachable
+
+verify_wide_reg.exit:                             ; preds = %if.then.i
+  call void @llvm.lifetime.end(i64 4, i8* %8) #3
+  %cmp40 = icmp eq i64 %and27, 0
+  br i1 %cmp40, label %if.end44, label %for.inc
+
+for.inc:                                          ; preds = %for.body24, %verify_wide_reg.exit
+  %word_.1 = phi i64 [ %and27, %verify_wide_reg.exit ], [ %word_.083, %for.body24 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %23 = trunc i64 %indvars.iv.next to i32
+  %cmp23 = icmp ult i32 %23, 64
+  br i1 %cmp23, label %for.body24, label %if.end44
+
+if.end44:                                         ; preds = %for.inc, %verify_wide_reg.exit, %for.body19
+  %indvars.iv.next91 = add i64 %indvars.iv90, 1
+  %24 = trunc i64 %indvars.iv.next91 to i32
+  %cmp18 = icmp ult i32 %24, 2
+  br i1 %cmp18, label %for.body19, label %for.end47
+
+for.end47:                                        ; preds = %if.end44
+  %next49 = getelementptr inbounds %struct.bitmap_element_def* %ptr_.187, i64 0, i32 0
+  %ptr_.1 = load %struct.bitmap_element_def** %next49, align 8
+  %cmp16 = icmp eq %struct.bitmap_element_def* %ptr_.1, null
+  br i1 %cmp16, label %if.end51, label %for.cond17.preheader
+
+if.end51:                                         ; preds = %if.else, %for.end47, %if.then
+  ret void
+}

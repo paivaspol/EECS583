@@ -1,0 +1,163 @@
+define internal fastcc void @estimate_loops_at_level(%struct.loop* %first_loop) #0 {
+entry:
+  %tobool102 = icmp eq %struct.loop* %first_loop, null
+  br i1 %tobool102, label %for.end63, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc61
+  %loop.0103 = phi %struct.loop* [ %27, %for.inc61 ], [ %first_loop, %entry ]
+  %inner = getelementptr inbounds %struct.loop* %loop.0103, i64 0, i32 18
+  %0 = load %struct.loop** %inner, align 8, !tbaa !0
+  tail call fastcc void @estimate_loops_at_level(%struct.loop* %0) #7
+  %latch = getelementptr inbounds %struct.loop* %loop.0103, i64 0, i32 2
+  %1 = load %struct.basic_block_def** %latch, align 8, !tbaa !0
+  %succ = getelementptr inbounds %struct.basic_block_def* %1, i64 0, i32 5
+  %header = getelementptr inbounds %struct.loop* %loop.0103, i64 0, i32 1
+  %2 = load %struct.basic_block_def** %header, align 8, !tbaa !0
+  br label %for.cond1
+
+for.cond1:                                        ; preds = %for.cond1, %for.body
+  %e.0.in = phi %struct.edge_def** [ %succ, %for.body ], [ %succ_next, %for.cond1 ]
+  %e.0 = load %struct.edge_def** %e.0.in, align 8
+  %dest = getelementptr inbounds %struct.edge_def* %e.0, i64 0, i32 3
+  %3 = load %struct.basic_block_def** %dest, align 8, !tbaa !0
+  %cmp = icmp eq %struct.basic_block_def* %3, %2
+  %succ_next = getelementptr inbounds %struct.edge_def* %e.0, i64 0, i32 1
+  br i1 %cmp, label %for.end, label %for.cond1
+
+for.end:                                          ; preds = %for.cond1
+  %aux = getelementptr inbounds %struct.edge_def* %e.0, i64 0, i32 5
+  %4 = load i8** %aux, align 8, !tbaa !0
+  %5 = getelementptr inbounds i8* %4, i64 8
+  %bf.load = load i8* %5, align 8
+  %bf.set = or i8 %bf.load, 1
+  store i8 %bf.set, i8* %5, align 8
+  %shared = getelementptr inbounds %struct.loop* %loop.0103, i64 0, i32 20
+  %6 = load i32* %shared, align 4, !tbaa !3
+  %tobool3 = icmp eq i32 %6, 0
+  br i1 %tobool3, label %if.end17, label %for.cond4
+
+for.cond4:                                        ; preds = %for.end, %for.body6
+  %loop.0.pn = phi %struct.loop* [ %l.0, %for.body6 ], [ %loop.0103, %for.end ]
+  %l.0.in = getelementptr inbounds %struct.loop* %loop.0.pn, i64 0, i32 19
+  %l.0 = load %struct.loop** %l.0.in, align 8
+  %tobool5 = icmp eq %struct.loop* %l.0, null
+  br i1 %tobool5, label %if.end17, label %for.body6
+
+for.body6:                                        ; preds = %for.cond4
+  %header7 = getelementptr inbounds %struct.loop* %l.0, i64 0, i32 1
+  %7 = load %struct.basic_block_def** %header7, align 8, !tbaa !0
+  %8 = load %struct.basic_block_def** %header, align 8, !tbaa !0
+  %cmp9 = icmp eq %struct.basic_block_def* %7, %8
+  br i1 %cmp9, label %for.inc61.loopexit, label %for.cond4
+
+if.end17:                                         ; preds = %for.cond4, %for.end
+  %tobool19 = icmp ne i32 %6, 0
+  %cond = select i1 %tobool19, %struct.loop* %first_loop, %struct.loop* %loop.0103
+  %next21 = getelementptr inbounds %struct.loop* %loop.0103, i64 0, i32 19
+  %9 = load %struct.loop** %next21, align 8, !tbaa !0
+  %cmp22100 = icmp eq %struct.loop* %cond, %9
+  %10 = load %struct.basic_block_def** %header, align 8, !tbaa !0
+  br i1 %cmp22100, label %for.end59, label %for.body23
+
+for.body23:                                       ; preds = %if.end17, %for.inc57
+  %11 = phi %struct.loop* [ %25, %for.inc57 ], [ %9, %if.end17 ]
+  %12 = phi %struct.basic_block_def* [ %24, %for.inc57 ], [ %10, %if.end17 ]
+  %l.1101 = phi %struct.loop* [ %26, %for.inc57 ], [ %cond, %if.end17 ]
+  %header25 = getelementptr inbounds %struct.loop* %l.1101, i64 0, i32 1
+  %13 = load %struct.basic_block_def** %header25, align 8, !tbaa !0
+  %cmp26 = icmp eq %struct.basic_block_def* %12, %13
+  br i1 %cmp26, label %do.body, label %for.inc57
+
+do.body:                                          ; preds = %for.body23
+  %nodes = getelementptr inbounds %struct.loop* %l.1101, i64 0, i32 8
+  %14 = load %struct.simple_bitmap_def** %nodes, align 8, !tbaa !0
+  %size = getelementptr inbounds %struct.simple_bitmap_def* %14, i64 0, i32 1
+  %15 = load i32* %size, align 4, !tbaa !3
+  %cmp3098 = icmp eq i32 %15, 0
+  br i1 %cmp3098, label %for.inc57, label %for.body31
+
+for.body31:                                       ; preds = %do.body, %for.inc53
+  %indvars.iv105 = phi i64 [ %indvars.iv.next106, %for.inc53 ], [ 0, %do.body ]
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def* %14, i64 0, i32 3, i64 %indvars.iv105
+  %16 = load i64* %arrayidx, align 8, !tbaa !4
+  %cmp32 = icmp eq i64 %16, 0
+  br i1 %cmp32, label %for.inc53, label %for.cond34.preheader
+
+for.cond34.preheader:                             ; preds = %for.body31
+  %17 = trunc i64 %indvars.iv105 to i32
+  %mul = shl i32 %17, 6
+  br label %for.body36
+
+for.body36:                                       ; preds = %for.cond34.preheader, %for.inc50
+  %indvars.iv = phi i64 [ 0, %for.cond34.preheader ], [ %indvars.iv.next, %for.inc50 ]
+  %word_.097 = phi i64 [ %16, %for.cond34.preheader ], [ %word_.1, %for.inc50 ]
+  %sh_prom = and i64 %indvars.iv, 4294967295
+  %shl = shl i64 1, %sh_prom
+  %and = and i64 %shl, %word_.097
+  %cmp37 = icmp eq i64 %and, 0
+  br i1 %cmp37, label %for.inc50, label %if.then38
+
+if.then38:                                        ; preds = %for.body36
+  %18 = trunc i64 %indvars.iv to i32
+  %neg = xor i64 %shl, -1
+  %and39 = and i64 %word_.097, %neg
+  %add = add i32 %18, %mul
+  %idxprom40 = sext i32 %add to i64
+  %19 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %19, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx41 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom40
+  %20 = load %struct.basic_block_def** %arrayidx41, align 8, !tbaa !0
+  %aux42 = getelementptr inbounds %struct.basic_block_def* %20, i64 0, i32 10
+  %21 = load i8** %aux42, align 8, !tbaa !0
+  %22 = getelementptr inbounds i8* %21, i64 16
+  %bf.load43 = load i8* %22, align 8
+  %bf.set45 = or i8 %bf.load43, 1
+  store i8 %bf.set45, i8* %22, align 8
+  %cmp46 = icmp eq i64 %and39, 0
+  br i1 %cmp46, label %for.inc53, label %for.inc50
+
+for.inc50:                                        ; preds = %for.body36, %if.then38
+  %word_.1 = phi i64 [ %and39, %if.then38 ], [ %word_.097, %for.body36 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %23 = trunc i64 %indvars.iv.next to i32
+  %cmp35 = icmp ult i32 %23, 64
+  br i1 %cmp35, label %for.body36, label %for.inc53
+
+for.inc53:                                        ; preds = %if.then38, %for.inc50, %for.body31
+  %indvars.iv.next106 = add i64 %indvars.iv105, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next106 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %15
+  br i1 %exitcond, label %for.cond29.for.inc57.loopexit_crit_edge, label %for.body31
+
+for.cond29.for.inc57.loopexit_crit_edge:          ; preds = %for.inc53
+  %.pre.pre = load %struct.loop** %next21, align 8, !tbaa !0
+  %.pre108.pre = load %struct.basic_block_def** %header, align 8, !tbaa !0
+  br label %for.inc57
+
+for.inc57:                                        ; preds = %for.cond29.for.inc57.loopexit_crit_edge, %do.body, %for.body23
+  %24 = phi %struct.basic_block_def* [ %12, %for.body23 ], [ %12, %do.body ], [ %.pre108.pre, %for.cond29.for.inc57.loopexit_crit_edge ]
+  %25 = phi %struct.loop* [ %11, %for.body23 ], [ %11, %do.body ], [ %.pre.pre, %for.cond29.for.inc57.loopexit_crit_edge ]
+  %next58 = getelementptr inbounds %struct.loop* %l.1101, i64 0, i32 19
+  %26 = load %struct.loop** %next58, align 8, !tbaa !0
+  %cmp22 = icmp eq %struct.loop* %26, %25
+  br i1 %cmp22, label %for.end59, label %for.body23
+
+for.end59:                                        ; preds = %for.inc57, %if.end17
+  %.lcssa = phi %struct.basic_block_def* [ %10, %if.end17 ], [ %24, %for.inc57 ]
+  tail call fastcc void @propagate_freq(%struct.basic_block_def* %.lcssa) #7
+  br label %for.inc61
+
+for.inc61.loopexit:                               ; preds = %for.body6
+  %next62.pre = getelementptr inbounds %struct.loop* %loop.0103, i64 0, i32 19
+  br label %for.inc61
+
+for.inc61:                                        ; preds = %for.inc61.loopexit, %for.end59
+  %next62.pre-phi = phi %struct.loop** [ %next62.pre, %for.inc61.loopexit ], [ %next21, %for.end59 ]
+  %27 = load %struct.loop** %next62.pre-phi, align 8, !tbaa !0
+  %tobool = icmp eq %struct.loop* %27, null
+  br i1 %tobool, label %for.end63, label %for.body
+
+for.end63:                                        ; preds = %for.inc61, %entry
+  ret void
+}

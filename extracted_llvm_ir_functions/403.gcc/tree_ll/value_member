@@ -1,0 +1,23 @@
+define %union.tree_node* @value_member(%union.tree_node* %elem, %union.tree_node* %list) #3 {
+entry:
+  %tobool4 = icmp eq %union.tree_node* %list, null
+  br i1 %tobool4, label %return, label %while.body
+
+while.body:                                       ; preds = %entry, %if.end
+  %list.addr.05 = phi %union.tree_node* [ %2, %if.end ], [ %list, %entry ]
+  %value = getelementptr inbounds %union.tree_node* %list.addr.05, i64 0, i32 0, i32 2
+  %0 = bitcast i32* %value to %union.tree_node**
+  %1 = load %union.tree_node** %0, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %1, %elem
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %while.body
+  %chain = getelementptr inbounds %union.tree_node* %list.addr.05, i64 0, i32 0, i32 0, i32 0
+  %2 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %tobool = icmp eq %union.tree_node* %2, null
+  br i1 %tobool, label %return, label %while.body
+
+return:                                           ; preds = %if.end, %while.body, %entry
+  %retval.0 = phi %union.tree_node* [ null, %entry ], [ %list.addr.05, %while.body ], [ null, %if.end ]
+  ret %union.tree_node* %retval.0
+}

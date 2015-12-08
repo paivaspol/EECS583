@@ -1,0 +1,42 @@
+define internal fastcc void @reset_used_decls(%union.tree_node* nocapture %blk) #0 {
+entry:
+  %vars = getelementptr inbounds %union.tree_node* %blk, i64 0, i32 0, i32 2
+  %0 = bitcast i32* %vars to %union.tree_node**
+  %t.028 = load %union.tree_node** %0, align 8
+  %tobool29 = icmp eq %union.tree_node* %t.028, null
+  br i1 %tobool29, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %t.030 = phi %union.tree_node* [ %t.0, %for.inc ], [ %t.028, %entry ]
+  %rtl = getelementptr inbounds %union.tree_node* %t.030, i64 0, i32 0, i32 17
+  %1 = load %struct.rtx_def** %rtl, align 8, !tbaa !4
+  %cmp = icmp eq %struct.rtx_def* %1, null
+  br i1 %cmp, label %for.inc, label %cond.end
+
+cond.end:                                         ; preds = %for.body
+  tail call void @reset_used_flags(%struct.rtx_def* %1) #9
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %cond.end
+  %chain = getelementptr inbounds %union.tree_node* %t.030, i64 0, i32 0, i32 0, i32 0
+  %t.0 = load %union.tree_node** %chain, align 8
+  %tobool = icmp eq %union.tree_node* %t.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  %2 = getelementptr inbounds %union.tree_node* %blk, i64 0, i32 0, i32 4
+  %t.125 = load %union.tree_node** %2, align 8
+  %tobool1026 = icmp eq %union.tree_node* %t.125, null
+  br i1 %tobool1026, label %for.end15, label %for.body11
+
+for.body11:                                       ; preds = %for.end, %for.body11
+  %t.127 = phi %union.tree_node* [ %t.1, %for.body11 ], [ %t.125, %for.end ]
+  tail call fastcc void @reset_used_decls(%union.tree_node* %t.127) #9
+  %chain14 = getelementptr inbounds %union.tree_node* %t.127, i64 0, i32 0, i32 0, i32 0
+  %t.1 = load %union.tree_node** %chain14, align 8
+  %tobool10 = icmp eq %union.tree_node* %t.1, null
+  br i1 %tobool10, label %for.end15, label %for.body11
+
+for.end15:                                        ; preds = %for.body11, %for.end
+  ret void
+}

@@ -1,0 +1,88 @@
+define void @unshare_all_rtl_again(%struct.rtx_def* %insn) #0 {
+entry:
+  %tobool42 = icmp eq %struct.rtx_def* %insn, null
+  br i1 %tobool42, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %p.043 = phi %struct.rtx_def* [ %5, %for.inc ], [ %insn, %entry ]
+  %0 = bitcast %struct.rtx_def* %p.043 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom38 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom38
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %1, 105
+  br i1 %cmp, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %p.043, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  tail call void @reset_used_flags(%struct.rtx_def* %2) #9
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %p.043, i64 0, i32 1, i64 6
+  %rtx5 = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx5, align 8, !tbaa !4
+  tail call void @reset_used_flags(%struct.rtx_def* %3) #9
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %p.043, i64 0, i32 1, i64 5
+  %rtx8 = bitcast %union.rtunion_def* %arrayidx7 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx8, align 8, !tbaa !4
+  tail call void @reset_used_flags(%struct.rtx_def* %4) #9
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %p.043, i64 0, i32 1, i64 2
+  %rtx11 = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx11, align 8, !tbaa !4
+  %tobool = icmp eq %struct.rtx_def* %5, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  %6 = load %struct.function** @cfun, align 8, !tbaa !4
+  %decl12 = getelementptr inbounds %struct.function* %6, i64 0, i32 6
+  %7 = load %union.tree_node** %decl12, align 8, !tbaa !4
+  %initial = getelementptr inbounds %union.tree_node* %7, i64 0, i32 0, i32 12
+  %8 = load %union.tree_node** %initial, align 8, !tbaa !4
+  tail call fastcc void @reset_used_decls(%union.tree_node* %8) #9
+  %9 = load %struct.function** @cfun, align 8, !tbaa !4
+  %decl14 = getelementptr inbounds %struct.function* %9, i64 0, i32 6
+  %10 = load %union.tree_node** %decl14, align 8, !tbaa !4
+  %arguments = getelementptr inbounds %union.tree_node* %10, i64 0, i32 0, i32 10
+  %decl.039 = load %union.tree_node** %arguments, align 8
+  %tobool1740 = icmp eq %union.tree_node* %decl.039, null
+  br i1 %tobool1740, label %for.end26, label %for.body18
+
+for.body18:                                       ; preds = %for.end, %cond.end
+  %decl.041 = phi %union.tree_node* [ %decl.0, %cond.end ], [ %decl.039, %for.end ]
+  %rtl = getelementptr inbounds %union.tree_node* %decl.041, i64 0, i32 0, i32 17
+  %11 = load %struct.rtx_def** %rtl, align 8, !tbaa !4
+  %tobool20 = icmp eq %struct.rtx_def* %11, null
+  br i1 %tobool20, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %for.body18
+  tail call void @make_decl_rtl(%union.tree_node* %decl.041, i8* null) #8
+  %12 = load %struct.rtx_def** %rtl, align 8, !tbaa !4
+  br label %cond.end
+
+cond.end:                                         ; preds = %for.body18, %cond.false
+  %cond = phi %struct.rtx_def* [ %12, %cond.false ], [ %11, %for.body18 ]
+  tail call void @reset_used_flags(%struct.rtx_def* %cond) #9
+  %chain = getelementptr inbounds %union.tree_node* %decl.041, i64 0, i32 0, i32 0, i32 0
+  %decl.0 = load %union.tree_node** %chain, align 8
+  %tobool17 = icmp eq %union.tree_node* %decl.0, null
+  br i1 %tobool17, label %for.cond16.for.end26_crit_edge, label %for.body18
+
+for.cond16.for.end26_crit_edge:                   ; preds = %cond.end
+  %.pre = load %struct.function** @cfun, align 8, !tbaa !4
+  br label %for.end26
+
+for.end26:                                        ; preds = %for.cond16.for.end26_crit_edge, %for.end
+  %13 = phi %struct.function* [ %.pre, %for.cond16.for.end26_crit_edge ], [ %9, %for.end ]
+  %x_stack_slot_list = getelementptr inbounds %struct.function* %13, i64 0, i32 26
+  %14 = load %struct.rtx_def** %x_stack_slot_list, align 8, !tbaa !4
+  tail call void @reset_used_flags(%struct.rtx_def* %14) #9
+  %15 = load %struct.function** @cfun, align 8, !tbaa !4
+  %decl27 = getelementptr inbounds %struct.function* %15, i64 0, i32 6
+  %16 = load %union.tree_node** %decl27, align 8, !tbaa !4
+  tail call void @unshare_all_rtl(%union.tree_node* %16, %struct.rtx_def* %insn) #9
+  ret void
+}

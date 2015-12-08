@@ -1,0 +1,41 @@
+define %struct.rtx_def* @change_address(%struct.rtx_def* %memref, i32 %mode, %struct.rtx_def* %addr) #0 {
+entry:
+  %call = tail call fastcc %struct.rtx_def* @change_address_1(%struct.rtx_def* %memref, i32 %mode, %struct.rtx_def* %addr, i32 1) #9
+  %0 = bitcast %struct.rtx_def* %call to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %memref, i64 0, i32 1, i64 1
+  %rtmem = bitcast %union.rtunion_def* %arrayidx to %struct.mem_attrs**
+  %1 = load %struct.mem_attrs** %rtmem, align 8, !tbaa !4
+  %cmp = icmp eq %struct.mem_attrs* %1, null
+  br i1 %cmp, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %entry
+  %alias = getelementptr inbounds %struct.mem_attrs* %1, i64 0, i32 0
+  %2 = load i64* %alias, align 8, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi i64 [ %2, %cond.false ], [ 0, %entry ]
+  %cmp4 = icmp eq i32 %bf.clear, 51
+  br i1 %cmp4, label %cond.end16, label %cond.false14
+
+cond.false14:                                     ; preds = %cond.end
+  %idxprom30 = zext i32 %bf.clear to i64
+  %arrayidx7 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom30
+  %3 = load i8* %arrayidx7, align 1, !tbaa !1
+  %conv = zext i8 %3 to i64
+  %call8 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 undef, i64 %conv) #9
+  %call15 = tail call i32 @get_mode_alignment(i32 %bf.clear) #8
+  br label %cond.end16
+
+cond.end16:                                       ; preds = %cond.end, %cond.false14
+  %cond1031 = phi %struct.rtx_def* [ %call8, %cond.false14 ], [ null, %cond.end ]
+  %cond17 = phi i32 [ %call15, %cond.false14 ], [ 8, %cond.end ]
+  %call18 = tail call fastcc %struct.mem_attrs* @get_mem_attrs(i64 %cond, %union.tree_node* null, %struct.rtx_def* null, %struct.rtx_def* %cond1031, i32 %cond17, i32 %bf.clear) #9
+  %4 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 1, i32 0
+  %call18.c = ptrtoint %struct.mem_attrs* %call18 to i64
+  store i64 %call18.c, i64* %4, align 8, !tbaa !4
+  ret %struct.rtx_def* %call
+}

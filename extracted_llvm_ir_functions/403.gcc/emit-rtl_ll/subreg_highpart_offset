@@ -1,0 +1,23 @@
+define i32 @subreg_highpart_offset(i32 %outermode, i32 %innermode) #0 {
+entry:
+  %idxprom = sext i32 %innermode to i64
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom
+  %0 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = zext i8 %0 to i32
+  %idxprom1 = sext i32 %outermode to i64
+  %arrayidx2 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom1
+  %1 = load i8* %arrayidx2, align 1, !tbaa !1
+  %conv3 = zext i8 %1 to i32
+  %sub = sub nsw i32 %conv, %conv3
+  %cmp = icmp ult i8 %0, %1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 1278, i8* getelementptr inbounds ([23 x i8]* @__FUNCTION__.subreg_highpart_offset, i64 0, i64 0)) #10
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %cmp11 = icmp sgt i32 %sub, 0
+  %sub. = select i1 %cmp11, i32 %sub, i32 0
+  ret i32 %sub.
+}

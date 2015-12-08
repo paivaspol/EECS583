@@ -1,0 +1,49 @@
+define internal fastcc %struct.rtx_def* @walk_alter_subreg(%struct.rtx_def** nocapture %xp) #0 {
+entry:
+  %0 = load %struct.rtx_def** %xp, align 8, !tbaa !0
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.epilog [
+    i32 75, label %sw.bb
+    i32 78, label %sw.bb
+    i32 66, label %sw.bb11
+    i32 63, label %sw.bb19
+  ]
+
+sw.bb:                                            ; preds = %entry, %entry
+  %fld = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
+  %call = tail call fastcc %struct.rtx_def* @walk_alter_subreg(%struct.rtx_def** %rtx) #10
+  %2 = getelementptr inbounds [1 x %union.rtunion_def]* %fld, i64 0, i64 0, i32 0
+  %call.c = ptrtoint %struct.rtx_def* %call to i64
+  store i64 %call.c, i64* %2, align 8, !tbaa !0
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 1
+  %rtx6 = bitcast %union.rtunion_def* %arrayidx5 to %struct.rtx_def**
+  %call7 = tail call fastcc %struct.rtx_def* @walk_alter_subreg(%struct.rtx_def** %rtx6) #10
+  %3 = getelementptr inbounds %union.rtunion_def* %arrayidx5, i64 0, i32 0
+  %call7.c = ptrtoint %struct.rtx_def* %call7 to i64
+  store i64 %call7.c, i64* %3, align 8, !tbaa !0
+  br label %sw.epilog
+
+sw.bb11:                                          ; preds = %entry
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtx14 = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**
+  %call15 = tail call fastcc %struct.rtx_def* @walk_alter_subreg(%struct.rtx_def** %rtx14) #10
+  %4 = getelementptr inbounds %union.rtunion_def* %arrayidx13, i64 0, i32 0
+  %call15.c = ptrtoint %struct.rtx_def* %call15 to i64
+  store i64 %call15.c, i64* %4, align 8, !tbaa !0
+  br label %sw.epilog
+
+sw.bb19:                                          ; preds = %entry
+  %call20 = tail call %struct.rtx_def* @alter_subreg(%struct.rtx_def** %xp) #10
+  br label %return
+
+sw.epilog:                                        ; preds = %entry, %sw.bb11, %sw.bb
+  %5 = load %struct.rtx_def** %xp, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %sw.epilog, %sw.bb19
+  %retval.0 = phi %struct.rtx_def* [ %5, %sw.epilog ], [ %call20, %sw.bb19 ]
+  ret %struct.rtx_def* %retval.0
+}

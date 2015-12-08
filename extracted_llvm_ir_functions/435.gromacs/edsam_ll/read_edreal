@@ -1,0 +1,14 @@
+define float @read_edreal(%struct._IO_FILE* %file) #0 {
+entry:
+  %line = alloca [4097 x i8], align 16
+  %rdum = alloca double, align 8
+  %0 = getelementptr inbounds [4097 x i8]* %line, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4097, i8* %0) #3
+  %call = call i8* @fgets2(i8* %0, i32 4096, %struct._IO_FILE* %file) #6
+  %call2 = call i8* @fgets2(i8* %0, i32 4096, %struct._IO_FILE* %file) #6
+  %call4 = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %0, i8* getelementptr inbounds ([4 x i8]* @.str31, i64 0, i64 0), double* %rdum) #6
+  %1 = load double* %rdum, align 8, !tbaa !5
+  %conv = fptrunc double %1 to float
+  call void @llvm.lifetime.end(i64 4097, i8* %0) #3
+  ret float %conv
+}

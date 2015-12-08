@@ -1,0 +1,39 @@
+define void @distribute_parts(i32 %left, i32 %right, i32 %nodeid, i32 %nnodes, %struct.t_parm* %parm, i8* %tpxfile, i32 %nstDlb) #0 {
+entry:
+  %natoms = alloca i32, align 4
+  %step = alloca i32, align 4
+  %t = alloca float, align 4
+  %lambda = alloca float, align 4
+  %tpx = alloca %struct.t_tpxheader, align 4
+  %top = alloca %struct.t_topology, align 8
+  %nsb = alloca %struct.t_nsborder, align 4
+  %0 = bitcast %struct.t_tpxheader* %tpx to i8*
+  call void @llvm.lifetime.start(i64 40, i8* %0) #2
+  %1 = bitcast %struct.t_topology* %top to i8*
+  call void @llvm.lifetime.start(i64 50264, i8* %1) #2
+  %2 = bitcast %struct.t_nsborder* %nsb to i8*
+  call void @llvm.lifetime.start(i64 4124, i8* %2) #2
+  call void @read_tpxheader(i8* %tpxfile, %struct.t_tpxheader* %tpx) #4
+  %natoms1 = getelementptr inbounds %struct.t_tpxheader* %tpx, i64 0, i32 6
+  %3 = load i32* %natoms1, align 4, !tbaa !0
+  %call = call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str2, i64 0, i64 0), i32 147, i32 %3, i32 12) #4
+  %4 = bitcast i8* %call to [3 x float]*
+  %5 = load i32* %natoms1, align 4, !tbaa !0
+  %call3 = call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str2, i64 0, i64 0), i32 148, i32 %5, i32 12) #4
+  %6 = bitcast i8* %call3 to [3 x float]*
+  %ir = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0
+  %arraydecay = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 1, i64 0
+  call void @read_tpx(i8* %tpxfile, i32* %step, float* %t, float* %lambda, %struct.t_inputrec* %ir, [3 x float]* %arraydecay, i32* %natoms, [3 x float]* %4, [3 x float]* %6, [3 x float]* null, %struct.t_topology* %top) #4
+  call void @check_nnodes_top(i8* %tpxfile, %struct.t_topology* %top, i32 %nnodes) #5
+  %7 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0
+  call void @calc_nsb(%struct._IO_FILE* %7, %struct.t_block* %arrayidx, i32 %nnodes, %struct.t_nsborder* %nsb, i32 %nstDlb) #4
+  call void @mv_data(i32 %left, i32 %right, %struct.t_parm* %parm, %struct.t_nsborder* %nsb, %struct.t_topology* %top, [3 x float]* %4, [3 x float]* %6) #4
+  call void @done_top(%struct.t_topology* %top) #4
+  call void @save_free(i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str2, i64 0, i64 0), i32 156, i8* %call) #4
+  call void @save_free(i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str2, i64 0, i64 0), i32 157, i8* %call3) #4
+  call void @llvm.lifetime.end(i64 4124, i8* %2) #2
+  call void @llvm.lifetime.end(i64 50264, i8* %1) #2
+  call void @llvm.lifetime.end(i64 40, i8* %0) #2
+  ret void
+}

@@ -1,0 +1,17 @@
+define i64 @etarsingle(%struct.realvaluetype* byval nocapture align 8 %r) #0 {
+entry:
+  %e = alloca [6 x i16], align 2
+  %0 = bitcast [6 x i16]* %e to i8*
+  %1 = bitcast %struct.realvaluetype* %r to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false)
+  %arraydecay = getelementptr inbounds [6 x i16]* %e, i64 0, i64 0
+  call fastcc void @etoe24(i16* %arraydecay, i16* %arraydecay) #6
+  %arrayidx18.i = getelementptr inbounds [6 x i16]* %e, i64 0, i64 1
+  %2 = load i16* %arrayidx18.i, align 2, !tbaa !0
+  %conv19.i = zext i16 %2 to i64
+  %3 = load i16* %arraydecay, align 2, !tbaa !0
+  %conv22.i = zext i16 %3 to i64
+  %shl24.i = shl nuw nsw i64 %conv19.i, 16
+  %or25.i = or i64 %conv22.i, %shl24.i
+  ret i64 %or25.i
+}

@@ -1,0 +1,25 @@
+define internal void @reg_is_set(%struct.rtx_def* %reg, %struct.rtx_def* nocapture %setter, i8* nocapture %data) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %reg to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %return [
+    i32 63, label %if.end
+    i32 61, label %if.end
+  ]
+
+if.end:                                           ; preds = %entry, %entry
+  %1 = load i32* @this_insn_number, align 4, !tbaa !0
+  %mul = shl nsw i32 %1, 1
+  %2 = bitcast %struct.rtx_def* %setter to i32*
+  %bf.load4 = load i32* %2, align 8
+  %bf.clear5 = and i32 %bf.load4, 65535
+  %cmp6 = icmp eq i32 %bf.clear5, 49
+  %conv = zext i1 %cmp6 to i32
+  %sub = sub nsw i32 %mul, %conv
+  tail call fastcc void @reg_is_born(%struct.rtx_def* %reg, i32 %sub) #8
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  ret void
+}

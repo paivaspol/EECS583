@@ -1,0 +1,26 @@
+define void @delete_insns_since(%struct.rtx_def* %from) #0 {
+entry:
+  %cmp = icmp eq %struct.rtx_def* %from, null
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit = getelementptr inbounds %struct.function* %0, i64 0, i32 3
+  %1 = load %struct.emit_status** %emit, align 8, !tbaa !4
+  %x_first_insn = getelementptr inbounds %struct.emit_status* %1, i64 0, i32 2
+  store %struct.rtx_def* null, %struct.rtx_def** %x_first_insn, align 8, !tbaa !4
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %2 = getelementptr inbounds %struct.rtx_def* %from, i64 0, i32 1, i64 2, i32 0
+  store i64 0, i64* %2, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %3 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit1 = getelementptr inbounds %struct.function* %3, i64 0, i32 3
+  %4 = load %struct.emit_status** %emit1, align 8, !tbaa !4
+  %x_last_insn = getelementptr inbounds %struct.emit_status* %4, i64 0, i32 3
+  store %struct.rtx_def* %from, %struct.rtx_def** %x_last_insn, align 8, !tbaa !4
+  ret void
+}

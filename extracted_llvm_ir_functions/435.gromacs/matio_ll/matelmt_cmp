@@ -1,0 +1,20 @@
+define i32 @matelmt_cmp(i16 %e1.coerce, i16 %e2.coerce) #2 {
+entry:
+  %e1.sroa.0.0.extract.trunc = zext i16 %e1.coerce to i32
+  %e2.sroa.0.0.extract.trunc = zext i16 %e2.coerce to i32
+  %sext = shl i32 %e1.sroa.0.0.extract.trunc, 24
+  %sext9 = shl i32 %e2.sroa.0.0.extract.trunc, 24
+  %cmp = icmp eq i32 %sext, %sext9
+  br i1 %cmp, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %entry
+  %e2.sroa.1.1.extract.shift = lshr i16 %e2.coerce, 8
+  %e1.sroa.1.1.extract.shift = lshr i16 %e1.coerce, 8
+  %cmp7 = icmp eq i16 %e1.sroa.1.1.extract.shift, %e2.sroa.1.1.extract.shift
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %entry
+  %0 = phi i1 [ false, %entry ], [ %cmp7, %land.rhs ]
+  %land.ext = zext i1 %0 to i32
+  ret i32 %land.ext
+}

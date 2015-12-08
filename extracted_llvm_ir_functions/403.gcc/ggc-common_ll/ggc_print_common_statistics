@@ -1,0 +1,187 @@
+define void @ggc_print_common_statistics(%struct._IO_FILE* nocapture %stream, %struct.ggc_statistics* %stats) #0 {
+entry:
+  store %struct.ggc_statistics* %stats, %struct.ggc_statistics** @ggc_stats, align 8, !tbaa !0
+  tail call void @ggc_collect() #5
+  %total_num_trees = getelementptr inbounds %struct.ggc_statistics* %stats, i64 0, i32 6
+  %total_size_trees = getelementptr inbounds %struct.ggc_statistics* %stats, i64 0, i32 4
+  %.pre = load i32* %total_num_trees, align 4, !tbaa !3
+  %.pre266 = load i64* %total_size_trees, align 8, !tbaa !4
+  br label %for.body
+
+for.cond4.preheader:                              ; preds = %for.body
+  %total_num_rtxs = getelementptr inbounds %struct.ggc_statistics* %stats, i64 0, i32 7
+  %total_size_rtxs = getelementptr inbounds %struct.ggc_statistics* %stats, i64 0, i32 5
+  %.pre267 = load i32* %total_num_rtxs, align 4, !tbaa !3
+  %.pre268 = load i64* %total_size_rtxs, align 8, !tbaa !4
+  br label %for.body6
+
+for.body:                                         ; preds = %for.body, %entry
+  %0 = phi i64 [ %.pre266, %entry ], [ %add3, %for.body ]
+  %1 = phi i32 [ %.pre, %entry ], [ %add, %for.body ]
+  %indvars.iv262 = phi i64 [ 0, %entry ], [ %indvars.iv.next263, %for.body ]
+  %arrayidx = getelementptr inbounds %struct.ggc_statistics* %stats, i64 0, i32 0, i64 %indvars.iv262
+  %2 = load i32* %arrayidx, align 4, !tbaa !3
+  %add = add i32 %1, %2
+  store i32 %add, i32* %total_num_trees, align 4, !tbaa !3
+  %arrayidx2 = getelementptr inbounds %struct.ggc_statistics* %stats, i64 0, i32 1, i64 %indvars.iv262
+  %3 = load i64* %arrayidx2, align 8, !tbaa !4
+  %add3 = add i64 %0, %3
+  store i64 %add3, i64* %total_size_trees, align 8, !tbaa !4
+  %indvars.iv.next263 = add i64 %indvars.iv262, 1
+  %lftr.wideiv264 = trunc i64 %indvars.iv.next263 to i32
+  %exitcond265 = icmp eq i32 %lftr.wideiv264, 256
+  br i1 %exitcond265, label %for.cond4.preheader, label %for.body
+
+for.body6:                                        ; preds = %for.body6, %for.cond4.preheader
+  %4 = phi i64 [ %.pre268, %for.cond4.preheader ], [ %add12, %for.body6 ]
+  %5 = phi i32 [ %.pre267, %for.cond4.preheader ], [ %add9, %for.body6 ]
+  %indvars.iv258 = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next259, %for.body6 ]
+  %arrayidx8 = getelementptr inbounds %struct.ggc_statistics* %stats, i64 0, i32 2, i64 %indvars.iv258
+  %6 = load i32* %arrayidx8, align 4, !tbaa !3
+  %add9 = add i32 %5, %6
+  store i32 %add9, i32* %total_num_rtxs, align 4, !tbaa !3
+  %arrayidx11 = getelementptr inbounds %struct.ggc_statistics* %stats, i64 0, i32 3, i64 %indvars.iv258
+  %7 = load i64* %arrayidx11, align 8, !tbaa !4
+  %add12 = add i64 %4, %7
+  store i64 %add12, i64* %total_size_rtxs, align 8, !tbaa !4
+  %indvars.iv.next259 = add i64 %indvars.iv258, 1
+  %lftr.wideiv260 = trunc i64 %indvars.iv.next259 to i32
+  %exitcond261 = icmp eq i32 %lftr.wideiv260, 153
+  br i1 %exitcond261, label %for.end15, label %for.body6
+
+for.end15:                                        ; preds = %for.body6
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([22 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str6, i64 0, i64 0)) #5
+  br label %for.body18
+
+for.body18:                                       ; preds = %for.inc69, %for.end15
+  %indvars.iv254 = phi i64 [ 0, %for.end15 ], [ %indvars.iv.next255, %for.inc69 ]
+  %8 = load %struct.ggc_statistics** @ggc_stats, align 8, !tbaa !0
+  %arrayidx21 = getelementptr inbounds %struct.ggc_statistics* %8, i64 0, i32 0, i64 %indvars.iv254
+  %9 = load i32* %arrayidx21, align 4, !tbaa !3
+  %tobool = icmp eq i32 %9, 0
+  br i1 %tobool, label %for.inc69, label %if.then
+
+if.then:                                          ; preds = %for.body18
+  %arrayidx23 = getelementptr inbounds [256 x i8*]* @tree_code_name, i64 0, i64 %indvars.iv254
+  %10 = load i8** %arrayidx23, align 8, !tbaa !0
+  %arrayidx29 = getelementptr inbounds %struct.ggc_statistics* %8, i64 0, i32 1, i64 %indvars.iv254
+  %11 = load i64* %arrayidx29, align 8, !tbaa !4
+  %cmp30 = icmp ult i64 %11, 10240
+  br i1 %cmp30, label %cond.end60, label %cond.false
+
+cond.false:                                       ; preds = %if.then
+  %cmp37 = icmp ult i64 %11, 10485760
+  %cond48271.v = select i1 %cmp37, i64 10, i64 20
+  %cond48271 = lshr i64 %11, %cond48271.v
+  %cmp58 = icmp ult i64 %11, 10485760
+  %cond59 = select i1 %cmp58, i32 107, i32 77
+  br label %cond.end60
+
+cond.end60:                                       ; preds = %if.then, %cond.false
+  %cond48269 = phi i64 [ %cond48271, %cond.false ], [ %11, %if.then ]
+  %cond61 = phi i32 [ %cond59, %cond.false ], [ 32, %if.then ]
+  %conv = uitofp i64 %11 to double
+  %mul = fmul double %conv, 1.000000e+02
+  %total_size_trees65 = getelementptr inbounds %struct.ggc_statistics* %8, i64 0, i32 4
+  %12 = load i64* %total_size_trees65, align 8, !tbaa !4
+  %conv66 = uitofp i64 %12 to double
+  %div67 = fdiv double %mul, %conv66
+  %call68 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([25 x i8]* @.str7, i64 0, i64 0), i8* %10, i32 %9, i64 %cond48269, i32 %cond61, double %div67) #5
+  br label %for.inc69
+
+for.inc69:                                        ; preds = %for.body18, %cond.end60
+  %indvars.iv.next255 = add i64 %indvars.iv254, 1
+  %lftr.wideiv256 = trunc i64 %indvars.iv.next255 to i32
+  %exitcond257 = icmp eq i32 %lftr.wideiv256, 256
+  br i1 %exitcond257, label %for.end71, label %for.body18
+
+for.end71:                                        ; preds = %for.inc69
+  %13 = load %struct.ggc_statistics** @ggc_stats, align 8, !tbaa !0
+  %total_num_trees72 = getelementptr inbounds %struct.ggc_statistics* %13, i64 0, i32 6
+  %14 = load i32* %total_num_trees72, align 4, !tbaa !3
+  %total_size_trees73 = getelementptr inbounds %struct.ggc_statistics* %13, i64 0, i32 4
+  %15 = load i64* %total_size_trees73, align 8, !tbaa !4
+  %cmp74 = icmp ult i64 %15, 10240
+  br i1 %cmp74, label %cond.end101, label %cond.false78
+
+cond.false78:                                     ; preds = %for.end71
+  %cmp80 = icmp ult i64 %15, 10485760
+  %cond91274.v = select i1 %cmp80, i64 10, i64 20
+  %cond91274 = lshr i64 %15, %cond91274.v
+  %cmp98 = icmp ult i64 %15, 10485760
+  %cond100 = select i1 %cmp98, i32 107, i32 77
+  br label %cond.end101
+
+cond.end101:                                      ; preds = %for.end71, %cond.false78
+  %cond91272 = phi i64 [ %cond91274, %cond.false78 ], [ %15, %for.end71 ]
+  %cond102 = phi i32 [ %cond100, %cond.false78 ], [ 32, %for.end71 ]
+  %call103 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([18 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str9, i64 0, i64 0), i32 %14, i64 %cond91272, i32 %cond102) #5
+  %call104 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([22 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str6, i64 0, i64 0)) #5
+  br label %for.body108
+
+for.body108:                                      ; preds = %for.inc173, %cond.end101
+  %indvars.iv = phi i64 [ 0, %cond.end101 ], [ %indvars.iv.next, %for.inc173 ]
+  %16 = load %struct.ggc_statistics** @ggc_stats, align 8, !tbaa !0
+  %arrayidx111 = getelementptr inbounds %struct.ggc_statistics* %16, i64 0, i32 2, i64 %indvars.iv
+  %17 = load i32* %arrayidx111, align 4, !tbaa !3
+  %tobool112 = icmp eq i32 %17, 0
+  br i1 %tobool112, label %for.inc173, label %if.then113
+
+if.then113:                                       ; preds = %for.body108
+  %arrayidx115 = getelementptr inbounds [153 x i8*]* @rtx_name, i64 0, i64 %indvars.iv
+  %18 = load i8** %arrayidx115, align 8, !tbaa !0
+  %arrayidx121 = getelementptr inbounds %struct.ggc_statistics* %16, i64 0, i32 3, i64 %indvars.iv
+  %19 = load i64* %arrayidx121, align 8, !tbaa !4
+  %cmp122 = icmp ult i64 %19, 10240
+  br i1 %cmp122, label %cond.end161, label %cond.false128
+
+cond.false128:                                    ; preds = %if.then113
+  %cmp132 = icmp ult i64 %19, 10485760
+  %cond147277.v = select i1 %cmp132, i64 10, i64 20
+  %cond147277 = lshr i64 %19, %cond147277.v
+  %cmp158 = icmp ult i64 %19, 10485760
+  %cond160 = select i1 %cmp158, i32 107, i32 77
+  br label %cond.end161
+
+cond.end161:                                      ; preds = %if.then113, %cond.false128
+  %cond147275 = phi i64 [ %cond147277, %cond.false128 ], [ %19, %if.then113 ]
+  %cond162 = phi i32 [ %cond160, %cond.false128 ], [ 32, %if.then113 ]
+  %conv166 = uitofp i64 %19 to double
+  %mul167 = fmul double %conv166, 1.000000e+02
+  %total_size_rtxs168 = getelementptr inbounds %struct.ggc_statistics* %16, i64 0, i32 5
+  %20 = load i64* %total_size_rtxs168, align 8, !tbaa !4
+  %conv169 = uitofp i64 %20 to double
+  %div170 = fdiv double %mul167, %conv169
+  %call171 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([25 x i8]* @.str7, i64 0, i64 0), i8* %18, i32 %17, i64 %cond147275, i32 %cond162, double %div170) #5
+  br label %for.inc173
+
+for.inc173:                                       ; preds = %for.body108, %cond.end161
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 153
+  br i1 %exitcond, label %for.end175, label %for.body108
+
+for.end175:                                       ; preds = %for.inc173
+  %21 = load %struct.ggc_statistics** @ggc_stats, align 8, !tbaa !0
+  %total_num_rtxs176 = getelementptr inbounds %struct.ggc_statistics* %21, i64 0, i32 7
+  %22 = load i32* %total_num_rtxs176, align 4, !tbaa !3
+  %total_size_rtxs177 = getelementptr inbounds %struct.ggc_statistics* %21, i64 0, i32 5
+  %23 = load i64* %total_size_rtxs177, align 8, !tbaa !4
+  %cmp178 = icmp ult i64 %23, 10240
+  br i1 %cmp178, label %cond.end205, label %cond.false182
+
+cond.false182:                                    ; preds = %for.end175
+  %cmp184 = icmp ult i64 %23, 10485760
+  %cond195280.v = select i1 %cmp184, i64 10, i64 20
+  %cond195280 = lshr i64 %23, %cond195280.v
+  %cmp202 = icmp ult i64 %23, 10485760
+  %cond204 = select i1 %cmp202, i32 107, i32 77
+  br label %cond.end205
+
+cond.end205:                                      ; preds = %for.end175, %cond.false182
+  %cond195278 = phi i64 [ %cond195280, %cond.false182 ], [ %23, %for.end175 ]
+  %cond206 = phi i32 [ %cond204, %cond.false182 ], [ 32, %for.end175 ]
+  %call207 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([18 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str9, i64 0, i64 0), i32 %22, i64 %cond195278, i32 %cond206) #5
+  store %struct.ggc_statistics* null, %struct.ggc_statistics** @ggc_stats, align 8, !tbaa !0
+  ret void
+}

@@ -1,0 +1,91 @@
+define noalias %struct.msg_tag* @start_gather_from_temp(i8* %field, i32 %size, i32 %index, i32 %parity, i8** nocapture %dest) #1 {
+entry:
+  switch i32 %parity, label %sw.epilog [
+    i32 2, label %for.cond.preheader
+    i32 1, label %sw.bb5
+    i32 3, label %for.cond25.preheader
+  ]
+
+for.cond25.preheader:                             ; preds = %entry
+  %0 = load i32* @sites_on_node, align 4, !tbaa !3
+  %cmp2669 = icmp sgt i32 %0, 0
+  br i1 %cmp2669, label %for.body27.lr.ph, label %sw.epilog
+
+for.body27.lr.ph:                                 ; preds = %for.cond25.preheader
+  %idxprom29 = sext i32 %index to i64
+  br label %for.body27
+
+for.cond.preheader:                               ; preds = %entry
+  %1 = load i32* @even_sites_on_node, align 4, !tbaa !3
+  %cmp63 = icmp sgt i32 %1, 0
+  br i1 %cmp63, label %for.body.lr.ph, label %sw.epilog
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %idxprom1 = sext i32 %index to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %2 = load i32*** @neighbor, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32** %2, i64 %idxprom1
+  %3 = load i32** %arrayidx, align 8, !tbaa !0
+  %arrayidx2 = getelementptr inbounds i32* %3, i64 %indvars.iv
+  %4 = load i32* %arrayidx2, align 4, !tbaa !3
+  %mul = mul nsw i32 %4, %size
+  %idx.ext = sext i32 %mul to i64
+  %add.ptr = getelementptr inbounds i8* %field, i64 %idx.ext
+  %arrayidx4 = getelementptr inbounds i8** %dest, i64 %indvars.iv
+  store i8* %add.ptr, i8** %arrayidx4, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %5 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %5, %1
+  br i1 %cmp, label %for.body, label %sw.epilog
+
+sw.bb5:                                           ; preds = %entry
+  %6 = load i32* @even_sites_on_node, align 4, !tbaa !3
+  %7 = load i32* @sites_on_node, align 4, !tbaa !3
+  %cmp966 = icmp slt i32 %6, %7
+  br i1 %cmp966, label %for.body10.lr.ph, label %sw.epilog
+
+for.body10.lr.ph:                                 ; preds = %sw.bb5
+  %idxprom12 = sext i32 %index to i64
+  %8 = sext i32 %6 to i64
+  br label %for.body10
+
+for.body10:                                       ; preds = %for.body10.lr.ph, %for.body10
+  %indvars.iv71 = phi i64 [ %8, %for.body10.lr.ph ], [ %indvars.iv.next72, %for.body10 ]
+  %9 = load i32*** @neighbor, align 8, !tbaa !0
+  %arrayidx13 = getelementptr inbounds i32** %9, i64 %idxprom12
+  %10 = load i32** %arrayidx13, align 8, !tbaa !0
+  %arrayidx14 = getelementptr inbounds i32* %10, i64 %indvars.iv71
+  %11 = load i32* %arrayidx14, align 4, !tbaa !3
+  %mul15 = mul nsw i32 %11, %size
+  %idx.ext16 = sext i32 %mul15 to i64
+  %add.ptr17 = getelementptr inbounds i8* %field, i64 %idx.ext16
+  %arrayidx19 = getelementptr inbounds i8** %dest, i64 %indvars.iv71
+  store i8* %add.ptr17, i8** %arrayidx19, align 8, !tbaa !0
+  %indvars.iv.next72 = add i64 %indvars.iv71, 1
+  %12 = trunc i64 %indvars.iv.next72 to i32
+  %cmp9 = icmp slt i32 %12, %7
+  br i1 %cmp9, label %for.body10, label %sw.epilog
+
+for.body27:                                       ; preds = %for.body27.lr.ph, %for.body27
+  %indvars.iv73 = phi i64 [ 0, %for.body27.lr.ph ], [ %indvars.iv.next74, %for.body27 ]
+  %13 = load i32*** @neighbor, align 8, !tbaa !0
+  %arrayidx30 = getelementptr inbounds i32** %13, i64 %idxprom29
+  %14 = load i32** %arrayidx30, align 8, !tbaa !0
+  %arrayidx31 = getelementptr inbounds i32* %14, i64 %indvars.iv73
+  %15 = load i32* %arrayidx31, align 4, !tbaa !3
+  %mul32 = mul nsw i32 %15, %size
+  %idx.ext33 = sext i32 %mul32 to i64
+  %add.ptr34 = getelementptr inbounds i8* %field, i64 %idx.ext33
+  %arrayidx36 = getelementptr inbounds i8** %dest, i64 %indvars.iv73
+  store i8* %add.ptr34, i8** %arrayidx36, align 8, !tbaa !0
+  %indvars.iv.next74 = add i64 %indvars.iv73, 1
+  %16 = trunc i64 %indvars.iv.next74 to i32
+  %cmp26 = icmp slt i32 %16, %0
+  br i1 %cmp26, label %for.body27, label %sw.epilog
+
+sw.epilog:                                        ; preds = %for.cond25.preheader, %for.body27, %sw.bb5, %for.body10, %for.cond.preheader, %for.body, %entry
+  ret %struct.msg_tag* null
+}

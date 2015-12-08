@@ -1,0 +1,94 @@
+define void @partition_print(%struct.partition_def* %part, %struct._IO_FILE* nocapture %fp) #0 {
+entry:
+  %num_elements1 = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 0
+  %0 = load i32* %num_elements1, align 4, !tbaa !0
+  %conv = sext i32 %0 to i64
+  %call = tail call noalias i8* @xmalloc(i64 %conv) #5
+  tail call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 %conv, i32 1, i1 false)
+  %mul = shl nsw i64 %conv, 2
+  %call5 = tail call noalias i8* @xmalloc(i64 %mul) #5
+  %1 = bitcast i8* %call5 to i32*
+  %call6 = tail call i32 @fputc(i32 91, %struct._IO_FILE* %fp) #5
+  %cmp75 = icmp sgt i32 %0, 0
+  br i1 %cmp75, label %for.body.lr.ph, label %for.end39
+
+for.body.lr.ph:                                   ; preds = %entry
+  %arraydecay = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 0
+  %sub.ptr.rhs.cast = ptrtoint %struct.partition_elem* %arraydecay to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc37, %for.body.lr.ph
+  %indvars.iv81 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next82, %for.inc37 ]
+  %e.076 = phi i32 [ 0, %for.body.lr.ph ], [ %inc38, %for.inc37 ]
+  %arrayidx = getelementptr inbounds i8* %call, i64 %indvars.iv81
+  %2 = load i8* %arrayidx, align 1, !tbaa !1
+  %tobool = icmp eq i8 %2, 0
+  br i1 %tobool, label %if.then, label %for.inc37
+
+if.then:                                          ; preds = %for.body
+  %class_element = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 %indvars.iv81, i32 0
+  %3 = load i32* %class_element, align 4, !tbaa !0
+  %idxprom10 = sext i32 %3 to i64
+  %class_count = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 %idxprom10, i32 2
+  %4 = load i32* %class_count, align 4, !tbaa !0
+  %cmp1370 = icmp sgt i32 %4, 0
+  br i1 %cmp1370, label %for.body15, label %for.end35.critedge
+
+for.body15:                                       ; preds = %if.then, %for.body15
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body15 ], [ 0, %if.then ]
+  %c.071 = phi i32 [ %conv22, %for.body15 ], [ %e.076, %if.then ]
+  %arrayidx17 = getelementptr inbounds i32* %1, i64 %indvars.iv
+  store i32 %c.071, i32* %arrayidx17, align 4, !tbaa !0
+  %idxprom18 = sext i32 %c.071 to i64
+  %arrayidx19 = getelementptr inbounds i8* %call, i64 %idxprom18
+  store i8 1, i8* %arrayidx19, align 1, !tbaa !1
+  %next = getelementptr inbounds %struct.partition_def* %part, i64 0, i32 1, i64 %idxprom18, i32 1
+  %5 = load %struct.partition_elem** %next, align 8, !tbaa !3
+  %sub.ptr.lhs.cast = ptrtoint %struct.partition_elem* %5 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %sub.ptr.div = sdiv exact i64 %sub.ptr.sub, 24
+  %conv22 = trunc i64 %sub.ptr.div to i32
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %4
+  br i1 %exitcond, label %for.end, label %for.body15
+
+for.end:                                          ; preds = %for.body15
+  tail call void @specqsort(i8* %call5, i32 %4, i32 4, i32 (...)* bitcast (i32 (i8*, i8*)* @elem_compare to i32 (...)*)) #5
+  %call23 = tail call i32 @fputc(i32 40, %struct._IO_FILE* %fp) #5
+  br i1 %cmp1370, label %for.body27, label %for.end35
+
+for.body27:                                       ; preds = %for.end, %for.body27
+  %indvars.iv77 = phi i64 [ %indvars.iv.next78, %for.body27 ], [ 0, %for.end ]
+  %6 = trunc i64 %indvars.iv77 to i32
+  %cmp28 = icmp eq i32 %6, 0
+  %cond = select i1 %cmp28, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0)
+  %arrayidx31 = getelementptr inbounds i32* %1, i64 %indvars.iv77
+  %7 = load i32* %arrayidx31, align 4, !tbaa !0
+  %call32 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* %cond, i32 %7) #5
+  %indvars.iv.next78 = add i64 %indvars.iv77, 1
+  %lftr.wideiv79 = trunc i64 %indvars.iv.next78 to i32
+  %exitcond80 = icmp eq i32 %lftr.wideiv79, %4
+  br i1 %exitcond80, label %for.end35, label %for.body27
+
+for.end35.critedge:                               ; preds = %if.then
+  tail call void @specqsort(i8* %call5, i32 %4, i32 4, i32 (...)* bitcast (i32 (i8*, i8*)* @elem_compare to i32 (...)*)) #5
+  %call23.c = tail call i32 @fputc(i32 40, %struct._IO_FILE* %fp) #5
+  br label %for.end35
+
+for.end35:                                        ; preds = %for.end35.critedge, %for.body27, %for.end
+  %call36 = tail call i32 @fputc(i32 41, %struct._IO_FILE* %fp) #5
+  br label %for.inc37
+
+for.inc37:                                        ; preds = %for.body, %for.end35
+  %indvars.iv.next82 = add i64 %indvars.iv81, 1
+  %inc38 = add nsw i32 %e.076, 1
+  %lftr.wideiv83 = trunc i64 %indvars.iv.next82 to i32
+  %exitcond84 = icmp eq i32 %lftr.wideiv83, %0
+  br i1 %exitcond84, label %for.end39, label %for.body
+
+for.end39:                                        ; preds = %for.inc37, %entry
+  %call40 = tail call i32 @fputc(i32 93, %struct._IO_FILE* %fp) #5
+  tail call void @free(i8* %call) #5
+  ret void
+}

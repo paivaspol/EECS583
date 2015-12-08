@@ -1,0 +1,37 @@
+define internal void @validate_equiv_mem_from_store(%struct.rtx_def* %dest, %struct.rtx_def* nocapture %set, i8* nocapture %data) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %dest to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 61
+  br i1 %cmp, label %land.lhs.true, label %lor.lhs.false
+
+land.lhs.true:                                    ; preds = %entry
+  %1 = load %struct.rtx_def** @equiv_mem, align 8, !tbaa !3
+  %call = tail call i32 @reg_overlap_mentioned_p(%struct.rtx_def* %dest, %struct.rtx_def* %1) #6
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %land.lhs.true.lor.lhs.false_crit_edge, label %if.then
+
+land.lhs.true.lor.lhs.false_crit_edge:            ; preds = %land.lhs.true
+  %bf.load1.pre = load i32* %0, align 8
+  br label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true.lor.lhs.false_crit_edge, %entry
+  %bf.load1 = phi i32 [ %bf.load1.pre, %land.lhs.true.lor.lhs.false_crit_edge ], [ %bf.load, %entry ]
+  %bf.clear2 = and i32 %bf.load1, 65535
+  %cmp3 = icmp eq i32 %bf.clear2, 66
+  br i1 %cmp3, label %land.lhs.true4, label %if.end
+
+land.lhs.true4:                                   ; preds = %lor.lhs.false
+  %2 = load %struct.rtx_def** @equiv_mem, align 8, !tbaa !3
+  %call5 = tail call i32 @true_dependence(%struct.rtx_def* %dest, i32 0, %struct.rtx_def* %2, i32 (%struct.rtx_def*, i32)* @rtx_varies_p) #6
+  %tobool6 = icmp eq i32 %call5, 0
+  br i1 %tobool6, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true, %land.lhs.true4
+  store i1 true, i1* @equiv_mem_modified, align 1
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true4, %if.then, %lor.lhs.false
+  ret void
+}

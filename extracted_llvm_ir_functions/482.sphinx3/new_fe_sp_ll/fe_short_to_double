@@ -1,0 +1,20 @@
+define void @fe_short_to_double(i16* nocapture %in, double* nocapture %out, i32 %len) #0 {
+entry:
+  %cmp6 = icmp sgt i32 %len, 0
+  br i1 %cmp6, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i16* %in, i64 %indvars.iv
+  %0 = load i16* %arrayidx, align 2, !tbaa !5
+  %conv = sitofp i16 %0 to double
+  %arrayidx2 = getelementptr inbounds double* %out, i64 %indvars.iv
+  store double %conv, double* %arrayidx2, align 8, !tbaa !6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %len
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

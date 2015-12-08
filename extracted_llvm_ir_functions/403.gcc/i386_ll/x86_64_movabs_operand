@@ -1,0 +1,51 @@
+define i32 @x86_64_movabs_operand(%struct.rtx_def* %op, i32 %mode) #1 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp ne i32 %and, 0
+  %1 = load i32* @flag_pic, align 4, !tbaa !0
+  %tobool1 = icmp ne i32 %1, 0
+  %or.cond = and i1 %tobool, %tobool1
+  br i1 %or.cond, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @nonmemory_operand(%struct.rtx_def* %op, i32 %mode) #9
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call2 = tail call i32 @register_operand(%struct.rtx_def* %op, i32 %mode) #9
+  %tobool3 = icmp eq i32 %call2, 0
+  br i1 %tobool3, label %lor.lhs.false4, label %return
+
+lor.lhs.false4:                                   ; preds = %if.end
+  %call5 = tail call i32 @x86_64_sign_extended_value(%struct.rtx_def* %op) #10
+  %tobool6 = icmp eq i32 %call5, 0
+  br i1 %tobool6, label %if.end8, label %return
+
+if.end8:                                          ; preds = %lor.lhs.false4
+  %2 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.end40 [
+    i32 67, label %land.lhs.true
+    i32 68, label %land.lhs.true
+    i32 54, label %land.lhs.true
+    i32 55, label %land.lhs.true
+    i32 58, label %land.lhs.true
+    i32 134, label %land.lhs.true
+    i32 56, label %land.lhs.true
+    i32 140, label %land.lhs.true
+  ]
+
+land.lhs.true:                                    ; preds = %if.end8, %if.end8, %if.end8, %if.end8, %if.end8, %if.end8, %if.end8, %if.end8
+  %call37 = tail call i32 @symbolic_reference_mentioned_p(%struct.rtx_def* %op) #10
+  %tobool38 = icmp eq i32 %call37, 0
+  br i1 %tobool38, label %return, label %if.end40
+
+if.end40:                                         ; preds = %if.end8, %land.lhs.true
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %if.end, %lor.lhs.false4, %if.end40, %if.then
+  %retval.0 = phi i32 [ 0, %if.end40 ], [ %call, %if.then ], [ 1, %lor.lhs.false4 ], [ 1, %if.end ], [ 1, %land.lhs.true ]
+  ret i32 %retval.0
+}

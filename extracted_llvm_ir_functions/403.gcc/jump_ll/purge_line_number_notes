@@ -1,0 +1,61 @@
+define void @purge_line_number_notes(%struct.rtx_def* %f) #0 {
+entry:
+  %tobool39 = icmp eq %struct.rtx_def* %f, null
+  br i1 %tobool39, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %insn.041 = phi %struct.rtx_def* [ %5, %for.inc ], [ %f, %entry ]
+  %last_note.040 = phi %struct.rtx_def* [ %last_note.1, %for.inc ], [ null, %entry ]
+  %0 = bitcast %struct.rtx_def* %insn.041 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 37
+  br i1 %cmp, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.041, i64 0, i32 1, i64 4
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtint, align 4, !tbaa !0
+  %cmp1 = icmp eq i32 %1, -87
+  br i1 %cmp1, label %for.inc, label %if.else
+
+if.else:                                          ; preds = %if.then
+  %cmp6 = icmp sgt i32 %1, -1
+  br i1 %cmp6, label %if.then7, label %for.inc
+
+if.then7:                                         ; preds = %if.else
+  %tobool8 = icmp eq %struct.rtx_def* %last_note.040, null
+  br i1 %tobool8, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then7
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %insn.041, i64 0, i32 1, i64 3
+  %rtstr = bitcast %union.rtunion_def* %arrayidx10 to i8**
+  %2 = load i8** %rtstr, align 8, !tbaa !3
+  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %last_note.040, i64 0, i32 1, i64 3
+  %rtstr13 = bitcast %union.rtunion_def* %arrayidx12 to i8**
+  %3 = load i8** %rtstr13, align 8, !tbaa !3
+  %cmp14 = icmp eq i8* %2, %3
+  br i1 %cmp14, label %land.lhs.true15, label %for.inc
+
+land.lhs.true15:                                  ; preds = %land.lhs.true
+  %arrayidx20 = getelementptr inbounds %struct.rtx_def* %last_note.040, i64 0, i32 1, i64 4
+  %rtint21 = bitcast %union.rtunion_def* %arrayidx20 to i32*
+  %4 = load i32* %rtint21, align 4, !tbaa !0
+  %cmp22 = icmp eq i32 %1, %4
+  br i1 %cmp22, label %if.then23, label %for.inc
+
+if.then23:                                        ; preds = %land.lhs.true15
+  %call = tail call %struct.rtx_def* @delete_related_insns(%struct.rtx_def* %insn.041) #8
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true, %land.lhs.true15, %if.then7, %if.then, %for.body, %if.else, %if.then23
+  %last_note.1 = phi %struct.rtx_def* [ %last_note.040, %if.then23 ], [ %last_note.040, %if.else ], [ %last_note.040, %for.body ], [ null, %if.then ], [ %insn.041, %if.then7 ], [ %insn.041, %land.lhs.true15 ], [ %insn.041, %land.lhs.true ]
+  %arrayidx28 = getelementptr inbounds %struct.rtx_def* %insn.041, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx28 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %tobool = icmp eq %struct.rtx_def* %5, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

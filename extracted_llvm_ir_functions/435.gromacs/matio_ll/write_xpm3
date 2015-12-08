@@ -1,0 +1,20 @@
+define void @write_xpm3(%struct._IO_FILE* nocapture %out, i8* %title, i8* %legend, i8* %label_x, i8* %label_y, i32 %n_x, i32 %n_y, float* %axis_x, float* %axis_y, float** nocapture %matrix, float %lo, float %mid, float %hi, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rmid.coerce0, float %rmid.coerce1, %struct.t_rgb* byval nocapture align 8 %rhi, i32* nocapture %nlevels) #0 {
+entry:
+  %cmp = fcmp ugt float %hi, %lo
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %conv = fpext float %hi to double
+  %conv2 = fpext float %lo to double
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([19 x i8]* @.str79, i64 0, i64 0), double %conv, double %conv2) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  tail call void @write_xpm_header(%struct._IO_FILE* %out, i8* %title, i8* %legend, i8* %label_x, i8* %label_y, i32 0) #9
+  tail call void @write_xpm_map3(%struct._IO_FILE* %out, i32 %n_x, i32 %n_y, i32* %nlevels, float %lo, float %mid, float %hi, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rmid.coerce0, float %rmid.coerce1, %struct.t_rgb* byval align 8 %rhi) #9
+  tail call void @write_xpm_axis(%struct._IO_FILE* %out, i8* getelementptr inbounds ([2 x i8]* @.str77, i64 0, i64 0), i32 %n_x, float* %axis_x) #9
+  tail call void @write_xpm_axis(%struct._IO_FILE* %out, i8* getelementptr inbounds ([2 x i8]* @.str78, i64 0, i64 0), i32 %n_y, float* %axis_y) #9
+  %0 = load i32* %nlevels, align 4, !tbaa !3
+  tail call void @write_xpm_data3(%struct._IO_FILE* %out, i32 %n_x, i32 %n_y, float** %matrix, float %lo, float %mid, float %hi, i32 %0) #9
+  ret void
+}

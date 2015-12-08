@@ -1,0 +1,52 @@
+define internal void @do_pragma_poison(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %poisoned_ok = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 6
+  store i8 1, i8* %poisoned_ok, align 1, !tbaa !0
+  br label %for.cond
+
+for.cond:                                         ; preds = %if.end6, %if.end15, %entry
+  %call = tail call %struct.cpp_token* @_cpp_lex_token(%struct.cpp_reader* %pfile) #8
+  %type = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2
+  %bf.load = load i8* %type, align 2
+  switch i8 %bf.load, label %if.then5 [
+    i8 67, label %for.end
+    i8 56, label %if.end6
+  ]
+
+if.then5:                                         ; preds = %for.cond
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([37 x i8]* @.str26, i64 0, i64 0)) #8
+  br label %for.end
+
+if.end6:                                          ; preds = %for.cond
+  %val = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4
+  %node = bitcast %union.anon.0* %val to %struct.cpp_hashnode**
+  %0 = load %struct.cpp_hashnode** %node, align 8, !tbaa !3
+  %flags = getelementptr inbounds %struct.cpp_hashnode* %0, i64 0, i32 5
+  %1 = load i8* %flags, align 1, !tbaa !0
+  %and = and i8 %1, 2
+  %tobool = icmp eq i8 %and, 0
+  br i1 %tobool, label %if.end8, label %for.cond
+
+if.end8:                                          ; preds = %if.end6
+  %type9 = getelementptr inbounds %struct.cpp_hashnode* %0, i64 0, i32 4
+  %bf.load10 = load i8* %type9, align 4
+  %cmp12 = icmp eq i8 %bf.load10, 1
+  br i1 %cmp12, label %if.then14, label %if.end15
+
+if.then14:                                        ; preds = %if.end8
+  %str = getelementptr inbounds %struct.cpp_hashnode* %0, i64 0, i32 0, i32 1
+  %2 = load i8** %str, align 8, !tbaa !3
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([30 x i8]* @.str27, i64 0, i64 0), i8* %2) #8
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then14, %if.end8
+  tail call void @_cpp_free_definition(%struct.cpp_hashnode* %0) #8
+  %3 = load i8* %flags, align 1, !tbaa !0
+  %or = or i8 %3, 10
+  store i8 %or, i8* %flags, align 1, !tbaa !0
+  br label %for.cond
+
+for.end:                                          ; preds = %for.cond, %if.then5
+  store i8 0, i8* %poisoned_ok, align 1, !tbaa !0
+  ret void
+}

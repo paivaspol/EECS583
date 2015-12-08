@@ -1,0 +1,30 @@
+define %union.tree_node* @strip_attrs(%union.tree_node* %specs_attrs) #0 {
+entry:
+  %specs = alloca %union.tree_node*, align 8
+  %attrs = alloca %union.tree_node*, align 8
+  call void @split_specs_attrs(%union.tree_node* %specs_attrs, %union.tree_node** %specs, %union.tree_node** %attrs) #5
+  %.pr = load %union.tree_node** %attrs, align 8, !tbaa !0
+  %tobool1 = icmp eq %union.tree_node* %.pr, null
+  br i1 %tobool1, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  %0 = phi %union.tree_node* [ %4, %while.body ], [ %.pr, %entry ]
+  %purpose = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 1
+  %1 = load i8** %purpose, align 8
+  %str = getelementptr inbounds i8* %1, i64 32
+  %2 = bitcast i8* %str to i8**
+  %3 = load i8** %2, align 8, !tbaa !0
+  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([23 x i8]* @.str4, i64 0, i64 0), i8* %3) #4
+  %chain = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 0
+  %4 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %tobool = icmp eq %union.tree_node* %4, null
+  br i1 %tobool, label %while.cond.while.end_crit_edge, label %while.body
+
+while.cond.while.end_crit_edge:                   ; preds = %while.body
+  store %union.tree_node* null, %union.tree_node** %attrs, align 8, !tbaa !0
+  br label %while.end
+
+while.end:                                        ; preds = %while.cond.while.end_crit_edge, %entry
+  %5 = load %union.tree_node** %specs, align 8, !tbaa !0
+  ret %union.tree_node* %5
+}

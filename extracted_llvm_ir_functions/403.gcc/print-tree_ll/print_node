@@ -1,0 +1,1804 @@
+define void @print_node(%struct._IO_FILE* %file, i8* %prefix, %union.tree_node* %node, i32 %indent) #0 {
+entry:
+  %temp = alloca [10 x i8], align 1
+  %d = alloca %struct.realvaluetype, align 8
+  %string = alloca [100 x i8], align 16
+  %buf = alloca [10 x i8], align 1
+  %temp1552 = alloca [10 x i8], align 1
+  %cmp = icmp eq %union.tree_node* %node, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %code = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %idxprom2097 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom2097
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp1 = icmp sgt i32 %indent, 24
+  br i1 %cmp1, label %if.then2, label %if.end3
+
+if.then2:                                         ; preds = %if.end
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* %prefix, %union.tree_node* %node, i32 %indent) #5
+  br label %return
+
+if.end3:                                          ; preds = %if.end
+  %cmp4 = icmp sgt i32 %indent, 8
+  br i1 %cmp4, label %land.lhs.true, label %if.end11
+
+land.lhs.true:                                    ; preds = %if.end3
+  switch i8 %1, label %if.end11 [
+    i8 116, label %if.then10
+    i8 100, label %if.then10
+  ]
+
+if.then10:                                        ; preds = %land.lhs.true, %land.lhs.true
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* %prefix, %union.tree_node* %node, i32 %indent) #5
+  br label %return
+
+if.end11:                                         ; preds = %land.lhs.true, %if.end3
+  %cmp16 = icmp eq i32 %bf.clear, 0
+  br i1 %cmp16, label %if.then18, label %if.end19
+
+if.then18:                                        ; preds = %if.end11
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* %prefix, %union.tree_node* %node, i32 %indent) #5
+  br label %return
+
+if.end19:                                         ; preds = %if.end11
+  %2 = ptrtoint %union.tree_node* %node to i64
+  %rem = urem i64 %2, 37
+  %3 = load %struct.bucket*** @table, align 8, !tbaa !0
+  %arrayidx22 = getelementptr inbounds %struct.bucket** %3, i64 %rem
+  %b.02125 = load %struct.bucket** %arrayidx22, align 8
+  %tobool2126 = icmp eq %struct.bucket* %b.02125, null
+  br i1 %tobool2126, label %for.end, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %next = getelementptr inbounds %struct.bucket* %b.02127, i64 0, i32 1
+  %b.0 = load %struct.bucket** %next, align 8
+  %tobool = icmp eq %struct.bucket* %b.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.body:                                         ; preds = %if.end19, %for.cond
+  %b.02127 = phi %struct.bucket* [ %b.0, %for.cond ], [ %b.02125, %if.end19 ]
+  %node23 = getelementptr inbounds %struct.bucket* %b.02127, i64 0, i32 0
+  %4 = load %union.tree_node** %node23, align 8, !tbaa !0
+  %cmp24 = icmp eq %union.tree_node* %4, %node
+  br i1 %cmp24, label %if.then26, label %for.cond
+
+if.then26:                                        ; preds = %for.body
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* %prefix, %union.tree_node* %node, i32 %indent) #5
+  br label %return
+
+for.end:                                          ; preds = %for.cond, %if.end19
+  %call = call i8* @permalloc(i32 16) #4
+  %5 = bitcast i8* %call to %struct.bucket*
+  %node28 = bitcast i8* %call to %union.tree_node**
+  store %union.tree_node* %node, %union.tree_node** %node28, align 8, !tbaa !0
+  %6 = load %struct.bucket*** @table, align 8, !tbaa !0
+  %arrayidx30 = getelementptr inbounds %struct.bucket** %6, i64 %rem
+  %7 = load %struct.bucket** %arrayidx30, align 8, !tbaa !0
+  %next31 = getelementptr inbounds i8* %call, i64 8
+  %8 = bitcast i8* %next31 to %struct.bucket**
+  store %struct.bucket* %7, %struct.bucket** %8, align 8, !tbaa !0
+  %9 = load %struct.bucket*** @table, align 8, !tbaa !0
+  %arrayidx33 = getelementptr inbounds %struct.bucket** %9, i64 %rem
+  store %struct.bucket* %5, %struct.bucket** %arrayidx33, align 8, !tbaa !0
+  call void @indent_to(%struct._IO_FILE* %file, i32 %indent) #5
+  %bf.load36 = load i32* %0, align 8
+  %bf.clear37 = and i32 %bf.load36, 255
+  %idxprom382099 = zext i32 %bf.clear37 to i64
+  %arrayidx39 = getelementptr inbounds [256 x i8*]* @tree_code_name, i64 0, i64 %idxprom382099
+  %10 = load i8** %arrayidx39, align 8, !tbaa !0
+  %call40 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0), i8* %prefix, i8* %10) #4
+  %call41 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), %union.tree_node* %node) #4
+  switch i8 %1, label %if.end102 [
+    i8 100, label %if.then45
+    i8 116, label %if.then55
+  ]
+
+if.then45:                                        ; preds = %for.end
+  %name = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 8
+  %11 = load %union.tree_node** %name, align 8, !tbaa !0
+  %tobool46 = icmp eq %union.tree_node* %11, null
+  br i1 %tobool46, label %if.end102, label %if.then47
+
+if.then47:                                        ; preds = %if.then45
+  %id = getelementptr inbounds %union.tree_node* %11, i64 0, i32 0, i32 1
+  %12 = getelementptr inbounds i8** %id, i64 1
+  %13 = load i8** %12, align 8, !tbaa !0
+  %call50 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i8* %13) #4
+  br label %if.end102
+
+if.then55:                                        ; preds = %for.end
+  %14 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 11
+  %15 = load %union.tree_node** %14, align 8, !tbaa !0
+  %tobool57 = icmp eq %union.tree_node* %15, null
+  br i1 %tobool57, label %if.end102, label %if.then58
+
+if.then58:                                        ; preds = %if.then55
+  %code62 = getelementptr inbounds %union.tree_node* %15, i64 0, i32 0, i32 0, i32 2
+  %16 = bitcast [4 x i8]* %code62 to i32*
+  %bf.load63 = load i32* %16, align 8
+  %bf.clear64 = and i32 %bf.load63, 255
+  switch i32 %bf.clear64, label %if.end102 [
+    i32 1, label %if.then67
+    i32 33, label %land.lhs.true83
+  ]
+
+if.then67:                                        ; preds = %if.then58
+  %id71 = getelementptr inbounds %union.tree_node* %15, i64 0, i32 0, i32 1
+  %17 = getelementptr inbounds i8** %id71, i64 1
+  %18 = load i8** %17, align 8, !tbaa !0
+  %call73 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i8* %18) #4
+  br label %if.end102
+
+land.lhs.true83:                                  ; preds = %if.then58
+  %name87 = getelementptr inbounds %union.tree_node* %15, i64 0, i32 0, i32 8
+  %19 = load %union.tree_node** %name87, align 8, !tbaa !0
+  %tobool88 = icmp eq %union.tree_node* %19, null
+  br i1 %tobool88, label %if.end102, label %if.then89
+
+if.then89:                                        ; preds = %land.lhs.true83
+  %id95 = getelementptr inbounds %union.tree_node* %19, i64 0, i32 0, i32 1
+  %20 = getelementptr inbounds i8** %id95, i64 1
+  %21 = load i8** %20, align 8, !tbaa !0
+  %call97 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i8* %21) #4
+  br label %if.end102
+
+if.end102:                                        ; preds = %if.then58, %for.end, %if.then45, %land.lhs.true83, %if.then55, %if.then67, %if.then89, %if.then47
+  %bf.load105 = load i32* %0, align 8
+  %bf.clear106 = and i32 %bf.load105, 255
+  %cmp107 = icmp eq i32 %bf.clear106, 1
+  br i1 %cmp107, label %if.then109, label %if.end114
+
+if.then109:                                       ; preds = %if.end102
+  %id111 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 1
+  %22 = getelementptr inbounds i8** %id111, i64 1
+  %23 = load i8** %22, align 8, !tbaa !0
+  %call113 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i8* %23) #4
+  %bf.load117.pre = load i32* %0, align 8
+  br label %if.end114
+
+if.end114:                                        ; preds = %if.then109, %if.end102
+  %bf.load117 = phi i32 [ %bf.load117.pre, %if.then109 ], [ %bf.load105, %if.end102 ]
+  %bf.clear118 = and i32 %bf.load117, 255
+  %cmp119 = icmp eq i32 %bf.clear118, 25
+  br i1 %cmp119, label %if.then121, label %if.else128
+
+if.then121:                                       ; preds = %if.end114
+  %cmp122 = icmp slt i32 %indent, 5
+  br i1 %cmp122, label %if.then124, label %if.end138
+
+if.then124:                                       ; preds = %if.then121
+  %type126 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 0, i32 1
+  %24 = load %union.tree_node** %type126, align 8, !tbaa !0
+  %add = add nsw i32 %indent, 4
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([5 x i8]* @.str13, i64 0, i64 0), %union.tree_node* %24, i32 %add) #5
+  br label %if.end138
+
+if.else128:                                       ; preds = %if.end114
+  %type130 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 0, i32 1
+  %25 = load %union.tree_node** %type130, align 8, !tbaa !0
+  %add131 = add nsw i32 %indent, 4
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([5 x i8]* @.str13, i64 0, i64 0), %union.tree_node* %25, i32 %add131) #5
+  %26 = load %union.tree_node** %type130, align 8, !tbaa !0
+  %tobool134 = icmp eq %union.tree_node* %26, null
+  br i1 %tobool134, label %if.end138, label %if.then135
+
+if.then135:                                       ; preds = %if.else128
+  %add136 = add nsw i32 %indent, 3
+  call void @indent_to(%struct._IO_FILE* %file, i32 %add136) #5
+  br label %if.end138
+
+if.end138:                                        ; preds = %if.else128, %if.then135, %if.then121, %if.then124
+  %bf.load140 = load i32* %0, align 8
+  %bf.clear141 = and i32 %bf.load140, 256
+  %tobool142 = icmp eq i32 %bf.clear141, 0
+  br i1 %tobool142, label %if.end145, label %if.then143
+
+if.then143:                                       ; preds = %if.end138
+  %27 = call i64 @fwrite(i8* getelementptr inbounds ([14 x i8]* @.str14, i64 0, i64 0), i64 13, i64 1, %struct._IO_FILE* %file)
+  %bf.load147.pre = load i32* %0, align 8
+  br label %if.end145
+
+if.end145:                                        ; preds = %if.end138, %if.then143
+  %bf.load147 = phi i32 [ %bf.load140, %if.end138 ], [ %bf.load147.pre, %if.then143 ]
+  %bf.clear149 = and i32 %bf.load147, 4096
+  %tobool150 = icmp eq i32 %bf.clear149, 0
+  br i1 %tobool150, label %if.end153, label %if.then151
+
+if.then151:                                       ; preds = %if.end145
+  %28 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str15, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %file)
+  %bf.load155.pre = load i32* %0, align 8
+  br label %if.end153
+
+if.end153:                                        ; preds = %if.end145, %if.then151
+  %bf.load155 = phi i32 [ %bf.load147, %if.end145 ], [ %bf.load155.pre, %if.then151 ]
+  %bf.clear157 = and i32 %bf.load155, 512
+  %tobool158 = icmp eq i32 %bf.clear157, 0
+  br i1 %tobool158, label %if.end161, label %if.then159
+
+if.then159:                                       ; preds = %if.end153
+  %29 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str16, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %file)
+  %bf.load163.pre = load i32* %0, align 8
+  br label %if.end161
+
+if.end161:                                        ; preds = %if.end153, %if.then159
+  %bf.load163 = phi i32 [ %bf.load155, %if.end153 ], [ %bf.load163.pre, %if.then159 ]
+  %bf.clear165 = and i32 %bf.load163, 1024
+  %tobool166 = icmp eq i32 %bf.clear165, 0
+  br i1 %tobool166, label %if.end169, label %if.then167
+
+if.then167:                                       ; preds = %if.end161
+  %30 = call i64 @fwrite(i8* getelementptr inbounds ([13 x i8]* @.str17, i64 0, i64 0), i64 12, i64 1, %struct._IO_FILE* %file)
+  %bf.load171.pre = load i32* %0, align 8
+  br label %if.end169
+
+if.end169:                                        ; preds = %if.end161, %if.then167
+  %bf.load171 = phi i32 [ %bf.load163, %if.end161 ], [ %bf.load171.pre, %if.then167 ]
+  %bf.clear173 = and i32 %bf.load171, 2048
+  %tobool174 = icmp eq i32 %bf.clear173, 0
+  br i1 %tobool174, label %if.end177, label %if.then175
+
+if.then175:                                       ; preds = %if.end169
+  %31 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str18, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %file)
+  %bf.load179.pre = load i32* %0, align 8
+  br label %if.end177
+
+if.end177:                                        ; preds = %if.end169, %if.then175
+  %bf.load179 = phi i32 [ %bf.load171, %if.end169 ], [ %bf.load179.pre, %if.then175 ]
+  %bf.clear181 = and i32 %bf.load179, 8192
+  %tobool182 = icmp eq i32 %bf.clear181, 0
+  br i1 %tobool182, label %if.end185, label %if.then183
+
+if.then183:                                       ; preds = %if.end177
+  %32 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str19, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %file)
+  %bf.load187.pre = load i32* %0, align 8
+  br label %if.end185
+
+if.end185:                                        ; preds = %if.end177, %if.then183
+  %bf.load187 = phi i32 [ %bf.load179, %if.end177 ], [ %bf.load187.pre, %if.then183 ]
+  %bf.clear189 = and i32 %bf.load187, 16384
+  %tobool190 = icmp eq i32 %bf.clear189, 0
+  br i1 %tobool190, label %if.end193, label %if.then191
+
+if.then191:                                       ; preds = %if.end185
+  %33 = call i64 @fwrite(i8* getelementptr inbounds ([13 x i8]* @.str20, i64 0, i64 0), i64 12, i64 1, %struct._IO_FILE* %file)
+  %bf.load195.pre = load i32* %0, align 8
+  br label %if.end193
+
+if.end193:                                        ; preds = %if.end185, %if.then191
+  %bf.load195 = phi i32 [ %bf.load187, %if.end185 ], [ %bf.load195.pre, %if.then191 ]
+  %bf.clear197 = and i32 %bf.load195, 65536
+  %tobool198 = icmp eq i32 %bf.clear197, 0
+  br i1 %tobool198, label %if.end201, label %if.then199
+
+if.then199:                                       ; preds = %if.end193
+  %34 = call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str21, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %file)
+  %bf.load203.pre = load i32* %0, align 8
+  br label %if.end201
+
+if.end201:                                        ; preds = %if.end193, %if.then199
+  %bf.load203 = phi i32 [ %bf.load195, %if.end193 ], [ %bf.load203.pre, %if.then199 ]
+  %bf.clear205 = and i32 %bf.load203, 131072
+  %tobool206 = icmp eq i32 %bf.clear205, 0
+  br i1 %tobool206, label %if.end209, label %if.then207
+
+if.then207:                                       ; preds = %if.end201
+  %35 = call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str22, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %file)
+  %bf.load211.pre = load i32* %0, align 8
+  br label %if.end209
+
+if.end209:                                        ; preds = %if.end201, %if.then207
+  %bf.load211 = phi i32 [ %bf.load203, %if.end201 ], [ %bf.load211.pre, %if.then207 ]
+  %bf.clear213 = and i32 %bf.load211, 524288
+  %tobool214 = icmp eq i32 %bf.clear213, 0
+  br i1 %tobool214, label %if.end217, label %if.then215
+
+if.then215:                                       ; preds = %if.end209
+  %36 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str23, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load219.pre = load i32* %0, align 8
+  br label %if.end217
+
+if.end217:                                        ; preds = %if.end209, %if.then215
+  %bf.load219 = phi i32 [ %bf.load211, %if.end209 ], [ %bf.load219.pre, %if.then215 ]
+  %bf.clear221 = and i32 %bf.load219, 1048576
+  %tobool222 = icmp eq i32 %bf.clear221, 0
+  br i1 %tobool222, label %if.end225, label %if.then223
+
+if.then223:                                       ; preds = %if.end217
+  %37 = call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str24, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %file)
+  %bf.load227.pre = load i32* %0, align 8
+  br label %if.end225
+
+if.end225:                                        ; preds = %if.end217, %if.then223
+  %bf.load227 = phi i32 [ %bf.load219, %if.end217 ], [ %bf.load227.pre, %if.then223 ]
+  %bf.clear229 = and i32 %bf.load227, 2097152
+  %tobool230 = icmp eq i32 %bf.clear229, 0
+  br i1 %tobool230, label %if.end233, label %if.then231
+
+if.then231:                                       ; preds = %if.end225
+  %38 = call i64 @fwrite(i8* getelementptr inbounds ([11 x i8]* @.str25, i64 0, i64 0), i64 10, i64 1, %struct._IO_FILE* %file)
+  %bf.load235.pre = load i32* %0, align 8
+  br label %if.end233
+
+if.end233:                                        ; preds = %if.end225, %if.then231
+  %bf.load235 = phi i32 [ %bf.load227, %if.end225 ], [ %bf.load235.pre, %if.then231 ]
+  %bf.clear237 = and i32 %bf.load235, 262144
+  %tobool238 = icmp eq i32 %bf.clear237, 0
+  br i1 %tobool238, label %if.end241, label %if.then239
+
+if.then239:                                       ; preds = %if.end233
+  %39 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str26, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load243.pre = load i32* %0, align 8
+  br label %if.end241
+
+if.end241:                                        ; preds = %if.end233, %if.then239
+  %bf.load243 = phi i32 [ %bf.load235, %if.end233 ], [ %bf.load243.pre, %if.then239 ]
+  %bf.clear245 = and i32 %bf.load243, 8388608
+  %tobool246 = icmp eq i32 %bf.clear245, 0
+  br i1 %tobool246, label %if.end249, label %if.then247
+
+if.then247:                                       ; preds = %if.end241
+  %40 = call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str27, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %file)
+  %bf.load251.pre = load i32* %0, align 8
+  br label %if.end249
+
+if.end249:                                        ; preds = %if.end241, %if.then247
+  %bf.load251 = phi i32 [ %bf.load243, %if.end241 ], [ %bf.load251.pre, %if.then247 ]
+  %bf.clear253 = and i32 %bf.load251, 16777216
+  %tobool254 = icmp eq i32 %bf.clear253, 0
+  br i1 %tobool254, label %if.end257, label %if.then255
+
+if.then255:                                       ; preds = %if.end249
+  %41 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str28, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load259.pre = load i32* %0, align 8
+  br label %if.end257
+
+if.end257:                                        ; preds = %if.end249, %if.then255
+  %bf.load259 = phi i32 [ %bf.load251, %if.end249 ], [ %bf.load259.pre, %if.then255 ]
+  %bf.clear261 = and i32 %bf.load259, 33554432
+  %tobool262 = icmp eq i32 %bf.clear261, 0
+  br i1 %tobool262, label %if.end265, label %if.then263
+
+if.then263:                                       ; preds = %if.end257
+  %42 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str29, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load267.pre = load i32* %0, align 8
+  br label %if.end265
+
+if.end265:                                        ; preds = %if.end257, %if.then263
+  %bf.load267 = phi i32 [ %bf.load259, %if.end257 ], [ %bf.load267.pre, %if.then263 ]
+  %bf.clear269 = and i32 %bf.load267, 67108864
+  %tobool270 = icmp eq i32 %bf.clear269, 0
+  br i1 %tobool270, label %if.end273, label %if.then271
+
+if.then271:                                       ; preds = %if.end265
+  %43 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str30, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load275.pre = load i32* %0, align 8
+  br label %if.end273
+
+if.end273:                                        ; preds = %if.end265, %if.then271
+  %bf.load275 = phi i32 [ %bf.load267, %if.end265 ], [ %bf.load275.pre, %if.then271 ]
+  %bf.clear277 = and i32 %bf.load275, 134217728
+  %tobool278 = icmp eq i32 %bf.clear277, 0
+  br i1 %tobool278, label %if.end281, label %if.then279
+
+if.then279:                                       ; preds = %if.end273
+  %44 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str31, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load283.pre = load i32* %0, align 8
+  br label %if.end281
+
+if.end281:                                        ; preds = %if.end273, %if.then279
+  %bf.load283 = phi i32 [ %bf.load275, %if.end273 ], [ %bf.load283.pre, %if.then279 ]
+  %bf.clear285 = and i32 %bf.load283, 268435456
+  %tobool286 = icmp eq i32 %bf.clear285, 0
+  br i1 %tobool286, label %if.end289, label %if.then287
+
+if.then287:                                       ; preds = %if.end281
+  %45 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str32, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load291.pre = load i32* %0, align 8
+  br label %if.end289
+
+if.end289:                                        ; preds = %if.end281, %if.then287
+  %bf.load291 = phi i32 [ %bf.load283, %if.end281 ], [ %bf.load291.pre, %if.then287 ]
+  %bf.clear293 = and i32 %bf.load291, 536870912
+  %tobool294 = icmp eq i32 %bf.clear293, 0
+  br i1 %tobool294, label %if.end297, label %if.then295
+
+if.then295:                                       ; preds = %if.end289
+  %46 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str33, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load299.pre = load i32* %0, align 8
+  br label %if.end297
+
+if.end297:                                        ; preds = %if.end289, %if.then295
+  %bf.load299 = phi i32 [ %bf.load291, %if.end289 ], [ %bf.load299.pre, %if.then295 ]
+  %bf.clear301 = and i32 %bf.load299, 1073741824
+  %tobool302 = icmp eq i32 %bf.clear301, 0
+  br i1 %tobool302, label %if.end305, label %if.then303
+
+if.then303:                                       ; preds = %if.end297
+  %47 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str34, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load308.pre = load i32* %0, align 8
+  br label %if.end305
+
+if.end305:                                        ; preds = %if.end297, %if.then303
+  %bf.load1425 = phi i32 [ %bf.load299, %if.end297 ], [ %bf.load308.pre, %if.then303 ]
+  %bf.clear309 = and i32 %bf.load1425, 255
+  %idxprom3102100 = zext i32 %bf.clear309 to i64
+  %arrayidx311 = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom3102100
+  %48 = load i8* %arrayidx311, align 1, !tbaa !1
+  %conv312 = sext i8 %48 to i32
+  switch i32 %conv312, label %sw.epilog1576 [
+    i32 100, label %sw.bb
+    i32 116, label %sw.bb920
+    i32 98, label %sw.bb1316
+    i32 101, label %sw.bb1328
+    i32 60, label %sw.bb1328
+    i32 49, label %sw.bb1328
+    i32 50, label %sw.bb1328
+    i32 114, label %sw.bb1328
+    i32 115, label %sw.bb1328
+    i32 99, label %sw.bb1422
+    i32 120, label %sw.bb1422
+  ]
+
+sw.bb:                                            ; preds = %if.end305
+  %mode314 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 5
+  %49 = bitcast [8 x i8]* %mode314 to i64*
+  %bf.load315 = load i64* %49, align 8
+  %bf.cast = and i64 %bf.load315, 255
+  %bf.cast321 = and i64 %bf.load315, 16384
+  %tobool322 = icmp eq i64 %bf.cast321, 0
+  br i1 %tobool322, label %if.end325, label %if.then323
+
+if.then323:                                       ; preds = %sw.bb
+  %50 = call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str35, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %file)
+  %bf.load327.pre = load i64* %49, align 8
+  br label %if.end325
+
+if.end325:                                        ; preds = %sw.bb, %if.then323
+  %bf.load327 = phi i64 [ %bf.load315, %sw.bb ], [ %bf.load327.pre, %if.then323 ]
+  %bf.cast330 = and i64 %bf.load327, 32768
+  %tobool331 = icmp eq i64 %bf.cast330, 0
+  br i1 %tobool331, label %if.end334, label %if.then332
+
+if.then332:                                       ; preds = %if.end325
+  %51 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str36, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %file)
+  %bf.load336.pre = load i64* %49, align 8
+  br label %if.end334
+
+if.end334:                                        ; preds = %if.end325, %if.then332
+  %bf.load336 = phi i64 [ %bf.load327, %if.end325 ], [ %bf.load336.pre, %if.then332 ]
+  %bf.cast339 = and i64 %bf.load336, 65536
+  %tobool340 = icmp eq i64 %bf.cast339, 0
+  br i1 %tobool340, label %if.end343, label %if.then341
+
+if.then341:                                       ; preds = %if.end334
+  %52 = call i64 @fwrite(i8* getelementptr inbounds ([18 x i8]* @.str37, i64 0, i64 0), i64 17, i64 1, %struct._IO_FILE* %file)
+  %bf.load345.pre = load i64* %49, align 8
+  br label %if.end343
+
+if.end343:                                        ; preds = %if.end334, %if.then341
+  %bf.load345 = phi i64 [ %bf.load336, %if.end334 ], [ %bf.load345.pre, %if.then341 ]
+  %bf.cast348 = and i64 %bf.load345, 131072
+  %tobool349 = icmp eq i64 %bf.cast348, 0
+  br i1 %tobool349, label %if.end352, label %if.then350
+
+if.then350:                                       ; preds = %if.end343
+  %53 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str38, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load354.pre = load i64* %49, align 8
+  br label %if.end352
+
+if.end352:                                        ; preds = %if.end343, %if.then350
+  %bf.load354 = phi i64 [ %bf.load345, %if.end343 ], [ %bf.load354.pre, %if.then350 ]
+  %bf.cast357 = and i64 %bf.load354, 256
+  %tobool358 = icmp eq i64 %bf.cast357, 0
+  br i1 %tobool358, label %if.end361, label %if.then359
+
+if.then359:                                       ; preds = %if.end352
+  %54 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str39, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %file)
+  %bf.load363.pre = load i64* %49, align 8
+  br label %if.end361
+
+if.end361:                                        ; preds = %if.end352, %if.then359
+  %bf.load363 = phi i64 [ %bf.load354, %if.end352 ], [ %bf.load363.pre, %if.then359 ]
+  %bf.cast366 = and i64 %bf.load363, 8388608
+  %tobool367 = icmp eq i64 %bf.cast366, 0
+  br i1 %tobool367, label %if.end370, label %if.then368
+
+if.then368:                                       ; preds = %if.end361
+  %55 = call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str40, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %file)
+  %bf.load372.pre = load i64* %49, align 8
+  br label %if.end370
+
+if.end370:                                        ; preds = %if.end361, %if.then368
+  %bf.load372 = phi i64 [ %bf.load363, %if.end361 ], [ %bf.load372.pre, %if.then368 ]
+  %bf.cast375 = and i64 %bf.load372, 1024
+  %tobool376 = icmp eq i64 %bf.cast375, 0
+  br i1 %tobool376, label %if.end400, label %land.lhs.true377
+
+land.lhs.true377:                                 ; preds = %if.end370
+  %bf.load380 = load i32* %0, align 8
+  %bf.clear381 = and i32 %bf.load380, 255
+  switch i32 %bf.clear381, label %if.then398 [
+    i32 37, label %if.end400
+    i32 30, label %if.end400
+    i32 31, label %if.end400
+  ]
+
+if.then398:                                       ; preds = %land.lhs.true377
+  %56 = call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str41, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %file)
+  %bf.load402.pre = load i64* %49, align 8
+  br label %if.end400
+
+if.end400:                                        ; preds = %land.lhs.true377, %land.lhs.true377, %land.lhs.true377, %if.end370, %if.then398
+  %bf.load402 = phi i64 [ %bf.load372, %land.lhs.true377 ], [ %bf.load372, %land.lhs.true377 ], [ %bf.load372, %land.lhs.true377 ], [ %bf.load372, %if.end370 ], [ %bf.load402.pre, %if.then398 ]
+  %bf.cast405 = and i64 %bf.load402, 512
+  %tobool406 = icmp eq i64 %bf.cast405, 0
+  br i1 %tobool406, label %if.end409, label %if.then407
+
+if.then407:                                       ; preds = %if.end400
+  %57 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str42, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %file)
+  br label %if.end409
+
+if.end409:                                        ; preds = %if.end400, %if.then407
+  %bf.load412 = load i32* %0, align 8
+  %bf.clear413 = and i32 %bf.load412, 255
+  %cmp414 = icmp eq i32 %bf.clear413, 33
+  br i1 %cmp414, label %land.lhs.true416, label %if.end426
+
+land.lhs.true416:                                 ; preds = %if.end409
+  %bf.load419 = load i64* %49, align 8
+  %bf.cast422 = and i64 %bf.load419, 256
+  %tobool423 = icmp eq i64 %bf.cast422, 0
+  br i1 %tobool423, label %if.end426, label %if.then424
+
+if.then424:                                       ; preds = %land.lhs.true416
+  %58 = call i64 @fwrite(i8* getelementptr inbounds ([16 x i8]* @.str43, i64 0, i64 0), i64 15, i64 1, %struct._IO_FILE* %file)
+  %bf.load429.pre = load i32* %0, align 8
+  br label %if.end426
+
+if.end426:                                        ; preds = %land.lhs.true416, %if.then424, %if.end409
+  %bf.load429 = phi i32 [ %bf.load412, %land.lhs.true416 ], [ %bf.load429.pre, %if.then424 ], [ %bf.load412, %if.end409 ]
+  %bf.clear430 = and i32 %bf.load429, 255
+  %cmp431 = icmp eq i32 %bf.clear430, 30
+  br i1 %cmp431, label %land.lhs.true433, label %if.end442
+
+land.lhs.true433:                                 ; preds = %if.end426
+  %bf.load435 = load i64* %49, align 8
+  %bf.cast438 = and i64 %bf.load435, 2048
+  %tobool439 = icmp eq i64 %bf.cast438, 0
+  br i1 %tobool439, label %if.end442, label %if.then440
+
+if.then440:                                       ; preds = %land.lhs.true433
+  %59 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str44, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load445.pre = load i32* %0, align 8
+  br label %if.end442
+
+if.end442:                                        ; preds = %land.lhs.true433, %if.then440, %if.end426
+  %bf.load445 = phi i32 [ %bf.load429, %land.lhs.true433 ], [ %bf.load445.pre, %if.then440 ], [ %bf.load429, %if.end426 ]
+  %bf.clear446 = and i32 %bf.load445, 255
+  %cmp447 = icmp eq i32 %bf.clear446, 30
+  br i1 %cmp447, label %land.lhs.true449, label %if.end459
+
+land.lhs.true449:                                 ; preds = %if.end442
+  %bf.load451 = load i64* %49, align 8
+  %bf.cast454 = and i64 %bf.load451, 1610612736
+  %cmp455 = icmp eq i64 %bf.cast454, 0
+  br i1 %cmp455, label %if.end459, label %if.then457
+
+if.then457:                                       ; preds = %land.lhs.true449
+  %60 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str45, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %file)
+  %bf.load462.pre = load i32* %0, align 8
+  br label %if.end459
+
+if.end459:                                        ; preds = %land.lhs.true449, %if.then457, %if.end442
+  %bf.load462 = phi i32 [ %bf.load445, %land.lhs.true449 ], [ %bf.load462.pre, %if.then457 ], [ %bf.load445, %if.end442 ]
+  %61 = and i32 %bf.load462, 8447
+  %62 = icmp eq i32 %61, 8222
+  br i1 %62, label %if.then473, label %if.end475
+
+if.then473:                                       ; preds = %if.end459
+  %63 = call i64 @fwrite(i8* getelementptr inbounds ([18 x i8]* @.str46, i64 0, i64 0), i64 17, i64 1, %struct._IO_FILE* %file)
+  %bf.load478.pre = load i32* %0, align 8
+  br label %if.end475
+
+if.end475:                                        ; preds = %if.end459, %if.then473
+  %bf.load478 = phi i32 [ %bf.load462, %if.end459 ], [ %bf.load478.pre, %if.then473 ]
+  %bf.clear479 = and i32 %bf.load478, 255
+  %cmp480 = icmp eq i32 %bf.clear479, 30
+  br i1 %cmp480, label %land.lhs.true482, label %if.end492
+
+land.lhs.true482:                                 ; preds = %if.end475
+  %bf.load485 = load i64* %49, align 8
+  %bf.cast488 = and i64 %bf.load485, 1024
+  %tobool489 = icmp eq i64 %bf.cast488, 0
+  br i1 %tobool489, label %if.end492, label %if.then490
+
+if.then490:                                       ; preds = %land.lhs.true482
+  %64 = call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str47, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %file)
+  %bf.load495.pre = load i32* %0, align 8
+  br label %if.end492
+
+if.end492:                                        ; preds = %land.lhs.true482, %if.then490, %if.end475
+  %bf.load495 = phi i32 [ %bf.load478, %land.lhs.true482 ], [ %bf.load495.pre, %if.then490 ], [ %bf.load478, %if.end475 ]
+  %bf.clear496 = and i32 %bf.load495, 255
+  %cmp497 = icmp eq i32 %bf.clear496, 37
+  br i1 %cmp497, label %land.lhs.true499, label %if.end509
+
+land.lhs.true499:                                 ; preds = %if.end492
+  %bf.load502 = load i64* %49, align 8
+  %bf.cast505 = and i64 %bf.load502, 1024
+  %tobool506 = icmp eq i64 %bf.cast505, 0
+  br i1 %tobool506, label %if.end509, label %if.then507
+
+if.then507:                                       ; preds = %land.lhs.true499
+  %65 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str48, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load512.pre = load i32* %0, align 8
+  br label %if.end509
+
+if.end509:                                        ; preds = %land.lhs.true499, %if.then507, %if.end492
+  %bf.load512 = phi i32 [ %bf.load495, %land.lhs.true499 ], [ %bf.load512.pre, %if.then507 ], [ %bf.load495, %if.end492 ]
+  %bf.clear513 = and i32 %bf.load512, 255
+  %cmp514 = icmp eq i32 %bf.clear513, 37
+  br i1 %cmp514, label %land.lhs.true516, label %if.end525
+
+land.lhs.true516:                                 ; preds = %if.end509
+  %bf.load518 = load i64* %49, align 8
+  %bf.cast521 = and i64 %bf.load518, 4096
+  %tobool522 = icmp eq i64 %bf.cast521, 0
+  br i1 %tobool522, label %if.end525, label %if.then523
+
+if.then523:                                       ; preds = %land.lhs.true516
+  %66 = call i64 @fwrite(i8* getelementptr inbounds ([11 x i8]* @.str49, i64 0, i64 0), i64 10, i64 1, %struct._IO_FILE* %file)
+  %bf.load528.pre = load i32* %0, align 8
+  br label %if.end525
+
+if.end525:                                        ; preds = %land.lhs.true516, %if.then523, %if.end509
+  %bf.load528 = phi i32 [ %bf.load512, %land.lhs.true516 ], [ %bf.load528.pre, %if.then523 ], [ %bf.load512, %if.end509 ]
+  %bf.clear529 = and i32 %bf.load528, 255
+  %cmp530 = icmp eq i32 %bf.clear529, 37
+  br i1 %cmp530, label %land.lhs.true532, label %if.end541
+
+land.lhs.true532:                                 ; preds = %if.end525
+  %bf.load534 = load i64* %49, align 8
+  %bf.cast537 = and i64 %bf.load534, 17179869184
+  %tobool538 = icmp eq i64 %bf.cast537, 0
+  br i1 %tobool538, label %if.end541, label %if.then539
+
+if.then539:                                       ; preds = %land.lhs.true532
+  %67 = call i64 @fwrite(i8* getelementptr inbounds ([16 x i8]* @.str50, i64 0, i64 0), i64 15, i64 1, %struct._IO_FILE* %file)
+  %bf.load544.pre = load i32* %0, align 8
+  br label %if.end541
+
+if.end541:                                        ; preds = %land.lhs.true532, %if.then539, %if.end525
+  %bf.load544 = phi i32 [ %bf.load528, %land.lhs.true532 ], [ %bf.load544.pre, %if.then539 ], [ %bf.load528, %if.end525 ]
+  %bf.clear545 = and i32 %bf.load544, 255
+  %cmp546 = icmp eq i32 %bf.clear545, 31
+  br i1 %cmp546, label %land.lhs.true548, label %if.end558
+
+land.lhs.true548:                                 ; preds = %if.end541
+  %bf.load551 = load i64* %49, align 8
+  %bf.cast554 = and i64 %bf.load551, 4096
+  %tobool555 = icmp eq i64 %bf.cast554, 0
+  br i1 %tobool555, label %if.end558, label %if.then556
+
+if.then556:                                       ; preds = %land.lhs.true548
+  %68 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str51, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %file)
+  %bf.load561.pre = load i32* %0, align 8
+  br label %if.end558
+
+if.end558:                                        ; preds = %land.lhs.true548, %if.then556, %if.end541
+  %bf.load561 = phi i32 [ %bf.load544, %land.lhs.true548 ], [ %bf.load561.pre, %if.then556 ], [ %bf.load544, %if.end541 ]
+  %bf.clear562 = and i32 %bf.load561, 255
+  %cmp563 = icmp eq i32 %bf.clear562, 31
+  br i1 %cmp563, label %land.lhs.true565, label %if.end575
+
+land.lhs.true565:                                 ; preds = %if.end558
+  %bf.load568 = load i64* %49, align 8
+  %bf.cast571 = and i64 %bf.load568, 1024
+  %tobool572 = icmp eq i64 %bf.cast571, 0
+  br i1 %tobool572, label %if.end575, label %if.then573
+
+if.then573:                                       ; preds = %land.lhs.true565
+  %69 = call i64 @fwrite(i8* getelementptr inbounds ([14 x i8]* @.str52, i64 0, i64 0), i64 13, i64 1, %struct._IO_FILE* %file)
+  %bf.load578.pre = load i32* %0, align 8
+  br label %if.end575
+
+if.end575:                                        ; preds = %land.lhs.true565, %if.then573, %if.end558
+  %bf.load578 = phi i32 [ %bf.load561, %land.lhs.true565 ], [ %bf.load578.pre, %if.then573 ], [ %bf.load561, %if.end558 ]
+  %bf.clear579 = and i32 %bf.load578, 255
+  %cmp580 = icmp eq i32 %bf.clear579, 34
+  br i1 %cmp580, label %land.lhs.true582, label %if.end592
+
+land.lhs.true582:                                 ; preds = %if.end575
+  %bf.load585 = load i64* %49, align 8
+  %bf.cast588 = and i64 %bf.load585, 4096
+  %tobool589 = icmp eq i64 %bf.cast588, 0
+  br i1 %tobool589, label %if.end592, label %if.then590
+
+if.then590:                                       ; preds = %land.lhs.true582
+  %70 = call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str53, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %file)
+  %bf.load595.pre = load i32* %0, align 8
+  br label %if.end592
+
+if.end592:                                        ; preds = %land.lhs.true582, %if.then590, %if.end575
+  %bf.load595 = phi i32 [ %bf.load578, %land.lhs.true582 ], [ %bf.load595.pre, %if.then590 ], [ %bf.load578, %if.end575 ]
+  %bf.clear596 = and i32 %bf.load595, 255
+  %cmp597 = icmp eq i32 %bf.clear596, 35
+  br i1 %cmp597, label %land.lhs.true599, label %if.end608
+
+land.lhs.true599:                                 ; preds = %if.end592
+  %bf.load601 = load i64* %49, align 8
+  %bf.cast604 = and i64 %bf.load601, 524288
+  %tobool605 = icmp eq i64 %bf.cast604, 0
+  br i1 %tobool605, label %if.end608, label %if.then606
+
+if.then606:                                       ; preds = %land.lhs.true599
+  %71 = call i64 @fwrite(i8* getelementptr inbounds ([19 x i8]* @.str54, i64 0, i64 0), i64 18, i64 1, %struct._IO_FILE* %file)
+  br label %if.end608
+
+if.end608:                                        ; preds = %if.end592, %land.lhs.true599, %if.then606
+  %bf.load610 = load i64* %49, align 8
+  %bf.cast613 = and i64 %bf.load610, 8192
+  %tobool614 = icmp eq i64 %bf.cast613, 0
+  br i1 %tobool614, label %if.end617, label %if.then615
+
+if.then615:                                       ; preds = %if.end608
+  %72 = call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str55, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %file)
+  %bf.load619.pre = load i64* %49, align 8
+  br label %if.end617
+
+if.end617:                                        ; preds = %if.end608, %if.then615
+  %bf.load619 = phi i64 [ %bf.load610, %if.end608 ], [ %bf.load619.pre, %if.then615 ]
+  %bf.cast622 = and i64 %bf.load619, 262144
+  %tobool623 = icmp eq i64 %bf.cast622, 0
+  br i1 %tobool623, label %if.end626, label %if.then624
+
+if.then624:                                       ; preds = %if.end617
+  %73 = call i64 @fwrite(i8* getelementptr inbounds ([14 x i8]* @.str56, i64 0, i64 0), i64 13, i64 1, %struct._IO_FILE* %file)
+  %bf.load629.pre = load i64* %49, align 8
+  br label %if.end626
+
+if.end626:                                        ; preds = %if.end617, %if.then624
+  %bf.load629 = phi i64 [ %bf.load619, %if.end617 ], [ %bf.load629.pre, %if.then624 ]
+  %bf.cast632 = and i64 %bf.load629, 137438953472
+  %tobool633 = icmp eq i64 %bf.cast632, 0
+  br i1 %tobool633, label %if.end636, label %if.then634
+
+if.then634:                                       ; preds = %if.end626
+  %74 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str57, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load639.pre = load i64* %49, align 8
+  br label %if.end636
+
+if.end636:                                        ; preds = %if.end626, %if.then634
+  %bf.load639 = phi i64 [ %bf.load629, %if.end626 ], [ %bf.load639.pre, %if.then634 ]
+  %bf.cast642 = and i64 %bf.load639, 274877906944
+  %tobool643 = icmp eq i64 %bf.cast642, 0
+  br i1 %tobool643, label %if.end646, label %if.then644
+
+if.then644:                                       ; preds = %if.end636
+  %75 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str58, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load649.pre = load i64* %49, align 8
+  br label %if.end646
+
+if.end646:                                        ; preds = %if.end636, %if.then644
+  %bf.load649 = phi i64 [ %bf.load639, %if.end636 ], [ %bf.load649.pre, %if.then644 ]
+  %bf.cast652 = and i64 %bf.load649, 549755813888
+  %tobool653 = icmp eq i64 %bf.cast652, 0
+  br i1 %tobool653, label %if.end656, label %if.then654
+
+if.then654:                                       ; preds = %if.end646
+  %76 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str59, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load659.pre = load i64* %49, align 8
+  br label %if.end656
+
+if.end656:                                        ; preds = %if.end646, %if.then654
+  %bf.load659 = phi i64 [ %bf.load649, %if.end646 ], [ %bf.load659.pre, %if.then654 ]
+  %bf.cast662 = and i64 %bf.load659, 1099511627776
+  %tobool663 = icmp eq i64 %bf.cast662, 0
+  br i1 %tobool663, label %if.end666, label %if.then664
+
+if.then664:                                       ; preds = %if.end656
+  %77 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str60, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load669.pre = load i64* %49, align 8
+  br label %if.end666
+
+if.end666:                                        ; preds = %if.end656, %if.then664
+  %bf.load669 = phi i64 [ %bf.load659, %if.end656 ], [ %bf.load669.pre, %if.then664 ]
+  %bf.cast672 = and i64 %bf.load669, 2199023255552
+  %tobool673 = icmp eq i64 %bf.cast672, 0
+  br i1 %tobool673, label %if.end676, label %if.then674
+
+if.then674:                                       ; preds = %if.end666
+  %78 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str61, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load679.pre = load i64* %49, align 8
+  br label %if.end676
+
+if.end676:                                        ; preds = %if.end666, %if.then674
+  %bf.load679 = phi i64 [ %bf.load669, %if.end666 ], [ %bf.load679.pre, %if.then674 ]
+  %bf.cast682 = and i64 %bf.load679, 4398046511104
+  %tobool683 = icmp eq i64 %bf.cast682, 0
+  br i1 %tobool683, label %if.end686, label %if.then684
+
+if.then684:                                       ; preds = %if.end676
+  %79 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str62, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load689.pre = load i64* %49, align 8
+  br label %if.end686
+
+if.end686:                                        ; preds = %if.end676, %if.then684
+  %bf.load689 = phi i64 [ %bf.load679, %if.end676 ], [ %bf.load689.pre, %if.then684 ]
+  %bf.cast692 = and i64 %bf.load689, 8796093022208
+  %tobool693 = icmp eq i64 %bf.cast692, 0
+  br i1 %tobool693, label %if.end696, label %if.then694
+
+if.then694:                                       ; preds = %if.end686
+  %80 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str63, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load698.pre = load i64* %49, align 8
+  br label %if.end696
+
+if.end696:                                        ; preds = %if.end686, %if.then694
+  %bf.load698 = phi i64 [ %bf.load689, %if.end686 ], [ %bf.load698.pre, %if.then694 ]
+  %bf.cast701 = and i64 %bf.load698, 17592186044416
+  %tobool702 = icmp eq i64 %bf.cast701, 0
+  br i1 %tobool702, label %if.end705, label %if.then703
+
+if.then703:                                       ; preds = %if.end696
+  %81 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str64, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  br label %if.end705
+
+if.end705:                                        ; preds = %if.end696, %if.then703
+  %arrayidx707 = getelementptr inbounds [59 x i8*]* @mode_name, i64 0, i64 %bf.cast
+  %82 = load i8** %arrayidx707, align 8, !tbaa !0
+  %call708 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i8* %82) #4
+  %filename = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 1
+  %83 = load i8** %filename, align 8, !tbaa !0
+  %linenum = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %84 = load i32* %linenum, align 4, !tbaa !3
+  %call711 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([17 x i8]* @.str65, i64 0, i64 0), i8* %83, i32 %84) #4
+  %size = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 4
+  %85 = load %union.tree_node** %size, align 8, !tbaa !0
+  %add713 = add nsw i32 %indent, 4
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([5 x i8]* @.str66, i64 0, i64 0), %union.tree_node* %85, i32 %add713) #5
+  %size_unit = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 7
+  %86 = load %union.tree_node** %size_unit, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([10 x i8]* @.str67, i64 0, i64 0), %union.tree_node* %86, i32 %add713) #5
+  %bf.load718 = load i32* %0, align 8
+  %bf.clear719 = and i32 %bf.load718, 255
+  %cmp720 = icmp eq i32 %bf.clear719, 30
+  br i1 %cmp720, label %lor.lhs.false722, label %if.then739
+
+lor.lhs.false722:                                 ; preds = %if.end705
+  %bf.load725 = load i64* %49, align 8
+  %87 = and i64 %bf.load725, 1610614784
+  %88 = icmp eq i64 %87, 0
+  br i1 %88, label %if.end741, label %if.then739
+
+if.then739:                                       ; preds = %lor.lhs.false722, %if.end705
+  %add740 = add nsw i32 %indent, 3
+  call void @indent_to(%struct._IO_FILE* %file, i32 %add740) #5
+  %bf.load744.pre = load i32* %0, align 8
+  %bf.load750.pre = load i64* %49, align 8
+  br label %if.end741
+
+if.end741:                                        ; preds = %lor.lhs.false722, %if.then739
+  %bf.load750 = phi i64 [ %bf.load725, %lor.lhs.false722 ], [ %bf.load750.pre, %if.then739 ]
+  %bf.load744 = phi i32 [ %bf.load718, %lor.lhs.false722 ], [ %bf.load744.pre, %if.then739 ]
+  %bf.clear745 = and i32 %bf.load744, 255
+  %cmp746 = icmp eq i32 %bf.clear745, 30
+  br i1 %cmp746, label %if.else777, label %if.then748
+
+if.then748:                                       ; preds = %if.end741
+  %bf.cast753 = and i64 %bf.load750, 34359738368
+  %tobool754 = icmp eq i64 %bf.cast753, 0
+  br i1 %tobool754, label %if.end757, label %if.then755
+
+if.then755:                                       ; preds = %if.then748
+  %89 = call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str68, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %file)
+  br label %if.end757
+
+if.end757:                                        ; preds = %if.then748, %if.then755
+  %u1 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 6
+  %90 = bitcast %union.anon* %u1 to i32*
+  %bf.load759 = load i32* %90, align 4
+  %bf.clear760 = and i32 %bf.load759, 16777215
+  %call761 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([10 x i8]* @.str69, i64 0, i64 0), i32 %bf.clear760) #4
+  %bf.load764 = load i32* %0, align 8
+  %bf.clear765 = and i32 %bf.load764, 255
+  %cmp766 = icmp eq i32 %bf.clear765, 37
+  br i1 %cmp766, label %if.then768, label %if.end816
+
+if.then768:                                       ; preds = %if.end757
+  %91 = call i64 @fwrite(i8* getelementptr inbounds ([15 x i8]* @.str70, i64 0, i64 0), i64 14, i64 1, %struct._IO_FILE* %file)
+  %bf.load773 = load i32* %90, align 4
+  %bf.lshr774 = lshr i32 %bf.load773, 24
+  %sh_prom = zext i32 %bf.lshr774 to i64
+  %shl = shl i64 1, %sh_prom
+  %call775 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str7, i64 0, i64 0), i64 %shl) #4
+  br label %if.end816
+
+if.else777:                                       ; preds = %if.end741
+  %bf.lshr781 = lshr i64 %bf.load750, 29
+  %bf.lshr781.tr = trunc i64 %bf.lshr781 to i32
+  %bf.cast783 = and i32 %bf.lshr781.tr, 3
+  switch i32 %bf.cast783, label %if.else799 [
+    i32 0, label %if.end816
+    i32 2, label %if.then795
+  ]
+
+if.then795:                                       ; preds = %if.else777
+  %u1797 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 6
+  %f = bitcast %union.anon* %u1797 to i32*
+  %92 = load i32* %f, align 4, !tbaa !4
+  %call798 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([25 x i8]* @.str71, i64 0, i64 0), i32 %92) #4
+  br label %if.end816
+
+if.else799:                                       ; preds = %if.else777
+  %idxprom8062105 = zext i32 %bf.cast783 to i64
+  %arrayidx807 = getelementptr inbounds [4 x i8*]* @built_in_class_names, i64 0, i64 %idxprom8062105
+  %93 = load i8** %arrayidx807, align 8, !tbaa !0
+  %u1809 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 6
+  %f810 = bitcast %union.anon* %u1809 to i32*
+  %94 = load i32* %f810, align 4, !tbaa !4
+  %idxprom811 = sext i32 %94 to i64
+  %arrayidx812 = getelementptr inbounds [95 x i8*]* @built_in_names, i64 0, i64 %idxprom811
+  %95 = load i8** %arrayidx812, align 8, !tbaa !0
+  %call813 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([16 x i8]* @.str72, i64 0, i64 0), i8* %93, i8* %95) #4
+  br label %if.end816
+
+if.end816:                                        ; preds = %if.else777, %if.else799, %if.then795, %if.end757, %if.then768
+  %pointer_alias_set = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 23
+  %96 = load i64* %pointer_alias_set, align 8, !tbaa !5
+  %cmp818 = icmp eq i64 %96, -1
+  br i1 %cmp818, label %if.end825, label %if.then820
+
+if.then820:                                       ; preds = %if.end816
+  %97 = call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str73, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %file)
+  %98 = load i64* %pointer_alias_set, align 8, !tbaa !5
+  %call824 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str74, i64 0, i64 0), i64 %98) #4
+  br label %if.end825
+
+if.end825:                                        ; preds = %if.end816, %if.then820
+  %bf.load828 = load i32* %0, align 8
+  %bf.clear829 = and i32 %bf.load828, 255
+  %cmp830 = icmp eq i32 %bf.clear829, 37
+  %arguments = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 10
+  br i1 %cmp830, label %if.then832, label %if.end837
+
+if.then832:                                       ; preds = %if.end825
+  %99 = load %union.tree_node** %arguments, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([7 x i8]* @.str75, i64 0, i64 0), %union.tree_node* %99, i32 %add713) #5
+  %u2 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 19
+  %t = bitcast %union.anon.1* %u2 to %union.tree_node**
+  %100 = load %union.tree_node** %t, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([11 x i8]* @.str76, i64 0, i64 0), %union.tree_node* %100, i32 %add713) #5
+  br label %if.end837
+
+if.end837:                                        ; preds = %if.end825, %if.then832
+  %context = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 9
+  %101 = load %union.tree_node** %context, align 8, !tbaa !0
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([8 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %101, i32 %add713) #5
+  %attributes = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 16
+  %102 = load %union.tree_node** %attributes, align 8, !tbaa !0
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([11 x i8]* @.str78, i64 0, i64 0), %union.tree_node* %102, i32 %add713) #5
+  %abstract_origin = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 13
+  %103 = load %union.tree_node** %abstract_origin, align 8, !tbaa !0
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([16 x i8]* @.str79, i64 0, i64 0), %union.tree_node* %103, i32 %add713) #5
+  %104 = load %union.tree_node** %arguments, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([10 x i8]* @.str80, i64 0, i64 0), %union.tree_node* %104, i32 %add713) #5
+  %result = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 11
+  %105 = load %union.tree_node** %result, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([7 x i8]* @.str81, i64 0, i64 0), %union.tree_node* %105, i32 %add713) #5
+  %initial = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 12
+  %106 = load %union.tree_node** %initial, align 8, !tbaa !0
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([8 x i8]* @.str82, i64 0, i64 0), %union.tree_node* %106, i32 %add713) #5
+  %107 = load void (%struct._IO_FILE*, %union.tree_node*, i32)** getelementptr inbounds (%struct.lang_hooks* @lang_hooks, i64 0, i32 15), align 8, !tbaa !0
+  call void %107(%struct._IO_FILE* %file, %union.tree_node* %node, i32 %indent) #4
+  %rtl = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 17
+  %108 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %cmp852 = icmp eq %struct.rtx_def* %108, null
+  br i1 %cmp852, label %if.end863, label %if.then854
+
+if.then854:                                       ; preds = %if.end837
+  call void @indent_to(%struct._IO_FILE* %file, i32 %add713) #5
+  %109 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %tobool858 = icmp eq %struct.rtx_def* %109, null
+  br i1 %tobool858, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %if.then854
+  call void @make_decl_rtl(%union.tree_node* %node, i8* null) #4
+  %110 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then854, %cond.false
+  %cond = phi %struct.rtx_def* [ %110, %cond.false ], [ %109, %if.then854 ]
+  call void @print_rtl(%struct._IO_FILE* %file, %struct.rtx_def* %cond) #4
+  br label %if.end863
+
+if.end863:                                        ; preds = %if.end837, %cond.end
+  %bf.load866 = load i32* %0, align 8
+  %bf.clear867 = and i32 %bf.load866, 255
+  switch i32 %bf.clear867, label %if.end909 [
+    i32 35, label %if.then870
+    i32 30, label %land.lhs.true895
+  ]
+
+if.then870:                                       ; preds = %if.end863
+  %111 = load %union.tree_node** %initial, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([9 x i8]* @.str83, i64 0, i64 0), %union.tree_node* %111, i32 %add713) #5
+  %112 = load %union.tree_node** %result, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([20 x i8]* @.str84, i64 0, i64 0), %union.tree_node* %112, i32 %add713) #5
+  %u2878 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 19
+  %r = bitcast %union.anon.1* %u2878 to %struct.rtx_def**
+  %113 = load %struct.rtx_def** %r, align 8, !tbaa !0
+  %cmp879 = icmp eq %struct.rtx_def* %113, null
+  br i1 %cmp879, label %if.end909, label %if.then881
+
+if.then881:                                       ; preds = %if.then870
+  call void @indent_to(%struct._IO_FILE* %file, i32 %add713) #5
+  %114 = call i64 @fwrite(i8* getelementptr inbounds ([14 x i8]* @.str85, i64 0, i64 0), i64 13, i64 1, %struct._IO_FILE* %file)
+  %115 = load %struct.rtx_def** %r, align 8, !tbaa !0
+  call void @print_rtl(%struct._IO_FILE* %file, %struct.rtx_def* %115) #4
+  br label %if.end909
+
+land.lhs.true895:                                 ; preds = %if.end863
+  %f898 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 19, i32 0
+  %116 = load %struct.function** %f898, align 8, !tbaa !0
+  %cmp899 = icmp eq %struct.function* %116, null
+  br i1 %cmp899, label %if.end909, label %if.then901
+
+if.then901:                                       ; preds = %land.lhs.true895
+  call void @indent_to(%struct._IO_FILE* %file, i32 %add713) #5
+  %117 = call i64 @fwrite(i8* getelementptr inbounds ([13 x i8]* @.str86, i64 0, i64 0), i64 12, i64 1, %struct._IO_FILE* %file)
+  %118 = load %struct.function** %f898, align 8, !tbaa !0
+  %call907 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), %struct.function* %118) #4
+  br label %if.end909
+
+if.end909:                                        ; preds = %if.end863, %if.then870, %land.lhs.true895, %if.then901, %if.then881
+  %cmp910 = icmp eq i32 %indent, 4
+  %chain = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 0, i32 0
+  %119 = load %union.tree_node** %chain, align 8, !tbaa !0
+  br i1 %cmp910, label %if.then912, label %if.else915
+
+if.then912:                                       ; preds = %if.end909
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str87, i64 0, i64 0), %union.tree_node* %119, i32 %add713) #5
+  br label %sw.epilog1576
+
+if.else915:                                       ; preds = %if.end909
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str87, i64 0, i64 0), %union.tree_node* %119, i32 %add713) #5
+  br label %sw.epilog1576
+
+sw.bb920:                                         ; preds = %if.end305
+  %bf.clear309.off = add i32 %bf.clear309, -20
+  %switch = icmp ult i32 %bf.clear309.off, 3
+  br i1 %switch, label %land.lhs.true941, label %if.else949
+
+land.lhs.true941:                                 ; preds = %sw.bb920
+  %type942 = bitcast %union.tree_node* %node to %struct.tree_type*
+  %no_force_blk_flag = getelementptr inbounds %struct.tree_type* %type942, i64 0, i32 6
+  %120 = bitcast [4 x i8]* %no_force_blk_flag to i32*
+  %bf.load943 = load i32* %120, align 4
+  %bf.clear945 = and i32 %bf.load943, 131072
+  %tobool946 = icmp eq i32 %bf.clear945, 0
+  br i1 %tobool946, label %if.else965.if.end983_crit_edge, label %if.then947
+
+if.then947:                                       ; preds = %land.lhs.true941
+  %121 = call i64 @fwrite(i8* getelementptr inbounds ([14 x i8]* @.str88, i64 0, i64 0), i64 13, i64 1, %struct._IO_FILE* %file)
+  br label %if.end983
+
+if.else949:                                       ; preds = %sw.bb920
+  switch i32 %bf.clear309, label %if.else965.if.end983_crit_edge [
+    i32 6, label %land.lhs.true956
+    i32 23, label %land.lhs.true972
+  ]
+
+land.lhs.true956:                                 ; preds = %if.else949
+  %type957 = bitcast %union.tree_node* %node to %struct.tree_type*
+  %no_force_blk_flag958 = getelementptr inbounds %struct.tree_type* %type957, i64 0, i32 6
+  %122 = bitcast [4 x i8]* %no_force_blk_flag958 to i32*
+  %bf.load959 = load i32* %122, align 4
+  %bf.clear961 = and i32 %bf.load959, 131072
+  %tobool962 = icmp eq i32 %bf.clear961, 0
+  br i1 %tobool962, label %if.else965.if.end983_crit_edge, label %if.then963
+
+if.then963:                                       ; preds = %land.lhs.true956
+  %123 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str89, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %file)
+  br label %if.end983
+
+if.else965.if.end983_crit_edge:                   ; preds = %if.else949, %land.lhs.true941, %land.lhs.true956
+  %type984.pre = bitcast %union.tree_node* %node to %struct.tree_type*
+  %string_flag.pre = getelementptr inbounds %struct.tree_type* %type984.pre, i64 0, i32 6
+  %.pre2194 = bitcast [4 x i8]* %string_flag.pre to i32*
+  br label %if.end983
+
+land.lhs.true972:                                 ; preds = %if.else949
+  %type973 = bitcast %union.tree_node* %node to %struct.tree_type*
+  %no_force_blk_flag974 = getelementptr inbounds %struct.tree_type* %type973, i64 0, i32 6
+  %124 = bitcast [4 x i8]* %no_force_blk_flag974 to i32*
+  %bf.load975 = load i32* %124, align 4
+  %bf.clear977 = and i32 %bf.load975, 131072
+  %tobool978 = icmp eq i32 %bf.clear977, 0
+  br i1 %tobool978, label %if.end983, label %if.then979
+
+if.then979:                                       ; preds = %land.lhs.true972
+  %125 = call i64 @fwrite(i8* getelementptr inbounds ([25 x i8]* @.str90, i64 0, i64 0), i64 24, i64 1, %struct._IO_FILE* %file)
+  br label %if.end983
+
+if.end983:                                        ; preds = %if.else965.if.end983_crit_edge, %land.lhs.true972, %if.then963, %if.then979, %if.then947
+  %.pre-phi = phi i32* [ %.pre2194, %if.else965.if.end983_crit_edge ], [ %124, %land.lhs.true972 ], [ %122, %if.then963 ], [ %124, %if.then979 ], [ %120, %if.then947 ]
+  %bf.load985 = load i32* %.pre-phi, align 4
+  %bf.clear987 = and i32 %bf.load985, 65536
+  %tobool988 = icmp eq i32 %bf.clear987, 0
+  br i1 %tobool988, label %if.end991, label %if.then989
+
+if.then989:                                       ; preds = %if.end983
+  %126 = call i64 @fwrite(i8* getelementptr inbounds ([13 x i8]* @.str91, i64 0, i64 0), i64 12, i64 1, %struct._IO_FILE* %file)
+  %bf.load993.pre = load i32* %.pre-phi, align 4
+  br label %if.end991
+
+if.end991:                                        ; preds = %if.end983, %if.then989
+  %bf.load993 = phi i32 [ %bf.load985, %if.end983 ], [ %bf.load993.pre, %if.then989 ]
+  %bf.clear995 = and i32 %bf.load993, 262144
+  %tobool996 = icmp eq i32 %bf.clear995, 0
+  br i1 %tobool996, label %if.end999, label %if.then997
+
+if.then997:                                       ; preds = %if.end991
+  %127 = call i64 @fwrite(i8* getelementptr inbounds ([20 x i8]* @.str92, i64 0, i64 0), i64 19, i64 1, %struct._IO_FILE* %file)
+  br label %if.end999
+
+if.end999:                                        ; preds = %if.end991, %if.then997
+  %bf.load1002 = load i32* %0, align 8
+  %bf.clear1003 = and i32 %bf.load1002, 255
+  switch i32 %bf.clear1003, label %if.end1048 [
+    i32 21, label %land.lhs.true1006
+    i32 18, label %land.lhs.true1021
+    i32 23, label %land.lhs.true1037
+  ]
+
+land.lhs.true1006:                                ; preds = %if.end999
+  %bf.load1008 = load i32* %.pre-phi, align 4
+  %bf.clear1010 = and i32 %bf.load1008, 524288
+  %tobool1011 = icmp eq i32 %bf.clear1010, 0
+  br i1 %tobool1011, label %if.end1048, label %if.then1012
+
+if.then1012:                                      ; preds = %land.lhs.true1006
+  %128 = call i64 @fwrite(i8* getelementptr inbounds ([19 x i8]* @.str54, i64 0, i64 0), i64 18, i64 1, %struct._IO_FILE* %file)
+  br label %if.end1048
+
+land.lhs.true1021:                                ; preds = %if.end999
+  %bf.load1024 = load i32* %.pre-phi, align 4
+  %bf.clear1026 = and i32 %bf.load1024, 524288
+  %tobool1027 = icmp eq i32 %bf.clear1026, 0
+  br i1 %tobool1027, label %if.end1048, label %if.then1028
+
+if.then1028:                                      ; preds = %land.lhs.true1021
+  %129 = call i64 @fwrite(i8* getelementptr inbounds ([22 x i8]* @.str93, i64 0, i64 0), i64 21, i64 1, %struct._IO_FILE* %file)
+  br label %if.end1048
+
+land.lhs.true1037:                                ; preds = %if.end999
+  %bf.load1040 = load i32* %.pre-phi, align 4
+  %bf.clear1042 = and i32 %bf.load1040, 524288
+  %tobool1043 = icmp eq i32 %bf.clear1042, 0
+  br i1 %tobool1043, label %if.end1048, label %if.then1044
+
+if.then1044:                                      ; preds = %land.lhs.true1037
+  %130 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str94, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %file)
+  br label %if.end1048
+
+if.end1048:                                       ; preds = %if.end999, %land.lhs.true1006, %land.lhs.true1021, %land.lhs.true1037, %if.then1028, %if.then1044, %if.then1012
+  %bf.load1050 = load i32* %.pre-phi, align 4
+  %bf.clear1052 = and i32 %bf.load1050, 1048576
+  %tobool1053 = icmp eq i32 %bf.clear1052, 0
+  br i1 %tobool1053, label %if.end1056, label %if.then1054
+
+if.then1054:                                      ; preds = %if.end1048
+  %131 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str48, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load1059.pre = load i32* %.pre-phi, align 4
+  br label %if.end1056
+
+if.end1056:                                       ; preds = %if.end1048, %if.then1054
+  %bf.load1059 = phi i32 [ %bf.load1050, %if.end1048 ], [ %bf.load1059.pre, %if.then1054 ]
+  %bf.clear1061 = and i32 %bf.load1059, 16777216
+  %tobool1062 = icmp eq i32 %bf.clear1061, 0
+  br i1 %tobool1062, label %if.end1065, label %if.then1063
+
+if.then1063:                                      ; preds = %if.end1056
+  %132 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str95, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load1068.pre = load i32* %.pre-phi, align 4
+  br label %if.end1065
+
+if.end1065:                                       ; preds = %if.end1056, %if.then1063
+  %bf.load1068 = phi i32 [ %bf.load1059, %if.end1056 ], [ %bf.load1068.pre, %if.then1063 ]
+  %bf.clear1070 = and i32 %bf.load1068, 33554432
+  %tobool1071 = icmp eq i32 %bf.clear1070, 0
+  br i1 %tobool1071, label %if.end1074, label %if.then1072
+
+if.then1072:                                      ; preds = %if.end1065
+  %133 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str96, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load1077.pre = load i32* %.pre-phi, align 4
+  br label %if.end1074
+
+if.end1074:                                       ; preds = %if.end1065, %if.then1072
+  %bf.load1077 = phi i32 [ %bf.load1068, %if.end1065 ], [ %bf.load1077.pre, %if.then1072 ]
+  %bf.clear1079 = and i32 %bf.load1077, 67108864
+  %tobool1080 = icmp eq i32 %bf.clear1079, 0
+  br i1 %tobool1080, label %if.end1083, label %if.then1081
+
+if.then1081:                                      ; preds = %if.end1074
+  %134 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str97, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load1086.pre = load i32* %.pre-phi, align 4
+  br label %if.end1083
+
+if.end1083:                                       ; preds = %if.end1074, %if.then1081
+  %bf.load1086 = phi i32 [ %bf.load1077, %if.end1074 ], [ %bf.load1086.pre, %if.then1081 ]
+  %bf.clear1088 = and i32 %bf.load1086, 134217728
+  %tobool1089 = icmp eq i32 %bf.clear1088, 0
+  br i1 %tobool1089, label %if.end1092, label %if.then1090
+
+if.then1090:                                      ; preds = %if.end1083
+  %135 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str98, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load1095.pre = load i32* %.pre-phi, align 4
+  br label %if.end1092
+
+if.end1092:                                       ; preds = %if.end1083, %if.then1090
+  %bf.load1095 = phi i32 [ %bf.load1086, %if.end1083 ], [ %bf.load1095.pre, %if.then1090 ]
+  %bf.clear1097 = and i32 %bf.load1095, 268435456
+  %tobool1098 = icmp eq i32 %bf.clear1097, 0
+  br i1 %tobool1098, label %if.end1101, label %if.then1099
+
+if.then1099:                                      ; preds = %if.end1092
+  %136 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str99, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load1104.pre = load i32* %.pre-phi, align 4
+  br label %if.end1101
+
+if.end1101:                                       ; preds = %if.end1092, %if.then1099
+  %bf.load1104 = phi i32 [ %bf.load1095, %if.end1092 ], [ %bf.load1104.pre, %if.then1099 ]
+  %bf.clear1106 = and i32 %bf.load1104, 536870912
+  %tobool1107 = icmp eq i32 %bf.clear1106, 0
+  br i1 %tobool1107, label %if.end1110, label %if.then1108
+
+if.then1108:                                      ; preds = %if.end1101
+  %137 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str100, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load1113.pre = load i32* %.pre-phi, align 4
+  br label %if.end1110
+
+if.end1110:                                       ; preds = %if.end1101, %if.then1108
+  %bf.load1113 = phi i32 [ %bf.load1104, %if.end1101 ], [ %bf.load1113.pre, %if.then1108 ]
+  %bf.clear1115 = and i32 %bf.load1113, 1073741824
+  %tobool1116 = icmp eq i32 %bf.clear1115, 0
+  br i1 %tobool1116, label %if.end1119, label %if.then1117
+
+if.then1117:                                      ; preds = %if.end1110
+  %138 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str101, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %bf.load1122.pre = load i32* %.pre-phi, align 4
+  br label %if.end1119
+
+if.end1119:                                       ; preds = %if.end1110, %if.then1117
+  %bf.load1122 = phi i32 [ %bf.load1113, %if.end1110 ], [ %bf.load1122.pre, %if.then1117 ]
+  %bf.lshr1123 = lshr i32 %bf.load1122, 9
+  %bf.clear1124 = and i32 %bf.lshr1123, 127
+  %idxprom11252103 = zext i32 %bf.clear1124 to i64
+  %arrayidx1126 = getelementptr inbounds [59 x i8*]* @mode_name, i64 0, i64 %idxprom11252103
+  %139 = load i8** %arrayidx1126, align 8, !tbaa !0
+  %call1127 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i8* %139) #4
+  %size1129 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %140 = bitcast i32* %size1129 to %union.tree_node**
+  %141 = load %union.tree_node** %140, align 8, !tbaa !0
+  %add1130 = add nsw i32 %indent, 4
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([5 x i8]* @.str66, i64 0, i64 0), %union.tree_node* %141, i32 %add1130) #5
+  %142 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 4
+  %143 = load %union.tree_node** %142, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([10 x i8]* @.str67, i64 0, i64 0), %union.tree_node* %143, i32 %add1130) #5
+  %add1134 = add nsw i32 %indent, 3
+  call void @indent_to(%struct._IO_FILE* %file, i32 %add1134) #5
+  %bf.load1137 = load i32* %.pre-phi, align 4
+  %tobool1139 = icmp slt i32 %bf.load1137, 0
+  br i1 %tobool1139, label %if.then1140, label %if.end1142
+
+if.then1140:                                      ; preds = %if.end1119
+  %144 = call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str68, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %file)
+  br label %if.end1142
+
+if.end1142:                                       ; preds = %if.then1140, %if.end1119
+  %align = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 7
+  %145 = bitcast %union.tree_node** %align to i32*
+  %146 = load i32* %145, align 4, !tbaa !3
+  %call1144 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([10 x i8]* @.str69, i64 0, i64 0), i32 %146) #4
+  %symtab = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 10
+  %address = bitcast %union.tree_node** %symtab to i32*
+  %147 = load i32* %address, align 4, !tbaa !3
+  %call1146 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([11 x i8]* @.str102, i64 0, i64 0), i32 %147) #4
+  %148 = call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str73, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %file)
+  %alias_set = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 18
+  %149 = bitcast %struct.rtx_def** %alias_set to i64*
+  %150 = load i64* %149, align 8, !tbaa !5
+  %call1149 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str74, i64 0, i64 0), i64 %150) #4
+  %attributes1151 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 5
+  %151 = bitcast [8 x i8]* %attributes1151 to %union.tree_node**
+  %152 = load %union.tree_node** %151, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([11 x i8]* @.str78, i64 0, i64 0), %union.tree_node* %152, i32 %add1130) #5
+  %bf.load1155 = load i32* %0, align 8
+  %bf.clear1156 = and i32 %bf.load1155, 255
+  switch i32 %bf.clear1156, label %if.end1196 [
+    i32 6, label %if.then1187
+    i32 10, label %if.then1187
+    i32 11, label %if.then1187
+    i32 12, label %if.then1187
+    i32 7, label %if.then1187
+  ]
+
+if.then1187:                                      ; preds = %if.end1142, %if.end1142, %if.end1142, %if.end1142, %if.end1142
+  %bf.load1189 = load i32* %.pre-phi, align 4
+  %bf.clear1190 = and i32 %bf.load1189, 511
+  %call1191 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([14 x i8]* @.str103, i64 0, i64 0), i32 %bf.clear1190) #4
+  %153 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 12
+  %154 = load %union.tree_node** %153, align 8, !tbaa !0
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str104, i64 0, i64 0), %union.tree_node* %154, i32 %add1130) #5
+  %155 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 13
+  %156 = load %union.tree_node** %155, align 8, !tbaa !0
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str105, i64 0, i64 0), %union.tree_node* %156, i32 %add1130) #5
+  %bf.load1199.pre = load i32* %0, align 8
+  br label %if.end1196
+
+if.end1196:                                       ; preds = %if.end1142, %if.then1187
+  %bf.load1199 = phi i32 [ %bf.load1155, %if.end1142 ], [ %bf.load1199.pre, %if.then1187 ]
+  %bf.clear1200 = and i32 %bf.load1199, 255
+  switch i32 %bf.clear1200, label %if.end1290 [
+    i32 10, label %if.then1203
+    i32 18, label %if.then1220
+    i32 19, label %if.then1220
+    i32 20, label %if.then1245
+    i32 21, label %if.then1245
+    i32 22, label %if.then1245
+    i32 23, label %if.then1263
+    i32 16, label %if.then1263
+    i32 14, label %if.then1282
+  ]
+
+if.then1203:                                      ; preds = %if.end1196
+  %values = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 1
+  %157 = load i8** %values, align 8
+  %158 = bitcast i8* %157 to %union.tree_node*
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([7 x i8]* @.str106, i64 0, i64 0), %union.tree_node* %158, i32 %add1130) #5
+  br label %if.end1290
+
+if.then1220:                                      ; preds = %if.end1196, %if.end1196
+  %values1222 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 1
+  %159 = load i8** %values1222, align 8
+  %160 = bitcast i8* %159 to %union.tree_node*
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([7 x i8]* @.str107, i64 0, i64 0), %union.tree_node* %160, i32 %add1130) #5
+  br label %if.end1290
+
+if.then1245:                                      ; preds = %if.end1196, %if.end1196, %if.end1196
+  %values1247 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 1
+  %161 = load i8** %values1247, align 8
+  %162 = bitcast i8* %161 to %union.tree_node*
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([7 x i8]* @.str108, i64 0, i64 0), %union.tree_node* %162, i32 %add1130) #5
+  br label %if.end1290
+
+if.then1263:                                      ; preds = %if.end1196, %if.end1196
+  %163 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 13
+  %164 = load %union.tree_node** %163, align 8, !tbaa !0
+  %tobool1266 = icmp eq %union.tree_node* %164, null
+  br i1 %tobool1266, label %if.end1271, label %if.then1267
+
+if.then1267:                                      ; preds = %if.then1263
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([16 x i8]* @.str109, i64 0, i64 0), %union.tree_node* %164, i32 %add1130) #5
+  br label %if.end1271
+
+if.end1271:                                       ; preds = %if.then1263, %if.then1267
+  %values1273 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 1
+  %165 = load i8** %values1273, align 8
+  %166 = bitcast i8* %165 to %union.tree_node*
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([10 x i8]* @.str110, i64 0, i64 0), %union.tree_node* %166, i32 %add1130) #5
+  br label %if.end1290
+
+if.then1282:                                      ; preds = %if.end1196
+  %167 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 13
+  %168 = load %union.tree_node** %167, align 8, !tbaa !0
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([9 x i8]* @.str111, i64 0, i64 0), %union.tree_node* %168, i32 %add1130) #5
+  br label %if.end1290
+
+if.end1290:                                       ; preds = %if.end1196, %if.then1220, %if.end1271, %if.then1282, %if.then1245, %if.then1203
+  %context1292 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 17
+  %169 = load %struct.rtx_def** %context1292, align 8
+  %tobool1293 = icmp eq %struct.rtx_def* %169, null
+  br i1 %tobool1293, label %if.end1298, label %if.then1294
+
+if.then1294:                                      ; preds = %if.end1290
+  %170 = bitcast %struct.rtx_def* %169 to %union.tree_node*
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([8 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %170, i32 %add1130) #5
+  br label %if.end1298
+
+if.end1298:                                       ; preds = %if.end1290, %if.then1294
+  %171 = load void (%struct._IO_FILE*, %union.tree_node*, i32)** getelementptr inbounds (%struct.lang_hooks* @lang_hooks, i64 0, i32 16), align 8, !tbaa !0
+  call void %171(%struct._IO_FILE* %file, %union.tree_node* %node, i32 %indent) #4
+  %172 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 8
+  %173 = load %union.tree_node** %172, align 8, !tbaa !0
+  %tobool1300 = icmp eq %union.tree_node* %173, null
+  %chain1303 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 0, i32 0
+  br i1 %tobool1300, label %lor.lhs.false1301, label %if.then1305
+
+lor.lhs.false1301:                                ; preds = %if.end1298
+  %174 = load %union.tree_node** %chain1303, align 8, !tbaa !0
+  %tobool1304 = icmp eq %union.tree_node* %174, null
+  br i1 %tobool1304, label %if.end1307, label %if.then1305
+
+if.then1305:                                      ; preds = %if.end1298, %lor.lhs.false1301
+  call void @indent_to(%struct._IO_FILE* %file, i32 %add1134) #5
+  %.pre = load %union.tree_node** %172, align 8, !tbaa !0
+  br label %if.end1307
+
+if.end1307:                                       ; preds = %lor.lhs.false1301, %if.then1305
+  %175 = phi %union.tree_node* [ null, %lor.lhs.false1301 ], [ %.pre, %if.then1305 ]
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([16 x i8]* @.str112, i64 0, i64 0), %union.tree_node* %175, i32 %add1130) #5
+  %176 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 9
+  %177 = load %union.tree_node** %176, align 8, !tbaa !0
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([18 x i8]* @.str113, i64 0, i64 0), %union.tree_node* %177, i32 %add1130) #5
+  %178 = load %union.tree_node** %chain1303, align 8, !tbaa !0
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str87, i64 0, i64 0), %union.tree_node* %178, i32 %add1130) #5
+  br label %sw.epilog1576
+
+sw.bb1316:                                        ; preds = %if.end305
+  %vars = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %179 = bitcast i32* %vars to %union.tree_node**
+  %180 = load %union.tree_node** %179, align 8, !tbaa !0
+  %add1317 = add nsw i32 %indent, 4
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([5 x i8]* @.str114, i64 0, i64 0), %union.tree_node* %180, i32 %add1317) #5
+  %supercontext = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 5
+  %181 = bitcast [8 x i8]* %supercontext to %union.tree_node**
+  %182 = load %union.tree_node** %181, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([13 x i8]* @.str115, i64 0, i64 0), %union.tree_node* %182, i32 %add1317) #5
+  %183 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 4
+  %184 = load %union.tree_node** %183, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([10 x i8]* @.str116, i64 0, i64 0), %union.tree_node* %184, i32 %add1317) #5
+  %chain1323 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 0, i32 0
+  %185 = load %union.tree_node** %chain1323, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str87, i64 0, i64 0), %union.tree_node* %185, i32 %add1317) #5
+  %abstract_origin1326 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 6
+  %186 = bitcast %union.anon* %abstract_origin1326 to %union.tree_node**
+  %187 = load %union.tree_node** %186, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([16 x i8]* @.str79, i64 0, i64 0), %union.tree_node* %187, i32 %add1317) #5
+  br label %sw.epilog1576
+
+sw.bb1328:                                        ; preds = %if.end305, %if.end305, %if.end305, %if.end305, %if.end305, %if.end305
+  %cmp1333 = icmp eq i32 %bf.clear309, 52
+  br i1 %cmp1333, label %if.then1335, label %if.end1346
+
+if.then1335:                                      ; preds = %sw.bb1328
+  %operands = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %arrayidx1336 = bitcast i32* %operands to %union.tree_node**
+  %188 = load %union.tree_node** %arrayidx1336, align 8, !tbaa !0
+  %add1337 = add nsw i32 %indent, 4
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([5 x i8]* @.str114, i64 0, i64 0), %union.tree_node* %188, i32 %add1337) #5
+  %arrayidx1340 = getelementptr inbounds i32* %operands, i64 2
+  %189 = bitcast i32* %arrayidx1340 to %union.tree_node**
+  %190 = load %union.tree_node** %189, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([5 x i8]* @.str117, i64 0, i64 0), %union.tree_node* %190, i32 %add1337) #5
+  %arrayidx1344 = getelementptr inbounds i32* %operands, i64 4
+  %191 = bitcast i32* %arrayidx1344 to %union.tree_node**
+  %192 = load %union.tree_node** %191, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str118, i64 0, i64 0), %union.tree_node* %192, i32 %add1337) #5
+  br label %sw.epilog1576
+
+if.end1346:                                       ; preds = %sw.bb1328
+  %arrayidx1352 = getelementptr inbounds [256 x i32]* @tree_code_length, i64 0, i64 %idxprom3102100
+  %193 = load i32* %arrayidx1352, align 4, !tbaa !3
+  %call1357 = call i32 @first_rtl_op(i32 %bf.clear309) #4
+  %cmp13592116 = icmp sgt i32 %193, 0
+  br i1 %cmp13592116, label %for.body1361.lr.ph, label %for.end1391
+
+for.body1361.lr.ph:                               ; preds = %if.end1346
+  %arraydecay = getelementptr inbounds [10 x i8]* %temp, i64 0, i64 0
+  %operands1386 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %194 = bitcast i32* %operands1386 to [1 x %union.tree_node*]*
+  %add1388 = add nsw i32 %indent, 4
+  br label %for.body1361
+
+for.body1361:                                     ; preds = %for.inc1390, %for.body1361.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body1361.lr.ph ], [ %indvars.iv.next, %for.inc1390 ]
+  %195 = trunc i64 %indvars.iv to i32
+  %cmp1362 = icmp slt i32 %195, %call1357
+  br i1 %cmp1362, label %if.else1381, label %if.then1364
+
+if.then1364:                                      ; preds = %for.body1361
+  call void @indent_to(%struct._IO_FILE* %file, i32 %add1388) #5
+  %call1366 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([8 x i8]* @.str119, i64 0, i64 0), i32 %195) #4
+  %arrayidx1370 = getelementptr inbounds [1 x %union.tree_node*]* %194, i64 0, i64 %indvars.iv
+  %196 = load %union.tree_node** %arrayidx1370, align 8, !tbaa !0
+  %tobool1371 = icmp eq %union.tree_node* %196, null
+  br i1 %tobool1371, label %if.else1377, label %if.then1372
+
+if.then1372:                                      ; preds = %if.then1364
+  %197 = bitcast %union.tree_node* %196 to %struct.rtx_def*
+  call void @print_rtl(%struct._IO_FILE* %file, %struct.rtx_def* %197) #4
+  br label %if.end1379
+
+if.else1377:                                      ; preds = %if.then1364
+  %198 = call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str120, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %file)
+  br label %if.end1379
+
+if.end1379:                                       ; preds = %if.else1377, %if.then1372
+  %fputc2114 = call i32 @fputc(i32 10, %struct._IO_FILE* %file)
+  br label %for.inc1390
+
+if.else1381:                                      ; preds = %for.body1361
+  %call1382 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([7 x i8]* @.str121, i64 0, i64 0), i32 %195) #4
+  %arrayidx1387 = getelementptr inbounds [1 x %union.tree_node*]* %194, i64 0, i64 %indvars.iv
+  %199 = load %union.tree_node** %arrayidx1387, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* %arraydecay, %union.tree_node* %199, i32 %add1388) #5
+  br label %for.inc1390
+
+for.inc1390:                                      ; preds = %if.end1379, %if.else1381
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %193
+  br i1 %exitcond, label %for.end1391, label %for.body1361
+
+for.end1391:                                      ; preds = %for.inc1390, %if.end1346
+  %bf.load1394 = load i32* %0, align 8
+  %bf.clear1395 = and i32 %bf.load1394, 255
+  %cmp1396 = icmp eq i32 %bf.clear1395, 144
+  %add1399 = add nsw i32 %indent, 4
+  br i1 %cmp1396, label %if.then1398, label %if.end1418
+
+if.then1398:                                      ; preds = %for.end1391
+  call void @indent_to(%struct._IO_FILE* %file, i32 %add1399) #5
+  %operands1401 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %arrayidx1402 = getelementptr inbounds i32* %operands1401, i64 2
+  %200 = bitcast i32* %arrayidx1402 to %union.tree_node**
+  %201 = load %union.tree_node** %200, align 8, !tbaa !0
+  %tobool1403 = icmp eq %union.tree_node* %201, null
+  br i1 %tobool1403, label %cond.end1412, label %cond.true1404
+
+cond.true1404:                                    ; preds = %if.then1398
+  %id1409 = getelementptr inbounds %union.tree_node* %201, i64 0, i32 0, i32 1
+  %202 = getelementptr inbounds i8** %id1409, i64 1
+  %203 = load i8** %202, align 8, !tbaa !0
+  br label %cond.end1412
+
+cond.end1412:                                     ; preds = %if.then1398, %cond.true1404
+  %cond1413 = phi i8* [ %203, %cond.true1404 ], [ getelementptr inbounds ([15 x i8]* @.str123, i64 0, i64 0), %if.then1398 ]
+  %complexity = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 1
+  %204 = bitcast i8** %complexity to i32*
+  %205 = load i32* %204, align 4, !tbaa !3
+  %shr = ashr i32 %205, 12
+  %and = and i32 %205, 4095
+  %call1417 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([9 x i8]* @.str122, i64 0, i64 0), i8* %cond1413, i32 %shr, i32 %and) #4
+  br label %if.end1418
+
+if.end1418:                                       ; preds = %for.end1391, %cond.end1412
+  %chain1420 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 0, i32 0
+  %206 = load %union.tree_node** %chain1420, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str87, i64 0, i64 0), %union.tree_node* %206, i32 %add1399) #5
+  br label %sw.epilog1576
+
+sw.bb1422:                                        ; preds = %if.end305, %if.end305
+  switch i32 %bf.clear309, label %sw.default [
+    i32 25, label %sw.bb1427
+    i32 26, label %sw.bb1473
+    i32 28, label %sw.bb1499
+    i32 27, label %sw.bb1513
+    i32 29, label %sw.bb1517
+    i32 1, label %sw.bb1531
+    i32 2, label %sw.bb1532
+    i32 3, label %sw.bb1541
+  ]
+
+sw.bb1427:                                        ; preds = %sw.bb1422
+  %bf.clear1432 = and i32 %bf.load1425, 262144
+  %tobool1433 = icmp eq i32 %bf.clear1432, 0
+  br i1 %tobool1433, label %if.end1436, label %if.then1434
+
+if.then1434:                                      ; preds = %sw.bb1427
+  %207 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str6, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %file)
+  br label %if.end1436
+
+if.end1436:                                       ; preds = %sw.bb1427, %if.then1434
+  %fputc2108 = call i32 @fputc(i32 32, %struct._IO_FILE* %file)
+  %int_cst1438 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %high = getelementptr inbounds i32* %int_cst1438, i64 2
+  %208 = bitcast i32* %high to i64*
+  %209 = load i64* %208, align 8, !tbaa !5
+  switch i64 %209, label %if.end1436.if.else1463_crit_edge [
+    i64 0, label %if.then1441
+    i64 -1, label %land.lhs.true1451
+  ]
+
+if.end1436.if.else1463_crit_edge:                 ; preds = %if.end1436
+  %low1469.phi.trans.insert = bitcast i32* %int_cst1438 to i64*
+  %.pre2193 = load i64* %low1469.phi.trans.insert, align 8, !tbaa !5
+  br label %if.else1463
+
+if.then1441:                                      ; preds = %if.end1436
+  %low = bitcast i32* %int_cst1438 to i64*
+  %210 = load i64* %low, align 8, !tbaa !5
+  %call1444 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str7, i64 0, i64 0), i64 %210) #4
+  br label %sw.epilog1576
+
+land.lhs.true1451:                                ; preds = %if.end1436
+  %low1454 = bitcast i32* %int_cst1438 to i64*
+  %211 = load i64* %low1454, align 8, !tbaa !5
+  %cmp1455 = icmp eq i64 %211, 0
+  br i1 %cmp1455, label %if.else1463, label %if.then1457
+
+if.then1457:                                      ; preds = %land.lhs.true1451
+  %fputc2111 = call i32 @fputc(i32 45, %struct._IO_FILE* %file)
+  %212 = load i64* %low1454, align 8, !tbaa !5
+  %sub = sub i64 0, %212
+  %call1462 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str7, i64 0, i64 0), i64 %sub) #4
+  br label %sw.epilog1576
+
+if.else1463:                                      ; preds = %if.end1436.if.else1463_crit_edge, %land.lhs.true1451
+  %213 = phi i64 [ %.pre2193, %if.end1436.if.else1463_crit_edge ], [ 0, %land.lhs.true1451 ]
+  %call1470 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str9, i64 0, i64 0), i64 %209, i64 %213) #4
+  br label %sw.epilog1576
+
+sw.bb1473:                                        ; preds = %sw.bb1422
+  %bf.clear1478 = and i32 %bf.load1425, 524288
+  %tobool1479 = icmp eq i32 %bf.clear1478, 0
+  br i1 %tobool1479, label %if.end1482, label %if.then1480
+
+if.then1480:                                      ; preds = %sw.bb1473
+  %214 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str6, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %file)
+  br label %if.end1482
+
+if.end1482:                                       ; preds = %sw.bb1473, %if.then1480
+  %real_cst1483 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %215 = bitcast %struct.realvaluetype* %d to i8*
+  %216 = bitcast i32* %real_cst1483 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %215, i8* %216, i64 24, i32 8, i1 false), !tbaa.struct !6
+  %tmpcast = bitcast i32* %real_cst1483 to %struct.realvaluetype*
+  %call1484 = call i32 @target_isinf(%struct.realvaluetype* byval align 8 %tmpcast) #4
+  %tobool1485 = icmp eq i32 %call1484, 0
+  br i1 %tobool1485, label %if.else1488, label %if.then1486
+
+if.then1486:                                      ; preds = %if.end1482
+  %217 = call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str10, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %file)
+  br label %sw.epilog1576
+
+if.else1488:                                      ; preds = %if.end1482
+  %call1489 = call i32 @target_isnan(%struct.realvaluetype* byval align 8 %d) #4
+  %tobool1490 = icmp eq i32 %call1489, 0
+  br i1 %tobool1490, label %if.else1493, label %if.then1491
+
+if.then1491:                                      ; preds = %if.else1488
+  %218 = call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str11, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %file)
+  br label %sw.epilog1576
+
+if.else1493:                                      ; preds = %if.else1488
+  %219 = getelementptr inbounds [100 x i8]* %string, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 100, i8* %219) #2
+  call void @ereal_to_decimal(%struct.realvaluetype* byval align 8 %d, i8* %219) #4
+  %call1496 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i8* %219) #4
+  call void @llvm.lifetime.end(i64 100, i8* %219) #2
+  br label %sw.epilog1576
+
+sw.bb1499:                                        ; preds = %sw.bb1422
+  %elements = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %220 = bitcast i32* %elements to %union.tree_node**
+  %link.02118 = load %union.tree_node** %220, align 8
+  %tobool15022119 = icmp eq %union.tree_node* %link.02118, null
+  br i1 %tobool15022119, label %sw.epilog1576, label %for.body1503.lr.ph
+
+for.body1503.lr.ph:                               ; preds = %sw.bb1499
+  %arraydecay1504 = getelementptr inbounds [10 x i8]* %buf, i64 0, i64 0
+  %add1507 = add nsw i32 %indent, 4
+  br label %for.body1503
+
+for.body1503:                                     ; preds = %for.body1503.lr.ph, %for.body1503
+  %link.02121 = phi %union.tree_node* [ %link.02118, %for.body1503.lr.ph ], [ %link.0, %for.body1503 ]
+  %i1500.02120 = phi i32 [ 0, %for.body1503.lr.ph ], [ %inc1511, %for.body1503 ]
+  %call1505 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay1504, i8* getelementptr inbounds ([8 x i8]* @.str124, i64 0, i64 0), i32 %i1500.02120) #4
+  %value = getelementptr inbounds %union.tree_node* %link.02121, i64 0, i32 0, i32 2
+  %221 = bitcast i32* %value to %union.tree_node**
+  %222 = load %union.tree_node** %221, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* %arraydecay1504, %union.tree_node* %222, i32 %add1507) #5
+  %chain1510 = getelementptr inbounds %union.tree_node* %link.02121, i64 0, i32 0, i32 0, i32 0
+  %inc1511 = add nsw i32 %i1500.02120, 1
+  %link.0 = load %union.tree_node** %chain1510, align 8
+  %tobool1502 = icmp eq %union.tree_node* %link.0, null
+  br i1 %tobool1502, label %sw.epilog1576, label %for.body1503
+
+sw.bb1513:                                        ; preds = %sw.bb1422
+  %real = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %223 = bitcast i32* %real to %union.tree_node**
+  %224 = load %union.tree_node** %223, align 8, !tbaa !0
+  %add1514 = add nsw i32 %indent, 4
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([5 x i8]* @.str125, i64 0, i64 0), %union.tree_node* %224, i32 %add1514) #5
+  %225 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 4
+  %226 = load %union.tree_node** %225, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([5 x i8]* @.str126, i64 0, i64 0), %union.tree_node* %226, i32 %add1514) #5
+  br label %sw.epilog1576
+
+sw.bb1517:                                        ; preds = %sw.bb1422
+  %pointer = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 4
+  %227 = load %union.tree_node** %pointer, align 8
+  %call1519 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str127, i64 0, i64 0), %union.tree_node* %227) #4
+  %cmp1520 = icmp eq i32 %indent, 4
+  %chain1524 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 0, i32 0
+  %228 = load %union.tree_node** %chain1524, align 8, !tbaa !0
+  %add1525 = add nsw i32 %indent, 4
+  br i1 %cmp1520, label %if.then1522, label %if.else1526
+
+if.then1522:                                      ; preds = %sw.bb1517
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str87, i64 0, i64 0), %union.tree_node* %228, i32 %add1525) #5
+  br label %sw.epilog1576
+
+if.else1526:                                      ; preds = %sw.bb1517
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str87, i64 0, i64 0), %union.tree_node* %228, i32 %add1525) #5
+  br label %sw.epilog1576
+
+sw.bb1531:                                        ; preds = %sw.bb1422
+  %229 = load void (%struct._IO_FILE*, %union.tree_node*, i32)** getelementptr inbounds (%struct.lang_hooks* @lang_hooks, i64 0, i32 17), align 8, !tbaa !0
+  call void %229(%struct._IO_FILE* %file, %union.tree_node* %node, i32 %indent) #4
+  br label %sw.epilog1576
+
+sw.bb1532:                                        ; preds = %sw.bb1422
+  %purpose = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 1
+  %230 = load i8** %purpose, align 8
+  %231 = bitcast i8* %230 to %union.tree_node*
+  %add1534 = add nsw i32 %indent, 4
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([8 x i8]* @.str128, i64 0, i64 0), %union.tree_node* %231, i32 %add1534) #5
+  %value1536 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %232 = bitcast i32* %value1536 to %union.tree_node**
+  %233 = load %union.tree_node** %232, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str129, i64 0, i64 0), %union.tree_node* %233, i32 %add1534) #5
+  %chain1539 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 0, i32 0
+  %234 = load %union.tree_node** %chain1539, align 8, !tbaa !0
+  call void @print_node(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str87, i64 0, i64 0), %union.tree_node* %234, i32 %add1534) #5
+  br label %sw.epilog1576
+
+sw.bb1541:                                        ; preds = %sw.bb1422
+  %length = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 1
+  %235 = bitcast i8** %length to i32*
+  %236 = load i32* %235, align 4, !tbaa !3
+  %cmp15432123 = icmp sgt i32 %236, 0
+  br i1 %cmp15432123, label %for.body1545.lr.ph, label %sw.epilog1576
+
+for.body1545.lr.ph:                               ; preds = %sw.bb1541
+  %a1548 = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %237 = bitcast i32* %a1548 to [1 x %union.tree_node*]*
+  %arraydecay1553 = getelementptr inbounds [10 x i8]* %temp1552, i64 0, i64 0
+  %add1555 = add nsw i32 %indent, 4
+  br label %for.body1545
+
+for.body1545:                                     ; preds = %for.inc1562, %for.body1545.lr.ph
+  %indvars.iv2128 = phi i64 [ 0, %for.body1545.lr.ph ], [ %indvars.iv.next2129, %for.inc1562 ]
+  %arrayidx1549 = getelementptr inbounds [1 x %union.tree_node*]* %237, i64 0, i64 %indvars.iv2128
+  %238 = load %union.tree_node** %arrayidx1549, align 8, !tbaa !0
+  %tobool1550 = icmp eq %union.tree_node* %238, null
+  br i1 %tobool1550, label %for.inc1562, label %if.then1551
+
+if.then1551:                                      ; preds = %for.body1545
+  %239 = trunc i64 %indvars.iv2128 to i32
+  %call1554 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay1553, i8* getelementptr inbounds ([7 x i8]* @.str130, i64 0, i64 0), i32 %239) #4
+  call void @indent_to(%struct._IO_FILE* %file, i32 %add1555) #5
+  %240 = load %union.tree_node** %arrayidx1549, align 8, !tbaa !0
+  call void @print_node_brief(%struct._IO_FILE* %file, i8* %arraydecay1553, %union.tree_node* %240, i32 0) #5
+  br label %for.inc1562
+
+for.inc1562:                                      ; preds = %for.body1545, %if.then1551
+  %indvars.iv.next2129 = add i64 %indvars.iv2128, 1
+  %lftr.wideiv2130 = trunc i64 %indvars.iv.next2129 to i32
+  %exitcond2131 = icmp eq i32 %lftr.wideiv2130, %236
+  br i1 %exitcond2131, label %sw.epilog1576, label %for.body1545
+
+sw.default:                                       ; preds = %sw.bb1422
+  %cmp1572 = icmp eq i8 %48, 120
+  br i1 %cmp1572, label %if.then1574, label %sw.epilog1576
+
+if.then1574:                                      ; preds = %sw.default
+  %241 = load void (%struct._IO_FILE*, %union.tree_node*, i32)** getelementptr inbounds (%struct.lang_hooks* @lang_hooks, i64 0, i32 14), align 8, !tbaa !0
+  call void %241(%struct._IO_FILE* %file, %union.tree_node* %node, i32 %indent) #4
+  br label %sw.epilog1576
+
+sw.epilog1576:                                    ; preds = %sw.bb1541, %for.inc1562, %sw.bb1499, %for.body1503, %sw.bb1513, %sw.bb1531, %sw.bb1532, %if.then1457, %if.else1463, %if.then1441, %if.then1491, %if.else1493, %if.then1486, %if.else1526, %if.then1522, %if.then1574, %sw.default, %if.then912, %if.else915, %if.end305, %if.end1418, %if.then1335, %sw.bb1316, %if.end1307
+  %fputc = call i32 @fputc(i32 62, %struct._IO_FILE* %file)
+  br label %return
+
+return:                                           ; preds = %entry, %sw.epilog1576, %if.then26, %if.then18, %if.then10, %if.then2
+  ret void
+}

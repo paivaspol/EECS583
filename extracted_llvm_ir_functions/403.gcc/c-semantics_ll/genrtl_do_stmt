@@ -1,0 +1,40 @@
+define void @genrtl_do_stmt(%union.tree_node* nocapture %t) #0 {
+entry:
+  %operands = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  %0 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
+  %call = tail call i32 @integer_zerop(%union.tree_node* %0) #5
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call %struct.nesting* @expand_start_null_loop() #5
+  %arrayidx4 = getelementptr inbounds i32* %operands, i64 2
+  %1 = bitcast i32* %arrayidx4 to %union.tree_node**
+  %2 = load %union.tree_node** %1, align 8, !tbaa !0
+  tail call void @expand_stmt(%union.tree_node* %2) #7
+  tail call void @expand_end_null_loop() #5
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  tail call void @emit_nop() #5
+  %3 = load i8** @input_filename, align 8, !tbaa !0
+  %4 = load i32* @lineno, align 4, !tbaa !4
+  %call5 = tail call %struct.rtx_def* @emit_line_note(i8* %3, i32 %4) #5
+  %call6 = tail call %struct.nesting* @expand_start_loop_continue_elsewhere(i32 1) #5
+  %arrayidx9 = getelementptr inbounds i32* %operands, i64 2
+  %5 = bitcast i32* %arrayidx9 to %union.tree_node**
+  %6 = load %union.tree_node** %5, align 8, !tbaa !0
+  tail call void @expand_stmt(%union.tree_node* %6) #7
+  tail call void @expand_loop_continue_here() #5
+  %call10 = tail call %union.tree_node* @expand_cond(%union.tree_node* %0) #7
+  %7 = load i8** @input_filename, align 8, !tbaa !0
+  %8 = load i32* @lineno, align 4, !tbaa !4
+  %call11 = tail call %struct.rtx_def* @emit_line_note(i8* %7, i32 %8) #5
+  %call12 = tail call i32 @expand_exit_loop_if_false(%struct.nesting* null, %union.tree_node* %call10) #5
+  tail call void @expand_end_loop() #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void
+}

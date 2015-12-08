@@ -1,0 +1,22 @@
+define internal void @default_diagnostic_starter(%struct.output_buffer* nocapture %buffer, %struct.diagnostic_context* nocapture %dc) #2 {
+entry:
+  %file = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 3
+  %0 = load void (%struct.diagnostic_context*, i8*)** @print_error_function, align 8, !tbaa !3
+  %1 = load %struct.diagnostic_context** @global_dc, align 8, !tbaa !3
+  %2 = load i8** @input_filename, align 8, !tbaa !3
+  tail call void %0(%struct.diagnostic_context* %1, i8* %2) #10
+  %3 = load i8** %file, align 8, !tbaa !3
+  %line = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 4
+  %4 = load i32* %line, align 4, !tbaa !0
+  %warn = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 5
+  %5 = load i32* %warn, align 4, !tbaa !0
+  %call = tail call i8* @context_as_prefix(i8* %3, i32 %4, i32 %5) #11
+  %prefix1.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 0
+  store i8* %call, i8** %prefix1.i, align 8, !tbaa !3
+  tail call fastcc void @set_real_maximum_length(%struct.output_buffer* %buffer) #10
+  %emitted_prefix_p.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 4
+  store i8 0, i8* %emitted_prefix_p.i, align 1, !tbaa !4
+  %indent_skip.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 3
+  store i32 0, i32* %indent_skip.i, align 4, !tbaa !0
+  ret void
+}

@@ -1,0 +1,31 @@
+define void @dump_class(%struct.table_elt* nocapture %classp) #0 {
+entry:
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str, i64 0, i64 0), i64 22, i64 1, %struct._IO_FILE* %0)
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %exp = getelementptr inbounds %struct.table_elt* %classp, i64 0, i32 0
+  %3 = load %struct.rtx_def** %exp, align 8, !tbaa !0
+  tail call void @print_rtl(%struct._IO_FILE* %2, %struct.rtx_def* %3) #6
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i64 3, i64 1, %struct._IO_FILE* %4)
+  %first_same_value = getelementptr inbounds %struct.table_elt* %classp, i64 0, i32 6
+  %elt.07 = load %struct.table_elt** %first_same_value, align 8
+  %tobool8 = icmp eq %struct.table_elt* %elt.07, null
+  br i1 %tobool8, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %elt.09 = phi %struct.table_elt* [ %elt.0, %for.body ], [ %elt.07, %entry ]
+  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %exp2 = getelementptr inbounds %struct.table_elt* %elt.09, i64 0, i32 0
+  %7 = load %struct.rtx_def** %exp2, align 8, !tbaa !0
+  tail call void @print_rtl(%struct._IO_FILE* %6, %struct.rtx_def* %7) #6
+  %8 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %8)
+  %next_same_value = getelementptr inbounds %struct.table_elt* %elt.09, i64 0, i32 4
+  %elt.0 = load %struct.table_elt** %next_same_value, align 8
+  %tobool = icmp eq %struct.table_elt* %elt.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

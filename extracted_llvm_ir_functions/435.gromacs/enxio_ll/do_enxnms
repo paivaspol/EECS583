@@ -1,0 +1,128 @@
+define void @do_enxnms(i32 %fp, i32* %nre, i8*** nocapture %nms) #0 {
+entry:
+  %line.i = alloca [256 x i8], align 16
+  %call = call i32 @gmx_fio_getread(i32 %fp) #4
+  %call1 = call i32 @gmx_fio_getftp(i32 %fp) #4
+  %cmp = icmp eq i32 %call1, 9
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  call void @gmx_fio_select(i32 %fp) #4
+  %call.i = call i32 @gmx_fio_getread(i32 %fp) #4
+  %call1.i = call %struct.XDR* @gmx_fio_getxdr(i32 %fp) #4
+  %0 = load i8*** %nms, align 8, !tbaa !3
+  %call2.i = call i32 @xdr_int(%struct.XDR* %call1.i, i32* %nre) #4
+  %tobool.i = icmp eq i32 %call2.i, 0
+  br i1 %tobool.i, label %if.then.i, label %if.end.i
+
+if.then.i:                                        ; preds = %if.then
+  store i32 0, i32* %nre, align 4, !tbaa !0
+  br label %if.end6
+
+if.end.i:                                         ; preds = %if.then
+  %cmp.i = icmp eq i8** %0, null
+  br i1 %cmp.i, label %if.then3.i, label %if.end5.i
+
+if.then3.i:                                       ; preds = %if.end.i
+  %1 = load i32* %nre, align 4, !tbaa !0
+  %call4.i = call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str43, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 100, i32 %1, i32 8) #4
+  %2 = bitcast i8* %call4.i to i8**
+  br label %if.end5.i
+
+if.end5.i:                                        ; preds = %if.then3.i, %if.end.i
+  %NM.0.i = phi i8** [ %2, %if.then3.i ], [ %0, %if.end.i ]
+  %3 = load i32* %nre, align 4, !tbaa !0
+  %cmp634.i = icmp sgt i32 %3, 0
+  br i1 %cmp634.i, label %for.body.lr.ph.i, label %for.end.i
+
+for.body.lr.ph.i:                                 ; preds = %if.end5.i
+  %tobool7.i = icmp eq i32 %call.i, 0
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %if.end14.i, %for.body.lr.ph.i
+  %indvars.iv.i = phi i64 [ 0, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %if.end14.i ]
+  %arrayidx16.pre.i = getelementptr inbounds i8** %NM.0.i, i64 %indvars.iv.i
+  br i1 %tobool7.i, label %if.end14.i, label %land.lhs.true.i
+
+land.lhs.true.i:                                  ; preds = %for.body.i
+  %4 = load i8** %arrayidx16.pre.i, align 8, !tbaa !3
+  %tobool8.i = icmp eq i8* %4, null
+  br i1 %tobool8.i, label %if.end14.i, label %if.then9.i
+
+if.then9.i:                                       ; preds = %land.lhs.true.i
+  call void @save_free(i8* getelementptr inbounds ([6 x i8]* @.str44, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 104, i8* %4) #4
+  store i8* null, i8** %arrayidx16.pre.i, align 8, !tbaa !3
+  br label %if.end14.i
+
+if.end14.i:                                       ; preds = %if.then9.i, %land.lhs.true.i, %for.body.i
+  %call17.i = call i32 @xdr_string(%struct.XDR* %call1.i, i8** %arrayidx16.pre.i, i32 4096) #4
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %5 = load i32* %nre, align 4, !tbaa !0
+  %6 = trunc i64 %indvars.iv.next.i to i32
+  %cmp6.i = icmp slt i32 %6, %5
+  br i1 %cmp6.i, label %for.body.i, label %for.end.i
+
+for.end.i:                                        ; preds = %if.end14.i, %if.end5.i
+  store i8** %NM.0.i, i8*** %nms, align 8, !tbaa !3
+  br label %if.end6
+
+if.else:                                          ; preds = %entry
+  %tobool = icmp eq i32 %call, 0
+  %call3 = call %struct._IO_FILE* @gmx_fio_getfp(i32 %fp) #4
+  br i1 %tobool, label %if.else4, label %if.then2
+
+if.then2:                                         ; preds = %if.else
+  %7 = getelementptr inbounds [256 x i8]* %line.i, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %7) #3
+  %call.i14 = call i8* @fgets2(i8* %7, i32 255, %struct._IO_FILE* %call3) #4
+  %call2.i15 = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %7, i8* getelementptr inbounds ([3 x i8]* @.str41, i64 0, i64 0), i32* %nre) #4
+  %cmp.i16 = icmp eq i32 %call2.i15, 0
+  br i1 %cmp.i16, label %if.then.i17, label %if.end.i18
+
+if.then.i17:                                      ; preds = %if.then2
+  store i32 0, i32* %nre, align 4, !tbaa !0
+  br label %if.end6
+
+if.end.i18:                                       ; preds = %if.then2
+  %8 = load i32* %nre, align 4, !tbaa !0
+  %call3.i = call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str42, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 76, i32 %8, i32 8) #4
+  %9 = bitcast i8* %call3.i to i8**
+  store i8** %9, i8*** %nms, align 8, !tbaa !3
+  %10 = load i32* %nre, align 4, !tbaa !0
+  %cmp416.i = icmp sgt i32 %10, 0
+  br i1 %cmp416.i, label %for.body.i21, label %if.end6
+
+for.body.i21:                                     ; preds = %if.end.i18, %for.body.i21
+  %indvars.iv.i19 = phi i64 [ %indvars.iv.next.i20, %for.body.i21 ], [ 0, %if.end.i18 ]
+  %call6.i = call i8* @fgets2(i8* %7, i32 255, %struct._IO_FILE* %call3) #4
+  call void @trim(i8* %7) #4
+  %call9.i = call i8* @gmx_strdup(i8* %7) #4
+  %11 = load i8*** %nms, align 8, !tbaa !3
+  %arrayidx.i = getelementptr inbounds i8** %11, i64 %indvars.iv.i19
+  store i8* %call9.i, i8** %arrayidx.i, align 8, !tbaa !3
+  %indvars.iv.next.i20 = add i64 %indvars.iv.i19, 1
+  %12 = load i32* %nre, align 4, !tbaa !0
+  %13 = trunc i64 %indvars.iv.next.i20 to i32
+  %cmp4.i = icmp slt i32 %13, %12
+  br i1 %cmp4.i, label %for.body.i21, label %if.end6
+
+if.else4:                                         ; preds = %if.else
+  %14 = load i32* %nre, align 4, !tbaa !0
+  %15 = load i8*** %nms, align 8, !tbaa !3
+  %call.i22 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call3, i8* getelementptr inbounds ([4 x i8]* @.str39, i64 0, i64 0), i32 %14) #4
+  %cmp6.i23 = icmp sgt i32 %14, 0
+  br i1 %cmp6.i23, label %for.body.i28, label %if.end6
+
+for.body.i28:                                     ; preds = %if.else4, %for.body.i28
+  %indvars.iv.i24 = phi i64 [ %indvars.iv.next.i27, %for.body.i28 ], [ 0, %if.else4 ]
+  %arrayidx.i25 = getelementptr inbounds i8** %15, i64 %indvars.iv.i24
+  %16 = load i8** %arrayidx.i25, align 8, !tbaa !3
+  %call1.i26 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call3, i8* getelementptr inbounds ([4 x i8]* @.str40, i64 0, i64 0), i8* %16) #4
+  %indvars.iv.next.i27 = add i64 %indvars.iv.i24, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i27 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %14
+  br i1 %exitcond, label %if.end6, label %for.body.i28
+
+if.end6:                                          ; preds = %for.body.i21, %for.body.i28, %if.end.i18, %if.then.i17, %if.else4, %for.end.i, %if.then.i
+  ret void
+}

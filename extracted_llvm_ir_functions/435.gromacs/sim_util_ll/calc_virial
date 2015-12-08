@@ -1,0 +1,78 @@
+define void @calc_virial(%struct._IO_FILE* %log, i32 %start, i32 %homenr, [3 x float]* %x, [3 x float]* %f, [3 x float]* %vir_part, [3 x float]* %pme_vir, %struct.t_graph* %graph, [3 x float]* %box, %struct.t_nrnb* nocapture %nrnb, %struct.t_forcerec* nocapture %fr, i32 %bTweak) #0 {
+entry:
+  %virtest = alloca [3 x [3 x float]], align 16
+  %0 = bitcast [3 x [3 x float]]* %virtest to i8*
+  call void @llvm.lifetime.start(i64 36, i8* %0) #1
+  %add = add nsw i32 %homenr, %start
+  call void @f_calc_vir(%struct._IO_FILE* %log, i32 %start, i32 %add, [3 x float]* %x, [3 x float]* %f, [3 x float]* %vir_part, %struct.t_graph* %graph, [3 x float]* %box) #6
+  %conv = sitofp i32 %homenr to double
+  %arrayidx = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 107
+  %1 = load double* %arrayidx, align 8, !tbaa !6
+  %add1 = fadd double %conv, %1
+  store double %add1, double* %arrayidx, align 8, !tbaa !6
+  %eeltype = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 33
+  %2 = load i32* %eeltype, align 4, !tbaa !0
+  %.off = add i32 %2, -3
+  %switch = icmp ugt i32 %.off, 3
+  %cmp15 = icmp eq i32 %2, 5
+  %or.cond71 = or i1 %switch, %cmp15
+  br i1 %or.cond71, label %if.end43, label %if.then
+
+if.then:                                          ; preds = %entry
+  %3 = load %struct._IO_FILE** @debug, align 8, !tbaa !5
+  %tobool = icmp eq %struct._IO_FILE* %3, null
+  %tobool18 = icmp eq i32 %bTweak, 0
+  %or.cond = or i1 %tobool, %tobool18
+  br i1 %or.cond, label %if.end, label %if.then19
+
+if.then19:                                        ; preds = %if.then
+  %arraydecay = getelementptr inbounds [3 x [3 x float]]* %virtest, i64 0, i64 0
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 36, i32 16, i1 false) #1
+  %f_pme = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 55
+  %4 = load [3 x float]** %f_pme, align 8, !tbaa !5
+  call void @f_calc_vir(%struct._IO_FILE* %log, i32 %start, i32 %add, [3 x float]* %x, [3 x float]* %4, [3 x float]* %arraydecay, %struct.t_graph* %graph, [3 x float]* %box) #6
+  %5 = load %struct._IO_FILE** @debug, align 8, !tbaa !5
+  call void @pr_rvecs(%struct._IO_FILE* %5, i32 0, i8* getelementptr inbounds ([8 x i8]* @.str7, i64 0, i64 0), [3 x float]* %arraydecay, i32 3) #6
+  %6 = load %struct._IO_FILE** @debug, align 8, !tbaa !5
+  call void @pr_rvecs(%struct._IO_FILE* %6, i32 0, i8* getelementptr inbounds ([8 x i8]* @.str8, i64 0, i64 0), [3 x float]* %pme_vir, i32 3) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then19
+  br i1 %tobool18, label %for.cond27.preheader, label %if.end43
+
+for.cond27.preheader:                             ; preds = %if.end, %for.inc39
+  %indvars.iv74 = phi i64 [ %indvars.iv.next75, %for.inc39 ], [ 0, %if.end ]
+  br label %for.body30
+
+for.body30:                                       ; preds = %for.body30, %for.cond27.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond27.preheader ], [ %indvars.iv.next, %for.body30 ]
+  %arrayidx33 = getelementptr inbounds [3 x float]* %pme_vir, i64 %indvars.iv74, i64 %indvars.iv
+  %7 = load float* %arrayidx33, align 4, !tbaa !3
+  %arrayidx37 = getelementptr inbounds [3 x float]* %vir_part, i64 %indvars.iv74, i64 %indvars.iv
+  %8 = load float* %arrayidx37, align 4, !tbaa !3
+  %add38 = fadd float %7, %8
+  store float %add38, float* %arrayidx37, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc39, label %for.body30
+
+for.inc39:                                        ; preds = %for.body30
+  %indvars.iv.next75 = add i64 %indvars.iv74, 1
+  %lftr.wideiv76 = trunc i64 %indvars.iv.next75 to i32
+  %exitcond77 = icmp eq i32 %lftr.wideiv76, 3
+  br i1 %exitcond77, label %if.end43, label %for.cond27.preheader
+
+if.end43:                                         ; preds = %for.inc39, %if.end, %entry
+  %9 = load %struct._IO_FILE** @debug, align 8, !tbaa !5
+  %tobool44 = icmp eq %struct._IO_FILE* %9, null
+  br i1 %tobool44, label %if.end46, label %if.then45
+
+if.then45:                                        ; preds = %if.end43
+  call void @pr_rvecs(%struct._IO_FILE* %9, i32 0, i8* getelementptr inbounds ([9 x i8]* @.str9, i64 0, i64 0), [3 x float]* %vir_part, i32 3) #6
+  br label %if.end46
+
+if.end46:                                         ; preds = %if.end43, %if.then45
+  call void @llvm.lifetime.end(i64 36, i8* %0) #1
+  ret void
+}

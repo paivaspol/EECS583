@@ -1,0 +1,23 @@
+define %struct.rtx_def* @remove_death(i32 %regno, %struct.rtx_def* %insn) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @find_regno_note(%struct.rtx_def* %insn, i32 1, i32 %regno) #6
+  %tobool = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %idxprom = zext i32 %regno to i64
+  %0 = load %struct.varray_head_tag** @reg_n_info, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %0, i64 0, i32 4
+  %reg = bitcast %union.varray_data_tag* %data to [1 x %struct.reg_info_def*]*
+  %arrayidx = getelementptr inbounds [1 x %struct.reg_info_def*]* %reg, i64 0, i64 %idxprom
+  %1 = load %struct.reg_info_def** %arrayidx, align 8, !tbaa !3
+  %deaths = getelementptr inbounds %struct.reg_info_def* %1, i64 0, i32 6
+  %2 = load i32* %deaths, align 4, !tbaa !0
+  %dec = add nsw i32 %2, -1
+  store i32 %dec, i32* %deaths, align 4, !tbaa !0
+  tail call void @remove_note(%struct.rtx_def* %insn, %struct.rtx_def* %call) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret %struct.rtx_def* %call
+}

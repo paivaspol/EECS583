@@ -1,0 +1,47 @@
+define void @write_xvg(i8* %fn, i8* %title, i32 %nx, i32 %ny, float** nocapture %y, i8** %leg) #0 {
+entry:
+  %call = tail call %struct._IO_FILE* @xvgropen(i8* %fn, i8* %title, i8* getelementptr inbounds ([2 x i8]* @.str43, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str44, i64 0, i64 0)) #9
+  %tobool = icmp eq i8** %leg, null
+  br i1 %tobool, label %for.cond.preheader, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sub = add nsw i32 %ny, -1
+  tail call void @xvgr_legend(%struct._IO_FILE* %call, i32 %sub, i8** %leg) #9
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry, %if.then
+  %cmp21 = icmp sgt i32 %nx, 0
+  br i1 %cmp21, label %for.cond1.preheader.lr.ph, label %for.end10
+
+for.cond1.preheader.lr.ph:                        ; preds = %for.cond.preheader
+  %cmp219 = icmp sgt i32 %ny, 0
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.end, %for.cond1.preheader.lr.ph
+  %indvars.iv23 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next24, %for.end ]
+  br i1 %cmp219, label %for.body3, label %for.end
+
+for.body3:                                        ; preds = %for.cond1.preheader, %for.body3
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body3 ], [ 0, %for.cond1.preheader ]
+  %arrayidx = getelementptr inbounds float** %y, i64 %indvars.iv
+  %0 = load float** %arrayidx, align 8, !tbaa !0
+  %arrayidx5 = getelementptr inbounds float* %0, i64 %indvars.iv23
+  %1 = load float* %arrayidx5, align 4, !tbaa !3
+  %conv = fpext float %1 to double
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call, i8* getelementptr inbounds ([9 x i8]* @.str45, i64 0, i64 0), double %conv) #6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %ny
+  br i1 %exitcond, label %for.end, label %for.body3
+
+for.end:                                          ; preds = %for.body3, %for.cond1.preheader
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %call)
+  %indvars.iv.next24 = add i64 %indvars.iv23, 1
+  %lftr.wideiv25 = trunc i64 %indvars.iv.next24 to i32
+  %exitcond26 = icmp eq i32 %lftr.wideiv25, %nx
+  br i1 %exitcond26, label %for.end10, label %for.cond1.preheader
+
+for.end10:                                        ; preds = %for.end, %for.cond.preheader
+  tail call void @ffclose(%struct._IO_FILE* %call) #6
+  ret void
+}

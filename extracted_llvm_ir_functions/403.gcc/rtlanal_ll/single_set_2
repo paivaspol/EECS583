@@ -1,0 +1,79 @@
+define %struct.rtx_def* @single_set_2(%struct.rtx_def* nocapture %insn, %struct.rtx_def* nocapture %pat) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %pat to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 39
+  br i1 %cmp, label %for.cond.preheader, label %return
+
+for.cond.preheader:                               ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %pat, i64 0, i32 1, i64 0
+  %rtvec = bitcast %union.rtunion_def* %arrayidx to %struct.rtvec_def**
+  %1 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem46 = getelementptr inbounds %struct.rtvec_def* %1, i64 0, i32 0
+  %2 = load i32* %num_elem46, align 4, !tbaa !3
+  %cmp147 = icmp sgt i32 %2, 0
+  br i1 %cmp147, label %for.body, label %return
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond.preheader ]
+  %set_verified.049 = phi i32 [ %set_verified.2, %for.inc ], [ 1, %for.cond.preheader ]
+  %set.048 = phi %struct.rtx_def* [ %set.2, %for.inc ], [ null, %for.cond.preheader ]
+  %arrayidx5 = getelementptr inbounds %struct.rtvec_def* %1, i64 0, i32 1, i64 %indvars.iv
+  %3 = load %struct.rtx_def** %arrayidx5, align 8, !tbaa !0
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load6 = load i32* %4, align 8
+  %bf.clear7 = and i32 %bf.load6, 65535
+  switch i32 %bf.clear7, label %return [
+    i32 48, label %for.inc
+    i32 49, label %for.inc
+    i32 47, label %sw.bb8
+  ]
+
+sw.bb8:                                           ; preds = %for.body
+  %tobool = icmp eq i32 %set_verified.049, 0
+  br i1 %tobool, label %if.then9, label %if.end16
+
+if.then9:                                         ; preds = %sw.bb8
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %set.048, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx11 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn, i32 10, %struct.rtx_def* %5) #4
+  %tobool12 = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool12, label %if.else19, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then9
+  %call13 = tail call i32 @side_effects_p(%struct.rtx_def* %set.048) #4
+  %tobool14 = icmp eq i32 %call13, 0
+  br i1 %tobool14, label %for.inc, label %if.else19
+
+if.end16:                                         ; preds = %sw.bb8
+  %tobool17 = icmp eq %struct.rtx_def* %set.048, null
+  br i1 %tobool17, label %for.inc, label %if.else19
+
+if.else19:                                        ; preds = %if.then9, %land.lhs.true, %if.end16
+  %set_verified.145 = phi i32 [ %set_verified.049, %if.end16 ], [ 1, %land.lhs.true ], [ 1, %if.then9 ]
+  %arrayidx21 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0
+  %rtx22 = bitcast %union.rtunion_def* %arrayidx21 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx22, align 8, !tbaa !0
+  %call23 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn, i32 10, %struct.rtx_def* %6) #4
+  %tobool24 = icmp eq %struct.rtx_def* %call23, null
+  br i1 %tobool24, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.else19
+  %call25 = tail call i32 @side_effects_p(%struct.rtx_def* %3) #4
+  %tobool26 = icmp eq i32 %call25, 0
+  br i1 %tobool26, label %for.inc, label %return
+
+for.inc:                                          ; preds = %land.lhs.true, %if.end16, %lor.lhs.false, %for.body, %for.body
+  %set.2 = phi %struct.rtx_def* [ %set.048, %lor.lhs.false ], [ %set.048, %for.body ], [ %set.048, %for.body ], [ %3, %if.end16 ], [ %3, %land.lhs.true ]
+  %set_verified.2 = phi i32 [ %set_verified.145, %lor.lhs.false ], [ %set_verified.049, %for.body ], [ %set_verified.049, %for.body ], [ 0, %if.end16 ], [ 0, %land.lhs.true ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %7 = trunc i64 %indvars.iv.next to i32
+  %cmp1 = icmp slt i32 %7, %2
+  br i1 %cmp1, label %for.body, label %return
+
+return:                                           ; preds = %for.cond.preheader, %for.body, %if.else19, %lor.lhs.false, %for.inc, %entry
+  %retval.0 = phi %struct.rtx_def* [ null, %entry ], [ null, %for.cond.preheader ], [ null, %for.body ], [ null, %if.else19 ], [ null, %lor.lhs.false ], [ %set.2, %for.inc ]
+  ret %struct.rtx_def* %retval.0
+}

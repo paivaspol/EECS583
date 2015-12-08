@@ -1,0 +1,56 @@
+define void @shift_atom(%struct.t_graph* nocapture %g, [3 x float]* nocapture %box, [3 x float]* nocapture %x, [3 x float]* nocapture %x_s, i32 %ai) #0 {
+entry:
+  %start = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 3
+  %0 = load i32* %start, align 4, !tbaa !0
+  %sub = sub nsw i32 %ai, %0
+  %idxprom = sext i32 %sub to i64
+  %ishift = getelementptr inbounds %struct.t_graph* %g, i64 0, i32 7
+  %1 = load [3 x i32]** %ishift, align 8, !tbaa !3
+  %arrayidx1 = getelementptr inbounds [3 x i32]* %1, i64 %idxprom, i64 0
+  %2 = load i32* %arrayidx1, align 4, !tbaa !0
+  %arrayidx7 = getelementptr inbounds [3 x i32]* %1, i64 %idxprom, i64 1
+  %3 = load i32* %arrayidx7, align 4, !tbaa !0
+  %arrayidx13 = getelementptr inbounds [3 x i32]* %1, i64 %idxprom, i64 2
+  %4 = load i32* %arrayidx13, align 4, !tbaa !0
+  %idxprom14 = sext i32 %ai to i64
+  %arrayidx16 = getelementptr inbounds [3 x float]* %x, i64 %idxprom14, i64 0
+  %5 = load float* %arrayidx16, align 4, !tbaa !6
+  %conv = sitofp i32 %2 to float
+  %arrayidx18 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
+  %6 = load float* %arrayidx18, align 4, !tbaa !6
+  %mul = fmul float %conv, %6
+  %add = fadd float %5, %mul
+  %conv19 = sitofp i32 %3 to float
+  %arrayidx21 = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
+  %7 = load float* %arrayidx21, align 4, !tbaa !6
+  %mul22 = fmul float %conv19, %7
+  %add23 = fadd float %add, %mul22
+  %conv24 = sitofp i32 %4 to float
+  %arrayidx26 = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
+  %8 = load float* %arrayidx26, align 4, !tbaa !6
+  %mul27 = fmul float %conv24, %8
+  %add28 = fadd float %add23, %mul27
+  %arrayidx31 = getelementptr inbounds [3 x float]* %x_s, i64 %idxprom14, i64 0
+  store float %add28, float* %arrayidx31, align 4, !tbaa !6
+  %arrayidx34 = getelementptr inbounds [3 x float]* %x, i64 %idxprom14, i64 1
+  %9 = load float* %arrayidx34, align 4, !tbaa !6
+  %arrayidx37 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
+  %10 = load float* %arrayidx37, align 4, !tbaa !6
+  %mul38 = fmul float %conv19, %10
+  %add39 = fadd float %9, %mul38
+  %arrayidx42 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
+  %11 = load float* %arrayidx42, align 4, !tbaa !6
+  %mul43 = fmul float %conv24, %11
+  %add44 = fadd float %add39, %mul43
+  %arrayidx47 = getelementptr inbounds [3 x float]* %x_s, i64 %idxprom14, i64 1
+  store float %add44, float* %arrayidx47, align 4, !tbaa !6
+  %arrayidx50 = getelementptr inbounds [3 x float]* %x, i64 %idxprom14, i64 2
+  %12 = load float* %arrayidx50, align 4, !tbaa !6
+  %arrayidx53 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
+  %13 = load float* %arrayidx53, align 4, !tbaa !6
+  %mul54 = fmul float %conv24, %13
+  %add55 = fadd float %12, %mul54
+  %arrayidx58 = getelementptr inbounds [3 x float]* %x_s, i64 %idxprom14, i64 2
+  store float %add55, float* %arrayidx58, align 4, !tbaa !6
+  ret void
+}

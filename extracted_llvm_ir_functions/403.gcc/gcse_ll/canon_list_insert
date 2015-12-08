@@ -1,0 +1,62 @@
+define internal void @canon_list_insert(%struct.rtx_def* %dest, %struct.rtx_def* nocapture %unused1, i8* nocapture %v_insn) #0 {
+entry:
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.body, %entry
+  %dest.addr.0 = phi %struct.rtx_def* [ %dest, %entry ], [ %1, %while.body ]
+  %0 = bitcast %struct.rtx_def* %dest.addr.0 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %return [
+    i32 63, label %while.body
+    i32 133, label %while.body
+    i32 132, label %while.body
+    i32 64, label %while.body
+    i32 66, label %if.end
+  ]
+
+while.body:                                       ; preds = %while.cond, %while.cond, %while.cond, %while.cond
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest.addr.0, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  br label %while.cond
+
+if.end:                                           ; preds = %while.cond
+  %arrayidx15 = getelementptr inbounds %struct.rtx_def* %dest.addr.0, i64 0, i32 1, i64 0
+  %rtx16 = bitcast %union.rtunion_def* %arrayidx15 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx16, align 8, !tbaa !0
+  %call = tail call %struct.rtx_def* @get_addr(%struct.rtx_def* %2) #6
+  %call17 = tail call %struct.rtx_def* @canon_rtx(%struct.rtx_def* %call) #6
+  %fld18 = getelementptr inbounds i8* %v_insn, i64 8
+  %rtint = bitcast i8* %fld18 to i32*
+  %3 = load i32* %rtint, align 4, !tbaa !3
+  %idxprom = sext i32 %3 to i64
+  %4 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %4, i64 0, i32 4
+  %bb20 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx21 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb20, i64 0, i64 %idxprom
+  %5 = load %struct.basic_block_def** %arrayidx21, align 8, !tbaa !0
+  %index = getelementptr inbounds %struct.basic_block_def* %5, i64 0, i32 11
+  %6 = load i32* %index, align 4, !tbaa !3
+  %idxprom22 = sext i32 %6 to i64
+  %7 = load %struct.rtx_def*** @canon_modify_mem_list, align 8, !tbaa !0
+  %arrayidx23 = getelementptr inbounds %struct.rtx_def** %7, i64 %idxprom22
+  %8 = load %struct.rtx_def** %arrayidx23, align 8, !tbaa !0
+  %call24 = tail call %struct.rtx_def* @alloc_EXPR_LIST(i32 0, %struct.rtx_def* %call17, %struct.rtx_def* %8) #6
+  %9 = load %struct.rtx_def*** @canon_modify_mem_list, align 8, !tbaa !0
+  %arrayidx26 = getelementptr inbounds %struct.rtx_def** %9, i64 %idxprom22
+  store %struct.rtx_def* %call24, %struct.rtx_def** %arrayidx26, align 8, !tbaa !0
+  %10 = load %struct.rtx_def*** @canon_modify_mem_list, align 8, !tbaa !0
+  %arrayidx28 = getelementptr inbounds %struct.rtx_def** %10, i64 %idxprom22
+  %11 = load %struct.rtx_def** %arrayidx28, align 8, !tbaa !0
+  %call29 = tail call %struct.rtx_def* @alloc_EXPR_LIST(i32 0, %struct.rtx_def* %dest.addr.0, %struct.rtx_def* %11) #6
+  %12 = load %struct.rtx_def*** @canon_modify_mem_list, align 8, !tbaa !0
+  %arrayidx31 = getelementptr inbounds %struct.rtx_def** %12, i64 %idxprom22
+  store %struct.rtx_def* %call29, %struct.rtx_def** %arrayidx31, align 8, !tbaa !0
+  %13 = load %struct.bitmap_head_def** @canon_modify_mem_list_set, align 8, !tbaa !0
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %13, i32 %6) #6
+  br label %return
+
+return:                                           ; preds = %while.cond, %if.end
+  ret void
+}

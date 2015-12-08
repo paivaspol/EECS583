@@ -1,0 +1,24 @@
+define void @fillpen_free(%struct.fillpen_t* %f) #0 {
+entry:
+  %tobool = icmp eq %struct.fillpen_t* %f, null
+  br i1 %tobool, label %if.end4, label %if.then
+
+if.then:                                          ; preds = %entry
+  %prob = getelementptr inbounds %struct.fillpen_t* %f, i64 0, i32 1
+  %0 = load i32** %prob, align 8, !tbaa !0
+  %tobool1 = icmp eq i32* %0, null
+  br i1 %tobool1, label %if.end, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %1 = bitcast i32* %0 to i8*
+  tail call void @ckd_free(i8* %1) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then2
+  %2 = bitcast %struct.fillpen_t* %f to i8*
+  tail call void @ckd_free(i8* %2) #5
+  br label %if.end4
+
+if.end4:                                          ; preds = %entry, %if.end
+  ret void
+}

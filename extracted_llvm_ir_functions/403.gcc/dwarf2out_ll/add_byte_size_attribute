@@ -1,0 +1,111 @@
+define internal fastcc void @add_byte_size_attribute(%struct.die_struct* %die, %union.tree_node* %tree_node) #1 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %tree_node, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %sw.default [
+    i32 0, label %sw.epilog
+    i32 10, label %sw.bb1
+    i32 20, label %sw.bb1
+    i32 21, label %sw.bb1
+    i32 22, label %sw.bb1
+    i32 37, label %if.end.i
+  ]
+
+sw.bb1:                                           ; preds = %entry, %entry, %entry, %entry
+  %call = tail call i64 @int_size_in_bytes(%union.tree_node* %tree_node) #9
+  br label %sw.epilog
+
+if.end.i:                                         ; preds = %entry
+  %result.i = getelementptr inbounds %union.tree_node* %tree_node, i64 0, i32 0, i32 11
+  %1 = load %union.tree_node** %result.i, align 8, !tbaa !4
+  %cmp2.i = icmp eq %union.tree_node* %1, null
+  br i1 %cmp2.i, label %if.then3.i, label %field_type.exit
+
+if.then3.i:                                       ; preds = %if.end.i
+  %type5.i = getelementptr inbounds %union.tree_node* %tree_node, i64 0, i32 0, i32 0, i32 1
+  %2 = load %union.tree_node** %type5.i, align 8, !tbaa !4
+  br label %field_type.exit
+
+field_type.exit:                                  ; preds = %if.end.i, %if.then3.i
+  %retval.0.i = phi %union.tree_node* [ %2, %if.then3.i ], [ %1, %if.end.i ]
+  %code.i9 = getelementptr inbounds %union.tree_node* %retval.0.i, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %code.i9 to i32*
+  %bf.load.i10 = load i32* %3, align 8
+  %bf.clear.i11 = and i32 %bf.load.i10, 255
+  %cmp.i12 = icmp eq i32 %bf.clear.i11, 0
+  br i1 %cmp.i12, label %if.then.i13, label %if.else.i
+
+if.then.i13:                                      ; preds = %field_type.exit
+  %4 = load i32* @target_flags, align 4, !tbaa !0
+  %and.i = lshr i32 %4, 20
+  %5 = and i32 %and.i, 32
+  %6 = add i32 %5, 32
+  %conv19.i = zext i32 %6 to i64
+  br label %simple_type_size_in_bits.exit
+
+if.else.i:                                        ; preds = %field_type.exit
+  %size.i = getelementptr inbounds %union.tree_node* %retval.0.i, i64 0, i32 0, i32 2
+  %7 = bitcast i32* %size.i to %union.tree_node**
+  %8 = load %union.tree_node** %7, align 8, !tbaa !4
+  %cmp2.i14 = icmp eq %union.tree_node* %8, null
+  br i1 %cmp2.i14, label %simple_type_size_in_bits.exit, label %if.else5.i
+
+if.else5.i:                                       ; preds = %if.else.i
+  %call.i15 = tail call i32 @host_integerp(%union.tree_node* %8, i32 1) #9
+  %tobool8.i = icmp eq i32 %call.i15, 0
+  br i1 %tobool8.i, label %if.else13.i, label %if.then9.i
+
+if.then9.i:                                       ; preds = %if.else5.i
+  %9 = load %union.tree_node** %7, align 8, !tbaa !4
+  %call12.i = tail call i64 @tree_low_cst(%union.tree_node* %9, i32 1) #9
+  br label %simple_type_size_in_bits.exit
+
+if.else13.i:                                      ; preds = %if.else5.i
+  %align.i = getelementptr inbounds %union.tree_node* %retval.0.i, i64 0, i32 0, i32 7
+  %10 = bitcast %union.tree_node** %align.i to i32*
+  %11 = load i32* %10, align 4, !tbaa !0
+  %conv15.i = zext i32 %11 to i64
+  br label %simple_type_size_in_bits.exit
+
+simple_type_size_in_bits.exit:                    ; preds = %if.then.i13, %if.else.i, %if.then9.i, %if.else13.i
+  %retval.0.i16 = phi i64 [ %conv19.i, %if.then.i13 ], [ %call12.i, %if.then9.i ], [ %conv15.i, %if.else13.i ], [ 0, %if.else.i ]
+  %div = lshr i64 %retval.0.i16, 3
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 9320, i8* getelementptr inbounds ([24 x i8]* @__FUNCTION__.add_byte_size_attribute, i64 0, i64 0)) #12
+  unreachable
+
+sw.epilog:                                        ; preds = %entry, %simple_type_size_in_bits.exit, %sw.bb1
+  %size.0 = phi i64 [ %div, %simple_type_size_in_bits.exit ], [ %call, %sw.bb1 ], [ 0, %entry ]
+  %conv6 = and i64 %size.0, 4294967295
+  %call.i = tail call noalias i8* @xmalloc(i64 40) #9
+  %dw_attr_next.i = getelementptr inbounds i8* %call.i, i64 8
+  %12 = bitcast i8* %dw_attr_next.i to %struct.dw_attr_struct**
+  store %struct.dw_attr_struct* null, %struct.dw_attr_struct** %12, align 8, !tbaa !4
+  %dw_attr.i = bitcast i8* %call.i to i32*
+  store i32 11, i32* %dw_attr.i, align 4, !tbaa !11
+  %dw_attr_val.i = getelementptr inbounds i8* %call.i, i64 16
+  %val_class.i = bitcast i8* %dw_attr_val.i to i32*
+  store i32 6, i32* %val_class.i, align 4, !tbaa !1
+  %v.i = getelementptr inbounds i8* %call.i, i64 24
+  %val_unsigned.i = bitcast i8* %v.i to i64*
+  store i64 %conv6, i64* %val_unsigned.i, align 8, !tbaa !6
+  %cmp.i.i = icmp eq %struct.die_struct* %die, null
+  %cmp1.i.i = icmp eq i8* %call.i, null
+  %or.cond.i.i = or i1 %cmp.i.i, %cmp1.i.i
+  br i1 %or.cond.i.i, label %add_AT_unsigned.exit, label %if.then.i.i
+
+if.then.i.i:                                      ; preds = %sw.epilog
+  %13 = bitcast i8* %call.i to %struct.dw_attr_struct*
+  %die_attr.i.i = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 2
+  %14 = load %struct.dw_attr_struct** %die_attr.i.i, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %14, %struct.dw_attr_struct** %12, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %13, %struct.dw_attr_struct** %die_attr.i.i, align 8, !tbaa !4
+  br label %add_AT_unsigned.exit
+
+add_AT_unsigned.exit:                             ; preds = %sw.epilog, %if.then.i.i
+  ret void
+}

@@ -1,0 +1,11 @@
+define i8* @output_last_position(%struct.output_buffer* nocapture %buffer) #1 {
+entry:
+  %object_base = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 2, i32 2
+  %0 = load i8** %object_base, align 8, !tbaa !3
+  %next_free = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 2, i32 3
+  %1 = load i8** %next_free, align 8, !tbaa !3
+  %cmp = icmp eq i8* %0, %1
+  %add.ptr = getelementptr inbounds i8* %1, i64 -1
+  %.add.ptr = select i1 %cmp, i8* null, i8* %add.ptr
+  ret i8* %.add.ptr
+}

@@ -1,0 +1,15 @@
+define void @output_add_string(%struct.output_buffer* %buffer, i8* %str) #2 {
+entry:
+  %tobool = icmp eq i8* %str, null
+  br i1 %tobool, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %call = tail call i64 @strlen(i8* %str) #12
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi i64 [ %call, %cond.true ], [ 0, %entry ]
+  %add.ptr = getelementptr inbounds i8* %str, i64 %cond
+  tail call fastcc void @maybe_wrap_text(%struct.output_buffer* %buffer, i8* %str, i8* %add.ptr) #11
+  ret void
+}

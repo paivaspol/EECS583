@@ -1,0 +1,43 @@
+define %struct.rtx_def* @emit_line_note_after(i8* %file, i32 %line, %struct.rtx_def* %after) #0 {
+entry:
+  %0 = load i32* @no_line_numbers, align 4, !tbaa !0
+  %tobool = icmp ne i32 %0, 0
+  %cmp = icmp sgt i32 %line, 0
+  %or.cond = and i1 %tobool, %cmp
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit = getelementptr inbounds %struct.function* %1, i64 0, i32 3
+  %2 = load %struct.emit_status** %emit, align 8, !tbaa !4
+  %x_cur_insn_uid = getelementptr inbounds %struct.emit_status* %2, i64 0, i32 6
+  %3 = load i32* %x_cur_insn_uid, align 4, !tbaa !0
+  %inc = add nsw i32 %3, 1
+  store i32 %inc, i32* %x_cur_insn_uid, align 4, !tbaa !0
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call = tail call %struct.rtx_def* @rtx_alloc(i32 37) #8
+  %4 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit1 = getelementptr inbounds %struct.function* %4, i64 0, i32 3
+  %5 = load %struct.emit_status** %emit1, align 8, !tbaa !4
+  %x_cur_insn_uid2 = getelementptr inbounds %struct.emit_status* %5, i64 0, i32 6
+  %6 = load i32* %x_cur_insn_uid2, align 4, !tbaa !0
+  %inc3 = add nsw i32 %6, 1
+  store i32 %inc3, i32* %x_cur_insn_uid2, align 4, !tbaa !0
+  %fld = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1
+  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*
+  store i32 %6, i32* %rtint, align 4, !tbaa !0
+  %7 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 3, i32 0
+  %file.c = ptrtoint i8* %file to i64
+  store i64 %file.c, i64* %7, align 8, !tbaa !4
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 4
+  %rtint8 = bitcast %union.rtunion_def* %arrayidx7 to i32*
+  store i32 %line, i32* %rtint8, align 4, !tbaa !0
+  tail call void @add_insn_after(%struct.rtx_def* %call, %struct.rtx_def* %after) #9
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then
+  %retval.0 = phi %struct.rtx_def* [ null, %if.then ], [ %call, %if.end ]
+  ret %struct.rtx_def* %retval.0
+}

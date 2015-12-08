@@ -1,0 +1,22 @@
+define internal fastcc void @upd_f_value(i32 %atnr, float %xi, float %dt, float %factor, float* nocapture %ff, i32 %ati, i32 %atj) #0 {
+entry:
+  %fabsf = tail call float @fabsf(float %xi) #7
+  %0 = fpext float %fabsf to double
+  %cmp = fcmp ogt double %0, 1.200000e-38
+  br i1 %cmp, label %if.then, label %if.end8
+
+if.then:                                          ; preds = %entry
+  %div = fdiv float %dt, %xi
+  %mul = fmul float %div, %factor
+  %add = fadd float %mul, 1.000000e+00
+  %cmp2 = fcmp ogt float %add, 0.000000e+00
+  br i1 %cmp2, label %if.then4, label %if.end8
+
+if.then4:                                         ; preds = %if.then
+  %conv7 = tail call float @sqrtf(float %add) #4
+  tail call fastcc void @set_factor_matrix(i32 %atnr, float* %ff, float %conv7, i32 %ati, i32 %atj) #8
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.then, %if.then4, %entry
+  ret void
+}

@@ -1,0 +1,104 @@
+define i32 @ask_starting_lattice(i32 %prompt, i32* nocapture %flag, i8* %filename) #0 {
+entry:
+  %savebuf = alloca [256 x i8], align 16
+  %0 = getelementptr inbounds [256 x i8]* %savebuf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %0) #3
+  %cmp = icmp ne i32 %prompt, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %puts68 = call i32 @puts(i8* getelementptr inbounds ([81 x i8]* @str65, i64 0, i64 0))
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %call1 = call i32 (i8*, ...)* @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i8* %0) #5
+  %cmp2 = icmp eq i32 %call1, 1
+  br i1 %cmp2, label %if.end5, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  %puts67 = call i32 @puts(i8* getelementptr inbounds ([63 x i8]* @str64, i64 0, i64 0))
+  br label %cleanup
+
+if.end5:                                          ; preds = %if.end
+  %call7 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str9, i64 0, i64 0), i8* %0) #5
+  %call9 = call i32 @strcmp(i8* getelementptr inbounds ([6 x i8]* @.str10, i64 0, i64 0), i8* %0) #7
+  %cmp10 = icmp eq i32 %call9, 0
+  br i1 %cmp10, label %if.then11, label %if.else
+
+if.then11:                                        ; preds = %if.end5
+  store i32 11, i32* %flag, align 4, !tbaa !0
+  %putchar66 = call i32 @putchar(i32 10) #3
+  br label %if.end40
+
+if.else:                                          ; preds = %if.end5
+  %call14 = call i32 @strcmp(i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0), i8* %0) #7
+  %cmp15 = icmp eq i32 %call14, 0
+  br i1 %cmp15, label %if.then16, label %if.else18
+
+if.then16:                                        ; preds = %if.else
+  store i32 10, i32* %flag, align 4, !tbaa !0
+  %putchar = call i32 @putchar(i32 10) #3
+  br label %if.end40
+
+if.else18:                                        ; preds = %if.else
+  %call20 = call i32 @strcmp(i8* getelementptr inbounds ([13 x i8]* @.str13, i64 0, i64 0), i8* %0) #7
+  %cmp21 = icmp eq i32 %call20, 0
+  br i1 %cmp21, label %if.then22, label %if.else23
+
+if.then22:                                        ; preds = %if.else18
+  store i32 12, i32* %flag, align 4, !tbaa !0
+  br label %if.end40
+
+if.else23:                                        ; preds = %if.else18
+  %call25 = call i32 @strcmp(i8* getelementptr inbounds ([14 x i8]* @.str14, i64 0, i64 0), i8* %0) #7
+  %cmp26 = icmp eq i32 %call25, 0
+  br i1 %cmp26, label %if.then27, label %if.else28
+
+if.then27:                                        ; preds = %if.else23
+  store i32 13, i32* %flag, align 4, !tbaa !0
+  br label %if.end40
+
+if.else28:                                        ; preds = %if.else23
+  %call30 = call i32 @strcmp(i8* getelementptr inbounds ([16 x i8]* @.str15, i64 0, i64 0), i8* %0) #7
+  %cmp31 = icmp eq i32 %call30, 0
+  br i1 %cmp31, label %if.then32, label %if.else33
+
+if.then32:                                        ; preds = %if.else28
+  store i32 19, i32* %flag, align 4, !tbaa !0
+  br label %if.end40
+
+if.else33:                                        ; preds = %if.else28
+  %call35 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([69 x i8]* @.str16, i64 0, i64 0), i8* %0) #5
+  br label %cleanup
+
+if.end40:                                         ; preds = %if.then16, %if.then27, %if.then32, %if.then22, %if.then11
+  %1 = load i32* %flag, align 4, !tbaa !0
+  %.off = add i32 %1, -10
+  %switch = icmp ult i32 %.off, 2
+  br i1 %switch, label %cleanup, label %if.then43
+
+if.then43:                                        ; preds = %if.end40
+  br i1 %cmp, label %if.then45, label %if.end47
+
+if.then45:                                        ; preds = %if.then43
+  %puts65 = call i32 @puts(i8* getelementptr inbounds ([38 x i8]* @str63, i64 0, i64 0))
+  br label %if.end47
+
+if.end47:                                         ; preds = %if.then45, %if.then43
+  %call48 = call i32 (i8*, ...)* @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i8* %filename) #5
+  %cmp49 = icmp eq i32 %call48, 1
+  br i1 %cmp49, label %if.end52, label %if.then50
+
+if.then50:                                        ; preds = %if.end47
+  %puts64 = call i32 @puts(i8* getelementptr inbounds ([53 x i8]* @str62, i64 0, i64 0))
+  br label %cleanup
+
+if.end52:                                         ; preds = %if.end47
+  %puts = call i32 @puts(i8* %filename)
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.end40, %if.end52, %if.then50, %if.else33, %if.then3
+  %retval.0 = phi i32 [ 1, %if.then3 ], [ 1, %if.then50 ], [ 1, %if.else33 ], [ 0, %if.end40 ], [ 0, %if.end52 ]
+  call void @llvm.lifetime.end(i64 256, i8* %0) #3
+  ret i32 %retval.0
+}

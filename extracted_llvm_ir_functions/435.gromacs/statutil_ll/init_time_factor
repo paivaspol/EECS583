@@ -1,0 +1,44 @@
+define internal fastcc void @init_time_factor() #2 {
+entry:
+  %0 = load float* @timefactor, align 4, !tbaa !3
+  %sub = fadd float %0, 1.234500e+04
+  %fabsf = tail call float @fabsf(float %sub) #5
+  %1 = fpext float %fabsf to double
+  %cmp = fcmp olt double %1, 1.200000e-38
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %2 = load i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 1), align 8, !tbaa !0
+  %tobool9.i = icmp eq i8* %2, null
+  br i1 %tobool9.i, label %nenum.exit, label %land.rhs.lr.ph.i
+
+land.rhs.lr.ph.i:                                 ; preds = %if.then
+  %3 = load i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 0), align 16, !tbaa !0
+  br label %land.rhs.i
+
+while.cond.i:                                     ; preds = %land.rhs.i
+  %arrayidx.i = getelementptr inbounds [10 x i8*]* @timestr, i64 0, i64 %indvars.iv.next.i
+  %4 = load i8** %arrayidx.i, align 8, !tbaa !0
+  %tobool.i = icmp eq i8* %4, null
+  br i1 %tobool.i, label %nenum.exit, label %land.rhs.i
+
+land.rhs.i:                                       ; preds = %while.cond.i, %land.rhs.lr.ph.i
+  %indvars.iv.i = phi i64 [ 1, %land.rhs.lr.ph.i ], [ %indvars.iv.next.i, %while.cond.i ]
+  %5 = phi i8* [ %2, %land.rhs.lr.ph.i ], [ %4, %while.cond.i ]
+  %i.010.i = phi i32 [ 1, %land.rhs.lr.ph.i ], [ %inc.i, %while.cond.i ]
+  %cmp.i = icmp eq i8* %3, %5
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %inc.i = add nsw i32 %i.010.i, 1
+  br i1 %cmp.i, label %nenum.exit, label %while.cond.i
+
+nenum.exit:                                       ; preds = %while.cond.i, %land.rhs.i, %if.then
+  %i.0.lcssa.i = phi i32 [ 1, %if.then ], [ %inc.i, %while.cond.i ], [ %i.010.i, %land.rhs.i ]
+  %idxprom = sext i32 %i.0.lcssa.i to i64
+  %arrayidx = getelementptr inbounds [10 x float]* @timefactors, i64 0, i64 %idxprom
+  %6 = load float* %arrayidx, align 4, !tbaa !3
+  store float %6, float* @timefactor, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %nenum.exit, %entry
+  ret void
+}

@@ -1,0 +1,51 @@
+define void @weak_finish() #0 {
+entry:
+  %t.012 = load %union.tree_node** @weak_decls, align 8
+  %tobool13 = icmp eq %union.tree_node* %t.012, null
+  br i1 %tobool13, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %t.014 = phi %union.tree_node* [ %t.0, %for.inc ], [ %t.012, %entry ]
+  %value = getelementptr inbounds %union.tree_node* %t.014, i64 0, i32 0, i32 2
+  %0 = bitcast i32* %value to %union.tree_node**
+  %1 = load %union.tree_node** %0, align 8, !tbaa !3
+  %assembler_name = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 14
+  %2 = load %union.tree_node** %assembler_name, align 8, !tbaa !3
+  %cmp = icmp eq %union.tree_node* %2, null
+  br i1 %cmp, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %for.body
+  %3 = load void (%union.tree_node*)** @lang_set_decl_assembler_name, align 8, !tbaa !3
+  tail call void %3(%union.tree_node* %1) #9
+  br label %cond.end
+
+cond.end:                                         ; preds = %for.body, %cond.false
+  %used_flag = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 2
+  %4 = bitcast [4 x i8]* %used_flag to i32*
+  %bf.load = load i32* %4, align 8
+  %bf.clear = and i32 %bf.load, 65536
+  %tobool4 = icmp eq i32 %bf.clear, 0
+  br i1 %tobool4, label %for.inc, label %do.body
+
+do.body:                                          ; preds = %cond.end
+  %5 = load %union.tree_node** %assembler_name, align 8, !tbaa !3
+  %id = getelementptr inbounds %union.tree_node* %5, i64 0, i32 0, i32 1
+  %6 = getelementptr inbounds i8** %id, i64 1
+  %7 = load i8** %6, align 8, !tbaa !3
+  %8 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
+  %9 = tail call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str107, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %8)
+  %10 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
+  tail call void @assemble_name(%struct._IO_FILE* %10, i8* %7) #10
+  %11 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
+  %call5 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %11) #9
+  br label %for.inc
+
+for.inc:                                          ; preds = %cond.end, %do.body
+  %chain = getelementptr inbounds %union.tree_node* %t.014, i64 0, i32 0, i32 0, i32 0
+  %t.0 = load %union.tree_node** %chain, align 8
+  %tobool = icmp eq %union.tree_node* %t.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

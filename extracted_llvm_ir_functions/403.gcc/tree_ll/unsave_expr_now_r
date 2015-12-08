@@ -1,0 +1,86 @@
+define internal fastcc void @unsave_expr_now_r(%union.tree_node* %expr) #0 {
+entry:
+  %cmp31 = icmp eq %union.tree_node* %expr, null
+  br i1 %cmp31, label %sw.epilog, label %if.end
+
+if.end:                                           ; preds = %entry, %if.then5
+  %expr.tr32 = phi %union.tree_node* [ %4, %if.then5 ], [ %expr, %entry ]
+  tail call void @unsave_expr_1(%union.tree_node* %expr.tr32) #10
+  %code1 = getelementptr inbounds %union.tree_node* %expr.tr32, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code1 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %idxprom22 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom22
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = sext i8 %1 to i32
+  switch i32 %conv, label %sw.default [
+    i32 99, label %sw.epilog
+    i32 116, label %sw.epilog
+    i32 100, label %sw.epilog
+    i32 98, label %sw.epilog
+    i32 120, label %sw.bb2
+    i32 101, label %sw.bb8
+    i32 114, label %sw.bb8
+    i32 115, label %sw.bb8
+    i32 60, label %sw.bb8
+    i32 50, label %sw.bb8
+    i32 49, label %sw.bb8
+  ]
+
+sw.bb2:                                           ; preds = %if.end
+  %cmp3 = icmp eq i32 %bf.clear, 2
+  br i1 %cmp3, label %if.then5, label %sw.epilog
+
+if.then5:                                         ; preds = %sw.bb2
+  %value = getelementptr inbounds %union.tree_node* %expr.tr32, i64 0, i32 0, i32 2
+  %2 = bitcast i32* %value to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  tail call fastcc void @unsave_expr_now_r(%union.tree_node* %3) #10
+  %chain = getelementptr inbounds %union.tree_node* %expr.tr32, i64 0, i32 0, i32 0, i32 0
+  %4 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %4, null
+  br i1 %cmp, label %sw.epilog, label %if.end
+
+sw.bb8:                                           ; preds = %if.end, %if.end, %if.end, %if.end, %if.end, %if.end
+  switch i32 %bf.clear, label %for.cond.preheader [
+    i32 118, label %for.body.lr.ph
+    i32 136, label %sw.epilog
+    i32 120, label %sw.epilog
+    i32 55, label %for.body.lr.ph
+    i32 54, label %sw.bb3.i
+  ]
+
+sw.bb3.i:                                         ; preds = %sw.bb8
+  br label %for.body.lr.ph
+
+for.cond.preheader:                               ; preds = %sw.bb8
+  %arrayidx.i = getelementptr inbounds [256 x i32]* @tree_code_length, i64 0, i64 %idxprom22
+  %5 = load i32* %arrayidx.i, align 4, !tbaa !4
+  %cmp925 = icmp sgt i32 %5, 0
+  br i1 %cmp925, label %for.body.lr.ph, label %sw.epilog
+
+for.body.lr.ph:                                   ; preds = %sw.bb8, %sw.bb8, %sw.bb3.i, %for.cond.preheader
+  %i.0.in.ph40 = phi i32 [ %5, %for.cond.preheader ], [ 3, %sw.bb3.i ], [ 2, %sw.bb8 ], [ 2, %sw.bb8 ]
+  %operands = getelementptr inbounds %union.tree_node* %expr.tr32, i64 0, i32 0, i32 2
+  %6 = bitcast i32* %operands to [1 x %union.tree_node*]*
+  %7 = sext i32 %i.0.in.ph40 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ %7, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %arrayidx12 = getelementptr inbounds [1 x %union.tree_node*]* %6, i64 0, i64 %indvars.iv.next
+  %8 = load %union.tree_node** %arrayidx12, align 8, !tbaa !0
+  tail call fastcc void @unsave_expr_now_r(%union.tree_node* %8) #10
+  %9 = trunc i64 %indvars.iv.next to i32
+  %cmp9 = icmp sgt i32 %9, 0
+  br i1 %cmp9, label %for.body, label %sw.epilog
+
+sw.default:                                       ; preds = %if.end
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str147, i64 0, i64 0), i32 1768, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.unsave_expr_now_r, i64 0, i64 0)) #8
+  unreachable
+
+sw.epilog:                                        ; preds = %sw.bb8, %sw.bb8, %entry, %sw.bb2, %if.end, %if.end, %if.end, %if.end, %if.then5, %for.cond.preheader, %for.body
+  ret void
+}

@@ -1,0 +1,218 @@
+define void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %x) #0 {
+entry:
+  %buf = alloca [256 x i8], align 16
+  %0 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %0) #7
+  %.phi.trans.insert = bitcast %struct.rtx_def* %x to i32*
+  %bf.load.pre = load i32* %.phi.trans.insert, align 8
+  br label %restart
+
+restart:                                          ; preds = %sw.bb97, %entry
+  %bf.load = phi i32 [ %bf.load.pre, %entry ], [ %bf.load99, %sw.bb97 ]
+  %x.addr.0 = phi %struct.rtx_def* [ %x, %entry ], [ %call98, %sw.bb97 ]
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.default [
+    i32 59, label %sw.bb
+    i32 68, label %sw.bb1
+    i32 67, label %sw.bb2
+    i32 36, label %do.body
+    i32 54, label %sw.bb10
+    i32 58, label %sw.bb14
+    i32 55, label %sw.bb18
+    i32 75, label %sw.bb49
+    i32 76, label %sw.bb97
+    i32 121, label %sw.bb146
+    i32 120, label %sw.bb146
+    i32 63, label %sw.bb146
+  ]
+
+sw.bb:                                            ; preds = %restart
+  %call = call i32 @_IO_putc(i32 46, %struct._IO_FILE* %file) #8
+  br label %sw.epilog
+
+sw.bb1:                                           ; preds = %restart
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 0
+  %rtstr = bitcast %union.rtunion_def* %arrayidx to i8**
+  %1 = load i8** %rtstr, align 8, !tbaa !0
+  call void @assemble_name(%struct._IO_FILE* %file, i8* %1) #8
+  br label %sw.epilog
+
+sw.bb2:                                           ; preds = %restart
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  br label %do.body
+
+do.body:                                          ; preds = %restart, %sw.bb2
+  %x.addr.1 = phi %struct.rtx_def* [ %2, %sw.bb2 ], [ %x.addr.0, %restart ]
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %x.addr.1, i64 0, i32 1, i64 5
+  %rtint = bitcast %union.rtunion_def* %arrayidx7 to i32*
+  %3 = load i32* %rtint, align 4, !tbaa !4
+  %call8 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str19, i64 0, i64 0), i32 %3) #8
+  call void @assemble_name(%struct._IO_FILE* %file, i8* %0) #8
+  br label %sw.epilog
+
+sw.bb10:                                          ; preds = %restart
+  %rtwint = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 0, i32 0
+  %4 = load i64* %rtwint, align 8, !tbaa !7
+  %call13 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str34, i64 0, i64 0), i64 %4) #8
+  br label %sw.epilog
+
+sw.bb14:                                          ; preds = %restart
+  %arrayidx16 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 0
+  %rtx17 = bitcast %union.rtunion_def* %arrayidx16 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx17, align 8, !tbaa !0
+  call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %5) #10
+  br label %sw.epilog
+
+sw.bb18:                                          ; preds = %restart
+  %bf.clear20 = and i32 %bf.load, 16711680
+  %cmp = icmp eq i32 %bf.clear20, 0
+  br i1 %cmp, label %if.then, label %if.else47
+
+if.then:                                          ; preds = %sw.bb18
+  %rtwint23 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 2, i32 0
+  %6 = load i64* %rtwint23, align 8, !tbaa !7
+  %tobool = icmp eq i64 %6, 0
+  %rtwint34 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 1, i32 0
+  %7 = load i64* %rtwint34, align 8, !tbaa !7
+  br i1 %tobool, label %if.else, label %if.then24
+
+if.then24:                                        ; preds = %if.then
+  %call31 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([12 x i8]* @.str37, i64 0, i64 0), i64 %6, i64 %7) #8
+  br label %sw.epilog
+
+if.else:                                          ; preds = %if.then
+  %cmp35 = icmp slt i64 %7, 0
+  br i1 %cmp35, label %if.then36, label %if.else41
+
+if.then36:                                        ; preds = %if.else
+  %call40 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str38, i64 0, i64 0), i64 %7) #8
+  br label %sw.epilog
+
+if.else41:                                        ; preds = %if.else
+  %call45 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str34, i64 0, i64 0), i64 %7) #8
+  br label %sw.epilog
+
+if.else47:                                        ; preds = %sw.bb18
+  call void (i8*, ...)* @output_operand_lossage(i8* getelementptr inbounds ([26 x i8]* @.str39, i64 0, i64 0)) #10
+  br label %sw.epilog
+
+sw.bb49:                                          ; preds = %restart
+  %fld50 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1
+  %rtx52 = bitcast [1 x %union.rtunion_def]* %fld50 to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %rtx52, align 8, !tbaa !0
+  %9 = bitcast %struct.rtx_def* %8 to i32*
+  %bf.load53 = load i32* %9, align 8
+  %bf.clear54 = and i32 %bf.load53, 65535
+  %cmp55 = icmp eq i32 %bf.clear54, 54
+  br i1 %cmp55, label %if.then56, label %if.else73
+
+if.then56:                                        ; preds = %sw.bb49
+  %arrayidx58 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 1
+  %rtx59 = bitcast %union.rtunion_def* %arrayidx58 to %struct.rtx_def**
+  %10 = load %struct.rtx_def** %rtx59, align 8, !tbaa !0
+  call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %10) #10
+  %11 = load %struct.rtx_def** %rtx52, align 8, !tbaa !0
+  %rtwint65 = getelementptr inbounds %struct.rtx_def* %11, i64 0, i32 1, i64 0, i32 0
+  %12 = load i64* %rtwint65, align 8, !tbaa !7
+  %cmp66 = icmp sgt i64 %12, -1
+  br i1 %cmp66, label %if.then67, label %if.end69
+
+if.then67:                                        ; preds = %if.then56
+  %fputc201 = call i32 @fputc(i32 43, %struct._IO_FILE* %file) #7
+  %.pre = load %struct.rtx_def** %rtx52, align 8, !tbaa !0
+  br label %if.end69
+
+if.end69:                                         ; preds = %if.then67, %if.then56
+  %13 = phi %struct.rtx_def* [ %.pre, %if.then67 ], [ %11, %if.then56 ]
+  call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %13) #10
+  br label %sw.epilog
+
+if.else73:                                        ; preds = %sw.bb49
+  call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %8) #10
+  %arrayidx78 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 1
+  %rtx79 = bitcast %union.rtunion_def* %arrayidx78 to %struct.rtx_def**
+  %14 = load %struct.rtx_def** %rtx79, align 8, !tbaa !0
+  %15 = bitcast %struct.rtx_def* %14 to i32*
+  %bf.load80 = load i32* %15, align 8
+  %bf.clear81 = and i32 %bf.load80, 65535
+  %cmp82 = icmp eq i32 %bf.clear81, 54
+  br i1 %cmp82, label %lor.lhs.false, label %if.then90
+
+lor.lhs.false:                                    ; preds = %if.else73
+  %rtwint88 = getelementptr inbounds %struct.rtx_def* %14, i64 0, i32 1, i64 0, i32 0
+  %16 = load i64* %rtwint88, align 8, !tbaa !7
+  %cmp89 = icmp sgt i64 %16, -1
+  br i1 %cmp89, label %if.then90, label %if.end92
+
+if.then90:                                        ; preds = %if.else73, %lor.lhs.false
+  %fputc198 = call i32 @fputc(i32 43, %struct._IO_FILE* %file) #7
+  %.pre243 = load %struct.rtx_def** %rtx79, align 8, !tbaa !0
+  br label %if.end92
+
+if.end92:                                         ; preds = %if.then90, %lor.lhs.false
+  %17 = phi %struct.rtx_def* [ %.pre243, %if.then90 ], [ %14, %lor.lhs.false ]
+  call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %17) #10
+  br label %sw.epilog
+
+sw.bb97:                                          ; preds = %restart
+  %call98 = call %struct.rtx_def* @simplify_subtraction(%struct.rtx_def* %x.addr.0) #8
+  %18 = bitcast %struct.rtx_def* %call98 to i32*
+  %bf.load99 = load i32* %18, align 8
+  %bf.clear100 = and i32 %bf.load99, 65535
+  %cmp101 = icmp eq i32 %bf.clear100, 76
+  br i1 %cmp101, label %if.end103, label %restart
+
+if.end103:                                        ; preds = %sw.bb97
+  %fld104 = getelementptr inbounds %struct.rtx_def* %call98, i64 0, i32 1
+  %rtx106 = bitcast [1 x %union.rtunion_def]* %fld104 to %struct.rtx_def**
+  %19 = load %struct.rtx_def** %rtx106, align 8, !tbaa !0
+  call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %19) #10
+  %fputc = call i32 @fputc(i32 45, %struct._IO_FILE* %file) #7
+  %arrayidx109 = getelementptr inbounds %struct.rtx_def* %call98, i64 0, i32 1, i64 1
+  %rtx110 = bitcast %union.rtunion_def* %arrayidx109 to %struct.rtx_def**
+  %20 = load %struct.rtx_def** %rtx110, align 8, !tbaa !0
+  %21 = bitcast %struct.rtx_def* %20 to i32*
+  %bf.load111 = load i32* %21, align 8
+  %bf.clear112 = and i32 %bf.load111, 65535
+  switch i32 %bf.clear112, label %if.else139 [
+    i32 54, label %land.lhs.true
+    i32 59, label %if.then135
+    i32 68, label %if.then135
+  ]
+
+land.lhs.true:                                    ; preds = %if.end103
+  %rtwint119 = getelementptr inbounds %struct.rtx_def* %20, i64 0, i32 1, i64 0, i32 0
+  %22 = load i64* %rtwint119, align 8, !tbaa !7
+  %cmp120 = icmp sgt i64 %22, -1
+  br i1 %cmp120, label %if.then135, label %if.else139
+
+if.then135:                                       ; preds = %if.end103, %if.end103, %land.lhs.true
+  call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %20) #10
+  br label %sw.epilog
+
+if.else139:                                       ; preds = %if.end103, %land.lhs.true
+  %23 = load i8** getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 0), align 8, !tbaa !0
+  %call140 = call i32 @fputs(i8* %23, %struct._IO_FILE* %file) #8
+  %24 = load %struct.rtx_def** %rtx110, align 8, !tbaa !0
+  call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %24) #10
+  %25 = load i8** getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 1), align 8, !tbaa !0
+  %call144 = call i32 @fputs(i8* %25, %struct._IO_FILE* %file) #8
+  br label %sw.epilog
+
+sw.bb146:                                         ; preds = %restart, %restart, %restart
+  %arrayidx148 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 0
+  %rtx149 = bitcast %union.rtunion_def* %arrayidx148 to %struct.rtx_def**
+  %26 = load %struct.rtx_def** %rtx149, align 8, !tbaa !0
+  call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %26) #10
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %restart
+  call void (i8*, ...)* @output_operand_lossage(i8* getelementptr inbounds ([30 x i8]* @.str42, i64 0, i64 0)) #10
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %if.then135, %if.else139, %if.end69, %if.end92, %if.else47, %if.then36, %if.else41, %if.then24, %sw.default, %sw.bb146, %sw.bb14, %sw.bb10, %do.body, %sw.bb1, %sw.bb
+  call void @llvm.lifetime.end(i64 256, i8* %0) #7
+  ret void
+}

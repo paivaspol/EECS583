@@ -1,0 +1,238 @@
+define internal fastcc i32 @const_hash(%union.tree_node* %exp) #0 {
+entry:
+  %value55 = alloca %struct.addr_const, align 8
+  %code1 = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code1 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %sw.default [
+    i32 25, label %sw.bb
+    i32 26, label %sw.bb3
+    i32 29, label %sw.bb5
+    i32 27, label %sw.bb7
+    i32 46, label %sw.bb10
+    i32 121, label %sw.bb53
+    i32 124, label %sw.bb53
+    i32 59, label %sw.bb99
+    i32 60, label %sw.bb99
+    i32 115, label %sw.bb110
+    i32 114, label %sw.bb110
+    i32 116, label %sw.bb110
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %int_cst2 = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 2
+  %1 = bitcast i32* %int_cst2 to i8*
+  br label %for.body121.lr.ph
+
+sw.bb3:                                           ; preds = %entry
+  %real_cst4 = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 2
+  %2 = bitcast i32* %real_cst4 to i8*
+  br label %for.body121.lr.ph
+
+sw.bb5:                                           ; preds = %entry
+  %pointer = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 4
+  %3 = load %union.tree_node** %pointer, align 8
+  %4 = bitcast %union.tree_node* %3 to i8*
+  %5 = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 2
+  %6 = load i32* %5, align 4, !tbaa !4
+  br label %sw.epilog
+
+sw.bb7:                                           ; preds = %entry
+  %real = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 2
+  %7 = bitcast i32* %real to %union.tree_node**
+  %8 = load %union.tree_node** %7, align 8, !tbaa !3
+  %call = call fastcc i32 @const_hash(%union.tree_node* %8) #10
+  %mul = mul nsw i32 %call, 5
+  %9 = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 4
+  %10 = load %union.tree_node** %9, align 8, !tbaa !3
+  %call9 = call fastcc i32 @const_hash(%union.tree_node* %10) #10
+  %add = add nsw i32 %call9, %mul
+  br label %return
+
+sw.bb10:                                          ; preds = %entry
+  %type = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 0, i32 1
+  %11 = load %union.tree_node** %type, align 8, !tbaa !3
+  %code13 = getelementptr inbounds %union.tree_node* %11, i64 0, i32 0, i32 0, i32 2
+  %12 = bitcast [4 x i8]* %code13 to i32*
+  %bf.load14 = load i32* %12, align 8
+  %bf.clear15 = and i32 %bf.load14, 255
+  switch i32 %bf.clear15, label %if.else34 [
+    i32 19, label %if.then
+    i32 20, label %if.then30
+  ]
+
+if.then:                                          ; preds = %sw.bb10
+  %call18 = call i64 @int_size_in_bytes(%union.tree_node* %11) #9
+  %conv = trunc i64 %call18 to i32
+  %sext = shl i64 %call18, 32
+  %conv19 = ashr exact i64 %sext, 32
+  %13 = alloca i8, i64 %conv19, align 1
+  %call20 = call %union.tree_node* @get_set_constructor_bytes(%union.tree_node* %exp, i8* %13, i32 %conv) #9
+  br label %sw.epilog
+
+if.then30:                                        ; preds = %sw.bb10
+  %14 = ptrtoint %union.tree_node* %11 to i64
+  br label %if.end
+
+if.else34:                                        ; preds = %sw.bb10
+  %call37 = call i64 @int_size_in_bytes(%union.tree_node* %11) #9
+  %add38 = add nsw i64 %call37, 5
+  br label %if.end
+
+if.end:                                           ; preds = %if.else34, %if.then30
+  %hi.0.in.in.in = phi i64 [ %14, %if.then30 ], [ %add38, %if.else34 ]
+  %hi.0.in.in = and i64 %hi.0.in.in.in, 1073741823
+  %hi.0.in = urem i64 %hi.0.in.in, 1009
+  %hi.0 = trunc i64 %hi.0.in to i32
+  %operands = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 2
+  %arrayidx = getelementptr inbounds i32* %operands, i64 2
+  %15 = bitcast i32* %arrayidx to %union.tree_node**
+  %link.0174 = load %union.tree_node** %15, align 8
+  %tobool175 = icmp eq %union.tree_node* %link.0174, null
+  br i1 %tobool175, label %return, label %for.body
+
+for.body:                                         ; preds = %if.end, %for.inc
+  %link.0177 = phi %union.tree_node* [ %link.0, %for.inc ], [ %link.0174, %if.end ]
+  %hi.1176 = phi i32 [ %hi.2, %for.inc ], [ %hi.0, %if.end ]
+  %value = getelementptr inbounds %union.tree_node* %link.0177, i64 0, i32 0, i32 2
+  %16 = bitcast i32* %value to %union.tree_node**
+  %17 = load %union.tree_node** %16, align 8, !tbaa !3
+  %tobool43 = icmp eq %union.tree_node* %17, null
+  br i1 %tobool43, label %for.inc, label %if.then44
+
+if.then44:                                        ; preds = %for.body
+  %mul45 = mul nsw i32 %hi.1176, 603
+  %call48 = call fastcc i32 @const_hash(%union.tree_node* %17) #10
+  %add49 = add nsw i32 %call48, %mul45
+  %rem50 = srem i32 %add49, 1009
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then44
+  %hi.2 = phi i32 [ %rem50, %if.then44 ], [ %hi.1176, %for.body ]
+  %chain = getelementptr inbounds %union.tree_node* %link.0177, i64 0, i32 0, i32 0, i32 0
+  %link.0 = load %union.tree_node** %chain, align 8
+  %tobool = icmp eq %union.tree_node* %link.0, null
+  br i1 %tobool, label %return, label %for.body
+
+sw.bb53:                                          ; preds = %entry, %entry
+  call fastcc void @decode_addr_const(%union.tree_node* %exp, %struct.addr_const* %value55) #10
+  %base = getelementptr inbounds %struct.addr_const* %value55, i64 0, i32 0
+  %18 = load %struct.rtx_def** %base, align 8, !tbaa !3
+  %19 = bitcast %struct.rtx_def* %18 to i32*
+  %bf.load56 = load i32* %19, align 8
+  %bf.clear57 = and i32 %bf.load56, 65535
+  switch i32 %bf.clear57, label %if.else94 [
+    i32 68, label %if.then60
+    i32 67, label %if.then83
+  ]
+
+if.then60:                                        ; preds = %sw.bb53
+  %offset = getelementptr inbounds %struct.addr_const* %value55, i64 0, i32 1
+  %20 = load i64* %offset, align 8, !tbaa !10
+  %conv61 = trunc i64 %20 to i32
+  %arrayidx63 = getelementptr inbounds %struct.rtx_def* %18, i64 0, i32 1, i64 0
+  %rtstr = bitcast %union.rtunion_def* %arrayidx63 to i8**
+  %21 = load i8** %rtstr, align 8, !tbaa !3
+  %22 = load i8* %21, align 1, !tbaa !1
+  %cmp67179 = icmp eq i8 %22, 0
+  br i1 %cmp67179, label %if.end96, label %for.body69
+
+for.body69:                                       ; preds = %if.then60, %for.body69
+  %indvars.iv183 = phi i64 [ %indvars.iv.next184, %for.body69 ], [ 0, %if.then60 ]
+  %23 = phi i8 [ %24, %for.body69 ], [ %22, %if.then60 ]
+  %hi.3180 = phi i32 [ %add74, %for.body69 ], [ %conv61, %if.then60 ]
+  %conv66 = sext i8 %23 to i32
+  %mul70 = mul nsw i32 %hi.3180, 613
+  %add74 = add i32 %conv66, %mul70
+  %indvars.iv.next184 = add i64 %indvars.iv183, 1
+  %arrayidx65 = getelementptr inbounds i8* %21, i64 %indvars.iv.next184
+  %24 = load i8* %arrayidx65, align 1, !tbaa !1
+  %cmp67 = icmp eq i8 %24, 0
+  br i1 %cmp67, label %if.end96, label %for.body69
+
+if.then83:                                        ; preds = %sw.bb53
+  %offset84 = getelementptr inbounds %struct.addr_const* %value55, i64 0, i32 1
+  %25 = load i64* %offset84, align 8, !tbaa !10
+  %arrayidx87 = getelementptr inbounds %struct.rtx_def* %18, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx87 to %struct.rtx_def**
+  %26 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %arrayidx89 = getelementptr inbounds %struct.rtx_def* %26, i64 0, i32 1, i64 5
+  %rtint = bitcast %union.rtunion_def* %arrayidx89 to i32*
+  %27 = load i32* %rtint, align 4, !tbaa !4
+  %mul90 = mul nsw i32 %27, 13
+  %conv91170 = zext i32 %mul90 to i64
+  %add92 = add nsw i64 %conv91170, %25
+  %conv93 = trunc i64 %add92 to i32
+  br label %if.end96
+
+if.else94:                                        ; preds = %sw.bb53
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), i32 2581, i8* getelementptr inbounds ([11 x i8]* @__FUNCTION__.const_hash, i64 0, i64 0)) #12
+  unreachable
+
+if.end96:                                         ; preds = %if.then60, %for.body69, %if.then83
+  %hi.4 = phi i32 [ %conv93, %if.then83 ], [ %conv61, %if.then60 ], [ %add74, %for.body69 ]
+  %and97 = and i32 %hi.4, 1073741823
+  %rem98 = urem i32 %and97, 1009
+  br label %return
+
+sw.bb99:                                          ; preds = %entry, %entry
+  %operands101 = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 2
+  %arrayidx102 = bitcast i32* %operands101 to %union.tree_node**
+  %28 = load %union.tree_node** %arrayidx102, align 8, !tbaa !3
+  %call103 = call fastcc i32 @const_hash(%union.tree_node* %28) #10
+  %mul104 = mul nsw i32 %call103, 9
+  %arrayidx107 = getelementptr inbounds i32* %operands101, i64 2
+  %29 = bitcast i32* %arrayidx107 to %union.tree_node**
+  %30 = load %union.tree_node** %29, align 8, !tbaa !3
+  %call108 = call fastcc i32 @const_hash(%union.tree_node* %30) #10
+  %add109 = add nsw i32 %call108, %mul104
+  br label %return
+
+sw.bb110:                                         ; preds = %entry, %entry, %entry
+  %operands112 = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 2
+  %arrayidx113 = bitcast i32* %operands112 to %union.tree_node**
+  %31 = load %union.tree_node** %arrayidx113, align 8, !tbaa !3
+  %call114 = call fastcc i32 @const_hash(%union.tree_node* %31) #10
+  %mul115 = mul nsw i32 %call114, 7
+  %add116 = add nsw i32 %mul115, 2
+  br label %return
+
+sw.default:                                       ; preds = %entry
+  %rem117 = urem i32 %bf.clear, 1009
+  br label %return
+
+sw.epilog:                                        ; preds = %if.then, %sw.bb5
+  %len.0 = phi i32 [ %conv, %if.then ], [ %6, %sw.bb5 ]
+  %p.0 = phi i8* [ %13, %if.then ], [ %4, %sw.bb5 ]
+  %cmp119171 = icmp sgt i32 %len.0, 0
+  br i1 %cmp119171, label %for.body121.lr.ph, label %for.end129
+
+for.body121.lr.ph:                                ; preds = %sw.bb, %sw.bb3, %sw.epilog
+  %p.0187 = phi i8* [ %p.0, %sw.epilog ], [ %2, %sw.bb3 ], [ %1, %sw.bb ]
+  %len.0186 = phi i32 [ %len.0, %sw.epilog ], [ 24, %sw.bb3 ], [ 16, %sw.bb ]
+  br label %for.body121
+
+for.body121:                                      ; preds = %for.body121, %for.body121.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body121.lr.ph ], [ %indvars.iv.next, %for.body121 ]
+  %hi.5172 = phi i32 [ %len.0186, %for.body121.lr.ph ], [ %add126, %for.body121 ]
+  %mul122 = mul nsw i32 %hi.5172, 613
+  %arrayidx124 = getelementptr inbounds i8* %p.0187, i64 %indvars.iv
+  %32 = load i8* %arrayidx124, align 1, !tbaa !1
+  %conv125 = sext i8 %32 to i32
+  %add126 = add i32 %conv125, %mul122
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %len.0186
+  br i1 %exitcond, label %for.end129, label %for.body121
+
+for.end129:                                       ; preds = %for.body121, %sw.epilog
+  %hi.5.lcssa = phi i32 [ %len.0, %sw.epilog ], [ %add126, %for.body121 ]
+  %and130 = and i32 %hi.5.lcssa, 1073741823
+  %rem131 = urem i32 %and130, 1009
+  br label %return
+
+return:                                           ; preds = %if.end, %for.inc, %for.end129, %sw.default, %sw.bb110, %sw.bb99, %if.end96, %sw.bb7
+  %retval.0 = phi i32 [ %rem117, %sw.default ], [ %add116, %sw.bb110 ], [ %add109, %sw.bb99 ], [ %rem98, %if.end96 ], [ %rem131, %for.end129 ], [ %add, %sw.bb7 ], [ %hi.0, %if.end ], [ %hi.2, %for.inc ]
+  ret i32 %retval.0
+}

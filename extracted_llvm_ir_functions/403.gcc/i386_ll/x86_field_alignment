@@ -1,0 +1,52 @@
+define i32 @x86_field_alignment(%union.tree_node* nocapture %field, i32 %computed) #1 {
+entry:
+  %type1 = getelementptr inbounds %union.tree_node* %field, i64 0, i32 0, i32 0, i32 1
+  %0 = load %union.tree_node** %type1, align 8, !tbaa !4
+  %1 = load i32* @target_flags, align 4, !tbaa !0
+  %2 = and i32 %1, 33554436
+  %3 = icmp eq i32 %2, 0
+  br i1 %3, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
+  %4 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %4, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 18
+  br i1 %cmp, label %cond.true, label %cond.end
+
+cond.true:                                        ; preds = %if.end
+  %call = tail call %union.tree_node* @get_inner_array_type(%union.tree_node* %0) #9
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.end, %cond.true
+  %cond = phi %union.tree_node* [ %call, %cond.true ], [ %0, %if.end ]
+  %type5 = bitcast %union.tree_node* %cond to %struct.tree_type*
+  %mode6 = getelementptr inbounds %struct.tree_type* %type5, i64 0, i32 6
+  %5 = bitcast [4 x i8]* %mode6 to i32*
+  %bf.load7 = load i32* %5, align 4
+  %bf.lshr = lshr i32 %bf.load7, 9
+  %bf.clear8 = and i32 %bf.lshr, 127
+  switch i32 %bf.clear8, label %lor.lhs.false12 [
+    i32 22, label %if.then18
+    i32 16, label %if.then18
+  ]
+
+lor.lhs.false12:                                  ; preds = %cond.end
+  %idxprom32 = zext i32 %bf.clear8 to i64
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom32
+  %6 = load i32* %arrayidx, align 4, !tbaa !9
+  switch i32 %6, label %return [
+    i32 1, label %if.then18
+    i32 5, label %if.then18
+  ]
+
+if.then18:                                        ; preds = %lor.lhs.false12, %lor.lhs.false12, %cond.end, %cond.end
+  %cmp19 = icmp sgt i32 %computed, 32
+  %cond23 = select i1 %cmp19, i32 32, i32 %computed
+  br label %return
+
+return:                                           ; preds = %lor.lhs.false12, %entry, %if.then18
+  %retval.0 = phi i32 [ %cond23, %if.then18 ], [ %computed, %entry ], [ %computed, %lor.lhs.false12 ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,92 @@
+define i32 @ix86_expand_setcc(i32 %code, %struct.rtx_def* %dest) #1 {
+entry:
+  %second_test = alloca %struct.rtx_def*, align 8
+  %bypass_test = alloca %struct.rtx_def*, align 8
+  %0 = load %struct.rtx_def** @ix86_compare_op0, align 8, !tbaa !4
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 16711680
+  %cmp = icmp eq i32 %bf.clear, 327680
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %2 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %2, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %entry
+  %3 = bitcast %struct.rtx_def* %dest to i32*
+  %bf.load4 = load i32* %3, align 8
+  %bf.clear6 = and i32 %bf.load4, 16711680
+  %cmp7 = icmp eq i32 %bf.clear6, 131072
+  br i1 %cmp7, label %if.end9, label %if.then8
+
+if.then8:                                         ; preds = %if.end
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 7980, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.ix86_expand_setcc, i64 0, i64 0)) #11
+  unreachable
+
+if.end9:                                          ; preds = %if.end
+  %call = call %struct.rtx_def* @ix86_expand_compare(i32 %code, %struct.rtx_def** %second_test, %struct.rtx_def** %bypass_test) #10
+  %4 = bitcast %struct.rtx_def* %call to i32*
+  %bf.load10 = load i32* %4, align 8
+  %bf.clear11 = and i32 %bf.load10, -16711681
+  %bf.set = or i32 %bf.clear11, 131072
+  store i32 %bf.set, i32* %4, align 8
+  %call12 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %dest, %struct.rtx_def* %call) #9
+  %call13 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call12) #9
+  %5 = load %struct.rtx_def** %bypass_test, align 8, !tbaa !4
+  %tobool14 = icmp eq %struct.rtx_def* %5, null
+  %6 = load %struct.rtx_def** %second_test, align 8, !tbaa !4
+  %tobool15 = icmp eq %struct.rtx_def* %6, null
+  %or.cond = and i1 %tobool14, %tobool15
+  br i1 %or.cond, label %return, label %if.then16
+
+if.then16:                                        ; preds = %if.end9
+  %call20 = call %struct.rtx_def* @gen_reg_rtx(i32 2) #9
+  %7 = load %struct.rtx_def** %bypass_test, align 8, !tbaa !4
+  %tobool21 = icmp eq %struct.rtx_def* %7, null
+  br i1 %tobool21, label %if.end32, label %if.then22
+
+if.then22:                                        ; preds = %if.then16
+  %8 = load %struct.rtx_def** %second_test, align 8, !tbaa !4
+  %tobool23 = icmp eq %struct.rtx_def* %8, null
+  br i1 %tobool23, label %if.end25, label %if.then24
+
+if.then24:                                        ; preds = %if.then22
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 7997, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.ix86_expand_setcc, i64 0, i64 0)) #11
+  unreachable
+
+if.end25:                                         ; preds = %if.then22
+  %9 = bitcast %struct.rtx_def* %7 to i32*
+  %bf.load26 = load i32* %9, align 8
+  %bf.clear27 = and i32 %bf.load26, 65535
+  %call28 = call i32 @reverse_condition_maybe_unordered(i32 %bf.clear27) #9
+  %bf.load29 = load i32* %9, align 8
+  %bf.value = and i32 %call28, 65535
+  %bf.clear30 = and i32 %bf.load29, -16777216
+  %bf.set31 = or i32 %bf.value, %bf.clear30
+  %bf.set35.c = or i32 %bf.set31, 131072
+  store i32 %bf.set35.c, i32* %9, align 8
+  %call36.c = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %call20, %struct.rtx_def* %7) #9
+  %call37.c = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call36.c) #9
+  %call40 = call %struct.rtx_def* @gen_andqi3(%struct.rtx_def* %dest, %struct.rtx_def* %dest, %struct.rtx_def* %call20) #9
+  %call41 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call40) #9
+  br label %return
+
+if.end32:                                         ; preds = %if.then16
+  %10 = bitcast %struct.rtx_def* %6 to i32*
+  %bf.load33 = load i32* %10, align 8
+  %bf.clear34 = and i32 %bf.load33, -16711681
+  %bf.set35 = or i32 %bf.clear34, 131072
+  store i32 %bf.set35, i32* %10, align 8
+  %call36 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %call20, %struct.rtx_def* %6) #9
+  %call37 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call36) #9
+  %call42 = call %struct.rtx_def* @gen_iorqi3(%struct.rtx_def* %dest, %struct.rtx_def* %dest, %struct.rtx_def* %call20) #9
+  %call43 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call42) #9
+  br label %return
+
+return:                                           ; preds = %if.end9, %if.end32, %if.end25, %land.lhs.true
+  %retval.0 = phi i32 [ 0, %land.lhs.true ], [ 1, %if.end25 ], [ 1, %if.end32 ], [ 1, %if.end9 ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,102 @@
+define internal fastcc i32 @get_coefficients(%struct.def_use* %du, %struct.subscript* %coefficients) #0 {
+entry:
+  %expression = getelementptr inbounds %struct.def_use* %du, i64 0, i32 2
+  %array_ref.082 = load %union.tree_node** %expression, align 8
+  %code83 = getelementptr inbounds %union.tree_node* %array_ref.082, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code83 to i32*
+  %bf.load84 = load i32* %0, align 8
+  %bf.clear85 = and i32 %bf.load84, 255
+  %cmp86 = icmp eq i32 %bf.clear85, 43
+  br i1 %cmp86, label %for.body, label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.body, %entry
+  %array_count.0.lcssa = phi i32 [ 0, %entry ], [ %add, %for.body ]
+  br label %for.body3
+
+for.body:                                         ; preds = %entry, %for.body
+  %array_ref.088 = phi %union.tree_node* [ %array_ref.0, %for.body ], [ %array_ref.082, %entry ]
+  %array_count.087 = phi i32 [ %add, %for.body ], [ 0, %entry ]
+  %add = add nsw i32 %array_count.087, 1
+  %operands = getelementptr inbounds %union.tree_node* %array_ref.088, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  %array_ref.0 = load %union.tree_node** %arrayidx, align 8
+  %code = getelementptr inbounds %union.tree_node* %array_ref.0, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 43
+  br i1 %cmp, label %for.body, label %for.cond1.preheader
+
+for.cond16.preheader:                             ; preds = %for.body3
+  %array_ref.174 = load %union.tree_node** %expression, align 8
+  %code1875 = getelementptr inbounds %union.tree_node* %array_ref.174, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %code1875 to i32*
+  %bf.load1976 = load i32* %2, align 8
+  %bf.clear2077 = and i32 %bf.load1976, 255
+  %cmp2178 = icmp eq i32 %bf.clear2077, 43
+  br i1 %cmp2178, label %for.body22.lr.ph, label %return
+
+for.body22.lr.ph:                                 ; preds = %for.cond16.preheader
+  %3 = sext i32 %array_count.0.lcssa to i64
+  br label %for.body22
+
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv90 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next91, %for.body3 ]
+  %position = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv90, i32 0
+  store i32 0, i32* %position, align 4, !tbaa !4
+  %coefficient = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv90, i32 1
+  store i32 -2147483648, i32* %coefficient, align 4, !tbaa !4
+  %offset = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv90, i32 2
+  store i32 -2147483648, i32* %offset, align 4, !tbaa !4
+  %variable = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv90, i32 3
+  %indvars.iv.next91 = add i64 %indvars.iv90, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next91 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 13
+  %4 = bitcast i8** %variable to i8*
+  call void @llvm.memset.p0i8.i64(i8* %4, i8 0, i64 16, i32 8, i1 false)
+  br i1 %exitcond, label %for.cond16.preheader, label %for.body3
+
+for.body22:                                       ; preds = %for.body22.lr.ph, %if.end46
+  %indvars.iv = phi i64 [ %3, %for.body22.lr.ph ], [ %indvars.iv.next, %if.end46 ]
+  %array_ref.180 = phi %union.tree_node* [ %array_ref.174, %for.body22.lr.ph ], [ %array_ref.1, %if.end46 ]
+  %operands24 = getelementptr inbounds %union.tree_node* %array_ref.180, i64 0, i32 0, i32 2
+  %arrayidx25 = getelementptr inbounds i32* %operands24, i64 2
+  %5 = bitcast i32* %arrayidx25 to %union.tree_node**
+  %6 = load %union.tree_node** %5, align 8, !tbaa !0
+  %code27 = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 0, i32 2
+  %7 = bitcast [4 x i8]* %code27 to i32*
+  %bf.load28 = load i32* %7, align 8
+  %bf.clear29 = and i32 %bf.load28, 255
+  %cmp30 = icmp eq i32 %bf.clear29, 25
+  br i1 %cmp30, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.body22
+  %int_cst34 = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 2
+  %low = bitcast i32* %int_cst34 to i64*
+  %8 = load i64* %low, align 8, !tbaa !3
+  %conv = trunc i64 %8 to i32
+  %offset37 = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv, i32 2
+  store i32 %conv, i32* %offset37, align 4, !tbaa !4
+  br label %if.end46
+
+if.else:                                          ; preds = %for.body22
+  %arrayidx42 = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv
+  %call = tail call fastcc i32 @get_one_coefficient(%union.tree_node* %6, %struct.subscript* %arrayidx42, %struct.def_use* %du, i32* null) #7
+  %cmp43 = icmp slt i32 %call, 0
+  br i1 %cmp43, label %return, label %if.end46
+
+if.end46:                                         ; preds = %if.else, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %arrayidx50 = bitcast i32* %operands24 to %union.tree_node**
+  %array_ref.1 = load %union.tree_node** %arrayidx50, align 8
+  %code18 = getelementptr inbounds %union.tree_node* %array_ref.1, i64 0, i32 0, i32 0, i32 2
+  %9 = bitcast [4 x i8]* %code18 to i32*
+  %bf.load19 = load i32* %9, align 8
+  %bf.clear20 = and i32 %bf.load19, 255
+  %cmp21 = icmp eq i32 %bf.clear20, 43
+  br i1 %cmp21, label %for.body22, label %return
+
+return:                                           ; preds = %if.end46, %if.else, %for.cond16.preheader
+  %retval.0 = phi i32 [ %array_count.0.lcssa, %for.cond16.preheader ], [ -1, %if.else ], [ %array_count.0.lcssa, %if.end46 ]
+  ret i32 %retval.0
+}

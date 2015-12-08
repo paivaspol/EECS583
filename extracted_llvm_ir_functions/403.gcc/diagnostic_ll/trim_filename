@@ -1,0 +1,87 @@
+define i8* @trim_filename(i8* %name) #1 {
+entry:
+  %0 = load i8* %name, align 1, !tbaa !1
+  %cmp86 = icmp eq i8 %0, 46
+  br i1 %cmp86, label %land.lhs.true, label %while.cond10.preheader
+
+while.cond:                                       ; preds = %land.rhs
+  %1 = load i8* %add.ptr, align 1, !tbaa !1
+  %cmp = icmp eq i8 %1, 46
+  br i1 %cmp, label %land.lhs.true, label %while.cond10.preheader
+
+land.lhs.true:                                    ; preds = %entry, %while.cond
+  %p.087 = phi i8* [ %add.ptr, %while.cond ], [ %name, %entry ]
+  %arrayidx2 = getelementptr inbounds i8* %p.087, i64 1
+  %2 = load i8* %arrayidx2, align 1, !tbaa !1
+  %cmp4 = icmp eq i8 %2, 46
+  br i1 %cmp4, label %land.rhs, label %while.cond10.preheader
+
+land.rhs:                                         ; preds = %land.lhs.true
+  %arrayidx6 = getelementptr inbounds i8* %p.087, i64 2
+  %3 = load i8* %arrayidx6, align 1, !tbaa !1
+  %cmp8 = icmp eq i8 %3, 47
+  %add.ptr = getelementptr inbounds i8* %p.087, i64 3
+  br i1 %cmp8, label %while.cond, label %while.cond10.preheader
+
+while.cond10.preheader:                           ; preds = %while.cond, %land.lhs.true, %land.rhs, %entry
+  %4 = phi i8 [ %0, %entry ], [ 46, %land.rhs ], [ 46, %land.lhs.true ], [ %1, %while.cond ]
+  %p.0.lcssa = phi i8* [ %name, %entry ], [ %p.087, %land.rhs ], [ %p.087, %land.lhs.true ], [ %add.ptr, %while.cond ]
+  br label %land.lhs.true15
+
+while.cond10:                                     ; preds = %land.rhs20
+  %5 = load i8* %add.ptr27, align 1, !tbaa !1
+  %cmp13 = icmp eq i8 %5, 46
+  br i1 %cmp13, label %land.lhs.true15, label %while.cond29.preheader
+
+land.lhs.true15:                                  ; preds = %while.cond10.preheader, %while.cond10
+  %q.085 = phi i8* [ getelementptr inbounds ([54 x i8]* @.str20, i64 0, i64 0), %while.cond10.preheader ], [ %add.ptr27, %while.cond10 ]
+  %arrayidx16 = getelementptr inbounds i8* %q.085, i64 1
+  %6 = load i8* %arrayidx16, align 1, !tbaa !1
+  %cmp18 = icmp eq i8 %6, 46
+  br i1 %cmp18, label %land.rhs20, label %while.cond29.preheader
+
+land.rhs20:                                       ; preds = %land.lhs.true15
+  %arrayidx21 = getelementptr inbounds i8* %q.085, i64 2
+  %7 = load i8* %arrayidx21, align 1, !tbaa !1
+  %cmp23 = icmp eq i8 %7, 47
+  %add.ptr27 = getelementptr inbounds i8* %q.085, i64 3
+  br i1 %cmp23, label %while.cond10, label %while.cond29.preheader
+
+while.cond29.preheader:                           ; preds = %land.rhs20, %land.lhs.true15, %while.cond10
+  %q.0.lcssa = phi i8* [ %add.ptr27, %while.cond10 ], [ %q.085, %land.lhs.true15 ], [ %q.085, %land.rhs20 ]
+  %8 = load i8* %q.0.lcssa, align 1, !tbaa !1
+  %cmp3278 = icmp ne i8 %4, %8
+  %cmp3679 = icmp eq i8 %4, 0
+  %or.cond80 = or i1 %cmp3278, %cmp3679
+  %cmp4081 = icmp eq i8 %8, 0
+  %or.cond7782 = or i1 %or.cond80, %cmp4081
+  br i1 %or.cond7782, label %while.cond46, label %while.body43
+
+while.body43:                                     ; preds = %while.cond29.preheader, %while.body43
+  %q.184 = phi i8* [ %incdec.ptr44, %while.body43 ], [ %q.0.lcssa, %while.cond29.preheader ]
+  %p.183 = phi i8* [ %incdec.ptr, %while.body43 ], [ %p.0.lcssa, %while.cond29.preheader ]
+  %incdec.ptr = getelementptr inbounds i8* %p.183, i64 1
+  %incdec.ptr44 = getelementptr inbounds i8* %q.184, i64 1
+  %9 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %10 = load i8* %incdec.ptr44, align 1, !tbaa !1
+  %cmp32 = icmp ne i8 %9, %10
+  %cmp36 = icmp eq i8 %9, 0
+  %or.cond = or i1 %cmp32, %cmp36
+  %cmp40 = icmp eq i8 %10, 0
+  %or.cond77 = or i1 %or.cond, %cmp40
+  br i1 %or.cond77, label %while.cond46, label %while.body43
+
+while.cond46:                                     ; preds = %while.cond29.preheader, %while.body43, %land.rhs49
+  %p.2 = phi i8* [ %arrayidx50, %land.rhs49 ], [ %p.0.lcssa, %while.cond29.preheader ], [ %incdec.ptr, %while.body43 ]
+  %cmp47 = icmp ugt i8* %p.2, %name
+  br i1 %cmp47, label %land.rhs49, label %while.end57
+
+land.rhs49:                                       ; preds = %while.cond46
+  %arrayidx50 = getelementptr inbounds i8* %p.2, i64 -1
+  %11 = load i8* %arrayidx50, align 1, !tbaa !1
+  %cmp52 = icmp eq i8 %11, 47
+  br i1 %cmp52, label %while.end57, label %while.cond46
+
+while.end57:                                      ; preds = %land.rhs49, %while.cond46
+  ret i8* %p.2
+}

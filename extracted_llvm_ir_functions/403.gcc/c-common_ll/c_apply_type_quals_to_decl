@@ -1,0 +1,89 @@
+define void @c_apply_type_quals_to_decl(i32 %type_quals, %union.tree_node* nocapture %decl) #0 {
+entry:
+  %and = and i32 %type_quals, 1
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %entry
+  %type = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 1
+  %0 = load %union.tree_node** %type, align 8, !tbaa !3
+  %tobool1 = icmp eq %union.tree_node* %0, null
+  br i1 %tobool1, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %lor.lhs.false
+  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 15
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry, %land.lhs.true
+  %readonly_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %readonly_flag to i32*
+  %bf.load6 = load i32* %2, align 8
+  %bf.set = or i32 %bf.load6, 4096
+  store i32 %bf.set, i32* %2, align 8
+  br label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false, %if.then, %land.lhs.true
+  %and8 = and i32 %type_quals, 2
+  %tobool9 = icmp eq i32 %and8, 0
+  br i1 %tobool9, label %if.end19, label %if.then10
+
+if.then10:                                        ; preds = %if.end
+  %side_effects_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %side_effects_flag to i32*
+  %bf.load12 = load i32* %3, align 8
+  %bf.set18 = or i32 %bf.load12, 2304
+  store i32 %bf.set18, i32* %3, align 8
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.end, %if.then10
+  %and20 = and i32 %type_quals, 4
+  %tobool21 = icmp eq i32 %and20, 0
+  br i1 %tobool21, label %if.end58, label %if.then22
+
+if.then22:                                        ; preds = %if.end19
+  %type24 = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 1
+  %4 = load %union.tree_node** %type24, align 8, !tbaa !3
+  %tobool25 = icmp eq %union.tree_node* %4, null
+  br i1 %tobool25, label %if.then52, label %lor.lhs.false26
+
+lor.lhs.false26:                                  ; preds = %if.then22
+  %code30 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 2
+  %5 = bitcast [4 x i8]* %code30 to i32*
+  %bf.load31 = load i32* %5, align 8
+  %bf.clear32 = and i32 %bf.load31, 255
+  switch i32 %bf.clear32, label %if.then52 [
+    i32 13, label %lor.lhs.false42
+    i32 15, label %lor.lhs.false42
+  ]
+
+lor.lhs.false42:                                  ; preds = %lor.lhs.false26, %lor.lhs.false26
+  %type46 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 1
+  %6 = load %union.tree_node** %type46, align 8, !tbaa !3
+  %code48 = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 0, i32 2
+  %7 = bitcast [4 x i8]* %code48 to i32*
+  %bf.load49 = load i32* %7, align 8
+  %bf.clear50 = and i32 %bf.load49, 255
+  %cmp51 = icmp eq i32 %bf.clear50, 23
+  br i1 %cmp51, label %if.then52, label %if.else
+
+if.then52:                                        ; preds = %lor.lhs.false26, %if.then22, %lor.lhs.false42
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([26 x i8]* @.str48, i64 0, i64 0)) #8
+  br label %if.end58
+
+if.else:                                          ; preds = %lor.lhs.false42
+  %8 = load i32* @flag_strict_aliasing, align 4, !tbaa !0
+  %tobool53 = icmp eq i32 %8, 0
+  br i1 %tobool53, label %if.end58, label %if.then54
+
+if.then54:                                        ; preds = %if.else
+  %pointer_alias_set = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 23
+  store i64 -2, i64* %pointer_alias_set, align 8, !tbaa !4
+  br label %if.end58
+
+if.end58:                                         ; preds = %if.else, %if.end19, %if.then52, %if.then54
+  ret void
+}

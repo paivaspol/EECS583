@@ -1,0 +1,61 @@
+define void @fixup_signed_type(%union.tree_node* %type) #0 {
+entry:
+  %type1 = bitcast %union.tree_node* %type to %struct.tree_type*
+  %precision2 = getelementptr inbounds %struct.tree_type* %type1, i64 0, i32 6
+  %0 = bitcast [4 x i8]* %precision2 to i32*
+  %bf.load = load i32* %0, align 4
+  %bf.clear = and i32 %bf.load, 511
+  %cmp = icmp ugt i32 %bf.clear, 128
+  %.bf.clear = select i1 %cmp, i32 128, i32 %bf.clear
+  %sub = add nsw i32 %.bf.clear, -64
+  %cmp3 = icmp sgt i32 %sub, 0
+  br i1 %cmp3, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %entry
+  %sub4 = add nsw i32 %.bf.clear, -1
+  %sh_prom = zext i32 %sub4 to i64
+  %shl = shl i64 -1, %sh_prom
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi i64 [ %shl, %cond.false ], [ 0, %entry ]
+  %sub6 = add nsw i32 %.bf.clear, -65
+  %cmp7 = icmp sgt i32 %sub6, 0
+  %phitmp = zext i32 %sub6 to i64
+  %phitmp.op = shl i64 -1, %phitmp
+  %shl15 = select i1 %cmp7, i64 %phitmp.op, i64 -1
+  %call = tail call %union.tree_node* @build_int_2_wide(i64 %cond, i64 %shl15) #7
+  %1 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 12
+  store %union.tree_node* %call, %union.tree_node** %1, align 8, !tbaa !0
+  br i1 %cmp3, label %cond.end25, label %cond.false20
+
+cond.false20:                                     ; preds = %cond.end
+  %sub21 = add nsw i32 %.bf.clear, -1
+  %sh_prom22 = zext i32 %sub21 to i64
+  %shl23 = shl i64 1, %sh_prom22
+  %sub24 = add nsw i64 %shl23, -1
+  br label %cond.end25
+
+cond.end25:                                       ; preds = %cond.end, %cond.false20
+  %cond26 = phi i64 [ %sub24, %cond.false20 ], [ -1, %cond.end ]
+  br i1 %cmp7, label %cond.true30, label %cond.end37
+
+cond.true30:                                      ; preds = %cond.end25
+  %shl34 = shl i64 1, %phitmp
+  %sub35 = add nsw i64 %shl34, -1
+  br label %cond.end37
+
+cond.end37:                                       ; preds = %cond.end25, %cond.true30
+  %cond38 = phi i64 [ %sub35, %cond.true30 ], [ 0, %cond.end25 ]
+  %call39 = tail call %union.tree_node* @build_int_2_wide(i64 %cond26, i64 %cond38) #7
+  %2 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 13
+  store %union.tree_node* %call39, %union.tree_node** %2, align 8, !tbaa !0
+  %3 = load %union.tree_node** %1, align 8, !tbaa !0
+  %type43 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 0, i32 1
+  store %union.tree_node* %type, %union.tree_node** %type43, align 8, !tbaa !0
+  %4 = load %union.tree_node** %2, align 8, !tbaa !0
+  %type47 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 1
+  store %union.tree_node* %type, %union.tree_node** %type47, align 8, !tbaa !0
+  tail call void @layout_type(%union.tree_node* %type) #9
+  ret void
+}

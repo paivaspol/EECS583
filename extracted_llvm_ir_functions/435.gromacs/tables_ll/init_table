@@ -1,0 +1,57 @@
+define internal fastcc void @init_table(i32 %n, i32 %nx0, float %tabscale, %struct.t_tabledata* nocapture %td, i32 %bAlloc) #0 {
+entry:
+  %nx = getelementptr inbounds %struct.t_tabledata* %td, i64 0, i32 0
+  store i32 %n, i32* %nx, align 4, !tbaa !0
+  %nx01 = getelementptr inbounds %struct.t_tabledata* %td, i64 0, i32 1
+  store i32 %nx0, i32* %nx01, align 4, !tbaa !0
+  %tabscale2 = getelementptr inbounds %struct.t_tabledata* %td, i64 0, i32 2
+  store float %tabscale, float* %tabscale2, align 4, !tbaa !3
+  %tobool = icmp eq i32 %bAlloc, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str4, i64 0, i64 0), i32 145, i32 %n, i32 4) #4
+  %0 = bitcast i8* %call to float*
+  %x = getelementptr inbounds %struct.t_tabledata* %td, i64 0, i32 3
+  store float* %0, float** %x, align 8, !tbaa !4
+  %1 = load i32* %nx, align 4, !tbaa !0
+  %call5 = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str4, i64 0, i64 0), i32 146, i32 %1, i32 4) #4
+  %2 = bitcast i8* %call5 to float*
+  %v = getelementptr inbounds %struct.t_tabledata* %td, i64 0, i32 4
+  store float* %2, float** %v, align 8, !tbaa !4
+  %3 = load i32* %nx, align 4, !tbaa !0
+  %call7 = tail call i8* @save_calloc(i8* getelementptr inbounds ([7 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str4, i64 0, i64 0), i32 147, i32 %3, i32 4) #4
+  %4 = bitcast i8* %call7 to float*
+  %v2 = getelementptr inbounds %struct.t_tabledata* %td, i64 0, i32 5
+  store float* %4, float** %v2, align 8, !tbaa !4
+  %.pre = load i32* %nx01, align 4, !tbaa !0
+  %.pre3 = load i32* %nx, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %5 = phi i32 [ %n, %entry ], [ %.pre3, %if.then ]
+  %6 = phi i32 [ %nx0, %entry ], [ %.pre, %if.then ]
+  %cmp1 = icmp slt i32 %6, %5
+  br i1 %cmp1, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %x10 = getelementptr inbounds %struct.t_tabledata* %td, i64 0, i32 3
+  %7 = load float** %x10, align 8, !tbaa !4
+  %8 = sext i32 %6 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ %8, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %9 = trunc i64 %indvars.iv to i32
+  %conv = sitofp i32 %9 to float
+  %div = fdiv float %conv, %tabscale
+  %arrayidx = getelementptr inbounds float* %7, i64 %indvars.iv
+  store float %div, float* %arrayidx, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %10 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %10, %5
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %if.end
+  ret void
+}

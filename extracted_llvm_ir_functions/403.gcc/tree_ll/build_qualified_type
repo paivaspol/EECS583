@@ -1,0 +1,44 @@
+define %union.tree_node* @build_qualified_type(%union.tree_node* nocapture %type, i32 %type_quals) #0 {
+entry:
+  %call = tail call %union.tree_node* @get_qualified_type(%union.tree_node* %type, i32 %type_quals) #10
+  %tobool = icmp eq %union.tree_node* %call, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 15
+  %1 = load %union.tree_node** %0, align 8, !tbaa !0
+  %call.i = tail call %union.tree_node* @copy_node(%union.tree_node* %type) #9
+  %2 = getelementptr inbounds %union.tree_node* %call.i, i64 0, i32 0, i32 8
+  %3 = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 14
+  %4 = bitcast %union.tree_node** %2 to i8*
+  tail call void @llvm.memset.p0i8.i64(i8* %4, i8 0, i64 16, i32 8, i1 false) #4
+  %5 = load %union.tree_node** %3, align 8, !tbaa !0
+  %6 = getelementptr inbounds %union.tree_node* %call.i, i64 0, i32 0, i32 14
+  store %union.tree_node* %5, %union.tree_node** %6, align 8, !tbaa !0
+  store %union.tree_node* %call.i, %union.tree_node** %3, align 8, !tbaa !0
+  %readonly_flag.i = getelementptr inbounds %union.tree_node* %call.i, i64 0, i32 0, i32 0, i32 2
+  %7 = bitcast [4 x i8]* %readonly_flag.i to i32*
+  %bf.load.i = load i32* %7, align 8
+  %bf.value.i = shl i32 %type_quals, 12
+  %bf.shl.i = and i32 %bf.value.i, 4096
+  %bf.clear.i = and i32 %bf.load.i, -6145
+  %8 = shl i32 %type_quals, 10
+  %bf.shl7.i = and i32 %8, 2048
+  %bf.set.i = or i32 %bf.shl7.i, %bf.shl.i
+  %bf.set9.i = or i32 %bf.set.i, %bf.clear.i
+  store i32 %bf.set9.i, i32* %7, align 8
+  %type13.i = bitcast %union.tree_node* %call.i to %struct.tree_type*
+  %restrict_flag.i = getelementptr inbounds %struct.tree_type* %type13.i, i64 0, i32 6
+  %9 = bitcast [4 x i8]* %restrict_flag.i to i32*
+  %bf.load14.i = load i32* %9, align 4
+  %10 = shl i32 %type_quals, 19
+  %bf.shl16.i = and i32 %10, 2097152
+  %bf.clear17.i = and i32 %bf.load14.i, -2097153
+  %bf.set18.i = or i32 %bf.clear17.i, %bf.shl16.i
+  store i32 %bf.set18.i, i32* %9, align 4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %t.0 = phi %union.tree_node* [ %call, %entry ], [ %call.i, %if.then ]
+  ret %union.tree_node* %t.0
+}

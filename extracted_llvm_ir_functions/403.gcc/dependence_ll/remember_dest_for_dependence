@@ -1,0 +1,38 @@
+define void @remember_dest_for_dependence(%union.tree_node* %node) #0 {
+entry:
+  %tobool = icmp eq %union.tree_node* %node, null
+  br i1 %tobool, label %if.end15, label %if.then
+
+if.then:                                          ; preds = %entry
+  %code = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 41
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %if.then
+  %operands = getelementptr inbounds %union.tree_node* %node, i64 0, i32 0, i32 2
+  %arrayidx = getelementptr inbounds i32* %operands, i64 2
+  %1 = bitcast i32* %arrayidx to %union.tree_node**
+  %2 = load %union.tree_node** %1, align 8, !tbaa !0
+  %tobool1 = icmp eq %union.tree_node* %2, null
+  br i1 %tobool1, label %if.end, label %land.lhs.true2
+
+land.lhs.true2:                                   ; preds = %land.lhs.true
+  %code7 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %code7 to i32*
+  %bf.load8 = load i32* %3, align 8
+  %bf.clear9 = and i32 %bf.load8, 255
+  %cmp10 = icmp eq i32 %bf.clear9, 43
+  %.node = select i1 %cmp10, %union.tree_node* %2, %union.tree_node* %node
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true2, %land.lhs.true, %if.then
+  %node.addr.0 = phi %union.tree_node* [ %node, %land.lhs.true ], [ %node, %if.then ], [ %.node, %land.lhs.true2 ]
+  store %union.tree_node* %node.addr.0, %union.tree_node** @dest_to_remember, align 8, !tbaa !0
+  br label %if.end15
+
+if.end15:                                         ; preds = %entry, %if.end
+  ret void
+}

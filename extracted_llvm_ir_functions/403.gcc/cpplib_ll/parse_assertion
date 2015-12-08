@@ -1,0 +1,157 @@
+define internal fastcc %struct.cpp_hashnode* @parse_assertion(%struct.cpp_reader* %pfile, %struct.answer** nocapture %answerp, i32 %type) #0 {
+entry:
+  %prevent_expansion = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 7
+  %0 = load i8* %prevent_expansion, align 1, !tbaa !0
+  %inc = add i8 %0, 1
+  store i8 %inc, i8* %prevent_expansion, align 1, !tbaa !0
+  store %struct.answer* null, %struct.answer** %answerp, align 8, !tbaa !3
+  %call = call %struct.cpp_token* @cpp_get_token(%struct.cpp_reader* %pfile) #8
+  %type1 = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2
+  %bf.load = load i8* %type1, align 2
+  switch i8 %bf.load, label %if.then6 [
+    i8 67, label %if.then
+    i8 56, label %if.else7
+  ]
+
+if.then:                                          ; preds = %entry
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([28 x i8]* @.str12, i64 0, i64 0)) #8
+  br label %if.end19
+
+if.then6:                                         ; preds = %entry
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([32 x i8]* @.str13, i64 0, i64 0)) #8
+  br label %if.end19
+
+if.else7:                                         ; preds = %entry
+  %call.i = call %struct.cpp_token* @cpp_get_token(%struct.cpp_reader* %pfile) #8
+  %type1.i = getelementptr inbounds %struct.cpp_token* %call.i, i64 0, i32 2
+  %bf.load.i = load i8* %type1.i, align 2
+  %cmp.i = icmp eq i8 %bf.load.i, 22
+  br i1 %cmp.i, label %for.cond.preheader.i, label %if.then.i
+
+for.cond.preheader.i:                             ; preds = %if.else7
+  %a_buff.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 6
+  br label %for.cond.i
+
+if.then.i:                                        ; preds = %if.else7
+  switch i32 %type, label %if.end10.i [
+    i32 4, label %if.then3.i
+    i32 17, label %land.lhs.true.i
+  ]
+
+if.then3.i:                                       ; preds = %if.then.i
+  call void @_cpp_backup_tokens(%struct.cpp_reader* %pfile, i32 1) #8
+  br label %if.then10
+
+land.lhs.true.i:                                  ; preds = %if.then.i
+  %cmp8.i = icmp eq i8 %bf.load.i, 67
+  br i1 %cmp8.i, label %if.then10, label %if.end10.i
+
+if.end10.i:                                       ; preds = %land.lhs.true.i, %if.then.i
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([28 x i8]* @.str14, i64 0, i64 0)) #8
+  br label %if.end19
+
+for.cond.i:                                       ; preds = %for.inc.i, %for.cond.preheader.i
+  %acount.0.i = phi i32 [ %inc.i, %for.inc.i ], [ 0, %for.cond.preheader.i ]
+  %call12.i = call %struct.cpp_token* @cpp_get_token(%struct.cpp_reader* %pfile) #8
+  %type13.i = getelementptr inbounds %struct.cpp_token* %call12.i, i64 0, i32 2
+  %bf.load14.i = load i8* %type13.i, align 2
+  switch i8 %bf.load14.i, label %if.end24.i [
+    i8 23, label %for.end.i
+    i8 67, label %if.then23.i
+  ]
+
+if.then23.i:                                      ; preds = %for.cond.i
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([31 x i8]* @.str15, i64 0, i64 0)) #8
+  br label %if.end19
+
+if.end24.i:                                       ; preds = %for.cond.i
+  %conv.i = zext i32 %acount.0.i to i64
+  %mul.i = mul i64 %conv.i, 24
+  %add.i = add i64 %mul.i, 40
+  %1 = load %struct._cpp_buff** %a_buff.i, align 8, !tbaa !3
+  %limit.i = getelementptr inbounds %struct._cpp_buff* %1, i64 0, i32 3
+  %2 = load i8** %limit.i, align 8, !tbaa !3
+  %cur.i = getelementptr inbounds %struct._cpp_buff* %1, i64 0, i32 2
+  %3 = load i8** %cur.i, align 8, !tbaa !3
+  %sub.ptr.lhs.cast.i = ptrtoint i8* %2 to i64
+  %sub.ptr.rhs.cast.i = ptrtoint i8* %3 to i64
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i
+  %cmp26.i = icmp ult i64 %sub.ptr.sub.i, %add.i
+  br i1 %cmp26.i, label %if.then28.i, label %if.end30.i
+
+if.then28.i:                                      ; preds = %if.end24.i
+  call void @_cpp_extend_buff(%struct.cpp_reader* %pfile, %struct._cpp_buff** %a_buff.i, i64 40) #8
+  %.pre.i = load %struct._cpp_buff** %a_buff.i, align 8, !tbaa !3
+  %cur32.phi.trans.insert.i = getelementptr inbounds %struct._cpp_buff* %.pre.i, i64 0, i32 2
+  %.pre69.i = load i8** %cur32.phi.trans.insert.i, align 8, !tbaa !3
+  br label %if.end30.i
+
+if.end30.i:                                       ; preds = %if.then28.i, %if.end24.i
+  %4 = phi i8* [ %.pre69.i, %if.then28.i ], [ %3, %if.end24.i ]
+  %first.i = getelementptr inbounds i8* %4, i64 16
+  %5 = bitcast i8* %first.i to [1 x %struct.cpp_token]*
+  %arrayidx.i = getelementptr inbounds [1 x %struct.cpp_token]* %5, i64 0, i64 %conv.i
+  %6 = bitcast %struct.cpp_token* %arrayidx.i to i8*
+  %7 = bitcast %struct.cpp_token* %call12.i to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %6, i8* %7, i64 24, i32 8, i1 false) #4, !tbaa.struct !6
+  %cmp33.i = icmp eq i32 %acount.0.i, 0
+  br i1 %cmp33.i, label %if.then35.i, label %for.inc.i
+
+if.then35.i:                                      ; preds = %if.end30.i
+  %flags.i = getelementptr inbounds [1 x %struct.cpp_token]* %5, i64 0, i64 %conv.i, i32 3
+  %8 = load i8* %flags.i, align 1, !tbaa !0
+  %and.i = and i8 %8, -2
+  store i8 %and.i, i8* %flags.i, align 1, !tbaa !0
+  br label %for.inc.i
+
+for.inc.i:                                        ; preds = %if.then35.i, %if.end30.i
+  %inc.i = add i32 %acount.0.i, 1
+  br label %for.cond.i
+
+for.end.i:                                        ; preds = %for.cond.i
+  %cmp39.i = icmp eq i32 %acount.0.i, 0
+  br i1 %cmp39.i, label %if.then41.i, label %if.end42.i
+
+if.then41.i:                                      ; preds = %for.end.i
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([28 x i8]* @.str16, i64 0, i64 0)) #8
+  br label %if.end19
+
+if.end42.i:                                       ; preds = %for.end.i
+  %9 = load %struct._cpp_buff** %a_buff.i, align 8, !tbaa !3
+  %cur44.i = getelementptr inbounds %struct._cpp_buff* %9, i64 0, i32 2
+  %10 = load i8** %cur44.i, align 8, !tbaa !3
+  %11 = bitcast i8* %10 to %struct.answer*
+  %count.i = getelementptr inbounds i8* %10, i64 8
+  %12 = bitcast i8* %count.i to i32*
+  store i32 %acount.0.i, i32* %12, align 4, !tbaa !2
+  %next.i = bitcast i8* %10 to %struct.answer**
+  store %struct.answer* null, %struct.answer** %next.i, align 8, !tbaa !3
+  store %struct.answer* %11, %struct.answer** %answerp, align 8, !tbaa !3
+  br label %if.then10
+
+if.then10:                                        ; preds = %if.then3.i, %if.end42.i, %land.lhs.true.i
+  %val = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4
+  %node = bitcast %union.anon.0* %val to %struct.cpp_hashnode**
+  %13 = load %struct.cpp_hashnode** %node, align 8, !tbaa !3
+  %len11 = getelementptr inbounds %struct.cpp_hashnode* %13, i64 0, i32 0, i32 0
+  %14 = load i32* %len11, align 4, !tbaa !2
+  %add = add i32 %14, 1
+  %conv = zext i32 %add to i64
+  %15 = alloca i8, i64 %conv, align 1
+  store i8 35, i8* %15, align 1, !tbaa !0
+  %add.ptr = getelementptr inbounds i8* %15, i64 1
+  %16 = load %struct.cpp_hashnode** %node, align 8, !tbaa !3
+  %str = getelementptr inbounds %struct.cpp_hashnode* %16, i64 0, i32 0, i32 1
+  %17 = load i8** %str, align 8, !tbaa !3
+  %conv15 = zext i32 %14 to i64
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr, i8* %17, i64 %conv15, i32 1, i1 false)
+  %call17 = call %struct.cpp_hashnode* @cpp_lookup(%struct.cpp_reader* %pfile, i8* %15, i32 %add) #8
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.then23.i, %if.then41.i, %if.end10.i, %if.then6, %if.then10, %if.then
+  %result.0 = phi %struct.cpp_hashnode* [ null, %if.then ], [ null, %if.then6 ], [ %call17, %if.then10 ], [ null, %if.end10.i ], [ null, %if.then41.i ], [ null, %if.then23.i ]
+  %18 = load i8* %prevent_expansion, align 1, !tbaa !0
+  %dec = add i8 %18, -1
+  store i8 %dec, i8* %prevent_expansion, align 1, !tbaa !0
+  ret %struct.cpp_hashnode* %result.0
+}

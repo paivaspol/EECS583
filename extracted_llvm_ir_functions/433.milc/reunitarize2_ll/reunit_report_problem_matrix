@@ -1,0 +1,69 @@
+define void @reunit_report_problem_matrix(%struct.su3_matrix* nocapture %mat, i32 %i, i32 %dir) #0 {
+entry:
+  %call = tail call i32 (...)* @mynode() #5
+  %call1 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([60 x i8]* @.str, i64 0, i64 0), i32 %call, i32 %i, i32 %dir, double 1.000000e-04) #5
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([12 x i8]* @str, i64 0, i64 0))
+  br label %for.cond3.preheader
+
+for.cond3.preheader:                              ; preds = %for.end, %entry
+  %indvars.iv85 = phi i64 [ 0, %entry ], [ %indvars.iv.next86, %for.end ]
+  br label %for.body5
+
+for.body5:                                        ; preds = %for.body5, %for.cond3.preheader
+  %indvars.iv81 = phi i64 [ 0, %for.cond3.preheader ], [ %indvars.iv.next82, %for.body5 ]
+  %real = getelementptr inbounds %struct.su3_matrix* %mat, i64 0, i32 0, i64 %indvars.iv85, i64 %indvars.iv81, i32 0
+  %0 = load double* %real, align 8, !tbaa !0
+  %call8 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), double %0) #5
+  %imag = getelementptr inbounds %struct.su3_matrix* %mat, i64 0, i32 0, i64 %indvars.iv85, i64 %indvars.iv81, i32 1
+  %1 = load double* %imag, align 8, !tbaa !0
+  %call14 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), double %1) #5
+  %indvars.iv.next82 = add i64 %indvars.iv81, 1
+  %lftr.wideiv83 = trunc i64 %indvars.iv.next82 to i32
+  %exitcond84 = icmp eq i32 %lftr.wideiv83, 3
+  br i1 %exitcond84, label %for.end, label %for.body5
+
+for.end:                                          ; preds = %for.body5
+  %putchar72 = tail call i32 @putchar(i32 10) #4
+  %indvars.iv.next86 = add i64 %indvars.iv85, 1
+  %lftr.wideiv87 = trunc i64 %indvars.iv.next86 to i32
+  %exitcond88 = icmp eq i32 %lftr.wideiv87, 3
+  br i1 %exitcond88, label %for.end18, label %for.cond3.preheader
+
+for.end18:                                        ; preds = %for.end
+  %puts70 = tail call i32 @puts(i8* getelementptr inbounds ([15 x i8]* @str9, i64 0, i64 0))
+  br label %for.cond23.preheader
+
+for.cond23.preheader:                             ; preds = %for.end44, %for.end18
+  %indvars.iv77 = phi i64 [ 0, %for.end18 ], [ %indvars.iv.next78, %for.end44 ]
+  br label %for.body25
+
+for.body25:                                       ; preds = %for.body25, %for.cond23.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond23.preheader ], [ %indvars.iv.next, %for.body25 ]
+  %real31 = getelementptr inbounds %struct.su3_matrix* %mat, i64 0, i32 0, i64 %indvars.iv77, i64 %indvars.iv, i32 0
+  %2 = load double* %real31, align 8, !tbaa !0
+  %3 = bitcast double %2 to i64
+  %ifval.sroa.0.0.extract.trunc = trunc i64 %3 to i32
+  %call32 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i32 %ifval.sroa.0.0.extract.trunc) #5
+  %imag38 = getelementptr inbounds %struct.su3_matrix* %mat, i64 0, i32 0, i64 %indvars.iv77, i64 %indvars.iv, i32 1
+  %4 = load double* %imag38, align 8, !tbaa !0
+  %5 = bitcast double %4 to i64
+  %ifval.sroa.0.0.extract.trunc52 = trunc i64 %5 to i32
+  %call41 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i32 %ifval.sroa.0.0.extract.trunc52) #5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.end44, label %for.body25
+
+for.end44:                                        ; preds = %for.body25
+  %putchar = tail call i32 @putchar(i32 10) #4
+  %indvars.iv.next78 = add i64 %indvars.iv77, 1
+  %lftr.wideiv79 = trunc i64 %indvars.iv.next78 to i32
+  %exitcond80 = icmp eq i32 %lftr.wideiv79, 3
+  br i1 %exitcond80, label %for.end48, label %for.cond23.preheader
+
+for.end48:                                        ; preds = %for.end44
+  %puts71 = tail call i32 @puts(i8* getelementptr inbounds ([5 x i8]* @str10, i64 0, i64 0))
+  %6 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call50 = tail call i32 @fflush(%struct._IO_FILE* %6) #5
+  ret void
+}

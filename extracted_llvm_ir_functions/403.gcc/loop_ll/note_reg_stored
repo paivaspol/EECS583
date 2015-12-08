@@ -1,0 +1,16 @@
+define internal void @note_reg_stored(%struct.rtx_def* %x, %struct.rtx_def* nocapture %setter, i8* nocapture %arg) #0 {
+entry:
+  %reg = getelementptr inbounds i8* %arg, i64 8
+  %0 = bitcast i8* %reg to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %0, align 8, !tbaa !4
+  %cmp = icmp eq %struct.rtx_def* %1, %x
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %set_seen = bitcast i8* %arg to i32*
+  store i32 1, i32* %set_seen, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  ret void
+}

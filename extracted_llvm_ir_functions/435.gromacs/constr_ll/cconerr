@@ -1,0 +1,65 @@
+define void @cconerr(float* nocapture %max, float* nocapture %rms, i32* nocapture %imax, [3 x float]* nocapture %xprime, i32 %ncons, i32* nocapture %bla1, i32* nocapture %bla2, float* nocapture %bllen) #0 {
+entry:
+  %cmp65 = icmp sgt i32 %ncons, 0
+  br i1 %cmp65, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %im.069 = phi i32 [ %im.1, %for.body ], [ 0, %entry ]
+  %ma.068 = phi float [ %ma.1, %for.body ], [ 0.000000e+00, %entry ]
+  %ms.067 = phi float [ %add36, %for.body ], [ 0.000000e+00, %entry ]
+  %arrayidx = getelementptr inbounds i32* %bla1, i64 %indvars.iv
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %arrayidx2 = getelementptr inbounds i32* %bla2, i64 %indvars.iv
+  %1 = load i32* %arrayidx2, align 4, !tbaa !0
+  %idxprom3 = sext i32 %0 to i64
+  %arrayidx5 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom3, i64 0
+  %2 = load float* %arrayidx5, align 4, !tbaa !4
+  %idxprom6 = sext i32 %1 to i64
+  %arrayidx8 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom6, i64 0
+  %3 = load float* %arrayidx8, align 4, !tbaa !4
+  %sub = fsub float %2, %3
+  %arrayidx11 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom3, i64 1
+  %4 = load float* %arrayidx11, align 4, !tbaa !4
+  %arrayidx14 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom6, i64 1
+  %5 = load float* %arrayidx14, align 4, !tbaa !4
+  %sub15 = fsub float %4, %5
+  %arrayidx18 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom3, i64 2
+  %6 = load float* %arrayidx18, align 4, !tbaa !4
+  %arrayidx21 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom6, i64 2
+  %7 = load float* %arrayidx21, align 4, !tbaa !4
+  %sub22 = fsub float %6, %7
+  %mul = fmul float %sub, %sub
+  %mul23 = fmul float %sub15, %sub15
+  %add = fadd float %mul, %mul23
+  %mul24 = fmul float %sub22, %sub22
+  %add25 = fadd float %add, %mul24
+  %conv26 = tail call float @sqrtf(float %add25) #3
+  %arrayidx28 = getelementptr inbounds float* %bllen, i64 %indvars.iv
+  %8 = load float* %arrayidx28, align 4, !tbaa !4
+  %div = fdiv float %conv26, %8
+  %sub29 = fadd float %div, -1.000000e+00
+  %fabsf = tail call float @fabsf(float %sub29) #7
+  %cmp33 = fcmp ogt float %fabsf, %ma.068
+  %ma.1 = select i1 %cmp33, float %fabsf, float %ma.068
+  %9 = trunc i64 %indvars.iv to i32
+  %im.1 = select i1 %cmp33, i32 %9, i32 %im.069
+  %mul35 = fmul float %fabsf, %fabsf
+  %add36 = fadd float %ms.067, %mul35
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %ncons
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %im.0.lcssa = phi i32 [ 0, %entry ], [ %im.1, %for.body ]
+  %ma.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %ma.1, %for.body ]
+  %ms.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %add36, %for.body ]
+  store float %ma.0.lcssa, float* %max, align 4, !tbaa !4
+  %conv37 = sitofp i32 %ncons to float
+  %div38 = fdiv float %ms.0.lcssa, %conv37
+  %conv41 = tail call float @sqrtf(float %div38) #3
+  store float %conv41, float* %rms, align 4, !tbaa !4
+  store i32 %im.0.lcssa, i32* %imax, align 4, !tbaa !0
+  ret void
+}

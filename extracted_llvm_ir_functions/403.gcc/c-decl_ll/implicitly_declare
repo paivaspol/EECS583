@@ -1,0 +1,69 @@
+define %union.tree_node* @implicitly_declare(%union.tree_node* %functionid) #0 {
+entry:
+  %decl = alloca %union.tree_node*, align 8
+  %0 = load %union.tree_node** getelementptr inbounds ([32 x %union.tree_node*]* @c_global_trees, i64 0, i64 22), align 8, !tbaa !0
+  %call = call %union.tree_node* @build_decl(i32 30, %union.tree_node* %functionid, %union.tree_node* %0) #8
+  store %union.tree_node* %call, %union.tree_node** %decl, align 8, !tbaa !0
+  %public_flag = getelementptr inbounds %union.tree_node* %functionid, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %public_flag to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 524288
+  %tobool = icmp eq i32 %bf.clear, 0
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %global_value = getelementptr inbounds %union.tree_node* %functionid, i64 0, i32 0, i32 6
+  %2 = bitcast %union.anon* %global_value to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %3, null
+  %. = zext i1 %cmp to i32
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %entry
+  %traditional_warning.0 = phi i32 [ 0, %entry ], [ %., %land.lhs.true ]
+  %4 = getelementptr inbounds %union.tree_node* %functionid, i64 0, i32 0, i32 9
+  %5 = load %union.tree_node** %4, align 8, !tbaa !0
+  %cmp1 = icmp eq %union.tree_node* %5, null
+  %external_flag = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 5
+  %6 = bitcast [8 x i8]* %external_flag to i64*
+  %bf.load3 = load i64* %6, align 8
+  %bf.set = or i64 %bf.load3, 256
+  store i64 %bf.set, i64* %6, align 8
+  %7 = load %union.tree_node** %decl, align 8, !tbaa !0
+  %public_flag6 = getelementptr inbounds %union.tree_node* %7, i64 0, i32 0, i32 0, i32 2
+  %8 = bitcast [4 x i8]* %public_flag6 to i32*
+  %bf.load7 = load i32* %8, align 8
+  %bf.set9 = or i32 %bf.load7, 524288
+  store i32 %bf.set9, i32* %8, align 8
+  %9 = load %union.tree_node** %decl, align 8, !tbaa !0
+  store %union.tree_node* %9, %union.tree_node** %4, align 8, !tbaa !0
+  %call11 = call %union.tree_node* @pushdecl(%union.tree_node* %9) #10
+  call void @maybe_objc_check_decl(%union.tree_node* %9) #8
+  call void @rest_of_decl_compilation(%union.tree_node* %9, i8* null, i32 0, i32 0) #8
+  br i1 %cmp1, label %if.then13, label %if.else
+
+if.then13:                                        ; preds = %if.end
+  call void @implicit_decl_warning(%union.tree_node* %functionid) #10
+  br label %if.end19
+
+if.else:                                          ; preds = %if.end
+  %10 = load i32* @warn_traditional, align 4, !tbaa !3
+  %tobool14 = icmp eq i32 %10, 0
+  %tobool16 = icmp eq i32 %traditional_warning.0, 0
+  %or.cond = or i1 %tobool14, %tobool16
+  br i1 %or.cond, label %if.end19, label %if.then17
+
+if.then17:                                        ; preds = %if.else
+  %id = getelementptr inbounds %union.tree_node* %functionid, i64 0, i32 0, i32 1
+  %11 = getelementptr inbounds i8** %id, i64 1
+  %12 = load i8** %11, align 8, !tbaa !0
+  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([53 x i8]* @.str148, i64 0, i64 0), i8* %12) #8
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.else, %if.then17, %if.then13
+  %13 = load %union.tree_node** %decl, align 8, !tbaa !0
+  call void @gen_aux_info_record(%union.tree_node* %13, i32 0, i32 1, i32 0) #8
+  %call20 = call %union.tree_node* @decl_attributes(%union.tree_node** %decl, %union.tree_node* null, i32 0) #8
+  %14 = load %union.tree_node** %decl, align 8, !tbaa !0
+  ret %union.tree_node* %14
+}

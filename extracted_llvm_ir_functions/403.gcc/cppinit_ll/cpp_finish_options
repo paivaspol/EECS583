@@ -1,0 +1,146 @@
+define void @cpp_finish_options(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %header.i = alloca %struct.cpp_token, align 8
+  %cplusplus = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 14
+  %0 = load i8* %cplusplus, align 1, !tbaa !0
+  %tobool = icmp eq i8 %0, 0
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %operator_names = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 49
+  %1 = load i8* %operator_names, align 1, !tbaa !0
+  %tobool3 = icmp eq i8 %1, 0
+  br i1 %tobool3, label %if.end, label %for.body.i
+
+for.body.i:                                       ; preds = %land.lhs.true, %for.body.i
+  %b.08.i = phi %struct.named_op* [ %incdec.ptr.i, %for.body.i ], [ getelementptr inbounds ([11 x %struct.named_op]* @operator_array, i64 0, i64 0), %land.lhs.true ]
+  %name.i = getelementptr inbounds %struct.named_op* %b.08.i, i64 0, i32 0
+  %2 = load i8** %name.i, align 8, !tbaa !3
+  %len.i = getelementptr inbounds %struct.named_op* %b.08.i, i64 0, i32 1
+  %3 = load i32* %len.i, align 4, !tbaa !2
+  %call.i = call %struct.cpp_hashnode* @cpp_lookup(%struct.cpp_reader* %pfile, i8* %2, i32 %3) #6
+  %flags.i = getelementptr inbounds %struct.cpp_hashnode* %call.i, i64 0, i32 5
+  %4 = load i8* %flags.i, align 1, !tbaa !0
+  %or.i = or i8 %4, 1
+  store i8 %or.i, i8* %flags.i, align 1, !tbaa !0
+  %value.i = getelementptr inbounds %struct.named_op* %b.08.i, i64 0, i32 2
+  %5 = load i32* %value.i, align 4, !tbaa !7
+  %value2.i = getelementptr inbounds %struct.cpp_hashnode* %call.i, i64 0, i32 6
+  %operator.i = bitcast %union.anon.0* %value2.i to i32*
+  store i32 %5, i32* %operator.i, align 4, !tbaa !7
+  %incdec.ptr.i = getelementptr inbounds %struct.named_op* %b.08.i, i64 1
+  %cmp.i = icmp ult %struct.named_op* %incdec.ptr.i, getelementptr inbounds ([11 x %struct.named_op]* @operator_array, i64 1, i64 0)
+  br i1 %cmp.i, label %for.body.i, label %if.end
+
+if.end:                                           ; preds = %for.body.i, %land.lhs.true, %entry
+  %preprocessed = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 43
+  %6 = load i8* %preprocessed, align 1, !tbaa !0
+  %tobool5 = icmp eq i8 %6, 0
+  br i1 %tobool5, label %if.then6, label %if.end.if.end18_crit_edge
+
+if.end.if.end18_crit_edge:                        ; preds = %if.end
+  %pending20.phi.trans.insert = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 3
+  %.pre51 = load %struct.cpp_pending** %pending20.phi.trans.insert, align 8, !tbaa !3
+  br label %if.end18
+
+if.then6:                                         ; preds = %if.end
+  call void @_cpp_do_file_change(%struct.cpp_reader* %pfile, i32 2, i8* getelementptr inbounds ([11 x i8]* @.str4, i64 0, i64 0), i32 1, i32 0) #6
+  call fastcc void @init_builtins(%struct.cpp_reader* %pfile) #7
+  call void @_cpp_do_file_change(%struct.cpp_reader* %pfile, i32 2, i8* getelementptr inbounds ([15 x i8]* @.str5, i64 0, i64 0), i32 1, i32 0) #6
+  %pending = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 3
+  %7 = load %struct.cpp_pending** %pending, align 8, !tbaa !3
+  %directive_head = getelementptr inbounds %struct.cpp_pending* %7, i64 0, i32 0
+  %p.048 = load %struct.pending_option** %directive_head, align 8
+  %tobool849 = icmp eq %struct.pending_option* %p.048, null
+  br i1 %tobool849, label %while.cond.preheader, label %for.body
+
+for.cond.while.cond.preheader_crit_edge:          ; preds = %for.body
+  %.pre = load %struct.cpp_pending** %pending, align 8, !tbaa !3
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %for.cond.while.cond.preheader_crit_edge, %if.then6
+  %8 = phi %struct.cpp_pending* [ %.pre, %for.cond.while.cond.preheader_crit_edge ], [ %7, %if.then6 ]
+  %imacros_head46 = getelementptr inbounds %struct.cpp_pending* %8, i64 0, i32 10
+  %9 = load %struct.pending_option** %imacros_head46, align 8, !tbaa !3
+  %cmp47 = icmp eq %struct.pending_option* %9, null
+  br i1 %cmp47, label %if.end18, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %while.cond.preheader
+  %10 = bitcast %struct.cpp_token* %header.i to i8*
+  %type.i = getelementptr inbounds %struct.cpp_token* %header.i, i64 0, i32 2
+  %text.i = getelementptr inbounds %struct.cpp_token* %header.i, i64 0, i32 4, i32 0, i32 1
+  %len.i45 = getelementptr inbounds %struct.cpp_token* %header.i, i64 0, i32 4, i32 0, i32 0
+  %line.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 4
+  %buffer = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
+  br label %while.body
+
+for.body:                                         ; preds = %if.then6, %for.body
+  %p.050 = phi %struct.pending_option* [ %p.0, %for.body ], [ %p.048, %if.then6 ]
+  %handler = getelementptr inbounds %struct.pending_option* %p.050, i64 0, i32 2
+  %11 = load void (%struct.cpp_reader*, i8*)** %handler, align 8, !tbaa !3
+  %arg = getelementptr inbounds %struct.pending_option* %p.050, i64 0, i32 1
+  %12 = load i8** %arg, align 8, !tbaa !3
+  call void %11(%struct.cpp_reader* %pfile, i8* %12) #6
+  %next = getelementptr inbounds %struct.pending_option* %p.050, i64 0, i32 0
+  %p.0 = load %struct.pending_option** %next, align 8
+  %tobool8 = icmp eq %struct.pending_option* %p.0, null
+  br i1 %tobool8, label %for.cond.while.cond.preheader_crit_edge, label %for.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end13
+  %13 = phi %struct.pending_option* [ %9, %while.body.lr.ph ], [ %21, %if.end13 ]
+  call void @llvm.lifetime.start(i64 24, i8* %10) #4
+  store i8 61, i8* %type.i, align 2
+  %arg.i = getelementptr inbounds %struct.pending_option* %13, i64 0, i32 1
+  %14 = load i8** %arg.i, align 8, !tbaa !3
+  store i8* %14, i8** %text.i, align 8, !tbaa !3
+  %call.i44 = call i64 @strlen(i8* %14) #8
+  %conv.i = trunc i64 %call.i44 to i32
+  store i32 %conv.i, i32* %len.i45, align 8, !tbaa !2
+  %15 = load i32* %line.i, align 4, !tbaa !2
+  %inc.i = add i32 %15, 1
+  store i32 %inc.i, i32* %line.i, align 4, !tbaa !2
+  %call4.i = call zeroext i1 @_cpp_execute_include(%struct.cpp_reader* %pfile, %struct.cpp_token* %header.i, i32 3) #6
+  call void @llvm.lifetime.end(i64 24, i8* %10) #4
+  br i1 %call4.i, label %if.then12, label %if.end13
+
+if.then12:                                        ; preds = %while.body
+  %16 = load %struct.cpp_buffer** %buffer, align 8, !tbaa !3
+  %return_at_eof = getelementptr inbounds %struct.cpp_buffer* %16, i64 0, i32 14
+  store i8 1, i8* %return_at_eof, align 1, !tbaa !6
+  call void @cpp_scan_nooutput(%struct.cpp_reader* %pfile) #6
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.then12, %while.body
+  %next14 = getelementptr inbounds %struct.pending_option* %13, i64 0, i32 0
+  %17 = load %struct.pending_option** %next14, align 8, !tbaa !3
+  %18 = load %struct.cpp_pending** %pending, align 8, !tbaa !3
+  %imacros_head17 = getelementptr inbounds %struct.cpp_pending* %18, i64 0, i32 10
+  store %struct.pending_option* %17, %struct.pending_option** %imacros_head17, align 8, !tbaa !3
+  %19 = bitcast %struct.pending_option* %13 to i8*
+  call void @free(i8* %19) #6
+  %20 = load %struct.cpp_pending** %pending, align 8, !tbaa !3
+  %imacros_head = getelementptr inbounds %struct.cpp_pending* %20, i64 0, i32 10
+  %21 = load %struct.pending_option** %imacros_head, align 8, !tbaa !3
+  %cmp = icmp eq %struct.pending_option* %21, null
+  br i1 %cmp, label %if.end18, label %while.body
+
+if.end18:                                         ; preds = %while.cond.preheader, %if.end13, %if.end.if.end18_crit_edge
+  %22 = phi %struct.cpp_pending* [ %.pre51, %if.end.if.end18_crit_edge ], [ %8, %while.cond.preheader ], [ %20, %if.end13 ]
+  %directive_head21 = getelementptr inbounds %struct.cpp_pending* %22, i64 0, i32 0
+  %23 = load %struct.pending_option** %directive_head21, align 8, !tbaa !3
+  %tobool4.i = icmp eq %struct.pending_option* %23, null
+  br i1 %tobool4.i, label %free_chain.exit, label %while.body.i
+
+while.body.i:                                     ; preds = %if.end18, %while.body.i
+  %head.addr.05.i = phi %struct.pending_option* [ %24, %while.body.i ], [ %23, %if.end18 ]
+  %next1.i = getelementptr inbounds %struct.pending_option* %head.addr.05.i, i64 0, i32 0
+  %24 = load %struct.pending_option** %next1.i, align 8, !tbaa !3
+  %25 = bitcast %struct.pending_option* %head.addr.05.i to i8*
+  call void @free(i8* %25) #6
+  %tobool.i = icmp eq %struct.pending_option* %24, null
+  br i1 %tobool.i, label %free_chain.exit, label %while.body.i
+
+free_chain.exit:                                  ; preds = %while.body.i, %if.end18
+  %call22 = call zeroext i1 @_cpp_push_next_buffer(%struct.cpp_reader* %pfile) #7
+  ret void
+}

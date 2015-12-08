@@ -1,0 +1,42 @@
+define internal fastcc %struct.rtx_def* @label_for_bb(%struct.basic_block_def* %bb) #0 {
+entry:
+  %head = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 0
+  %0 = load %struct.rtx_def** %head, align 8, !tbaa !0
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 36
+  br i1 %cmp, label %if.end9, label %if.then
+
+if.then:                                          ; preds = %entry
+  %2 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !0
+  %tobool = icmp eq %struct._IO_FILE* %2, null
+  br i1 %tobool, label %if.end, label %if.then1
+
+if.then1:                                         ; preds = %if.then
+  %index = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 11
+  %3 = load i32* %index, align 4, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([29 x i8]* @.str6, i64 0, i64 0), i32 %3) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then1
+  %call2 = tail call %struct.rtx_def* @block_label(%struct.basic_block_def* %bb) #5
+  %4 = load %struct.rtx_def** %head, align 8, !tbaa !0
+  %aux = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 10
+  %5 = load i8** %aux, align 8, !tbaa !0
+  %eff_head = bitcast i8* %5 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %eff_head, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 1
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %cmp4 = icmp eq %struct.rtx_def* %4, %7
+  br i1 %cmp4, label %if.then5, label %if.end9
+
+if.then5:                                         ; preds = %if.end
+  store %struct.rtx_def* %call2, %struct.rtx_def** %eff_head, align 8, !tbaa !0
+  br label %if.end9
+
+if.end9:                                          ; preds = %entry, %if.end, %if.then5
+  %label.0 = phi %struct.rtx_def* [ %call2, %if.then5 ], [ %call2, %if.end ], [ %0, %entry ]
+  ret %struct.rtx_def* %label.0
+}

@@ -1,0 +1,21 @@
+define void @expand_pending_sizes(%union.tree_node* %pending_sizes) #0 {
+entry:
+  %tobool3 = icmp eq %union.tree_node* %pending_sizes, null
+  br i1 %tobool3, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %tem.04 = phi %union.tree_node* [ %3, %for.body ], [ %pending_sizes, %entry ]
+  %value = getelementptr inbounds %union.tree_node* %tem.04, i64 0, i32 0, i32 2
+  %0 = bitcast i32* %value to %union.tree_node**
+  %1 = load %union.tree_node** %0, align 8, !tbaa !0
+  %2 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
+  %call = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %1, %struct.rtx_def* %2, i32 0, i32 0) #10
+  tail call void @emit_queue() #10
+  %chain = getelementptr inbounds %union.tree_node* %tem.04, i64 0, i32 0, i32 0, i32 0
+  %3 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %tobool = icmp eq %union.tree_node* %3, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

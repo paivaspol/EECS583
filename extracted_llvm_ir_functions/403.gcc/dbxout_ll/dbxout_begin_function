@@ -1,0 +1,20 @@
+define internal void @dbxout_begin_function(%union.tree_node* %decl) #0 {
+entry:
+  %call = tail call i32 @dbxout_symbol(%union.tree_node* %decl, i32 undef) #8
+  %arguments = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 10
+  %0 = load %union.tree_node** %arguments, align 8, !tbaa !0
+  tail call void @dbxout_parms(%union.tree_node* %0) #8
+  %result = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 11
+  %1 = load %union.tree_node** %result, align 8, !tbaa !0
+  %name = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 8
+  %2 = load %union.tree_node** %name, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %2, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call6 = tail call i32 @dbxout_symbol(%union.tree_node* %1, i32 undef) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

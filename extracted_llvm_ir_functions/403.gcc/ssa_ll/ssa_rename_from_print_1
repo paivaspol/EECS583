@@ -1,0 +1,14 @@
+define internal i32 @ssa_rename_from_print_1(i8** nocapture %slot, i8* nocapture %data) #0 {
+entry:
+  %0 = load i8** %slot, align 8, !tbaa !0
+  %reg = bitcast i8* %0 to i32*
+  %1 = load i32* %reg, align 4, !tbaa !3
+  %original = getelementptr inbounds i8* %0, i64 8
+  %2 = bitcast i8* %original to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %2, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %4 = load i32* %rtuint, align 4, !tbaa !3
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([48 x i8]* @.str11, i64 0, i64 0), i32 %1, i32 %4) #6
+  ret i32 1
+}

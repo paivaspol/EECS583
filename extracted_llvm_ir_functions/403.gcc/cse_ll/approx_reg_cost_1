@@ -1,0 +1,24 @@
+define internal i32 @approx_reg_cost_1(%struct.rtx_def** nocapture %xp, i8* %data) #0 {
+entry:
+  %0 = load %struct.rtx_def** %xp, align 8, !tbaa !0
+  %1 = bitcast i8* %data to %struct.bitmap_head_def*
+  %tobool = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %2 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 61
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !4
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %1, i32 %3) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then, %land.lhs.true
+  ret i32 0
+}

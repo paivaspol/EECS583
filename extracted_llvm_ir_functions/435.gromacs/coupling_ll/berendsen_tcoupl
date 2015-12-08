@@ -1,0 +1,86 @@
+define void @berendsen_tcoupl(%struct.t_grpopts* nocapture %opts, %struct.t_groups* nocapture %grps, float %dt, float %SAfactor) #0 {
+entry:
+  %ngtc = getelementptr inbounds %struct.t_grpopts* %opts, i64 0, i32 0
+  %0 = load i32* %ngtc, align 4, !tbaa !4
+  %cmp89 = icmp sgt i32 %0, 0
+  br i1 %cmp89, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %tcstat = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 1
+  %tau_t = getelementptr inbounds %struct.t_grpopts* %opts, i64 0, i32 6
+  %ref_t = getelementptr inbounds %struct.t_grpopts* %opts, i64 0, i32 5
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %1 = load %struct.t_grp_tcstat** %tcstat, align 8, !tbaa !3
+  %T1 = getelementptr inbounds %struct.t_grp_tcstat* %1, i64 %indvars.iv, i32 0
+  %2 = load float* %T1, align 4, !tbaa !0
+  %3 = load float** %tau_t, align 8, !tbaa !3
+  %arrayidx3 = getelementptr inbounds float* %3, i64 %indvars.iv
+  %4 = load float* %arrayidx3, align 4, !tbaa !0
+  %cmp4 = fcmp ogt float %4, 0.000000e+00
+  %cmp5 = fcmp ogt float %2, 0.000000e+00
+  %or.cond = and i1 %cmp4, %cmp5
+  br i1 %or.cond, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.body
+  %5 = load float** %ref_t, align 8, !tbaa !3
+  %arrayidx8 = getelementptr inbounds float* %5, i64 %indvars.iv
+  %6 = load float* %arrayidx8, align 4, !tbaa !0
+  %mul = fmul float %6, %SAfactor
+  %cmp10 = fcmp olt float %mul, 0.000000e+00
+  %cond = select i1 %cmp10, float 0.000000e+00, float %mul
+  %div = fdiv float %dt, %4
+  %conv21 = fpext float %div to double
+  %div22 = fdiv float %cond, %2
+  %conv23 = fpext float %div22 to double
+  %sub = fadd double %conv23, -1.000000e+00
+  %mul24 = fmul double %conv21, %sub
+  %add = fadd double %mul24, 1.000000e+00
+  %call = tail call double @sqrt(double %add) #5
+  %conv25 = fptrunc double %call to float
+  %cmp27 = fcmp olt float %conv25, 1.250000e+00
+  br i1 %cmp27, label %cond.true29, label %cond.end46
+
+cond.true29:                                      ; preds = %if.then
+  %conv26 = fpext float %conv25 to double
+  %phitmp.not = fcmp ule double %conv26, 8.000000e-01
+  %.mux.conv25 = select i1 %phitmp.not, float 0x3FE99999A0000000, float %conv25
+  br label %cond.end46
+
+cond.end46:                                       ; preds = %cond.true29, %if.then
+  %cond47 = phi float [ 1.250000e+00, %if.then ], [ %.mux.conv25, %cond.true29 ]
+  %7 = load %struct.t_grp_tcstat** %tcstat, align 8, !tbaa !3
+  %lambda = getelementptr inbounds %struct.t_grp_tcstat* %7, i64 %indvars.iv, i32 1
+  store float %cond47, float* %lambda, align 4, !tbaa !0
+  br label %if.end
+
+if.else:                                          ; preds = %for.body
+  %lambda55 = getelementptr inbounds %struct.t_grp_tcstat* %1, i64 %indvars.iv, i32 1
+  store float 1.000000e+00, float* %lambda55, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %cond.end46
+  %8 = phi float [ 1.000000e+00, %if.else ], [ %cond47, %cond.end46 ]
+  %9 = load %struct._IO_FILE** @debug, align 8, !tbaa !3
+  %tobool = icmp eq %struct._IO_FILE* %9, null
+  br i1 %tobool, label %for.inc, label %if.then56
+
+if.then56:                                        ; preds = %if.end
+  %conv57 = fpext float %2 to double
+  %conv62 = fpext float %8 to double
+  %10 = trunc i64 %indvars.iv to i32
+  %call63 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %9, i8* getelementptr inbounds ([33 x i8]* @.str12, i64 0, i64 0), i32 %10, double %conv57, double %conv62) #5
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.end, %if.then56
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %11 = load i32* %ngtc, align 4, !tbaa !4
+  %12 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %12, %11
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

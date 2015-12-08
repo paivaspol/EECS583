@@ -1,0 +1,43 @@
+define void @stop_cm(%struct._IO_FILE* nocapture %log, i32 %natoms, float* nocapture %mass, [3 x float]* nocapture %x, [3 x float]* nocapture %v) #0 {
+entry:
+  %xcm = alloca [3 x float], align 4
+  %vcm = alloca [3 x float], align 4
+  %acm = alloca [3 x float], align 4
+  %L = alloca [3 x [3 x float]], align 16
+  %0 = bitcast [3 x [3 x float]]* %L to i8*
+  call void @llvm.lifetime.start(i64 36, i8* %0) #3
+  %arraydecay = getelementptr inbounds [3 x float]* %xcm, i64 0, i64 0
+  %arraydecay1 = getelementptr inbounds [3 x float]* %vcm, i64 0, i64 0
+  %arraydecay2 = getelementptr inbounds [3 x float]* %acm, i64 0, i64 0
+  %arraydecay3 = getelementptr inbounds [3 x [3 x float]]* %L, i64 0, i64 0
+  %call = call float @calc_cm(%struct._IO_FILE* undef, i32 %natoms, float* %mass, [3 x float]* %x, [3 x float]* %v, float* %arraydecay, float* %arraydecay1, float* %arraydecay2, [3 x float]* %arraydecay3) #5
+  %cmp22 = icmp sgt i32 %natoms, 0
+  br i1 %cmp22, label %for.cond4.preheader, label %for.end13
+
+for.cond4.preheader:                              ; preds = %entry, %for.inc11
+  %indvars.iv24 = phi i64 [ %indvars.iv.next25, %for.inc11 ], [ 0, %entry ]
+  br label %for.body6
+
+for.body6:                                        ; preds = %for.body6, %for.cond4.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next, %for.body6 ]
+  %arrayidx = getelementptr inbounds [3 x float]* %vcm, i64 0, i64 %indvars.iv
+  %1 = load float* %arrayidx, align 4, !tbaa !4
+  %arrayidx10 = getelementptr inbounds [3 x float]* %v, i64 %indvars.iv24, i64 %indvars.iv
+  %2 = load float* %arrayidx10, align 4, !tbaa !4
+  %sub = fsub float %2, %1
+  store float %sub, float* %arrayidx10, align 4, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc11, label %for.body6
+
+for.inc11:                                        ; preds = %for.body6
+  %indvars.iv.next25 = add i64 %indvars.iv24, 1
+  %lftr.wideiv26 = trunc i64 %indvars.iv.next25 to i32
+  %exitcond27 = icmp eq i32 %lftr.wideiv26, %natoms
+  br i1 %exitcond27, label %for.end13, label %for.cond4.preheader
+
+for.end13:                                        ; preds = %for.inc11, %entry
+  call void @llvm.lifetime.end(i64 36, i8* %0) #3
+  ret void
+}

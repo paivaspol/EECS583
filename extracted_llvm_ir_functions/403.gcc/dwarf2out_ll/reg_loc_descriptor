@@ -1,0 +1,59 @@
+define internal fastcc noalias %struct.dw_loc_descr_struct* @reg_loc_descriptor(%struct.rtx_def* nocapture %rtl) #1 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %rtl, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp = icmp ugt i32 %0, 52
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call fastcc i32 @reg_number(%struct.rtx_def* %rtl) #10
+  %cmp1 = icmp ult i32 %call, 32
+  br i1 %cmp1, label %if.then2, label %if.else
+
+if.then2:                                         ; preds = %if.end
+  %add = add i32 %call, 80
+  %call.i = tail call noalias i8* @xcalloc(i64 1, i64 72) #9
+  %1 = bitcast i8* %call.i to %struct.dw_loc_descr_struct*
+  %dw_loc_opc.i = getelementptr inbounds i8* %call.i, i64 8
+  %2 = bitcast i8* %dw_loc_opc.i to i32*
+  store i32 %add, i32* %2, align 4, !tbaa !9
+  %dw_loc_oprnd1.i = getelementptr inbounds i8* %call.i, i64 16
+  %val_class.i = bitcast i8* %dw_loc_oprnd1.i to i32*
+  store i32 6, i32* %val_class.i, align 4, !tbaa !1
+  %v.i = getelementptr inbounds i8* %call.i, i64 24
+  %val_unsigned.i = bitcast i8* %v.i to i64*
+  store i64 0, i64* %val_unsigned.i, align 8, !tbaa !6
+  %dw_loc_oprnd2.i = getelementptr inbounds i8* %call.i, i64 40
+  %val_class2.i = bitcast i8* %dw_loc_oprnd2.i to i32*
+  store i32 6, i32* %val_class2.i, align 4, !tbaa !1
+  %v4.i = getelementptr inbounds i8* %call.i, i64 48
+  %val_unsigned5.i = bitcast i8* %v4.i to i64*
+  store i64 0, i64* %val_unsigned5.i, align 8, !tbaa !6
+  br label %return
+
+if.else:                                          ; preds = %if.end
+  %conv = zext i32 %call to i64
+  %call.i8 = tail call noalias i8* @xcalloc(i64 1, i64 72) #9
+  %3 = bitcast i8* %call.i8 to %struct.dw_loc_descr_struct*
+  %dw_loc_opc.i9 = getelementptr inbounds i8* %call.i8, i64 8
+  %4 = bitcast i8* %dw_loc_opc.i9 to i32*
+  store i32 144, i32* %4, align 4, !tbaa !9
+  %dw_loc_oprnd1.i10 = getelementptr inbounds i8* %call.i8, i64 16
+  %val_class.i11 = bitcast i8* %dw_loc_oprnd1.i10 to i32*
+  store i32 6, i32* %val_class.i11, align 4, !tbaa !1
+  %v.i12 = getelementptr inbounds i8* %call.i8, i64 24
+  %val_unsigned.i13 = bitcast i8* %v.i12 to i64*
+  store i64 %conv, i64* %val_unsigned.i13, align 8, !tbaa !6
+  %dw_loc_oprnd2.i14 = getelementptr inbounds i8* %call.i8, i64 40
+  %val_class2.i15 = bitcast i8* %dw_loc_oprnd2.i14 to i32*
+  store i32 6, i32* %val_class2.i15, align 4, !tbaa !1
+  %v4.i16 = getelementptr inbounds i8* %call.i8, i64 48
+  %val_unsigned5.i17 = bitcast i8* %v4.i16 to i64*
+  store i64 0, i64* %val_unsigned5.i17, align 8, !tbaa !6
+  br label %return
+
+return:                                           ; preds = %if.then2, %if.else, %entry
+  %retval.0 = phi %struct.dw_loc_descr_struct* [ null, %entry ], [ %1, %if.then2 ], [ %3, %if.else ]
+  ret %struct.dw_loc_descr_struct* %retval.0
+}

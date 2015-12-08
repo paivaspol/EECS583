@@ -1,0 +1,101 @@
+define internal void @mark_reg(%struct.rtx_def* nocapture %reg, i8* %xset) #0 {
+entry:
+  %0 = bitcast i8* %xset to %struct.bitmap_head_def*
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !0
+  %2 = bitcast %struct.rtx_def* %reg to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 16711680
+  %cmp = icmp eq i32 %bf.clear, 3342336
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str3, i64 0, i64 0), i32 918, i8* getelementptr inbounds ([9 x i8]* @__FUNCTION__.mark_reg, i64 0, i64 0)) #7
+  unreachable
+
+if.end:                                           ; preds = %entry
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %0, i32 %1) #6
+  %cmp1 = icmp slt i32 %1, 53
+  br i1 %cmp1, label %if.then2, label %if.end62
+
+if.then2:                                         ; preds = %if.end
+  %.off = add i32 %1, -8
+  %3 = icmp ult i32 %.off, 8
+  %.off84 = add i32 %1, -21
+  %4 = icmp ult i32 %.off84, 8
+  %or.cond = or i1 %3, %4
+  %.off85 = add i32 %1, -45
+  %5 = icmp ult i32 %.off85, 8
+  %or.cond91 = or i1 %or.cond, %5
+  %.off86 = add i32 %1, -29
+  %6 = icmp ult i32 %.off86, 8
+  %or.cond93 = or i1 %or.cond91, %6
+  %bf.load16 = load i32* %2, align 8
+  %bf.lshr17 = lshr i32 %bf.load16, 16
+  %bf.clear18 = and i32 %bf.lshr17, 255
+  br i1 %or.cond93, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %if.then2
+  %idxprom88 = zext i32 %bf.clear18 to i64
+  %arrayidx19 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom88
+  %7 = load i32* %arrayidx19, align 4, !tbaa !5
+  %cmp20 = icmp eq i32 %7, 5
+  br i1 %cmp20, label %while.body, label %lor.rhs
+
+lor.rhs:                                          ; preds = %cond.true
+  %cmp26 = icmp eq i32 %7, 6
+  %phitmp = select i1 %cmp26, i32 2, i32 1
+  br label %while.cond.preheader
+
+cond.false:                                       ; preds = %if.then2
+  switch i32 %bf.clear18, label %cond.false42 [
+    i32 18, label %cond.true31
+    i32 24, label %cond.true38
+  ]
+
+cond.true31:                                      ; preds = %cond.false
+  %8 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %8, 25
+  %9 = and i32 %and, 1
+  %10 = xor i32 %9, 3
+  br label %while.cond.preheader
+
+cond.true38:                                      ; preds = %cond.false
+  %11 = load i32* @target_flags, align 4, !tbaa !0
+  %and39 = lshr i32 %11, 24
+  %12 = and i32 %and39, 2
+  %13 = xor i32 %12, 6
+  br label %while.cond.preheader
+
+cond.false42:                                     ; preds = %cond.false
+  %idxprom4687 = zext i32 %bf.clear18 to i64
+  %arrayidx47 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom4687
+  %14 = load i8* %arrayidx47, align 1, !tbaa !1
+  %conv = zext i8 %14 to i32
+  %15 = load i32* @target_flags, align 4, !tbaa !0
+  %and48 = lshr i32 %15, 23
+  %16 = and i32 %and48, 4
+  %17 = add i32 %16, 4
+  %add = add i32 %conv, -1
+  %sub = add i32 %add, %17
+  %div = sdiv i32 %sub, %17
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %lor.rhs, %cond.true31, %cond.false42, %cond.true38
+  %n.0.ph = phi i32 [ %13, %cond.true38 ], [ %div, %cond.false42 ], [ %10, %cond.true31 ], [ %phitmp, %lor.rhs ]
+  %dec94 = add nsw i32 %n.0.ph, -1
+  %cmp5995 = icmp sgt i32 %dec94, 0
+  br i1 %cmp5995, label %while.body, label %if.end62
+
+while.body:                                       ; preds = %cond.true, %while.cond.preheader, %while.body
+  %dec96 = phi i32 [ %dec, %while.body ], [ %dec94, %while.cond.preheader ], [ 1, %cond.true ]
+  %add61 = add nsw i32 %dec96, %1
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %0, i32 %add61) #6
+  %dec = add nsw i32 %dec96, -1
+  %cmp59 = icmp sgt i32 %dec, 0
+  br i1 %cmp59, label %while.body, label %if.end62
+
+if.end62:                                         ; preds = %while.cond.preheader, %while.body, %if.end
+  ret void
+}

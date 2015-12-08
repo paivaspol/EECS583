@@ -1,0 +1,42 @@
+define internal fastcc void @push_range_stack(%union.tree_node* %range_end) #0 {
+entry:
+  %call = tail call i8* @ggc_alloc(i64 56) #8
+  %0 = bitcast i8* %call to %struct.constructor_range_stack*
+  %1 = load %struct.constructor_range_stack** @constructor_range_stack, align 8, !tbaa !0
+  %prev = getelementptr inbounds i8* %call, i64 8
+  %2 = bitcast i8* %prev to %struct.constructor_range_stack**
+  store %struct.constructor_range_stack* %1, %struct.constructor_range_stack** %2, align 8, !tbaa !0
+  %next = bitcast i8* %call to %struct.constructor_range_stack**
+  store %struct.constructor_range_stack* null, %struct.constructor_range_stack** %next, align 8, !tbaa !0
+  %3 = load %union.tree_node** @constructor_fields, align 8, !tbaa !0
+  %fields = getelementptr inbounds i8* %call, i64 48
+  %4 = bitcast i8* %fields to %union.tree_node**
+  store %union.tree_node* %3, %union.tree_node** %4, align 8, !tbaa !0
+  %5 = load %union.tree_node** @constructor_index, align 8, !tbaa !0
+  %range_start = getelementptr inbounds i8* %call, i64 24
+  %6 = bitcast i8* %range_start to %union.tree_node**
+  store %union.tree_node* %5, %union.tree_node** %6, align 8, !tbaa !0
+  %7 = load %union.tree_node** @constructor_index, align 8, !tbaa !0
+  %index = getelementptr inbounds i8* %call, i64 32
+  %8 = bitcast i8* %index to %union.tree_node**
+  store %union.tree_node* %7, %union.tree_node** %8, align 8, !tbaa !0
+  %9 = load %struct.constructor_stack** @constructor_stack, align 8, !tbaa !0
+  %stack = getelementptr inbounds i8* %call, i64 16
+  %10 = bitcast i8* %stack to %struct.constructor_stack**
+  store %struct.constructor_stack* %9, %struct.constructor_stack** %10, align 8, !tbaa !0
+  %range_end1 = getelementptr inbounds i8* %call, i64 40
+  %11 = bitcast i8* %range_end1 to %union.tree_node**
+  store %union.tree_node* %range_end, %union.tree_node** %11, align 8, !tbaa !0
+  %12 = load %struct.constructor_range_stack** @constructor_range_stack, align 8, !tbaa !0
+  %tobool = icmp eq %struct.constructor_range_stack* %12, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %next2 = getelementptr inbounds %struct.constructor_range_stack* %12, i64 0, i32 0
+  store %struct.constructor_range_stack* %0, %struct.constructor_range_stack** %next2, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  store %struct.constructor_range_stack* %0, %struct.constructor_range_stack** @constructor_range_stack, align 8, !tbaa !0
+  ret void
+}

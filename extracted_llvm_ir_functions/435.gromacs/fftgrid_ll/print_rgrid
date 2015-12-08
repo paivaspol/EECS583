@@ -1,0 +1,81 @@
+define float @print_rgrid(%struct._IO_FILE* %fp, i8* %title, i32 %nx, i32 %ny, i32 %nz, float*** nocapture %grid) #0 {
+entry:
+  %tobool = icmp ne %struct._IO_FILE* %fp, null
+  br i1 %tobool, label %if.then, label %for.cond.preheader
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([43 x i8]* @.str10, i64 0, i64 0), i8* %title) #4
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then, %entry
+  %cmp48 = icmp sgt i32 %nx, 0
+  br i1 %cmp48, label %for.cond1.preheader.lr.ph, label %for.end24
+
+for.cond1.preheader.lr.ph:                        ; preds = %for.cond.preheader
+  %cmp244 = icmp sgt i32 %ny, 0
+  %cmp541 = icmp sgt i32 %nz, 0
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc22, %for.cond1.preheader.lr.ph
+  %indvars.iv56 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next57, %for.inc22 ]
+  %gtot.050 = phi float [ 0.000000e+00, %for.cond1.preheader.lr.ph ], [ %gtot.1.lcssa, %for.inc22 ]
+  br i1 %cmp244, label %for.cond4.preheader.lr.ph, label %for.inc22
+
+for.cond4.preheader.lr.ph:                        ; preds = %for.cond1.preheader
+  %arrayidx = getelementptr inbounds float*** %grid, i64 %indvars.iv56
+  br label %for.cond4.preheader
+
+for.cond4.preheader:                              ; preds = %for.inc19, %for.cond4.preheader.lr.ph
+  %indvars.iv52 = phi i64 [ 0, %for.cond4.preheader.lr.ph ], [ %indvars.iv.next53, %for.inc19 ]
+  %gtot.146 = phi float [ %gtot.050, %for.cond4.preheader.lr.ph ], [ %gtot.2.lcssa, %for.inc19 ]
+  br i1 %cmp541, label %for.body6, label %for.inc19
+
+for.body6:                                        ; preds = %if.end18, %for.cond4.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next, %if.end18 ]
+  %gtot.243 = phi float [ %gtot.146, %for.cond4.preheader ], [ %add, %if.end18 ]
+  %0 = load float*** %arrayidx, align 8, !tbaa !3
+  %arrayidx9 = getelementptr inbounds float** %0, i64 %indvars.iv52
+  %1 = load float** %arrayidx9, align 8, !tbaa !3
+  %arrayidx10 = getelementptr inbounds float* %1, i64 %indvars.iv
+  %2 = load float* %arrayidx10, align 4, !tbaa !4
+  br i1 %tobool, label %land.lhs.true, label %if.end18
+
+land.lhs.true:                                    ; preds = %for.body6
+  %fabsf = tail call float @fabsf(float %2) #5
+  %3 = fpext float %fabsf to double
+  %cmp13 = fcmp ogt double %3, 1.200000e-38
+  br i1 %cmp13, label %if.then15, label %if.end18
+
+if.then15:                                        ; preds = %land.lhs.true
+  %conv = fpext float %2 to double
+  %4 = trunc i64 %indvars.iv to i32
+  %5 = trunc i64 %indvars.iv52 to i32
+  %6 = trunc i64 %indvars.iv56 to i32
+  %call17 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([28 x i8]* @.str11, i64 0, i64 0), i8* %title, i32 %6, i32 %5, i32 %4, double %conv) #4
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.then15, %land.lhs.true, %for.body6
+  %add = fadd float %gtot.243, %2
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nz
+  br i1 %exitcond, label %for.inc19, label %for.body6
+
+for.inc19:                                        ; preds = %if.end18, %for.cond4.preheader
+  %gtot.2.lcssa = phi float [ %gtot.146, %for.cond4.preheader ], [ %add, %if.end18 ]
+  %indvars.iv.next53 = add i64 %indvars.iv52, 1
+  %lftr.wideiv54 = trunc i64 %indvars.iv.next53 to i32
+  %exitcond55 = icmp eq i32 %lftr.wideiv54, %ny
+  br i1 %exitcond55, label %for.inc22, label %for.cond4.preheader
+
+for.inc22:                                        ; preds = %for.inc19, %for.cond1.preheader
+  %gtot.1.lcssa = phi float [ %gtot.050, %for.cond1.preheader ], [ %gtot.2.lcssa, %for.inc19 ]
+  %indvars.iv.next57 = add i64 %indvars.iv56, 1
+  %lftr.wideiv58 = trunc i64 %indvars.iv.next57 to i32
+  %exitcond59 = icmp eq i32 %lftr.wideiv58, %nx
+  br i1 %exitcond59, label %for.end24, label %for.cond1.preheader
+
+for.end24:                                        ; preds = %for.inc22, %for.cond.preheader
+  %gtot.0.lcssa = phi float [ 0.000000e+00, %for.cond.preheader ], [ %gtot.1.lcssa, %for.inc22 ]
+  ret float %gtot.0.lcssa
+}

@@ -1,0 +1,46 @@
+define internal fastcc void @loop_biv_dump(%struct.induction* %v, %struct._IO_FILE* %file, i32 %verbose) #0 {
+entry:
+  %tobool = icmp eq %struct.induction* %v, null
+  %tobool1 = icmp eq %struct._IO_FILE* %file, null
+  %or.cond = or i1 %tobool, %tobool1
+  br i1 %or.cond, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %dest_reg = getelementptr inbounds %struct.induction* %v, i64 0, i32 4
+  %0 = load %struct.rtx_def** %dest_reg, align 8, !tbaa !4
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !3
+  %insn = getelementptr inbounds %struct.induction* %v, i64 0, i32 0
+  %2 = load %struct.rtx_def** %insn, align 8, !tbaa !4
+  %arrayidx3 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx3 to i32*
+  %3 = load i32* %rtint, align 4, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([16 x i8]* @.str22, i64 0, i64 0), i32 %1, i32 %3) #8
+  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str23, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %add_val = getelementptr inbounds %struct.induction* %v, i64 0, i32 9
+  %5 = load %struct.rtx_def** %add_val, align 8, !tbaa !4
+  tail call void @print_simple_rtl(%struct._IO_FILE* %file, %struct.rtx_def* %5) #8
+  %tobool5 = icmp eq i32 %verbose, 0
+  br i1 %tobool5, label %if.end11, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %final_value = getelementptr inbounds %struct.induction* %v, i64 0, i32 11
+  %6 = load %struct.rtx_def** %final_value, align 8, !tbaa !4
+  %tobool6 = icmp eq %struct.rtx_def* %6, null
+  br i1 %tobool6, label %if.end11, label %if.then7
+
+if.then7:                                         ; preds = %land.lhs.true
+  %call8 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #8
+  %7 = tail call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str21, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %file)
+  %8 = load %struct.rtx_def** %final_value, align 8, !tbaa !4
+  tail call void @print_simple_rtl(%struct._IO_FILE* %file, %struct.rtx_def* %8) #8
+  br label %if.end11
+
+if.end11:                                         ; preds = %land.lhs.true, %if.end, %if.then7
+  %call12 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #8
+  br label %return
+
+return:                                           ; preds = %entry, %if.end11
+  ret void
+}

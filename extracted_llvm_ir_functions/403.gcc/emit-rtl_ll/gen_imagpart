@@ -1,0 +1,35 @@
+define %struct.rtx_def* @gen_imagpart(i32 %mode, %struct.rtx_def* %x) #0 {
+entry:
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom
+  %0 = load i16* %arrayidx, align 2, !tbaa !6
+  %conv = zext i16 %0 to i32
+  %1 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %1, 20
+  %2 = and i32 %and, 32
+  %3 = add i32 %2, 32
+  %cmp = icmp ult i32 %conv, %3
+  br i1 %cmp, label %land.lhs.true, label %if.else
+
+land.lhs.true:                                    ; preds = %entry
+  %4 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %4, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp2 = icmp eq i32 %bf.clear, 61
+  br i1 %cmp2, label %land.lhs.true4, label %if.else
+
+land.lhs.true4:                                   ; preds = %land.lhs.true
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx5 to i32*
+  %5 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp6 = icmp ult i32 %5, 53
+  br i1 %cmp6, label %if.then, label %if.else
+
+if.then:                                          ; preds = %land.lhs.true4
+  tail call void (i8*, ...)* @internal_error(i8* getelementptr inbounds ([62 x i8]* @.str1, i64 0, i64 0)) #10
+  unreachable
+
+if.else:                                          ; preds = %land.lhs.true4, %land.lhs.true, %entry
+  %call = tail call %struct.rtx_def* @gen_highpart(i32 %mode, %struct.rtx_def* %x) #9
+  ret %struct.rtx_def* %call
+}

@@ -1,0 +1,52 @@
+define internal fastcc void @record_last_mem_set_info(%struct.rtx_def* %insn) #0 {
+entry:
+  %fld = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1
+  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !3
+  %idxprom = sext i32 %0 to i64
+  %1 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4
+  %bb1 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx2 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb1, i64 0, i64 %idxprom
+  %2 = load %struct.basic_block_def** %arrayidx2, align 8, !tbaa !0
+  %index = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 11
+  %3 = load i32* %index, align 4, !tbaa !3
+  %idxprom3 = sext i32 %3 to i64
+  %4 = load %struct.rtx_def*** @modify_mem_list, align 8, !tbaa !0
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def** %4, i64 %idxprom3
+  %5 = load %struct.rtx_def** %arrayidx4, align 8, !tbaa !0
+  %call = tail call %struct.rtx_def* @alloc_INSN_LIST(%struct.rtx_def* %insn, %struct.rtx_def* %5) #6
+  %6 = load %struct.rtx_def*** @modify_mem_list, align 8, !tbaa !0
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def** %6, i64 %idxprom3
+  store %struct.rtx_def* %call, %struct.rtx_def** %arrayidx6, align 8, !tbaa !0
+  %7 = load %struct.bitmap_head_def** @modify_mem_list_set, align 8, !tbaa !0
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %7, i32 %3) #6
+  %8 = bitcast %struct.rtx_def* %insn to i32*
+  %bf.load = load i32* %8, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 34
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %9 = load %struct.rtx_def*** @canon_modify_mem_list, align 8, !tbaa !0
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def** %9, i64 %idxprom3
+  %10 = load %struct.rtx_def** %arrayidx8, align 8, !tbaa !0
+  %call9 = tail call %struct.rtx_def* @alloc_INSN_LIST(%struct.rtx_def* %insn, %struct.rtx_def* %10) #6
+  %11 = load %struct.rtx_def*** @canon_modify_mem_list, align 8, !tbaa !0
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def** %11, i64 %idxprom3
+  store %struct.rtx_def* %call9, %struct.rtx_def** %arrayidx11, align 8, !tbaa !0
+  %12 = load %struct.bitmap_head_def** @canon_modify_mem_list_set, align 8, !tbaa !0
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %12, i32 %3) #6
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**
+  %13 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %14 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 0, i64 0
+  tail call void @note_stores(%struct.rtx_def* %13, void (%struct.rtx_def*, %struct.rtx_def*, i8*)* @canon_list_insert, i8* %14) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void
+}

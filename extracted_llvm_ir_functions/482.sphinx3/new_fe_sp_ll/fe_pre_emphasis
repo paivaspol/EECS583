@@ -1,0 +1,31 @@
+define void @fe_pre_emphasis(i16* nocapture %in, double* nocapture %out, i32 %len, float %factor, i16 signext %prior) #0 {
+entry:
+  %0 = load i16* %in, align 2, !tbaa !5
+  %conv = sitofp i16 %0 to double
+  %conv1 = fpext float %factor to double
+  %conv2 = sitofp i16 %prior to double
+  %mul = fmul double %conv1, %conv2
+  %sub = fsub double %conv, %mul
+  store double %sub, double* %out, align 8, !tbaa !6
+  %cmp24 = icmp sgt i32 %len, 1
+  br i1 %cmp24, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %1 = phi i16 [ %2, %for.body ], [ %0, %entry ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %entry ]
+  %arrayidx5 = getelementptr inbounds i16* %in, i64 %indvars.iv
+  %2 = load i16* %arrayidx5, align 2, !tbaa !5
+  %conv6 = sitofp i16 %2 to double
+  %conv11 = sitofp i16 %1 to double
+  %mul12 = fmul double %conv1, %conv11
+  %sub13 = fsub double %conv6, %mul12
+  %arrayidx15 = getelementptr inbounds double* %out, i64 %indvars.iv
+  store double %sub13, double* %arrayidx15, align 8, !tbaa !6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %len
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

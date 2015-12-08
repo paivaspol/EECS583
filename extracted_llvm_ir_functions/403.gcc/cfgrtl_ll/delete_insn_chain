@@ -1,0 +1,36 @@
+define void @delete_insn_chain(%struct.rtx_def* %start, %struct.rtx_def* %finish) #0 {
+entry:
+  br label %while.body
+
+while.body:                                       ; preds = %if.end, %entry
+  %start.addr.0 = phi %struct.rtx_def* [ %start, %entry ], [ %next.0, %if.end ]
+  %0 = bitcast %struct.rtx_def* %start.addr.0 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 37
+  br i1 %cmp, label %land.lhs.true, label %if.else
+
+land.lhs.true:                                    ; preds = %while.body
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %start.addr.0, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %start.addr.0, i64 0, i32 1, i64 4
+  %rtint.i = bitcast %union.rtunion_def* %arrayidx.i to i32*
+  %2 = load i32* %rtint.i, align 4, !tbaa !3
+  switch i32 %2, label %if.end [
+    i32 -80, label %if.else
+    i32 -99, label %if.else
+  ]
+
+if.else:                                          ; preds = %land.lhs.true, %land.lhs.true, %while.body
+  %call1 = tail call %struct.rtx_def* @delete_insn(%struct.rtx_def* %start.addr.0) #7
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %if.else
+  %next.0 = phi %struct.rtx_def* [ %call1, %if.else ], [ %1, %land.lhs.true ]
+  %cmp2 = icmp eq %struct.rtx_def* %start.addr.0, %finish
+  br i1 %cmp2, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.end
+  ret void
+}

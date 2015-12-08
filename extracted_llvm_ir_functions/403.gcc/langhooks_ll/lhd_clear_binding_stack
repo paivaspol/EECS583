@@ -1,0 +1,15 @@
+define void @lhd_clear_binding_stack() #1 {
+entry:
+  %call2 = tail call i32 @global_bindings_p() #5
+  %lnot3 = icmp eq i32 %call2, 0
+  br i1 %lnot3, label %while.body, label %while.end
+
+while.body:                                       ; preds = %entry, %while.body
+  %call1 = tail call %union.tree_node* @poplevel(i32 0, i32 0, i32 0) #5
+  %call = tail call i32 @global_bindings_p() #5
+  %lnot = icmp eq i32 %call, 0
+  br i1 %lnot, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %entry
+  ret void
+}

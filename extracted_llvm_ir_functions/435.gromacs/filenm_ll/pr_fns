@@ -1,0 +1,84 @@
+define void @pr_fns(%struct._IO_FILE* nocapture %fp, i32 %nf, %struct.t_filenm* nocapture %tfn) #0 {
+entry:
+  %buf = alloca [256 x i8], align 16
+  %0 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %0) #5
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([21 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([12 x i8]* @.str23, i64 0, i64 0)) #6
+  %1 = call i64 @fwrite(i8* getelementptr inbounds ([62 x i8]* @.str24, i64 0, i64 0), i64 61, i64 1, %struct._IO_FILE* %fp)
+  %cmp99 = icmp sgt i32 %nf, 0
+  br i1 %cmp99, label %for.body, label %for.end58
+
+for.body:                                         ; preds = %entry, %if.end
+  %indvars.iv101 = phi i64 [ %indvars.iv.next102, %if.end ], [ 0, %entry ]
+  %opt = getelementptr inbounds %struct.t_filenm* %tfn, i64 %indvars.iv101, i32 1
+  %2 = load i8** %opt, align 8, !tbaa !0
+  %fn = getelementptr inbounds %struct.t_filenm* %tfn, i64 %indvars.iv101, i32 2
+  %3 = load i8** %fn, align 8, !tbaa !0
+  %flag = getelementptr inbounds %struct.t_filenm* %tfn, i64 %indvars.iv101, i32 3
+  %4 = load i64* %flag, align 8, !tbaa !4
+  %call6 = call i8* @fileopt(i64 %4) #6
+  %ftp = getelementptr inbounds %struct.t_filenm* %tfn, i64 %indvars.iv101, i32 0
+  %5 = load i32* %ftp, align 4, !tbaa !3
+  %idxprom9 = sext i32 %5 to i64
+  %descr = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %idxprom9, i32 4
+  %6 = load i8** %descr, align 8, !tbaa !0
+  %call11 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([21 x i8]* @.str25, i64 0, i64 0), i8* %2, i8* %3, i8* %call6, i8* %6) #6
+  %7 = load i8** %opt, align 8, !tbaa !0
+  %call15 = call i64 @strlen(i8* %7) #7
+  %cmp16 = icmp ugt i64 %call15, 4
+  br i1 %cmp16, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %for.body
+  %8 = load i8** %fn, align 8, !tbaa !0
+  %call24 = call i64 @strlen(i8* %8) #7
+  %sub = sub i64 18, %call24
+  %cmp25 = icmp ugt i64 %call15, %sub
+  br i1 %cmp25, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %sext = shl i64 %call15, 32
+  %conv3189 = ashr exact i64 %sext, 32
+  %call3390 = call i64 @strlen(i8* %0) #7
+  %call3791 = call i64 @strlen(i8* %7) #7
+  %sub3993 = add i64 %call3390, 5
+  %add94 = sub i64 %sub3993, %call3791
+  %cmp4095 = icmp ult i64 %conv3189, %add94
+  br i1 %cmp4095, label %for.body42.lr.ph, label %if.end
+
+for.body42.lr.ph:                                 ; preds = %if.then
+  %sext103 = shl i64 %call15, 32
+  %9 = ashr exact i64 %sext103, 32
+  br label %for.body42
+
+for.body42:                                       ; preds = %for.body42.lr.ph, %for.body42
+  %indvars.iv = phi i64 [ %9, %for.body42.lr.ph ], [ %indvars.iv.next, %for.body42 ]
+  %call3798 = phi i64 [ %call3791, %for.body42.lr.ph ], [ %call37, %for.body42 ]
+  %add48 = add i64 %indvars.iv, -4
+  %sub49 = add i64 %add48, %call3798
+  %arrayidx50 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 %sub49
+  %10 = load i8* %arrayidx50, align 1, !tbaa !1
+  %arrayidx52 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 %indvars.iv
+  store i8 %10, i8* %arrayidx52, align 1, !tbaa !1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %call33 = call i64 @strlen(i8* %0) #7
+  %call37 = call i64 @strlen(i8* %7) #7
+  %sub39 = add i64 %call33, 5
+  %add = sub i64 %sub39, %call37
+  %cmp40 = icmp ult i64 %indvars.iv.next, %add
+  br i1 %cmp40, label %for.body42, label %if.end
+
+if.end:                                           ; preds = %if.then, %for.body42, %land.lhs.true, %for.body
+  %call54 = call i8* @wrap_lines(i8* %0, i32 80, i32 35) #6
+  %fputs = call i32 @fputs(i8* %call54, %struct._IO_FILE* %fp)
+  call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str26, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str12, i64 0, i64 0), i32 290, i8* %call54) #6
+  %indvars.iv.next102 = add i64 %indvars.iv101, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next102 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nf
+  br i1 %exitcond, label %for.end58, label %for.body
+
+for.end58:                                        ; preds = %if.end, %entry
+  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %fp)
+  %call60 = call i32 @fflush(%struct._IO_FILE* %fp) #6
+  call void @llvm.lifetime.end(i64 256, i8* %0) #5
+  ret void
+}

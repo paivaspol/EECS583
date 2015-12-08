@@ -1,0 +1,147 @@
+define internal fastcc void @new_i_nblist(%struct.t_nblist* nocapture %nlist, i32 %ftype, i32 %i_atom, i32 %shift, i32 %gid, i32* %mno) #5 {
+entry:
+  %maxnrj = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 4
+  %0 = load i32* %maxnrj, align 4, !tbaa !0
+  %nrj = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 3
+  %1 = load i32* %nrj, align 4, !tbaa !0
+  %2 = load i32* @NLJ_INC, align 4, !tbaa !0
+  %add = add i32 %1, -1
+  %sub = add i32 %add, %2
+  %cmp = icmp sgt i32 %0, %sub
+  br i1 %cmp, label %if.end8, label %if.then
+
+if.then:                                          ; preds = %entry
+  %3 = load %struct._IO_FILE** @debug, align 8, !tbaa !3
+  %tobool = icmp eq %struct._IO_FILE* %3, null
+  br i1 %tobool, label %if.end, label %if.then1
+
+if.then1:                                         ; preds = %if.then
+  %idxprom = sext i32 %ftype to i64
+  %longname = getelementptr inbounds [44 x %struct.t_interaction_function]* @interaction_function, i64 0, i64 %idxprom, i32 1
+  %4 = load i8** %longname, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([38 x i8]* @.str18, i64 0, i64 0), i32 %2, i8* %4) #8
+  %.pre125 = load i32* @NLJ_INC, align 4, !tbaa !0
+  %.pre126 = load i32* %maxnrj, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then1
+  %5 = phi i32 [ %0, %if.then ], [ %.pre126, %if.then1 ]
+  %6 = phi i32 [ %2, %if.then ], [ %.pre125, %if.then1 ]
+  %add3 = add nsw i32 %5, %6
+  store i32 %add3, i32* %maxnrj, align 4, !tbaa !0
+  %jjnr = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 11
+  %7 = load i32** %jjnr, align 8, !tbaa !3
+  %8 = bitcast i32* %7 to i8*
+  %mul = shl i32 %add3, 2
+  %call6 = tail call i8* @save_realloc(i8* getelementptr inbounds ([12 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([50 x i8]* @.str2, i64 0, i64 0), i32 366, i8* %8, i32 %mul) #8
+  %9 = bitcast i8* %call6 to i32*
+  store i32* %9, i32** %jjnr, align 8, !tbaa !3
+  br label %if.end8
+
+if.end8:                                          ; preds = %entry, %if.end
+  %nri9 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 1
+  %10 = load i32* %nri9, align 4, !tbaa !0
+  %idxprom10 = sext i32 %10 to i64
+  %iinr = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 7
+  %11 = load i32** %iinr, align 8, !tbaa !3
+  %arrayidx11 = getelementptr inbounds i32* %11, i64 %idxprom10
+  %12 = load i32* %arrayidx11, align 4, !tbaa !0
+  %cmp12 = icmp eq i32 %12, %i_atom
+  br i1 %cmp12, label %lor.lhs.false, label %if.then25
+
+lor.lhs.false:                                    ; preds = %if.end8
+  %shift15 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 9
+  %13 = load i32** %shift15, align 8, !tbaa !3
+  %arrayidx16 = getelementptr inbounds i32* %13, i64 %idxprom10
+  %14 = load i32* %arrayidx16, align 4, !tbaa !0
+  %cmp17 = icmp eq i32 %14, %shift
+  br i1 %cmp17, label %lor.lhs.false19, label %if.then25
+
+lor.lhs.false19:                                  ; preds = %lor.lhs.false
+  %gid21 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 8
+  %15 = load i32** %gid21, align 8, !tbaa !3
+  %arrayidx22 = getelementptr inbounds i32* %15, i64 %idxprom10
+  %16 = load i32* %arrayidx22, align 4, !tbaa !0
+  %cmp23 = icmp eq i32 %16, %gid
+  br i1 %cmp23, label %if.end78, label %if.then25
+
+if.then25:                                        ; preds = %lor.lhs.false19, %lor.lhs.false, %if.end8
+  %add26 = add nsw i32 %10, 1
+  %idxprom27 = sext i32 %add26 to i64
+  %jindex = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 10
+  %17 = load i32** %jindex, align 8, !tbaa !3
+  %arrayidx28 = getelementptr inbounds i32* %17, i64 %idxprom27
+  %18 = load i32* %arrayidx28, align 4, !tbaa !0
+  %arrayidx31 = getelementptr inbounds i32* %17, i64 %idxprom10
+  %19 = load i32* %arrayidx31, align 4, !tbaa !0
+  %cmp32 = icmp sgt i32 %18, %19
+  %gid35 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 8
+  br i1 %cmp32, label %land.lhs.true, label %if.end49
+
+land.lhs.true:                                    ; preds = %if.then25
+  %20 = load i32** %gid35, align 8, !tbaa !3
+  %arrayidx36 = getelementptr inbounds i32* %20, i64 %idxprom10
+  %21 = load i32* %arrayidx36, align 4, !tbaa !0
+  %cmp37 = icmp eq i32 %21, -1
+  br i1 %cmp37, label %if.end49, label %if.then39
+
+if.then39:                                        ; preds = %land.lhs.true
+  store i32 %add26, i32* %nri9, align 4, !tbaa !0
+  %maxnri = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 2
+  %22 = load i32* %maxnri, align 4, !tbaa !0
+  %cmp43 = icmp slt i32 %add26, %22
+  br i1 %cmp43, label %if.end49, label %if.then45
+
+if.then45:                                        ; preds = %if.then39
+  %add47 = add nsw i32 %22, 1000
+  store i32 %add47, i32* %maxnri, align 4, !tbaa !0
+  tail call fastcc void @reallocate_nblist(%struct.t_nblist* %nlist) #7
+  %.pre = load i32** %jindex, align 8, !tbaa !3
+  %.pre124 = load i32** %iinr, align 8, !tbaa !3
+  br label %if.end49
+
+if.end49:                                         ; preds = %if.then25, %if.then39, %land.lhs.true, %if.then45
+  %23 = phi i32* [ %.pre124, %if.then45 ], [ %11, %land.lhs.true ], [ %11, %if.then39 ], [ %11, %if.then25 ]
+  %24 = phi i32* [ %.pre, %if.then45 ], [ %17, %land.lhs.true ], [ %17, %if.then39 ], [ %17, %if.then25 ]
+  %nri.0 = phi i32 [ %add26, %if.then45 ], [ %10, %land.lhs.true ], [ %add26, %if.then39 ], [ %10, %if.then25 ]
+  %idxprom50 = sext i32 %nri.0 to i64
+  %arrayidx52 = getelementptr inbounds i32* %24, i64 %idxprom50
+  %25 = load i32* %arrayidx52, align 4, !tbaa !0
+  %add53 = add nsw i32 %nri.0, 1
+  %idxprom54 = sext i32 %add53 to i64
+  %arrayidx56 = getelementptr inbounds i32* %24, i64 %idxprom54
+  store i32 %25, i32* %arrayidx56, align 4, !tbaa !0
+  %arrayidx59 = getelementptr inbounds i32* %23, i64 %idxprom50
+  store i32 %i_atom, i32* %arrayidx59, align 4, !tbaa !0
+  %26 = load i32** %gid35, align 8, !tbaa !3
+  %arrayidx62 = getelementptr inbounds i32* %26, i64 %idxprom50
+  store i32 %gid, i32* %arrayidx62, align 4, !tbaa !0
+  %shift64 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 9
+  %27 = load i32** %shift64, align 8, !tbaa !3
+  %arrayidx65 = getelementptr inbounds i32* %27, i64 %idxprom50
+  store i32 %shift, i32* %arrayidx65, align 4, !tbaa !0
+  %tobool66 = icmp eq i32* %mno, null
+  br i1 %tobool66, label %if.end78, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.end49
+  %mul72 = mul nsw i32 %nri.0, 3
+  %nsatoms = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 12
+  %28 = load i32** %nsatoms, align 8, !tbaa !3
+  %29 = sext i32 %mul72 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.cond.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx71 = getelementptr inbounds i32* %mno, i64 %indvars.iv
+  %30 = load i32* %arrayidx71, align 4, !tbaa !0
+  %31 = add nsw i64 %indvars.iv, %29
+  %arrayidx75 = getelementptr inbounds i32* %28, i64 %31
+  store i32 %30, i32* %arrayidx75, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %if.end78, label %for.body
+
+if.end78:                                         ; preds = %for.body, %if.end49, %lor.lhs.false19
+  ret void
+}

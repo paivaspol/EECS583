@@ -1,0 +1,12 @@
+define i32 @df_reg_lifetime(%struct.df* nocapture %df, %struct.rtx_def* nocapture %reg) #4 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtuint, align 4, !tbaa !4
+  %idxprom = zext i32 %0 to i64
+  %regs = getelementptr inbounds %struct.df* %df, i64 0, i32 5
+  %1 = load %struct.reg_info** %regs, align 8, !tbaa !3
+  %lifetime = getelementptr inbounds %struct.reg_info* %1, i64 %idxprom, i32 2
+  %2 = load i32* %lifetime, align 4, !tbaa !4
+  ret i32 %2
+}

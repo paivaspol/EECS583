@@ -1,0 +1,18 @@
+define void @set_default_file_name(i8* %name) #0 {
+entry:
+  %call = tail call i8* @gmx_strdup(i8* %name) #6
+  store i8* %call, i8** @default_file_name, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %defnm = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %indvars.iv, i32 2
+  store i8* %call, i8** %defnm, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 46
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  ret void
+}

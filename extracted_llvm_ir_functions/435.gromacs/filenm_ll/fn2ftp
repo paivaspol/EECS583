@@ -1,0 +1,44 @@
+define i32 @fn2ftp(i8* %fn) #0 {
+entry:
+  %tobool = icmp eq i8* %fn, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call i64 @strlen(i8* %fn) #7
+  %conv = trunc i64 %call to i32
+  %cmp = icmp sgt i32 %conv, 3
+  br i1 %cmp, label %land.lhs.true, label %return
+
+land.lhs.true:                                    ; preds = %if.end
+  %sub = shl i64 %call, 32
+  %sext = add i64 %sub, -17179869184
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds i8* %fn, i64 %idxprom
+  %0 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp3 = icmp eq i8 %0, 46
+  br i1 %cmp3, label %for.body, label %return
+
+for.body:                                         ; preds = %land.lhs.true, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %land.lhs.true ]
+  %i.031 = phi i32 [ %inc, %for.inc ], [ 0, %land.lhs.true ]
+  %ext = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %indvars.iv, i32 1
+  %1 = load i8** %ext, align 8, !tbaa !0
+  %cmp14 = icmp eq i8* %1, null
+  br i1 %cmp14, label %for.inc, label %if.then16
+
+if.then16:                                        ; preds = %for.body
+  %call17 = tail call i32 @gmx_strcasecmp(i8* %arrayidx, i8* %1) #6
+  %cmp18 = icmp eq i32 %call17, 0
+  br i1 %cmp18, label %return, label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then16
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %i.031, 1
+  %2 = trunc i64 %indvars.iv.next to i32
+  %cmp10 = icmp slt i32 %2, 46
+  br i1 %cmp10, label %for.body, label %return
+
+return:                                           ; preds = %for.inc, %if.then16, %if.end, %land.lhs.true, %entry
+  %retval.0 = phi i32 [ 46, %entry ], [ 46, %land.lhs.true ], [ 46, %if.end ], [ %i.031, %if.then16 ], [ %inc, %for.inc ]
+  ret i32 %retval.0
+}

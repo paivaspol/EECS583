@@ -1,0 +1,31 @@
+define void @pop_topmost_sequence() #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit = getelementptr inbounds %struct.function* %0, i64 0, i32 3
+  %1 = load %struct.emit_status** %emit, align 8, !tbaa !4
+  %sequence_stack = getelementptr inbounds %struct.emit_status* %1, i64 0, i32 5
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond, %entry
+  %stack.0.in = phi %struct.sequence_stack** [ %sequence_stack, %entry ], [ %next, %for.cond ]
+  %top.0 = phi %struct.sequence_stack* [ null, %entry ], [ %stack.0, %for.cond ]
+  %stack.0 = load %struct.sequence_stack** %stack.0.in, align 8
+  %tobool = icmp eq %struct.sequence_stack* %stack.0, null
+  %next = getelementptr inbounds %struct.sequence_stack* %stack.0, i64 0, i32 3
+  br i1 %tobool, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.cond
+  %x_first_insn = getelementptr inbounds %struct.emit_status* %1, i64 0, i32 2
+  %2 = load %struct.rtx_def** %x_first_insn, align 8, !tbaa !4
+  %first = getelementptr inbounds %struct.sequence_stack* %top.0, i64 0, i32 0
+  store %struct.rtx_def* %2, %struct.rtx_def** %first, align 8, !tbaa !4
+  %3 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit2 = getelementptr inbounds %struct.function* %3, i64 0, i32 3
+  %4 = load %struct.emit_status** %emit2, align 8, !tbaa !4
+  %x_last_insn = getelementptr inbounds %struct.emit_status* %4, i64 0, i32 3
+  %5 = load %struct.rtx_def** %x_last_insn, align 8, !tbaa !4
+  %last = getelementptr inbounds %struct.sequence_stack* %top.0, i64 0, i32 1
+  store %struct.rtx_def* %5, %struct.rtx_def** %last, align 8, !tbaa !4
+  tail call void @end_sequence() #9
+  ret void
+}

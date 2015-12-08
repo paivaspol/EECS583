@@ -1,0 +1,76 @@
+define zeroext i1 @_cpp_pop_file_buffer(%struct.cpp_reader* %pfile, %struct.include_file* nocapture %inc) #0 {
+entry:
+  %mi_valid = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 14
+  %0 = load i8* %mi_valid, align 1, !tbaa !6, !range !7
+  %tobool = icmp eq i8 %0, 0
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %cmacro = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 1
+  %1 = load %struct.cpp_hashnode** %cmacro, align 8, !tbaa !0
+  %cmp = icmp eq %struct.cpp_hashnode* %1, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true
+  %mi_cmacro = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 12
+  %2 = load %struct.cpp_hashnode** %mi_cmacro, align 8, !tbaa !0
+  store %struct.cpp_hashnode* %2, %struct.cpp_hashnode** %cmacro, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then, %land.lhs.true
+  store i8 0, i8* %mi_valid, align 1, !tbaa !6
+  %refcnt = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 8
+  %3 = load i16* %refcnt, align 2, !tbaa !5
+  %dec = add i16 %3, -1
+  store i16 %dec, i16* %refcnt, align 2, !tbaa !5
+  %cmp4 = icmp eq i16 %dec, 0
+  br i1 %cmp4, label %land.lhs.true6, label %if.end17
+
+land.lhs.true6:                                   ; preds = %if.end
+  %cmacro7 = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 1
+  %4 = load %struct.cpp_hashnode** %cmacro7, align 8, !tbaa !0
+  %magicptr = ptrtoint %struct.cpp_hashnode* %4 to i64
+  switch i64 %magicptr, label %lor.lhs.false [
+    i64 0, label %if.end17
+    i64 -1, label %if.then16
+  ]
+
+lor.lhs.false:                                    ; preds = %land.lhs.true6
+  %type = getelementptr inbounds %struct.cpp_hashnode* %4, i64 0, i32 4
+  %bf.load = load i8* %type, align 4
+  %cmp14 = icmp eq i8 %bf.load, 1
+  br i1 %cmp14, label %if.then16, label %if.end17
+
+if.then16:                                        ; preds = %land.lhs.true6, %lor.lhs.false
+  %buffer.i = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 3
+  %5 = load i8** %buffer.i, align 8, !tbaa !0
+  %tobool.i = icmp eq i8* %5, null
+  br i1 %tobool.i, label %if.end17, label %if.then.i
+
+if.then.i:                                        ; preds = %if.then16
+  tail call void @free(i8* %5) #6
+  store i8* null, i8** %buffer.i, align 8, !tbaa !0
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.then.i, %if.then16, %land.lhs.true6, %lor.lhs.false, %if.end
+  %buffer = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
+  %6 = load %struct.cpp_buffer** %buffer, align 8, !tbaa !0
+  %tobool18 = icmp eq %struct.cpp_buffer* %6, null
+  br i1 %tobool18, label %if.end24, label %if.then19
+
+if.then19:                                        ; preds = %if.end17
+  tail call void @_cpp_do_file_change(%struct.cpp_reader* %pfile, i32 1, i8* null, i32 0, i32 0) #6
+  %7 = load %struct.cpp_buffer** %buffer, align 8, !tbaa !0
+  %prev = getelementptr inbounds %struct.cpp_buffer* %7, i64 0, i32 4
+  %8 = load %struct.cpp_buffer** %prev, align 8, !tbaa !0
+  %tobool21 = icmp eq %struct.cpp_buffer* %8, null
+  br i1 %tobool21, label %if.then22, label %if.end24
+
+if.then22:                                        ; preds = %if.then19
+  %call = tail call zeroext i1 @_cpp_push_next_buffer(%struct.cpp_reader* %pfile) #6
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.then19, %if.end17, %if.then22
+  %pushed.0 = phi i1 [ false, %if.then19 ], [ %call, %if.then22 ], [ false, %if.end17 ]
+  ret i1 %pushed.0
+}

@@ -1,0 +1,43 @@
+define float @potential(float %r1, float %rc, float %R) #3 {
+entry:
+  %cmp = fcmp olt float %R, %r1
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %conv = fpext float %R to double
+  %div = fdiv double 1.000000e+00, %conv
+  %0 = load float* @C, align 4, !tbaa !0
+  %conv1 = fpext float %0 to double
+  %sub = fsub double %div, %conv1
+  %conv2 = fptrunc double %sub to float
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %cmp3 = fcmp ugt float %R, %rc
+  br i1 %cmp3, label %return, label %if.then5
+
+if.then5:                                         ; preds = %if.else
+  %conv6 = fpext float %R to double
+  %div7 = fdiv double 1.000000e+00, %conv6
+  %1 = load float* @A_3, align 4, !tbaa !0
+  %sub8 = fsub float %R, %r1
+  %mul = fmul float %sub8, %sub8
+  %mul11 = fmul float %sub8, %mul
+  %mul12 = fmul float %mul11, %1
+  %conv13 = fpext float %mul12 to double
+  %sub14 = fsub double %div7, %conv13
+  %2 = load float* @B_4, align 4, !tbaa !0
+  %mul21 = fmul float %sub8, %mul11
+  %mul22 = fmul float %mul21, %2
+  %conv23 = fpext float %mul22 to double
+  %sub24 = fsub double %sub14, %conv23
+  %3 = load float* @C, align 4, !tbaa !0
+  %conv25 = fpext float %3 to double
+  %sub26 = fsub double %sub24, %conv25
+  %conv27 = fptrunc double %sub26 to float
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then5, %if.then
+  %retval.0 = phi float [ %conv2, %if.then ], [ %conv27, %if.then5 ], [ 0.000000e+00, %if.else ]
+  ret float %retval.0
+}

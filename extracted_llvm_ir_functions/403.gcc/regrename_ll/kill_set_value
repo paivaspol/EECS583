@@ -1,0 +1,29 @@
+define internal void @kill_set_value(%struct.rtx_def* nocapture %x, %struct.rtx_def* nocapture %set, i8* nocapture %data) #0 {
+entry:
+  %0 = bitcast i8* %data to %struct.value_data*
+  %1 = bitcast %struct.rtx_def* %set to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 49
+  br i1 %cmp, label %if.end7, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call fastcc void @kill_value(%struct.rtx_def* %x, %struct.value_data* %0) #6
+  %2 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load1 = load i32* %2, align 8
+  %bf.clear2 = and i32 %bf.load1, 65535
+  %cmp3 = icmp eq i32 %bf.clear2, 61
+  br i1 %cmp3, label %if.then4, label %if.end7
+
+if.then4:                                         ; preds = %if.then
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !3
+  %bf.lshr = lshr i32 %bf.load1, 16
+  %bf.clear6 = and i32 %bf.lshr, 255
+  tail call fastcc void @set_value_regno(i32 %3, i32 %bf.clear6, %struct.value_data* %0) #6
+  br label %if.end7
+
+if.end7:                                          ; preds = %entry, %if.then, %if.then4
+  ret void
+}

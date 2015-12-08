@@ -1,0 +1,20 @@
+define void @fibheap_delete(%struct.fibheap* nocapture %heap) #0 {
+entry:
+  %min = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 1
+  %0 = load %struct.fibnode** %min, align 8, !tbaa !0
+  %cmp2 = icmp eq %struct.fibnode* %0, null
+  br i1 %cmp2, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  %call = tail call fastcc %struct.fibnode* @fibheap_extr_min_node(%struct.fibheap* %heap) #6
+  %1 = bitcast %struct.fibnode* %call to i8*
+  tail call void @free(i8* %1) #5
+  %2 = load %struct.fibnode** %min, align 8, !tbaa !0
+  %cmp = icmp eq %struct.fibnode* %2, null
+  br i1 %cmp, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  %3 = bitcast %struct.fibheap* %heap to i8*
+  tail call void @free(i8* %3) #5
+  ret void
+}

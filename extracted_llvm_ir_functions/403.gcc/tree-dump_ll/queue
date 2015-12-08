@@ -1,0 +1,62 @@
+define internal fastcc i32 @queue(%struct.dump_info* nocapture %di, %union.tree_node* %t, i32 %flags) #0 {
+entry:
+  %index1 = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 3
+  %0 = load i32* %index1, align 4, !tbaa !4
+  %inc = add i32 %0, 1
+  store i32 %inc, i32* %index1, align 4, !tbaa !4
+  %free_list = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 7
+  %1 = load %struct.dump_queue** %free_list, align 8, !tbaa !0
+  %tobool = icmp eq %struct.dump_queue* %1, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %next = getelementptr inbounds %struct.dump_queue* %1, i64 0, i32 1
+  %2 = load %struct.dump_queue** %next, align 8, !tbaa !0
+  store %struct.dump_queue* %2, %struct.dump_queue** %free_list, align 8, !tbaa !0
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %call = tail call noalias i8* @xmalloc(i64 16) #7
+  %3 = bitcast i8* %call to %struct.dump_queue*
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %dq.0 = phi %struct.dump_queue* [ %1, %if.then ], [ %3, %if.else ]
+  %call4 = tail call noalias i8* @xmalloc(i64 8) #7
+  %index5 = bitcast i8* %call4 to i32*
+  store i32 %inc, i32* %index5, align 4, !tbaa !4
+  %4 = getelementptr inbounds i8* %call4, i64 4
+  %flags.tr = trunc i32 %flags to i8
+  %bf.load = load i8* %4, align 4
+  %bf.value = and i8 %flags.tr, 1
+  %bf.clear = and i8 %bf.load, -2
+  %bf.set = or i8 %bf.clear, %bf.value
+  store i8 %bf.set, i8* %4, align 4
+  %nodes = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 8
+  %5 = load %struct.splay_tree_s** %nodes, align 8, !tbaa !0
+  %6 = ptrtoint %union.tree_node* %t to i64
+  %7 = ptrtoint i8* %call4 to i64
+  %call6 = tail call %struct.splay_tree_node_s* @splay_tree_insert(%struct.splay_tree_s* %5, i64 %6, i64 %7) #7
+  %node = getelementptr inbounds %struct.dump_queue* %dq.0, i64 0, i32 0
+  store %struct.splay_tree_node_s* %call6, %struct.splay_tree_node_s** %node, align 8, !tbaa !0
+  %next7 = getelementptr inbounds %struct.dump_queue* %dq.0, i64 0, i32 1
+  store %struct.dump_queue* null, %struct.dump_queue** %next7, align 8, !tbaa !0
+  %queue_end = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 6
+  %8 = load %struct.dump_queue** %queue_end, align 8, !tbaa !0
+  %tobool8 = icmp eq %struct.dump_queue* %8, null
+  br i1 %tobool8, label %if.then9, label %if.else10
+
+if.then9:                                         ; preds = %if.end
+  %queue = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 5
+  store %struct.dump_queue* %dq.0, %struct.dump_queue** %queue, align 8, !tbaa !0
+  br label %if.end13
+
+if.else10:                                        ; preds = %if.end
+  %next12 = getelementptr inbounds %struct.dump_queue* %8, i64 0, i32 1
+  store %struct.dump_queue* %dq.0, %struct.dump_queue** %next12, align 8, !tbaa !0
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.else10, %if.then9
+  store %struct.dump_queue* %dq.0, %struct.dump_queue** %queue_end, align 8, !tbaa !0
+  ret i32 %inc
+}

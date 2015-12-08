@@ -1,0 +1,21 @@
+define internal i32 @mark_ehl_map_entry(i8** nocapture %pentry, i8* nocapture %data) #0 {
+entry:
+  %0 = load i8** %pentry, align 8
+  %label = bitcast i8* %0 to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %label, align 8, !tbaa !3
+  %cmp = icmp eq %struct.rtx_def* %1, null
+  br i1 %cmp, label %do.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %2 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 0, i64 0
+  %call = tail call i32 @ggc_set_mark(i8* %2) #6
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then, label %do.end
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %1) #6
+  br label %do.end
+
+do.end:                                           ; preds = %land.lhs.true, %entry, %if.then
+  ret i32 1
+}

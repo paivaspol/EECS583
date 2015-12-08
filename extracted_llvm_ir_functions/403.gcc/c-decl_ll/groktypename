@@ -1,0 +1,33 @@
+define %union.tree_node* @groktypename(%union.tree_node* %typename) #0 {
+entry:
+  %typename.addr = alloca %union.tree_node*, align 8
+  %specs = alloca %union.tree_node*, align 8
+  %attrs = alloca %union.tree_node*, align 8
+  store %union.tree_node* %typename, %union.tree_node** %typename.addr, align 8, !tbaa !0
+  %code = getelementptr inbounds %union.tree_node* %typename, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 2
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %purpose = getelementptr inbounds %union.tree_node* %typename, i64 0, i32 0, i32 1
+  %1 = load i8** %purpose, align 8
+  %2 = bitcast i8* %1 to %union.tree_node*
+  call void @split_specs_attrs(%union.tree_node* %2, %union.tree_node** %specs, %union.tree_node** %attrs) #8
+  %value = getelementptr inbounds %union.tree_node* %typename, i64 0, i32 0, i32 2
+  %3 = bitcast i32* %value to %union.tree_node**
+  %4 = load %union.tree_node** %3, align 8, !tbaa !0
+  %5 = load %union.tree_node** %specs, align 8, !tbaa !0
+  %call = call fastcc %union.tree_node* @grokdeclarator(%union.tree_node* %4, %union.tree_node* %5, i32 5, i32 0) #10
+  store %union.tree_node* %call, %union.tree_node** %typename.addr, align 8, !tbaa !0
+  %6 = load %union.tree_node** %attrs, align 8, !tbaa !0
+  %call2 = call %union.tree_node* @decl_attributes(%union.tree_node** %typename.addr, %union.tree_node* %6, i32 0) #8
+  %7 = load %union.tree_node** %typename.addr, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi %union.tree_node* [ %7, %if.end ], [ %typename, %entry ]
+  ret %union.tree_node* %retval.0
+}

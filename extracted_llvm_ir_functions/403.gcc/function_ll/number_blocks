@@ -1,0 +1,34 @@
+define void @number_blocks(%union.tree_node* nocapture %fn) #0 {
+entry:
+  %n_blocks = alloca i32, align 4
+  %initial = getelementptr inbounds %union.tree_node* %fn, i64 0, i32 0, i32 12
+  %0 = load %union.tree_node** %initial, align 8, !tbaa !0
+  %call = call fastcc %union.tree_node** @get_block_vector(%union.tree_node* %0, i32* %n_blocks) #9
+  %1 = load i32* %n_blocks, align 4, !tbaa !4
+  %cmp5 = icmp sgt i32 %1, 1
+  br i1 %cmp5, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %entry ]
+  %2 = load i32* @next_block_index, align 4, !tbaa !4
+  %inc = add nsw i32 %2, 1
+  store i32 %inc, i32* @next_block_index, align 4, !tbaa !4
+  %arrayidx = getelementptr inbounds %union.tree_node** %call, i64 %indvars.iv
+  %3 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
+  %block_num = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 1
+  %4 = bitcast i8** %block_num to i32*
+  %bf.load = load i32* %4, align 8
+  %bf.shl = shl i32 %2, 2
+  %bf.clear = and i32 %bf.load, 3
+  %bf.set = or i32 %bf.clear, %bf.shl
+  store i32 %bf.set, i32* %4, align 8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %5 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %5, %1
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  %6 = bitcast %union.tree_node** %call to i8*
+  call void @free(i8* %6) #10
+  ret void
+}

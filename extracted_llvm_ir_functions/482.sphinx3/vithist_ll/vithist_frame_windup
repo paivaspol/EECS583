@@ -1,0 +1,36 @@
+define void @vithist_frame_windup(%struct.vithist_t* nocapture %vh, i32 %frm, %struct._IO_FILE* %fp, %struct.kbcore_t* nocapture %kbc) #0 {
+entry:
+  %n_frm = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 3
+  %0 = load i32* %n_frm, align 4, !tbaa !3
+  %inc = add nsw i32 %0, 1
+  store i32 %inc, i32* %n_frm, align 4, !tbaa !3
+  %n_entry = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 2
+  %1 = load i32* %n_entry, align 4, !tbaa !3
+  %idxprom = sext i32 %inc to i64
+  %frame_start = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 1
+  %2 = load i32** %frame_start, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom
+  store i32 %1, i32* %arrayidx, align 4, !tbaa !3
+  %tobool = icmp eq %struct._IO_FILE* %fp, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @vithist_dump(%struct.vithist_t* %vh, i32 %frm, %struct.kbcore_t* %kbc, %struct._IO_FILE* %fp) #7
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  tail call fastcc void @vithist_lmstate_reset(%struct.vithist_t* %vh) #7
+  %3 = load i32* %n_frm, align 4, !tbaa !3
+  %idxprom3 = sext i32 %3 to i64
+  %bestscore = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 6
+  %4 = load i32** %bestscore, align 8, !tbaa !0
+  %arrayidx4 = getelementptr inbounds i32* %4, i64 %idxprom3
+  store i32 -2147483648, i32* %arrayidx4, align 4, !tbaa !3
+  %5 = load i32* %n_frm, align 4, !tbaa !3
+  %idxprom6 = sext i32 %5 to i64
+  %bestvh = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 7
+  %6 = load i32** %bestvh, align 8, !tbaa !0
+  %arrayidx7 = getelementptr inbounds i32* %6, i64 %idxprom6
+  store i32 -1, i32* %arrayidx7, align 4, !tbaa !3
+  ret void
+}

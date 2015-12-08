@@ -1,0 +1,74 @@
+define %struct.rtx_def* @get_addr(%struct.rtx_def* %x) #2 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 60
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rt_cselib = bitcast %union.rtunion_def* %arrayidx to %struct.cselib_val_struct**
+  %1 = load %struct.cselib_val_struct** %rt_cselib, align 8, !tbaa !0
+  %locs = getelementptr inbounds %struct.cselib_val_struct* %1, i64 0, i32 2
+  %l.088 = load %struct.elt_loc_list** %locs, align 8
+  %tobool89 = icmp eq %struct.elt_loc_list* %l.088, null
+  br i1 %tobool89, label %return, label %for.body
+
+for.cond42.preheader:                             ; preds = %for.inc
+  br i1 %tobool89, label %return, label %for.body44
+
+for.body:                                         ; preds = %if.end, %for.inc
+  %l.090 = phi %struct.elt_loc_list* [ %l.0, %for.inc ], [ %l.088, %if.end ]
+  %loc = getelementptr inbounds %struct.elt_loc_list* %l.090, i64 0, i32 1
+  %2 = load %struct.rtx_def** %loc, align 8, !tbaa !0
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load1 = load i32* %3, align 8
+  %bf.clear2 = and i32 %bf.load1, 65535
+  switch i32 %bf.clear2, label %for.inc [
+    i32 67, label %return
+    i32 68, label %return
+    i32 54, label %return
+    i32 55, label %return
+    i32 58, label %return
+    i32 134, label %return
+    i32 56, label %return
+    i32 140, label %return
+  ]
+
+for.inc:                                          ; preds = %for.body
+  %next = getelementptr inbounds %struct.elt_loc_list* %l.090, i64 0, i32 0
+  %l.0 = load %struct.elt_loc_list** %next, align 8
+  %tobool = icmp eq %struct.elt_loc_list* %l.0, null
+  br i1 %tobool, label %for.cond42.preheader, label %for.body
+
+for.body44:                                       ; preds = %for.cond42.preheader, %for.inc56
+  %l.187 = phi %struct.elt_loc_list* [ %l.1, %for.inc56 ], [ %l.088, %for.cond42.preheader ]
+  %loc45 = getelementptr inbounds %struct.elt_loc_list* %l.187, i64 0, i32 1
+  %4 = load %struct.rtx_def** %loc45, align 8, !tbaa !0
+  %5 = bitcast %struct.rtx_def* %4 to i32*
+  %bf.load46 = load i32* %5, align 8
+  %bf.clear47 = and i32 %bf.load46, 65535
+  switch i32 %bf.clear47, label %return [
+    i32 61, label %for.inc56
+    i32 66, label %for.inc56
+  ]
+
+for.inc56:                                        ; preds = %for.body44, %for.body44
+  %next57 = getelementptr inbounds %struct.elt_loc_list* %l.187, i64 0, i32 0
+  %l.1 = load %struct.elt_loc_list** %next57, align 8
+  %tobool43 = icmp eq %struct.elt_loc_list* %l.1, null
+  br i1 %tobool43, label %for.end58, label %for.body44
+
+for.end58:                                        ; preds = %for.inc56
+  br i1 %tobool89, label %return, label %if.then61
+
+if.then61:                                        ; preds = %for.end58
+  %loc63 = getelementptr inbounds %struct.elt_loc_list* %l.088, i64 0, i32 1
+  %6 = load %struct.rtx_def** %loc63, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end, %for.cond42.preheader, %for.body44, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.end58, %entry, %if.then61
+  %retval.0 = phi %struct.rtx_def* [ %6, %if.then61 ], [ %x, %entry ], [ %x, %for.end58 ], [ %2, %for.body ], [ %2, %for.body ], [ %2, %for.body ], [ %2, %for.body ], [ %2, %for.body ], [ %2, %for.body ], [ %2, %for.body ], [ %2, %for.body ], [ %4, %for.body44 ], [ %x, %for.cond42.preheader ], [ %x, %if.end ]
+  ret %struct.rtx_def* %retval.0
+}

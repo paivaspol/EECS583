@@ -1,0 +1,543 @@
+define void @convert_from_eh_region_ranges() #0 {
+entry:
+  %insns = alloca %struct.rtx_def*, align 8
+  %0 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh.i = getelementptr inbounds %struct.function* %0, i64 0, i32 0
+  %1 = load %struct.eh_status** %eh.i, align 8, !tbaa !3
+  %region_tree.i = getelementptr inbounds %struct.eh_status* %1, i64 0, i32 0
+  %2 = load %struct.eh_region** %region_tree.i, align 8, !tbaa !3
+  %tobool.i = icmp eq %struct.eh_region* %2, null
+  br i1 %tobool.i, label %collect_eh_region_array.exit, label %if.end.i
+
+if.end.i:                                         ; preds = %entry
+  %last_region_number.i = getelementptr inbounds %struct.eh_status* %1, i64 0, i32 8
+  %3 = load i32* %last_region_number.i, align 4, !tbaa !0
+  %add.i = add nsw i32 %3, 1
+  %conv.i = sext i32 %add.i to i64
+  %call.i = call noalias i8* @xcalloc(i64 %conv.i, i64 8) #6
+  %4 = bitcast i8* %call.i to %struct.eh_region**
+  %5 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh2.i = getelementptr inbounds %struct.function* %5, i64 0, i32 0
+  %6 = load %struct.eh_status** %eh2.i, align 8, !tbaa !3
+  %region_array.i = getelementptr inbounds %struct.eh_status* %6, i64 0, i32 1
+  store %struct.eh_region** %4, %struct.eh_region*** %region_array.i, align 8, !tbaa !3
+  br label %while.body.i
+
+while.body.i:                                     ; preds = %if.else.i, %while.body.i, %do.cond.i, %if.end.i
+  %i.0.i = phi %struct.eh_region* [ %2, %if.end.i ], [ %8, %while.body.i ], [ %9, %if.else.i ], [ %11, %do.cond.i ]
+  %region_number.i = getelementptr inbounds %struct.eh_region* %i.0.i, i64 0, i32 3
+  %7 = load i32* %region_number.i, align 4, !tbaa !0
+  %idxprom.i = sext i32 %7 to i64
+  %arrayidx.i = getelementptr inbounds %struct.eh_region** %4, i64 %idxprom.i
+  store %struct.eh_region* %i.0.i, %struct.eh_region** %arrayidx.i, align 8, !tbaa !3
+  %inner.i = getelementptr inbounds %struct.eh_region* %i.0.i, i64 0, i32 1
+  %8 = load %struct.eh_region** %inner.i, align 8, !tbaa !3
+  %tobool3.i = icmp eq %struct.eh_region* %8, null
+  br i1 %tobool3.i, label %if.else.i, label %while.body.i
+
+if.else.i:                                        ; preds = %while.body.i
+  %next_peer.i = getelementptr inbounds %struct.eh_region* %i.0.i, i64 0, i32 2
+  %9 = load %struct.eh_region** %next_peer.i, align 8, !tbaa !3
+  %tobool6.i = icmp eq %struct.eh_region* %9, null
+  br i1 %tobool6.i, label %do.body.i, label %while.body.i
+
+do.body.i:                                        ; preds = %if.else.i, %do.cond.i
+  %i.1.i = phi %struct.eh_region* [ %10, %do.cond.i ], [ %i.0.i, %if.else.i ]
+  %outer.i = getelementptr inbounds %struct.eh_region* %i.1.i, i64 0, i32 0
+  %10 = load %struct.eh_region** %outer.i, align 8, !tbaa !3
+  %cmp.i = icmp eq %struct.eh_region* %10, null
+  br i1 %cmp.i, label %collect_eh_region_array.exit.loopexit, label %do.cond.i
+
+do.cond.i:                                        ; preds = %do.body.i
+  %next_peer13.i = getelementptr inbounds %struct.eh_region* %10, i64 0, i32 2
+  %11 = load %struct.eh_region** %next_peer13.i, align 8, !tbaa !3
+  %cmp14.i = icmp eq %struct.eh_region* %11, null
+  br i1 %cmp14.i, label %do.body.i, label %while.body.i
+
+collect_eh_region_array.exit.loopexit:            ; preds = %do.body.i
+  %.pre = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh.i3.phi.trans.insert = getelementptr inbounds %struct.function* %.pre, i64 0, i32 0
+  %.pre58 = load %struct.eh_status** %eh.i3.phi.trans.insert, align 8, !tbaa !3
+  br label %collect_eh_region_array.exit
+
+collect_eh_region_array.exit:                     ; preds = %collect_eh_region_array.exit.loopexit, %entry
+  %12 = phi %struct.eh_status* [ %.pre58, %collect_eh_region_array.exit.loopexit ], [ %1, %entry ]
+  %last_region_number.i4 = getelementptr inbounds %struct.eh_status* %12, i64 0, i32 8
+  %13 = load i32* %last_region_number.i4, align 4, !tbaa !0
+  %cmp43.i = icmp slt i32 %13, 1
+  br i1 %cmp43.i, label %resolve_fixup_regions.exit, label %for.body.i
+
+for.body.i:                                       ; preds = %collect_eh_region_array.exit, %for.inc23.for.body_crit_edge.i
+  %14 = phi %struct.eh_status* [ %.pre49.i, %for.inc23.for.body_crit_edge.i ], [ %12, %collect_eh_region_array.exit ]
+  %indvars.iv47.i = phi i64 [ %indvars.iv.next48.i, %for.inc23.for.body_crit_edge.i ], [ 1, %collect_eh_region_array.exit ]
+  %region_array.i5 = getelementptr inbounds %struct.eh_status* %14, i64 0, i32 1
+  %15 = load %struct.eh_region*** %region_array.i5, align 8, !tbaa !3
+  %arrayidx.i6 = getelementptr inbounds %struct.eh_region** %15, i64 %indvars.iv47.i
+  %16 = load %struct.eh_region** %arrayidx.i6, align 8, !tbaa !3
+  %tobool.i7 = icmp eq %struct.eh_region* %16, null
+  br i1 %tobool.i7, label %for.inc23.i, label %lor.lhs.false.i
+
+lor.lhs.false.i:                                  ; preds = %for.body.i
+  %type.i = getelementptr inbounds %struct.eh_region* %16, i64 0, i32 5
+  %17 = load i32* %type.i, align 4, !tbaa !5
+  %cmp2.i = icmp eq i32 %17, 7
+  br i1 %cmp2.i, label %for.body5.lr.ph.i, label %for.inc23.i
+
+for.body5.lr.ph.i:                                ; preds = %lor.lhs.false.i
+  %u13.i = getelementptr inbounds %struct.eh_region* %16, i64 0, i32 6
+  %cleanup_exp.i = bitcast %union.anon* %u13.i to %union.tree_node**
+  br label %for.body5.i
+
+for.body5.i:                                      ; preds = %for.inc.i, %for.body5.lr.ph.i
+  %indvars.iv.i = phi i64 [ 1, %for.body5.lr.ph.i ], [ %indvars.iv.next.i, %for.inc.i ]
+  %arrayidx9.i = getelementptr inbounds %struct.eh_region** %15, i64 %indvars.iv.i
+  %18 = load %struct.eh_region** %arrayidx9.i, align 8, !tbaa !3
+  %type10.i = getelementptr inbounds %struct.eh_region* %18, i64 0, i32 5
+  %19 = load i32* %type10.i, align 4, !tbaa !5
+  %cmp11.i = icmp eq i32 %19, 1
+  br i1 %cmp11.i, label %land.lhs.true.i, label %for.inc.i
+
+land.lhs.true.i:                                  ; preds = %for.body5.i
+  %u.i = getelementptr inbounds %struct.eh_region* %18, i64 0, i32 6
+  %exp.i = bitcast %union.anon* %u.i to %union.tree_node**
+  %20 = load %union.tree_node** %exp.i, align 8, !tbaa !3
+  %21 = load %union.tree_node** %cleanup_exp.i, align 8, !tbaa !3
+  %cmp15.i = icmp eq %union.tree_node* %20, %21
+  br i1 %cmp15.i, label %if.end20.i, label %for.inc.i
+
+for.inc.i:                                        ; preds = %land.lhs.true.i, %for.body5.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %22 = trunc i64 %indvars.iv.i to i32
+  %cmp4.i = icmp slt i32 %22, %13
+  br i1 %cmp4.i, label %for.body5.i, label %if.then19.i
+
+if.then19.i:                                      ; preds = %for.inc.i
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str26, i64 0, i64 0), i32 1180, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.resolve_fixup_regions, i64 0, i64 0)) #8
+  unreachable
+
+if.end20.i:                                       ; preds = %land.lhs.true.i
+  %outer.i8 = getelementptr inbounds %struct.eh_region* %18, i64 0, i32 0
+  %23 = load %struct.eh_region** %outer.i8, align 8, !tbaa !3
+  %24 = getelementptr inbounds %struct.eh_region* %16, i64 0, i32 6, i32 0, i32 1
+  store %struct.eh_region* %23, %struct.eh_region** %24, align 8, !tbaa !3
+  br label %for.inc23.i
+
+for.inc23.i:                                      ; preds = %if.end20.i, %lor.lhs.false.i, %for.body.i
+  %25 = trunc i64 %indvars.iv47.i to i32
+  %cmp.i9 = icmp slt i32 %25, %13
+  br i1 %cmp.i9, label %for.inc23.for.body_crit_edge.i, label %resolve_fixup_regions.exit.loopexit
+
+for.inc23.for.body_crit_edge.i:                   ; preds = %for.inc23.i
+  %indvars.iv.next48.i = add i64 %indvars.iv47.i, 1
+  %.pre.i = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh1.phi.trans.insert.i = getelementptr inbounds %struct.function* %.pre.i, i64 0, i32 0
+  %.pre49.i = load %struct.eh_status** %eh1.phi.trans.insert.i, align 8, !tbaa !3
+  br label %for.body.i
+
+resolve_fixup_regions.exit.loopexit:              ; preds = %for.inc23.i
+  %.pre59 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh.phi.trans.insert = getelementptr inbounds %struct.function* %.pre59, i64 0, i32 0
+  %.pre60 = load %struct.eh_status** %eh.phi.trans.insert, align 8, !tbaa !3
+  %last_region_number.phi.trans.insert = getelementptr inbounds %struct.eh_status* %.pre60, i64 0, i32 8
+  %.pre61 = load i32* %last_region_number.phi.trans.insert, align 4, !tbaa !0
+  br label %resolve_fixup_regions.exit
+
+resolve_fixup_regions.exit:                       ; preds = %resolve_fixup_regions.exit.loopexit, %collect_eh_region_array.exit
+  %26 = phi i32 [ %.pre61, %resolve_fixup_regions.exit.loopexit ], [ %13, %collect_eh_region_array.exit ]
+  %add = add nsw i32 %26, 1
+  %conv = sext i32 %add to i64
+  %mul = shl nsw i64 %conv, 2
+  %call = call noalias i8* @xmalloc(i64 %mul) #6
+  %27 = bitcast i8* %call to i32*
+  %call1 = call %struct.rtx_def* @get_insns() #6
+  store %struct.rtx_def* %call1, %struct.rtx_def** %insns, align 8, !tbaa !3
+  call fastcc void @convert_from_eh_region_ranges_1(%struct.rtx_def** %insns, i32* %27, i32 0) #7
+  call void @free(i8* %call) #6
+  %call.i10 = call %struct.rtx_def* @get_insns() #6
+  %tobool115.i = icmp eq %struct.rtx_def* %call.i10, null
+  br i1 %tobool115.i, label %for.end.i, label %for.body.i13
+
+for.body.i13:                                     ; preds = %resolve_fixup_regions.exit, %for.inc.i22
+  %insn.0116.i = phi %struct.rtx_def* [ %41, %for.inc.i22 ], [ %call.i10, %resolve_fixup_regions.exit ]
+  %28 = bitcast %struct.rtx_def* %insn.0116.i to i32*
+  %bf.load.i = load i32* %28, align 8
+  %bf.clear.i = and i32 %bf.load.i, 65535
+  %idxprom112.i = zext i32 %bf.clear.i to i64
+  %arrayidx.i11 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom112.i
+  %29 = load i8* %arrayidx.i11, align 1, !tbaa !1
+  %cmp.i12 = icmp eq i8 %29, 105
+  br i1 %cmp.i12, label %land.lhs.true.i15, label %for.inc.i22
+
+land.lhs.true.i15:                                ; preds = %for.body.i13
+  %call2.i = call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn.0116.i, i32 23, %struct.rtx_def* null) #6
+  %tobool3.i14 = icmp eq %struct.rtx_def* %call2.i, null
+  br i1 %tobool3.i14, label %for.inc.i22, label %land.lhs.true4.i
+
+land.lhs.true4.i:                                 ; preds = %land.lhs.true.i15
+  %arrayidx5.i = getelementptr inbounds %struct.rtx_def* %call2.i, i64 0, i32 1, i64 0
+  %rtx.i = bitcast %union.rtunion_def* %arrayidx5.i to %struct.rtx_def**
+  %30 = load %struct.rtx_def** %rtx.i, align 8, !tbaa !3
+  %rtwint.i = getelementptr inbounds %struct.rtx_def* %30, i64 0, i32 1, i64 0, i32 0
+  %31 = load i64* %rtwint.i, align 8, !tbaa !4
+  %cmp8.i = icmp sgt i64 %31, 0
+  br i1 %cmp8.i, label %land.lhs.true10.i, label %for.inc.i22
+
+land.lhs.true10.i:                                ; preds = %land.lhs.true4.i
+  %32 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh.i16 = getelementptr inbounds %struct.function* %32, i64 0, i32 0
+  %33 = load %struct.eh_status** %eh.i16, align 8, !tbaa !3
+  %region_array.i17 = getelementptr inbounds %struct.eh_status* %33, i64 0, i32 1
+  %34 = load %struct.eh_region*** %region_array.i17, align 8, !tbaa !3
+  %arrayidx17.i = getelementptr inbounds %struct.eh_region** %34, i64 %31
+  %35 = load %struct.eh_region** %arrayidx17.i, align 8, !tbaa !3
+  %tobool18.i = icmp eq %struct.eh_region* %35, null
+  br i1 %tobool18.i, label %for.inc.i22, label %land.lhs.true19.i
+
+land.lhs.true19.i:                                ; preds = %land.lhs.true10.i
+  %type.i18 = getelementptr inbounds %struct.eh_region* %35, i64 0, i32 5
+  %36 = load i32* %type.i18, align 4, !tbaa !5
+  %cmp20.i = icmp eq i32 %36, 7
+  br i1 %cmp20.i, label %if.then.i, label %for.inc.i22
+
+if.then.i:                                        ; preds = %land.lhs.true19.i
+  %37 = getelementptr inbounds %struct.eh_region* %35, i64 0, i32 6, i32 0, i32 1
+  %38 = load %struct.eh_region** %37, align 8, !tbaa !3
+  %tobool23.i = icmp eq %struct.eh_region* %38, null
+  br i1 %tobool23.i, label %if.else.i20, label %if.then24.i
+
+if.then24.i:                                      ; preds = %if.then.i
+  %region_number.i19 = getelementptr inbounds %struct.eh_region* %38, i64 0, i32 3
+  %39 = load i32* %region_number.i19, align 4, !tbaa !0
+  %conv28.i = sext i32 %39 to i64
+  %call29.i = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv28.i) #6
+  %40 = getelementptr inbounds %union.rtunion_def* %arrayidx5.i, i64 0, i32 0
+  %call29.c.i = ptrtoint %struct.rtx_def* %call29.i to i64
+  store i64 %call29.c.i, i64* %40, align 8, !tbaa !3
+  br label %for.inc.i22
+
+if.else.i20:                                      ; preds = %if.then.i
+  call void @remove_note(%struct.rtx_def* %insn.0116.i, %struct.rtx_def* %call2.i) #6
+  br label %for.inc.i22
+
+for.inc.i22:                                      ; preds = %if.else.i20, %if.then24.i, %land.lhs.true19.i, %land.lhs.true10.i, %land.lhs.true4.i, %land.lhs.true.i15, %for.body.i13
+  %arrayidx35.i = getelementptr inbounds %struct.rtx_def* %insn.0116.i, i64 0, i32 1, i64 2
+  %rtx36.i = bitcast %union.rtunion_def* %arrayidx35.i to %struct.rtx_def**
+  %41 = load %struct.rtx_def** %rtx36.i, align 8, !tbaa !3
+  %tobool.i21 = icmp eq %struct.rtx_def* %41, null
+  br i1 %tobool.i21, label %for.end.i, label %for.body.i13
+
+for.end.i:                                        ; preds = %for.inc.i22, %resolve_fixup_regions.exit
+  %42 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh37.i = getelementptr inbounds %struct.function* %42, i64 0, i32 0
+  %43 = load %struct.eh_status** %eh37.i, align 8, !tbaa !3
+  %last_region_number.i23 = getelementptr inbounds %struct.eh_status* %43, i64 0, i32 8
+  %44 = load i32* %last_region_number.i23, align 4, !tbaa !0
+  %cmp39113.i = icmp sgt i32 %44, 0
+  br i1 %cmp39113.i, label %for.body41.lr.ph.i, label %remove_fixup_regions.exit
+
+for.body41.lr.ph.i:                               ; preds = %for.end.i
+  %45 = sext i32 %44 to i64
+  br label %for.body41.i
+
+for.body41.i:                                     ; preds = %for.inc83.for.body41_crit_edge.i, %for.body41.lr.ph.i
+  %46 = phi %struct.eh_status* [ %43, %for.body41.lr.ph.i ], [ %.pre117.i, %for.inc83.for.body41_crit_edge.i ]
+  %indvars.iv.i24 = phi i64 [ %45, %for.body41.lr.ph.i ], [ %indvars.iv.next.i29, %for.inc83.for.body41_crit_edge.i ]
+  %region_array44.i = getelementptr inbounds %struct.eh_status* %46, i64 0, i32 1
+  %47 = load %struct.eh_region*** %region_array44.i, align 8, !tbaa !3
+  %arrayidx45.i = getelementptr inbounds %struct.eh_region** %47, i64 %indvars.iv.i24
+  %48 = load %struct.eh_region** %arrayidx45.i, align 8, !tbaa !3
+  %tobool46.i = icmp eq %struct.eh_region* %48, null
+  br i1 %tobool46.i, label %for.inc83.i, label %if.end48.i
+
+if.end48.i:                                       ; preds = %for.body41.i
+  %type49.i = getelementptr inbounds %struct.eh_region* %48, i64 0, i32 5
+  %49 = load i32* %type49.i, align 4, !tbaa !5
+  switch i32 %49, label %for.inc83.i [
+    i32 1, label %if.end54.thread.i
+    i32 7, label %if.end59.i
+  ]
+
+if.end54.thread.i:                                ; preds = %if.end48.i
+  %50 = getelementptr inbounds %struct.eh_region* %48, i64 0, i32 6, i32 0, i32 0
+  store %struct.eh_region* null, %struct.eh_region** %50, align 8, !tbaa !3
+  br label %for.inc83.i
+
+if.end59.i:                                       ; preds = %if.end48.i
+  %inner.i25 = getelementptr inbounds %struct.eh_region* %48, i64 0, i32 1
+  %51 = load %struct.eh_region** %inner.i25, align 8, !tbaa !3
+  %tobool60.i = icmp eq %struct.eh_region* %51, null
+  br i1 %tobool60.i, label %if.end82.i, label %if.then61.i
+
+if.then61.i:                                      ; preds = %if.end59.i
+  %52 = getelementptr inbounds %struct.eh_region* %48, i64 0, i32 6, i32 0, i32 1
+  %53 = load %struct.eh_region** %52, align 8, !tbaa !3
+  br label %for.cond66.i
+
+for.cond66.i:                                     ; preds = %for.cond66.i, %if.then61.i
+  %p.0.i = phi %struct.eh_region* [ %51, %if.then61.i ], [ %54, %for.cond66.i ]
+  %outer.i26 = getelementptr inbounds %struct.eh_region* %p.0.i, i64 0, i32 0
+  store %struct.eh_region* %53, %struct.eh_region** %outer.i26, align 8, !tbaa !3
+  %next_peer.i27 = getelementptr inbounds %struct.eh_region* %p.0.i, i64 0, i32 2
+  %54 = load %struct.eh_region** %next_peer.i27, align 8, !tbaa !3
+  %tobool67.i = icmp eq %struct.eh_region* %54, null
+  br i1 %tobool67.i, label %for.end72.i, label %for.cond66.i
+
+for.end72.i:                                      ; preds = %for.cond66.i
+  %tobool73.i = icmp eq %struct.eh_region* %53, null
+  br i1 %tobool73.i, label %if.else76.i, label %if.then74.i
+
+if.then74.i:                                      ; preds = %for.end72.i
+  %inner75.i = getelementptr inbounds %struct.eh_region* %53, i64 0, i32 1
+  br label %if.end78.i
+
+if.else76.i:                                      ; preds = %for.end72.i
+  %55 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh77.i = getelementptr inbounds %struct.function* %55, i64 0, i32 0
+  %56 = load %struct.eh_status** %eh77.i, align 8, !tbaa !3
+  %region_tree.i28 = getelementptr inbounds %struct.eh_status* %56, i64 0, i32 0
+  br label %if.end78.i
+
+if.end78.i:                                       ; preds = %if.else76.i, %if.then74.i
+  %pp.0.i = phi %struct.eh_region** [ %inner75.i, %if.then74.i ], [ %region_tree.i28, %if.else76.i ]
+  %57 = load %struct.eh_region** %pp.0.i, align 8, !tbaa !3
+  store %struct.eh_region* %57, %struct.eh_region** %next_peer.i27, align 8, !tbaa !3
+  %58 = load %struct.eh_region** %inner.i25, align 8, !tbaa !3
+  store %struct.eh_region* %58, %struct.eh_region** %pp.0.i, align 8, !tbaa !3
+  store %struct.eh_region* null, %struct.eh_region** %inner.i25, align 8, !tbaa !3
+  br label %if.end82.i
+
+if.end82.i:                                       ; preds = %if.end78.i, %if.end59.i
+  call fastcc void @remove_eh_handler(%struct.eh_region* %48) #6
+  br label %for.inc83.i
+
+for.inc83.i:                                      ; preds = %if.end82.i, %if.end54.thread.i, %if.end48.i, %for.body41.i
+  %indvars.iv.next.i29 = add i64 %indvars.iv.i24, -1
+  %59 = trunc i64 %indvars.iv.next.i29 to i32
+  %cmp39.i = icmp sgt i32 %59, 0
+  br i1 %cmp39.i, label %for.inc83.for.body41_crit_edge.i, label %remove_fixup_regions.exit
+
+for.inc83.for.body41_crit_edge.i:                 ; preds = %for.inc83.i
+  %.pre.i30 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh43.phi.trans.insert.i = getelementptr inbounds %struct.function* %.pre.i30, i64 0, i32 0
+  %.pre117.i = load %struct.eh_status** %eh43.phi.trans.insert.i, align 8, !tbaa !3
+  br label %for.body41.i
+
+remove_fixup_regions.exit:                        ; preds = %for.inc83.i, %for.end.i
+  %60 = load %struct.rtx_def** %insns, align 8, !tbaa !3
+  %call.i31 = call i32 @get_max_uid() #6
+  %conv.i32 = sext i32 %call.i31 to i64
+  %call1.i = call noalias i8* @xcalloc(i64 %conv.i32, i64 4) #6
+  %61 = bitcast i8* %call1.i to i32*
+  %62 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh.i33 = getelementptr inbounds %struct.function* %62, i64 0, i32 0
+  %63 = load %struct.eh_status** %eh.i33, align 8, !tbaa !3
+  %last_region_number.i34 = getelementptr inbounds %struct.eh_status* %63, i64 0, i32 8
+  %64 = load i32* %last_region_number.i34, align 4, !tbaa !0
+  %add.i35 = add nsw i32 %64, 1
+  %conv2.i = sext i32 %add.i35 to i64
+  %call3.i = call noalias i8* @xcalloc(i64 %conv2.i, i64 1) #6
+  %65 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh4.i = getelementptr inbounds %struct.function* %65, i64 0, i32 0
+  %66 = load %struct.eh_status** %eh4.i, align 8, !tbaa !3
+  %last_region_number5.i = getelementptr inbounds %struct.eh_status* %66, i64 0, i32 8
+  %67 = load i32* %last_region_number5.i, align 4, !tbaa !0
+  %cmp164.i = icmp sgt i32 %67, 0
+  br i1 %cmp164.i, label %for.body.lr.ph.i, label %for.cond68.preheader.i
+
+for.body.lr.ph.i:                                 ; preds = %remove_fixup_regions.exit
+  %region_array.i36 = getelementptr inbounds %struct.eh_status* %66, i64 0, i32 1
+  %68 = load %struct.eh_region*** %region_array.i36, align 8, !tbaa !3
+  %69 = sext i32 %67 to i64
+  br label %for.body.i39
+
+for.cond68.preheader.i:                           ; preds = %for.inc.i48, %remove_fixup_regions.exit
+  %tobool69162.i = icmp eq %struct.rtx_def* %60, null
+  br i1 %tobool69162.i, label %for.end81.i, label %for.body70.i
+
+for.body.i39:                                     ; preds = %for.inc.i48, %for.body.lr.ph.i
+  %indvars.iv167.i = phi i64 [ %69, %for.body.lr.ph.i ], [ %indvars.iv.next168.i, %for.inc.i48 ]
+  %arrayidx.i37 = getelementptr inbounds %struct.eh_region** %68, i64 %indvars.iv167.i
+  %70 = load %struct.eh_region** %arrayidx.i37, align 8, !tbaa !3
+  %tobool.i38 = icmp eq %struct.eh_region* %70, null
+  br i1 %tobool.i38, label %for.inc.i48, label %lor.lhs.false.i42
+
+lor.lhs.false.i42:                                ; preds = %for.body.i39
+  %region_number.i40 = getelementptr inbounds %struct.eh_region* %70, i64 0, i32 3
+  %71 = load i32* %region_number.i40, align 4, !tbaa !0
+  %72 = trunc i64 %indvars.iv167.i to i32
+  %cmp8.i41 = icmp eq i32 %71, %72
+  br i1 %cmp8.i41, label %if.end.i43, label %for.inc.i48
+
+if.end.i43:                                       ; preds = %lor.lhs.false.i42
+  %resume.i = getelementptr inbounds %struct.eh_region* %70, i64 0, i32 10
+  %73 = load %struct.rtx_def** %resume.i, align 8, !tbaa !3
+  %tobool10.i = icmp eq %struct.rtx_def* %73, null
+  br i1 %tobool10.i, label %if.end25.i, label %if.then11.i
+
+if.then11.i:                                      ; preds = %if.end.i43
+  %arrayidx13.i = getelementptr inbounds %struct.rtx_def* %73, i64 0, i32 1, i64 0
+  %rtint.i = bitcast %union.rtunion_def* %arrayidx13.i to i32*
+  %74 = load i32* %rtint.i, align 4, !tbaa !0
+  %idxprom14.i = sext i32 %74 to i64
+  %arrayidx15.i = getelementptr inbounds i32* %61, i64 %idxprom14.i
+  %75 = load i32* %arrayidx15.i, align 4, !tbaa !0
+  %tobool16.i = icmp eq i32 %75, 0
+  br i1 %tobool16.i, label %if.end18.i, label %if.then17.i
+
+if.then17.i:                                      ; preds = %if.then11.i
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str26, i64 0, i64 0), i32 1280, i8* getelementptr inbounds ([27 x i8]* @__FUNCTION__.remove_unreachable_regions, i64 0, i64 0)) #8
+  unreachable
+
+if.end18.i:                                       ; preds = %if.then11.i
+  store i32 %71, i32* %arrayidx15.i, align 4, !tbaa !0
+  br label %if.end25.i
+
+if.end25.i:                                       ; preds = %if.end18.i, %if.end.i43
+  %label.i = getelementptr inbounds %struct.eh_region* %70, i64 0, i32 7
+  %76 = load %struct.rtx_def** %label.i, align 8, !tbaa !3
+  %tobool26.i = icmp eq %struct.rtx_def* %76, null
+  br i1 %tobool26.i, label %if.end43.i, label %if.then27.i
+
+if.then27.i:                                      ; preds = %if.end25.i
+  %arrayidx30.i = getelementptr inbounds %struct.rtx_def* %76, i64 0, i32 1, i64 0
+  %rtint31.i = bitcast %union.rtunion_def* %arrayidx30.i to i32*
+  %77 = load i32* %rtint31.i, align 4, !tbaa !0
+  %idxprom32.i = sext i32 %77 to i64
+  %arrayidx33.i = getelementptr inbounds i32* %61, i64 %idxprom32.i
+  %78 = load i32* %arrayidx33.i, align 4, !tbaa !0
+  %tobool34.i = icmp eq i32 %78, 0
+  br i1 %tobool34.i, label %if.end36.i, label %if.then35.i
+
+if.then35.i:                                      ; preds = %if.then27.i
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str26, i64 0, i64 0), i32 1286, i8* getelementptr inbounds ([27 x i8]* @__FUNCTION__.remove_unreachable_regions, i64 0, i64 0)) #8
+  unreachable
+
+if.end36.i:                                       ; preds = %if.then27.i
+  store i32 %71, i32* %arrayidx33.i, align 4, !tbaa !0
+  br label %if.end43.i
+
+if.end43.i:                                       ; preds = %if.end36.i, %if.end25.i
+  %type.i44 = getelementptr inbounds %struct.eh_region* %70, i64 0, i32 5
+  %79 = load i32* %type.i44, align 4, !tbaa !5
+  %cmp44.i = icmp eq i32 %79, 2
+  br i1 %cmp44.i, label %land.lhs.true.i46, label %for.inc.i48
+
+land.lhs.true.i46:                                ; preds = %if.end43.i
+  %continue_label.i = getelementptr inbounds %struct.eh_region* %70, i64 0, i32 6, i32 0, i32 3
+  %80 = load %struct.rtx_def** %continue_label.i, align 8, !tbaa !3
+  %tobool46.i45 = icmp eq %struct.rtx_def* %80, null
+  br i1 %tobool46.i45, label %for.inc.i48, label %if.then47.i
+
+if.then47.i:                                      ; preds = %land.lhs.true.i46
+  %arrayidx52.i = getelementptr inbounds %struct.rtx_def* %80, i64 0, i32 1, i64 0
+  %rtint53.i = bitcast %union.rtunion_def* %arrayidx52.i to i32*
+  %81 = load i32* %rtint53.i, align 4, !tbaa !0
+  %idxprom54.i = sext i32 %81 to i64
+  %arrayidx55.i = getelementptr inbounds i32* %61, i64 %idxprom54.i
+  %82 = load i32* %arrayidx55.i, align 4, !tbaa !0
+  %tobool56.i = icmp eq i32 %82, 0
+  br i1 %tobool56.i, label %if.end58.i, label %if.then57.i
+
+if.then57.i:                                      ; preds = %if.then47.i
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str26, i64 0, i64 0), i32 1292, i8* getelementptr inbounds ([27 x i8]* @__FUNCTION__.remove_unreachable_regions, i64 0, i64 0)) #8
+  unreachable
+
+if.end58.i:                                       ; preds = %if.then47.i
+  store i32 %71, i32* %arrayidx55.i, align 4, !tbaa !0
+  br label %for.inc.i48
+
+for.inc.i48:                                      ; preds = %if.end58.i, %land.lhs.true.i46, %if.end43.i, %lor.lhs.false.i42, %for.body.i39
+  %indvars.iv.next168.i = add i64 %indvars.iv167.i, -1
+  %83 = trunc i64 %indvars.iv.next168.i to i32
+  %cmp.i47 = icmp sgt i32 %83, 0
+  br i1 %cmp.i47, label %for.body.i39, label %for.cond68.preheader.i
+
+for.body70.i:                                     ; preds = %for.cond68.preheader.i, %for.body70.i
+  %insn.0163.i = phi %struct.rtx_def* [ %86, %for.body70.i ], [ %60, %for.cond68.preheader.i ]
+  %fld71.i = getelementptr inbounds %struct.rtx_def* %insn.0163.i, i64 0, i32 1
+  %rtint73.i = bitcast [1 x %union.rtunion_def]* %fld71.i to i32*
+  %84 = load i32* %rtint73.i, align 4, !tbaa !0
+  %idxprom74.i = sext i32 %84 to i64
+  %arrayidx75.i = getelementptr inbounds i32* %61, i64 %idxprom74.i
+  %85 = load i32* %arrayidx75.i, align 4, !tbaa !0
+  %idxprom76.i = sext i32 %85 to i64
+  %arrayidx77.i = getelementptr inbounds i8* %call3.i, i64 %idxprom76.i
+  store i8 1, i8* %arrayidx77.i, align 1, !tbaa !7
+  %arrayidx80.i = getelementptr inbounds %struct.rtx_def* %insn.0163.i, i64 0, i32 1, i64 2
+  %rtx.i49 = bitcast %union.rtunion_def* %arrayidx80.i to %struct.rtx_def**
+  %86 = load %struct.rtx_def** %rtx.i49, align 8, !tbaa !3
+  %tobool69.i = icmp eq %struct.rtx_def* %86, null
+  br i1 %tobool69.i, label %for.end81.i, label %for.body70.i
+
+for.end81.i:                                      ; preds = %for.body70.i, %for.cond68.preheader.i
+  br i1 %cmp164.i, label %for.body87.lr.ph.i, label %remove_unreachable_regions.exit
+
+for.body87.lr.ph.i:                               ; preds = %for.end81.i
+  %87 = sext i32 %67 to i64
+  br label %for.body87.i
+
+for.body87.i:                                     ; preds = %for.inc117.for.body87_crit_edge.i, %for.body87.lr.ph.i
+  %88 = phi %struct.eh_status* [ %66, %for.body87.lr.ph.i ], [ %.pre169.i, %for.inc117.for.body87_crit_edge.i ]
+  %indvars.iv.i50 = phi i64 [ %87, %for.body87.lr.ph.i ], [ %indvars.iv.next.i52, %for.inc117.for.body87_crit_edge.i ]
+  %region_array90.i = getelementptr inbounds %struct.eh_status* %88, i64 0, i32 1
+  %89 = load %struct.eh_region*** %region_array90.i, align 8, !tbaa !3
+  %arrayidx91.i = getelementptr inbounds %struct.eh_region** %89, i64 %indvars.iv.i50
+  %90 = load %struct.eh_region** %arrayidx91.i, align 8, !tbaa !3
+  %tobool92.i = icmp eq %struct.eh_region* %90, null
+  br i1 %tobool92.i, label %for.inc117.i, label %land.lhs.true93.i
+
+land.lhs.true93.i:                                ; preds = %for.body87.i
+  %region_number94.i = getelementptr inbounds %struct.eh_region* %90, i64 0, i32 3
+  %91 = load i32* %region_number94.i, align 4, !tbaa !0
+  %92 = trunc i64 %indvars.iv.i50 to i32
+  %cmp95.i = icmp eq i32 %91, %92
+  br i1 %cmp95.i, label %land.lhs.true97.i, label %for.inc117.i
+
+land.lhs.true97.i:                                ; preds = %land.lhs.true93.i
+  %arrayidx99.i = getelementptr inbounds i8* %call3.i, i64 %indvars.iv.i50
+  %93 = load i8* %arrayidx99.i, align 1, !tbaa !7, !range !8
+  %tobool100.i = icmp eq i8 %93, 0
+  br i1 %tobool100.i, label %if.then101.i, label %for.inc117.i
+
+if.then101.i:                                     ; preds = %land.lhs.true97.i
+  %type102.i = getelementptr inbounds %struct.eh_region* %90, i64 0, i32 5
+  %94 = load i32* %type102.i, align 4, !tbaa !5
+  %cmp103.i = icmp eq i32 %94, 6
+  br i1 %cmp103.i, label %land.lhs.true105.i, label %if.end115.i
+
+land.lhs.true105.i:                               ; preds = %if.then101.i
+  %outer.i51 = getelementptr inbounds %struct.eh_region* %90, i64 0, i32 0
+  %95 = load %struct.eh_region** %outer.i51, align 8, !tbaa !3
+  %tobool106.i = icmp eq %struct.eh_region* %95, null
+  br i1 %tobool106.i, label %if.end115.i, label %land.lhs.true107.i
+
+land.lhs.true107.i:                               ; preds = %land.lhs.true105.i
+  %region_number109.i = getelementptr inbounds %struct.eh_region* %95, i64 0, i32 3
+  %96 = load i32* %region_number109.i, align 4, !tbaa !0
+  %idxprom110.i = sext i32 %96 to i64
+  %arrayidx111.i = getelementptr inbounds i8* %call3.i, i64 %idxprom110.i
+  %97 = load i8* %arrayidx111.i, align 1, !tbaa !7, !range !8
+  %tobool112.i = icmp eq i8 %97, 0
+  br i1 %tobool112.i, label %if.end115.i, label %for.inc117.i
+
+if.end115.i:                                      ; preds = %land.lhs.true107.i, %land.lhs.true105.i, %if.then101.i
+  call fastcc void @remove_eh_handler(%struct.eh_region* %90) #6
+  br label %for.inc117.i
+
+for.inc117.i:                                     ; preds = %if.end115.i, %land.lhs.true107.i, %land.lhs.true97.i, %land.lhs.true93.i, %for.body87.i
+  %indvars.iv.next.i52 = add i64 %indvars.iv.i50, -1
+  %98 = trunc i64 %indvars.iv.next.i52 to i32
+  %cmp85.i = icmp sgt i32 %98, 0
+  br i1 %cmp85.i, label %for.inc117.for.body87_crit_edge.i, label %remove_unreachable_regions.exit
+
+for.inc117.for.body87_crit_edge.i:                ; preds = %for.inc117.i
+  %.pre.i53 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh89.phi.trans.insert.i = getelementptr inbounds %struct.function* %.pre.i53, i64 0, i32 0
+  %.pre169.i = load %struct.eh_status** %eh89.phi.trans.insert.i, align 8, !tbaa !3
+  br label %for.body87.i
+
+remove_unreachable_regions.exit:                  ; preds = %for.inc117.i, %for.end81.i
+  call void @free(i8* %call3.i) #6
+  call void @free(i8* %call1.i) #6
+  ret void
+}

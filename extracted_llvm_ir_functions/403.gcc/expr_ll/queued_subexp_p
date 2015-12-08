@@ -1,0 +1,51 @@
+define i32 @queued_subexp_p(%struct.rtx_def* nocapture %x) #4 {
+entry:
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %sw.bb1, %entry
+  %x.tr = phi %struct.rtx_def* [ %x, %entry ], [ %1, %sw.bb1 ]
+  %0 = bitcast %struct.rtx_def* %x.tr to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %return [
+    i32 71, label %return.loopexit
+    i32 66, label %sw.bb1
+    i32 78, label %sw.bb2
+    i32 75, label %sw.bb2
+    i32 76, label %sw.bb2
+  ]
+
+sw.bb1:                                           ; preds = %tailrecurse
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  br label %tailrecurse
+
+sw.bb2:                                           ; preds = %tailrecurse, %tailrecurse, %tailrecurse
+  %fld3 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1
+  %rtx5 = bitcast [1 x %union.rtunion_def]* %fld3 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx5, align 8, !tbaa !0
+  %call6 = tail call i32 @queued_subexp_p(%struct.rtx_def* %2) #10
+  %tobool = icmp eq i32 %call6, 0
+  br i1 %tobool, label %lor.rhs, label %lor.end
+
+lor.rhs:                                          ; preds = %sw.bb2
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 1
+  %rtx9 = bitcast %union.rtunion_def* %arrayidx8 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx9, align 8, !tbaa !0
+  %call10 = tail call i32 @queued_subexp_p(%struct.rtx_def* %3) #10
+  %tobool11 = icmp ne i32 %call10, 0
+  br label %lor.end
+
+lor.end:                                          ; preds = %sw.bb2, %lor.rhs
+  %4 = phi i1 [ true, %sw.bb2 ], [ %tobool11, %lor.rhs ]
+  %lor.ext = zext i1 %4 to i32
+  br label %return
+
+return.loopexit:                                  ; preds = %tailrecurse
+  br label %return
+
+return:                                           ; preds = %tailrecurse, %return.loopexit, %lor.end
+  %retval.0 = phi i32 [ %lor.ext, %lor.end ], [ 1, %return.loopexit ], [ 0, %tailrecurse ]
+  ret i32 %retval.0
+}

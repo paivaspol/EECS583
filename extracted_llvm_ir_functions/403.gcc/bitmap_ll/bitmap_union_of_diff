@@ -1,0 +1,29 @@
+define i32 @bitmap_union_of_diff(%struct.bitmap_head_def* nocapture %dst, %struct.bitmap_head_def* nocapture %a, %struct.bitmap_head_def* nocapture %b, %struct.bitmap_head_def* nocapture %c) #0 {
+entry:
+  %tmp = alloca %struct.bitmap_head_def, align 8
+  %first = getelementptr inbounds %struct.bitmap_head_def* %tmp, i64 0, i32 0
+  %0 = bitcast %struct.bitmap_head_def* %tmp to i8*
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 16, i32 8, i1 false)
+  %call = call i32 @bitmap_operation(%struct.bitmap_head_def* %tmp, %struct.bitmap_head_def* %b, %struct.bitmap_head_def* %c, i32 1) #7
+  %call2 = call i32 @bitmap_operation(%struct.bitmap_head_def* %dst, %struct.bitmap_head_def* %tmp, %struct.bitmap_head_def* %a, i32 2) #7
+  %1 = load %struct.bitmap_element_def** %first, align 8, !tbaa !0
+  %cmp9.i = icmp eq %struct.bitmap_element_def* %1, null
+  br i1 %cmp9.i, label %bitmap_clear.exit, label %for.body.lr.ph.i
+
+for.body.lr.ph.i:                                 ; preds = %entry
+  %.pre.i = load %struct.bitmap_element_def** @bitmap_free, align 8, !tbaa !0
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.body.i, %for.body.lr.ph.i
+  %2 = phi %struct.bitmap_element_def* [ %.pre.i, %for.body.lr.ph.i ], [ %element.010.i, %for.body.i ]
+  %element.010.i = phi %struct.bitmap_element_def* [ %1, %for.body.lr.ph.i ], [ %3, %for.body.i ]
+  %next1.i = getelementptr inbounds %struct.bitmap_element_def* %element.010.i, i64 0, i32 0
+  %3 = load %struct.bitmap_element_def** %next1.i, align 8, !tbaa !0
+  store %struct.bitmap_element_def* %2, %struct.bitmap_element_def** %next1.i, align 8, !tbaa !0
+  store %struct.bitmap_element_def* %element.010.i, %struct.bitmap_element_def** @bitmap_free, align 8, !tbaa !0
+  %cmp.i = icmp eq %struct.bitmap_element_def* %3, null
+  br i1 %cmp.i, label %bitmap_clear.exit, label %for.body.i
+
+bitmap_clear.exit:                                ; preds = %for.body.i, %entry
+  ret i32 %call2
+}

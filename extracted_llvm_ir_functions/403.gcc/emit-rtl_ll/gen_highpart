@@ -1,0 +1,56 @@
+define %struct.rtx_def* @gen_highpart(i32 %mode, %struct.rtx_def* %x) #0 {
+entry:
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom
+  %0 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = zext i8 %0 to i32
+  %1 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %1, 23
+  %2 = and i32 %and, 4
+  %3 = add i32 %2, 4
+  %cmp = icmp ugt i32 %conv, %3
+  %4 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %4, align 8
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %idxprom237 = zext i32 %bf.clear to i64
+  %arrayidx3 = getelementptr inbounds [59 x i8]* @mode_unit_size, i64 0, i64 %idxprom237
+  %5 = load i8* %arrayidx3, align 1, !tbaa !1
+  %cmp5 = icmp eq i8 %0, %5
+  br i1 %cmp5, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 1215, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.gen_highpart, i64 0, i64 0)) #10
+  unreachable
+
+if.end:                                           ; preds = %entry, %land.lhs.true
+  %bf.lshr8 = lshr i32 %bf.load, 16
+  %bf.clear9 = and i32 %bf.lshr8, 255
+  %call = tail call i32 @subreg_highpart_offset(i32 %mode, i32 %bf.clear9) #9
+  %call13 = tail call %struct.rtx_def* @simplify_gen_subreg(i32 %mode, %struct.rtx_def* %x, i32 %bf.clear9, i32 %call) #8
+  %cmp14 = icmp eq %struct.rtx_def* %call13, null
+  br i1 %cmp14, label %if.then25, label %land.lhs.true16
+
+land.lhs.true16:                                  ; preds = %if.end
+  %6 = bitcast %struct.rtx_def* %call13 to i32*
+  %bf.load17 = load i32* %6, align 8
+  %bf.clear18 = and i32 %bf.load17, 65535
+  %cmp19 = icmp eq i32 %bf.clear18, 66
+  br i1 %cmp19, label %if.end23, label %if.end26
+
+if.end23:                                         ; preds = %land.lhs.true16
+  %call22 = tail call %struct.rtx_def* @validize_mem(%struct.rtx_def* %call13) #8
+  %tobool24 = icmp eq %struct.rtx_def* %call22, null
+  br i1 %tobool24, label %if.then25, label %if.end26
+
+if.then25:                                        ; preds = %if.end, %if.end23
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 1227, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.gen_highpart, i64 0, i64 0)) #10
+  unreachable
+
+if.end26:                                         ; preds = %land.lhs.true16, %if.end23
+  %result.041 = phi %struct.rtx_def* [ %call22, %if.end23 ], [ %call13, %land.lhs.true16 ]
+  ret %struct.rtx_def* %result.041
+}

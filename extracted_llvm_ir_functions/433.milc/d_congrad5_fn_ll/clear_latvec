@@ -1,0 +1,116 @@
+define void @clear_latvec(i32 %v, i32 %parity) #0 {
+entry:
+  switch i32 %parity, label %sw.epilog [
+    i32 2, label %sw.bb
+    i32 1, label %sw.bb10
+    i32 3, label %sw.bb36
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %0 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %cmp90 = icmp sgt i32 %0, 0
+  br i1 %cmp90, label %for.body.lr.ph, label %sw.epilog
+
+for.body.lr.ph:                                   ; preds = %sw.bb
+  %1 = load %struct.site** @lattice, align 8, !tbaa !4
+  %idx.ext = sext i32 %v to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc7
+  %s.092 = phi %struct.site* [ %1, %for.body.lr.ph ], [ %incdec.ptr, %for.inc7 ]
+  %i.091 = phi i32 [ 0, %for.body.lr.ph ], [ %inc8, %for.inc7 ]
+  %2 = bitcast %struct.site* %s.092 to i8*
+  %add.ptr = getelementptr inbounds i8* %2, i64 %idx.ext
+  %c = bitcast i8* %add.ptr to [3 x %struct.complex]*
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body ], [ %indvars.iv.next, %for.body3 ]
+  %real = getelementptr inbounds [3 x %struct.complex]* %c, i64 0, i64 %indvars.iv, i32 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  %3 = bitcast double* %real to i8*
+  call void @llvm.memset.p0i8.i64(i8* %3, i8 0, i64 16, i32 8, i1 false)
+  br i1 %exitcond, label %for.inc7, label %for.body3
+
+for.inc7:                                         ; preds = %for.body3
+  %inc8 = add nsw i32 %i.091, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %s.092, i64 1
+  %cmp = icmp slt i32 %inc8, %0
+  br i1 %cmp, label %for.body, label %sw.epilog
+
+sw.bb10:                                          ; preds = %entry
+  %4 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %5 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp1495 = icmp slt i32 %4, %5
+  br i1 %cmp1495, label %for.body15.lr.ph, label %sw.epilog
+
+for.body15.lr.ph:                                 ; preds = %sw.bb10
+  %6 = load %struct.site** @lattice, align 8, !tbaa !4
+  %idxprom11 = sext i32 %4 to i64
+  %arrayidx12 = getelementptr inbounds %struct.site* %6, i64 %idxprom11
+  %idx.ext16 = sext i32 %v to i64
+  br label %for.body15
+
+for.body15:                                       ; preds = %for.body15.lr.ph, %for.inc32
+  %s.197 = phi %struct.site* [ %arrayidx12, %for.body15.lr.ph ], [ %incdec.ptr34, %for.inc32 ]
+  %i.196 = phi i32 [ %4, %for.body15.lr.ph ], [ %inc33, %for.inc32 ]
+  %7 = bitcast %struct.site* %s.197 to i8*
+  %add.ptr17 = getelementptr inbounds i8* %7, i64 %idx.ext16
+  %c22 = bitcast i8* %add.ptr17 to [3 x %struct.complex]*
+  br label %for.body20
+
+for.body20:                                       ; preds = %for.body20, %for.body15
+  %indvars.iv103 = phi i64 [ 0, %for.body15 ], [ %indvars.iv.next104, %for.body20 ]
+  %real28 = getelementptr inbounds [3 x %struct.complex]* %c22, i64 0, i64 %indvars.iv103, i32 0
+  %indvars.iv.next104 = add i64 %indvars.iv103, 1
+  %lftr.wideiv105 = trunc i64 %indvars.iv.next104 to i32
+  %exitcond106 = icmp eq i32 %lftr.wideiv105, 3
+  %8 = bitcast double* %real28 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %8, i8 0, i64 16, i32 8, i1 false)
+  br i1 %exitcond106, label %for.inc32, label %for.body20
+
+for.inc32:                                        ; preds = %for.body20
+  %inc33 = add nsw i32 %i.196, 1
+  %incdec.ptr34 = getelementptr inbounds %struct.site* %s.197, i64 1
+  %cmp14 = icmp slt i32 %inc33, %5
+  br i1 %cmp14, label %for.body15, label %sw.epilog
+
+sw.bb36:                                          ; preds = %entry
+  %9 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp38100 = icmp sgt i32 %9, 0
+  br i1 %cmp38100, label %for.body39.lr.ph, label %sw.epilog
+
+for.body39.lr.ph:                                 ; preds = %sw.bb36
+  %10 = load %struct.site** @lattice, align 8, !tbaa !4
+  %idx.ext40 = sext i32 %v to i64
+  br label %for.body39
+
+for.body39:                                       ; preds = %for.body39.lr.ph, %for.inc56
+  %s.2102 = phi %struct.site* [ %10, %for.body39.lr.ph ], [ %incdec.ptr58, %for.inc56 ]
+  %i.2101 = phi i32 [ 0, %for.body39.lr.ph ], [ %inc57, %for.inc56 ]
+  %11 = bitcast %struct.site* %s.2102 to i8*
+  %add.ptr41 = getelementptr inbounds i8* %11, i64 %idx.ext40
+  %c46 = bitcast i8* %add.ptr41 to [3 x %struct.complex]*
+  br label %for.body44
+
+for.body44:                                       ; preds = %for.body44, %for.body39
+  %indvars.iv107 = phi i64 [ 0, %for.body39 ], [ %indvars.iv.next108, %for.body44 ]
+  %real52 = getelementptr inbounds [3 x %struct.complex]* %c46, i64 0, i64 %indvars.iv107, i32 0
+  %indvars.iv.next108 = add i64 %indvars.iv107, 1
+  %lftr.wideiv109 = trunc i64 %indvars.iv.next108 to i32
+  %exitcond110 = icmp eq i32 %lftr.wideiv109, 3
+  %12 = bitcast double* %real52 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %12, i8 0, i64 16, i32 8, i1 false)
+  br i1 %exitcond110, label %for.inc56, label %for.body44
+
+for.inc56:                                        ; preds = %for.body44
+  %inc57 = add nsw i32 %i.2101, 1
+  %incdec.ptr58 = getelementptr inbounds %struct.site* %s.2102, i64 1
+  %cmp38 = icmp slt i32 %inc57, %9
+  br i1 %cmp38, label %for.body39, label %sw.epilog
+
+sw.epilog:                                        ; preds = %sw.bb36, %for.inc56, %sw.bb10, %for.inc32, %sw.bb, %for.inc7, %entry
+  ret void
+}

@@ -1,0 +1,127 @@
+define void @init_reload() #0 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %0, 25
+  %1 = and i32 %and, 1
+  %2 = or i32 %1, 4
+  %call = tail call %struct.rtx_def* @gen_rtx_REG(i32 %2, i32 58) #7
+  %call7 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 4) #7
+  %call8 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 75, i32 %2, %struct.rtx_def* %call, %struct.rtx_def* %call7) #7
+  %call9 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %2, %struct.rtx_def* %call8) #7
+  store i8 0, i8* @spill_indirect_levels, align 1, !tbaa !1
+  %call10109 = tail call i32 @memory_address_p(i32 2, %struct.rtx_def* %call9) #7
+  %tobool11110 = icmp eq i32 %call10109, 0
+  br i1 %tobool11110, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  %tem.0111 = phi %struct.rtx_def* [ %call15, %while.body ], [ %call9, %entry ]
+  %3 = load i8* @spill_indirect_levels, align 1, !tbaa !1
+  %inc = add i8 %3, 1
+  store i8 %inc, i8* @spill_indirect_levels, align 1, !tbaa !1
+  %4 = load i32* @target_flags, align 4, !tbaa !0
+  %and12 = lshr i32 %4, 25
+  %5 = and i32 %and12, 1
+  %6 = or i32 %5, 4
+  %call15 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %6, %struct.rtx_def* %tem.0111) #7
+  %call10 = tail call i32 @memory_address_p(i32 2, %struct.rtx_def* %call15) #7
+  %tobool11 = icmp eq i32 %call10, 0
+  br i1 %tobool11, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  %7 = load i32* @target_flags, align 4, !tbaa !0
+  %and16 = lshr i32 %7, 25
+  %8 = and i32 %and16, 1
+  %9 = or i32 %8, 4
+  %call22 = tail call %struct.rtx_def* @gen_rtx_fmt_s(i32 68, i32 %9, i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0)) #7
+  %call23 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %9, %struct.rtx_def* %call22) #7
+  %call24 = tail call i32 @memory_address_p(i32 2, %struct.rtx_def* %call23) #7
+  %conv = trunc i32 %call24 to i8
+  store i8 %conv, i8* @indirect_symref_ok, align 1, !tbaa !1
+  br label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %cmp = icmp slt i32 %inc41, 53
+  br i1 %cmp, label %for.body, label %for.end
+
+for.body:                                         ; preds = %while.end, %for.cond
+  %i.0108 = phi i32 [ 0, %while.end ], [ %inc41, %for.cond ]
+  %10 = load i32* @target_flags, align 4, !tbaa !0
+  %and26 = lshr i32 %10, 25
+  %11 = and i32 %and26, 1
+  %12 = or i32 %11, 4
+  %call32 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %12, i32 6) #7
+  %13 = load i32* @target_flags, align 4, !tbaa !0
+  %and33 = lshr i32 %13, 25
+  %14 = and i32 %and33, 1
+  %15 = or i32 %14, 4
+  %call36 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %15, i32 %i.0108) #7
+  %call37 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 75, i32 %12, %struct.rtx_def* %call32, %struct.rtx_def* %call36) #7
+  %call38 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %call37, i64 4) #7
+  %call39 = tail call i32 @memory_address_p(i32 2, %struct.rtx_def* %call38) #7
+  %tobool40 = icmp eq i32 %call39, 0
+  %inc41 = add nsw i32 %i.0108, 1
+  br i1 %tobool40, label %for.cond, label %if.then
+
+if.then:                                          ; preds = %for.body
+  store i8 1, i8* @double_reg_address_ok, align 1, !tbaa !1
+  br label %for.end
+
+for.end:                                          ; preds = %for.cond, %if.then
+  tail call void @gcc_obstack_init(%struct.obstack* @reload_obstack) #7
+  %16 = load i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 4), align 8, !tbaa !3
+  %17 = load i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %sub.ptr.lhs.cast = ptrtoint i8* %16 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %17 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp43 = icmp slt i64 %sub.ptr.sub, 0
+  br i1 %cmp43, label %if.then45, label %if.end46
+
+if.then45:                                        ; preds = %for.end
+  tail call void @_obstack_newchunk(%struct.obstack* @reload_obstack, i32 0) #7
+  %.pre = load i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 3), align 8, !tbaa !3
+  br label %if.end46
+
+if.end46:                                         ; preds = %if.then45, %for.end
+  %18 = phi i8* [ %.pre, %if.then45 ], [ %17, %for.end ]
+  %19 = load i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 2), align 8, !tbaa !3
+  %cmp49 = icmp eq i8* %18, %19
+  br i1 %cmp49, label %if.then51, label %if.end52
+
+if.then51:                                        ; preds = %if.end46
+  %bf.load = load i8* getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 10), align 8
+  %bf.set = or i8 %bf.load, 2
+  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 10), align 8
+  br label %if.end52
+
+if.end52:                                         ; preds = %if.end46, %if.then51
+  %sub.ptr.lhs.cast54 = ptrtoint i8* %18 to i64
+  %20 = load i32* getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 6), align 8, !tbaa !0
+  %conv56 = sext i32 %20 to i64
+  %add = add nsw i64 %conv56, %sub.ptr.lhs.cast54
+  %neg = xor i32 %20, -1
+  %conv58 = sext i32 %neg to i64
+  %and59 = and i64 %add, %conv58
+  %add.ptr60 = getelementptr inbounds i8* null, i64 %and59
+  store i8* %add.ptr60, i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %21 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 1), align 8, !tbaa !3
+  %sub.ptr.lhs.cast63 = ptrtoint i8* %add.ptr60 to i64
+  %sub.ptr.rhs.cast64 = ptrtoint %struct._obstack_chunk* %21 to i64
+  %sub.ptr.sub65 = sub i64 %sub.ptr.lhs.cast63, %sub.ptr.rhs.cast64
+  %22 = load i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 4), align 8, !tbaa !3
+  %sub.ptr.lhs.cast68 = ptrtoint i8* %22 to i64
+  %sub.ptr.sub70 = sub i64 %sub.ptr.lhs.cast68, %sub.ptr.rhs.cast64
+  %cmp71 = icmp sgt i64 %sub.ptr.sub65, %sub.ptr.sub70
+  br i1 %cmp71, label %if.then73, label %if.end76
+
+if.then73:                                        ; preds = %if.end52
+  store i8* %22, i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 3), align 8, !tbaa !3
+  br label %if.end76
+
+if.end76:                                         ; preds = %if.then73, %if.end52
+  %23 = phi i8* [ %22, %if.then73 ], [ %add.ptr60, %if.end52 ]
+  store i8* %23, i8** getelementptr inbounds (%struct.obstack* @reload_obstack, i64 0, i32 2), align 8, !tbaa !3
+  store i8* %19, i8** @reload_startobj, align 8, !tbaa !3
+  %call79 = tail call %struct.bitmap_head_def* @bitmap_initialize(%struct.bitmap_head_def* @spilled_pseudos) #7
+  %call80 = tail call %struct.bitmap_head_def* @bitmap_initialize(%struct.bitmap_head_def* @pseudos_counted) #7
+  ret void
+}

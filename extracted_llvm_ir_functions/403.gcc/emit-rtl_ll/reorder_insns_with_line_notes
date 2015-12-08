@@ -1,0 +1,95 @@
+define void @reorder_insns_with_line_notes(%struct.rtx_def* %from, %struct.rtx_def* %to, %struct.rtx_def* %after) #0 {
+entry:
+  %0 = load i32* @no_line_numbers, align 4, !tbaa !0
+  %tobool.i = icmp ne i32 %0, 0
+  %tobool111.i = icmp eq %struct.rtx_def* %from, null
+  %or.cond.i = or i1 %tobool.i, %tobool111.i
+  br i1 %or.cond.i, label %find_line_note.exit, label %for.body.i
+
+for.body.i:                                       ; preds = %entry, %for.inc.i
+  %insn.addr.012.i = phi %struct.rtx_def* [ %3, %for.inc.i ], [ %from, %entry ]
+  %1 = bitcast %struct.rtx_def* %insn.addr.012.i to i32*
+  %bf.load.i = load i32* %1, align 8
+  %bf.clear.i = and i32 %bf.load.i, 65535
+  %cmp.i = icmp eq i32 %bf.clear.i, 37
+  br i1 %cmp.i, label %land.lhs.true.i, label %for.inc.i
+
+land.lhs.true.i:                                  ; preds = %for.body.i
+  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %insn.addr.012.i, i64 0, i32 1, i64 4
+  %rtint.i = bitcast %union.rtunion_def* %arrayidx.i to i32*
+  %2 = load i32* %rtint.i, align 4, !tbaa !0
+  %cmp2.i = icmp sgt i32 %2, -1
+  br i1 %cmp2.i, label %find_line_note.exit, label %for.inc.i
+
+for.inc.i:                                        ; preds = %land.lhs.true.i, %for.body.i
+  %arrayidx6.i = getelementptr inbounds %struct.rtx_def* %insn.addr.012.i, i64 0, i32 1, i64 1
+  %rtx.i = bitcast %union.rtunion_def* %arrayidx6.i to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx.i, align 8, !tbaa !4
+  %tobool1.i = icmp eq %struct.rtx_def* %3, null
+  br i1 %tobool1.i, label %find_line_note.exit, label %for.body.i
+
+find_line_note.exit:                              ; preds = %land.lhs.true.i, %for.inc.i, %entry
+  %retval.0.i = phi %struct.rtx_def* [ null, %entry ], [ %insn.addr.012.i, %land.lhs.true.i ], [ null, %for.inc.i ]
+  %tobool111.i28 = icmp eq %struct.rtx_def* %after, null
+  %or.cond.i29 = or i1 %tobool.i, %tobool111.i28
+  br i1 %or.cond.i29, label %find_line_note.exit44, label %for.body.i34
+
+for.body.i34:                                     ; preds = %find_line_note.exit, %for.inc.i42
+  %insn.addr.012.i30 = phi %struct.rtx_def* [ %6, %for.inc.i42 ], [ %after, %find_line_note.exit ]
+  %4 = bitcast %struct.rtx_def* %insn.addr.012.i30 to i32*
+  %bf.load.i31 = load i32* %4, align 8
+  %bf.clear.i32 = and i32 %bf.load.i31, 65535
+  %cmp.i33 = icmp eq i32 %bf.clear.i32, 37
+  br i1 %cmp.i33, label %land.lhs.true.i38, label %for.inc.i42
+
+land.lhs.true.i38:                                ; preds = %for.body.i34
+  %arrayidx.i35 = getelementptr inbounds %struct.rtx_def* %insn.addr.012.i30, i64 0, i32 1, i64 4
+  %rtint.i36 = bitcast %union.rtunion_def* %arrayidx.i35 to i32*
+  %5 = load i32* %rtint.i36, align 4, !tbaa !0
+  %cmp2.i37 = icmp sgt i32 %5, -1
+  br i1 %cmp2.i37, label %find_line_note.exit44, label %for.inc.i42
+
+for.inc.i42:                                      ; preds = %land.lhs.true.i38, %for.body.i34
+  %arrayidx6.i39 = getelementptr inbounds %struct.rtx_def* %insn.addr.012.i30, i64 0, i32 1, i64 1
+  %rtx.i40 = bitcast %union.rtunion_def* %arrayidx6.i39 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx.i40, align 8, !tbaa !4
+  %tobool1.i41 = icmp eq %struct.rtx_def* %6, null
+  br i1 %tobool1.i41, label %find_line_note.exit44, label %for.body.i34
+
+find_line_note.exit44:                            ; preds = %land.lhs.true.i38, %for.inc.i42, %find_line_note.exit
+  %retval.0.i43 = phi %struct.rtx_def* [ null, %find_line_note.exit ], [ %insn.addr.012.i30, %land.lhs.true.i38 ], [ null, %for.inc.i42 ]
+  tail call void @reorder_insns(%struct.rtx_def* %from, %struct.rtx_def* %to, %struct.rtx_def* %after) #9
+  %cmp = icmp eq %struct.rtx_def* %retval.0.i, %retval.0.i43
+  br i1 %cmp, label %if.end16, label %if.end
+
+if.end:                                           ; preds = %find_line_note.exit44
+  %tobool = icmp eq %struct.rtx_def* %retval.0.i, null
+  br i1 %tobool, label %if.end6, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %retval.0.i, i64 0, i32 1, i64 3
+  %rtstr = bitcast %union.rtunion_def* %arrayidx to i8**
+  %7 = load i8** %rtstr, align 8, !tbaa !4
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %retval.0.i, i64 0, i32 1, i64 4
+  %rtint = bitcast %union.rtunion_def* %arrayidx4 to i32*
+  %8 = load i32* %rtint, align 4, !tbaa !0
+  %call5 = tail call %struct.rtx_def* @emit_line_note_after(i8* %7, i32 %8, %struct.rtx_def* %after) #9
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end, %if.then2
+  %tobool7 = icmp eq %struct.rtx_def* %retval.0.i43, null
+  br i1 %tobool7, label %if.end16, label %if.then8
+
+if.then8:                                         ; preds = %if.end6
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %retval.0.i43, i64 0, i32 1, i64 3
+  %rtstr11 = bitcast %union.rtunion_def* %arrayidx10 to i8**
+  %9 = load i8** %rtstr11, align 8, !tbaa !4
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %retval.0.i43, i64 0, i32 1, i64 4
+  %rtint14 = bitcast %union.rtunion_def* %arrayidx13 to i32*
+  %10 = load i32* %rtint14, align 4, !tbaa !0
+  %call15 = tail call %struct.rtx_def* @emit_line_note_after(i8* %9, i32 %10, %struct.rtx_def* %to) #9
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.end6, %find_line_note.exit44, %if.then8
+  ret void
+}

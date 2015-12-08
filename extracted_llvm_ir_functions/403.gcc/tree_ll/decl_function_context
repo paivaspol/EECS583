@@ -1,0 +1,89 @@
+define %union.tree_node* @decl_function_context(%union.tree_node* nocapture %decl) #3 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %if.else19 [
+    i32 0, label %return
+    i32 118, label %if.then6
+    i32 30, label %land.lhs.true
+  ]
+
+if.then6:                                         ; preds = %entry
+  %operands = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 2
+  %arrayidx = getelementptr inbounds i32* %operands, i64 2
+  %1 = bitcast i32* %arrayidx to %union.tree_node**
+  br label %while.cond.preheader
+
+land.lhs.true:                                    ; preds = %entry
+  %vindex = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 22
+  %2 = load %union.tree_node** %vindex, align 8, !tbaa !0
+  %tobool = icmp eq %union.tree_node* %2, null
+  br i1 %tobool, label %if.else19, label %if.then13
+
+if.then13:                                        ; preds = %land.lhs.true
+  %type = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 1
+  %3 = load %union.tree_node** %type, align 8, !tbaa !0
+  %values = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 1
+  %4 = load i8** %values, align 8
+  %value = getelementptr inbounds i8* %4, i64 32
+  %5 = bitcast i8* %value to %union.tree_node**
+  %6 = load %union.tree_node** %5, align 8, !tbaa !0
+  %type17 = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 0, i32 1
+  %7 = load %union.tree_node** %type17, align 8, !tbaa !0
+  %8 = getelementptr inbounds %union.tree_node* %7, i64 0, i32 0, i32 15
+  br label %while.cond.preheader
+
+if.else19:                                        ; preds = %entry, %land.lhs.true
+  %context21 = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 9
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.then13, %if.else19, %if.then6
+  %context.0.in.ph = phi %union.tree_node** [ %1, %if.then6 ], [ %context21, %if.else19 ], [ %8, %if.then13 ]
+  %context.046 = load %union.tree_node** %context.0.in.ph, align 8
+  %tobool2447 = icmp eq %union.tree_node* %context.046, null
+  br i1 %tobool2447, label %return, label %land.rhs
+
+land.rhs:                                         ; preds = %while.cond.preheader, %while.cond.backedge
+  %context.048 = phi %union.tree_node* [ %context.0, %while.cond.backedge ], [ %context.046, %while.cond.preheader ]
+  %code26 = getelementptr inbounds %union.tree_node* %context.048, i64 0, i32 0, i32 0, i32 2
+  %9 = bitcast [4 x i8]* %code26 to i32*
+  %bf.load27 = load i32* %9, align 8
+  %bf.clear28 = and i32 %bf.load27, 255
+  switch i32 %bf.clear28, label %if.else36 [
+    i32 30, label %return
+    i32 4, label %if.then35
+  ]
+
+if.then35:                                        ; preds = %land.rhs
+  %supercontext = getelementptr inbounds %union.tree_node* %context.048, i64 0, i32 0, i32 5
+  %10 = bitcast [8 x i8]* %supercontext to %union.tree_node**
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.then35, %cond.true.i, %cond.false.i
+  %context.0.in.be = phi %union.tree_node** [ %10, %if.then35 ], [ %12, %cond.true.i ], [ %context2.i, %cond.false.i ]
+  %context.0 = load %union.tree_node** %context.0.in.be, align 8
+  %tobool24 = icmp eq %union.tree_node* %context.0, null
+  br i1 %tobool24, label %return, label %land.rhs
+
+if.else36:                                        ; preds = %land.rhs
+  %idxprom4.i = zext i32 %bf.clear28 to i64
+  %arrayidx.i = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom4.i
+  %11 = load i8* %arrayidx.i, align 1, !tbaa !1
+  %cmp.i = icmp eq i8 %11, 116
+  br i1 %cmp.i, label %cond.true.i, label %cond.false.i
+
+cond.true.i:                                      ; preds = %if.else36
+  %context.i = getelementptr inbounds %union.tree_node* %context.048, i64 0, i32 0, i32 17
+  %12 = bitcast %struct.rtx_def** %context.i to %union.tree_node**
+  br label %while.cond.backedge
+
+cond.false.i:                                     ; preds = %if.else36
+  %context2.i = getelementptr inbounds %union.tree_node* %context.048, i64 0, i32 0, i32 9
+  br label %while.cond.backedge
+
+return:                                           ; preds = %while.cond.preheader, %land.rhs, %while.cond.backedge, %entry
+  %retval.0 = phi %union.tree_node* [ null, %entry ], [ null, %while.cond.preheader ], [ %context.048, %land.rhs ], [ null, %while.cond.backedge ]
+  ret %union.tree_node* %retval.0
+}

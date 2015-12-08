@@ -1,0 +1,24 @@
+define i32 @no_labels_between_p(%struct.rtx_def* %beg, %struct.rtx_def* %end) #0 {
+entry:
+  %cmp = icmp eq %struct.rtx_def* %beg, %end
+  br i1 %cmp, label %return, label %for.cond
+
+for.cond:                                         ; preds = %entry, %for.body
+  %beg.pn = phi %struct.rtx_def* [ %p.0, %for.body ], [ %beg, %entry ]
+  %p.0.in.in = getelementptr inbounds %struct.rtx_def* %beg.pn, i64 0, i32 1, i64 2
+  %p.0.in = bitcast %union.rtunion_def* %p.0.in.in to %struct.rtx_def**
+  %p.0 = load %struct.rtx_def** %p.0.in, align 8
+  %cmp1 = icmp eq %struct.rtx_def* %p.0, %end
+  br i1 %cmp1, label %return, label %for.body
+
+for.body:                                         ; preds = %for.cond
+  %0 = bitcast %struct.rtx_def* %p.0 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp2 = icmp eq i32 %bf.clear, 36
+  br i1 %cmp2, label %return, label %for.cond
+
+return:                                           ; preds = %for.cond, %for.body, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %for.cond ], [ 0, %for.body ]
+  ret i32 %retval.0
+}

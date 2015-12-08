@@ -1,0 +1,278 @@
+define internal fastcc void @clear_reload_reg_in_use(i32 %regno, i32 %opnum, i32 %type, i32 %mode) #0 {
+entry:
+  %regno.off = add i32 %regno, -8
+  %0 = icmp ult i32 %regno.off, 8
+  %regno.off252 = add i32 %regno, -21
+  %1 = icmp ult i32 %regno.off252, 8
+  %or.cond = or i1 %0, %1
+  %regno.off253 = add i32 %regno, -45
+  %2 = icmp ult i32 %regno.off253, 8
+  %or.cond261 = or i1 %or.cond, %2
+  %regno.off254 = add i32 %regno, -29
+  %3 = icmp ult i32 %regno.off254, 8
+  %or.cond263 = or i1 %or.cond261, %3
+  br i1 %or.cond263, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %entry
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom
+  %4 = load i32* %arrayidx, align 4, !tbaa !6
+  %cmp13 = icmp eq i32 %4, 5
+  br i1 %cmp13, label %cond.end38, label %lor.rhs
+
+lor.rhs:                                          ; preds = %cond.true
+  %cmp16 = icmp eq i32 %4, 6
+  %phitmp258 = select i1 %cmp16, i32 2, i32 1
+  br label %cond.end38
+
+cond.false:                                       ; preds = %entry
+  switch i32 %mode, label %cond.false26 [
+    i32 18, label %cond.true18
+    i32 24, label %cond.true22
+  ]
+
+cond.true18:                                      ; preds = %cond.false
+  %5 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %5, 25
+  %6 = and i32 %and, 1
+  %7 = xor i32 %6, 3
+  br label %cond.end38
+
+cond.true22:                                      ; preds = %cond.false
+  %8 = load i32* @target_flags, align 4, !tbaa !0
+  %and23 = lshr i32 %8, 24
+  %9 = and i32 %and23, 2
+  %10 = xor i32 %9, 6
+  br label %cond.end38
+
+cond.false26:                                     ; preds = %cond.false
+  %idxprom27 = sext i32 %mode to i64
+  %arrayidx28 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom27
+  %11 = load i8* %arrayidx28, align 1, !tbaa !1
+  %conv = zext i8 %11 to i32
+  %12 = load i32* @target_flags, align 4, !tbaa !0
+  %and29 = lshr i32 %12, 23
+  %13 = and i32 %and29, 4
+  %14 = add i32 %13, 4
+  %add = add i32 %conv, -1
+  %sub = add i32 %add, %14
+  %div = sdiv i32 %sub, %14
+  br label %cond.end38
+
+cond.end38:                                       ; preds = %cond.true, %lor.rhs, %cond.true18, %cond.false26, %cond.true22
+  %cond39 = phi i32 [ %7, %cond.true18 ], [ %10, %cond.true22 ], [ %div, %cond.false26 ], [ 2, %cond.true ], [ %phitmp258, %lor.rhs ]
+  switch i32 %type, label %sw.default [
+    i32 9, label %sw.epilog
+    i32 3, label %sw.bb40
+    i32 4, label %sw.bb43
+    i32 5, label %sw.bb46
+    i32 6, label %sw.bb49
+    i32 7, label %sw.bb52
+    i32 8, label %sw.epilog.thread
+    i32 10, label %sw.bb54
+    i32 0, label %sw.bb55
+    i32 1, label %sw.bb58
+    i32 2, label %sw.bb61
+  ]
+
+sw.bb40:                                          ; preds = %cond.end38
+  %idxprom41 = sext i32 %opnum to i64
+  %arrayidx42 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_input_addr, i64 0, i64 %idxprom41
+  br label %sw.epilog
+
+sw.bb43:                                          ; preds = %cond.end38
+  %idxprom44 = sext i32 %opnum to i64
+  %arrayidx45 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_inpaddr_addr, i64 0, i64 %idxprom44
+  br label %sw.epilog.thread
+
+sw.bb46:                                          ; preds = %cond.end38
+  %idxprom47 = sext i32 %opnum to i64
+  %arrayidx48 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output_addr, i64 0, i64 %idxprom47
+  br label %sw.epilog
+
+sw.bb49:                                          ; preds = %cond.end38
+  %idxprom50 = sext i32 %opnum to i64
+  %arrayidx51 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_outaddr_addr, i64 0, i64 %idxprom50
+  br label %sw.epilog.thread
+
+sw.bb52:                                          ; preds = %cond.end38
+  br label %sw.epilog
+
+sw.bb54:                                          ; preds = %cond.end38
+  br label %sw.epilog.thread
+
+sw.bb55:                                          ; preds = %cond.end38
+  %idxprom56 = sext i32 %opnum to i64
+  %arrayidx57 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_input, i64 0, i64 %idxprom56
+  br label %sw.epilog
+
+sw.bb58:                                          ; preds = %cond.end38
+  %idxprom59 = sext i32 %opnum to i64
+  %arrayidx60 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output, i64 0, i64 %idxprom59
+  br label %sw.epilog
+
+sw.bb61:                                          ; preds = %cond.end38
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %cond.end38
+  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 4328, i8* getelementptr inbounds ([24 x i8]* @__FUNCTION__.clear_reload_reg_in_use, i64 0, i64 0)) #8
+  unreachable
+
+sw.epilog.thread:                                 ; preds = %sw.bb49, %sw.bb43, %sw.bb54, %cond.end38
+  %check_any.0.ph = phi i1 [ true, %sw.bb49 ], [ true, %sw.bb43 ], [ false, %sw.bb54 ], [ false, %cond.end38 ]
+  %used_in_set.0.ph = phi i64* [ %arrayidx51, %sw.bb49 ], [ %arrayidx45, %sw.bb43 ], [ @reload_reg_used_in_other_addr, %sw.bb54 ], [ @reload_reg_used_in_op_addr_reload, %cond.end38 ]
+  %add62273 = add i32 %cond39, %regno
+  %15 = load i32* @n_reloads, align 4, !tbaa !0
+  %cmp67286293 = icmp sgt i32 %15, 0
+  br i1 %cmp67286293, label %for.body.lr.ph, label %if.end187
+
+for.body.lr.ph:                                   ; preds = %sw.epilog.thread, %cond.end170
+  %i.0285296.in = phi i32 [ %i.0287, %cond.end170 ], [ %15, %sw.epilog.thread ]
+  %start_regno.0.ph295 = phi i32 [ %start_regno.1, %cond.end170 ], [ %regno, %sw.epilog.thread ]
+  %end_regno.0.ph294 = phi i32 [ %call.end_regno.0, %cond.end170 ], [ %add62273, %sw.epilog.thread ]
+  %16 = sext i32 %i.0285296.in to i64
+  br label %for.body
+
+sw.epilog:                                        ; preds = %cond.end38, %sw.bb61, %sw.bb58, %sw.bb55, %sw.bb52, %sw.bb46, %sw.bb40
+  %used_in_set.0 = phi i64* [ @reload_reg_used_in_insn, %sw.bb61 ], [ %arrayidx60, %sw.bb58 ], [ %arrayidx57, %sw.bb55 ], [ @reload_reg_used_in_op_addr, %sw.bb52 ], [ %arrayidx48, %sw.bb46 ], [ %arrayidx42, %sw.bb40 ], [ @reload_reg_used, %cond.end38 ]
+  %add62 = add i32 %cond39, %regno
+  br label %if.end187
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %indvars.iv301 = phi i64 [ %16, %for.body.lr.ph ], [ %indvars.iv.next302, %for.cond.backedge ]
+  %i.0287.in = phi i32 [ %i.0285296.in, %for.body.lr.ph ], [ %i.0287, %for.cond.backedge ]
+  %indvars.iv.next302 = add i64 %indvars.iv301, -1
+  %i.0287 = add nsw i32 %i.0287.in, -1
+  %when_needed = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %indvars.iv.next302, i32 17
+  %17 = load i32* %when_needed, align 4, !tbaa !9
+  %cmp71 = icmp eq i32 %17, %type
+  br i1 %cmp71, label %land.lhs.true73, label %for.cond.backedge
+
+land.lhs.true73:                                  ; preds = %for.body
+  br i1 %check_any.0.ph, label %lor.lhs.false75, label %land.lhs.true81
+
+lor.lhs.false75:                                  ; preds = %land.lhs.true73
+  %opnum78 = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %indvars.iv.next302, i32 12
+  %18 = load i32* %opnum78, align 8, !tbaa !0
+  %cmp79 = icmp eq i32 %18, %opnum
+  br i1 %cmp79, label %land.lhs.true81, label %for.cond.backedge
+
+land.lhs.true81:                                  ; preds = %land.lhs.true73, %lor.lhs.false75
+  %reg_rtx = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %indvars.iv.next302, i32 11
+  %19 = load %struct.rtx_def** %reg_rtx, align 8, !tbaa !3
+  %tobool84 = icmp eq %struct.rtx_def* %19, null
+  br i1 %tobool84, label %for.cond.backedge, label %if.then85
+
+for.cond.backedge:                                ; preds = %land.lhs.true81, %for.body, %lor.lhs.false75
+  %20 = trunc i64 %indvars.iv.next302 to i32
+  %cmp67 = icmp sgt i32 %20, 0
+  br i1 %cmp67, label %for.body, label %if.end187
+
+if.then85:                                        ; preds = %land.lhs.true81
+  %call = tail call i32 @true_regnum(%struct.rtx_def* %19) #7
+  %call.off = add i32 %call, -8
+  %21 = icmp ult i32 %call.off, 8
+  %call.off255 = add i32 %call, -21
+  %22 = icmp ult i32 %call.off255, 8
+  %or.cond266 = or i1 %21, %22
+  %call.off256 = add i32 %call, -45
+  %23 = icmp ult i32 %call.off256, 8
+  %or.cond268 = or i1 %or.cond266, %23
+  %call.off257 = add i32 %call, -29
+  %24 = icmp ult i32 %call.off257, 8
+  %or.cond270 = or i1 %or.cond268, %24
+  %mode115 = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %indvars.iv.next302, i32 5
+  %25 = load i32* %mode115, align 4, !tbaa !8
+  br i1 %or.cond270, label %cond.true112, label %cond.false130
+
+cond.true112:                                     ; preds = %if.then85
+  %idxprom116 = sext i32 %25 to i64
+  %arrayidx117 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom116
+  %26 = load i32* %arrayidx117, align 4, !tbaa !6
+  %cmp118 = icmp eq i32 %26, 5
+  br i1 %cmp118, label %cond.end170, label %lor.rhs120
+
+lor.rhs120:                                       ; preds = %cond.true112
+  %cmp126 = icmp eq i32 %26, 6
+  %phitmp = select i1 %cmp126, i32 2, i32 1
+  br label %cond.end170
+
+cond.false130:                                    ; preds = %if.then85
+  switch i32 %25, label %cond.false150 [
+    i32 18, label %cond.true136
+    i32 24, label %cond.true146
+  ]
+
+cond.true136:                                     ; preds = %cond.false130
+  %27 = load i32* @target_flags, align 4, !tbaa !0
+  %and137 = lshr i32 %27, 25
+  %28 = and i32 %and137, 1
+  %29 = xor i32 %28, 3
+  br label %cond.end170
+
+cond.true146:                                     ; preds = %cond.false130
+  %30 = load i32* @target_flags, align 4, !tbaa !0
+  %and147 = lshr i32 %30, 24
+  %31 = and i32 %and147, 2
+  %32 = xor i32 %31, 6
+  br label %cond.end170
+
+cond.false150:                                    ; preds = %cond.false130
+  %idxprom154 = sext i32 %25 to i64
+  %arrayidx155 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom154
+  %33 = load i8* %arrayidx155, align 1, !tbaa !1
+  %conv156 = zext i8 %33 to i32
+  %34 = load i32* @target_flags, align 4, !tbaa !0
+  %and157 = lshr i32 %34, 23
+  %35 = and i32 %and157, 4
+  %36 = add i32 %35, 4
+  %add160 = add i32 %conv156, -1
+  %sub161 = add i32 %add160, %36
+  %div165 = sdiv i32 %sub161, %36
+  br label %cond.end170
+
+cond.end170:                                      ; preds = %cond.true112, %lor.rhs120, %cond.true136, %cond.false150, %cond.true146
+  %cond171 = phi i32 [ %29, %cond.true136 ], [ %32, %cond.true146 ], [ %div165, %cond.false150 ], [ 2, %cond.true112 ], [ %phitmp, %lor.rhs120 ]
+  %add172 = add i32 %cond171, %call
+  %cmp173 = icmp ule i32 %call, %start_regno.0.ph295
+  %cmp176 = icmp ugt i32 %add172, %start_regno.0.ph295
+  %or.cond271 = and i1 %cmp173, %cmp176
+  %start_regno.1 = select i1 %or.cond271, i32 %add172, i32 %start_regno.0.ph295
+  %cmp179 = icmp ugt i32 %call, %start_regno.1
+  %cmp182 = icmp ult i32 %call, %end_regno.0.ph294
+  %or.cond272 = and i1 %cmp179, %cmp182
+  %call.end_regno.0 = select i1 %or.cond272, i32 %call, i32 %end_regno.0.ph294
+  %cmp67286 = icmp sgt i32 %i.0287, 0
+  br i1 %cmp67286, label %for.body.lr.ph, label %if.end187
+
+if.end187:                                        ; preds = %for.cond.backedge, %cond.end170, %sw.epilog.thread, %sw.epilog
+  %used_in_set.0278 = phi i64* [ %used_in_set.0, %sw.epilog ], [ %used_in_set.0.ph, %sw.epilog.thread ], [ %used_in_set.0.ph, %cond.end170 ], [ %used_in_set.0.ph, %for.cond.backedge ]
+  %end_regno.2 = phi i32 [ %add62, %sw.epilog ], [ %add62273, %sw.epilog.thread ], [ %call.end_regno.0, %cond.end170 ], [ %end_regno.0.ph294, %for.cond.backedge ]
+  %start_regno.3 = phi i32 [ %regno, %sw.epilog ], [ %regno, %sw.epilog.thread ], [ %start_regno.1, %cond.end170 ], [ %start_regno.0.ph295, %for.cond.backedge ]
+  %cmp189281 = icmp ult i32 %start_regno.3, %end_regno.2
+  br i1 %cmp189281, label %for.body191.lr.ph, label %for.end194
+
+for.body191.lr.ph:                                ; preds = %if.end187
+  %used_in_set.0278.promoted = load i64* %used_in_set.0278, align 8, !tbaa !4
+  %37 = zext i32 %start_regno.3 to i64
+  br label %for.body191
+
+for.body191:                                      ; preds = %for.body191, %for.body191.lr.ph
+  %indvars.iv = phi i64 [ %37, %for.body191.lr.ph ], [ %indvars.iv.next, %for.body191 ]
+  %and192283 = phi i64 [ %used_in_set.0278.promoted, %for.body191.lr.ph ], [ %and192, %for.body191 ]
+  %r.0282 = phi i32 [ %start_regno.3, %for.body191.lr.ph ], [ %inc, %for.body191 ]
+  %shl = shl i64 1, %indvars.iv
+  %neg = xor i64 %shl, -1
+  %and192 = and i64 %and192283, %neg
+  %inc = add i32 %r.0282, 1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %exitcond = icmp eq i32 %inc, %end_regno.2
+  br i1 %exitcond, label %for.cond188.for.end194_crit_edge, label %for.body191
+
+for.cond188.for.end194_crit_edge:                 ; preds = %for.body191
+  store i64 %and192, i64* %used_in_set.0278, align 8, !tbaa !4
+  br label %for.end194
+
+for.end194:                                       ; preds = %for.cond188.for.end194_crit_edge, %if.end187
+  ret void
+}

@@ -1,0 +1,25 @@
+define internal fastcc void @print_wide_int(i64 %c) #0 {
+entry:
+  %0 = load %struct._IO_FILE** @asmfile, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0), i64 %c) #6
+  %cmp = icmp slt i64 %c, 0
+  %sub = sub nsw i64 0, %c
+  %sub.c = select i1 %cmp, i64 %sub, i64 %c
+  %c.lobit = lshr i64 %c, 63
+  %1 = trunc i64 %c.lobit to i32
+  %cmp19 = icmp sgt i64 %sub.c, 0
+  br i1 %cmp19, label %while.body, label %while.end
+
+while.body:                                       ; preds = %entry, %while.body
+  %c.addr.010 = phi i64 [ %div, %while.body ], [ %sub.c, %entry ]
+  %div = sdiv i64 %c.addr.010, 10
+  %cmp1 = icmp sgt i64 %c.addr.010, 9
+  br i1 %cmp1, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %entry
+  %inc2 = add nsw i32 %1, 1
+  %2 = load i32* @current_sym_nchars, align 4, !tbaa !3
+  %add = add nsw i32 %inc2, %2
+  store i32 %add, i32* @current_sym_nchars, align 4, !tbaa !3
+  ret void
+}

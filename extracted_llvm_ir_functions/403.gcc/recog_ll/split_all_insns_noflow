@@ -1,0 +1,18 @@
+define void @split_all_insns_noflow() #0 {
+entry:
+  %call = tail call %struct.rtx_def* @get_insns() #6
+  %tobool4 = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool4, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %insn.05 = phi %struct.rtx_def* [ %0, %for.body ], [ %call, %entry ]
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.05, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %call1 = tail call fastcc %struct.rtx_def* @split_insn(%struct.rtx_def* %insn.05) #7
+  %tobool = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

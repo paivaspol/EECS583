@@ -1,0 +1,29 @@
+define void @approx_cont_mgau_ci_eval(%struct.mgau_model_t* %g, float* %feat, i32* nocapture %ci_senscr, %struct.kb_t* nocapture %kb) #0 {
+entry:
+  %kbcore = getelementptr inbounds %struct.kb_t* %kb, i64 0, i32 0
+  %0 = load %struct.kbcore_t** %kbcore, align 8, !tbaa !3
+  %mdef1 = getelementptr inbounds %struct.kbcore_t* %0, i64 0, i32 1
+  %1 = load %struct.mdef_t** %mdef1, align 8, !tbaa !3
+  %cd2cisen2 = getelementptr inbounds %struct.mdef_t* %1, i64 0, i32 11
+  %2 = load i16** %cd2cisen2, align 8, !tbaa !3
+  %3 = load i16* %2, align 2, !tbaa !4
+  %cmp11 = icmp eq i16 %3, 0
+  br i1 %cmp11, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %4 = trunc i64 %indvars.iv to i32
+  %call = tail call i32 @mgau_eval(%struct.mgau_model_t* %g, i32 %4, i32* null, float* %feat) #2
+  %arrayidx5 = getelementptr inbounds i32* %ci_senscr, i64 %indvars.iv
+  store i32 %call, i32* %arrayidx5, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %arrayidx = getelementptr inbounds i16* %2, i64 %indvars.iv.next
+  %5 = load i16* %arrayidx, align 2, !tbaa !4
+  %conv = sext i16 %5 to i32
+  %6 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp eq i32 %6, %conv
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

@@ -1,0 +1,53 @@
+define void @qcdhdr_destroy_hdr(%struct.QCDheader* %hdr) #0 {
+entry:
+  %cmp = icmp eq %struct.QCDheader* %hdr, null
+  br i1 %cmp, label %return, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %ntoken = getelementptr inbounds %struct.QCDheader* %hdr, i64 0, i32 0
+  %0 = load i32* %ntoken, align 4, !tbaa !0
+  %cmp115 = icmp sgt i32 %0, 0
+  br i1 %cmp115, label %for.body.lr.ph, label %for.cond.preheader.for.end_crit_edge
+
+for.cond.preheader.for.end_crit_edge:             ; preds = %for.cond.preheader
+  %token4.pre = getelementptr inbounds %struct.QCDheader* %hdr, i64 0, i32 1
+  %value5.pre = getelementptr inbounds %struct.QCDheader* %hdr, i64 0, i32 2
+  br label %for.end
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %value = getelementptr inbounds %struct.QCDheader* %hdr, i64 0, i32 2
+  %token = getelementptr inbounds %struct.QCDheader* %hdr, i64 0, i32 1
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %1 = load i8*** %value, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i8** %1, i64 %indvars.iv
+  %2 = load i8** %arrayidx, align 8, !tbaa !3
+  tail call void @free(i8* %2) #9
+  %3 = load i8*** %token, align 8, !tbaa !3
+  %arrayidx3 = getelementptr inbounds i8** %3, i64 %indvars.iv
+  %4 = load i8** %arrayidx3, align 8, !tbaa !3
+  tail call void @free(i8* %4) #9
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %5 = load i32* %ntoken, align 4, !tbaa !0
+  %6 = trunc i64 %indvars.iv.next to i32
+  %cmp1 = icmp slt i32 %6, %5
+  br i1 %cmp1, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader.for.end_crit_edge
+  %value5.pre-phi = phi i8*** [ %value5.pre, %for.cond.preheader.for.end_crit_edge ], [ %value, %for.body ]
+  %token4.pre-phi = phi i8*** [ %token4.pre, %for.cond.preheader.for.end_crit_edge ], [ %token, %for.body ]
+  %7 = load i8*** %token4.pre-phi, align 8, !tbaa !3
+  %8 = bitcast i8** %7 to i8*
+  tail call void @free(i8* %8) #9
+  %9 = load i8*** %value5.pre-phi, align 8, !tbaa !3
+  %10 = bitcast i8** %9 to i8*
+  tail call void @free(i8* %10) #9
+  %11 = bitcast %struct.QCDheader* %hdr to i8*
+  tail call void @free(i8* %11) #9
+  br label %return
+
+return:                                           ; preds = %entry, %for.end
+  ret void
+}

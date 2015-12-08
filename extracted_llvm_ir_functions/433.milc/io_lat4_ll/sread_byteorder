@@ -1,0 +1,16 @@
+define i32 @sread_byteorder(i32 %byterevflag, %struct._IO_FILE* nocapture %fp, i8* %src, i64 %size, i8* %myname, i8* %descrip) #0 {
+entry:
+  %call = tail call i32 @sread_data(%struct._IO_FILE* %fp, i8* %src, i64 %size, i8* %myname, i8* %descrip) #8
+  %cmp = icmp eq i32 %byterevflag, 1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = bitcast i8* %src to i32*
+  %div = lshr i64 %size, 2
+  %conv = trunc i64 %div to i32
+  tail call void @byterevn(i32* %0, i32 %conv) #9
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  ret i32 %call
+}

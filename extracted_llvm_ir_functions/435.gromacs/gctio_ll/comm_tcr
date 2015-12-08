@@ -1,0 +1,43 @@
+define void @comm_tcr(%struct._IO_FILE* nocapture %log, %struct.t_commrec* nocapture %cr, %struct.t_coupl_rec** nocapture %tcr) #0 {
+entry:
+  %shit = alloca %struct.t_coupl_rec, align 8
+  %0 = bitcast %struct.t_coupl_rec* %shit to i8*
+  call void @llvm.lifetime.start(i64 288, i8* %0) #1
+  %nodeid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  %1 = load i32* %nodeid, align 4, !tbaa !0
+  %cmp = icmp eq i32 %1, 0
+  br i1 %cmp, label %land.lhs.true, label %if.else
+
+land.lhs.true:                                    ; preds = %entry
+  %threadid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
+  %2 = load i32* %threadid, align 4, !tbaa !0
+  %cmp1 = icmp eq i32 %2, 0
+  br i1 %cmp1, label %if.then, label %if.else
+
+if.then:                                          ; preds = %land.lhs.true
+  %left = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
+  %3 = load i32* %left, align 4, !tbaa !0
+  %4 = load %struct.t_coupl_rec** %tcr, align 8, !tbaa !3
+  call fastcc void @send_tcr(i32 %3, %struct.t_coupl_rec* %4) #5
+  %right = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
+  %5 = load i32* %right, align 4, !tbaa !0
+  call fastcc void @rec_tcr(i32 %5, %struct.t_coupl_rec* %shit) #5
+  br label %if.end
+
+if.else:                                          ; preds = %land.lhs.true, %entry
+  %call = call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str18, i64 0, i64 0), i32 108, i32 1, i32 288) #6
+  %6 = bitcast i8* %call to %struct.t_coupl_rec*
+  store %struct.t_coupl_rec* %6, %struct.t_coupl_rec** %tcr, align 8, !tbaa !3
+  %right2 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
+  %7 = load i32* %right2, align 4, !tbaa !0
+  call fastcc void @rec_tcr(i32 %7, %struct.t_coupl_rec* %6) #5
+  %left3 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
+  %8 = load i32* %left3, align 4, !tbaa !0
+  %9 = load %struct.t_coupl_rec** %tcr, align 8, !tbaa !3
+  call fastcc void @send_tcr(i32 %8, %struct.t_coupl_rec* %9) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  call void @llvm.lifetime.end(i64 288, i8* %0) #1
+  ret void
+}

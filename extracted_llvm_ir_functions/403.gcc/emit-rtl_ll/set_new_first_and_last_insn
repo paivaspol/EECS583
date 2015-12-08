@@ -1,0 +1,44 @@
+define void @set_new_first_and_last_insn(%struct.rtx_def* %first, %struct.rtx_def* %last) #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit = getelementptr inbounds %struct.function* %0, i64 0, i32 3
+  %1 = load %struct.emit_status** %emit, align 8, !tbaa !4
+  %x_first_insn = getelementptr inbounds %struct.emit_status* %1, i64 0, i32 2
+  store %struct.rtx_def* %first, %struct.rtx_def** %x_first_insn, align 8, !tbaa !4
+  %2 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit1 = getelementptr inbounds %struct.function* %2, i64 0, i32 3
+  %3 = load %struct.emit_status** %emit1, align 8, !tbaa !4
+  %x_last_insn = getelementptr inbounds %struct.emit_status* %3, i64 0, i32 3
+  store %struct.rtx_def* %last, %struct.rtx_def** %x_last_insn, align 8, !tbaa !4
+  %4 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit2 = getelementptr inbounds %struct.function* %4, i64 0, i32 3
+  %5 = load %struct.emit_status** %emit2, align 8, !tbaa !4
+  %x_cur_insn_uid = getelementptr inbounds %struct.emit_status* %5, i64 0, i32 6
+  store i32 0, i32* %x_cur_insn_uid, align 4, !tbaa !0
+  %tobool20 = icmp eq %struct.rtx_def* %first, null
+  br i1 %tobool20, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %6 = phi i32 [ %., %for.body ], [ 0, %entry ]
+  %insn.023 = phi %struct.rtx_def* [ %8, %for.body ], [ %first, %entry ]
+  %fld = getelementptr inbounds %struct.rtx_def* %insn.023, i64 0, i32 1
+  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*
+  %7 = load i32* %rtint, align 4, !tbaa !0
+  %cmp = icmp sgt i32 %6, %7
+  %. = select i1 %cmp, i32 %6, i32 %7
+  store i32 %., i32* %x_cur_insn_uid, align 4, !tbaa !0
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %insn.023, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %tobool = icmp eq %struct.rtx_def* %8, null
+  br i1 %tobool, label %for.cond.for.end_crit_edge, label %for.body
+
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %phitmp = add i32 %., 1
+  br label %for.end
+
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %entry
+  %.lcssa = phi i32 [ %phitmp, %for.cond.for.end_crit_edge ], [ 1, %entry ]
+  store i32 %.lcssa, i32* %x_cur_insn_uid, align 4, !tbaa !0
+  ret void
+}

@@ -1,0 +1,28 @@
+define internal fastcc %struct.rtx_def* @get_subtarget(%struct.rtx_def* %x) #0 {
+entry:
+  %cmp = icmp eq %struct.rtx_def* %x, null
+  br i1 %cmp, label %cond.end, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %1 = and i32 %bf.load, 67174399
+  %2 = icmp eq i32 %1, 61
+  br i1 %2, label %lor.lhs.false5, label %cond.end
+
+lor.lhs.false5:                                   ; preds = %lor.lhs.false
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp6 = icmp ult i32 %3, 53
+  br i1 %cmp6, label %cond.end, label %lor.lhs.false7
+
+lor.lhs.false7:                                   ; preds = %lor.lhs.false5
+  %call = tail call i32 @preserve_subexpressions_p() #8
+  %tobool8 = icmp ne i32 %call, 0
+  %. = select i1 %tobool8, %struct.rtx_def* null, %struct.rtx_def* %x
+  ret %struct.rtx_def* %.
+
+cond.end:                                         ; preds = %lor.lhs.false, %entry, %lor.lhs.false5
+  ret %struct.rtx_def* null
+}

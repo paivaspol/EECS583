@@ -1,0 +1,18 @@
+define internal fastcc void @maybe_wrap_text(%struct.output_buffer* %buffer, i8* %start, i8* %end) #2 {
+entry:
+  %ideal_maximum_length.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 2
+  %0 = load i32* %ideal_maximum_length.i, align 4, !tbaa !0
+  %cmp.i = icmp sgt i32 %0, 0
+  br i1 %cmp.i, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call fastcc void @wrap_text(%struct.output_buffer* %buffer, i8* %start, i8* %end) #11
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  tail call void @output_append(%struct.output_buffer* %buffer, i8* %start, i8* %end) #11
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void
+}

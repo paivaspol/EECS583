@@ -1,0 +1,23 @@
+define internal fastcc void @write_props(%struct._IO_FILE* %fp, i32 %nprop, %struct.t_prop* %props) #0 {
+entry:
+  %tobool = icmp ne %struct._IO_FILE* %fp, null
+  %cmp13 = icmp sgt i32 %nprop, 0
+  %or.cond = and i1 %tobool, %cmp13
+  br i1 %or.cond, label %for.body, label %if.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arraydecay = getelementptr inbounds %struct.t_prop* %props, i64 %indvars.iv, i32 1, i64 0
+  %arraydecay3 = getelementptr inbounds %struct.t_prop* %props, i64 %indvars.iv, i32 0, i64 0
+  %prop = getelementptr inbounds %struct.t_prop* %props, i64 %indvars.iv, i32 2
+  %0 = load float* %prop, align 4, !tbaa !4
+  %conv = fpext float %0 to double
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([18 x i8]* @.str16, i64 0, i64 0), i8* %arraydecay, i8* %arraydecay3, double %conv) #8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nprop
+  br i1 %exitcond, label %if.end, label %for.body
+
+if.end:                                           ; preds = %entry, %for.body
+  ret void
+}

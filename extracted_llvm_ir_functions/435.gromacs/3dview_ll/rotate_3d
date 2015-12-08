@@ -1,0 +1,53 @@
+define void @rotate_3d(%struct.t_3dview* nocapture %view, i32 %axis, i32 %bPositive) #0 {
+entry:
+  %m4 = alloca [4 x [4 x float]], align 16
+  %0 = bitcast [4 x [4 x float]]* %m4 to i8*
+  call void @llvm.lifetime.start(i64 64, i8* %0) #3
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arraydecay = getelementptr inbounds [3 x [4 x [4 x float]]]* @rotate_3d.RotP, i64 0, i64 %indvars.iv, i64 0
+  %1 = trunc i64 %indvars.iv to i32
+  call void @rotate(i32 %1, float 0x3FD0C15240000000, [4 x float]* %arraydecay) #5
+  %arraydecay3 = getelementptr inbounds [3 x [4 x [4 x float]]]* @rotate_3d.RotM, i64 0, i64 %indvars.iv, i64 0
+  call void @rotate(i32 %1, float 0xBFD0C15240000000, [4 x float]* %arraydecay3) #5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv60 = trunc i64 %indvars.iv.next to i32
+  %exitcond61 = icmp eq i32 %lftr.wideiv60, 3
+  br i1 %exitcond61, label %if.end, label %for.body
+
+if.end:                                           ; preds = %for.body
+  %tobool4 = icmp eq i32 %bPositive, 0
+  %arraydecay6 = getelementptr inbounds [4 x [4 x float]]* %m4, i64 0, i64 0
+  %arraydecay7 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 4, i64 0
+  %idxprom8 = sext i32 %axis to i64
+  br i1 %tobool4, label %if.else, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %arraydecay10 = getelementptr inbounds [3 x [4 x [4 x float]]]* @rotate_3d.RotP, i64 0, i64 %idxprom8, i64 0
+  call void @mult_matrix([4 x float]* %arraydecay6, [4 x float]* %arraydecay7, [4 x float]* %arraydecay10) #5
+  br label %for.cond21.preheader
+
+if.else:                                          ; preds = %if.end
+  %arraydecay16 = getelementptr inbounds [3 x [4 x [4 x float]]]* @rotate_3d.RotM, i64 0, i64 %idxprom8, i64 0
+  call void @mult_matrix([4 x float]* %arraydecay6, [4 x float]* %arraydecay7, [4 x float]* %arraydecay16) #5
+  br label %for.cond21.preheader
+
+for.cond21.preheader:                             ; preds = %if.then5, %if.else, %for.cond21.preheader
+  %indvar = phi i64 [ %indvar.next, %for.cond21.preheader ], [ 0, %if.else ], [ 0, %if.then5 ]
+  %scevgep = getelementptr %struct.t_3dview* %view, i64 0, i32 4, i64 %indvar, i64 0
+  %scevgep57 = bitcast float* %scevgep to i8*
+  %scevgep58 = getelementptr [4 x [4 x float]]* %m4, i64 0, i64 %indvar, i64 0
+  %scevgep5859 = bitcast float* %scevgep58 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %scevgep57, i8* %scevgep5859, i64 16, i32 4, i1 false)
+  %indvar.next = add i64 %indvar, 1
+  %lftr.wideiv = trunc i64 %indvar.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.end38, label %for.cond21.preheader
+
+for.end38:                                        ; preds = %for.cond21.preheader
+  call void @calculate_view(%struct.t_3dview* %view) #5
+  call void @llvm.lifetime.end(i64 64, i8* %0) #3
+  ret void
+}

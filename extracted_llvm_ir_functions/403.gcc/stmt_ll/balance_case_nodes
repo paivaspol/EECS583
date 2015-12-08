@@ -1,0 +1,242 @@
+define internal fastcc void @balance_case_nodes(%struct.case_node** nocapture %head, %struct.case_node* %parent) #0 {
+entry:
+  %0 = load %struct.case_node** %head, align 8, !tbaa !0
+  %tobool198 = icmp eq %struct.case_node* %0, null
+  br i1 %tobool198, label %if.end110, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %entry, %if.end93
+  %1 = phi %struct.case_node* [ %35, %if.end93 ], [ %0, %entry ]
+  %parent.tr201 = phi %struct.case_node* [ %34, %if.end93 ], [ %parent, %entry ]
+  %head.tr199 = phi %struct.case_node** [ %right97, %if.end93 ], [ %head, %entry ]
+  %tobool1175 = icmp eq %struct.case_node* %1, null
+  br i1 %tobool1175, label %if.else98, label %while.body
+
+while.body:                                       ; preds = %while.cond.preheader, %if.end21
+  %np.0179 = phi %struct.case_node* [ %11, %if.end21 ], [ %1, %while.cond.preheader ]
+  %ranges.0178 = phi i32 [ %ranges.1165, %if.end21 ], [ 0, %while.cond.preheader ]
+  %i.0177 = phi i32 [ %inc22, %if.end21 ], [ 0, %while.cond.preheader ]
+  %cost.0176 = phi i32 [ %cost.2, %if.end21 ], [ 0, %while.cond.preheader ]
+  %low = getelementptr inbounds %struct.case_node* %np.0179, i64 0, i32 3
+  %2 = load %union.tree_node** %low, align 8, !tbaa !0
+  %high = getelementptr inbounds %struct.case_node* %np.0179, i64 0, i32 4
+  %3 = load %union.tree_node** %high, align 8, !tbaa !0
+  %call = tail call i32 @tree_int_cst_equal(%union.tree_node* %2, %union.tree_node* %3) #7
+  %tobool2 = icmp eq i32 %call, 0
+  br i1 %tobool2, label %if.then3, label %if.end10
+
+if.then3:                                         ; preds = %while.body
+  %inc = add nsw i32 %ranges.0178, 1
+  %4 = load i32* @use_cost_table, align 4, !tbaa !4
+  %tobool4 = icmp eq i32 %4, 0
+  br i1 %tobool4, label %if.end21, label %if.end10.thread
+
+if.end10.thread:                                  ; preds = %if.then3
+  %5 = load %union.tree_node** %high, align 8, !tbaa !0
+  %int_cst7 = getelementptr inbounds %union.tree_node* %5, i64 0, i32 0, i32 2
+  %low8 = bitcast i32* %int_cst7 to i64*
+  %6 = load i64* %low8, align 8, !tbaa !3
+  %add = add i64 %6, 1
+  %arrayidx = getelementptr inbounds [129 x i16]* @cost_table_, i64 0, i64 %add
+  %7 = load i16* %arrayidx, align 2, !tbaa !6
+  %conv = sext i16 %7 to i32
+  %add9 = add nsw i32 %conv, %cost.0176
+  br label %if.then12
+
+if.end10:                                         ; preds = %while.body
+  %.pr.pre = load i32* @use_cost_table, align 4, !tbaa !4
+  %tobool11 = icmp eq i32 %.pr.pre, 0
+  br i1 %tobool11, label %if.end21, label %if.then12
+
+if.then12:                                        ; preds = %if.end10.thread, %if.end10
+  %ranges.1.ph214 = phi i32 [ %inc, %if.end10.thread ], [ %ranges.0178, %if.end10 ]
+  %cost.1.ph213 = phi i32 [ %add9, %if.end10.thread ], [ %cost.0176, %if.end10 ]
+  %8 = load %union.tree_node** %low, align 8, !tbaa !0
+  %int_cst15 = getelementptr inbounds %union.tree_node* %8, i64 0, i32 0, i32 2
+  %low16 = bitcast i32* %int_cst15 to i64*
+  %9 = load i64* %low16, align 8, !tbaa !3
+  %add17 = add i64 %9, 1
+  %arrayidx18 = getelementptr inbounds [129 x i16]* @cost_table_, i64 0, i64 %add17
+  %10 = load i16* %arrayidx18, align 2, !tbaa !6
+  %conv19 = sext i16 %10 to i32
+  %add20 = add nsw i32 %conv19, %cost.1.ph213
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then3, %if.end10, %if.then12
+  %ranges.1165 = phi i32 [ %ranges.1.ph214, %if.then12 ], [ %ranges.0178, %if.end10 ], [ %inc, %if.then3 ]
+  %cost.2 = phi i32 [ %add20, %if.then12 ], [ %cost.0176, %if.end10 ], [ %cost.0176, %if.then3 ]
+  %inc22 = add nsw i32 %i.0177, 1
+  %right = getelementptr inbounds %struct.case_node* %np.0179, i64 0, i32 1
+  %11 = load %struct.case_node** %right, align 8, !tbaa !0
+  %tobool1 = icmp eq %struct.case_node* %11, null
+  br i1 %tobool1, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.end21
+  %.pre = load %struct.case_node** %head.tr199, align 8, !tbaa !0
+  %cmp = icmp sgt i32 %i.0177, 1
+  br i1 %cmp, label %if.then24, label %if.else98
+
+if.then24:                                        ; preds = %while.end
+  %12 = load i32* @use_cost_table, align 4, !tbaa !4
+  %tobool25 = icmp eq i32 %12, 0
+  br i1 %tobool25, label %if.else, label %if.then26
+
+if.then26:                                        ; preds = %if.then24
+  %add27 = add nsw i32 %cost.2, 1
+  %div = sdiv i32 %add27, 2
+  br label %while.body29
+
+while.body29:                                     ; preds = %if.then26, %if.end54
+  %13 = phi %struct.case_node* [ %.pre, %if.then26 ], [ %.pre209, %if.end54 ]
+  %i.1 = phi i32 [ %div, %if.then26 ], [ %sub50, %if.end54 ]
+  %npp.0 = phi %struct.case_node** [ %head.tr199, %if.then26 ], [ %right55, %if.end54 ]
+  %n_moved.0 = phi i32 [ 0, %if.then26 ], [ %add56, %if.end54 ]
+  %low30 = getelementptr inbounds %struct.case_node* %13, i64 0, i32 3
+  %14 = load %union.tree_node** %low30, align 8, !tbaa !0
+  %high31 = getelementptr inbounds %struct.case_node* %13, i64 0, i32 4
+  %15 = load %union.tree_node** %high31, align 8, !tbaa !0
+  %call32 = tail call i32 @tree_int_cst_equal(%union.tree_node* %14, %union.tree_node* %15) #7
+  %tobool33 = icmp eq i32 %call32, 0
+  %16 = load %struct.case_node** %npp.0, align 8, !tbaa !0
+  br i1 %tobool33, label %if.then34, label %if.end42
+
+if.then34:                                        ; preds = %while.body29
+  %high35 = getelementptr inbounds %struct.case_node* %16, i64 0, i32 4
+  %17 = load %union.tree_node** %high35, align 8, !tbaa !0
+  %int_cst37 = getelementptr inbounds %union.tree_node* %17, i64 0, i32 0, i32 2
+  %low38 = bitcast i32* %int_cst37 to i64*
+  %18 = load i64* %low38, align 8, !tbaa !3
+  %add39 = add i64 %18, 1
+  %arrayidx40 = getelementptr inbounds [129 x i16]* @cost_table_, i64 0, i64 %add39
+  %19 = load i16* %arrayidx40, align 2, !tbaa !6
+  %conv41 = sext i16 %19 to i32
+  %sub = sub nsw i32 %i.1, %conv41
+  br label %if.end42
+
+if.end42:                                         ; preds = %while.body29, %if.then34
+  %i.2 = phi i32 [ %sub, %if.then34 ], [ %i.1, %while.body29 ]
+  %low43 = getelementptr inbounds %struct.case_node* %16, i64 0, i32 3
+  %20 = load %union.tree_node** %low43, align 8, !tbaa !0
+  %int_cst45 = getelementptr inbounds %union.tree_node* %20, i64 0, i32 0, i32 2
+  %low46 = bitcast i32* %int_cst45 to i64*
+  %21 = load i64* %low46, align 8, !tbaa !3
+  %add47 = add i64 %21, 1
+  %arrayidx48 = getelementptr inbounds [129 x i16]* @cost_table_, i64 0, i64 %add47
+  %22 = load i16* %arrayidx48, align 2, !tbaa !6
+  %conv49 = sext i16 %22 to i32
+  %sub50 = sub nsw i32 %i.2, %conv49
+  %cmp51 = icmp slt i32 %sub50, 1
+  br i1 %cmp51, label %while.end57, label %if.end54
+
+if.end54:                                         ; preds = %if.end42
+  %right55 = getelementptr inbounds %struct.case_node* %16, i64 0, i32 1
+  %add56 = add nsw i32 %n_moved.0, 1
+  %.pre209 = load %struct.case_node** %right55, align 8, !tbaa !0
+  br label %while.body29
+
+while.end57:                                      ; preds = %if.end42
+  %cmp58 = icmp eq i32 %n_moved.0, 0
+  br i1 %cmp58, label %if.then60, label %if.end93
+
+if.then60:                                        ; preds = %while.end57
+  %23 = load %struct.case_node** %head.tr199, align 8, !tbaa !0
+  %parent61 = getelementptr inbounds %struct.case_node* %23, i64 0, i32 2
+  store %struct.case_node* %parent.tr201, %struct.case_node** %parent61, align 8, !tbaa !0
+  %left62 = getelementptr inbounds %struct.case_node* %23, i64 0, i32 0
+  tail call fastcc void @balance_case_nodes(%struct.case_node** %left62, %struct.case_node* %23) #9
+  %right63166 = getelementptr inbounds %struct.case_node* %23, i64 0, i32 1
+  %24 = load %struct.case_node** %right63166, align 8, !tbaa !0
+  %tobool64167 = icmp eq %struct.case_node* %24, null
+  br i1 %tobool64167, label %if.end110, label %for.body
+
+for.body:                                         ; preds = %if.then60, %for.body
+  %25 = phi %struct.case_node* [ %27, %for.body ], [ %24, %if.then60 ]
+  %right63169 = phi %struct.case_node** [ %right63, %for.body ], [ %right63166, %if.then60 ]
+  %np.1168 = phi %struct.case_node* [ %26, %for.body ], [ %23, %if.then60 ]
+  %parent66 = getelementptr inbounds %struct.case_node* %25, i64 0, i32 2
+  store %struct.case_node* %np.1168, %struct.case_node** %parent66, align 8, !tbaa !0
+  %26 = load %struct.case_node** %right63169, align 8, !tbaa !0
+  %right63 = getelementptr inbounds %struct.case_node* %26, i64 0, i32 1
+  %27 = load %struct.case_node** %right63, align 8, !tbaa !0
+  %tobool64 = icmp eq %struct.case_node* %27, null
+  br i1 %tobool64, label %if.end110, label %for.body
+
+if.else:                                          ; preds = %if.then24
+  %cmp69 = icmp eq i32 %inc22, 3
+  br i1 %cmp69, label %if.then71, label %if.else73
+
+if.then71:                                        ; preds = %if.else
+  %right72 = getelementptr inbounds %struct.case_node* %.pre, i64 0, i32 1
+  br label %if.end93
+
+if.else73:                                        ; preds = %if.else
+  %add74 = add i32 %i.0177, 2
+  %add75 = add i32 %add74, %ranges.1165
+  %div76 = sdiv i32 %add75, 2
+  %low79182 = getelementptr inbounds %struct.case_node* %.pre, i64 0, i32 3
+  %28 = load %union.tree_node** %low79182, align 8, !tbaa !0
+  %high80183 = getelementptr inbounds %struct.case_node* %.pre, i64 0, i32 4
+  %29 = load %union.tree_node** %high80183, align 8, !tbaa !0
+  %call81184 = tail call i32 @tree_int_cst_equal(%union.tree_node* %28, %union.tree_node* %29) #7
+  %tobool82185 = icmp eq i32 %call81184, 0
+  %dec186 = sext i1 %tobool82185 to i32
+  %dec.i.3187 = add nsw i32 %dec186, %div76
+  %cmp86188 = icmp slt i32 %dec.i.3187, 2
+  br i1 %cmp86188, label %if.end93, label %if.end89
+
+if.end89:                                         ; preds = %if.else73, %if.end89
+  %dec.i.3190 = phi i32 [ %dec.i.3, %if.end89 ], [ %dec.i.3187, %if.else73 ]
+  %npp.1189 = phi %struct.case_node** [ %right90, %if.end89 ], [ %head.tr199, %if.else73 ]
+  %dec85 = add nsw i32 %dec.i.3190, -1
+  %30 = load %struct.case_node** %npp.1189, align 8, !tbaa !0
+  %right90 = getelementptr inbounds %struct.case_node* %30, i64 0, i32 1
+  %31 = load %struct.case_node** %right90, align 8, !tbaa !0
+  %low79 = getelementptr inbounds %struct.case_node* %31, i64 0, i32 3
+  %32 = load %union.tree_node** %low79, align 8, !tbaa !0
+  %high80 = getelementptr inbounds %struct.case_node* %31, i64 0, i32 4
+  %33 = load %union.tree_node** %high80, align 8, !tbaa !0
+  %call81 = tail call i32 @tree_int_cst_equal(%union.tree_node* %32, %union.tree_node* %33) #7
+  %tobool82 = icmp eq i32 %call81, 0
+  %dec = sext i1 %tobool82 to i32
+  %dec.i.3 = add nsw i32 %dec, %dec85
+  %cmp86 = icmp slt i32 %dec.i.3, 2
+  br i1 %cmp86, label %if.end93, label %if.end89
+
+if.end93:                                         ; preds = %if.else73, %if.end89, %if.then71, %while.end57
+  %npp.2 = phi %struct.case_node** [ %npp.0, %while.end57 ], [ %right72, %if.then71 ], [ %head.tr199, %if.else73 ], [ %right90, %if.end89 ]
+  %34 = load %struct.case_node** %npp.2, align 8, !tbaa !0
+  store %struct.case_node* %34, %struct.case_node** %head.tr199, align 8, !tbaa !0
+  store %struct.case_node* null, %struct.case_node** %npp.2, align 8, !tbaa !0
+  %parent94 = getelementptr inbounds %struct.case_node* %34, i64 0, i32 2
+  store %struct.case_node* %parent.tr201, %struct.case_node** %parent94, align 8, !tbaa !0
+  %left95 = getelementptr inbounds %struct.case_node* %34, i64 0, i32 0
+  store %struct.case_node* %.pre, %struct.case_node** %left95, align 8, !tbaa !0
+  tail call fastcc void @balance_case_nodes(%struct.case_node** %left95, %struct.case_node* %34) #9
+  %right97 = getelementptr inbounds %struct.case_node* %34, i64 0, i32 1
+  %35 = load %struct.case_node** %right97, align 8, !tbaa !0
+  %tobool = icmp eq %struct.case_node* %35, null
+  br i1 %tobool, label %if.end110, label %while.cond.preheader
+
+if.else98:                                        ; preds = %while.cond.preheader, %while.end
+  %36 = phi %struct.case_node* [ %.pre, %while.end ], [ null, %while.cond.preheader ]
+  %parent99 = getelementptr inbounds %struct.case_node* %36, i64 0, i32 2
+  store %struct.case_node* %parent.tr201, %struct.case_node** %parent99, align 8, !tbaa !0
+  %right101171 = getelementptr inbounds %struct.case_node* %36, i64 0, i32 1
+  %37 = load %struct.case_node** %right101171, align 8, !tbaa !0
+  %tobool102172 = icmp eq %struct.case_node* %37, null
+  br i1 %tobool102172, label %if.end110, label %for.body103
+
+for.body103:                                      ; preds = %if.else98, %for.body103
+  %38 = phi %struct.case_node* [ %40, %for.body103 ], [ %37, %if.else98 ]
+  %right101174 = phi %struct.case_node** [ %right101, %for.body103 ], [ %right101171, %if.else98 ]
+  %np.2173 = phi %struct.case_node* [ %39, %for.body103 ], [ %36, %if.else98 ]
+  %parent105 = getelementptr inbounds %struct.case_node* %38, i64 0, i32 2
+  store %struct.case_node* %np.2173, %struct.case_node** %parent105, align 8, !tbaa !0
+  %39 = load %struct.case_node** %right101174, align 8, !tbaa !0
+  %right101 = getelementptr inbounds %struct.case_node* %39, i64 0, i32 1
+  %40 = load %struct.case_node** %right101, align 8, !tbaa !0
+  %tobool102 = icmp eq %struct.case_node* %40, null
+  br i1 %tobool102, label %if.end110, label %for.body103
+
+if.end110:                                        ; preds = %entry, %if.end93, %if.else98, %for.body103, %if.then60, %for.body
+  ret void
+}

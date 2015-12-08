@@ -1,0 +1,18 @@
+define i64 @gmx_fio_ftell(i32 %fio) #1 {
+entry:
+  tail call fastcc void @_gmx_fio_check(i32 %fio, i32 843) #9
+  %idxprom = sext i32 %fio to i64
+  %0 = load %struct.t_fileio** @FIO, align 8, !tbaa !3
+  %fp = getelementptr inbounds %struct.t_fileio* %0, i64 %idxprom, i32 7
+  %1 = load %struct._IO_FILE** %fp, align 8, !tbaa !3
+  %tobool = icmp eq %struct._IO_FILE* %1, null
+  br i1 %tobool, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i64 @ftell(%struct._IO_FILE* %1) #7
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i64 [ %call, %if.then ], [ 0, %entry ]
+  ret i64 %retval.0
+}

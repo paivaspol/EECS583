@@ -1,0 +1,216 @@
+define i32 @ix86_data_alignment(%union.tree_node* nocapture %type, i32 %align) #2 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %bf.clear.off = add i32 %bf.clear, -18
+  %switch = icmp ult i32 %bf.clear.off, 5
+  br i1 %switch, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %size = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 2
+  %1 = bitcast i32* %size to %union.tree_node**
+  %2 = load %union.tree_node** %1, align 8, !tbaa !4
+  %tobool = icmp eq %union.tree_node* %2, null
+  br i1 %tobool, label %if.end, label %land.lhs.true25
+
+land.lhs.true25:                                  ; preds = %land.lhs.true
+  %code29 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %code29 to i32*
+  %bf.load30 = load i32* %3, align 8
+  %bf.clear31 = and i32 %bf.load30, 255
+  %cmp32 = icmp eq i32 %bf.clear31, 25
+  br i1 %cmp32, label %land.lhs.true33, label %if.end
+
+land.lhs.true33:                                  ; preds = %land.lhs.true25
+  %int_cst36 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 2
+  %low = bitcast i32* %int_cst36 to i64*
+  %4 = load i64* %low, align 8, !tbaa !14
+  %cmp37 = icmp ugt i64 %4, 255
+  br i1 %cmp37, label %land.lhs.true44, label %lor.lhs.false38
+
+lor.lhs.false38:                                  ; preds = %land.lhs.true33
+  %high = getelementptr inbounds i32* %int_cst36, i64 2
+  %5 = bitcast i32* %high to i64*
+  %6 = load i64* %5, align 8, !tbaa !14
+  %tobool43 = icmp ne i64 %6, 0
+  %cmp45 = icmp slt i32 %align, 256
+  %or.cond = and i1 %tobool43, %cmp45
+  br i1 %or.cond, label %return, label %if.end
+
+land.lhs.true44:                                  ; preds = %land.lhs.true33
+  %cmp45.old = icmp slt i32 %align, 256
+  br i1 %cmp45.old, label %return, label %if.end
+
+if.end:                                           ; preds = %entry, %lor.lhs.false38, %land.lhs.true, %land.lhs.true44, %land.lhs.true25
+  %7 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %7, 33554432
+  %tobool46 = icmp eq i32 %and, 0
+  %switch.not = xor i1 %switch, true
+  %brmerge = or i1 %tobool46, %switch.not
+  br i1 %brmerge, label %if.end107, label %land.lhs.true77
+
+land.lhs.true77:                                  ; preds = %if.end
+  %size79 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 2
+  %8 = bitcast i32* %size79 to %union.tree_node**
+  %9 = load %union.tree_node** %8, align 8, !tbaa !4
+  %tobool80 = icmp eq %union.tree_node* %9, null
+  br i1 %tobool80, label %if.end107, label %land.lhs.true81
+
+land.lhs.true81:                                  ; preds = %land.lhs.true77
+  %code85 = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 2
+  %10 = bitcast [4 x i8]* %code85 to i32*
+  %bf.load86 = load i32* %10, align 8
+  %bf.clear87 = and i32 %bf.load86, 255
+  %cmp88 = icmp eq i32 %bf.clear87, 25
+  br i1 %cmp88, label %land.lhs.true89, label %if.end107
+
+land.lhs.true89:                                  ; preds = %land.lhs.true81
+  %int_cst93 = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 2
+  %low94 = bitcast i32* %int_cst93 to i64*
+  %11 = load i64* %low94, align 8, !tbaa !14
+  %cmp95 = icmp ugt i64 %11, 127
+  br i1 %cmp95, label %land.lhs.true103, label %lor.lhs.false96
+
+lor.lhs.false96:                                  ; preds = %land.lhs.true89
+  %high101 = getelementptr inbounds i32* %int_cst93, i64 2
+  %12 = bitcast i32* %high101 to i64*
+  %13 = load i64* %12, align 8, !tbaa !14
+  %tobool102 = icmp ne i64 %13, 0
+  %cmp104 = icmp slt i32 %align, 128
+  %or.cond403 = and i1 %tobool102, %cmp104
+  br i1 %or.cond403, label %return, label %if.end107
+
+land.lhs.true103:                                 ; preds = %land.lhs.true89
+  %cmp104.old = icmp slt i32 %align, 128
+  br i1 %cmp104.old, label %return, label %if.end107
+
+if.end107:                                        ; preds = %if.end, %lor.lhs.false96, %land.lhs.true77, %land.lhs.true81, %land.lhs.true103
+  switch i32 %bf.clear, label %if.end348 [
+    i32 18, label %if.then113
+    i32 8, label %if.then177
+    i32 20, label %land.lhs.true216
+    i32 21, label %land.lhs.true216
+    i32 22, label %land.lhs.true216
+    i32 7, label %if.then296
+    i32 9, label %if.then296
+    i32 6, label %if.then296
+  ]
+
+if.then113:                                       ; preds = %if.end107
+  %type115 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 1
+  %14 = load %union.tree_node** %type115, align 8, !tbaa !4
+  %type116 = bitcast %union.tree_node* %14 to %struct.tree_type*
+  %mode = getelementptr inbounds %struct.tree_type* %type116, i64 0, i32 6
+  %15 = bitcast [4 x i8]* %mode to i32*
+  %bf.load117 = load i32* %15, align 4
+  %bf.clear118 = and i32 %bf.load117, 65024
+  %cmp119 = icmp eq i32 %bf.clear118, 8192
+  %cmp121 = icmp slt i32 %align, 64
+  %or.cond404 = and i1 %cmp119, %cmp121
+  br i1 %or.cond404, label %return, label %if.end123
+
+if.end123:                                        ; preds = %if.then113
+  %bf.lshr129 = lshr i32 %bf.load117, 9
+  %bf.clear130 = and i32 %bf.lshr129, 127
+  switch i32 %bf.clear130, label %if.end348 [
+    i32 17, label %land.lhs.true168
+    i32 18, label %land.lhs.true168
+    i32 6, label %land.lhs.true168
+    i32 46, label %land.lhs.true168
+    i32 37, label %land.lhs.true168
+  ]
+
+land.lhs.true168:                                 ; preds = %if.end123, %if.end123, %if.end123, %if.end123, %if.end123
+  %cmp169 = icmp slt i32 %align, 128
+  br i1 %cmp169, label %return, label %if.end348
+
+if.then177:                                       ; preds = %if.end107
+  %type178 = bitcast %union.tree_node* %type to %struct.tree_type*
+  %mode179 = getelementptr inbounds %struct.tree_type* %type178, i64 0, i32 6
+  %16 = bitcast [4 x i8]* %mode179 to i32*
+  %bf.load180 = load i32* %16, align 4
+  %bf.clear182 = and i32 %bf.load180, 65024
+  %cmp183 = icmp eq i32 %bf.clear182, 11264
+  %cmp185 = icmp slt i32 %align, 64
+  %or.cond405 = and i1 %cmp183, %cmp185
+  br i1 %or.cond405, label %return, label %if.end187
+
+if.end187:                                        ; preds = %if.then177
+  %cmp193 = icmp eq i32 %bf.clear182, 11776
+  %cmp195 = icmp slt i32 %align, 128
+  %or.cond406 = and i1 %cmp193, %cmp195
+  br i1 %or.cond406, label %return, label %if.end348
+
+land.lhs.true216:                                 ; preds = %if.end107, %if.end107, %if.end107
+  %values = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 1
+  %17 = load i8** %values, align 8
+  %tobool218 = icmp eq i8* %17, null
+  br i1 %tobool218, label %if.else278, label %if.then219
+
+if.then219:                                       ; preds = %land.lhs.true216
+  %mode222 = getelementptr inbounds i8* %17, i64 48
+  %18 = bitcast i8* %mode222 to i64*
+  %bf.load223 = load i64* %18, align 8
+  %bf.cast = and i64 %bf.load223, 255
+  %cmp225 = icmp eq i64 %bf.cast, 16
+  %cmp227 = icmp slt i32 %align, 64
+  %or.cond407 = and i1 %cmp225, %cmp227
+  br i1 %or.cond407, label %return, label %if.end229
+
+if.end229:                                        ; preds = %if.then219
+  %bf.load234.tr = trunc i64 %bf.load223 to i32
+  %bf.cast236 = and i32 %bf.load234.tr, 255
+  switch i32 %bf.cast236, label %if.end348 [
+    i32 17, label %land.lhs.true274
+    i32 18, label %land.lhs.true274
+    i32 6, label %land.lhs.true274
+    i32 46, label %land.lhs.true274
+    i32 37, label %land.lhs.true274
+  ]
+
+land.lhs.true274:                                 ; preds = %if.end229, %if.end229, %if.end229, %if.end229, %if.end229
+  %cmp275 = icmp slt i32 %align, 128
+  br i1 %cmp275, label %return, label %if.end348
+
+if.else278:                                       ; preds = %land.lhs.true216
+  switch i32 %bf.clear, label %if.end348 [
+    i32 7, label %if.then296
+    i32 9, label %if.then296
+    i32 6, label %if.then296
+  ]
+
+if.then296:                                       ; preds = %if.end107, %if.end107, %if.end107, %if.else278, %if.else278, %if.else278
+  %type297 = bitcast %union.tree_node* %type to %struct.tree_type*
+  %mode298 = getelementptr inbounds %struct.tree_type* %type297, i64 0, i32 6
+  %19 = bitcast [4 x i8]* %mode298 to i32*
+  %bf.load299 = load i32* %19, align 4
+  %bf.clear301 = and i32 %bf.load299, 65024
+  %cmp302 = icmp eq i32 %bf.clear301, 8192
+  %cmp304 = icmp slt i32 %align, 64
+  %or.cond408 = and i1 %cmp302, %cmp304
+  br i1 %or.cond408, label %return, label %if.end306
+
+if.end306:                                        ; preds = %if.then296
+  %bf.lshr310 = lshr i32 %bf.load299, 9
+  %bf.clear311 = and i32 %bf.lshr310, 127
+  switch i32 %bf.clear311, label %if.end348 [
+    i32 17, label %land.lhs.true341
+    i32 18, label %land.lhs.true341
+    i32 6, label %land.lhs.true341
+    i32 46, label %land.lhs.true341
+    i32 37, label %land.lhs.true341
+  ]
+
+land.lhs.true341:                                 ; preds = %if.end306, %if.end306, %if.end306, %if.end306, %if.end306
+  %cmp342 = icmp slt i32 %align, 128
+  br i1 %cmp342, label %return, label %if.end348
+
+if.end348:                                        ; preds = %if.end107, %if.end306, %if.else278, %if.end229, %if.end123, %if.end187, %land.lhs.true341, %land.lhs.true274, %land.lhs.true168
+  br label %return
+
+return:                                           ; preds = %land.lhs.true341, %if.then296, %land.lhs.true274, %if.then219, %if.end187, %if.then177, %land.lhs.true168, %if.then113, %land.lhs.true103, %lor.lhs.false96, %land.lhs.true44, %lor.lhs.false38, %if.end348
+  %retval.0 = phi i32 [ %align, %if.end348 ], [ 256, %lor.lhs.false38 ], [ 256, %land.lhs.true44 ], [ 128, %lor.lhs.false96 ], [ 128, %land.lhs.true103 ], [ 64, %if.then113 ], [ 128, %land.lhs.true168 ], [ 64, %if.then177 ], [ 128, %if.end187 ], [ 64, %if.then219 ], [ 128, %land.lhs.true274 ], [ 64, %if.then296 ], [ 128, %land.lhs.true341 ]
+  ret i32 %retval.0
+}

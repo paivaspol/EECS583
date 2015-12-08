@@ -1,0 +1,43 @@
+define i32 @subreg_lsb(%struct.rtx_def* nocapture %x) #0 {
+entry:
+  %fld = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %2 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load1 = load i32* %2, align 8
+  %bf.lshr2 = lshr i32 %bf.load1, 16
+  %bf.clear3 = and i32 %bf.lshr2, 255
+  %idxprom25 = zext i32 %bf.clear3 to i64
+  %arrayidx4 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom25
+  %3 = load i16* %arrayidx4, align 2, !tbaa !6
+  %idxprom526 = zext i32 %bf.clear to i64
+  %arrayidx6 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom526
+  %4 = load i16* %arrayidx6, align 2, !tbaa !6
+  %cmp = icmp ugt i16 %3, %4
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
+  %rtuint = bitcast %union.rtunion_def* %arrayidx10 to i32*
+  %5 = load i32* %rtuint, align 4, !tbaa !3
+  %6 = load i32* @target_flags, align 4, !tbaa !3
+  %and = and i32 %6, 33554432
+  %7 = lshr exact i32 %and, 23
+  %8 = add i32 %7, 4
+  %div = udiv i32 %5, %8
+  %9 = lshr exact i32 %and, 20
+  %10 = add i32 %9, 32
+  %mul = mul i32 %10, %div
+  %rem = urem i32 %5, %8
+  %mul20 = shl i32 %rem, 3
+  %add = add i32 %mul, %mul20
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ %add, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0
+}

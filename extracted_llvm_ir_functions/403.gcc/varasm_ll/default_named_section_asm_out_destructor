@@ -1,0 +1,28 @@
+define void @default_named_section_asm_out_destructor(%struct.rtx_def* %symbol, i32 %priority) #0 {
+entry:
+  %buf = alloca [16 x i8], align 16
+  %cmp = icmp eq i32 %priority, 65535
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %arraydecay = getelementptr inbounds [16 x i8]* %buf, i64 0, i64 0
+  %sub = sub nsw i32 65535, %priority
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([12 x i8]* @.str63, i64 0, i64 0), i32 %sub) #9
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %section.0 = phi i8* [ %arraydecay, %if.then ], [ getelementptr inbounds ([7 x i8]* @.str62, i64 0, i64 0), %entry ]
+  call void @named_section_flags(i8* %section.0, i32 512) #10
+  %0 = load i32* @target_flags, align 4, !tbaa !4
+  %and = lshr i32 %0, 20
+  %1 = and i32 %and, 32
+  %2 = add i32 %1, 32
+  call void @assemble_align(i32 %2) #10
+  %3 = load i32* @target_flags, align 4, !tbaa !4
+  %and2 = lshr i32 %3, 20
+  %4 = and i32 %and2, 32
+  %5 = add i32 %4, 32
+  %div = sdiv i32 %5, 8
+  %call8 = call zeroext i1 @assemble_integer(%struct.rtx_def* %symbol, i32 %div, i32 %5, i32 1) #10
+  ret void
+}

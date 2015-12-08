@@ -1,0 +1,44 @@
+define void @mult_matrix([4 x float]* nocapture %A, [4 x float]* nocapture %B, [4 x float]* nocapture %C) #0 {
+entry:
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc24, %entry
+  %indvars.iv47 = phi i64 [ 0, %entry ], [ %indvars.iv.next48, %for.inc24 ]
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.inc21, %for.cond1.preheader
+  %indvars.iv42 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next43, %for.inc21 ]
+  %arrayidx5 = getelementptr inbounds [4 x float]* %A, i64 %indvars.iv47, i64 %indvars.iv42
+  store float 0.000000e+00, float* %arrayidx5, align 4, !tbaa !0
+  br label %for.body8
+
+for.body8:                                        ; preds = %for.body8, %for.body3
+  %0 = phi float [ 0.000000e+00, %for.body3 ], [ %add, %for.body8 ]
+  %indvars.iv = phi i64 [ 0, %for.body3 ], [ %indvars.iv.next, %for.body8 ]
+  %arrayidx12 = getelementptr inbounds [4 x float]* %B, i64 %indvars.iv47, i64 %indvars.iv
+  %1 = load float* %arrayidx12, align 4, !tbaa !0
+  %arrayidx16 = getelementptr inbounds [4 x float]* %C, i64 %indvars.iv, i64 %indvars.iv42
+  %2 = load float* %arrayidx16, align 4, !tbaa !0
+  %mul = fmul float %1, %2
+  %add = fadd float %0, %mul
+  store float %add, float* %arrayidx5, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.inc21, label %for.body8
+
+for.inc21:                                        ; preds = %for.body8
+  %indvars.iv.next43 = add i64 %indvars.iv42, 1
+  %lftr.wideiv44 = trunc i64 %indvars.iv.next43 to i32
+  %exitcond45 = icmp eq i32 %lftr.wideiv44, 4
+  br i1 %exitcond45, label %for.inc24, label %for.body3
+
+for.inc24:                                        ; preds = %for.inc21
+  %indvars.iv.next48 = add i64 %indvars.iv47, 1
+  %lftr.wideiv49 = trunc i64 %indvars.iv.next48 to i32
+  %exitcond50 = icmp eq i32 %lftr.wideiv49, 4
+  br i1 %exitcond50, label %for.end26, label %for.cond1.preheader
+
+for.end26:                                        ; preds = %for.inc24
+  ret void
+}

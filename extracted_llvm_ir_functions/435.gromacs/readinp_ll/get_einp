@@ -1,0 +1,88 @@
+define internal fastcc i32 @get_einp(i32* nocapture %ninp, %struct.t_inpfile** %inp, i8* %name) #0 {
+entry:
+  %cmp = icmp eq %struct.t_inpfile** %inp, null
+  br i1 %cmp, label %return, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %0 = load i32* %ninp, align 4, !tbaa !3
+  %cmp161 = icmp sgt i32 %0, 0
+  br i1 %cmp161, label %for.body, label %for.end
+
+for.cond:                                         ; preds = %for.body
+  %1 = trunc i64 %indvars.iv.next to i32
+  %cmp1 = icmp slt i32 %1, %.pre
+  br i1 %cmp1, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %for.cond.preheader ]
+  %i.062 = phi i32 [ %inc, %for.cond ], [ 0, %for.cond.preheader ]
+  %2 = load %struct.t_inpfile** %inp, align 8, !tbaa !0
+  %name2 = getelementptr inbounds %struct.t_inpfile* %2, i64 %indvars.iv, i32 2
+  %3 = load i8** %name2, align 8, !tbaa !0
+  %call = tail call i32 @strcasecmp_min(i8* %name, i8* %3) #7
+  %cmp3 = icmp eq i32 %call, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %i.062, 1
+  %.pre = load i32* %ninp, align 4, !tbaa !3
+  br i1 %cmp3, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.body, %for.cond, %for.cond.preheader
+  %4 = phi i32 [ %0, %for.cond.preheader ], [ %.pre, %for.cond ], [ %.pre, %for.body ]
+  %i.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %inc, %for.cond ], [ %i.062, %for.body ]
+  %cmp6 = icmp eq i32 %i.0.lcssa, %4
+  br i1 %cmp6, label %if.then7, label %for.end.if.end17_crit_edge
+
+for.end.if.end17_crit_edge:                       ; preds = %for.end
+  %.pre65 = load %struct.t_inpfile** %inp, align 8, !tbaa !0
+  br label %if.end17
+
+if.then7:                                         ; preds = %for.end
+  %inc8 = add nsw i32 %4, 1
+  store i32 %inc8, i32* %ninp, align 4, !tbaa !3
+  %5 = load %struct.t_inpfile** %inp, align 8, !tbaa !0
+  %6 = bitcast %struct.t_inpfile* %5 to i8*
+  %mul = mul i32 %inc8, 24
+  %call10 = tail call i8* @save_realloc(i8* getelementptr inbounds ([5 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str6, i64 0, i64 0), i32 165, i8* %6, i32 %mul) #7
+  %7 = bitcast i8* %call10 to %struct.t_inpfile*
+  store %struct.t_inpfile* %7, %struct.t_inpfile** %inp, align 8, !tbaa !0
+  %call11 = tail call i8* @gmx_strdup(i8* %name) #7
+  %idxprom12 = sext i32 %4 to i64
+  %8 = load %struct.t_inpfile** %inp, align 8, !tbaa !0
+  %name14 = getelementptr inbounds %struct.t_inpfile* %8, i64 %idxprom12, i32 2
+  store i8* %call11, i8** %name14, align 8, !tbaa !0
+  %9 = load %struct.t_inpfile** %inp, align 8, !tbaa !0
+  %bSet = getelementptr inbounds %struct.t_inpfile* %9, i64 %idxprom12, i32 1
+  store i32 1, i32* %bSet, align 4, !tbaa !3
+  br label %if.end17
+
+if.end17:                                         ; preds = %for.end.if.end17_crit_edge, %if.then7
+  %10 = phi %struct.t_inpfile* [ %.pre65, %for.end.if.end17_crit_edge ], [ %9, %if.then7 ]
+  %11 = load i32* @inp_count, align 4, !tbaa !3
+  %inc18 = add nsw i32 %11, 1
+  store i32 %inc18, i32* @inp_count, align 4, !tbaa !3
+  %idxprom19 = sext i32 %i.0.lcssa to i64
+  %count = getelementptr inbounds %struct.t_inpfile* %10, i64 %idxprom19, i32 0
+  store i32 %11, i32* %count, align 4, !tbaa !3
+  %bSet23 = getelementptr inbounds %struct.t_inpfile* %10, i64 %idxprom19, i32 1
+  store i32 1, i32* %bSet23, align 4, !tbaa !3
+  %12 = load %struct._IO_FILE** @debug, align 8, !tbaa !0
+  %tobool = icmp eq %struct._IO_FILE* %12, null
+  br i1 %tobool, label %if.end32, label %if.then24
+
+if.then24:                                        ; preds = %if.end17
+  %name30 = getelementptr inbounds %struct.t_inpfile* %10, i64 %idxprom19, i32 2
+  %13 = load i8** %name30, align 8, !tbaa !0
+  %call31 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %12, i8* getelementptr inbounds ([13 x i8]* @.str22, i64 0, i64 0), i32 %11, i8* %13) #7
+  br label %if.end32
+
+if.end32:                                         ; preds = %if.end17, %if.then24
+  %14 = load i32* %ninp, align 4, !tbaa !3
+  %sub = add nsw i32 %14, -1
+  %cmp33 = icmp eq i32 %i.0.lcssa, %sub
+  %.i.0 = select i1 %cmp33, i32 -1, i32 %i.0.lcssa
+  br label %return
+
+return:                                           ; preds = %if.end32, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %.i.0, %if.end32 ]
+  ret i32 %retval.0
+}

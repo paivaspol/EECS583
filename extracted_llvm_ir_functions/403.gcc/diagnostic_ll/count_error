@@ -1,0 +1,53 @@
+define i32 @count_error(i32 %warningp) #2 {
+entry:
+  %tobool = icmp eq i32 %warningp, 0
+  br i1 %tobool, label %if.end14, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load i32* @inhibit_warnings, align 4, !tbaa !0
+  %tobool1 = icmp eq i32 %0, 0
+  br i1 %tobool1, label %land.lhs.true2, label %return
+
+land.lhs.true2:                                   ; preds = %land.lhs.true
+  %1 = load i32* @in_system_header, align 4, !tbaa !0
+  %tobool3 = icmp eq i32 %1, 0
+  %2 = load i32* @warn_system_headers, align 4, !tbaa !0
+  %tobool5 = icmp ne i32 %2, 0
+  %or.cond = or i1 %tobool3, %tobool5
+  br i1 %or.cond, label %if.end, label %return
+
+if.end:                                           ; preds = %land.lhs.true2
+  %3 = load i32* @warnings_are_errors, align 4, !tbaa !0
+  %tobool8 = icmp eq i32 %3, 0
+  br i1 %tobool8, label %if.then9, label %if.else
+
+if.then9:                                         ; preds = %if.end
+  %4 = load %struct.diagnostic_context** @global_dc, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.diagnostic_context* %4, i64 0, i32 0, i32 0, i32 9, i64 4
+  %5 = load i32* %arrayidx, align 4, !tbaa !0
+  %inc = add nsw i32 %5, 1
+  store i32 %inc, i32* %arrayidx, align 4, !tbaa !0
+  br label %return
+
+if.else:                                          ; preds = %if.end
+  %.b = load i1* @count_error.warning_message, align 1
+  br i1 %.b, label %if.end14, label %if.then13
+
+if.then13:                                        ; preds = %if.else
+  %6 = load i8** @progname, align 8, !tbaa !3
+  tail call void (i8*, ...)* @verbatim(i8* getelementptr inbounds ([38 x i8]* @.str5, i64 0, i64 0), i8* %6) #11
+  store i1 true, i1* @count_error.warning_message, align 1
+  br label %if.end14
+
+if.end14:                                         ; preds = %entry, %if.else, %if.then13
+  %7 = load %struct.diagnostic_context** @global_dc, align 8, !tbaa !3
+  %arrayidx17 = getelementptr inbounds %struct.diagnostic_context* %7, i64 0, i32 0, i32 0, i32 9, i64 3
+  %8 = load i32* %arrayidx17, align 4, !tbaa !0
+  %inc18 = add nsw i32 %8, 1
+  store i32 %inc18, i32* %arrayidx17, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.then9, %if.end14, %land.lhs.true2, %land.lhs.true
+  %retval.0 = phi i32 [ 0, %land.lhs.true ], [ 0, %land.lhs.true2 ], [ 1, %if.end14 ], [ 1, %if.then9 ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,49 @@
+define internal fastcc void @set_real_maximum_length(%struct.output_buffer* nocapture %buffer) #2 {
+entry:
+  %ideal_maximum_length.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 2
+  %0 = load i32* %ideal_maximum_length.i, align 4, !tbaa !0
+  %cmp.i = icmp sgt i32 %0, 0
+  br i1 %cmp.i, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %entry
+  %prefixing_rule = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 6
+  %1 = load i32* %prefixing_rule, align 4, !tbaa !1
+  %switch = icmp ult i32 %1, 2
+  br i1 %switch, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry, %lor.lhs.false
+  %maximum_length = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 1
+  store i32 %0, i32* %maximum_length, align 4, !tbaa !0
+  br label %if.end26
+
+if.else:                                          ; preds = %lor.lhs.false
+  %prefix = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 0
+  %2 = load i8** %prefix, align 8, !tbaa !3
+  %tobool8 = icmp eq i8* %2, null
+  br i1 %tobool8, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %if.else
+  %call11 = tail call i64 @strlen(i8* %2) #12
+  %phitmp = trunc i64 %call11 to i32
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.else, %cond.true
+  %cond = phi i32 [ %phitmp, %cond.true ], [ 0, %if.else ]
+  %sub = sub nsw i32 %0, %cond
+  %cmp14 = icmp slt i32 %sub, 32
+  br i1 %cmp14, label %if.then16, label %if.else21
+
+if.then16:                                        ; preds = %cond.end
+  %add = add nsw i32 %0, 32
+  %maximum_length20 = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 1
+  store i32 %add, i32* %maximum_length20, align 4, !tbaa !0
+  br label %if.end26
+
+if.else21:                                        ; preds = %cond.end
+  %maximum_length25 = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 1
+  store i32 %0, i32* %maximum_length25, align 4, !tbaa !0
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.then16, %if.else21, %if.then
+  ret void
+}

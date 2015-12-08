@@ -1,0 +1,38 @@
+define void @printcmap(%struct._IO_FILE* nocapture %out, i32 %n, %struct.t_mapping* nocapture %map) #0 {
+entry:
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str10, i64 0, i64 0), i32 %n) #8
+  %cmp52 = icmp sgt i32 %n, 0
+  br i1 %cmp52, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %c1 = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 0, i32 0
+  %0 = load i8* %c1, align 1, !tbaa !1
+  %tobool = icmp eq i8 %0, 0
+  %conv = sext i8 %0 to i32
+  %.conv = select i1 %tobool, i32 32, i32 %conv
+  %c2 = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 0, i32 1
+  %1 = load i8* %c2, align 1, !tbaa !1
+  %tobool10 = icmp eq i8 %1, 0
+  %conv9 = sext i8 %1 to i32
+  %cond19 = select i1 %tobool10, i32 32, i32 %conv9
+  %desc = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 1
+  %2 = load i8** %desc, align 8, !tbaa !0
+  %r = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 2, i32 0
+  %3 = load float* %r, align 4, !tbaa !5
+  %conv24 = fpext float %3 to double
+  %g = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 2, i32 1
+  %4 = load float* %g, align 4, !tbaa !5
+  %conv28 = fpext float %4 to double
+  %b = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 2, i32 2
+  %5 = load float* %b, align 4, !tbaa !5
+  %conv32 = fpext float %5 to double
+  %call33 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([30 x i8]* @.str11, i64 0, i64 0), i32 %.conv, i32 %cond19, i8* %2, double %conv24, double %conv28, double %conv32) #8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

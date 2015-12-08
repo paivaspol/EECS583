@@ -1,0 +1,97 @@
+define void @write_xpm_data(%struct._IO_FILE* nocapture %out, i32 %n_x, i32 %n_y, float** nocapture %matrix, float %lo, float %hi, i32 %nlevels) #0 {
+entry:
+  %sub = add nsw i32 %nlevels, -1
+  %conv = sitofp i32 %sub to float
+  %sub1 = fsub float %hi, %lo
+  %div = fdiv float %conv, %sub1
+  %cmp82 = icmp sgt i32 %n_y, 0
+  br i1 %cmp82, label %for.body.lr.ph, label %for.end59
+
+for.body.lr.ph:                                   ; preds = %entry
+  %div4 = sdiv i32 %n_y, 100
+  %add = add nsw i32 %div4, 1
+  %cmp1179 = icmp sgt i32 %n_x, 0
+  %conv30 = sext i32 %nlevels to i64
+  %0 = sext i32 %n_y to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.cond.backedge.thread, %for.body.lr.ph
+  %indvars.iv84 = phi i64 [ %0, %for.body.lr.ph ], [ %indvars.iv.next85, %for.cond.backedge.thread ]
+  %indvars.iv.next85 = add i64 %indvars.iv84, -1
+  %1 = trunc i64 %indvars.iv.next85 to i32
+  %rem = srem i32 %1, %add
+  %cmp5 = icmp eq i32 %rem, 0
+  br i1 %cmp5, label %if.then, label %if.end
+
+if.then:                                          ; preds = %for.body
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %sub7 = sub nsw i32 %n_y, %1
+  %mul = mul nsw i32 %sub7, 100
+  %div8 = sdiv i32 %mul, %n_y
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([10 x i8]* @.str42, i64 0, i64 0), i32 %div8) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %for.body
+  %fputc78 = tail call i32 @fputc(i32 34, %struct._IO_FILE* %out)
+  br i1 %cmp1179, label %for.body13, label %for.end
+
+for.body13:                                       ; preds = %if.end, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %if.end ]
+  %arrayidx = getelementptr inbounds float** %matrix, i64 %indvars.iv
+  %3 = load float** %arrayidx, align 8, !tbaa !0
+  %arrayidx15 = getelementptr inbounds float* %3, i64 %indvars.iv.next85
+  %4 = load float* %arrayidx15, align 4, !tbaa !5
+  %sub16 = fsub float %4, %lo
+  %mul17 = fmul float %div, %sub16
+  %conv18 = fpext float %mul17 to double
+  %add19 = fadd double %conv18, 5.000000e-01
+  %conv20 = fptosi double %add19 to i32
+  %cmp21 = icmp slt i32 %conv20, 0
+  %.conv20 = select i1 %cmp21, i32 0, i32 %conv20
+  %cmp25 = icmp slt i32 %.conv20, %nlevels
+  %.conv20.sub = select i1 %cmp25, i32 %.conv20, i32 %sub
+  %call31 = tail call i64 @strlen(i8* getelementptr inbounds ([89 x i8]* @mapper, i64 0, i64 0)) #10
+  %cmp32 = icmp ugt i64 %conv30, %call31
+  %idxprom35 = sext i32 %.conv20.sub to i64
+  br i1 %cmp32, label %if.else, label %if.then34
+
+if.then34:                                        ; preds = %for.body13
+  %arrayidx36 = getelementptr inbounds [89 x i8]* @mapper, i64 0, i64 %idxprom35
+  %5 = load i8* %arrayidx36, align 1, !tbaa !1
+  %conv37 = sext i8 %5 to i32
+  %fputc = tail call i32 @fputc(i32 %conv37, %struct._IO_FILE* %out)
+  br label %for.inc
+
+if.else:                                          ; preds = %for.body13
+  %rem41 = urem i64 %idxprom35, %call31
+  %arrayidx42 = getelementptr inbounds [89 x i8]* @mapper, i64 0, i64 %rem41
+  %6 = load i8* %arrayidx42, align 1, !tbaa !1
+  %conv43 = sext i8 %6 to i32
+  %div46 = udiv i64 %idxprom35, %call31
+  %arrayidx47 = getelementptr inbounds [89 x i8]* @mapper, i64 0, i64 %div46
+  %7 = load i8* %arrayidx47, align 1, !tbaa !1
+  %conv48 = sext i8 %7 to i32
+  %call49 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([5 x i8]* @.str73, i64 0, i64 0), i32 %conv43, i32 %conv48) #8
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then34, %if.else
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n_x
+  br i1 %exitcond, label %for.end, label %for.body13
+
+for.end:                                          ; preds = %for.inc, %if.end
+  %cmp51 = icmp sgt i32 %1, 0
+  br i1 %cmp51, label %for.cond.backedge.thread, label %for.cond.for.end59_crit_edge
+
+for.cond.backedge.thread:                         ; preds = %for.end
+  %8 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str74, i64 0, i64 0), i64 3, i64 1, %struct._IO_FILE* %out)
+  br label %for.body
+
+for.cond.for.end59_crit_edge:                     ; preds = %for.end
+  %9 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str75, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %out)
+  br label %for.end59
+
+for.end59:                                        ; preds = %for.cond.for.end59_crit_edge, %entry
+  ret void
+}

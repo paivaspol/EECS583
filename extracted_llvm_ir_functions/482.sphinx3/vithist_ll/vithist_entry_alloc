@@ -1,0 +1,46 @@
+define internal fastcc %struct.vithist_entry_t* @vithist_entry_alloc(%struct.vithist_t* nocapture %vh) #0 {
+entry:
+  %n_entry = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 2
+  %0 = load i32* %n_entry, align 4, !tbaa !3
+  %shr = ashr i32 %0, 14
+  %and = and i32 %0, 16383
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %cmp2 = icmp sgt i32 %shr, 255
+  br i1 %cmp2, label %if.then3, label %if.end
+
+if.then3:                                         ; preds = %if.then
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i64 132, i8* getelementptr inbounds ([12 x i8]* @.str4, i64 0, i64 0)) #6
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([59 x i8]* @.str33, i64 0, i64 0)) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.then3, %if.then
+  %call = tail call i8* @__ckd_calloc__(i64 16384, i64 36, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 136) #6
+  %1 = bitcast i8* %call to %struct.vithist_entry_t*
+  %idxprom = sext i32 %shr to i64
+  %entry4 = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 0
+  %2 = load %struct.vithist_entry_t*** %entry4, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.vithist_entry_t** %2, i64 %idxprom
+  store %struct.vithist_entry_t* %1, %struct.vithist_entry_t** %arrayidx, align 8, !tbaa !0
+  %.pre = load i32* %n_entry, align 4, !tbaa !3
+  br label %if.end8
+
+if.else:                                          ; preds = %entry
+  %idxprom5 = sext i32 %shr to i64
+  %entry6 = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 0
+  %3 = load %struct.vithist_entry_t*** %entry6, align 8, !tbaa !0
+  %arrayidx7 = getelementptr inbounds %struct.vithist_entry_t** %3, i64 %idxprom5
+  %4 = load %struct.vithist_entry_t** %arrayidx7, align 8, !tbaa !0
+  %idx.ext17 = zext i32 %and to i64
+  %add.ptr = getelementptr inbounds %struct.vithist_entry_t* %4, i64 %idx.ext17
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.else, %if.end
+  %5 = phi i32 [ %.pre, %if.end ], [ %0, %if.else ]
+  %ve.0 = phi %struct.vithist_entry_t* [ %1, %if.end ], [ %add.ptr, %if.else ]
+  %inc = add nsw i32 %5, 1
+  store i32 %inc, i32* %n_entry, align 4, !tbaa !3
+  ret %struct.vithist_entry_t* %ve.0
+}

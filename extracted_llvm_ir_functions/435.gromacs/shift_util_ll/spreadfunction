@@ -1,0 +1,32 @@
+define float @spreadfunction(float %r1, float %rc, float %R) #3 {
+entry:
+  %cmp = fcmp ugt float %R, %r1
+  %cmp1 = fcmp ult float %R, %rc
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.end3, label %return
+
+if.end3:                                          ; preds = %entry
+  %sub = fsub float %R, %r1
+  %0 = load float* @One_4pi, align 4, !tbaa !0
+  %div = fdiv float %sub, %R
+  %1 = fmul float %0, %div
+  %2 = load float* @A, align 4, !tbaa !0
+  %mul5 = fmul float %2, 2.000000e+00
+  %mul6 = fmul float %R, 2.000000e+00
+  %sub7 = fsub float %mul6, %r1
+  %mul8 = fmul float %sub7, %mul5
+  %3 = load float* @B, align 4, !tbaa !0
+  %mul9 = fmul float %sub, %3
+  %mul10 = fmul float %R, 5.000000e+00
+  %mul11 = fmul float %r1, 2.000000e+00
+  %sub12 = fsub float %mul10, %mul11
+  %mul13 = fmul float %sub12, %mul9
+  %add = fadd float %mul8, %mul13
+  %4 = fmul float %1, %add
+  %mul14 = fsub float -0.000000e+00, %4
+  br label %return
+
+return:                                           ; preds = %entry, %if.end3
+  %retval.0 = phi float [ %mul14, %if.end3 ], [ 0.000000e+00, %entry ]
+  ret float %retval.0
+}

@@ -1,0 +1,56 @@
+define %struct.rtx_def* @compare_from_rtx(%struct.rtx_def* %op0, %struct.rtx_def* %op1, i32 %code, i32 %unsignedp, i32 %mode, %struct.rtx_def* %size) #0 {
+entry:
+  %call = tail call i32 @swap_commutative_operands_p(%struct.rtx_def* %op0, %struct.rtx_def* %op1) #8
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @swap_condition(i32 %code) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %code.addr.0 = phi i32 [ %call1, %if.then ], [ %code, %entry ]
+  %op1.addr.0 = phi %struct.rtx_def* [ %op0, %if.then ], [ %op1, %entry ]
+  %op0.addr.0 = phi %struct.rtx_def* [ %op1, %if.then ], [ %op0, %entry ]
+  %0 = load i32* @flag_force_mem, align 4, !tbaa !3
+  %tobool2 = icmp eq i32 %0, 0
+  br i1 %tobool2, label %if.end6, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  %call4 = tail call %struct.rtx_def* @force_not_mem(%struct.rtx_def* %op0.addr.0) #8
+  %call5 = tail call %struct.rtx_def* @force_not_mem(%struct.rtx_def* %op1.addr.0) #8
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end, %if.then3
+  %op1.addr.1 = phi %struct.rtx_def* [ %call5, %if.then3 ], [ %op1.addr.0, %if.end ]
+  %op0.addr.1 = phi %struct.rtx_def* [ %call4, %if.then3 ], [ %op0.addr.0, %if.end ]
+  tail call void @do_pending_stack_adjust() #10
+  %1 = bitcast %struct.rtx_def* %op0.addr.1 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 54
+  br i1 %cmp, label %land.lhs.true, label %if.end14
+
+land.lhs.true:                                    ; preds = %if.end6
+  %2 = bitcast %struct.rtx_def* %op1.addr.1 to i32*
+  %bf.load7 = load i32* %2, align 8
+  %bf.clear8 = and i32 %bf.load7, 65535
+  %cmp9 = icmp eq i32 %bf.clear8, 54
+  br i1 %cmp9, label %land.lhs.true10, label %if.end14
+
+land.lhs.true10:                                  ; preds = %land.lhs.true
+  %call11 = tail call %struct.rtx_def* @simplify_relational_operation(i32 %code.addr.0, i32 %mode, %struct.rtx_def* %op0.addr.1, %struct.rtx_def* %op1.addr.1) #8
+  %cmp12 = icmp eq %struct.rtx_def* %call11, null
+  br i1 %cmp12, label %if.end14, label %return
+
+if.end14:                                         ; preds = %land.lhs.true10, %land.lhs.true, %if.end6
+  tail call void @emit_cmp_insn(%struct.rtx_def* %op0.addr.1, %struct.rtx_def* %op1.addr.1, i32 %code.addr.0, %struct.rtx_def* %size, i32 %mode, i32 %unsignedp) #8
+  %3 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 1), align 8, !tbaa !0
+  %4 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
+  %call15 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 %code.addr.0, i32 0, %struct.rtx_def* %3, %struct.rtx_def* %4) #8
+  br label %return
+
+return:                                           ; preds = %land.lhs.true10, %if.end14
+  %retval.0 = phi %struct.rtx_def* [ %call15, %if.end14 ], [ %call11, %land.lhs.true10 ]
+  ret %struct.rtx_def* %retval.0
+}

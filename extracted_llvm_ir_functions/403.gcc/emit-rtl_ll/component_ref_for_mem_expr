@@ -1,0 +1,95 @@
+define internal fastcc %union.tree_node* @component_ref_for_mem_expr(%union.tree_node* %ref) #0 {
+entry:
+  %placeholder_ptr = alloca %union.tree_node*, align 8
+  %operands = getelementptr inbounds %union.tree_node* %ref, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  %0 = load %union.tree_node** %arrayidx, align 8, !tbaa !4
+  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 39
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call = call fastcc %union.tree_node* @component_ref_for_mem_expr(%union.tree_node* %0) #9
+  br label %if.end54
+
+if.else:                                          ; preds = %entry
+  store %union.tree_node* null, %union.tree_node** %placeholder_ptr, align 8, !tbaa !4
+  %bf.load389 = load i32* %1, align 8
+  %bf.clear490 = and i32 %bf.load389, 255
+  %switch.tableidx91 = add i32 %bf.clear490, -57
+  %2 = icmp ult i32 %switch.tableidx91, 62
+  br i1 %2, label %lor.end, label %lor.end.thread
+
+lor.end.thread:                                   ; preds = %while.cond.backedge, %if.else
+  %bf.load3682 = phi i32 [ %bf.load389, %if.else ], [ %bf.load3, %while.cond.backedge ]
+  %inner.0.lcssa = phi %union.tree_node* [ %0, %if.else ], [ %inner.0.be, %while.cond.backedge ]
+  %bf.clear3783 = and i32 %bf.load3682, 255
+  br label %while.end
+
+lor.end:                                          ; preds = %if.else, %while.cond.backedge
+  %bf.load36 = phi i32 [ %bf.load3, %while.cond.backedge ], [ %bf.load389, %if.else ]
+  %switch.tableidx93 = phi i32 [ %switch.tableidx, %while.cond.backedge ], [ %switch.tableidx91, %if.else ]
+  %inner.092 = phi %union.tree_node* [ %inner.0.be, %while.cond.backedge ], [ %0, %if.else ]
+  %switch.cast = zext i32 %switch.tableidx93 to i62
+  %switch.downshift = lshr i62 -144115188075855871, %switch.cast
+  %3 = and i62 %switch.downshift, 1
+  %switch.masked = icmp eq i62 %3, 0
+  %bf.clear37 = and i32 %bf.load36, 255
+  br i1 %switch.masked, label %while.end, label %while.body
+
+while.body:                                       ; preds = %lor.end
+  %cmp38 = icmp eq i32 %bf.clear37, 57
+  br i1 %cmp38, label %if.then39, label %if.else41
+
+if.then39:                                        ; preds = %while.body
+  %call40 = call %union.tree_node* @find_placeholder(%union.tree_node* %inner.092, %union.tree_node** %placeholder_ptr) #8
+  br label %while.cond.backedge
+
+if.else41:                                        ; preds = %while.body
+  %operands43 = getelementptr inbounds %union.tree_node* %inner.092, i64 0, i32 0, i32 2
+  %arrayidx44 = bitcast i32* %operands43 to %union.tree_node**
+  %4 = load %union.tree_node** %arrayidx44, align 8, !tbaa !4
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.else41, %if.then39
+  %inner.0.be = phi %union.tree_node* [ %call40, %if.then39 ], [ %4, %if.else41 ]
+  %code2 = getelementptr inbounds %union.tree_node* %inner.0.be, i64 0, i32 0, i32 0, i32 2
+  %5 = bitcast [4 x i8]* %code2 to i32*
+  %bf.load3 = load i32* %5, align 8
+  %bf.clear4 = and i32 %bf.load3, 255
+  %switch.tableidx = add i32 %bf.clear4, -57
+  %6 = icmp ult i32 %switch.tableidx, 62
+  br i1 %6, label %lor.end, label %lor.end.thread
+
+while.end:                                        ; preds = %lor.end, %lor.end.thread
+  %inner.086 = phi %union.tree_node* [ %inner.0.lcssa, %lor.end.thread ], [ %inner.092, %lor.end ]
+  %bf.clear3784 = phi i32 [ %bf.clear3783, %lor.end.thread ], [ %bf.clear37, %lor.end ]
+  %idxprom81 = zext i32 %bf.clear3784 to i64
+  %arrayidx49 = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom81
+  %7 = load i8* %arrayidx49, align 1, !tbaa !1
+  %cmp50 = icmp eq i8 %7, 100
+  %inner.0. = select i1 %cmp50, %union.tree_node* %inner.086, %union.tree_node* null
+  br label %if.end54
+
+if.end54:                                         ; preds = %while.end, %if.then
+  %inner.1 = phi %union.tree_node* [ %call, %if.then ], [ %inner.0., %while.end ]
+  %8 = load %union.tree_node** %arrayidx, align 8, !tbaa !4
+  %cmp58 = icmp eq %union.tree_node* %inner.1, %8
+  br i1 %cmp58, label %return, label %if.else61
+
+if.else61:                                        ; preds = %if.end54
+  %type = getelementptr inbounds %union.tree_node* %ref, i64 0, i32 0, i32 0, i32 1
+  %9 = load %union.tree_node** %type, align 8, !tbaa !4
+  %arrayidx65 = getelementptr inbounds i32* %operands, i64 2
+  %10 = bitcast i32* %arrayidx65 to %union.tree_node**
+  %11 = load %union.tree_node** %10, align 8, !tbaa !4
+  %call66 = call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 39, %union.tree_node* %9, %union.tree_node* %inner.1, %union.tree_node* %11) #8
+  br label %return
+
+return:                                           ; preds = %if.end54, %if.else61
+  %retval.0 = phi %union.tree_node* [ %call66, %if.else61 ], [ %ref, %if.end54 ]
+  ret %union.tree_node* %retval.0
+}

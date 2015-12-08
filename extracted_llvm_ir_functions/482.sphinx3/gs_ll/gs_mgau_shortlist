@@ -1,0 +1,85 @@
+define i32 @gs_mgau_shortlist(%struct.gs_s* nocapture %gs, i32 %m, i32 %n, float* nocapture %feat, i32 %bst_codeid) #0 {
+entry:
+  %idxprom = sext i32 %bst_codeid to i64
+  %idxprom1 = sext i32 %m to i64
+  %codemap = getelementptr inbounds %struct.gs_s* %gs, i64 0, i32 7
+  %0 = load i32**** %codemap, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32*** %0, i64 %idxprom1
+  %1 = load i32*** %arrayidx, align 8, !tbaa !0
+  %2 = load i32** %1, align 8, !tbaa !0
+  %arrayidx3 = getelementptr inbounds i32* %2, i64 %idxprom
+  %3 = load i32* %arrayidx3, align 4, !tbaa !3
+  %cmp53 = icmp sgt i32 %n, 0
+  %mgau_sl = getelementptr inbounds %struct.gs_s* %gs, i64 0, i32 9
+  br i1 %cmp53, label %for.body, label %for.end.thread
+
+for.end.thread:                                   ; preds = %entry
+  %4 = load i32** %mgau_sl, align 8, !tbaa !0
+  store i32 -1, i32* %4, align 4, !tbaa !3
+  br label %for.cond12.preheader
+
+for.body:                                         ; preds = %entry, %for.inc
+  %nc.055 = phi i32 [ %nc.1, %for.inc ], [ 0, %entry ]
+  %bit_id.054 = phi i32 [ %inc6, %for.inc ], [ 0, %entry ]
+  %shl = shl i32 1, %bit_id.054
+  %and = and i32 %shl, %3
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %inc = add nsw i32 %nc.055, 1
+  %idxprom4 = sext i32 %nc.055 to i64
+  %5 = load i32** %mgau_sl, align 8, !tbaa !0
+  %arrayidx5 = getelementptr inbounds i32* %5, i64 %idxprom4
+  store i32 %bit_id.054, i32* %arrayidx5, align 4, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %nc.1 = phi i32 [ %inc, %if.then ], [ %nc.055, %for.body ]
+  %inc6 = add nsw i32 %bit_id.054, 1
+  %exitcond57 = icmp eq i32 %inc6, %n
+  br i1 %exitcond57, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  %idxprom7 = sext i32 %nc.1 to i64
+  %6 = load i32** %mgau_sl, align 8, !tbaa !0
+  %arrayidx9 = getelementptr inbounds i32* %6, i64 %idxprom7
+  store i32 -1, i32* %arrayidx9, align 4, !tbaa !3
+  %cmp10 = icmp eq i32 %nc.1, 0
+  br i1 %cmp10, label %for.cond12.preheader, label %if.end28
+
+for.cond12.preheader:                             ; preds = %for.end.thread, %for.end
+  %7 = phi i32* [ %4, %for.end.thread ], [ %6, %for.end ]
+  br i1 %cmp53, label %for.body14, label %if.end25.thread
+
+if.end25.thread:                                  ; preds = %for.cond12.preheader
+  store i32 -1, i32* %7, align 4, !tbaa !3
+  br label %if.then27
+
+for.body14:                                       ; preds = %for.cond12.preheader, %for.body14
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body14 ], [ 0, %for.cond12.preheader ]
+  %nc.252 = phi i32 [ %inc15, %for.body14 ], [ 0, %for.cond12.preheader ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc15 = add nsw i32 %nc.252, 1
+  %arrayidx18 = getelementptr inbounds i32* %7, i64 %indvars.iv
+  store i32 %nc.252, i32* %arrayidx18, align 4, !tbaa !3
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %if.end25, label %for.body14
+
+if.end25:                                         ; preds = %for.body14
+  %idxprom22 = sext i32 %n to i64
+  %arrayidx24 = getelementptr inbounds i32* %7, i64 %idxprom22
+  store i32 -1, i32* %arrayidx24, align 4, !tbaa !3
+  %cmp26 = icmp eq i32 %n, 0
+  br i1 %cmp26, label %if.then27, label %if.end28
+
+if.then27:                                        ; preds = %if.end25.thread, %if.end25
+  tail call void @_E__pr_info_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 287, i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0)) #5
+  tail call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([65 x i8]* @.str20, i64 0, i64 0), i32 %m, i32 %n) #5
+  br label %if.end28
+
+if.end28:                                         ; preds = %for.end, %if.then27, %if.end25
+  %nc.349 = phi i32 [ 0, %if.then27 ], [ %n, %if.end25 ], [ %nc.1, %for.end ]
+  ret i32 %nc.349
+}

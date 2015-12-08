@@ -1,0 +1,143 @@
+define void @split_double(%struct.rtx_def* %value, %struct.rtx_def** nocapture %first, %struct.rtx_def** nocapture %second) #0 {
+entry:
+  %l = alloca [2 x i64], align 16
+  %0 = bitcast %struct.rtx_def* %value to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.then38 [
+    i32 54, label %if.then
+    i32 55, label %if.else39
+  ]
+
+if.then:                                          ; preds = %entry
+  %1 = load i32* @target_flags, align 4, !tbaa !4
+  %and = lshr i32 %1, 20
+  %2 = and i32 %and, 32
+  %3 = shl nuw nsw i32 %2, 1
+  %mul = add i32 %3, 64
+  %cmp1 = icmp ult i32 %mul, 65
+  br i1 %cmp1, label %if.then2, label %if.else
+
+if.then2:                                         ; preds = %if.then
+  %sub128 = or i32 %2, 31
+  %sh_prom = zext i32 %sub128 to i64
+  %shl = shl i64 1, %sh_prom
+  %shl6 = shl i64 %shl, 1
+  %dec = add i64 %shl6, -1
+  %neg = sub i64 0, %shl6
+  %rtwint = getelementptr inbounds %struct.rtx_def* %value, i64 0, i32 1, i64 0, i32 0
+  %4 = load i64* %rtwint, align 8, !tbaa !7
+  %and7 = and i64 %4, %dec
+  %and8 = and i64 %and7, %shl
+  %tobool9 = icmp eq i64 %and8, 0
+  %or = select i1 %tobool9, i64 0, i64 %neg
+  %and7.or = or i64 %or, %and7
+  %shr = lshr i64 %4, %sh_prom
+  %shr19 = lshr i64 %shr, 1
+  %and20 = and i64 %shr19, %dec
+  %and21 = and i64 %and20, %shl
+  %tobool22 = icmp eq i64 %and21, 0
+  %or24 = select i1 %tobool22, i64 0, i64 %neg
+  %high.0 = or i64 %or24, %and20
+  %call = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %and7.or) #8
+  store %struct.rtx_def* %call, %struct.rtx_def** %first, align 8, !tbaa !0
+  %call26 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %high.0) #8
+  store %struct.rtx_def* %call26, %struct.rtx_def** %second, align 8, !tbaa !0
+  br label %if.end91
+
+if.else:                                          ; preds = %if.then
+  %rtwint30 = getelementptr inbounds %struct.rtx_def* %value, i64 0, i32 1, i64 0, i32 0
+  %5 = load i64* %rtwint30, align 8, !tbaa !7
+  %cmp31 = icmp slt i64 %5, 0
+  %6 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 63), align 8, !tbaa !0
+  %7 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
+  %cond32 = select i1 %cmp31, %struct.rtx_def* %6, %struct.rtx_def* %7
+  store %struct.rtx_def* %value, %struct.rtx_def** %first, align 8, !tbaa !0
+  store %struct.rtx_def* %cond32, %struct.rtx_def** %second, align 8, !tbaa !0
+  br label %if.end91
+
+if.then38:                                        ; preds = %entry
+  store %struct.rtx_def* %value, %struct.rtx_def** %first, align 8, !tbaa !0
+  %8 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
+  store %struct.rtx_def* %8, %struct.rtx_def** %second, align 8, !tbaa !0
+  br label %if.end91
+
+if.else39:                                        ; preds = %entry
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear41 = and i32 %bf.lshr, 255
+  %cmp42 = icmp eq i32 %bf.clear41, 0
+  br i1 %cmp42, label %if.then48, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.else39
+  %idxprom127 = zext i32 %bf.clear41 to i64
+  %arrayidx46 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom127
+  %9 = load i32* %arrayidx46, align 4, !tbaa !9
+  %cmp47 = icmp eq i32 %9, 1
+  br i1 %cmp47, label %if.then48, label %do.body
+
+if.then48:                                        ; preds = %lor.lhs.false, %if.else39
+  %rtwint51 = getelementptr inbounds %struct.rtx_def* %value, i64 0, i32 1, i64 1, i32 0
+  %10 = load i64* %rtwint51, align 8, !tbaa !7
+  %call52 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %10) #8
+  store %struct.rtx_def* %call52, %struct.rtx_def** %first, align 8, !tbaa !0
+  %rtwint55 = getelementptr inbounds %struct.rtx_def* %value, i64 0, i32 1, i64 2, i32 0
+  %11 = load i64* %rtwint55, align 8, !tbaa !7
+  %call56 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %11) #8
+  store %struct.rtx_def* %call56, %struct.rtx_def** %second, align 8, !tbaa !0
+  br label %if.end91
+
+do.body:                                          ; preds = %lor.lhs.false
+  %u.sroa.0.0.idx = getelementptr inbounds %struct.rtx_def* %value, i64 1, i32 0, i64 0
+  %arraydecay = getelementptr inbounds [2 x i64]* %l, i64 0, i64 0
+  %tmpcast = bitcast i8* %u.sroa.0.0.idx to %struct.realvaluetype*
+  call void @etardouble(%struct.realvaluetype* byval align 8 %tmpcast, i64* %arraydecay) #8
+  %12 = load i32* @target_flags, align 4, !tbaa !4
+  %and61 = lshr i32 %12, 20
+  %13 = and i32 %and61, 32
+  %14 = add i32 %13, 32
+  %cmp64 = icmp ult i32 %14, 64
+  %cmp68 = icmp eq i32 %13, 0
+  %or.cond = and i1 %cmp64, %cmp68
+  %15 = load i64* %arraydecay, align 16, !tbaa !7
+  br i1 %or.cond, label %if.then69, label %do.body.if.end84_crit_edge
+
+do.body.if.end84_crit_edge:                       ; preds = %do.body
+  %arrayidx87.pre = getelementptr inbounds [2 x i64]* %l, i64 0, i64 1
+  br label %if.end84
+
+if.then69:                                        ; preds = %do.body
+  %and71 = and i64 %15, 2147483648
+  %tobool72 = icmp eq i64 %and71, 0
+  br i1 %tobool72, label %if.end76, label %if.then73
+
+if.then73:                                        ; preds = %if.then69
+  %or75 = or i64 %15, -4294967296
+  store i64 %or75, i64* %arraydecay, align 16, !tbaa !7
+  br label %if.end76
+
+if.end76:                                         ; preds = %if.then69, %if.then73
+  %16 = phi i64 [ %15, %if.then69 ], [ %or75, %if.then73 ]
+  %arrayidx77 = getelementptr inbounds [2 x i64]* %l, i64 0, i64 1
+  %17 = load i64* %arrayidx77, align 8, !tbaa !7
+  %and78 = and i64 %17, 2147483648
+  %tobool79 = icmp eq i64 %and78, 0
+  br i1 %tobool79, label %if.end84, label %if.then80
+
+if.then80:                                        ; preds = %if.end76
+  %or82 = or i64 %17, -4294967296
+  store i64 %or82, i64* %arrayidx77, align 8, !tbaa !7
+  br label %if.end84
+
+if.end84:                                         ; preds = %do.body.if.end84_crit_edge, %if.end76, %if.then80
+  %arrayidx87.pre-phi = phi i64* [ %arrayidx87.pre, %do.body.if.end84_crit_edge ], [ %arrayidx77, %if.end76 ], [ %arrayidx77, %if.then80 ]
+  %18 = phi i64 [ %15, %do.body.if.end84_crit_edge ], [ %16, %if.end76 ], [ %16, %if.then80 ]
+  %call86 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %18) #8
+  store %struct.rtx_def* %call86, %struct.rtx_def** %first, align 8, !tbaa !0
+  %19 = load i64* %arrayidx87.pre-phi, align 8, !tbaa !7
+  %call88 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %19) #8
+  store %struct.rtx_def* %call88, %struct.rtx_def** %second, align 8, !tbaa !0
+  br label %if.end91
+
+if.end91:                                         ; preds = %if.then38, %if.end84, %if.then48, %if.then2, %if.else
+  ret void
+}

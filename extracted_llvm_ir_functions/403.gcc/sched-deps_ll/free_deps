@@ -1,0 +1,88 @@
+define void @free_deps(%struct.deps* %deps) #1 {
+entry:
+  %pending_read_insns = getelementptr inbounds %struct.deps* %deps, i64 0, i32 0
+  tail call void @free_INSN_LIST_list(%struct.rtx_def** %pending_read_insns) #7
+  %pending_read_mems = getelementptr inbounds %struct.deps* %deps, i64 0, i32 1
+  tail call void @free_EXPR_LIST_list(%struct.rtx_def** %pending_read_mems) #7
+  %pending_write_insns = getelementptr inbounds %struct.deps* %deps, i64 0, i32 2
+  tail call void @free_INSN_LIST_list(%struct.rtx_def** %pending_write_insns) #7
+  %pending_write_mems = getelementptr inbounds %struct.deps* %deps, i64 0, i32 3
+  tail call void @free_EXPR_LIST_list(%struct.rtx_def** %pending_write_mems) #7
+  %last_pending_memory_flush = getelementptr inbounds %struct.deps* %deps, i64 0, i32 6
+  tail call void @free_INSN_LIST_list(%struct.rtx_def** %last_pending_memory_flush) #7
+  %reg_last_in_use = getelementptr inbounds %struct.deps* %deps, i64 0, i32 12
+  %first = getelementptr inbounds %struct.bitmap_head_def* %reg_last_in_use, i64 0, i32 0
+  %ptr_.167 = load %struct.bitmap_element_def** %first, align 8
+  %cmp568 = icmp eq %struct.bitmap_element_def* %ptr_.167, null
+  %reg_last35.pre = getelementptr inbounds %struct.deps* %deps, i64 0, i32 11
+  br i1 %cmp568, label %do.end, label %for.cond6.preheader
+
+for.cond6.preheader:                              ; preds = %entry, %for.end30
+  %ptr_.169 = phi %struct.bitmap_element_def* [ %ptr_.1, %for.end30 ], [ %ptr_.167, %entry ]
+  %indx17 = getelementptr inbounds %struct.bitmap_element_def* %ptr_.169, i64 0, i32 2
+  br label %for.body8
+
+for.body8:                                        ; preds = %if.end27, %for.cond6.preheader
+  %indvars.iv71 = phi i64 [ 0, %for.cond6.preheader ], [ %indvars.iv.next72, %if.end27 ]
+  %arrayidx = getelementptr inbounds %struct.bitmap_element_def* %ptr_.169, i64 0, i32 3, i64 %indvars.iv71
+  %0 = load i64* %arrayidx, align 8, !tbaa !4
+  %cmp9 = icmp eq i64 %0, 0
+  br i1 %cmp9, label %if.end27, label %for.cond11.preheader
+
+for.cond11.preheader:                             ; preds = %for.body8
+  %1 = shl i64 %indvars.iv71, 6
+  br label %for.body13
+
+for.body13:                                       ; preds = %for.cond11.preheader, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.cond11.preheader ], [ %indvars.iv.next, %for.inc ]
+  %word_.064 = phi i64 [ %0, %for.cond11.preheader ], [ %word_.1, %for.inc ]
+  %shl = shl i64 1, %indvars.iv
+  %and = and i64 %shl, %word_.064
+  %cmp14 = icmp eq i64 %and, 0
+  br i1 %cmp14, label %for.inc, label %if.then15
+
+if.then15:                                        ; preds = %for.body13
+  %neg = xor i64 %shl, -1
+  %and16 = and i64 %word_.064, %neg
+  %2 = load i32* %indx17, align 4, !tbaa !3
+  %mul = shl i32 %2, 7
+  %3 = add i64 %indvars.iv, %1
+  %4 = trunc i64 %3 to i32
+  %add19 = add i32 %4, %mul
+  %idxprom20 = sext i32 %add19 to i64
+  %5 = load %struct.deps_reg** %reg_last35.pre, align 8, !tbaa !0
+  %uses = getelementptr inbounds %struct.deps_reg* %5, i64 %idxprom20, i32 0
+  tail call void @free_INSN_LIST_list(%struct.rtx_def** %uses) #7
+  %sets = getelementptr inbounds %struct.deps_reg* %5, i64 %idxprom20, i32 1
+  tail call void @free_INSN_LIST_list(%struct.rtx_def** %sets) #7
+  %clobbers = getelementptr inbounds %struct.deps_reg* %5, i64 %idxprom20, i32 2
+  tail call void @free_INSN_LIST_list(%struct.rtx_def** %clobbers) #7
+  %cmp23 = icmp eq i64 %and16, 0
+  br i1 %cmp23, label %if.end27, label %for.inc
+
+for.inc:                                          ; preds = %for.body13, %if.then15
+  %word_.1 = phi i64 [ %and16, %if.then15 ], [ %word_.064, %for.body13 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %6 = trunc i64 %indvars.iv.next to i32
+  %cmp12 = icmp ult i32 %6, 64
+  br i1 %cmp12, label %for.body13, label %if.end27
+
+if.end27:                                         ; preds = %for.inc, %if.then15, %for.body8
+  %indvars.iv.next72 = add i64 %indvars.iv71, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next72 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 2
+  br i1 %exitcond, label %for.end30, label %for.body8
+
+for.end30:                                        ; preds = %if.end27
+  %next32 = getelementptr inbounds %struct.bitmap_element_def* %ptr_.169, i64 0, i32 0
+  %ptr_.1 = load %struct.bitmap_element_def** %next32, align 8
+  %cmp5 = icmp eq %struct.bitmap_element_def* %ptr_.1, null
+  br i1 %cmp5, label %do.end, label %for.cond6.preheader
+
+do.end:                                           ; preds = %entry, %for.end30
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %reg_last_in_use) #7
+  %7 = load %struct.deps_reg** %reg_last35.pre, align 8, !tbaa !0
+  %8 = bitcast %struct.deps_reg* %7 to i8*
+  tail call void @free(i8* %8) #7
+  ret void
+}

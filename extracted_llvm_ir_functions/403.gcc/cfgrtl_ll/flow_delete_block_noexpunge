@@ -1,0 +1,106 @@
+define i32 @flow_delete_block_noexpunge(%struct.basic_block_def* nocapture %b) #0 {
+entry:
+  %head = getelementptr inbounds %struct.basic_block_def* %b, i64 0, i32 0
+  %0 = load %struct.rtx_def** %head, align 8, !tbaa !0
+  %end1 = getelementptr inbounds %struct.basic_block_def* %b, i64 0, i32 1
+  %1 = load %struct.rtx_def** %end1, align 8, !tbaa !0
+  tail call void @never_reached_warning(%struct.rtx_def* %0, %struct.rtx_def* %1) #5
+  %2 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 36
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @maybe_remove_eh_handler(%struct.rtx_def* %0) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %3 = load %struct.rtx_def** %end1, align 8, !tbaa !0
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load3 = load i32* %4, align 8
+  %bf.clear4 = and i32 %bf.load3, 65535
+  %cmp5 = icmp eq i32 %bf.clear4, 33
+  br i1 %cmp5, label %land.lhs.true, label %if.end30
+
+land.lhs.true:                                    ; preds = %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 7
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %cmp6 = icmp eq %struct.rtx_def* %5, null
+  br i1 %cmp6, label %if.end30, label %land.lhs.true7
+
+land.lhs.true7:                                   ; preds = %land.lhs.true
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 2
+  %rtx10 = bitcast %union.rtunion_def* %arrayidx9 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx10, align 8, !tbaa !0
+  %cmp11 = icmp eq %struct.rtx_def* %6, null
+  br i1 %cmp11, label %if.end30, label %land.lhs.true12
+
+land.lhs.true12:                                  ; preds = %land.lhs.true7
+  %7 = bitcast %struct.rtx_def* %6 to i32*
+  %bf.load13 = load i32* %7, align 8
+  %bf.clear14 = and i32 %bf.load13, 65535
+  %cmp15 = icmp eq i32 %bf.clear14, 33
+  br i1 %cmp15, label %land.lhs.true16, label %if.end30
+
+land.lhs.true16:                                  ; preds = %land.lhs.true12
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 3
+  %rtx19 = bitcast %union.rtunion_def* %arrayidx18 to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %rtx19, align 8, !tbaa !0
+  %9 = bitcast %struct.rtx_def* %8 to i32*
+  %bf.load20 = load i32* %9, align 8
+  %bf.clear21 = and i32 %bf.load20, 65535
+  %bf.clear21.off = add i32 %bf.clear21, -44
+  %switch = icmp ult i32 %bf.clear21.off, 2
+  %. = select i1 %switch, %struct.rtx_def* %6, %struct.rtx_def* %3
+  br label %if.end30
+
+if.end30:                                         ; preds = %land.lhs.true16, %land.lhs.true7, %land.lhs.true, %land.lhs.true12, %if.end
+  %end.0 = phi %struct.rtx_def* [ %3, %land.lhs.true12 ], [ %3, %land.lhs.true7 ], [ %3, %land.lhs.true ], [ %3, %if.end ], [ %., %land.lhs.true16 ]
+  %call = tail call %struct.rtx_def* @next_nonnote_insn(%struct.rtx_def* %end.0) #5
+  %tobool = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool, label %if.end36, label %land.lhs.true31
+
+land.lhs.true31:                                  ; preds = %if.end30
+  %10 = bitcast %struct.rtx_def* %call to i32*
+  %bf.load32 = load i32* %10, align 8
+  %bf.clear33 = and i32 %bf.load32, 65535
+  %cmp34 = icmp eq i32 %bf.clear33, 35
+  %call.end.0 = select i1 %cmp34, %struct.rtx_def* %call, %struct.rtx_def* %end.0
+  br label %if.end36
+
+if.end36:                                         ; preds = %land.lhs.true31, %if.end30
+  %end.1 = phi %struct.rtx_def* [ %end.0, %if.end30 ], [ %call.end.0, %land.lhs.true31 ]
+  store %struct.rtx_def* null, %struct.rtx_def** %head, align 8, !tbaa !0
+  tail call void @delete_insn_chain(%struct.rtx_def* %0, %struct.rtx_def* %end.1) #7
+  %pred = getelementptr inbounds %struct.basic_block_def* %b, i64 0, i32 4
+  %11 = load %struct.edge_def** %pred, align 8, !tbaa !0
+  %cmp3869 = icmp eq %struct.edge_def* %11, null
+  br i1 %cmp3869, label %while.cond40.preheader, label %while.body
+
+while.cond40.preheader:                           ; preds = %while.body, %if.end36
+  %succ = getelementptr inbounds %struct.basic_block_def* %b, i64 0, i32 5
+  %12 = load %struct.edge_def** %succ, align 8, !tbaa !0
+  %cmp4168 = icmp eq %struct.edge_def* %12, null
+  br i1 %cmp4168, label %while.end44, label %while.body42
+
+while.body:                                       ; preds = %if.end36, %while.body
+  %13 = phi %struct.edge_def* [ %14, %while.body ], [ %11, %if.end36 ]
+  tail call void @remove_edge(%struct.edge_def* %13) #5
+  %14 = load %struct.edge_def** %pred, align 8, !tbaa !0
+  %cmp38 = icmp eq %struct.edge_def* %14, null
+  br i1 %cmp38, label %while.cond40.preheader, label %while.body
+
+while.body42:                                     ; preds = %while.cond40.preheader, %while.body42
+  %15 = phi %struct.edge_def* [ %16, %while.body42 ], [ %12, %while.cond40.preheader ]
+  tail call void @remove_edge(%struct.edge_def* %15) #5
+  %16 = load %struct.edge_def** %succ, align 8, !tbaa !0
+  %cmp41 = icmp eq %struct.edge_def* %16, null
+  br i1 %cmp41, label %while.end44, label %while.body42
+
+while.end44:                                      ; preds = %while.body42, %while.cond40.preheader
+  %17 = bitcast %struct.edge_def** %pred to i8*
+  call void @llvm.memset.p0i8.i64(i8* %17, i8 0, i64 16, i32 8, i1 false)
+  ret i32 0
+}

@@ -1,0 +1,53 @@
+define void @put_pending_size(%union.tree_node* %expr) #0 {
+entry:
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.body, %entry
+  %expr.addr.0 = phi %union.tree_node* [ %expr, %entry ], [ %5, %while.body ]
+  %code = getelementptr inbounds %union.tree_node* %expr.addr.0, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %idxprom28 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom28
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  switch i8 %1, label %while.end [
+    i8 49, label %while.cond.while.body_crit_edge
+    i8 50, label %land.rhs
+  ]
+
+while.cond.while.body_crit_edge:                  ; preds = %while.cond
+  %operands16.pre = getelementptr inbounds %union.tree_node* %expr.addr.0, i64 0, i32 0, i32 2
+  br label %while.body
+
+land.rhs:                                         ; preds = %while.cond
+  %operands = getelementptr inbounds %union.tree_node* %expr.addr.0, i64 0, i32 0, i32 2
+  %arrayidx11 = getelementptr inbounds i32* %operands, i64 2
+  %2 = bitcast i32* %arrayidx11 to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %constant_flag = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 0, i32 2
+  %4 = bitcast [4 x i8]* %constant_flag to i32*
+  %bf.load13 = load i32* %4, align 8
+  %bf.clear14 = and i32 %bf.load13, 512
+  %tobool = icmp eq i32 %bf.clear14, 0
+  br i1 %tobool, label %while.end, label %while.body
+
+while.body:                                       ; preds = %while.cond.while.body_crit_edge, %land.rhs
+  %operands16.pre-phi = phi i32* [ %operands16.pre, %while.cond.while.body_crit_edge ], [ %operands, %land.rhs ]
+  %arrayidx17 = bitcast i32* %operands16.pre-phi to %union.tree_node**
+  %5 = load %union.tree_node** %arrayidx17, align 8, !tbaa !0
+  br label %while.cond
+
+while.end:                                        ; preds = %land.rhs, %while.cond
+  %cmp22 = icmp eq i32 %bf.clear, 118
+  br i1 %cmp22, label %if.then, label %if.end
+
+if.then:                                          ; preds = %while.end
+  %6 = load %union.tree_node** @pending_sizes, align 8, !tbaa !0
+  %call = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %expr.addr.0, %union.tree_node* %6) #7
+  store %union.tree_node* %call, %union.tree_node** @pending_sizes, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %while.end
+  ret void
+}

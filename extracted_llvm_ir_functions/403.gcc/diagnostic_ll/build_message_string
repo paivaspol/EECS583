@@ -1,0 +1,15 @@
+define internal i8* @build_message_string(i8* %msg, ...) #2 {
+entry:
+  %str.i = alloca i8*, align 8
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %0 = bitcast i8** %str.i to i8*
+  call void @llvm.lifetime.start(i64 8, i8* %0) #3
+  %call.i = call i32 @vasprintf(i8** %str.i, i8* %msg, %struct.__va_list_tag* %arraydecay) #10
+  %1 = load i8** %str.i, align 8, !tbaa !3
+  call void @llvm.lifetime.end(i64 8, i8* %0) #3
+  call void @llvm.va_end(i8* %arraydecay1)
+  ret i8* %1
+}

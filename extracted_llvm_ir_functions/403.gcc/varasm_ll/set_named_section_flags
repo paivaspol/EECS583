@@ -1,0 +1,36 @@
+define zeroext i1 @set_named_section_flags(i8* %section, i32 %flags) #0 {
+entry:
+  %0 = load %struct.htab** @in_named_htab, align 8, !tbaa !3
+  %call = tail call i32 @htab_hash_string(i8* %section) #9
+  %call2 = tail call i8** @htab_find_slot_with_hash(%struct.htab* %0, i8* %section, i32 %call, i32 1) #9
+  %1 = load i8** %call2, align 8
+  %tobool = icmp eq i8* %1, null
+  br i1 %tobool, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call3 = tail call noalias i8* @xmalloc(i64 16) #9
+  store i8* %call3, i8** %call2, align 8, !tbaa !3
+  %call4 = tail call i8* @ggc_alloc_string(i8* %section, i32 -1) #9
+  %name = bitcast i8* %call3 to i8**
+  store i8* %call4, i8** %name, align 8, !tbaa !3
+  %flags5 = getelementptr inbounds i8* %call3, i64 8
+  %2 = bitcast i8* %flags5 to i32*
+  store i32 %flags, i32* %2, align 4, !tbaa !4
+  %3 = getelementptr inbounds i8* %call3, i64 12
+  store i8 0, i8* %3, align 1, !tbaa !5
+  br label %if.end8
+
+if.else:                                          ; preds = %entry
+  %flags6 = getelementptr inbounds i8* %1, i64 8
+  %4 = bitcast i8* %flags6 to i32*
+  %5 = load i32* %4, align 4, !tbaa !4
+  %cmp = icmp eq i32 %5, %flags
+  br i1 %cmp, label %if.end8, label %return
+
+if.end8:                                          ; preds = %if.else, %if.then
+  br label %return
+
+return:                                           ; preds = %if.else, %if.end8
+  %retval.0 = phi i1 [ true, %if.end8 ], [ false, %if.else ]
+  ret i1 %retval.0
+}

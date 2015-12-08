@@ -1,0 +1,13 @@
+define void @expunge_block_nocompact(%struct.basic_block_def* %b) #0 {
+entry:
+  %0 = bitcast %struct.basic_block_def* %b to i8*
+  tail call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 112, i32 8, i1 false)
+  %index = getelementptr inbounds %struct.basic_block_def* %b, i64 0, i32 11
+  store i32 -3, i32* %index, align 4, !tbaa !3
+  %1 = load %struct.basic_block_def** @first_deleted_block, align 8, !tbaa !0
+  %2 = bitcast %struct.basic_block_def* %1 to %struct.edge_def*
+  %succ = getelementptr inbounds %struct.basic_block_def* %b, i64 0, i32 5
+  store %struct.edge_def* %2, %struct.edge_def** %succ, align 8, !tbaa !0
+  store %struct.basic_block_def* %b, %struct.basic_block_def** @first_deleted_block, align 8, !tbaa !0
+  ret void
+}

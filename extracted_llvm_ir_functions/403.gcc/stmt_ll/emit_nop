@@ -1,0 +1,29 @@
+define void @emit_nop() #0 {
+entry:
+  %call = tail call %struct.rtx_def* @get_last_insn() #7
+  %0 = load i32* @optimize, align 4, !tbaa !4
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %call to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.end [
+    i32 36, label %if.then
+    i32 37, label %land.lhs.true4
+  ]
+
+land.lhs.true4:                                   ; preds = %land.lhs.true
+  %call5 = tail call %struct.rtx_def* @prev_real_insn(%struct.rtx_def* %call) #7
+  %cmp6 = icmp eq %struct.rtx_def* %call5, null
+  br i1 %cmp6, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true, %land.lhs.true4
+  %call7 = tail call %struct.rtx_def* @gen_nop() #7
+  %call8 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call7) #7
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %entry, %if.then, %land.lhs.true4
+  ret void
+}

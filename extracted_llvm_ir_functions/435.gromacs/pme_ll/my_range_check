@@ -1,0 +1,16 @@
+define void @my_range_check(i8* %s, i32 %i, i32 %nr, i8* %file, i32 %line) #0 {
+entry:
+  %cmp = icmp sgt i32 %i, -1
+  %cmp1 = icmp slt i32 %i, %nr
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !0
+  %sub = add nsw i32 %nr, -1
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i8* %s, i32 %i, i32 %sub, i8* %file, i32 %line) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

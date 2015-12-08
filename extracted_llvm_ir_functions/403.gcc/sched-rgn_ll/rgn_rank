@@ -1,0 +1,73 @@
+define internal i32 @rgn_rank(%struct.rtx_def* nocapture %insn1, %struct.rtx_def* nocapture %insn2) #5 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn1, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !3
+  %idxprom = sext i32 %0 to i64
+  %1 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx1 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom
+  %2 = load %struct.basic_block_def** %arrayidx1, align 8, !tbaa !0
+  %index = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 11
+  %3 = load i32* %index, align 4, !tbaa !3
+  %idxprom2 = sext i32 %3 to i64
+  %4 = load i32** @block_to_bb, align 8, !tbaa !0
+  %arrayidx3 = getelementptr inbounds i32* %4, i64 %idxprom2
+  %5 = load i32* %arrayidx3, align 4, !tbaa !3
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %insn2, i64 0, i32 1, i64 0
+  %rtint6 = bitcast %union.rtunion_def* %arrayidx5 to i32*
+  %6 = load i32* %rtint6, align 4, !tbaa !3
+  %idxprom7 = sext i32 %6 to i64
+  %arrayidx10 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom7
+  %7 = load %struct.basic_block_def** %arrayidx10, align 8, !tbaa !0
+  %index11 = getelementptr inbounds %struct.basic_block_def* %7, i64 0, i32 11
+  %8 = load i32* %index11, align 4, !tbaa !3
+  %idxprom13 = sext i32 %8 to i64
+  %arrayidx14 = getelementptr inbounds i32* %4, i64 %idxprom13
+  %9 = load i32* %arrayidx14, align 4, !tbaa !3
+  %cmp = icmp eq i32 %5, %9
+  br i1 %cmp, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %10 = load i32* @target_bb, align 4, !tbaa !3
+  %cmp26 = icmp ne i32 %9, %10
+  %cmp38 = icmp eq i32 %5, %10
+  %or.cond = or i1 %cmp26, %cmp38
+  br i1 %or.cond, label %if.end, label %return
+
+if.end:                                           ; preds = %if.then
+  %cmp38.not = xor i1 %cmp38, true
+  %cmp64 = icmp eq i32 %9, %10
+  %or.cond139 = or i1 %cmp64, %cmp38.not
+  br i1 %or.cond139, label %if.end66, label %return
+
+if.end66:                                         ; preds = %if.end
+  %idxprom78 = sext i32 %5 to i64
+  %11 = load %struct.candidate** @candidate_table, align 8, !tbaa !0
+  %is_speculative = getelementptr inbounds %struct.candidate* %11, i64 %idxprom78, i32 1
+  %12 = load i8* %is_speculative, align 1, !tbaa !1
+  %idxprom91 = sext i32 %9 to i64
+  %is_speculative93 = getelementptr inbounds %struct.candidate* %11, i64 %idxprom91, i32 1
+  %13 = load i8* %is_speculative93, align 1, !tbaa !1
+  %tobool = icmp eq i8 %12, %13
+  br i1 %tobool, label %if.end96, label %if.then95
+
+if.then95:                                        ; preds = %if.end66
+  %conv = sext i8 %12 to i32
+  %conv94 = sext i8 %13 to i32
+  %sub = sub nsw i32 %conv, %conv94
+  br label %return
+
+if.end96:                                         ; preds = %if.end66
+  %src_prob = getelementptr inbounds %struct.candidate* %11, i64 %idxprom91, i32 2
+  %14 = load i32* %src_prob, align 4, !tbaa !3
+  %src_prob123 = getelementptr inbounds %struct.candidate* %11, i64 %idxprom78, i32 2
+  %15 = load i32* %src_prob123, align 4, !tbaa !3
+  %sub124 = sub nsw i32 %14, %15
+  ret i32 %sub124
+
+return:                                           ; preds = %if.end, %entry, %if.then, %if.then95
+  %retval.0 = phi i32 [ %sub, %if.then95 ], [ 1, %if.then ], [ 0, %entry ], [ -1, %if.end ]
+  ret i32 %retval.0
+}

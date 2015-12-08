@@ -1,0 +1,41 @@
+define void @htab_clear_slot(%struct.htab* nocapture %htab, i8** %slot) #1 {
+entry:
+  %entries = getelementptr inbounds %struct.htab* %htab, i64 0, i32 3
+  %0 = load i8*** %entries, align 8, !tbaa !0
+  %cmp = icmp ugt i8** %0, %slot
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %size = getelementptr inbounds %struct.htab* %htab, i64 0, i32 4
+  %1 = load i64* %size, align 8, !tbaa !3
+  %add.ptr = getelementptr inbounds i8** %0, i64 %1
+  %cmp2 = icmp ugt i8** %add.ptr, %slot
+  br i1 %cmp2, label %lor.lhs.false3, label %if.then
+
+lor.lhs.false3:                                   ; preds = %lor.lhs.false
+  %2 = load i8** %slot, align 8, !tbaa !0
+  %switch = icmp ult i8* %2, inttoptr (i64 2 to i8*)
+  br i1 %switch, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false3, %lor.lhs.false, %entry
+  tail call void @abort() #9
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false3
+  %del_f = getelementptr inbounds %struct.htab* %htab, i64 0, i32 2
+  %3 = load void (i8*)** %del_f, align 8, !tbaa !0
+  %tobool = icmp eq void (i8*)* %3, null
+  br i1 %tobool, label %if.end9, label %if.then7
+
+if.then7:                                         ; preds = %if.end
+  tail call void %3(i8* %2) #8
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end, %if.then7
+  store i8* inttoptr (i64 1 to i8*), i8** %slot, align 8, !tbaa !0
+  %n_deleted = getelementptr inbounds %struct.htab* %htab, i64 0, i32 6
+  %4 = load i64* %n_deleted, align 8, !tbaa !3
+  %inc = add i64 %4, 1
+  store i64 %inc, i64* %n_deleted, align 8, !tbaa !3
+  ret void
+}

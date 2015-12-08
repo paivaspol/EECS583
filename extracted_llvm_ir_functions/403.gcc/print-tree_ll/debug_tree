@@ -1,0 +1,13 @@
+define void @debug_tree(%union.tree_node* %node) #0 {
+entry:
+  %call = tail call i8* @permalloc(i32 296) #4
+  %0 = bitcast i8* %call to %struct.bucket**
+  store %struct.bucket** %0, %struct.bucket*** @table, align 8, !tbaa !0
+  tail call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 296, i32 1, i1 false)
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  tail call void @print_node(%struct._IO_FILE* %1, i8* getelementptr inbounds ([1 x i8]* @.str, i64 0, i64 0), %union.tree_node* %node, i32 0) #5
+  store %struct.bucket** null, %struct.bucket*** @table, align 8, !tbaa !0
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %2)
+  ret void
+}

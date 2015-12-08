@@ -1,0 +1,39 @@
+define %struct.rtx_def* @gen_rtx_CONST_DOUBLE(i32 %mode, i64 %arg0, i64 %arg1) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @rtx_alloc(i32 55) #8
+  %0 = bitcast %struct.rtx_def* %call to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.value = shl i32 %mode, 16
+  %bf.shl = and i32 %bf.value, 16711680
+  %bf.clear = and i32 %bf.load, -16711681
+  %bf.set = or i32 %bf.clear, %bf.shl
+  store i32 %bf.set, i32* %0, align 8
+  %1 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0, i32 0
+  store i64 0, i64* %1, align 8, !tbaa !4
+  %rtwint = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 1, i32 0
+  store i64 %arg0, i64* %rtwint, align 8, !tbaa !3
+  %rtwint5 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 2, i32 0
+  store i64 %arg1, i64* %rtwint5, align 8, !tbaa !3
+  %2 = load i8* getelementptr inbounds ([153 x i8]* @rtx_length, i64 0, i64 55), align 1, !tbaa !1
+  %conv = zext i8 %2 to i32
+  %i.017 = add nsw i32 %conv, -1
+  %cmp18 = icmp sgt i32 %i.017, 2
+  br i1 %cmp18, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %3 = zext i8 %2 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv.in = phi i64 [ %3, %for.body.lr.ph ], [ %indvars.iv, %for.body ]
+  %i.019 = phi i32 [ %i.017, %for.body.lr.ph ], [ %i.0, %for.body ]
+  %indvars.iv = add i64 %indvars.iv.in, -1
+  %rtwint9 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 %indvars.iv, i32 0
+  store i64 0, i64* %rtwint9, align 8, !tbaa !3
+  %i.0 = add nsw i32 %i.019, -1
+  %cmp = icmp sgt i32 %i.0, 2
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  ret %struct.rtx_def* %call
+}

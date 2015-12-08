@@ -1,0 +1,53 @@
+define %struct.rtx_def* @gen_ashldi3(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1, %struct.rtx_def* %operand2) #0 {
+entry:
+  %operands = alloca [3 x %struct.rtx_def*], align 16
+  call void @start_sequence() #4
+  %arrayidx = getelementptr inbounds [3 x %struct.rtx_def*]* %operands, i64 0, i64 0
+  store %struct.rtx_def* %operand0, %struct.rtx_def** %arrayidx, align 16, !tbaa !0
+  %arrayidx1 = getelementptr inbounds [3 x %struct.rtx_def*]* %operands, i64 0, i64 1
+  store %struct.rtx_def* %operand1, %struct.rtx_def** %arrayidx1, align 8, !tbaa !0
+  %arrayidx2 = getelementptr inbounds [3 x %struct.rtx_def*]* %operands, i64 0, i64 2
+  store %struct.rtx_def* %operand2, %struct.rtx_def** %arrayidx2, align 16, !tbaa !0
+  %0 = load i32* @target_flags, align 4, !tbaa !3
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %1 = load i32* @x86_cmove, align 4, !tbaa !3
+  %2 = load i32* @ix86_arch, align 4, !tbaa !3
+  %shl = shl i32 1, %2
+  %and3 = and i32 %shl, %1
+  %tobool4 = icmp eq i32 %and3, 0
+  br i1 %tobool4, label %lor.lhs.false, label %land.lhs.true6
+
+lor.lhs.false:                                    ; preds = %land.lhs.true
+  %and5 = and i32 %0, 327680
+  %cmp = icmp eq i32 %and5, 0
+  br i1 %cmp, label %if.end, label %land.lhs.true6
+
+land.lhs.true6:                                   ; preds = %lor.lhs.false, %land.lhs.true
+  %call = call i32 @immediate_operand(%struct.rtx_def* %operand2, i32 2) #4
+  %tobool8 = icmp eq i32 %call, 0
+  br i1 %tobool8, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true6
+  %3 = load %struct.rtx_def** %arrayidx, align 16, !tbaa !0
+  %4 = load %struct.rtx_def** %arrayidx1, align 8, !tbaa !0
+  %5 = load %struct.rtx_def** %arrayidx2, align 16, !tbaa !0
+  %call12 = call %struct.rtx_def* @gen_ashldi3_1(%struct.rtx_def* %3, %struct.rtx_def* %4, %struct.rtx_def* %5) #6
+  %call13 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call12) #4
+  %call14 = call %struct.rtx_def* @gen_sequence() #4
+  call void @end_sequence() #4
+  br label %return
+
+if.end:                                           ; preds = %land.lhs.true6, %lor.lhs.false, %entry
+  call void @ix86_expand_binary_operator(i32 87, i32 5, %struct.rtx_def** %arrayidx) #4
+  %call15 = call %struct.rtx_def* @gen_sequence() #4
+  call void @end_sequence() #4
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then
+  %retval.0 = phi %struct.rtx_def* [ %call15, %if.end ], [ %call14, %if.then ]
+  ret %struct.rtx_def* %retval.0
+}

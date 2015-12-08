@@ -1,0 +1,27 @@
+define void @write_pdbfile(%struct._IO_FILE* nocapture %out, i8* %title, %struct.t_atoms* nocapture %atoms, [3 x float]* nocapture %x, [3 x float]* %box, i8 signext %chain, i32 %model_nr) #0 {
+entry:
+  %nr = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 0
+  %0 = load i32* %nr, align 4, !tbaa !0
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str13, i64 0, i64 0), i32 191, i32 %0, i32 4) #7
+  %1 = bitcast i8* %call to i32*
+  %2 = load i32* %nr, align 4, !tbaa !0
+  %cmp11 = icmp sgt i32 %2, 0
+  br i1 %cmp11, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv
+  %3 = trunc i64 %indvars.iv to i32
+  store i32 %3, i32* %arrayidx, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %4 = load i32* %nr, align 4, !tbaa !0
+  %5 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %5, %4
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  %.lcssa = phi i32 [ %2, %entry ], [ %4, %for.body ]
+  tail call void @write_pdbfile_indexed(%struct._IO_FILE* %out, i8* %title, %struct.t_atoms* %atoms, [3 x float]* %x, [3 x float]* %box, i8 signext %chain, i32 %model_nr, i32 %.lcssa, i32* %1) #9
+  tail call void @save_free(i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str13, i64 0, i64 0), i32 195, i8* %call) #7
+  ret void
+}

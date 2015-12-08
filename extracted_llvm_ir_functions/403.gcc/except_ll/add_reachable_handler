@@ -1,0 +1,39 @@
+define internal fastcc void @add_reachable_handler(%struct.reachable_info* %info, %struct.eh_region* nocapture %lp_region, %struct.eh_region* nocapture %region) #0 {
+entry:
+  %tobool = icmp eq %struct.reachable_info* %info, null
+  br i1 %tobool, label %if.end10, label %if.end
+
+if.end:                                           ; preds = %entry
+  %0 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh = getelementptr inbounds %struct.function* %0, i64 0, i32 0
+  %1 = load %struct.eh_status** %eh, align 8, !tbaa !3
+  %built_landing_pads = getelementptr inbounds %struct.eh_status* %1, i64 0, i32 7
+  %2 = load i32* %built_landing_pads, align 4, !tbaa !0
+  %tobool1 = icmp eq i32 %2, 0
+  br i1 %tobool1, label %if.else, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %handlers = getelementptr inbounds %struct.reachable_info* %info, i64 0, i32 2
+  %3 = load %struct.rtx_def** %handlers, align 8, !tbaa !3
+  %tobool3 = icmp eq %struct.rtx_def* %3, null
+  br i1 %tobool3, label %if.then4, label %if.end10
+
+if.then4:                                         ; preds = %if.then2
+  %landing_pad = getelementptr inbounds %struct.eh_region* %lp_region, i64 0, i32 8
+  %4 = load %struct.rtx_def** %landing_pad, align 8, !tbaa !3
+  %call = tail call %struct.rtx_def* @alloc_INSN_LIST(%struct.rtx_def* %4, %struct.rtx_def* null) #6
+  store %struct.rtx_def* %call, %struct.rtx_def** %handlers, align 8, !tbaa !3
+  br label %if.end10
+
+if.else:                                          ; preds = %if.end
+  %label = getelementptr inbounds %struct.eh_region* %region, i64 0, i32 7
+  %5 = load %struct.rtx_def** %label, align 8, !tbaa !3
+  %handlers7 = getelementptr inbounds %struct.reachable_info* %info, i64 0, i32 2
+  %6 = load %struct.rtx_def** %handlers7, align 8, !tbaa !3
+  %call8 = tail call %struct.rtx_def* @alloc_INSN_LIST(%struct.rtx_def* %5, %struct.rtx_def* %6) #6
+  store %struct.rtx_def* %call8, %struct.rtx_def** %handlers7, align 8, !tbaa !3
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.then2, %entry, %if.then4, %if.else
+  ret void
+}

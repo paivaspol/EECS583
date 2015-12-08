@@ -1,0 +1,14 @@
+define i32 @label_to_alignment(%struct.rtx_def* nocapture %label) #6 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %label, i64 0, i32 1, i64 5
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !4
+  %1 = load i32* @min_labelno, align 4, !tbaa !4
+  %sub = sub nsw i32 %0, %1
+  %idxprom = sext i32 %sub to i64
+  %2 = load %struct.label_alignment** @label_align, align 8, !tbaa !0
+  %alignment = getelementptr inbounds %struct.label_alignment* %2, i64 %idxprom, i32 0
+  %3 = load i16* %alignment, align 2, !tbaa !5
+  %conv = sext i16 %3 to i32
+  ret i32 %conv
+}

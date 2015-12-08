@@ -1,0 +1,16 @@
+define i64 @fibheap_min_key(%struct.fibheap* nocapture %heap) #2 {
+entry:
+  %min = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 1
+  %0 = load %struct.fibnode** %min, align 8, !tbaa !0
+  %cmp = icmp eq %struct.fibnode* %0, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %key = getelementptr inbounds %struct.fibnode* %0, i64 0, i32 4
+  %1 = load i64* %key, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i64 [ %1, %if.end ], [ 0, %entry ]
+  ret i64 %retval.0
+}

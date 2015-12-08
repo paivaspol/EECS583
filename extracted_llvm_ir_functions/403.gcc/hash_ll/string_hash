@@ -1,0 +1,35 @@
+define i64 @string_hash(i8* nocapture %k) #4 {
+entry:
+  %0 = load i8* %k, align 1, !tbaa !1
+  %cmp22 = icmp eq i8 %0, 0
+  br i1 %cmp22, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  %1 = phi i8 [ %2, %while.body ], [ %0, %entry ]
+  %len.025 = phi i32 [ %inc, %while.body ], [ 0, %entry ]
+  %s.024 = phi i8* [ %incdec.ptr, %while.body ], [ %k, %entry ]
+  %hash.023 = phi i64 [ %xor, %while.body ], [ 0, %entry ]
+  %conv = zext i8 %1 to i64
+  %incdec.ptr = getelementptr inbounds i8* %s.024, i64 1
+  %add = mul i64 %conv, 131073
+  %add5 = add i64 %add, %hash.023
+  %shr = lshr i64 %add5, 2
+  %xor = xor i64 %shr, %add5
+  %inc = add i32 %len.025, 1
+  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %cmp = icmp eq i8 %2, 0
+  br i1 %cmp, label %while.cond.while.end_crit_edge, label %while.body
+
+while.cond.while.end_crit_edge:                   ; preds = %while.body
+  %phitmp = mul i32 %inc, 131073
+  %phitmp27 = zext i32 %phitmp to i64
+  br label %while.end
+
+while.end:                                        ; preds = %while.cond.while.end_crit_edge, %entry
+  %len.0.lcssa = phi i64 [ %phitmp27, %while.cond.while.end_crit_edge ], [ 0, %entry ]
+  %hash.0.lcssa = phi i64 [ %xor, %while.cond.while.end_crit_edge ], [ 0, %entry ]
+  %add9 = add i64 %len.0.lcssa, %hash.0.lcssa
+  %shr10 = lshr i64 %add9, 2
+  %xor11 = xor i64 %shr10, %add9
+  ret i64 %xor11
+}

@@ -1,0 +1,43 @@
+define i32 @dict_word2basestr(i8* nocapture %word) #0 {
+entry:
+  %call = tail call i64 @strlen(i8* %word) #8
+  %sub = shl i64 %call, 32
+  %sext = add i64 %sub, -4294967296
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds i8* %word, i64 %idxprom
+  %0 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %0, 41
+  br i1 %cmp, label %if.then, label %return
+
+if.then:                                          ; preds = %entry
+  %conv = trunc i64 %call to i32
+  %sub3 = add i32 %conv, -2
+  %cmp427 = icmp sgt i32 %sub3, 0
+  br i1 %cmp427, label %land.rhs.lr.ph, label %return
+
+land.rhs.lr.ph:                                   ; preds = %if.then
+  %1 = sext i32 %sub3 to i64
+  br label %land.rhs
+
+for.cond:                                         ; preds = %land.rhs
+  %cmp4 = icmp sgt i32 %dec, 0
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  br i1 %cmp4, label %land.rhs, label %return
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ %1, %land.rhs.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %i.028 = phi i32 [ %sub3, %land.rhs.lr.ph ], [ %dec, %for.cond ]
+  %arrayidx7 = getelementptr inbounds i8* %word, i64 %indvars.iv
+  %2 = load i8* %arrayidx7, align 1, !tbaa !1
+  %cmp9 = icmp eq i8 %2, 40
+  %dec = add nsw i32 %i.028, -1
+  br i1 %cmp9, label %if.then13, label %for.cond
+
+if.then13:                                        ; preds = %land.rhs
+  store i8 0, i8* %arrayidx7, align 1, !tbaa !1
+  br label %return
+
+return:                                           ; preds = %if.then, %for.cond, %entry, %if.then13
+  %retval.0 = phi i32 [ %i.028, %if.then13 ], [ -1, %entry ], [ -1, %for.cond ], [ -1, %if.then ]
+  ret i32 %retval.0
+}

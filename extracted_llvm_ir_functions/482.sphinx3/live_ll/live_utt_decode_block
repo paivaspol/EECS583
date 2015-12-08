@@ -1,0 +1,109 @@
+define i32 @live_utt_decode_block(i16* %samples, i32 %nsamples, i32 %live_endutt, %struct.partialhyp_t** nocapture %ohyp) #0 {
+entry:
+  %mfcbuf = alloca float**, align 8
+  %0 = load float**** @live_utt_decode_block.live_feat, align 8, !tbaa !0
+  %cmp = icmp eq float*** %0, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct.kbcore_t** @kbcore, align 8, !tbaa !0
+  %fcb = getelementptr inbounds %struct.kbcore_t* %1, i64 0, i32 0
+  %2 = load %struct.feat_s** %fcb, align 8, !tbaa !0
+  %call = call float*** @feat_array_alloc(%struct.feat_s* %2, i32 256) #3
+  store float*** %call, float**** @live_utt_decode_block.live_feat, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %.b27 = load i1* @live_utt_decode_block.live_begin_new_utt, align 1
+  br i1 %.b27, label %if.end3, label %if.then1
+
+if.then1:                                         ; preds = %if.end
+  %3 = load %struct.fe_t** @fe, align 8, !tbaa !0
+  %call2 = call i32 @fe_start_utt(%struct.fe_t* %3) #3
+  %4 = load %struct.kb_t** @kb, align 8, !tbaa !0
+  call void @utt_begin(%struct.kb_t* %4) #3
+  store i32 0, i32* @live_utt_decode_block.frmno, align 4, !tbaa !3
+  %5 = load %struct.kb_t** @kb, align 8, !tbaa !0
+  %nfr = getelementptr inbounds %struct.kb_t* %5, i64 0, i32 8
+  store i32 0, i32* %nfr, align 4, !tbaa !3
+  %utt_hmm_eval = getelementptr inbounds %struct.kb_t* %5, i64 0, i32 34
+  store i32 0, i32* %utt_hmm_eval, align 4, !tbaa !3
+  %utt_sen_eval = getelementptr inbounds %struct.kb_t* %5, i64 0, i32 35
+  store i32 0, i32* %utt_sen_eval, align 4, !tbaa !3
+  %utt_gau_eval = getelementptr inbounds %struct.kb_t* %5, i64 0, i32 36
+  store i32 0, i32* %utt_gau_eval, align 4, !tbaa !3
+  store i1 true, i1* @live_utt_decode_block.live_begin_new_utt, align 1
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %if.then1
+  store float** null, float*** %mfcbuf, align 8, !tbaa !0
+  %6 = load %struct.fe_t** @fe, align 8, !tbaa !0
+  %call4 = call i32 @fe_process_utt(%struct.fe_t* %6, i16* %samples, i32 %nsamples, float*** %mfcbuf) #3
+  %tobool5 = icmp ne i32 %live_endutt, 0
+  br i1 %tobool5, label %if.then6, label %if.end8
+
+if.then6:                                         ; preds = %if.end3
+  %7 = load %struct.fe_t** @fe, align 8, !tbaa !0
+  %8 = load float** @dummyframe, align 8, !tbaa !0
+  %call7 = call i32 @fe_end_utt(%struct.fe_t* %7, float* %8) #3
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.then6, %if.end3
+  %cmp9 = icmp sgt i32 %call4, 0
+  br i1 %cmp9, label %if.then10, label %if.end14
+
+if.then10:                                        ; preds = %if.end8
+  %9 = load %struct.kbcore_t** @kbcore, align 8, !tbaa !0
+  %fcb11 = getelementptr inbounds %struct.kbcore_t* %9, i64 0, i32 0
+  %10 = load %struct.feat_s** %fcb11, align 8, !tbaa !0
+  %11 = load float*** %mfcbuf, align 8, !tbaa !0
+  %.b = load i1* @live_utt_decode_block.live_begin_new_utt, align 1
+  %12 = zext i1 %.b to i32
+  %13 = xor i32 %12, 1
+  %14 = load float**** @live_utt_decode_block.live_feat, align 8, !tbaa !0
+  %call12 = call i32 @feat_s2mfc2feat_block(%struct.feat_s* %10, float** %11, i32 %call4, i32 %13, i32 %live_endutt, float*** %14) #3
+  %15 = load float**** @live_utt_decode_block.live_feat, align 8, !tbaa !0
+  %16 = load %struct.kb_t** @kb, align 8, !tbaa !0
+  %17 = load i32* @maxwpf, align 4, !tbaa !3
+  %18 = load i32* @maxhistpf, align 4, !tbaa !3
+  %19 = load i32* @maxhmmpf, align 4, !tbaa !3
+  %20 = load i32* @ptranskip, align 4, !tbaa !3
+  %21 = load %struct._IO_FILE** @hmmdumpfp, align 8, !tbaa !0
+  call void @utt_decode_block(float*** %15, i32 %call12, i32* @live_utt_decode_block.frmno, %struct.kb_t* %16, i32 %17, i32 %18, i32 %19, i32 %20, %struct._IO_FILE* %21) #3
+  %call13 = call i32 @live_get_partialhyp(i32 %live_endutt) #4
+  %22 = load %struct.partialhyp_t** @parthyp, align 8, !tbaa !0
+  store %struct.partialhyp_t* %22, %struct.partialhyp_t** %ohyp, align 8, !tbaa !0
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.then10, %if.end8
+  %nwds.0 = phi i32 [ %call13, %if.then10 ], [ 0, %if.end8 ]
+  br i1 %tobool5, label %if.then16, label %if.else
+
+if.then16:                                        ; preds = %if.end14
+  store i1 false, i1* @live_utt_decode_block.live_begin_new_utt, align 1
+  %23 = load %struct.kb_t** @kb, align 8, !tbaa !0
+  %nfr17 = getelementptr inbounds %struct.kb_t* %23, i64 0, i32 8
+  %24 = load i32* %nfr17, align 4, !tbaa !3
+  %tot_fr = getelementptr inbounds %struct.kb_t* %23, i64 0, i32 43
+  %25 = load i32* %tot_fr, align 4, !tbaa !3
+  %add = add nsw i32 %25, %24
+  store i32 %add, i32* %tot_fr, align 4, !tbaa !3
+  call void @utt_end(%struct.kb_t* %23) #3
+  br label %if.end18
+
+if.else:                                          ; preds = %if.end14
+  store i1 true, i1* @live_utt_decode_block.live_begin_new_utt, align 1
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.else, %if.then16
+  br i1 %cmp9, label %if.then20, label %if.end21
+
+if.then20:                                        ; preds = %if.end18
+  %26 = load float*** %mfcbuf, align 8, !tbaa !0
+  %27 = bitcast float** %26 to i8**
+  call void @ckd_free_2d(i8** %27) #3
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then20, %if.end18
+  ret i32 %nwds.0
+}

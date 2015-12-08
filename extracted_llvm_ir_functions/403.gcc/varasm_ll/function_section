@@ -1,0 +1,22 @@
+define void @function_section(%union.tree_node* %decl) #0 {
+entry:
+  %cmp = icmp eq %union.tree_node* %decl, null
+  br i1 %cmp, label %if.else, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %section_name = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 15
+  %0 = load %union.tree_node** %section_name, align 8, !tbaa !3
+  %cmp2 = icmp eq %union.tree_node* %0, null
+  br i1 %cmp2, label %if.else, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @named_section(%union.tree_node* %decl, i8* null, i32 0) #10
+  br label %if.end
+
+if.else:                                          ; preds = %land.lhs.true, %entry
+  tail call void @text_section() #10
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void
+}

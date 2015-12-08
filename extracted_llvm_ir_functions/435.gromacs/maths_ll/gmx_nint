@@ -1,0 +1,18 @@
+define i32 @gmx_nint(float %a) #0 {
+entry:
+  %cmp = fcmp olt float %a, 0.000000e+00
+  br i1 %cmp, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %entry
+  %sub = fadd float %a, -5.000000e-01
+  br label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %add = fadd float %a, 5.000000e-01
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %sub.sink = phi float [ %sub, %cond.true ], [ %add, %cond.false ]
+  %conv2 = fptosi float %sub.sink to i32
+  ret i32 %conv2
+}

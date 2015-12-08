@@ -1,0 +1,85 @@
+define float*** @feat_array_alloc(%struct.feat_s* nocapture %fcb, i32 %nfr) #0 {
+entry:
+  %n_stream.i = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 3
+  %0 = load i32* %n_stream.i, align 4, !tbaa !3
+  %cmp5.i = icmp sgt i32 %0, 0
+  br i1 %cmp5.i, label %for.body.lr.ph.i, label %if.then
+
+for.body.lr.ph.i:                                 ; preds = %entry
+  %stream_len.i = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 4
+  %1 = load i32** %stream_len.i, align 8, !tbaa !0
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.body.i, %for.body.lr.ph.i
+  %indvars.iv.i = phi i64 [ 0, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %for.body.i ]
+  %k.07.i = phi i32 [ 0, %for.body.lr.ph.i ], [ %add.i, %for.body.i ]
+  %arrayidx.i = getelementptr inbounds i32* %1, i64 %indvars.iv.i
+  %2 = load i32* %arrayidx.i, align 4, !tbaa !3
+  %add.i = add nsw i32 %2, %k.07.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv42 = trunc i64 %indvars.iv.next.i to i32
+  %exitcond43 = icmp eq i32 %lftr.wideiv42, %0
+  br i1 %exitcond43, label %feat_stream_len_sum.exit, label %for.body.i
+
+feat_stream_len_sum.exit:                         ; preds = %for.body.i
+  %cmp = icmp slt i32 %add.i, 1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry, %feat_stream_len_sum.exit
+  %k.0.lcssa.i33 = phi i32 [ %add.i, %feat_stream_len_sum.exit ], [ 0, %entry ]
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 412, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  tail call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([34 x i8]* @.str31, i64 0, i64 0), i32 %k.0.lcssa.i33) #7
+  br label %return
+
+if.end:                                           ; preds = %feat_stream_len_sum.exit
+  %call1 = tail call i8** @__ckd_calloc_2d__(i32 %nfr, i32 %0, i32 8, i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 417) #7
+  %3 = bitcast i8** %call1 to float***
+  %mul = mul nsw i32 %add.i, %nfr
+  %conv = sext i32 %mul to i64
+  %call2 = tail call i8* @__ckd_calloc__(i64 %conv, i64 4, i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 418) #7
+  %cmp337 = icmp sgt i32 %nfr, 0
+  br i1 %cmp337, label %for.cond5.preheader.lr.ph, label %return
+
+for.cond5.preheader.lr.ph:                        ; preds = %if.end
+  %4 = bitcast i8* %call2 to float*
+  %.pre = load i32* %n_stream.i, align 4, !tbaa !3
+  br label %for.cond5.preheader
+
+for.cond5.preheader:                              ; preds = %for.inc14, %for.cond5.preheader.lr.ph
+  %indvars.iv40 = phi i64 [ 0, %for.cond5.preheader.lr.ph ], [ %indvars.iv.next41, %for.inc14 ]
+  %data.039 = phi float* [ %4, %for.cond5.preheader.lr.ph ], [ %data.1.lcssa, %for.inc14 ]
+  %cmp734 = icmp sgt i32 %.pre, 0
+  br i1 %cmp734, label %for.body9.lr.ph, label %for.inc14
+
+for.body9.lr.ph:                                  ; preds = %for.cond5.preheader
+  %arrayidx30 = getelementptr inbounds i8** %call1, i64 %indvars.iv40
+  br label %for.body9
+
+for.body9:                                        ; preds = %for.body9.lr.ph, %for.body9
+  %indvars.iv = phi i64 [ 0, %for.body9.lr.ph ], [ %indvars.iv.next, %for.body9 ]
+  %data.136 = phi float* [ %data.039, %for.body9.lr.ph ], [ %add.ptr, %for.body9 ]
+  %arrayidx31 = load i8** %arrayidx30, align 8
+  %5 = bitcast i8* %arrayidx31 to float**
+  %arrayidx11 = getelementptr inbounds float** %5, i64 %indvars.iv
+  store float* %data.136, float** %arrayidx11, align 8, !tbaa !0
+  %6 = load i32** %stream_len.i, align 8, !tbaa !0
+  %arrayidx13 = getelementptr inbounds i32* %6, i64 %indvars.iv
+  %7 = load i32* %arrayidx13, align 4, !tbaa !3
+  %idx.ext = sext i32 %7 to i64
+  %add.ptr = getelementptr inbounds float* %data.136, i64 %idx.ext
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %8 = trunc i64 %indvars.iv.next to i32
+  %cmp7 = icmp slt i32 %8, %.pre
+  br i1 %cmp7, label %for.body9, label %for.inc14
+
+for.inc14:                                        ; preds = %for.body9, %for.cond5.preheader
+  %data.1.lcssa = phi float* [ %data.039, %for.cond5.preheader ], [ %add.ptr, %for.body9 ]
+  %indvars.iv.next41 = add i64 %indvars.iv40, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next41 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nfr
+  br i1 %exitcond, label %return, label %for.cond5.preheader
+
+return:                                           ; preds = %if.end, %for.inc14, %if.then
+  %retval.0 = phi float*** [ null, %if.then ], [ %3, %for.inc14 ], [ %3, %if.end ]
+  ret float*** %retval.0
+}

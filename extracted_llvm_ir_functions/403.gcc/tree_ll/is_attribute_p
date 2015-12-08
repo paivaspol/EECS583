@@ -1,0 +1,114 @@
+define i32 @is_attribute_p(i8* nocapture %attr, %union.tree_node* nocapture %ident) #0 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %ident, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 1
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %id = getelementptr inbounds %union.tree_node* %ident, i64 0, i32 0, i32 1
+  %1 = getelementptr inbounds i8** %id, i64 1
+  %2 = load i8** %1, align 8, !tbaa !0
+  %call = tail call i32 @strcmp(i8* %attr, i8* %2) #11
+  %cmp1 = icmp eq i32 %call, 0
+  br i1 %cmp1, label %return, label %if.end3
+
+if.end3:                                          ; preds = %if.end
+  %call7 = tail call i64 @strlen(i8* %2) #11
+  %conv = trunc i64 %call7 to i32
+  %call8 = tail call i64 @strlen(i8* %attr) #11
+  %conv9 = trunc i64 %call8 to i32
+  %3 = load i8* %attr, align 1, !tbaa !1
+  %cmp11 = icmp eq i8 %3, 95
+  br i1 %cmp11, label %if.then13, label %if.else
+
+if.then13:                                        ; preds = %if.end3
+  %arrayidx14 = getelementptr inbounds i8* %attr, i64 1
+  %4 = load i8* %arrayidx14, align 1, !tbaa !1
+  %cmp16 = icmp eq i8 %4, 95
+  br i1 %cmp16, label %lor.lhs.false, label %if.then29
+
+lor.lhs.false:                                    ; preds = %if.then13
+  %sub = shl i64 %call8, 32
+  %sext101 = add i64 %sub, -8589934592
+  %idxprom = ashr exact i64 %sext101, 32
+  %arrayidx18 = getelementptr inbounds i8* %attr, i64 %idxprom
+  %5 = load i8* %arrayidx18, align 1, !tbaa !1
+  %cmp20 = icmp eq i8 %5, 95
+  br i1 %cmp20, label %lor.lhs.false22, label %if.then29
+
+lor.lhs.false22:                                  ; preds = %lor.lhs.false
+  %sext102 = add i64 %sub, -4294967296
+  %idxprom24 = ashr exact i64 %sext102, 32
+  %arrayidx25 = getelementptr inbounds i8* %attr, i64 %idxprom24
+  %6 = load i8* %arrayidx25, align 1, !tbaa !1
+  %cmp27 = icmp eq i8 %6, 95
+  br i1 %cmp27, label %if.end30, label %if.then29
+
+if.then29:                                        ; preds = %lor.lhs.false22, %lor.lhs.false, %if.then13
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str147, i64 0, i64 0), i32 2815, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.is_attribute_p, i64 0, i64 0)) #8
+  unreachable
+
+if.end30:                                         ; preds = %lor.lhs.false22
+  %sub31 = add nsw i32 %conv9, -4
+  %cmp32 = icmp eq i32 %conv, %sub31
+  br i1 %cmp32, label %land.lhs.true, label %if.end75
+
+land.lhs.true:                                    ; preds = %if.end30
+  %add.ptr = getelementptr inbounds i8* %attr, i64 2
+  %sext103 = shl i64 %call7, 32
+  %conv35 = ashr exact i64 %sext103, 32
+  %call36 = tail call i32 @strncmp(i8* %add.ptr, i8* %2, i64 %conv35) #11
+  %cmp37 = icmp eq i32 %call36, 0
+  br i1 %cmp37, label %return, label %if.end75
+
+if.else:                                          ; preds = %if.end3
+  %add = add nsw i32 %conv9, 4
+  %cmp41 = icmp eq i32 %conv, %add
+  br i1 %cmp41, label %land.lhs.true43, label %if.end75
+
+land.lhs.true43:                                  ; preds = %if.else
+  %7 = load i8* %2, align 1, !tbaa !1
+  %cmp46 = icmp eq i8 %7, 95
+  br i1 %cmp46, label %land.lhs.true48, label %if.end75
+
+land.lhs.true48:                                  ; preds = %land.lhs.true43
+  %arrayidx49 = getelementptr inbounds i8* %2, i64 1
+  %8 = load i8* %arrayidx49, align 1, !tbaa !1
+  %cmp51 = icmp eq i8 %8, 95
+  br i1 %cmp51, label %land.lhs.true53, label %if.end75
+
+land.lhs.true53:                                  ; preds = %land.lhs.true48
+  %sub54 = shl i64 %call7, 32
+  %sext = add i64 %sub54, -8589934592
+  %idxprom55 = ashr exact i64 %sext, 32
+  %arrayidx56 = getelementptr inbounds i8* %2, i64 %idxprom55
+  %9 = load i8* %arrayidx56, align 1, !tbaa !1
+  %cmp58 = icmp eq i8 %9, 95
+  br i1 %cmp58, label %land.lhs.true60, label %if.end75
+
+land.lhs.true60:                                  ; preds = %land.lhs.true53
+  %sext99 = add i64 %sub54, -4294967296
+  %idxprom62 = ashr exact i64 %sext99, 32
+  %arrayidx63 = getelementptr inbounds i8* %2, i64 %idxprom62
+  %10 = load i8* %arrayidx63, align 1, !tbaa !1
+  %cmp65 = icmp eq i8 %10, 95
+  br i1 %cmp65, label %land.lhs.true67, label %if.end75
+
+land.lhs.true67:                                  ; preds = %land.lhs.true60
+  %add.ptr68 = getelementptr inbounds i8* %2, i64 2
+  %sext100 = shl i64 %call8, 32
+  %conv69 = ashr exact i64 %sext100, 32
+  %call70 = tail call i32 @strncmp(i8* %attr, i8* %add.ptr68, i64 %conv69) #11
+  %cmp71 = icmp eq i32 %call70, 0
+  br i1 %cmp71, label %return, label %if.end75
+
+if.end75:                                         ; preds = %if.else, %land.lhs.true43, %land.lhs.true48, %land.lhs.true53, %land.lhs.true60, %land.lhs.true67, %if.end30, %land.lhs.true
+  br label %return
+
+return:                                           ; preds = %land.lhs.true67, %land.lhs.true, %if.end, %entry, %if.end75
+  %retval.0 = phi i32 [ 0, %if.end75 ], [ 0, %entry ], [ 1, %if.end ], [ 1, %land.lhs.true ], [ 1, %land.lhs.true67 ]
+  ret i32 %retval.0
+}

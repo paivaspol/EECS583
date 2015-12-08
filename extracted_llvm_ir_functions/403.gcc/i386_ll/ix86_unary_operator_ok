@@ -1,0 +1,30 @@
+define i32 @ix86_unary_operator_ok(i32 %code, i32 %mode, %struct.rtx_def** nocapture %operands) #1 {
+entry:
+  %0 = load %struct.rtx_def** %operands, align 8, !tbaa !4
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  %arrayidx6.phi.trans.insert = getelementptr inbounds %struct.rtx_def** %operands, i64 1
+  %.pre = load %struct.rtx_def** %arrayidx6.phi.trans.insert, align 8, !tbaa !4
+  br i1 %cmp, label %land.lhs.true, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %2 = bitcast %struct.rtx_def* %.pre to i32*
+  %bf.load2 = load i32* %2, align 8
+  %bf.clear3 = and i32 %bf.load2, 65535
+  %cmp4 = icmp eq i32 %bf.clear3, 66
+  br i1 %cmp4, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry, %lor.lhs.false
+  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %0, %struct.rtx_def* %.pre) #9
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %lor.lhs.false
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %land.lhs.true ]
+  ret i32 %retval.0
+}

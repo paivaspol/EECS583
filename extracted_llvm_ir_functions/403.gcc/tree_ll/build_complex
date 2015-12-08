@@ -1,0 +1,44 @@
+define %union.tree_node* @build_complex(%union.tree_node* %type, %union.tree_node* %real, %union.tree_node* %imag) #0 {
+entry:
+  %call = tail call %union.tree_node* @make_node(i32 27) #10
+  %real1 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 2
+  %0 = bitcast i32* %real1 to %union.tree_node**
+  store %union.tree_node* %real, %union.tree_node** %0, align 8, !tbaa !0
+  %1 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 4
+  store %union.tree_node* %imag, %union.tree_node** %1, align 8, !tbaa !0
+  %tobool = icmp eq %union.tree_node* %type, null
+  br i1 %tobool, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %type4 = getelementptr inbounds %union.tree_node* %real, i64 0, i32 0, i32 0, i32 1
+  %2 = load %union.tree_node** %type4, align 8, !tbaa !0
+  %call5 = tail call %union.tree_node* @build_complex_type(%union.tree_node* %2) #10
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi %union.tree_node* [ %call5, %cond.false ], [ %type, %entry ]
+  %type7 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 1
+  store %union.tree_node* %cond, %union.tree_node** %type7, align 8, !tbaa !0
+  %public_flag = getelementptr inbounds %union.tree_node* %real, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %public_flag to i32*
+  %bf.load = load i32* %3, align 8
+  %public_flag10 = getelementptr inbounds %union.tree_node* %imag, i64 0, i32 0, i32 0, i32 2
+  %4 = bitcast [4 x i8]* %public_flag10 to i32*
+  %bf.load11 = load i32* %4, align 8
+  %bf.lshr47 = or i32 %bf.load11, %bf.load
+  %or = and i32 %bf.lshr47, 524288
+  %public_flag15 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 2
+  %5 = bitcast [4 x i8]* %public_flag15 to i32*
+  %bf.load16 = load i32* %5, align 8
+  %bf.clear17 = and i32 %bf.load16, -524289
+  %bf.set = or i32 %bf.clear17, %or
+  store i32 %bf.set, i32* %5, align 8
+  %bf.load19 = load i32* %3, align 8
+  %bf.load24 = load i32* %4, align 8
+  %bf.lshr2049 = or i32 %bf.load24, %bf.load19
+  %or27 = and i32 %bf.lshr2049, 262144
+  %bf.clear33 = and i32 %bf.set, -262145
+  %bf.set34 = or i32 %or27, %bf.clear33
+  store i32 %bf.set34, i32* %5, align 8
+  ret %union.tree_node* %call
+}

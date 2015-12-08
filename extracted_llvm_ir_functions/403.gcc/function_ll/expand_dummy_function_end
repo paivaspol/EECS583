@@ -1,0 +1,29 @@
+define void @expand_dummy_function_end() #0 {
+entry:
+  %call1 = tail call i32 @in_sequence_p() #10
+  %tobool2 = icmp eq i32 %call1, 0
+  br i1 %tobool2, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  tail call void @end_sequence() #10
+  %call = tail call i32 @in_sequence_p() #10
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %1 = load void (%struct.function*)** @free_lang_status, align 8, !tbaa !0
+  %tobool.i = icmp eq void (%struct.function*)* %1, null
+  br i1 %tobool.i, label %free_after_parsing.exit, label %if.then.i
+
+if.then.i:                                        ; preds = %while.end
+  tail call void %1(%struct.function* %0) #10
+  br label %free_after_parsing.exit
+
+free_after_parsing.exit:                          ; preds = %while.end, %if.then.i
+  tail call void @free_stmt_status(%struct.function* %0) #10
+  %2 = load %struct.function** @cfun, align 8, !tbaa !0
+  tail call void @free_after_compilation(%struct.function* %2) #9
+  store %struct.function* null, %struct.function** @cfun, align 8, !tbaa !0
+  ret void
+}

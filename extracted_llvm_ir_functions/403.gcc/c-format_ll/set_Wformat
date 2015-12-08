@@ -1,0 +1,16 @@
+define void @set_Wformat(i32 %setting) #0 {
+entry:
+  store i32 %setting, i32* @warn_format, align 4, !tbaa !0
+  store i32 %setting, i32* @warn_format_y2k, align 4, !tbaa !0
+  store i32 %setting, i32* @warn_format_extra_args, align 4, !tbaa !0
+  %cmp = icmp eq i32 %setting, 1
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  store i32 %setting, i32* @warn_format_nonliteral, align 4, !tbaa !0
+  store i32 %setting, i32* @warn_format_security, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

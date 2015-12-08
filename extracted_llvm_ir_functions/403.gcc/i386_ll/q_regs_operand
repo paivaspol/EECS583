@@ -1,0 +1,49 @@
+define i32 @q_regs_operand(%struct.rtx_def* nocapture %op, i32 %mode) #2 {
+entry:
+  %cmp = icmp eq i32 %mode, 0
+  %.phi.trans.insert19 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load2.pre = load i32* %.phi.trans.insert19, align 8
+  br i1 %cmp, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %bf.lshr = lshr i32 %bf.load2.pre, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %cmp1 = icmp eq i32 %bf.clear, %mode
+  br i1 %cmp1, label %if.end, label %return
+
+if.end:                                           ; preds = %entry, %land.lhs.true
+  %bf.clear3 = and i32 %bf.load2.pre, 65535
+  %cmp4 = icmp eq i32 %bf.clear3, 63
+  br i1 %cmp4, label %if.then5, label %if.end6
+
+if.then5:                                         ; preds = %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %.phi.trans.insert = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load7.pre = load i32* %.phi.trans.insert, align 8
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.then5, %if.end
+  %bf.load7 = phi i32 [ %bf.load7.pre, %if.then5 ], [ %bf.load2.pre, %if.end ]
+  %op.addr.0 = phi %struct.rtx_def* [ %0, %if.then5 ], [ %op, %if.end ]
+  %bf.clear8 = and i32 %bf.load7, 65535
+  %cmp9 = icmp eq i32 %bf.clear8, 61
+  br i1 %cmp9, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %if.end6
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %op.addr.0, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx11 to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp12 = icmp ult i32 %1, 4
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %if.end6
+  %2 = phi i1 [ false, %if.end6 ], [ %cmp12, %land.rhs ]
+  %land.ext = zext i1 %2 to i32
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %land.end
+  %retval.0 = phi i32 [ %land.ext, %land.end ], [ 0, %land.lhs.true ]
+  ret i32 %retval.0
+}

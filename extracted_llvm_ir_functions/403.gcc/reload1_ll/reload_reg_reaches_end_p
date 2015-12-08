@@ -1,0 +1,384 @@
+define internal fastcc i32 @reload_reg_reaches_end_p(i32 %regno, i32 %opnum, i32 %type) #0 {
+entry:
+  switch i32 %type, label %sw.epilog [
+    i32 9, label %return
+    i32 10, label %for.cond.preheader
+    i32 3, label %for.cond49.preheader
+    i32 4, label %for.cond49.preheader
+    i32 0, label %for.cond137.preheader
+    i32 7, label %entry.for.cond166.preheader_crit_edge
+    i32 8, label %for.cond200.preheader
+    i32 2, label %sw.bb246
+    i32 1, label %sw.bb247
+    i32 5, label %sw.bb247
+    i32 6, label %sw.bb247
+  ]
+
+entry.for.cond166.preheader_crit_edge:            ; preds = %entry
+  %.pre = load i32* @reload_n_operands, align 4, !tbaa !0
+  br label %for.cond166.preheader
+
+for.cond200.preheader:                            ; preds = %entry
+  %0 = load i32* @reload_n_operands, align 4, !tbaa !0
+  %cmp201357 = icmp sgt i32 %0, 0
+  %sh_prom205 = zext i32 %regno to i64
+  %shl206 = shl i64 1, %sh_prom205
+  br i1 %cmp201357, label %for.body202, label %for.end227
+
+for.cond137.preheader:                            ; preds = %entry
+  %1 = load i32* @reload_n_operands, align 4, !tbaa !0
+  %sh_prom142 = zext i32 %regno to i64
+  %shl143 = shl i64 1, %sh_prom142
+  %2 = sext i32 %opnum to i64
+  br label %for.cond137
+
+for.cond166.preheader:                            ; preds = %for.cond137, %entry.for.cond166.preheader_crit_edge
+  %3 = phi i32 [ %.pre, %entry.for.cond166.preheader_crit_edge ], [ %1, %for.cond137 ]
+  %cmp167353 = icmp sgt i32 %3, 0
+  %sh_prom171 = zext i32 %regno to i64
+  %shl172 = shl i64 1, %sh_prom171
+  br i1 %cmp167353, label %for.body168, label %for.end193
+
+for.cond49.preheader:                             ; preds = %entry, %entry
+  %4 = load i32* @reload_n_operands, align 4, !tbaa !0
+  %cmp50350 = icmp sgt i32 %4, %opnum
+  %sh_prom54 = zext i32 %regno to i64
+  %shl55 = shl i64 1, %sh_prom54
+  %5 = sext i32 %opnum to i64
+  br i1 %cmp50350, label %for.body51, label %for.cond63.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %6 = load i32* @reload_n_operands, align 4, !tbaa !0
+  %cmp343 = icmp sgt i32 %6, 0
+  %sh_prom = zext i32 %regno to i64
+  %shl = shl i64 1, %sh_prom
+  br i1 %cmp343, label %for.body, label %for.end
+
+for.cond:                                         ; preds = %lor.lhs.false29
+  %7 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %7, %6
+  br i1 %cmp, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output_addr, i64 0, i64 %indvars.iv
+  %8 = load i64* %arrayidx, align 8, !tbaa !4
+  %and = and i64 %8, %shl
+  %tobool = icmp eq i64 %and, 0
+  br i1 %tobool, label %lor.lhs.false, label %return
+
+lor.lhs.false:                                    ; preds = %for.body
+  %arrayidx3 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_outaddr_addr, i64 0, i64 %indvars.iv
+  %9 = load i64* %arrayidx3, align 8, !tbaa !4
+  %and6 = and i64 %9, %shl
+  %tobool7 = icmp eq i64 %and6, 0
+  br i1 %tobool7, label %lor.lhs.false8, label %return
+
+lor.lhs.false8:                                   ; preds = %lor.lhs.false
+  %arrayidx10 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output, i64 0, i64 %indvars.iv
+  %10 = load i64* %arrayidx10, align 8, !tbaa !4
+  %and13 = and i64 %10, %shl
+  %tobool14 = icmp eq i64 %and13, 0
+  br i1 %tobool14, label %lor.lhs.false15, label %return
+
+lor.lhs.false15:                                  ; preds = %lor.lhs.false8
+  %arrayidx17 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_input_addr, i64 0, i64 %indvars.iv
+  %11 = load i64* %arrayidx17, align 8, !tbaa !4
+  %and20 = and i64 %11, %shl
+  %tobool21 = icmp eq i64 %and20, 0
+  br i1 %tobool21, label %lor.lhs.false22, label %return
+
+lor.lhs.false22:                                  ; preds = %lor.lhs.false15
+  %arrayidx24 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_inpaddr_addr, i64 0, i64 %indvars.iv
+  %12 = load i64* %arrayidx24, align 8, !tbaa !4
+  %and27 = and i64 %12, %shl
+  %tobool28 = icmp eq i64 %and27, 0
+  br i1 %tobool28, label %lor.lhs.false29, label %return
+
+lor.lhs.false29:                                  ; preds = %lor.lhs.false22
+  %arrayidx31 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_input, i64 0, i64 %indvars.iv
+  %13 = load i64* %arrayidx31, align 8, !tbaa !4
+  %and34 = and i64 %13, %shl
+  %tobool35 = icmp eq i64 %and34, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %tobool35, label %for.cond, label %return
+
+for.end:                                          ; preds = %for.cond.preheader, %for.cond
+  %14 = load i64* @reload_reg_used_in_op_addr, align 8, !tbaa !4
+  %and38 = and i64 %14, %shl
+  %tobool39 = icmp eq i64 %and38, 0
+  br i1 %tobool39, label %land.lhs.true, label %land.end
+
+land.lhs.true:                                    ; preds = %for.end
+  %15 = load i64* @reload_reg_used_in_insn, align 8, !tbaa !4
+  %and42 = and i64 %15, %shl
+  %tobool43 = icmp eq i64 %and42, 0
+  br i1 %tobool43, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %land.lhs.true
+  %16 = load i64* @reload_reg_used, align 8, !tbaa !4
+  %and46 = and i64 %16, %shl
+  %lnot = icmp eq i64 %and46, 0
+  br label %land.end
+
+land.end:                                         ; preds = %land.lhs.true, %for.end, %land.rhs
+  %17 = phi i1 [ false, %land.lhs.true ], [ false, %for.end ], [ %lnot, %land.rhs ]
+  %land.ext = zext i1 %17 to i32
+  br label %return
+
+for.cond49:                                       ; preds = %for.body51
+  %18 = trunc i64 %indvars.iv.next367 to i32
+  %cmp50 = icmp slt i32 %18, %4
+  br i1 %cmp50, label %for.body51, label %for.cond63.preheader
+
+for.cond63.preheader:                             ; preds = %for.cond49.preheader, %for.cond49
+  br label %for.cond63
+
+for.body51:                                       ; preds = %for.cond49.preheader, %for.cond49
+  %indvars.iv366 = phi i64 [ %indvars.iv.next367, %for.cond49 ], [ %5, %for.cond49.preheader ]
+  %arrayidx53 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_input, i64 0, i64 %indvars.iv366
+  %19 = load i64* %arrayidx53, align 8, !tbaa !4
+  %and56 = and i64 %19, %shl55
+  %tobool57 = icmp eq i64 %and56, 0
+  %indvars.iv.next367 = add i64 %indvars.iv366, 1
+  br i1 %tobool57, label %for.cond49, label %return
+
+for.cond63:                                       ; preds = %for.cond63.preheader, %lor.lhs.false72
+  %indvars.iv364 = phi i64 [ %5, %for.cond63.preheader ], [ %indvars.iv.next365, %lor.lhs.false72 ]
+  %indvars.iv.next365 = add i64 %indvars.iv364, 1
+  %20 = trunc i64 %indvars.iv.next365 to i32
+  %cmp64 = icmp slt i32 %20, %4
+  br i1 %cmp64, label %for.body65, label %for.cond84.preheader
+
+for.cond84.preheader:                             ; preds = %for.cond63
+  %cmp85346 = icmp sgt i32 %4, 0
+  br i1 %cmp85346, label %for.body86, label %for.end111
+
+for.body65:                                       ; preds = %for.cond63
+  %arrayidx67 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_input_addr, i64 0, i64 %indvars.iv.next365
+  %21 = load i64* %arrayidx67, align 8, !tbaa !4
+  %and70 = and i64 %21, %shl55
+  %tobool71 = icmp eq i64 %and70, 0
+  br i1 %tobool71, label %lor.lhs.false72, label %return
+
+lor.lhs.false72:                                  ; preds = %for.body65
+  %arrayidx74 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_inpaddr_addr, i64 0, i64 %indvars.iv.next365
+  %22 = load i64* %arrayidx74, align 8, !tbaa !4
+  %and77 = and i64 %22, %shl55
+  %tobool78 = icmp eq i64 %and77, 0
+  br i1 %tobool78, label %for.cond63, label %return
+
+for.cond84:                                       ; preds = %lor.lhs.false100
+  %23 = trunc i64 %indvars.iv.next363 to i32
+  %cmp85 = icmp slt i32 %23, %4
+  br i1 %cmp85, label %for.body86, label %for.end111
+
+for.body86:                                       ; preds = %for.cond84.preheader, %for.cond84
+  %indvars.iv362 = phi i64 [ %indvars.iv.next363, %for.cond84 ], [ 0, %for.cond84.preheader ]
+  %arrayidx88 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output_addr, i64 0, i64 %indvars.iv362
+  %24 = load i64* %arrayidx88, align 8, !tbaa !4
+  %and91 = and i64 %24, %shl55
+  %tobool92 = icmp eq i64 %and91, 0
+  br i1 %tobool92, label %lor.lhs.false93, label %return
+
+lor.lhs.false93:                                  ; preds = %for.body86
+  %arrayidx95 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_outaddr_addr, i64 0, i64 %indvars.iv362
+  %25 = load i64* %arrayidx95, align 8, !tbaa !4
+  %and98 = and i64 %25, %shl55
+  %tobool99 = icmp eq i64 %and98, 0
+  br i1 %tobool99, label %lor.lhs.false100, label %return
+
+lor.lhs.false100:                                 ; preds = %lor.lhs.false93
+  %arrayidx102 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output, i64 0, i64 %indvars.iv362
+  %26 = load i64* %arrayidx102, align 8, !tbaa !4
+  %and105 = and i64 %26, %shl55
+  %tobool106 = icmp eq i64 %and105, 0
+  %indvars.iv.next363 = add i64 %indvars.iv362, 1
+  br i1 %tobool106, label %for.cond84, label %return
+
+for.end111:                                       ; preds = %for.cond84, %for.cond84.preheader
+  %27 = load i64* @reload_reg_used_in_op_addr_reload, align 8, !tbaa !4
+  %and114 = and i64 %27, %shl55
+  %tobool115 = icmp eq i64 %and114, 0
+  br i1 %tobool115, label %if.end117, label %return
+
+if.end117:                                        ; preds = %for.end111
+  %28 = load i64* @reload_reg_used_in_op_addr, align 8, !tbaa !4
+  %and120 = and i64 %28, %shl55
+  %tobool121 = icmp eq i64 %and120, 0
+  br i1 %tobool121, label %land.lhs.true122, label %land.end133
+
+land.lhs.true122:                                 ; preds = %if.end117
+  %29 = load i64* @reload_reg_used_in_insn, align 8, !tbaa !4
+  %and125 = and i64 %29, %shl55
+  %tobool126 = icmp eq i64 %and125, 0
+  br i1 %tobool126, label %land.rhs127, label %land.end133
+
+land.rhs127:                                      ; preds = %land.lhs.true122
+  %30 = load i64* @reload_reg_used, align 8, !tbaa !4
+  %and130 = and i64 %30, %shl55
+  %lnot132 = icmp eq i64 %and130, 0
+  br label %land.end133
+
+land.end133:                                      ; preds = %land.lhs.true122, %if.end117, %land.rhs127
+  %31 = phi i1 [ false, %land.lhs.true122 ], [ false, %if.end117 ], [ %lnot132, %land.rhs127 ]
+  %land.ext134 = zext i1 %31 to i32
+  br label %return
+
+for.cond137:                                      ; preds = %for.cond137.preheader, %lor.lhs.false153
+  %indvars.iv370 = phi i64 [ %2, %for.cond137.preheader ], [ %indvars.iv.next371, %lor.lhs.false153 ]
+  %indvars.iv.next371 = add i64 %indvars.iv370, 1
+  %32 = trunc i64 %indvars.iv.next371 to i32
+  %cmp138 = icmp slt i32 %32, %1
+  br i1 %cmp138, label %for.body139, label %for.cond166.preheader
+
+for.body139:                                      ; preds = %for.cond137
+  %arrayidx141 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_input_addr, i64 0, i64 %indvars.iv.next371
+  %33 = load i64* %arrayidx141, align 8, !tbaa !4
+  %and144 = and i64 %33, %shl143
+  %tobool145 = icmp eq i64 %and144, 0
+  br i1 %tobool145, label %lor.lhs.false146, label %return
+
+lor.lhs.false146:                                 ; preds = %for.body139
+  %arrayidx148 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_inpaddr_addr, i64 0, i64 %indvars.iv.next371
+  %34 = load i64* %arrayidx148, align 8, !tbaa !4
+  %and151 = and i64 %34, %shl143
+  %tobool152 = icmp eq i64 %and151, 0
+  br i1 %tobool152, label %lor.lhs.false153, label %return
+
+lor.lhs.false153:                                 ; preds = %lor.lhs.false146
+  %arrayidx155 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_input, i64 0, i64 %indvars.iv.next371
+  %35 = load i64* %arrayidx155, align 8, !tbaa !4
+  %and158 = and i64 %35, %shl143
+  %tobool159 = icmp eq i64 %and158, 0
+  br i1 %tobool159, label %for.cond137, label %return
+
+for.cond166:                                      ; preds = %lor.lhs.false182
+  %36 = trunc i64 %indvars.iv.next369 to i32
+  %cmp167 = icmp slt i32 %36, %3
+  br i1 %cmp167, label %for.body168, label %for.end193
+
+for.body168:                                      ; preds = %for.cond166.preheader, %for.cond166
+  %indvars.iv368 = phi i64 [ %indvars.iv.next369, %for.cond166 ], [ 0, %for.cond166.preheader ]
+  %arrayidx170 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output_addr, i64 0, i64 %indvars.iv368
+  %37 = load i64* %arrayidx170, align 8, !tbaa !4
+  %and173 = and i64 %37, %shl172
+  %tobool174 = icmp eq i64 %and173, 0
+  br i1 %tobool174, label %lor.lhs.false175, label %return
+
+lor.lhs.false175:                                 ; preds = %for.body168
+  %arrayidx177 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_outaddr_addr, i64 0, i64 %indvars.iv368
+  %38 = load i64* %arrayidx177, align 8, !tbaa !4
+  %and180 = and i64 %38, %shl172
+  %tobool181 = icmp eq i64 %and180, 0
+  br i1 %tobool181, label %lor.lhs.false182, label %return
+
+lor.lhs.false182:                                 ; preds = %lor.lhs.false175
+  %arrayidx184 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output, i64 0, i64 %indvars.iv368
+  %39 = load i64* %arrayidx184, align 8, !tbaa !4
+  %and187 = and i64 %39, %shl172
+  %tobool188 = icmp eq i64 %and187, 0
+  %indvars.iv.next369 = add i64 %indvars.iv368, 1
+  br i1 %tobool188, label %for.cond166, label %return
+
+for.end193:                                       ; preds = %for.cond166.preheader, %for.cond166
+  %40 = load i64* @reload_reg_used, align 8, !tbaa !4
+  %and196 = and i64 %40, %shl172
+  %lnot198 = icmp eq i64 %and196, 0
+  %lnot.ext = zext i1 %lnot198 to i32
+  br label %return
+
+for.cond200:                                      ; preds = %lor.lhs.false216
+  %41 = trunc i64 %indvars.iv.next373 to i32
+  %cmp201 = icmp slt i32 %41, %0
+  br i1 %cmp201, label %for.body202, label %for.end227
+
+for.body202:                                      ; preds = %for.cond200.preheader, %for.cond200
+  %indvars.iv372 = phi i64 [ %indvars.iv.next373, %for.cond200 ], [ 0, %for.cond200.preheader ]
+  %arrayidx204 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output_addr, i64 0, i64 %indvars.iv372
+  %42 = load i64* %arrayidx204, align 8, !tbaa !4
+  %and207 = and i64 %42, %shl206
+  %tobool208 = icmp eq i64 %and207, 0
+  br i1 %tobool208, label %lor.lhs.false209, label %return
+
+lor.lhs.false209:                                 ; preds = %for.body202
+  %arrayidx211 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_outaddr_addr, i64 0, i64 %indvars.iv372
+  %43 = load i64* %arrayidx211, align 8, !tbaa !4
+  %and214 = and i64 %43, %shl206
+  %tobool215 = icmp eq i64 %and214, 0
+  br i1 %tobool215, label %lor.lhs.false216, label %return
+
+lor.lhs.false216:                                 ; preds = %lor.lhs.false209
+  %arrayidx218 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output, i64 0, i64 %indvars.iv372
+  %44 = load i64* %arrayidx218, align 8, !tbaa !4
+  %and221 = and i64 %44, %shl206
+  %tobool222 = icmp eq i64 %and221, 0
+  %indvars.iv.next373 = add i64 %indvars.iv372, 1
+  br i1 %tobool222, label %for.cond200, label %return
+
+for.end227:                                       ; preds = %for.cond200.preheader, %for.cond200
+  %45 = load i64* @reload_reg_used_in_op_addr, align 8, !tbaa !4
+  %and230 = and i64 %45, %shl206
+  %tobool231 = icmp eq i64 %and230, 0
+  br i1 %tobool231, label %land.lhs.true232, label %land.end244
+
+land.lhs.true232:                                 ; preds = %for.end227
+  %46 = load i64* @reload_reg_used_in_insn, align 8, !tbaa !4
+  %and235 = and i64 %46, %shl206
+  %tobool236 = icmp eq i64 %and235, 0
+  br i1 %tobool236, label %land.rhs237, label %land.end244
+
+land.rhs237:                                      ; preds = %land.lhs.true232
+  %47 = load i64* @reload_reg_used, align 8, !tbaa !4
+  %and240 = and i64 %47, %shl206
+  %lnot242 = icmp eq i64 %and240, 0
+  br label %land.end244
+
+land.end244:                                      ; preds = %land.lhs.true232, %for.end227, %land.rhs237
+  %48 = phi i1 [ false, %land.lhs.true232 ], [ false, %for.end227 ], [ %lnot242, %land.rhs237 ]
+  %land.ext245 = zext i1 %48 to i32
+  br label %return
+
+sw.bb246:                                         ; preds = %entry
+  %49 = load i32* @reload_n_operands, align 4, !tbaa !0
+  br label %sw.bb247
+
+sw.bb247:                                         ; preds = %entry, %entry, %entry, %sw.bb246
+  %opnum.addr.0 = phi i32 [ %opnum, %entry ], [ %opnum, %entry ], [ %opnum, %entry ], [ %49, %sw.bb246 ]
+  %cmp249360 = icmp sgt i32 %opnum.addr.0, 0
+  br i1 %cmp249360, label %for.body250.lr.ph, label %return
+
+for.body250.lr.ph:                                ; preds = %sw.bb247
+  %sh_prom253 = zext i32 %regno to i64
+  %shl254 = shl i64 1, %sh_prom253
+  br label %for.body250
+
+for.cond248:                                      ; preds = %lor.lhs.false257
+  %50 = trunc i64 %indvars.iv.next375 to i32
+  %cmp249 = icmp slt i32 %50, %opnum.addr.0
+  br i1 %cmp249, label %for.body250, label %return
+
+for.body250:                                      ; preds = %for.body250.lr.ph, %for.cond248
+  %indvars.iv374 = phi i64 [ 0, %for.body250.lr.ph ], [ %indvars.iv.next375, %for.cond248 ]
+  %arrayidx252 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output_addr, i64 0, i64 %indvars.iv374
+  %51 = load i64* %arrayidx252, align 8, !tbaa !4
+  %and255 = and i64 %51, %shl254
+  %tobool256 = icmp eq i64 %and255, 0
+  br i1 %tobool256, label %lor.lhs.false257, label %return
+
+lor.lhs.false257:                                 ; preds = %for.body250
+  %arrayidx259 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_outaddr_addr, i64 0, i64 %indvars.iv374
+  %52 = load i64* %arrayidx259, align 8, !tbaa !4
+  %and262 = and i64 %52, %shl254
+  %tobool263 = icmp eq i64 %and262, 0
+  %indvars.iv.next375 = add i64 %indvars.iv374, 1
+  br i1 %tobool263, label %for.cond248, label %return
+
+sw.epilog:                                        ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 4663, i8* getelementptr inbounds ([25 x i8]* @__FUNCTION__.reload_reg_reaches_end_p, i64 0, i64 0)) #8
+  unreachable
+
+return:                                           ; preds = %sw.bb247, %for.body250, %lor.lhs.false257, %for.cond248, %for.body202, %lor.lhs.false209, %lor.lhs.false216, %for.body139, %lor.lhs.false146, %lor.lhs.false153, %for.body168, %lor.lhs.false175, %lor.lhs.false182, %for.body51, %for.body65, %lor.lhs.false72, %for.body86, %lor.lhs.false93, %lor.lhs.false100, %for.body, %lor.lhs.false, %lor.lhs.false8, %lor.lhs.false15, %lor.lhs.false22, %lor.lhs.false29, %for.end111, %entry, %land.end244, %for.end193, %land.end133, %land.end
+  %retval.0 = phi i32 [ %land.ext245, %land.end244 ], [ %lnot.ext, %for.end193 ], [ %land.ext134, %land.end133 ], [ %land.ext, %land.end ], [ 1, %entry ], [ 0, %for.end111 ], [ 0, %lor.lhs.false29 ], [ 0, %lor.lhs.false22 ], [ 0, %lor.lhs.false15 ], [ 0, %lor.lhs.false8 ], [ 0, %lor.lhs.false ], [ 0, %for.body ], [ 0, %lor.lhs.false100 ], [ 0, %lor.lhs.false93 ], [ 0, %for.body86 ], [ 0, %lor.lhs.false72 ], [ 0, %for.body65 ], [ 0, %for.body51 ], [ 0, %lor.lhs.false182 ], [ 0, %lor.lhs.false175 ], [ 0, %for.body168 ], [ 0, %lor.lhs.false153 ], [ 0, %lor.lhs.false146 ], [ 0, %for.body139 ], [ 0, %lor.lhs.false216 ], [ 0, %lor.lhs.false209 ], [ 0, %for.body202 ], [ 1, %sw.bb247 ], [ 0, %for.body250 ], [ 0, %lor.lhs.false257 ], [ 1, %for.cond248 ]
+  ret i32 %retval.0
+}

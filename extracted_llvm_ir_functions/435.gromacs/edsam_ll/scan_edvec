@@ -1,0 +1,36 @@
+define void @scan_edvec(%struct._IO_FILE* %in, i32 %nr, [3 x float]* nocapture %vec) #0 {
+entry:
+  %line = alloca [4097 x i8], align 16
+  %x = alloca double, align 8
+  %y = alloca double, align 8
+  %z = alloca double, align 8
+  %0 = getelementptr inbounds [4097 x i8]* %line, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4097, i8* %0) #3
+  %cmp18 = icmp sgt i32 %nr, 0
+  br i1 %cmp18, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %call = call i8* @fgets2(i8* %0, i32 4096, %struct._IO_FILE* %in) #6
+  %call2 = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %0, i8* getelementptr inbounds ([10 x i8]* @.str42, i64 0, i64 0), double* %x, double* %y, double* %z) #6
+  %1 = load double* %x, align 8, !tbaa !5
+  %conv = fptrunc double %1 to float
+  %arrayidx3 = getelementptr inbounds [3 x float]* %vec, i64 %indvars.iv, i64 0
+  store float %conv, float* %arrayidx3, align 4, !tbaa !4
+  %2 = load double* %y, align 8, !tbaa !5
+  %conv4 = fptrunc double %2 to float
+  %arrayidx7 = getelementptr inbounds [3 x float]* %vec, i64 %indvars.iv, i64 1
+  store float %conv4, float* %arrayidx7, align 4, !tbaa !4
+  %3 = load double* %z, align 8, !tbaa !5
+  %conv8 = fptrunc double %3 to float
+  %arrayidx11 = getelementptr inbounds [3 x float]* %vec, i64 %indvars.iv, i64 2
+  store float %conv8, float* %arrayidx11, align 4, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nr
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  call void @llvm.lifetime.end(i64 4097, i8* %0) #3
+  ret void
+}

@@ -1,0 +1,76 @@
+define internal fastcc i32 @add_ttypes_entry(%struct.htab* %ttypes_hash, %union.tree_node* %type) #0 {
+entry:
+  %0 = bitcast %union.tree_node* %type to i8*
+  %1 = ptrtoint %union.tree_node* %type to i64
+  %.tr = trunc i64 %1 to i32
+  %conv = and i32 %.tr, 262143
+  %call = tail call i8** @htab_find_slot_with_hash(%struct.htab* %ttypes_hash, i8* %0, i32 %conv, i32 1) #6
+  %2 = load i8** %call, align 8
+  %cmp = icmp eq i8* %2, null
+  br i1 %cmp, label %if.then, label %if.end25
+
+if.then:                                          ; preds = %entry
+  %call2 = tail call noalias i8* @xmalloc(i64 16) #6
+  %t = bitcast i8* %call2 to %union.tree_node**
+  store %union.tree_node* %type, %union.tree_node** %t, align 8, !tbaa !3
+  %3 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh = getelementptr inbounds %struct.function* %3, i64 0, i32 0
+  %4 = load %struct.eh_status** %eh, align 8, !tbaa !3
+  %ttype_data = getelementptr inbounds %struct.eh_status* %4, i64 0, i32 9
+  %5 = load %struct.varray_head_tag** %ttype_data, align 8, !tbaa !3
+  %elements_used = getelementptr inbounds %struct.varray_head_tag* %5, i64 0, i32 1
+  %6 = load i64* %elements_used, align 8, !tbaa !4
+  %add = add i64 %6, 1
+  %conv3 = trunc i64 %add to i32
+  %filter = getelementptr inbounds i8* %call2, i64 8
+  %7 = bitcast i8* %filter to i32*
+  store i32 %conv3, i32* %7, align 4, !tbaa !0
+  store i8* %call2, i8** %call, align 8, !tbaa !3
+  %8 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh4 = getelementptr inbounds %struct.function* %8, i64 0, i32 0
+  %9 = load %struct.eh_status** %eh4, align 8, !tbaa !3
+  %ttype_data5 = getelementptr inbounds %struct.eh_status* %9, i64 0, i32 9
+  %10 = load %struct.varray_head_tag** %ttype_data5, align 8, !tbaa !3
+  %elements_used6 = getelementptr inbounds %struct.varray_head_tag* %10, i64 0, i32 1
+  %11 = load i64* %elements_used6, align 8, !tbaa !4
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %10, i64 0, i32 0
+  %12 = load i64* %num_elements, align 8, !tbaa !4
+  %cmp9 = icmp ult i64 %11, %12
+  br i1 %cmp9, label %if.end, label %if.then11
+
+if.then11:                                        ; preds = %if.then
+  %mul = shl i64 %12, 1
+  %call17 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %10, i64 %mul) #6
+  %13 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh18 = getelementptr inbounds %struct.function* %13, i64 0, i32 0
+  %14 = load %struct.eh_status** %eh18, align 8, !tbaa !3
+  %ttype_data19 = getelementptr inbounds %struct.eh_status* %14, i64 0, i32 9
+  store %struct.varray_head_tag* %call17, %struct.varray_head_tag** %ttype_data19, align 8, !tbaa !3
+  %.pre = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh20.phi.trans.insert = getelementptr inbounds %struct.function* %.pre, i64 0, i32 0
+  %.pre34 = load %struct.eh_status** %eh20.phi.trans.insert, align 8, !tbaa !3
+  %ttype_data21.phi.trans.insert = getelementptr inbounds %struct.eh_status* %.pre34, i64 0, i32 9
+  %.pre35 = load %struct.varray_head_tag** %ttype_data21.phi.trans.insert, align 8, !tbaa !3
+  %elements_used22.phi.trans.insert = getelementptr inbounds %struct.varray_head_tag* %.pre35, i64 0, i32 1
+  %.pre36 = load i64* %elements_used22.phi.trans.insert, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then11
+  %15 = phi i64 [ %11, %if.then ], [ %.pre36, %if.then11 ]
+  %16 = phi %struct.varray_head_tag* [ %10, %if.then ], [ %.pre35, %if.then11 ]
+  %elements_used22 = getelementptr inbounds %struct.varray_head_tag* %16, i64 0, i32 1
+  %inc = add i64 %15, 1
+  store i64 %inc, i64* %elements_used22, align 8, !tbaa !4
+  %data = getelementptr inbounds %struct.varray_head_tag* %16, i64 0, i32 4
+  %tree = bitcast %union.varray_data_tag* %data to [1 x %union.tree_node*]*
+  %arrayidx = getelementptr inbounds [1 x %union.tree_node*]* %tree, i64 0, i64 %15
+  store %union.tree_node* %type, %union.tree_node** %arrayidx, align 8, !tbaa !3
+  br label %if.end25
+
+if.end25:                                         ; preds = %entry, %if.end
+  %n.0.in = phi i8* [ %call2, %if.end ], [ %2, %entry ]
+  %filter26 = getelementptr inbounds i8* %n.0.in, i64 8
+  %17 = bitcast i8* %filter26 to i32*
+  %18 = load i32* %17, align 4, !tbaa !0
+  ret i32 %18
+}

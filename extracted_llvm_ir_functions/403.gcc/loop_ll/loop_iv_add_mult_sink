@@ -1,0 +1,32 @@
+define void @loop_iv_add_mult_sink(%struct.loop* nocapture %loop, %struct.rtx_def* %b, %struct.rtx_def* %m, %struct.rtx_def* %a, %struct.rtx_def* %reg) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %b) #8
+  %call1 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %m) #8
+  %call2 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %a) #8
+  %call3 = tail call fastcc %struct.rtx_def* @gen_add_mult(%struct.rtx_def* %call, %struct.rtx_def* %call1, %struct.rtx_def* %call2, %struct.rtx_def* %reg) #10
+  %sink = getelementptr inbounds %struct.loop* %loop, i64 0, i32 30
+  %0 = load %struct.rtx_def** %sink, align 8, !tbaa !4
+  tail call fastcc void @update_reg_last_use(%struct.rtx_def* %a, %struct.rtx_def* %0) #10
+  %1 = load %struct.rtx_def** %sink, align 8, !tbaa !4
+  tail call fastcc void @update_reg_last_use(%struct.rtx_def* %b, %struct.rtx_def* %1) #10
+  %2 = load %struct.rtx_def** %sink, align 8, !tbaa !4
+  tail call fastcc void @update_reg_last_use(%struct.rtx_def* %m, %struct.rtx_def* %2) #10
+  %3 = load %struct.rtx_def** %sink, align 8, !tbaa !4
+  %tobool4.i.i = icmp eq %struct.rtx_def* %3, null
+  br i1 %tobool4.i.i, label %if.then.lr.ph.i.i, label %loop_insn_sink.exit
+
+if.then.lr.ph.i.i:                                ; preds = %entry
+  %start.i.i.i = getelementptr inbounds %struct.loop* %loop, i64 0, i32 26
+  %4 = load %struct.rtx_def** %start.i.i.i, align 8, !tbaa !4
+  %tobool.i.i = icmp eq %struct.rtx_def* %4, null
+  br i1 %tobool.i.i, label %if.then.i.i, label %loop_insn_sink.exit
+
+if.then.i.i:                                      ; preds = %if.then.lr.ph.i.i, %if.then.i.i
+  br label %if.then.i.i
+
+loop_insn_sink.exit:                              ; preds = %entry, %if.then.lr.ph.i.i
+  %where_insn.tr.lcssa.i.i = phi %struct.rtx_def* [ %3, %entry ], [ %4, %if.then.lr.ph.i.i ]
+  %call1.i.i = tail call %struct.rtx_def* @emit_insn_before(%struct.rtx_def* %call3, %struct.rtx_def* %where_insn.tr.lcssa.i.i) #8
+  tail call fastcc void @loop_regs_update(%struct.rtx_def* %call3) #10
+  ret void
+}

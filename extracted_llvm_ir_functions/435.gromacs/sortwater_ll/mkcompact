@@ -1,0 +1,324 @@
+define void @mkcompact(i32 %astart, i32 %nwater, i32 %nwatom, [3 x float]* %x, [3 x float]* nocapture %v, i32 %nnode, [3 x float]* nocapture %box) #0 {
+entry:
+  %cmp = icmp slt i32 %nnode, 2
+  br i1 %cmp, label %return, label %for.body.i.i
+
+for.body.i.i:                                     ; preds = %entry, %for.body.i.i
+  %ip.05.i.i = phi i32 [ %mul.i.i, %for.body.i.i ], [ 1, %entry ]
+  %i.04.i.i = phi i32 [ %inc.i.i, %for.body.i.i ], [ 0, %entry ]
+  %mul.i.i = mul nsw i32 %ip.05.i.i, %nnode
+  %inc.i.i = add nsw i32 %i.04.i.i, 1
+  %exitcond.i.i = icmp eq i32 %inc.i.i, 3
+  br i1 %exitcond.i.i, label %ipow.exit.i, label %for.body.i.i
+
+ipow.exit.i:                                      ; preds = %for.body.i.i
+  %mul.i = mul nsw i32 %mul.i.i, 6
+  %call1.i = tail call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), i32 270, i32 %mul.i, i32 12) #5
+  %0 = bitcast i8* %call1.i to [3 x i32]*
+  %add.i = add i32 %nnode, 1
+  %call2.i = tail call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), i32 272, i32 %add.i, i32 4) #5
+  %1 = bitcast i8* %call2.i to i32*
+  %call4.i = tail call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), i32 273, i32 %add.i, i32 4) #5
+  %2 = bitcast i8* %call4.i to i32*
+  tail call fastcc void @factorize(i32 %nnode, i32* %1) #5
+  %cmp69.i = icmp slt i32 %nnode, 0
+  br i1 %cmp69.i, label %for.end35.thread.i, label %for.cond5.preheader.i
+
+for.end35.thread.i:                               ; preds = %ipow.exit.i
+  tail call void @qsort(i8* %call1.i, i64 0, i64 12, i32 (i8*, i8*)* @iv_comp) #5
+  br label %for.end76.i
+
+for.cond5.preheader.i:                            ; preds = %ipow.exit.i, %for.inc33.i
+  %indvars.iv80.i = phi i64 [ %indvars.iv.next81.i, %for.inc33.i ], [ 0, %ipow.exit.i ]
+  %nbb.072.i = phi i32 [ %nbb.1.lcssa.i, %for.inc33.i ], [ 0, %ipow.exit.i ]
+  %arrayidx.i = getelementptr inbounds i32* %1, i64 %indvars.iv80.i
+  %3 = load i32* %arrayidx.i, align 4, !tbaa !0
+  %cmp664.i = icmp slt i32 %3, 1
+  br i1 %cmp664.i, label %for.inc33.i, label %for.body7.i.preheader
+
+for.body7.i.preheader:                            ; preds = %for.cond5.preheader.i
+  %4 = trunc i64 %indvars.iv80.i to i32
+  br label %for.body7.i
+
+for.body7.i:                                      ; preds = %for.body7.i.preheader, %for.inc30.i
+  %nbb.167.i = phi i32 [ %nbb.2.lcssa.i, %for.inc30.i ], [ %nbb.072.i, %for.body7.i.preheader ]
+  %m.065.i = phi i32 [ %inc31.i, %for.inc30.i ], [ 1, %for.body7.i.preheader ]
+  %cmp3.i.i = icmp sgt i32 %m.065.i, 0
+  br i1 %cmp3.i.i, label %for.body.i6.i, label %ipow.exit7.i
+
+for.body.i6.i:                                    ; preds = %for.body7.i, %for.body.i6.i
+  %ip.05.i1.i = phi i32 [ %mul.i3.i, %for.body.i6.i ], [ 1, %for.body7.i ]
+  %i.04.i2.i = phi i32 [ %inc.i4.i, %for.body.i6.i ], [ 0, %for.body7.i ]
+  %mul.i3.i = mul nsw i32 %ip.05.i1.i, %4
+  %inc.i4.i = add nsw i32 %i.04.i2.i, 1
+  %exitcond.i5.i = icmp eq i32 %inc.i4.i, %m.065.i
+  br i1 %exitcond.i5.i, label %ipow.exit7.i, label %for.body.i6.i
+
+ipow.exit7.i:                                     ; preds = %for.body.i6.i, %for.body7.i
+  %ip.0.lcssa.i.i = phi i32 [ 1, %for.body7.i ], [ %mul.i3.i, %for.body.i6.i ]
+  %div.i = sdiv i32 %nnode, %ip.0.lcssa.i.i
+  tail call fastcc void @factorize(i32 %div.i, i32* %2) #5
+  %cmp1259.i = icmp slt i32 %div.i, 0
+  br i1 %cmp1259.i, label %for.inc30.i, label %for.cond14.preheader.lr.ph.i
+
+for.cond14.preheader.lr.ph.i:                     ; preds = %ipow.exit7.i
+  %5 = add i32 %div.i, 1
+  br label %for.cond14.preheader.i
+
+for.cond14.preheader.i:                           ; preds = %for.inc27.i, %for.cond14.preheader.lr.ph.i
+  %indvars.iv76.i = phi i64 [ %indvars.iv.next77.i, %for.inc27.i ], [ 0, %for.cond14.preheader.lr.ph.i ]
+  %nbb.262.i = phi i32 [ %nbb.3.lcssa.i, %for.inc27.i ], [ %nbb.167.i, %for.cond14.preheader.lr.ph.i ]
+  %arrayidx16.i = getelementptr inbounds i32* %2, i64 %indvars.iv76.i
+  %6 = load i32* %arrayidx16.i, align 4, !tbaa !0
+  %cmp1754.i = icmp slt i32 %6, 1
+  br i1 %cmp1754.i, label %for.inc27.i, label %for.body18.i.preheader
+
+for.body18.i.preheader:                           ; preds = %for.cond14.preheader.i
+  %7 = trunc i64 %indvars.iv76.i to i32
+  br label %for.body18.i
+
+for.body18.i:                                     ; preds = %for.body18.i.preheader, %for.inc.i
+  %8 = phi i32 [ %9, %for.inc.i ], [ %6, %for.body18.i.preheader ]
+  %nbb.357.i = phi i32 [ %nbb.4.i, %for.inc.i ], [ %nbb.262.i, %for.body18.i.preheader ]
+  %n.055.i = phi i32 [ %inc.i, %for.inc.i ], [ 1, %for.body18.i.preheader ]
+  %cmp3.i15.i = icmp sgt i32 %n.055.i, 0
+  br i1 %cmp3.i15.i, label %for.body.i21.i, label %ipow.exit23.i
+
+for.body.i21.i:                                   ; preds = %for.body18.i, %for.body.i21.i
+  %ip.05.i16.i = phi i32 [ %mul.i18.i, %for.body.i21.i ], [ 1, %for.body18.i ]
+  %i.04.i17.i = phi i32 [ %inc.i19.i, %for.body.i21.i ], [ 0, %for.body18.i ]
+  %mul.i18.i = mul nsw i32 %ip.05.i16.i, %7
+  %inc.i19.i = add nsw i32 %i.04.i17.i, 1
+  %exitcond.i20.i = icmp eq i32 %inc.i19.i, %n.055.i
+  br i1 %exitcond.i20.i, label %ipow.exit23.i, label %for.body.i21.i
+
+ipow.exit23.i:                                    ; preds = %for.body.i21.i, %for.body18.i
+  %ip.0.lcssa.i22.i = phi i32 [ 1, %for.body18.i ], [ %mul.i18.i, %for.body.i21.i ]
+  %div22.i = sdiv i32 %div.i, %ip.0.lcssa.i22.i
+  %cmp25.i = icmp sgt i32 %div22.i, 0
+  br i1 %cmp25.i, label %if.then.i, label %for.inc.i
+
+if.then.i:                                        ; preds = %ipow.exit23.i
+  %inc.i10.i = add nsw i32 %nbb.357.i, 1
+  %idxprom.i.i = sext i32 %nbb.357.i to i64
+  %arraydecay.i11.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom.i.i, i64 0
+  store i32 %ip.0.lcssa.i.i, i32* %arraydecay.i11.i, align 4, !tbaa !0
+  %arrayidx3.i.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom.i.i, i64 1
+  store i32 %ip.0.lcssa.i22.i, i32* %arrayidx3.i.i.i, align 4, !tbaa !0
+  %arrayidx5.i.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom.i.i, i64 2
+  store i32 %div22.i, i32* %arrayidx5.i.i.i, align 4, !tbaa !0
+  %inc5.i.i = add nsw i32 %nbb.357.i, 2
+  %idxprom6.i.i = sext i32 %inc.i10.i to i64
+  %arraydecay8.i14.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom6.i.i, i64 0
+  store i32 %ip.0.lcssa.i22.i, i32* %arraydecay8.i14.i, align 4, !tbaa !0
+  %arrayidx3.i112.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom6.i.i, i64 1
+  store i32 %ip.0.lcssa.i.i, i32* %arrayidx3.i112.i.i, align 4, !tbaa !0
+  %arrayidx5.i114.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom6.i.i, i64 2
+  store i32 %div22.i, i32* %arrayidx5.i114.i.i, align 4, !tbaa !0
+  %inc15.i.i = add nsw i32 %nbb.357.i, 3
+  %idxprom16.i.i = sext i32 %inc5.i.i to i64
+  %arraydecay18.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom16.i.i, i64 0
+  store i32 %div22.i, i32* %arraydecay18.i.i, align 4, !tbaa !0
+  %arrayidx3.i108.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom16.i.i, i64 1
+  store i32 %ip.0.lcssa.i.i, i32* %arrayidx3.i108.i.i, align 4, !tbaa !0
+  %arrayidx5.i110.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom16.i.i, i64 2
+  store i32 %ip.0.lcssa.i22.i, i32* %arrayidx5.i110.i.i, align 4, !tbaa !0
+  %inc25.i.i = add nsw i32 %nbb.357.i, 4
+  %idxprom26.i.i = sext i32 %inc15.i.i to i64
+  %arraydecay28.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom26.i.i, i64 0
+  store i32 %ip.0.lcssa.i.i, i32* %arraydecay28.i.i, align 4, !tbaa !0
+  %arrayidx3.i104.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom26.i.i, i64 1
+  store i32 %div22.i, i32* %arrayidx3.i104.i.i, align 4, !tbaa !0
+  %arrayidx5.i106.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom26.i.i, i64 2
+  store i32 %ip.0.lcssa.i22.i, i32* %arrayidx5.i106.i.i, align 4, !tbaa !0
+  %inc35.i.i = add nsw i32 %nbb.357.i, 5
+  %idxprom36.i.i = sext i32 %inc25.i.i to i64
+  %arraydecay38.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom36.i.i, i64 0
+  store i32 %ip.0.lcssa.i22.i, i32* %arraydecay38.i.i, align 4, !tbaa !0
+  %arrayidx3.i100.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom36.i.i, i64 1
+  store i32 %div22.i, i32* %arrayidx3.i100.i.i, align 4, !tbaa !0
+  %arrayidx5.i102.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom36.i.i, i64 2
+  store i32 %ip.0.lcssa.i.i, i32* %arrayidx5.i102.i.i, align 4, !tbaa !0
+  %inc45.i.i = add nsw i32 %nbb.357.i, 6
+  %idxprom46.i.i = sext i32 %inc35.i.i to i64
+  %arraydecay48.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom46.i.i, i64 0
+  store i32 %div22.i, i32* %arraydecay48.i.i, align 4, !tbaa !0
+  %arrayidx3.i96.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom46.i.i, i64 1
+  store i32 %ip.0.lcssa.i22.i, i32* %arrayidx3.i96.i.i, align 4, !tbaa !0
+  %arrayidx5.i98.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom46.i.i, i64 2
+  store i32 %ip.0.lcssa.i.i, i32* %arrayidx5.i98.i.i, align 4, !tbaa !0
+  %.pre.i = load i32* %arrayidx16.i, align 4, !tbaa !0
+  br label %for.inc.i
+
+for.inc.i:                                        ; preds = %if.then.i, %ipow.exit23.i
+  %9 = phi i32 [ %.pre.i, %if.then.i ], [ %8, %ipow.exit23.i ]
+  %nbb.4.i = phi i32 [ %inc45.i.i, %if.then.i ], [ %nbb.357.i, %ipow.exit23.i ]
+  %inc.i = add nsw i32 %n.055.i, 1
+  %cmp17.i = icmp slt i32 %n.055.i, %9
+  br i1 %cmp17.i, label %for.body18.i, label %for.inc27.i
+
+for.inc27.i:                                      ; preds = %for.inc.i, %for.cond14.preheader.i
+  %nbb.3.lcssa.i = phi i32 [ %nbb.262.i, %for.cond14.preheader.i ], [ %nbb.4.i, %for.inc.i ]
+  %indvars.iv.next77.i = add i64 %indvars.iv76.i, 1
+  %lftr.wideiv16 = trunc i64 %indvars.iv.next77.i to i32
+  %exitcond17 = icmp eq i32 %lftr.wideiv16, %5
+  br i1 %exitcond17, label %for.inc30.i, label %for.cond14.preheader.i
+
+for.inc30.i:                                      ; preds = %for.inc27.i, %ipow.exit7.i
+  %nbb.2.lcssa.i = phi i32 [ %nbb.167.i, %ipow.exit7.i ], [ %nbb.3.lcssa.i, %for.inc27.i ]
+  %inc31.i = add nsw i32 %m.065.i, 1
+  %10 = load i32* %arrayidx.i, align 4, !tbaa !0
+  %cmp6.i = icmp slt i32 %m.065.i, %10
+  br i1 %cmp6.i, label %for.body7.i, label %for.inc33.i
+
+for.inc33.i:                                      ; preds = %for.inc30.i, %for.cond5.preheader.i
+  %nbb.1.lcssa.i = phi i32 [ %nbb.072.i, %for.cond5.preheader.i ], [ %nbb.2.lcssa.i, %for.inc30.i ]
+  %indvars.iv.next81.i = add i64 %indvars.iv80.i, 1
+  %lftr.wideiv18 = trunc i64 %indvars.iv.next81.i to i32
+  %exitcond19 = icmp eq i32 %lftr.wideiv18, %add.i
+  br i1 %exitcond19, label %for.end35.i, label %for.cond5.preheader.i
+
+for.end35.i:                                      ; preds = %for.inc33.i
+  %conv.i = sext i32 %nbb.1.lcssa.i to i64
+  tail call void @qsort(i8* %call1.i, i64 %conv.i, i64 12, i32 (i8*, i8*)* @iv_comp) #5
+  %cmp3751.i = icmp sgt i32 %nbb.1.lcssa.i, 1
+  br i1 %cmp3751.i, label %for.body39.i, label %for.end76.i
+
+for.body39.i:                                     ; preds = %for.end35.i, %for.inc74.i
+  %indvars.iv74.i = phi i64 [ %indvars.iv.next75.i, %for.inc74.i ], [ 1, %for.end35.i ]
+  %j.152.i = phi i32 [ %j.2.i, %for.inc74.i ], [ 0, %for.end35.i ]
+  %arrayidx42.i = getelementptr inbounds [3 x i32]* %0, i64 %indvars.iv74.i, i64 0
+  %11 = load i32* %arrayidx42.i, align 4, !tbaa !0
+  %idxprom43.i = sext i32 %j.152.i to i64
+  %arrayidx45.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom43.i, i64 0
+  %12 = load i32* %arrayidx45.i, align 4, !tbaa !0
+  %cmp46.i = icmp eq i32 %11, %12
+  %arrayidx50.i = getelementptr inbounds [3 x i32]* %0, i64 %indvars.iv74.i, i64 1
+  br i1 %cmp46.i, label %lor.lhs.false.i, label %if.then65.i
+
+lor.lhs.false.i:                                  ; preds = %for.body39.i
+  %13 = load i32* %arrayidx50.i, align 4, !tbaa !0
+  %arrayidx53.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom43.i, i64 1
+  %14 = load i32* %arrayidx53.i, align 4, !tbaa !0
+  %cmp54.i = icmp eq i32 %13, %14
+  br i1 %cmp54.i, label %lor.lhs.false56.i, label %if.then65.i
+
+lor.lhs.false56.i:                                ; preds = %lor.lhs.false.i
+  %arrayidx59.i = getelementptr inbounds [3 x i32]* %0, i64 %indvars.iv74.i, i64 2
+  %15 = load i32* %arrayidx59.i, align 4, !tbaa !0
+  %arrayidx62.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom43.i, i64 2
+  %16 = load i32* %arrayidx62.i, align 4, !tbaa !0
+  %cmp63.i = icmp eq i32 %15, %16
+  br i1 %cmp63.i, label %for.inc74.i, label %if.then65.i
+
+if.then65.i:                                      ; preds = %lor.lhs.false56.i, %lor.lhs.false.i, %for.body39.i
+  %inc66.i = add nsw i32 %j.152.i, 1
+  %idxprom70.i = sext i32 %inc66.i to i64
+  %arraydecay72.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom70.i, i64 0
+  store i32 %11, i32* %arraydecay72.i, align 4, !tbaa !0
+  %17 = load i32* %arrayidx50.i, align 4, !tbaa !0
+  %arrayidx3.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom70.i, i64 1
+  store i32 %17, i32* %arrayidx3.i.i, align 4, !tbaa !0
+  %arrayidx4.i9.i = getelementptr inbounds [3 x i32]* %0, i64 %indvars.iv74.i, i64 2
+  %18 = load i32* %arrayidx4.i9.i, align 4, !tbaa !0
+  %arrayidx5.i.i = getelementptr inbounds [3 x i32]* %0, i64 %idxprom70.i, i64 2
+  store i32 %18, i32* %arrayidx5.i.i, align 4, !tbaa !0
+  br label %for.inc74.i
+
+for.inc74.i:                                      ; preds = %if.then65.i, %lor.lhs.false56.i
+  %j.2.i = phi i32 [ %inc66.i, %if.then65.i ], [ %j.152.i, %lor.lhs.false56.i ]
+  %indvars.iv.next75.i = add i64 %indvars.iv74.i, 1
+  %lftr.wideiv14 = trunc i64 %indvars.iv.next75.i to i32
+  %exitcond15 = icmp eq i32 %lftr.wideiv14, %nbb.1.lcssa.i
+  br i1 %exitcond15, label %for.end76.i, label %for.body39.i
+
+for.end76.i:                                      ; preds = %for.inc74.i, %for.end35.i, %for.end35.thread.i
+  %j.1.lcssa.i = phi i32 [ 0, %for.end35.i ], [ 0, %for.end35.thread.i ], [ %j.2.i, %for.inc74.i ]
+  %inc77.i = add nsw i32 %j.1.lcssa.i, 1
+  %arraydecay.i.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
+  %19 = load float* %arraydecay.i.i, align 4, !tbaa !3
+  store float %19, float* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 0, i64 0), align 16, !tbaa !3
+  %arrayidx2.i.i.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 1
+  %20 = load float* %arrayidx2.i.i.i, align 4, !tbaa !3
+  store float %20, float* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 0, i64 1), align 4, !tbaa !3
+  %arrayidx4.i.i.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 2
+  %21 = load float* %arrayidx4.i.i.i, align 4, !tbaa !3
+  store float %21, float* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 0, i64 2), align 8, !tbaa !3
+  %arraydecay4.i.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
+  %22 = load float* %arraydecay4.i.i, align 4, !tbaa !3
+  store float %22, float* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 1, i64 0), align 4, !tbaa !3
+  %arrayidx2.i3.i.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
+  %23 = load float* %arrayidx2.i3.i.i, align 4, !tbaa !3
+  store float %23, float* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 1, i64 1), align 4, !tbaa !3
+  %arrayidx4.i4.i.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 2
+  %24 = load float* %arrayidx4.i4.i.i, align 4, !tbaa !3
+  store float %24, float* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 1, i64 2), align 4, !tbaa !3
+  %arraydecay8.i.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
+  %25 = load float* %arraydecay8.i.i, align 4, !tbaa !3
+  store float %25, float* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 2, i64 0), align 8, !tbaa !3
+  %arrayidx2.i1.i.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
+  %26 = load float* %arrayidx2.i1.i.i, align 4, !tbaa !3
+  store float %26, float* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 2, i64 1), align 4, !tbaa !3
+  %arrayidx4.i2.i.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
+  %27 = load float* %arrayidx4.i2.i.i, align 4, !tbaa !3
+  store float %27, float* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 2, i64 2), align 8, !tbaa !3
+  %conv78.i = sext i32 %inc77.i to i64
+  tail call void @qsort(i8* %call1.i, i64 %conv78.i, i64 12, i32 (i8*, i8*)* @w_comp) #5
+  %cmp8049.i = icmp sgt i32 %j.1.lcssa.i, -1
+  br i1 %cmp8049.i, label %for.body82.i, label %buildbox.exit
+
+for.body82.i:                                     ; preds = %for.end76.i, %for.body82.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body82.i ], [ 0, %for.end76.i ]
+  %28 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
+  %arrayidx85.i = getelementptr inbounds [3 x i32]* %0, i64 %indvars.iv.i, i64 0
+  %29 = load i32* %arrayidx85.i, align 4, !tbaa !0
+  %arrayidx88.i = getelementptr inbounds [3 x i32]* %0, i64 %indvars.iv.i, i64 1
+  %30 = load i32* %arrayidx88.i, align 4, !tbaa !0
+  %arrayidx91.i = getelementptr inbounds [3 x i32]* %0, i64 %indvars.iv.i, i64 2
+  %31 = load i32* %arrayidx91.i, align 4, !tbaa !0
+  %mul98.i = mul nsw i32 %30, %29
+  %mul102.i = mul nsw i32 %mul98.i, %31
+  %call106.i = tail call fastcc float @box_weight(i32* %arrayidx85.i, [3 x float]* %box) #5
+  %conv107.i = fpext float %call106.i to double
+  %call108.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %28, i8* getelementptr inbounds ([54 x i8]* @.str5, i64 0, i64 0), i32 %29, i32 %30, i32 %31, i32 %mul102.i, double %conv107.i) #5
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %32 = trunc i64 %indvars.iv.next.i to i32
+  %cmp80.i = icmp slt i32 %32, %inc77.i
+  br i1 %cmp80.i, label %for.body82.i, label %buildbox.exit
+
+buildbox.exit:                                    ; preds = %for.body82.i, %for.end76.i
+  %arraydecay113.i = bitcast i8* %call1.i to i32*
+  %33 = load i32* %arraydecay113.i, align 4, !tbaa !0
+  store i32 %33, i32* getelementptr inbounds ([3 x i32]* @NBOX, i64 0, i64 0), align 4, !tbaa !0
+  %arrayidx2.i.i = getelementptr inbounds i8* %call1.i, i64 4
+  %34 = bitcast i8* %arrayidx2.i.i to i32*
+  %35 = load i32* %34, align 4, !tbaa !0
+  store i32 %35, i32* getelementptr inbounds ([3 x i32]* @NBOX, i64 0, i64 1), align 4, !tbaa !0
+  %arrayidx4.i.i = getelementptr inbounds i8* %call1.i, i64 8
+  %36 = bitcast i8* %arrayidx4.i.i to i32*
+  %37 = load i32* %36, align 4, !tbaa !0
+  store i32 %37, i32* getelementptr inbounds ([3 x i32]* @NBOX, i64 0, i64 2), align 4, !tbaa !0
+  tail call void @save_free(i8* getelementptr inbounds ([3 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), i32 313, i8* %call1.i) #5
+  tail call void @save_free(i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), i32 314, i8* %call4.i) #5
+  tail call void @save_free(i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), i32 315, i8* %call2.i) #5
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %buildbox.exit
+  %indvars.iv = phi i64 [ 0, %buildbox.exit ], [ %indvars.iv.next, %for.body ]
+  %arrayidx3 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv, i64 %indvars.iv
+  %38 = load float* %arrayidx3, align 4, !tbaa !3
+  %conv4 = fdiv float 1.000000e+00, %38
+  %arrayidx6 = getelementptr inbounds [3 x float]* @box_1, i64 0, i64 %indvars.iv
+  store float %conv4, float* %arrayidx6, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  tail call fastcc void @lo_sortwater(i32 %astart, i32 %nwater, i32 %nwatom, [3 x float]* %x, [3 x float]* %v, i32 1) #6
+  br label %return
+
+return:                                           ; preds = %entry, %for.end
+  ret void
+}

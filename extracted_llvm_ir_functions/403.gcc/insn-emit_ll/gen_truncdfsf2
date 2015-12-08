@@ -1,0 +1,32 @@
+define %struct.rtx_def* @gen_truncdfsf2(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %0 = load i32* @target_flags, align 4, !tbaa !3
+  %and = and i32 %0, 1
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.rtx_def* @assign_386_stack_local(i32 15, i32 0) #4
+  %call11 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 124, i32 15, %struct.rtx_def* %operand1) #4
+  %call12 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %operand0, %struct.rtx_def* %call11) #4
+  %call13 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 49, i32 0, %struct.rtx_def* %call) #4
+  %call14 = tail call %struct.rtvec_def* (i32, ...)* @gen_rtvec(i32 2, %struct.rtx_def* %call12, %struct.rtx_def* %call13) #4
+  %call15 = tail call %struct.rtx_def* @gen_rtx_fmt_E(i32 39, i32 0, %struct.rtvec_def* %call14) #4
+  %call16 = tail call %struct.rtx_def* @emit(%struct.rtx_def* %call15) #4
+  %call17 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %call.i = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 124, i32 15, %struct.rtx_def* %operand1) #4
+  %call1.i = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %operand0, %struct.rtx_def* %call.i) #4
+  %call6 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call1.i) #4
+  %call7 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  br label %return
+
+return:                                           ; preds = %if.then, %if.else
+  %retval.0 = phi %struct.rtx_def* [ %call17, %if.then ], [ %call7, %if.else ]
+  ret %struct.rtx_def* %retval.0
+}

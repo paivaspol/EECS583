@@ -1,0 +1,31 @@
+define i32 @line2type(i8* nocapture %line) #6 {
+entry:
+  %type = alloca [8 x i8], align 1
+  %type30 = getelementptr inbounds [8 x i8]* %type, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %type30, i8* %line, i64 6, i32 1, i1 false)
+  %arrayidx4 = getelementptr inbounds [8 x i8]* %type, i64 0, i64 6
+  store i8 0, i8* %arrayidx4, align 1, !tbaa !1
+  %arraydecay = getelementptr inbounds [8 x i8]* %type, i64 0, i64 0
+  br label %for.body7
+
+for.cond5:                                        ; preds = %for.body7
+  %0 = trunc i64 %indvars.iv.next to i32
+  %cmp6 = icmp slt i32 %0, 11
+  br i1 %cmp6, label %for.body7, label %for.end16
+
+for.body7:                                        ; preds = %entry, %for.cond5
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.cond5 ]
+  %k.125 = phi i32 [ 0, %entry ], [ %inc15, %for.cond5 ]
+  %arrayidx9 = getelementptr inbounds [11 x i8*]* @pdbtp, i64 0, i64 %indvars.iv
+  %1 = load i8** %arrayidx9, align 8, !tbaa !4
+  %call = call i64 @strlen(i8* %1) #8
+  %call12 = call i32 @strncmp(i8* %arraydecay, i8* %1, i64 %call) #8
+  %cmp13 = icmp eq i32 %call12, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc15 = add nsw i32 %k.125, 1
+  br i1 %cmp13, label %for.end16, label %for.cond5
+
+for.end16:                                        ; preds = %for.body7, %for.cond5
+  %k.1.lcssa = phi i32 [ %k.125, %for.body7 ], [ %inc15, %for.cond5 ]
+  ret i32 %k.1.lcssa
+}

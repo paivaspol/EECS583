@@ -1,0 +1,157 @@
+define %struct.rtx_def* @copy_blkmode_from_reg(%struct.rtx_def* %tgtblk, %struct.rtx_def* %srcreg, %union.tree_node* %type) #0 {
+entry:
+  %call = tail call i64 @int_size_in_bytes(%union.tree_node* %type) #8
+  %align = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 7
+  %0 = bitcast %union.tree_node** %align to i32*
+  %1 = load i32* %0, align 4, !tbaa !3
+  %2 = load i32* @target_flags, align 4, !tbaa !3
+  %and = lshr i32 %2, 20
+  %3 = and i32 %and, 32
+  %4 = add i32 %3, 32
+  %cmp = icmp ult i32 %1, %4
+  %. = select i1 %cmp, i32 %1, i32 %4
+  %conv = zext i32 %. to i64
+  %cmp8 = icmp eq %struct.rtx_def* %tgtblk, null
+  br i1 %cmp8, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %type1 = bitcast %union.tree_node* %type to %struct.tree_type*
+  %readonly_flag = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 2
+  %5 = bitcast [4 x i8]* %readonly_flag to i32*
+  %bf.load = load i32* %5, align 8
+  %6 = lshr i32 %bf.load, 10
+  %mul14 = and i32 %6, 2
+  %restrict_flag = getelementptr inbounds %struct.tree_type* %type1, i64 0, i32 6
+  %7 = bitcast [4 x i8]* %restrict_flag to i32*
+  %bf.load16 = load i32* %7, align 4
+  %8 = lshr i32 %bf.load16, 19
+  %mul19 = and i32 %8, 4
+  %bf.clear23 = and i32 %bf.load, 255
+  %cmp24 = icmp eq i32 %bf.clear23, 20
+  br i1 %cmp24, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %if.then
+  %type27 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 1
+  %9 = load %union.tree_node** %type27, align 8, !tbaa !0
+  %tobool28 = icmp ne %union.tree_node* %9, null
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %if.then
+  %10 = phi i1 [ false, %if.then ], [ %tobool28, %land.rhs ]
+  %land.ext = zext i1 %10 to i32
+  %mul29 = shl nuw nsw i32 %land.ext, 3
+  %or = or i32 %mul14, %mul19
+  %or20 = or i32 %or, %mul29
+  %or31 = or i32 %or20, 1
+  %call32 = tail call %union.tree_node* @build_qualified_type(%union.tree_node* %type, i32 %or31) #8
+  %call33 = tail call %struct.rtx_def* @assign_temp(%union.tree_node* %call32, i32 0, i32 1, i32 1) #8
+  tail call void @preserve_temp_slots(%struct.rtx_def* %call33) #8
+  br label %if.end
+
+if.end:                                           ; preds = %land.end, %entry
+  %tgtblk.addr.0 = phi %struct.rtx_def* [ %call33, %land.end ], [ %tgtblk, %entry ]
+  %11 = bitcast %struct.rtx_def* %srcreg to i32*
+  %bf.load34 = load i32* %11, align 8
+  %bf.lshr35 = lshr i32 %bf.load34, 16
+  %bf.clear36 = and i32 %bf.lshr35, 255
+  %cmp37 = icmp eq i32 %bf.clear36, 51
+  br i1 %cmp37, label %if.end54, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %idxprom147 = zext i32 %bf.clear36 to i64
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom147
+  %12 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv42 = zext i8 %12 to i32
+  %13 = load i32* @target_flags, align 4, !tbaa !3
+  %and43 = lshr i32 %13, 23
+  %14 = and i32 %and43, 4
+  %15 = add i32 %14, 4
+  %cmp46 = icmp ult i32 %conv42, %15
+  br i1 %cmp46, label %if.then48, label %if.end54
+
+if.then48:                                        ; preds = %land.lhs.true
+  %16 = load i32* @word_mode, align 4, !tbaa !6
+  %unsigned_flag = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 2
+  %17 = bitcast [4 x i8]* %unsigned_flag to i32*
+  %bf.load50 = load i32* %17, align 8
+  %bf.lshr51 = lshr i32 %bf.load50, 13
+  %bf.clear52 = and i32 %bf.lshr51, 1
+  %call.i = tail call %struct.rtx_def* @convert_modes(i32 %16, i32 0, %struct.rtx_def* %srcreg, i32 %bf.clear52) #8
+  br label %if.end54
+
+if.end54:                                         ; preds = %if.end, %if.then48, %land.lhs.true
+  %srcreg.addr.0 = phi %struct.rtx_def* [ %call.i, %if.then48 ], [ %srcreg, %land.lhs.true ], [ %srcreg, %if.end ]
+  %mul55 = shl i64 %call, 3
+  %cmp56148 = icmp eq i64 %mul55, 0
+  br i1 %cmp56148, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.end54
+  %18 = bitcast %struct.rtx_def* %srcreg.addr.0 to i32*
+  br label %for.body
+
+for.body:                                         ; preds = %if.end92, %for.body.lr.ph
+  %xbitpos.0152 = phi i64 [ 0, %for.body.lr.ph ], [ %add113, %if.end92 ]
+  %dst.0150 = phi %struct.rtx_def* [ null, %for.body.lr.ph ], [ %dst.1, %if.end92 ]
+  %src.0149 = phi %struct.rtx_def* [ null, %for.body.lr.ph ], [ %src.1, %if.end92 ]
+  %19 = load i32* @target_flags, align 4, !tbaa !3
+  %and58 = lshr i32 %19, 20
+  %20 = and i32 %and58, 32
+  %21 = add i32 %20, 32
+  %conv61142 = zext i32 %21 to i64
+  %rem = urem i64 %xbitpos.0152, %conv61142
+  %cmp62 = icmp eq i64 %rem, 0
+  %cmp64 = icmp eq i64 %xbitpos.0152, 0
+  %or.cond = or i1 %cmp62, %cmp64
+  br i1 %or.cond, label %if.then66, label %if.end76
+
+if.then66:                                        ; preds = %for.body
+  %div = udiv i64 %xbitpos.0152, %conv61142
+  %conv71 = trunc i64 %div to i32
+  %bf.load72 = load i32* %18, align 8
+  %bf.lshr73 = lshr i32 %bf.load72, 16
+  %bf.clear74 = and i32 %bf.lshr73, 255
+  %call75 = tail call %struct.rtx_def* @operand_subword_force(%struct.rtx_def* %srcreg.addr.0, i32 %conv71, i32 %bf.clear74) #8
+  %.pre = load i32* @target_flags, align 4, !tbaa !3
+  br label %if.end76
+
+if.end76:                                         ; preds = %for.body, %if.then66
+  %22 = phi i32 [ %.pre, %if.then66 ], [ %19, %for.body ]
+  %src.1 = phi %struct.rtx_def* [ %call75, %if.then66 ], [ %src.0149, %for.body ]
+  %and77 = lshr i32 %22, 20
+  %23 = and i32 %and77, 32
+  %24 = add i32 %23, 32
+  %conv80143 = zext i32 %24 to i64
+  %rem81 = urem i64 %xbitpos.0152, %conv80143
+  %cmp82 = icmp eq i64 %rem81, 0
+  br i1 %cmp82, label %if.then84, label %if.end92
+
+if.then84:                                        ; preds = %if.end76
+  %div89 = udiv i64 %xbitpos.0152, %conv80143
+  %conv90 = trunc i64 %div89 to i32
+  %call91 = tail call %struct.rtx_def* @operand_subword(%struct.rtx_def* %tgtblk.addr.0, i32 %conv90, i32 1, i32 51) #8
+  %.pre153 = load i32* @target_flags, align 4, !tbaa !3
+  br label %if.end92
+
+if.end92:                                         ; preds = %if.then84, %if.end76
+  %25 = phi i32 [ %.pre153, %if.then84 ], [ %22, %if.end76 ]
+  %dst.1 = phi %struct.rtx_def* [ %call91, %if.then84 ], [ %dst.0150, %if.end76 ]
+  %and93 = lshr i32 %25, 20
+  %26 = and i32 %and93, 32
+  %27 = add i32 %26, 32
+  %conv96144 = zext i32 %27 to i64
+  %rem97 = urem i64 %xbitpos.0152, %conv96144
+  %28 = load i32* @word_mode, align 4, !tbaa !6
+  %call107 = tail call %struct.rtx_def* @extract_bit_field(%struct.rtx_def* %src.1, i64 %conv, i64 %rem97, i32 1, %struct.rtx_def* null, i32 %28, i32 %28, i64 %conv96144) #8
+  %29 = load i32* @target_flags, align 4, !tbaa !3
+  %and108 = lshr i32 %29, 20
+  %30 = and i32 %and108, 32
+  %31 = add i32 %30, 32
+  %conv111145 = zext i32 %31 to i64
+  %call112 = tail call %struct.rtx_def* @store_bit_field(%struct.rtx_def* %dst.1, i64 %conv, i64 %rem97, i32 %28, %struct.rtx_def* %call107, i64 %conv111145) #8
+  %add113 = add i64 %xbitpos.0152, %conv
+  %cmp56 = icmp ult i64 %add113, %mul55
+  br i1 %cmp56, label %for.body, label %for.end
+
+for.end:                                          ; preds = %if.end92, %if.end54
+  ret %struct.rtx_def* %tgtblk.addr.0
+}

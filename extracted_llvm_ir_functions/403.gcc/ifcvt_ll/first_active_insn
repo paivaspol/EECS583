@@ -1,0 +1,54 @@
+define internal fastcc %struct.rtx_def* @first_active_insn(%struct.basic_block_def* nocapture %bb) #3 {
+entry:
+  %head = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 0
+  %0 = load %struct.rtx_def** %head, align 8, !tbaa !4
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 36
+  %end = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 1
+  br i1 %cmp, label %if.then, label %while.cond.preheader
+
+if.then:                                          ; preds = %entry
+  %2 = load %struct.rtx_def** %end, align 8, !tbaa !4
+  %cmp1 = icmp eq %struct.rtx_def* %0, %2
+  br i1 %cmp1, label %return, label %if.end
+
+if.end:                                           ; preds = %if.then
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %entry, %if.end
+  %insn.0.ph = phi %struct.rtx_def* [ %3, %if.end ], [ %0, %entry ]
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.preheader, %if.end10
+  %insn.0 = phi %struct.rtx_def* [ %6, %if.end10 ], [ %insn.0.ph, %while.cond.preheader ]
+  %4 = bitcast %struct.rtx_def* %insn.0 to i32*
+  %bf.load4 = load i32* %4, align 8
+  %bf.clear5 = and i32 %bf.load4, 65535
+  switch i32 %bf.clear5, label %return [
+    i32 37, label %while.body
+    i32 33, label %return.loopexit
+  ]
+
+while.body:                                       ; preds = %while.cond
+  %5 = load %struct.rtx_def** %end, align 8, !tbaa !4
+  %cmp8 = icmp eq %struct.rtx_def* %insn.0, %5
+  br i1 %cmp8, label %return.loopexit, label %if.end10
+
+if.end10:                                         ; preds = %while.body
+  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %insn.0, i64 0, i32 1, i64 2
+  %rtx13 = bitcast %union.rtunion_def* %arrayidx12 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx13, align 8, !tbaa !4
+  br label %while.cond
+
+return.loopexit:                                  ; preds = %while.body, %while.cond
+  br label %return
+
+return:                                           ; preds = %while.cond, %return.loopexit, %if.then
+  %retval.0 = phi %struct.rtx_def* [ null, %if.then ], [ null, %return.loopexit ], [ %insn.0, %while.cond ]
+  ret %struct.rtx_def* %retval.0
+}

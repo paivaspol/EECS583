@@ -1,0 +1,27 @@
+define internal i32 @output_indirect_string(%struct.cpp_reader* nocapture %pfile, %struct.ht_identifier* nocapture %h, i8* nocapture %v) #1 {
+entry:
+  %0 = bitcast %struct.ht_identifier* %h to %struct.indirect_string_node*
+  %form = getelementptr inbounds %struct.indirect_string_node* %0, i64 0, i32 2
+  %1 = load i32* %form, align 4, !tbaa !0
+  %cmp = icmp eq i32 %1, 14
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @named_section_flags(i8* getelementptr inbounds ([11 x i8]* @.str17, i64 0, i64 0), i32 99329) #9
+  %2 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  %3 = getelementptr inbounds %struct.ht_identifier* %h, i64 1, i32 1
+  %4 = load i8** %3, align 8, !tbaa !4
+  tail call void @assemble_name(%struct._IO_FILE* %2, i8* %4) #9
+  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %5)
+  %str = getelementptr inbounds %struct.ht_identifier* %h, i64 0, i32 1
+  %7 = load i8** %str, align 8, !tbaa !4
+  %len = getelementptr inbounds %struct.ht_identifier* %h, i64 0, i32 0
+  %8 = load i32* %len, align 4, !tbaa !0
+  %add = add i32 %8, 1
+  tail call void @assemble_string(i8* %7, i32 %add) #9
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  ret i32 1
+}

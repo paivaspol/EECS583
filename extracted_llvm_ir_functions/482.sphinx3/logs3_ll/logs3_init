@@ -1,0 +1,124 @@
+define i32 @logs3_init(double %base) #0 {
+entry:
+  %call = tail call i8* @cmd_ln_access(i8* getelementptr inbounds ([11 x i8]* @.str, i64 0, i64 0)) #4
+  %0 = bitcast i8* %call to i32*
+  %1 = load i32* %0, align 4, !tbaa !0
+  store i32 %1, i32* @USE_LOG3_ADD_TABLE, align 4, !tbaa !0
+  tail call void @_E__pr_info_header(i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i64 99, i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0)) #4
+  %2 = load i32* @USE_LOG3_ADD_TABLE, align 4, !tbaa !0
+  tail call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([42 x i8]* @.str3, i64 0, i64 0), double %base, i32 %2) #4
+  %cmp = fcmp ugt double %base, 1.000000e+00
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i64 102, i8* getelementptr inbounds ([12 x i8]* @.str4, i64 0, i64 0)) #4
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([36 x i8]* @.str5, i64 0, i64 0), double %base) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %3 = load i16** @add_tbl, align 8, !tbaa !3
+  %tobool = icmp eq i16* %3, null
+  br i1 %tobool, label %if.end5, label %if.then1
+
+if.then1:                                         ; preds = %if.end
+  %4 = load double* @B, align 8, !tbaa !4
+  %cmp2 = fcmp oeq double %4, %base
+  br i1 %cmp2, label %if.then3, label %if.else
+
+if.then3:                                         ; preds = %if.then1
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i64 106, i8* getelementptr inbounds ([8 x i8]* @.str6, i64 0, i64 0)) #4
+  tail call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([27 x i8]* @.str7, i64 0, i64 0)) #4
+  br label %if.end5
+
+if.else:                                          ; preds = %if.then1
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i64 108, i8* getelementptr inbounds ([12 x i8]* @.str4, i64 0, i64 0)) #4
+  %5 = load double* @B, align 8, !tbaa !4
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([40 x i8]* @.str8, i64 0, i64 0), double %5) #4
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.end, %if.then3, %if.else
+  store double %base, double* @B, align 8, !tbaa !4
+  %call6 = tail call double @log(double %base) #4
+  store double %call6, double* @logB, align 8, !tbaa !4
+  %div = fdiv double 1.000000e+00, %call6
+  store double %div, double* @invlogB, align 8, !tbaa !4
+  %call7 = tail call double @log10(double %base) #4
+  %div8 = fdiv double 1.000000e+00, %call7
+  store double %div8, double* @invlog10B, align 8, !tbaa !4
+  %6 = load double* @invlogB, align 8, !tbaa !4
+  %mul = fmul double %6, 0x3FE62E42FEFA39EF
+  %add = fadd double %mul, 5.000000e-01
+  %conv = fptosi double %add to i32
+  %cmp10 = icmp sgt i32 %conv, 65535
+  br i1 %cmp10, label %if.then12, label %if.end13
+
+if.then12:                                        ; preds = %if.end5
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i64 120, i8* getelementptr inbounds ([6 x i8]* @.str9, i64 0, i64 0)) #4
+  tail call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([47 x i8]* @.str10, i64 0, i64 0), double %base) #4
+  br label %return
+
+if.end13:                                         ; preds = %if.end5
+  %7 = load double* @B, align 8, !tbaa !4
+  %div14 = fdiv double 1.000000e+00, %7
+  store double %div14, double* @F, align 8, !tbaa !4
+  %cmp2176 = icmp eq i32 %conv, 0
+  br i1 %cmp2176, label %for.end, label %if.end24
+
+if.end24:                                         ; preds = %if.end13, %if.end24
+  %d.078 = phi double [ %mul25, %if.end24 ], [ 1.000000e+00, %if.end13 ]
+  %i.077 = phi i32 [ %phitmp, %if.end24 ], [ 1, %if.end13 ]
+  %mul25 = fmul double %div14, %d.078
+  %phitmp = add i32 %i.077, 1
+  %add16 = fadd double %mul25, 1.000000e+00
+  %call17 = tail call double @log(double %add16) #4
+  %8 = load double* @invlogB, align 8, !tbaa !4
+  %mul18 = fmul double %call17, %8
+  %add19 = fadd double %mul18, 5.000000e-01
+  %conv20 = fptosi double %add19 to i32
+  %cmp21 = icmp eq i32 %conv20, 0
+  br i1 %cmp21, label %for.end, label %if.end24
+
+for.end:                                          ; preds = %if.end24, %if.end13
+  %i.0.lcssa = phi i32 [ 1, %if.end13 ], [ %phitmp, %if.end24 ]
+  store i32 %i.0.lcssa, i32* @add_tbl_size, align 4, !tbaa !0
+  %conv28 = sext i32 %i.0.lcssa to i64
+  %call29 = tail call i8* @__ckd_calloc__(i64 %conv28, i64 2, i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 145) #4
+  %9 = bitcast i8* %call29 to i16*
+  store i16* %9, i16** @add_tbl, align 8, !tbaa !3
+  %10 = load double* @invlogB, align 8, !tbaa !4
+  %mul3365 = fmul double %10, 0x3FE62E42FEFA39EF
+  %add3466 = fadd double %mul3365, 5.000000e-01
+  %conv3567 = fptosi double %add3466 to i32
+  %conv3668 = trunc i32 %conv3567 to i16
+  store i16 %conv3668, i16* %9, align 2, !tbaa !5
+  %cmp3769 = icmp eq i32 %conv3567, 0
+  br i1 %cmp3769, label %for.end44, label %if.end40
+
+if.end40:                                         ; preds = %for.end, %if.end40
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end40 ], [ 0, %for.end ]
+  %d.171 = phi double [ %mul41, %if.end40 ], [ 1.000000e+00, %for.end ]
+  %mul41 = fmul double %div14, %d.171
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %add31 = fadd double %mul41, 1.000000e+00
+  %call32 = tail call double @log(double %add31) #4
+  %11 = load double* @invlogB, align 8, !tbaa !4
+  %mul33 = fmul double %call32, %11
+  %add34 = fadd double %mul33, 5.000000e-01
+  %conv35 = fptosi double %add34 to i32
+  %conv36 = trunc i32 %conv35 to i16
+  %12 = load i16** @add_tbl, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i16* %12, i64 %indvars.iv.next
+  store i16 %conv36, i16* %arrayidx, align 2, !tbaa !5
+  %cmp37 = icmp eq i32 %conv35, 0
+  br i1 %cmp37, label %for.end44, label %if.end40
+
+for.end44:                                        ; preds = %if.end40, %for.end
+  tail call void @_E__pr_info_header(i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i64 161, i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0)) #4
+  %13 = load i32* @add_tbl_size, align 4, !tbaa !0
+  tail call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([25 x i8]* @.str11, i64 0, i64 0), i32 %13) #4
+  br label %return
+
+return:                                           ; preds = %for.end44, %if.then12
+  %retval.0 = phi i32 [ -1, %if.then12 ], [ 0, %for.end44 ]
+  ret i32 %retval.0
+}

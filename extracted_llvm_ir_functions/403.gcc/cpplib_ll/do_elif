@@ -1,0 +1,56 @@
+define internal void @do_elif(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %buffer1 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
+  %0 = load %struct.cpp_buffer** %buffer1, align 8, !tbaa !3
+  %if_stack = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 7
+  %1 = load %struct.if_stack** %if_stack, align 8, !tbaa !3
+  %cmp = icmp eq %struct.if_stack* %1, null
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([18 x i8]* @.str62, i64 0, i64 0)) #8
+  br label %if.end19
+
+if.else:                                          ; preds = %entry
+  %type = getelementptr inbounds %struct.if_stack* %1, i64 0, i32 5
+  %2 = load i32* %type, align 4, !tbaa !2
+  %cmp2 = icmp eq i32 %2, 5
+  br i1 %cmp2, label %if.then3, label %if.end
+
+if.then3:                                         ; preds = %if.else
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([18 x i8]* @.str63, i64 0, i64 0)) #8
+  %line = getelementptr inbounds %struct.if_stack* %1, i64 0, i32 1
+  %3 = load i32* %line, align 4, !tbaa !2
+  tail call void (%struct.cpp_reader*, i32, i32, i8*, ...)* @cpp_error_with_line(%struct.cpp_reader* %pfile, i32 %3, i32 0, i8* getelementptr inbounds ([27 x i8]* @.str64, i64 0, i64 0)) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.then3, %if.else
+  store i32 9, i32* %type, align 4, !tbaa !2
+  %skip_elses = getelementptr inbounds %struct.if_stack* %1, i64 0, i32 3
+  %4 = load i8* %skip_elses, align 1, !tbaa !5, !range !9
+  %tobool = icmp eq i8 %4, 0
+  %skipping = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 1
+  br i1 %tobool, label %if.else6, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  store i8 1, i8* %skipping, align 1, !tbaa !0
+  br label %if.end18
+
+if.else6:                                         ; preds = %if.end
+  store i8 0, i8* %skipping, align 1, !tbaa !0
+  %call = tail call i32 @_cpp_parse_expr(%struct.cpp_reader* %pfile) #8
+  %lnot = icmp eq i32 %call, 0
+  %conv = zext i1 %lnot to i8
+  store i8 %conv, i8* %skipping, align 1, !tbaa !0
+  %frombool = xor i8 %conv, 1
+  store i8 %frombool, i8* %skip_elses, align 1, !tbaa !5
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.else6, %if.then5
+  %mi_cmacro = getelementptr inbounds %struct.if_stack* %1, i64 0, i32 2
+  store %struct.cpp_hashnode* null, %struct.cpp_hashnode** %mi_cmacro, align 8, !tbaa !3
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.end18, %if.then
+  ret void
+}

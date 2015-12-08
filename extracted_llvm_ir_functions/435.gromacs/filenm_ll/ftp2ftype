@@ -1,0 +1,33 @@
+define i8* @ftp2ftype(i32 %ftp) #0 {
+entry:
+  %0 = icmp ult i32 %ftp, 46
+  br i1 %0, label %if.then, label %return
+
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %ftp to i64
+  %ftype = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %idxprom, i32 0
+  %1 = load i32* %ftype, align 8, !tbaa !3
+  switch i32 %1, label %sw.default [
+    i32 0, label %return
+    i32 1, label %sw.bb2
+    i32 2, label %sw.bb3
+    i32 3, label %sw.bb4
+  ]
+
+sw.bb2:                                           ; preds = %if.then
+  br label %return
+
+sw.bb3:                                           ; preds = %if.then
+  br label %return
+
+sw.bb4:                                           ; preds = %if.then
+  br label %return
+
+sw.default:                                       ; preds = %if.then
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([49 x i8]* @.str8, i64 0, i64 0), i32 %1) #6
+  br label %return
+
+return:                                           ; preds = %entry, %sw.default, %if.then, %sw.bb4, %sw.bb3, %sw.bb2
+  %retval.0 = phi i8* [ getelementptr inbounds ([1 x i8]* @.str7, i64 0, i64 0), %sw.bb4 ], [ getelementptr inbounds ([13 x i8]* @.str6, i64 0, i64 0), %sw.bb3 ], [ getelementptr inbounds ([7 x i8]* @.str5, i64 0, i64 0), %sw.bb2 ], [ getelementptr inbounds ([6 x i8]* @.str4, i64 0, i64 0), %if.then ], [ getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), %sw.default ], [ getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), %entry ]
+  ret i8* %retval.0
+}

@@ -1,0 +1,238 @@
+define void @pr_load(%struct._IO_FILE* nocapture %log, i32 %nprocs, %struct.t_nrnb* nocapture %nrnb) #0 {
+entry:
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str33, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str34, i64 0, i64 0), i32 350, i32 1, i32 1032) #7
+  %0 = bitcast i8* %call to %struct.t_nrnb*
+  %call1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str35, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str34, i64 0, i64 0), i32 351, i32 %nprocs, i32 8) #7
+  %1 = bitcast i8* %call1 to double*
+  %call2 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str36, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str34, i64 0, i64 0), i32 352, i32 %nprocs, i32 8) #7
+  %2 = bitcast i8* %call2 to double*
+  tail call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 1032, i32 8, i1 false) #6
+  %cmp280 = icmp sgt i32 %nprocs, 0
+  br i1 %cmp280, label %for.body, label %for.cond62.preheader
+
+for.cond62.preheader:                             ; preds = %for.inc59, %entry
+  %n67 = bitcast i8* %call to [129 x double]*
+  %conv69 = sitofp i32 %nprocs to double
+  br label %for.body65
+
+for.body:                                         ; preds = %entry, %for.inc59
+  %indvars.iv310 = phi i64 [ %indvars.iv.next311, %for.inc59 ], [ 0, %entry ]
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.body.i, %for.body
+  %indvars.iv.i = phi i64 [ 0, %for.body ], [ %indvars.iv.next.i, %for.body.i ]
+  %arrayidx.i = getelementptr inbounds %struct.t_nrnb* %0, i64 0, i32 0, i64 %indvars.iv.i
+  %3 = load double* %arrayidx.i, align 8, !tbaa !0
+  %arrayidx3.i = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 %indvars.iv310, i32 0, i64 %indvars.iv.i
+  %4 = load double* %arrayidx3.i, align 8, !tbaa !0
+  %add.i = fadd double %3, %4
+  store double %add.i, double* %arrayidx.i, align 8, !tbaa !0
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv296 = trunc i64 %indvars.iv.next.i to i32
+  %exitcond297 = icmp eq i32 %lftr.wideiv296, 129
+  br i1 %exitcond297, label %for.cond3.loopexit, label %for.body.i
+
+for.cond3.loopexit:                               ; preds = %for.body.i
+  %arrayidx12 = getelementptr inbounds double* %1, i64 %indvars.iv310
+  %.pre = load double* %arrayidx12, align 8, !tbaa !0
+  br label %for.body5
+
+for.body5:                                        ; preds = %for.body5, %for.cond3.loopexit
+  %5 = phi double [ %.pre, %for.cond3.loopexit ], [ %add, %for.body5 ]
+  %indvars.iv298 = phi i64 [ 0, %for.cond3.loopexit ], [ %indvars.iv.next299, %for.body5 ]
+  %arrayidx9 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 %indvars.iv310, i32 0, i64 %indvars.iv298
+  %6 = load double* %arrayidx9, align 8, !tbaa !0
+  %flop.i = getelementptr inbounds [129 x %struct.t_nrnb_data]* bitcast (<{ { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] } }>* @nbdata to [129 x %struct.t_nrnb_data]*), i64 0, i64 %indvars.iv298, i32 1
+  %7 = load i32* %flop.i, align 8, !tbaa !4
+  %conv = sitofp i32 %7 to double
+  %mul = fmul double %6, %conv
+  %add = fadd double %5, %mul
+  store double %add, double* %arrayidx12, align 8, !tbaa !0
+  %indvars.iv.next299 = add i64 %indvars.iv298, 1
+  %lftr.wideiv300 = trunc i64 %indvars.iv.next299 to i32
+  %exitcond301 = icmp eq i32 %lftr.wideiv300, 78
+  br i1 %exitcond301, label %for.body17, label %for.body5
+
+for.body17:                                       ; preds = %for.body5, %for.body17
+  %8 = phi double [ %add32, %for.body17 ], [ %add, %for.body5 ]
+  %indvars.iv302 = phi i64 [ %indvars.iv.next303, %for.body17 ], [ 0, %for.body5 ]
+  %arrayidx19 = getelementptr inbounds [10 x i32]* @force_index, i64 0, i64 %indvars.iv302
+  %9 = load i32* %arrayidx19, align 4, !tbaa !4
+  %idxprom20 = sext i32 %9 to i64
+  %arrayidx24 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 %indvars.iv310, i32 0, i64 %idxprom20
+  %10 = load double* %arrayidx24, align 8, !tbaa !0
+  %flop.i261 = getelementptr inbounds [129 x %struct.t_nrnb_data]* bitcast (<{ { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] } }>* @nbdata to [129 x %struct.t_nrnb_data]*), i64 0, i64 %idxprom20, i32 1
+  %11 = load i32* %flop.i261, align 8, !tbaa !4
+  %conv28 = sitofp i32 %11 to double
+  %mul29 = fmul double %10, %conv28
+  %add32 = fadd double %8, %mul29
+  store double %add32, double* %arrayidx12, align 8, !tbaa !0
+  %indvars.iv.next303 = add i64 %indvars.iv302, 1
+  %lftr.wideiv304 = trunc i64 %indvars.iv.next303 to i32
+  %exitcond305 = icmp eq i32 %lftr.wideiv304, 10
+  br i1 %exitcond305, label %for.cond36.loopexit, label %for.body17
+
+for.cond36.loopexit:                              ; preds = %for.body17
+  %arrayidx54 = getelementptr inbounds double* %2, i64 %indvars.iv310
+  %.pre314 = load double* %arrayidx54, align 8, !tbaa !0
+  br label %for.body40
+
+for.body40:                                       ; preds = %for.body40, %for.cond36.loopexit
+  %12 = phi double [ %.pre314, %for.cond36.loopexit ], [ %add55, %for.body40 ]
+  %indvars.iv306 = phi i64 [ 0, %for.cond36.loopexit ], [ %indvars.iv.next307, %for.body40 ]
+  %arrayidx42 = getelementptr inbounds [10 x i32]* @shake_index, i64 0, i64 %indvars.iv306
+  %13 = load i32* %arrayidx42, align 4, !tbaa !4
+  %idxprom43 = sext i32 %13 to i64
+  %arrayidx47 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 %indvars.iv310, i32 0, i64 %idxprom43
+  %14 = load double* %arrayidx47, align 8, !tbaa !0
+  %flop.i259 = getelementptr inbounds [129 x %struct.t_nrnb_data]* bitcast (<{ { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] } }>* @nbdata to [129 x %struct.t_nrnb_data]*), i64 0, i64 %idxprom43, i32 1
+  %15 = load i32* %flop.i259, align 8, !tbaa !4
+  %conv51 = sitofp i32 %15 to double
+  %mul52 = fmul double %14, %conv51
+  %add55 = fadd double %12, %mul52
+  store double %add55, double* %arrayidx54, align 8, !tbaa !0
+  %indvars.iv.next307 = add i64 %indvars.iv306, 1
+  %lftr.wideiv308 = trunc i64 %indvars.iv.next307 to i32
+  %exitcond309 = icmp eq i32 %lftr.wideiv308, 10
+  br i1 %exitcond309, label %for.inc59, label %for.body40
+
+for.inc59:                                        ; preds = %for.body40
+  %indvars.iv.next311 = add i64 %indvars.iv310, 1
+  %lftr.wideiv312 = trunc i64 %indvars.iv.next311 to i32
+  %exitcond313 = icmp eq i32 %lftr.wideiv312, %nprocs
+  br i1 %exitcond313, label %for.cond62.preheader, label %for.body
+
+for.body65:                                       ; preds = %for.body65, %for.cond62.preheader
+  %indvars.iv292 = phi i64 [ 0, %for.cond62.preheader ], [ %indvars.iv.next293, %for.body65 ]
+  %arrayidx68 = getelementptr inbounds [129 x double]* %n67, i64 0, i64 %indvars.iv292
+  %16 = load double* %arrayidx68, align 8, !tbaa !0
+  %div = fdiv double %16, %conv69
+  store double %div, double* %arrayidx68, align 8, !tbaa !0
+  %indvars.iv.next293 = add i64 %indvars.iv292, 1
+  %lftr.wideiv294 = trunc i64 %indvars.iv.next293 to i32
+  %exitcond295 = icmp eq i32 %lftr.wideiv294, 129
+  br i1 %exitcond295, label %for.end75, label %for.body65
+
+for.end75:                                        ; preds = %for.body65
+  %17 = tail call i64 @fwrite(i8* getelementptr inbounds ([56 x i8]* @.str37, i64 0, i64 0), i64 55, i64 1, %struct._IO_FILE* %log)
+  %18 = tail call i64 @fwrite(i8* getelementptr inbounds ([18 x i8]* @.str38, i64 0, i64 0), i64 17, i64 1, %struct._IO_FILE* %log)
+  br i1 %cmp280, label %for.body81, label %for.end95.critedge
+
+for.body81:                                       ; preds = %for.end75, %for.body81
+  %i.1275 = phi i32 [ %inc84, %for.body81 ], [ 0, %for.end75 ]
+  %call82 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([5 x i8]* @.str39, i64 0, i64 0), i32 %i.1275) #7
+  %inc84 = add nsw i32 %i.1275, 1
+  %exitcond291 = icmp eq i32 %inc84, %nprocs
+  br i1 %exitcond291, label %for.end85, label %for.body81
+
+for.end85:                                        ; preds = %for.body81
+  %19 = tail call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str40, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %log)
+  %20 = tail call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str41, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %log)
+  br i1 %cmp280, label %for.body91, label %for.end95
+
+for.body91:                                       ; preds = %for.end85, %for.body91
+  %i.2273 = phi i32 [ %inc94, %for.body91 ], [ 0, %for.end85 ]
+  %21 = tail call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str42, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %log)
+  %inc94 = add nsw i32 %i.2273, 1
+  %exitcond290 = icmp eq i32 %inc94, %nprocs
+  br i1 %exitcond290, label %for.end95, label %for.body91
+
+for.end95.critedge:                               ; preds = %for.end75
+  %22 = tail call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str40, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %log)
+  %23 = tail call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str41, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %log)
+  br label %for.end95
+
+for.end95:                                        ; preds = %for.end95.critedge, %for.body91, %for.end85
+  %24 = tail call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str43, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %log)
+  br label %for.body100
+
+for.cond140.preheader:                            ; preds = %for.inc137
+  br i1 %cmp280, label %for.body143, label %for.end152
+
+for.body100:                                      ; preds = %for.inc137, %for.end95
+  %indvars.iv286 = phi i64 [ 0, %for.end95 ], [ %indvars.iv.next287, %for.inc137 ]
+  %arrayidx103 = getelementptr inbounds [129 x double]* %n67, i64 0, i64 %indvars.iv286
+  %25 = load double* %arrayidx103, align 8, !tbaa !0
+  %cmp104 = fcmp ogt double %25, 0.000000e+00
+  br i1 %cmp104, label %if.then, label %for.inc137
+
+if.then:                                          ; preds = %for.body100
+  %name.i = getelementptr inbounds [129 x %struct.t_nrnb_data]* bitcast (<{ { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] }, { i8*, i32, [4 x i8] } }>* @nbdata to [129 x %struct.t_nrnb_data]*), i64 0, i64 %indvars.iv286, i32 0
+  %26 = load i8** %name.i, align 16, !tbaa !3
+  %call107 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([6 x i8]* @.str44, i64 0, i64 0), i8* %26) #7
+  br i1 %cmp280, label %for.body111, label %if.then131
+
+for.body111:                                      ; preds = %if.then, %for.body111
+  %indvars.iv282 = phi i64 [ %indvars.iv.next283, %for.body111 ], [ 0, %if.then ]
+  %unb.0268 = phi double [ %cond, %for.body111 ], [ 1.000000e+02, %if.then ]
+  %arrayidx116 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 %indvars.iv282, i32 0, i64 %indvars.iv286
+  %27 = load double* %arrayidx116, align 8, !tbaa !0
+  %mul117 = fmul double %27, 1.000000e+02
+  %28 = load double* %arrayidx103, align 8, !tbaa !0
+  %div121 = fdiv double %mul117, %28
+  %cmp122 = fcmp ogt double %unb.0268, %div121
+  %cond = select i1 %cmp122, double %unb.0268, double %div121
+  %conv124 = fptosi double %div121 to i32
+  %call125 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([5 x i8]* @.str39, i64 0, i64 0), i32 %conv124) #7
+  %indvars.iv.next283 = add i64 %indvars.iv282, 1
+  %lftr.wideiv284 = trunc i64 %indvars.iv.next283 to i32
+  %exitcond285 = icmp eq i32 %lftr.wideiv284, %nprocs
+  br i1 %exitcond285, label %for.end128, label %for.body111
+
+for.end128:                                       ; preds = %for.body111
+  %cmp129 = fcmp ogt double %cond, 0.000000e+00
+  br i1 %cmp129, label %if.then131, label %if.else
+
+if.then131:                                       ; preds = %if.then, %for.end128
+  %unb.0.lcssa316 = phi double [ %cond, %for.end128 ], [ 1.000000e+02, %if.then ]
+  %div132 = fdiv double 1.000000e+04, %unb.0.lcssa316
+  %conv133 = fptosi double %div132 to i32
+  %call134 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([7 x i8]* @.str45, i64 0, i64 0), i32 %conv133) #7
+  br label %for.inc137
+
+if.else:                                          ; preds = %for.end128
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %log)
+  br label %for.inc137
+
+for.inc137:                                       ; preds = %for.body100, %if.else, %if.then131
+  %indvars.iv.next287 = add i64 %indvars.iv286, 1
+  %lftr.wideiv288 = trunc i64 %indvars.iv.next287 to i32
+  %exitcond289 = icmp eq i32 %lftr.wideiv288, 129
+  br i1 %exitcond289, label %for.cond140.preheader, label %for.body100
+
+for.body143:                                      ; preds = %for.cond140.preheader, %for.body143
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body143 ], [ 0, %for.cond140.preheader ]
+  %sav.0264 = phi double [ %add149, %for.body143 ], [ 0.000000e+00, %for.cond140.preheader ]
+  %fav.0263 = phi double [ %add146, %for.body143 ], [ 0.000000e+00, %for.cond140.preheader ]
+  %arrayidx145 = getelementptr inbounds double* %1, i64 %indvars.iv
+  %29 = load double* %arrayidx145, align 8, !tbaa !0
+  %add146 = fadd double %fav.0263, %29
+  %arrayidx148 = getelementptr inbounds double* %2, i64 %indvars.iv
+  %30 = load double* %arrayidx148, align 8, !tbaa !0
+  %add149 = fadd double %sav.0264, %30
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nprocs
+  br i1 %exitcond, label %for.end152, label %for.body143
+
+for.end152:                                       ; preds = %for.body143, %for.cond140.preheader
+  %sav.0.lcssa = phi double [ 0.000000e+00, %for.cond140.preheader ], [ %add149, %for.body143 ]
+  %fav.0.lcssa = phi double [ 0.000000e+00, %for.cond140.preheader ], [ %add146, %for.body143 ]
+  %call153 = tail call fastcc double @pr_av(%struct._IO_FILE* %log, i32 %nprocs, double %fav.0.lcssa, double* %1, i8* getelementptr inbounds ([12 x i8]* @.str47, i64 0, i64 0)) #10
+  %call154 = tail call fastcc double @pr_av(%struct._IO_FILE* %log, i32 %nprocs, double %sav.0.lcssa, double* %2, i8* getelementptr inbounds ([12 x i8]* @.str48, i64 0, i64 0)) #10
+  %mul155 = fmul double %fav.0.lcssa, %call153
+  %mul156 = fmul double %sav.0.lcssa, %call154
+  %add157 = fadd double %mul155, %mul156
+  %add158 = fadd double %fav.0.lcssa, %sav.0.lcssa
+  %div159 = fdiv double %add157, %add158
+  %cmp160 = fcmp ogt double %div159, 0.000000e+00
+  br i1 %cmp160, label %if.then162, label %if.end165
+
+if.then162:                                       ; preds = %for.end152
+  %div163 = fdiv double 1.000000e+04, %div159
+  %call164 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([44 x i8]* @.str49, i64 0, i64 0), double %div163) #7
+  br label %if.end165
+
+if.end165:                                        ; preds = %if.then162, %for.end152
+  ret void
+}

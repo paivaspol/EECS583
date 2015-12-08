@@ -1,0 +1,37 @@
+define void @assemble_end_function(%union.tree_node* nocapture %decl, i8* %fnname) #0 {
+entry:
+  %label = alloca [256 x i8], align 16
+  %0 = load i32* @flag_inhibit_size_directive, align 4, !tbaa !4
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.then, label %do.end12
+
+if.then:                                          ; preds = %entry
+  %1 = getelementptr inbounds [256 x i8]* %label, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %1) #6
+  %2 = load i32* @assemble_end_function.labelno, align 4, !tbaa !4
+  %inc = add nsw i32 %2, 1
+  store i32 %inc, i32* @assemble_end_function.labelno, align 4, !tbaa !4
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %1, i8* getelementptr inbounds ([7 x i8]* @.str74, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str75, i64 0, i64 0), i32 %inc) #9
+  %3 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
+  %4 = load i32* @assemble_end_function.labelno, align 4, !tbaa !4
+  %call3 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([8 x i8]* @.str76, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str75, i64 0, i64 0), i32 %4) #9
+  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
+  %6 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str77, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %5)
+  %7 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
+  call void @assemble_name(%struct._IO_FILE* %7, i8* %fnname) #10
+  %8 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
+  %fputc = call i32 @fputc(i32 44, %struct._IO_FILE* %8) #6
+  %9 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
+  call void @assemble_name(%struct._IO_FILE* %9, i8* %1) #10
+  %10 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
+  %fputc16 = call i32 @fputc(i32 45, %struct._IO_FILE* %10) #6
+  %11 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
+  call void @assemble_name(%struct._IO_FILE* %11, i8* %fnname) #10
+  %12 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
+  %call10 = call i32 @_IO_putc(i32 10, %struct._IO_FILE* %12) #9
+  call void @llvm.lifetime.end(i64 256, i8* %1) #6
+  br label %do.end12
+
+do.end12:                                         ; preds = %entry, %if.then
+  ret void
+}

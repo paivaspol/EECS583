@@ -1,0 +1,78 @@
+define internal void @dwarf2out_init(i8* %main_input_filename) #1 {
+entry:
+  %call.i = tail call noalias i8* @xcalloc(i64 64, i64 8) #9
+  %0 = bitcast i8* %call.i to i8**
+  store i8** %0, i8*** @file_table.0, align 8, !tbaa !4
+  store i32 64, i32* @file_table.1, align 8, !tbaa !0
+  store i32 1, i32* @file_table.2, align 4, !tbaa !0
+  store i32 0, i32* @file_table.3, align 8, !tbaa !0
+  store i8* %main_input_filename, i8** @primary_filename, align 8, !tbaa !4
+  %call = tail call fastcc i32 @lookup_filename(i8* %main_input_filename) #10
+  %call1 = tail call noalias i8* @xcalloc(i64 256, i64 8) #9
+  %1 = bitcast i8* %call1 to %struct.die_struct**
+  store %struct.die_struct** %1, %struct.die_struct*** @decl_die_table, align 8, !tbaa !4
+  store i32 256, i32* @decl_die_table_allocated, align 4, !tbaa !0
+  store i32 0, i32* @decl_die_table_in_use, align 4, !tbaa !0
+  %call2 = tail call %struct.varray_head_tag* @varray_init(i64 256, i64 8, i8* getelementptr inbounds ([17 x i8]* @.str391, i64 0, i64 0)) #9
+  store %struct.varray_head_tag* %call2, %struct.varray_head_tag** @decl_scope_table, align 8, !tbaa !4
+  tail call void @ggc_add_tree_varray_root(%struct.varray_head_tag** @decl_scope_table, i32 1) #9
+  %call3 = tail call noalias i8* @xcalloc(i64 256, i64 8) #9
+  %2 = bitcast i8* %call3 to %struct.die_struct**
+  store %struct.die_struct** %2, %struct.die_struct*** @abbrev_die_table, align 8, !tbaa !4
+  store i32 256, i32* @abbrev_die_table_allocated, align 4, !tbaa !0
+  store i32 1, i32* @abbrev_die_table_in_use, align 4, !tbaa !0
+  %call4 = tail call noalias i8* @xcalloc(i64 1024, i64 16) #9
+  %3 = bitcast i8* %call4 to %struct.dw_line_info_struct*
+  store %struct.dw_line_info_struct* %3, %struct.dw_line_info_struct** @line_info_table, align 8, !tbaa !4
+  store i32 1, i32* @line_info_table_in_use, align 4, !tbaa !0
+  %call5 = tail call fastcc %struct.die_struct* @gen_compile_unit_die(i8* %main_input_filename) #10
+  store %struct.die_struct* %call5, %struct.die_struct** @comp_unit_die, align 8, !tbaa !4
+  %call6 = tail call %struct.varray_head_tag* @varray_init(i64 64, i64 8, i8* getelementptr inbounds ([17 x i8]* @.str392, i64 0, i64 0)) #9
+  store %struct.varray_head_tag* %call6, %struct.varray_head_tag** @incomplete_types, align 8, !tbaa !4
+  tail call void @ggc_add_tree_varray_root(%struct.varray_head_tag** @incomplete_types, i32 1) #9
+  %call7 = tail call %struct.varray_head_tag* @varray_init(i64 32, i64 8, i8* getelementptr inbounds ([16 x i8]* @.str393, i64 0, i64 0)) #9
+  store %struct.varray_head_tag* %call7, %struct.varray_head_tag** @used_rtx_varray, align 8, !tbaa !4
+  tail call void @ggc_add_rtx_varray_root(%struct.varray_head_tag** @used_rtx_varray, i32 1) #9
+  tail call void @ggc_add_root(i8* bitcast (%struct.limbo_die_struct** @limbo_die_list to i8*), i32 1, i32 1, void (i8*)* @mark_limbo_die_list) #9
+  %call8 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([30 x i8]* @text_end_label, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str8, i64 0, i64 0), i32 0) #9
+  %call10 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([30 x i8]* @abbrev_section_label, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str394, i64 0, i64 0), i32 0) #9
+  %call13 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([30 x i8]* @text_section_label, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str395, i64 0, i64 0), i32 0) #9
+  %call16 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([30 x i8]* @debug_info_section_label, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([12 x i8]* @.str396, i64 0, i64 0), i32 0) #9
+  %call19 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([30 x i8]* @debug_line_section_label, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([12 x i8]* @.str397, i64 0, i64 0), i32 0) #9
+  %call22 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([60 x i8]* @ranges_section_label, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str398, i64 0, i64 0), i32 0) #9
+  tail call void @named_section_flags(i8* getelementptr inbounds ([14 x i8]* @.str11, i64 0, i64 0), i32 1024) #9
+  %4 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  tail call void @assemble_name(%struct._IO_FILE* %4, i8* getelementptr inbounds ([30 x i8]* @abbrev_section_label, i64 0, i64 0)) #9
+  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %5)
+  tail call void @named_section_flags(i8* getelementptr inbounds ([12 x i8]* @.str211, i64 0, i64 0), i32 1024) #9
+  %7 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  tail call void @assemble_name(%struct._IO_FILE* %7, i8* getelementptr inbounds ([30 x i8]* @debug_info_section_label, i64 0, i64 0)) #9
+  %8 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  %9 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %8)
+  tail call void @named_section_flags(i8* getelementptr inbounds ([12 x i8]* @.str399, i64 0, i64 0), i32 1024) #9
+  %10 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  tail call void @assemble_name(%struct._IO_FILE* %10, i8* getelementptr inbounds ([30 x i8]* @debug_line_section_label, i64 0, i64 0)) #9
+  %11 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  %12 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %11)
+  %13 = load i32* @debug_info_level, align 4, !tbaa !10
+  %cmp = icmp ugt i32 %13, 2
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @named_section_flags(i8* getelementptr inbounds ([15 x i8]* @.str15, i64 0, i64 0), i32 1024) #9
+  %call28 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([30 x i8]* @macinfo_section_label, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([15 x i8]* @.str400, i64 0, i64 0), i32 0) #9
+  %14 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  tail call void @assemble_name(%struct._IO_FILE* %14, i8* getelementptr inbounds ([30 x i8]* @macinfo_section_label, i64 0, i64 0)) #9
+  %15 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  %16 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %15)
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  tail call void @text_section() #9
+  %17 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  tail call void @assemble_name(%struct._IO_FILE* %17, i8* getelementptr inbounds ([30 x i8]* @text_section_label, i64 0, i64 0)) #9
+  %18 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
+  %19 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %18)
+  ret void
+}

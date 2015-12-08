@@ -1,0 +1,43 @@
+define internal fastcc void @add_prop(float %p, i8* nocapture %resnm, i8* nocapture %atomnm, i32* nocapture %nprop, %struct.t_prop** nocapture %props, i32* nocapture %maxprop) #0 {
+entry:
+  %0 = load i32* %nprop, align 4, !tbaa !3
+  %1 = load i32* %maxprop, align 4, !tbaa !3
+  %cmp = icmp slt i32 %0, %1
+  br i1 %cmp, label %entry.if.end_crit_edge, label %if.then
+
+entry.if.end_crit_edge:                           ; preds = %entry
+  %.pre19 = load %struct.t_prop** %props, align 8, !tbaa !0
+  br label %if.end
+
+if.then:                                          ; preds = %entry
+  %add = add nsw i32 %1, 10
+  store i32 %add, i32* %maxprop, align 4, !tbaa !3
+  %2 = load %struct.t_prop** %props, align 8, !tbaa !0
+  %3 = getelementptr inbounds %struct.t_prop* %2, i64 0, i32 0, i64 0
+  %mul = mul i32 %add, 24
+  %call = tail call i8* @save_realloc(i8* getelementptr inbounds ([7 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([56 x i8]* @.str10, i64 0, i64 0), i32 56, i8* %3, i32 %mul) #8
+  %4 = bitcast i8* %call to %struct.t_prop*
+  store %struct.t_prop* %4, %struct.t_prop** %props, align 8, !tbaa !0
+  %.pre = load i32* %nprop, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
+  %5 = phi %struct.t_prop* [ %.pre19, %entry.if.end_crit_edge ], [ %4, %if.then ]
+  %6 = phi i32 [ %0, %entry.if.end_crit_edge ], [ %.pre, %if.then ]
+  %idxprom = sext i32 %6 to i64
+  %arraydecay = getelementptr inbounds %struct.t_prop* %5, i64 %idxprom, i32 0, i64 0
+  %call2 = tail call i8* @strcpy(i8* %arraydecay, i8* %atomnm) #8
+  %7 = load i32* %nprop, align 4, !tbaa !3
+  %idxprom3 = sext i32 %7 to i64
+  %8 = load %struct.t_prop** %props, align 8, !tbaa !0
+  %arraydecay5 = getelementptr inbounds %struct.t_prop* %8, i64 %idxprom3, i32 1, i64 0
+  %call6 = tail call i8* @strcpy(i8* %arraydecay5, i8* %resnm) #8
+  %9 = load i32* %nprop, align 4, !tbaa !3
+  %idxprom7 = sext i32 %9 to i64
+  %10 = load %struct.t_prop** %props, align 8, !tbaa !0
+  %prop = getelementptr inbounds %struct.t_prop* %10, i64 %idxprom7, i32 2
+  store float %p, float* %prop, align 4, !tbaa !4
+  %inc = add nsw i32 %9, 1
+  store i32 %inc, i32* %nprop, align 4, !tbaa !3
+  ret void
+}

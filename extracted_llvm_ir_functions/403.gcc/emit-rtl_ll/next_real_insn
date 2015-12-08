@@ -1,0 +1,28 @@
+define %struct.rtx_def* @next_real_insn(%struct.rtx_def* %insn) #5 {
+entry:
+  br label %while.cond
+
+while.cond:                                       ; preds = %lor.lhs.false, %entry
+  %insn.addr.0 = phi %struct.rtx_def* [ %insn, %entry ], [ %0, %lor.lhs.false ]
+  %tobool = icmp eq %struct.rtx_def* %insn.addr.0, null
+  br i1 %tobool, label %while.end, label %while.body
+
+while.body:                                       ; preds = %while.cond
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.addr.0, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %cmp = icmp eq %struct.rtx_def* %0, null
+  br i1 %cmp, label %while.end, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %while.body
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %bf.clear.off = add i32 %bf.clear, -32
+  %switch = icmp ult i32 %bf.clear.off, 3
+  br i1 %switch, label %while.end, label %while.cond
+
+while.end:                                        ; preds = %lor.lhs.false, %while.cond, %while.body
+  %insn.addr.1 = phi %struct.rtx_def* [ null, %while.body ], [ null, %while.cond ], [ %0, %lor.lhs.false ]
+  ret %struct.rtx_def* %insn.addr.1
+}

@@ -1,0 +1,34 @@
+define internal fastcc void @compute_sets(%struct.rtx_def* %f) #0 {
+entry:
+  %cmp12 = icmp eq %struct.rtx_def* %f, null
+  br i1 %cmp12, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %insn.013 = phi %struct.rtx_def* [ %4, %for.inc ], [ %f, %entry ]
+  %0 = bitcast %struct.rtx_def* %insn.013 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom11 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom11
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp1 = icmp eq i8 %1, 105
+  br i1 %cmp1, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body
+  %arrayidx3 = getelementptr inbounds %struct.rtx_def* %insn.013, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx3 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %3 = getelementptr inbounds %struct.rtx_def* %insn.013, i64 0, i32 0, i64 0
+  tail call void @note_stores(%struct.rtx_def* %2, void (%struct.rtx_def*, %struct.rtx_def*, i8*)* @record_set_info, i8* %3) #6
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %insn.013, i64 0, i32 1, i64 2
+  %rtx6 = bitcast %union.rtunion_def* %arrayidx5 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx6, align 8, !tbaa !0
+  %cmp = icmp eq %struct.rtx_def* %4, null
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

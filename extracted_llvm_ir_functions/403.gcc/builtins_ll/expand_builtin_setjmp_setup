@@ -1,0 +1,83 @@
+define void @expand_builtin_setjmp_setup(%struct.rtx_def* %buf_addr, %struct.rtx_def* %receiver_label) #0 {
+entry:
+  %stack_save = alloca %struct.rtx_def*, align 8
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %0, 25
+  %1 = and i32 %and, 1
+  %2 = or i32 %1, 4
+  %3 = load i64* @setjmp_alias_set, align 8, !tbaa !4
+  %cmp = icmp eq i64 %3, -1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = call i64 @new_alias_set() #7
+  store i64 %call, i64* @setjmp_alias_set, align 8, !tbaa !4
+  %.pre = load i32* @target_flags, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %4 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %and1 = lshr i32 %4, 25
+  %5 = and i32 %and1, 1
+  %6 = or i32 %5, 4
+  %call4 = call %struct.rtx_def* @force_operand(%struct.rtx_def* %buf_addr, %struct.rtx_def* null) #7
+  %call5 = call %struct.rtx_def* @force_reg(i32 %6, %struct.rtx_def* %call4) #7
+  call void @emit_queue() #7
+  %7 = load i32* @target_flags, align 4, !tbaa !0
+  %and6 = lshr i32 %7, 25
+  %8 = and i32 %and6, 1
+  %9 = or i32 %8, 4
+  %call9 = call %struct.rtx_def* @gen_rtx_MEM(i32 %9, %struct.rtx_def* %call5) #7
+  %10 = load i64* @setjmp_alias_set, align 8, !tbaa !4
+  call void @set_mem_alias_set(%struct.rtx_def* %call9, i64 %10) #7
+  %11 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 7), align 8, !tbaa !3
+  %call10 = call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call9, %struct.rtx_def* %11) #7
+  %12 = load i32* @target_flags, align 4, !tbaa !0
+  %and11 = lshr i32 %12, 25
+  %13 = and i32 %and11, 1
+  %14 = or i32 %13, 4
+  %idxprom47 = zext i32 %14 to i64
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom47
+  %15 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = zext i8 %15 to i64
+  %call17 = call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %call5, i64 %conv) #7
+  %call18 = call %struct.rtx_def* @gen_rtx_MEM(i32 %14, %struct.rtx_def* %call17) #7
+  %16 = load i64* @setjmp_alias_set, align 8, !tbaa !4
+  call void @set_mem_alias_set(%struct.rtx_def* %call18, i64 %16) #7
+  %call19 = call %struct.rtx_def* @validize_mem(%struct.rtx_def* %call18) #7
+  %17 = load i32* @target_flags, align 4, !tbaa !0
+  %and20 = lshr i32 %17, 25
+  %18 = and i32 %and20, 1
+  %19 = or i32 %18, 4
+  %call26 = call %struct.rtx_def* @gen_rtx_fmt_u00(i32 67, i32 %19, %struct.rtx_def* %receiver_label) #7
+  %call27 = call %struct.rtx_def* @force_reg(i32 %19, %struct.rtx_def* %call26) #7
+  %call28 = call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call19, %struct.rtx_def* %call27) #7
+  %20 = load i32* @target_flags, align 4, !tbaa !0
+  %and29 = lshr i32 %20, 25
+  %21 = and i32 %and29, 1
+  %22 = or i32 %21, 4
+  %idxprom3248 = zext i32 %22 to i64
+  %arrayidx33 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom3248
+  %23 = load i8* %arrayidx33, align 1, !tbaa !1
+  %conv34 = zext i8 %23 to i64
+  %mul = shl nuw nsw i64 %conv34, 1
+  %call36 = call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %call5, i64 %mul) #7
+  %call37 = call %struct.rtx_def* @gen_rtx_MEM(i32 %2, %struct.rtx_def* %call36) #7
+  store %struct.rtx_def* %call37, %struct.rtx_def** %stack_save, align 8, !tbaa !3
+  %24 = load i64* @setjmp_alias_set, align 8, !tbaa !4
+  call void @set_mem_alias_set(%struct.rtx_def* %call37, i64 %24) #7
+  call void @emit_stack_save(i32 2, %struct.rtx_def** %stack_save, %struct.rtx_def* null) #7
+  %25 = load %struct.function** @cfun, align 8, !tbaa !3
+  %calls_setjmp = getelementptr inbounds %struct.function* %25, i64 0, i32 56
+  %26 = bitcast [4 x i8]* %calls_setjmp to i32*
+  %bf.load = load i32* %26, align 8
+  %bf.set = or i32 %bf.load, 16
+  store i32 %bf.set, i32* %26, align 8
+  %27 = load %struct.function** @cfun, align 8, !tbaa !3
+  %has_nonlocal_label = getelementptr inbounds %struct.function* %27, i64 0, i32 56
+  %28 = bitcast [4 x i8]* %has_nonlocal_label to i32*
+  %bf.load38 = load i32* %28, align 8
+  %bf.set40 = or i32 %bf.load38, 256
+  store i32 %bf.set40, i32* %28, align 8
+  ret void
+}

@@ -1,0 +1,84 @@
+define %struct.rtx_def* @get_func_hard_reg_initial_val(%struct.function* nocapture %fun, %struct.rtx_def* %reg) #0 {
+entry:
+  %hard_reg_initial_vals = getelementptr inbounds %struct.function* %fun, i64 0, i32 17
+  %0 = load %struct.initial_value_struct** %hard_reg_initial_vals, align 8, !tbaa !0
+  %call = tail call %struct.rtx_def* @has_func_hard_reg_initial_val(%struct.function* %fun, %struct.rtx_def* %reg) #8
+  %tobool = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %cmp = icmp eq %struct.initial_value_struct* %0, null
+  br i1 %cmp, label %if.then1, label %if.end6
+
+if.then1:                                         ; preds = %if.end
+  %call2 = tail call noalias i8* @xmalloc(i64 16) #7
+  %1 = bitcast i8* %call2 to %struct.initial_value_struct*
+  store %struct.initial_value_struct* %1, %struct.initial_value_struct** %hard_reg_initial_vals, align 8, !tbaa !0
+  %num_entries = bitcast i8* %call2 to i32*
+  store i32 0, i32* %num_entries, align 4, !tbaa !3
+  %max_entries = getelementptr inbounds i8* %call2, i64 4
+  %2 = bitcast i8* %max_entries to i32*
+  store i32 5, i32* %2, align 4, !tbaa !3
+  %call5 = tail call noalias i8* @xmalloc(i64 80) #7
+  %3 = bitcast i8* %call5 to %struct.initial_value_pair*
+  %entries = getelementptr inbounds i8* %call2, i64 8
+  %4 = bitcast i8* %entries to %struct.initial_value_pair**
+  store %struct.initial_value_pair* %3, %struct.initial_value_pair** %4, align 8, !tbaa !0
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.then1, %if.end
+  %ivs.0 = phi %struct.initial_value_struct* [ %1, %if.then1 ], [ %0, %if.end ]
+  %num_entries7 = getelementptr inbounds %struct.initial_value_struct* %ivs.0, i64 0, i32 0
+  %5 = load i32* %num_entries7, align 4, !tbaa !3
+  %max_entries8 = getelementptr inbounds %struct.initial_value_struct* %ivs.0, i64 0, i32 1
+  %6 = load i32* %max_entries8, align 4, !tbaa !3
+  %cmp9 = icmp slt i32 %5, %6
+  br i1 %cmp9, label %if.end6.if.end16_crit_edge, label %if.then10
+
+if.end6.if.end16_crit_edge:                       ; preds = %if.end6
+  %entries18.phi.trans.insert = getelementptr inbounds %struct.initial_value_struct* %ivs.0, i64 0, i32 2
+  %.pre50 = load %struct.initial_value_pair** %entries18.phi.trans.insert, align 8, !tbaa !0
+  br label %if.end16
+
+if.then10:                                        ; preds = %if.end6
+  %add = add nsw i32 %6, 5
+  store i32 %add, i32* %max_entries8, align 4, !tbaa !3
+  %entries12 = getelementptr inbounds %struct.initial_value_struct* %ivs.0, i64 0, i32 2
+  %7 = load %struct.initial_value_pair** %entries12, align 8, !tbaa !0
+  %8 = bitcast %struct.initial_value_pair* %7 to i8*
+  %conv = sext i32 %add to i64
+  %mul = shl nsw i64 %conv, 4
+  %call14 = tail call i8* @xrealloc(i8* %8, i64 %mul) #7
+  %9 = bitcast i8* %call14 to %struct.initial_value_pair*
+  store %struct.initial_value_pair* %9, %struct.initial_value_pair** %entries12, align 8, !tbaa !0
+  %.pre = load i32* %num_entries7, align 4, !tbaa !3
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.end6.if.end16_crit_edge, %if.then10
+  %10 = phi %struct.initial_value_pair* [ %.pre50, %if.end6.if.end16_crit_edge ], [ %9, %if.then10 ]
+  %11 = phi i32 [ %5, %if.end6.if.end16_crit_edge ], [ %.pre, %if.then10 ]
+  %idxprom = sext i32 %11 to i64
+  %entries18 = getelementptr inbounds %struct.initial_value_struct* %ivs.0, i64 0, i32 2
+  %hard_reg = getelementptr inbounds %struct.initial_value_pair* %10, i64 %idxprom, i32 0
+  store %struct.rtx_def* %reg, %struct.rtx_def** %hard_reg, align 8, !tbaa !0
+  %12 = bitcast %struct.rtx_def* %reg to i32*
+  %bf.load = load i32* %12, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %call19 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %bf.clear) #7
+  %13 = load i32* %num_entries7, align 4, !tbaa !3
+  %idxprom21 = sext i32 %13 to i64
+  %14 = load %struct.initial_value_pair** %entries18, align 8, !tbaa !0
+  %pseudo = getelementptr inbounds %struct.initial_value_pair* %14, i64 %idxprom21, i32 1
+  store %struct.rtx_def* %call19, %struct.rtx_def** %pseudo, align 8, !tbaa !0
+  %inc = add nsw i32 %13, 1
+  store i32 %inc, i32* %num_entries7, align 4, !tbaa !3
+  %15 = load %struct.initial_value_pair** %entries18, align 8, !tbaa !0
+  %pseudo28 = getelementptr inbounds %struct.initial_value_pair* %15, i64 %idxprom21, i32 1
+  %16 = load %struct.rtx_def** %pseudo28, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %if.end16
+  %retval.0 = phi %struct.rtx_def* [ %16, %if.end16 ], [ %call, %entry ]
+  ret %struct.rtx_def* %retval.0
+}

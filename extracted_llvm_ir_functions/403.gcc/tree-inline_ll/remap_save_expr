@@ -1,0 +1,40 @@
+define void @remap_save_expr(%union.tree_node** nocapture %tp, i8* %st_, %union.tree_node* %fn, i32* nocapture %walk_subtrees) #0 {
+entry:
+  %0 = bitcast i8* %st_ to %struct.splay_tree_s*
+  %1 = load %union.tree_node** %tp, align 8, !tbaa !0
+  %2 = ptrtoint %union.tree_node* %1 to i64
+  %call = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %0, i64 %2) #6
+  %tobool = icmp eq %struct.splay_tree_node_s* %call, null
+  br i1 %tobool, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %3 = load %union.tree_node** %tp, align 8, !tbaa !0
+  %call1 = tail call %union.tree_node* @copy_node(%union.tree_node* %3) #6
+  %operands = getelementptr inbounds %union.tree_node* %call1, i64 0, i32 0, i32 2
+  %arrayidx = getelementptr inbounds i32* %operands, i64 2
+  %4 = bitcast i32* %arrayidx to %union.tree_node**
+  store %union.tree_node* %fn, %union.tree_node** %4, align 8, !tbaa !0
+  %arrayidx4 = getelementptr inbounds i32* %operands, i64 4
+  %5 = bitcast i32* %arrayidx4 to %struct.rtx_def**
+  store %struct.rtx_def* null, %struct.rtx_def** %5, align 8, !tbaa !0
+  %6 = load %union.tree_node** %tp, align 8, !tbaa !0
+  %7 = ptrtoint %union.tree_node* %6 to i64
+  %8 = ptrtoint %union.tree_node* %call1 to i64
+  %call5 = tail call %struct.splay_tree_node_s* @splay_tree_insert(%struct.splay_tree_s* %0, i64 %7, i64 %8) #6
+  %9 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 8, !tbaa !0
+  %10 = ptrtoint %union.tree_node* %9 to i64
+  %call6 = tail call %struct.splay_tree_node_s* @splay_tree_insert(%struct.splay_tree_s* %0, i64 %8, i64 %10) #6
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  store i32 0, i32* %walk_subtrees, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %n.0 = phi %struct.splay_tree_node_s* [ %call, %if.else ], [ %call5, %if.then ]
+  %value = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 1
+  %11 = load i64* %value, align 8, !tbaa !4
+  %12 = inttoptr i64 %11 to %union.tree_node*
+  store %union.tree_node* %12, %union.tree_node** %tp, align 8, !tbaa !0
+  ret void
+}

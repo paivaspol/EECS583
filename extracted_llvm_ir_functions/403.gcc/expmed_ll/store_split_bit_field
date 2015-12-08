@@ -1,0 +1,182 @@
+define internal fastcc void @store_split_bit_field(%struct.rtx_def* %op0, i64 %bitsize, i64 %bitpos, %struct.rtx_def* %value) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %op0 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.else [
+    i32 61, label %if.then
+    i32 63, label %if.then
+  ]
+
+if.then:                                          ; preds = %entry, %entry
+  %1 = load i32* @target_flags, align 4, !tbaa !4
+  %and = lshr i32 %1, 20
+  %2 = and i32 %and, 32
+  %3 = add i32 %2, 32
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op0, i64 0, i32 1, i64 1
+  %rtmem = bitcast %union.rtunion_def* %arrayidx to %struct.mem_attrs**
+  %4 = load %struct.mem_attrs** %rtmem, align 8, !tbaa !3
+  %cmp4 = icmp eq %struct.mem_attrs* %4, null
+  br i1 %cmp4, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %if.else
+  %align = getelementptr inbounds %struct.mem_attrs* %4, i64 0, i32 4
+  %5 = load i32* %align, align 4, !tbaa !4
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.else, %cond.true
+  %cond8 = phi i32 [ %5, %cond.true ], [ 8, %if.else ]
+  %6 = load i32* @target_flags, align 4, !tbaa !4
+  %and9 = lshr i32 %6, 20
+  %7 = and i32 %and9, 32
+  %8 = add i32 %7, 32
+  %cmp12.not = icmp uge i32 %cond8, %8
+  %brmerge = or i1 %cmp12.not, %cmp4
+  %.mux = select i1 %cmp12.not, i32 %8, i32 8
+  br i1 %brmerge, label %if.end, label %cond.true18
+
+cond.true18:                                      ; preds = %cond.end
+  %align22 = getelementptr inbounds %struct.mem_attrs* %4, i64 0, i32 4
+  %9 = load i32* %align22, align 4, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %cond.end, %cond.true18, %if.then
+  %unit.0 = phi i32 [ %3, %if.then ], [ %9, %cond.true18 ], [ %.mux, %cond.end ]
+  %10 = bitcast %struct.rtx_def* %value to i32*
+  %bf.load32 = load i32* %10, align 8
+  %bf.clear33 = and i32 %bf.load32, 65535
+  switch i32 %bf.clear33, label %while.cond.preheader [
+    i32 70, label %if.then89
+    i32 55, label %if.then66
+    i32 56, label %if.then66
+    i32 58, label %if.then66
+    i32 67, label %if.then66
+    i32 68, label %if.then66
+    i32 134, label %if.then66
+    i32 140, label %if.then66
+  ]
+
+if.then66:                                        ; preds = %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end
+  %11 = load i32* @word_mode, align 4, !tbaa !0
+  %call = tail call %struct.rtx_def* @gen_lowpart_common(i32 %11, %struct.rtx_def* %value) #4
+  %tobool67 = icmp eq %struct.rtx_def* %call, null
+  %cmp69 = icmp eq %struct.rtx_def* %call, %value
+  %or.cond = or i1 %tobool67, %cmp69
+  br i1 %or.cond, label %if.else71, label %while.cond.preheader
+
+if.else71:                                        ; preds = %if.then66
+  %12 = load i32* @word_mode, align 4, !tbaa !0
+  %bf.load72 = load i32* %10, align 8
+  %bf.lshr = lshr i32 %bf.load72, 16
+  %bf.clear73 = and i32 %bf.lshr, 255
+  %cmp74 = icmp eq i32 %bf.clear73, 0
+  %.bf.clear73 = select i1 %cmp74, i32 %12, i32 %bf.clear73
+  %call82 = tail call %struct.rtx_def* @force_reg(i32 %.bf.clear73, %struct.rtx_def* %value) #4
+  %call83 = tail call %struct.rtx_def* @gen_lowpart_common(i32 %12, %struct.rtx_def* %call82) #4
+  br label %while.cond.preheader
+
+if.then89:                                        ; preds = %if.end
+  %call90 = tail call %struct.rtx_def* @copy_to_reg(%struct.rtx_def* %value) #4
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.end, %if.then89, %if.else71, %if.then66
+  %value.addr.0.ph = phi %struct.rtx_def* [ %call, %if.then66 ], [ %call83, %if.else71 ], [ %call90, %if.then89 ], [ %value, %if.end ]
+  %cmp93239 = icmp eq i64 %bitsize, 0
+  br i1 %cmp93239, label %while.end, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %while.cond.preheader
+  %conv97 = zext i32 %unit.0 to i64
+  %13 = bitcast %struct.rtx_def* %value.addr.0.ph to i32*
+  %rtwint = getelementptr inbounds %struct.rtx_def* %value.addr.0.ph, i64 0, i32 1, i64 0, i32 0
+  %arrayidx148 = getelementptr inbounds %struct.rtx_def* %op0, i64 0, i32 1, i64 1
+  %rtuint = bitcast %union.rtunion_def* %arrayidx148 to i32*
+  %arrayidx157 = getelementptr inbounds %struct.rtx_def* %op0, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx157 to %struct.rtx_def**
+  br label %while.body
+
+while.body:                                       ; preds = %if.end178, %while.body.lr.ph
+  %bitsdone.0240 = phi i64 [ 0, %while.body.lr.ph ], [ %phitmp, %if.end178 ]
+  %add = add i64 %bitsdone.0240, %bitpos
+  %div = udiv i64 %add, %conv97
+  %rem = urem i64 %add, %conv97
+  %sub = sub i64 %bitsize, %bitsdone.0240
+  %14 = load i32* @target_flags, align 4, !tbaa !4
+  %and102 = lshr i32 %14, 20
+  %15 = and i32 %and102, 32
+  %16 = add i32 %15, 32
+  %conv105238 = zext i32 %16 to i64
+  %cmp106 = icmp ult i64 %sub, %conv105238
+  %sub.conv105238 = select i1 %cmp106, i64 %sub, i64 %conv105238
+  %sub119 = sub i64 %conv97, %rem
+  %cmp120 = icmp ult i64 %sub.conv105238, %sub119
+  %cond127 = select i1 %cmp120, i64 %sub.conv105238, i64 %sub119
+  %bf.load128 = load i32* %13, align 8
+  %bf.clear129 = and i32 %bf.load128, 65535
+  %cmp130 = icmp eq i32 %bf.clear129, 54
+  br i1 %cmp130, label %if.then132, label %if.else138
+
+if.then132:                                       ; preds = %while.body
+  %17 = load i64* %rtwint, align 8, !tbaa !8
+  %shr = lshr i64 %17, %bitsdone.0240
+  %shl = shl i64 1, %cond127
+  %sub135 = add nsw i64 %shl, -1
+  %and136 = and i64 %shr, %sub135
+  %call137 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %and136) #4
+  br label %if.end141
+
+if.else138:                                       ; preds = %while.body
+  %18 = load i32* @word_mode, align 4, !tbaa !0
+  %call140 = tail call fastcc %struct.rtx_def* @extract_fixed_bit_field(i32 %18, %struct.rtx_def* %value.addr.0.ph, i64 0, i64 %cond127, i64 %bitsdone.0240, %struct.rtx_def* null, i32 1) #6
+  br label %if.end141
+
+if.end141:                                        ; preds = %if.else138, %if.then132
+  %part.0 = phi %struct.rtx_def* [ %call137, %if.then132 ], [ %call140, %if.else138 ]
+  %bf.load142 = load i32* %0, align 8
+  %bf.clear143 = and i32 %bf.load142, 65535
+  switch i32 %bf.clear143, label %if.end178 [
+    i32 63, label %if.then146
+    i32 61, label %if.then170
+  ]
+
+if.then146:                                       ; preds = %if.end141
+  %19 = load i32* %rtuint, align 4, !tbaa !4
+  %20 = load i32* @target_flags, align 4, !tbaa !4
+  %and149 = lshr i32 %20, 23
+  %21 = and i32 %and149, 4
+  %22 = add i32 %21, 4
+  %div152 = udiv i32 %19, %22
+  %conv153 = zext i32 %div152 to i64
+  %add154 = add i64 %conv153, %div
+  %conv155 = trunc i64 %add154 to i32
+  %23 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %24 = bitcast %struct.rtx_def* %23 to i32*
+  %bf.load161 = load i32* %24, align 8
+  %bf.lshr162 = lshr i32 %bf.load161, 16
+  %bf.clear163 = and i32 %bf.lshr162, 255
+  %call164 = tail call %struct.rtx_def* @operand_subword_force(%struct.rtx_def* %23, i32 %conv155, i32 %bf.clear163) #4
+  br label %if.end178
+
+if.then170:                                       ; preds = %if.end141
+  %conv171 = trunc i64 %div to i32
+  %bf.lshr173 = lshr i32 %bf.load142, 16
+  %bf.clear174 = and i32 %bf.lshr173, 255
+  %call175 = tail call %struct.rtx_def* @operand_subword_force(%struct.rtx_def* %op0, i32 %conv171, i32 %bf.clear174) #4
+  br label %if.end178
+
+if.end178:                                        ; preds = %if.end141, %if.then170, %if.then146
+  %word95.0 = phi %struct.rtx_def* [ %call164, %if.then146 ], [ %call175, %if.then170 ], [ %op0, %if.end141 ]
+  %offset.0 = phi i64 [ 0, %if.then146 ], [ 0, %if.then170 ], [ %div, %if.end141 ]
+  %mul = mul i64 %offset.0, %conv97
+  %div180 = lshr i64 %mul, 3
+  tail call fastcc void @store_fixed_bit_field(%struct.rtx_def* %word95.0, i64 %div180, i64 %cond127, i64 %rem, %struct.rtx_def* %part.0) #6
+  %add182 = add i64 %cond127, %bitsdone.0240
+  %phitmp = and i64 %add182, 4294967295
+  %cmp93 = icmp ult i64 %phitmp, %bitsize
+  br i1 %cmp93, label %while.body, label %while.end
+
+while.end:                                        ; preds = %if.end178, %while.cond.preheader
+  ret void
+}

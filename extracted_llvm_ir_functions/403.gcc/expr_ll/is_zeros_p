@@ -1,0 +1,132 @@
+define internal fastcc i32 @is_zeros_p(%union.tree_node* %exp) #0 {
+entry:
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %sw.bb, %entry
+  %exp.tr = phi %union.tree_node* [ %exp, %entry ], [ %1, %sw.bb ]
+  %code = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %return [
+    i32 114, label %sw.bb
+    i32 115, label %sw.bb
+    i32 116, label %sw.bb
+    i32 117, label %sw.bb
+    i32 25, label %sw.bb2
+    i32 27, label %sw.bb4
+    i32 26, label %sw.bb9
+    i32 28, label %sw.bb13
+    i32 46, label %sw.bb18
+  ]
+
+sw.bb:                                            ; preds = %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse
+  %operands = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  %1 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
+  br label %tailrecurse
+
+sw.bb2:                                           ; preds = %tailrecurse
+  %call3 = tail call i32 @integer_zerop(%union.tree_node* %exp.tr) #8
+  br label %return
+
+sw.bb4:                                           ; preds = %tailrecurse
+  %real = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2
+  %2 = bitcast i32* %real to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %call5 = tail call fastcc i32 @is_zeros_p(%union.tree_node* %3) #10
+  %tobool = icmp eq i32 %call5, 0
+  br i1 %tobool, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %sw.bb4
+  %4 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 4
+  %5 = load %union.tree_node** %4, align 8, !tbaa !0
+  %call7 = tail call fastcc i32 @is_zeros_p(%union.tree_node* %5) #10
+  %tobool8 = icmp ne i32 %call7, 0
+  br label %land.end
+
+land.end:                                         ; preds = %sw.bb4, %land.rhs
+  %6 = phi i1 [ false, %sw.bb4 ], [ %tobool8, %land.rhs ]
+  %land.ext = zext i1 %6 to i32
+  br label %return
+
+sw.bb9:                                           ; preds = %tailrecurse
+  %real_cst10 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2
+  %7 = bitcast i32* %real_cst10 to i8*
+  %call11 = tail call i32 @memcmp(i8* %7, i8* bitcast (%struct.realvaluetype* @dconst0 to i8*), i64 24) #11
+  %lnot = icmp eq i32 %call11, 0
+  %lnot.ext = zext i1 %lnot to i32
+  br label %return
+
+sw.bb13:                                          ; preds = %tailrecurse
+  %elements = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2
+  %8 = bitcast i32* %elements to %union.tree_node**
+  %elt.064 = load %union.tree_node** %8, align 8
+  %tobool1465 = icmp eq %union.tree_node* %elt.064, null
+  br i1 %tobool1465, label %return, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %chain = getelementptr inbounds %union.tree_node* %elt.066, i64 0, i32 0, i32 0, i32 0
+  %elt.0 = load %union.tree_node** %chain, align 8
+  %tobool14 = icmp eq %union.tree_node* %elt.0, null
+  br i1 %tobool14, label %return, label %for.body
+
+for.body:                                         ; preds = %sw.bb13, %for.cond
+  %elt.066 = phi %union.tree_node* [ %elt.0, %for.cond ], [ %elt.064, %sw.bb13 ]
+  %value = getelementptr inbounds %union.tree_node* %elt.066, i64 0, i32 0, i32 2
+  %9 = bitcast i32* %value to %union.tree_node**
+  %10 = load %union.tree_node** %9, align 8, !tbaa !0
+  %call15 = tail call fastcc i32 @is_zeros_p(%union.tree_node* %10) #10
+  %tobool16 = icmp eq i32 %call15, 0
+  br i1 %tobool16, label %return, label %for.cond
+
+sw.bb18:                                          ; preds = %tailrecurse
+  %type = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 0, i32 1
+  %11 = load %union.tree_node** %type, align 8, !tbaa !0
+  %tobool20 = icmp eq %union.tree_node* %11, null
+  br i1 %tobool20, label %if.end32, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %sw.bb18
+  %code24 = getelementptr inbounds %union.tree_node* %11, i64 0, i32 0, i32 0, i32 2
+  %12 = bitcast [4 x i8]* %code24 to i32*
+  %bf.load25 = load i32* %12, align 8
+  %bf.clear26 = and i32 %bf.load25, 255
+  %cmp = icmp eq i32 %bf.clear26, 19
+  br i1 %cmp, label %if.then27, label %if.end32
+
+if.then27:                                        ; preds = %land.lhs.true
+  %operands29 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2
+  %arrayidx30 = getelementptr inbounds i32* %operands29, i64 2
+  %13 = bitcast i32* %arrayidx30 to %union.tree_node**
+  %14 = load %union.tree_node** %13, align 8, !tbaa !0
+  %cmp31 = icmp eq %union.tree_node* %14, null
+  %conv = zext i1 %cmp31 to i32
+  br label %return
+
+if.end32:                                         ; preds = %sw.bb18, %land.lhs.true
+  %operands34 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2
+  %arrayidx35 = getelementptr inbounds i32* %operands34, i64 2
+  %15 = bitcast i32* %arrayidx35 to %union.tree_node**
+  %elt.169 = load %union.tree_node** %15, align 8
+  %tobool3770 = icmp eq %union.tree_node* %elt.169, null
+  br i1 %tobool3770, label %return, label %for.body38
+
+for.cond36:                                       ; preds = %for.body38
+  %chain47 = getelementptr inbounds %union.tree_node* %elt.171, i64 0, i32 0, i32 0, i32 0
+  %elt.1 = load %union.tree_node** %chain47, align 8
+  %tobool37 = icmp eq %union.tree_node* %elt.1, null
+  br i1 %tobool37, label %return, label %for.body38
+
+for.body38:                                       ; preds = %if.end32, %for.cond36
+  %elt.171 = phi %union.tree_node* [ %elt.1, %for.cond36 ], [ %elt.169, %if.end32 ]
+  %value40 = getelementptr inbounds %union.tree_node* %elt.171, i64 0, i32 0, i32 2
+  %16 = bitcast i32* %value40 to %union.tree_node**
+  %17 = load %union.tree_node** %16, align 8, !tbaa !0
+  %call41 = tail call fastcc i32 @is_zeros_p(%union.tree_node* %17) #10
+  %tobool42 = icmp eq i32 %call41, 0
+  br i1 %tobool42, label %return, label %for.cond36
+
+return:                                           ; preds = %tailrecurse, %if.end32, %for.body38, %for.cond36, %sw.bb13, %for.body, %for.cond, %if.then27, %sw.bb9, %land.end, %sw.bb2
+  %retval.0 = phi i32 [ %conv, %if.then27 ], [ %lnot.ext, %sw.bb9 ], [ %land.ext, %land.end ], [ %call3, %sw.bb2 ], [ 1, %sw.bb13 ], [ 0, %for.body ], [ 1, %for.cond ], [ 1, %if.end32 ], [ 0, %for.body38 ], [ 1, %for.cond36 ], [ 0, %tailrecurse ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,90 @@
+define void @mdsplit_top(%struct._IO_FILE* nocapture %log, %struct.t_topology* nocapture %top, %struct.t_commrec* nocapture %cr, %struct.t_nsborder* nocapture %nsb, i32* nocapture %bParallelDummies, %struct.t_comm_dummies* nocapture %dummycomm) #0 {
+entry:
+  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
+  %0 = load i32* %nnodes, align 4, !tbaa !0
+  %cmp = icmp slt i32 %0, 2
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %idef = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1
+  %call = tail call i32 @setup_parallel_dummies(%struct.t_idef* %idef, %struct.t_commrec* %cr, %struct.t_nsborder* %nsb, %struct.t_comm_dummies* %dummycomm) #3
+  store i32 %call, i32* %bParallelDummies, align 4, !tbaa !0
+  %nodeid.i.i = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %split_ilist.exit.i, %if.end
+  %indvars.iv.i = phi i64 [ 0, %if.end ], [ %indvars.iv.next.i, %split_ilist.exit.i ]
+  %1 = load i32* %nodeid.i.i, align 4, !tbaa !0
+  %cmp.i.i = icmp eq i32 %1, 0
+  br i1 %cmp.i.i, label %if.end.i.i, label %if.else.i.i
+
+if.else.i.i:                                      ; preds = %for.body.i
+  %sub.i.i = add nsw i32 %1, -1
+  %idxprom.i.i = sext i32 %sub.i.i to i64
+  %arrayidx.i.i = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 5, i64 %indvars.iv.i, i32 1, i64 %idxprom.i.i
+  %2 = load i32* %arrayidx.i.i, align 4, !tbaa !0
+  br label %if.end.i.i
+
+if.end.i.i:                                       ; preds = %if.else.i.i, %for.body.i
+  %start.0.i.i = phi i32 [ %2, %if.else.i.i ], [ 0, %for.body.i ]
+  %idxprom3.i.i = sext i32 %1 to i64
+  %arrayidx5.i.i = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 5, i64 %indvars.iv.i, i32 1, i64 %idxprom3.i.i
+  %3 = load i32* %arrayidx5.i.i, align 4, !tbaa !0
+  %sub6.i.i = sub i32 %3, %start.0.i.i
+  %cmp7.i.i = icmp slt i32 %sub6.i.i, 0
+  br i1 %cmp7.i.i, label %if.then8.i.i, label %if.end10.i.i
+
+if.then8.i.i:                                     ; preds = %if.end.i.i
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([113 x i8]* @.str7, i64 0, i64 0), i32 %sub6.i.i, i32 %1) #2
+  br label %if.end10.i.i
+
+if.end10.i.i:                                     ; preds = %if.then8.i.i, %if.end.i.i
+  %call.i.i = tail call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([56 x i8]* @.str1, i64 0, i64 0), i32 222, i32 %sub6.i.i, i32 4) #2
+  %4 = bitcast i8* %call.i.i to i32*
+  %cmp112.i.i = icmp sgt i32 %sub6.i.i, 0
+  %iatoms.i.i = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 5, i64 %indvars.iv.i, i32 2
+  %5 = load i32** %iatoms.i.i, align 8, !tbaa !3
+  br i1 %cmp112.i.i, label %for.body.lr.ph.i.i, label %for.end.i.i
+
+for.body.lr.ph.i.i:                               ; preds = %if.end10.i.i
+  %6 = sext i32 %start.0.i.i to i64
+  br label %for.body.i.i
+
+for.body.i.i:                                     ; preds = %for.body.i.i, %for.body.lr.ph.i.i
+  %indvars.iv4.i.i = phi i64 [ 0, %for.body.lr.ph.i.i ], [ %indvars.iv.next5.i.i, %for.body.i.i ]
+  %7 = add nsw i64 %indvars.iv4.i.i, %6
+  %arrayidx13.i.i = getelementptr inbounds i32* %5, i64 %7
+  %8 = load i32* %arrayidx13.i.i, align 4, !tbaa !0
+  %arrayidx15.i.i = getelementptr inbounds i32* %4, i64 %indvars.iv4.i.i
+  store i32 %8, i32* %arrayidx15.i.i, align 4, !tbaa !0
+  %indvars.iv.next5.i.i = add i64 %indvars.iv4.i.i, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next5.i.i to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %sub6.i.i
+  br i1 %exitcond, label %for.end.i.i, label %for.body.i.i
+
+for.end.i.i:                                      ; preds = %for.body.i.i, %if.end10.i.i
+  %9 = bitcast i32* %5 to i8*
+  tail call void @save_free(i8* getelementptr inbounds ([11 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([56 x i8]* @.str1, i64 0, i64 0), i32 227, i8* %9) #2
+  store i32* %4, i32** %iatoms.i.i, align 8, !tbaa !3
+  br label %for.body20.i.i
+
+for.body20.i.i:                                   ; preds = %for.body20.i.i, %for.end.i.i
+  %indvars.iv.i.i = phi i64 [ 0, %for.end.i.i ], [ %indvars.iv.next.i.i, %for.body20.i.i ]
+  %arrayidx23.i.i = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 5, i64 %indvars.iv.i, i32 1, i64 %indvars.iv.i.i
+  store i32 %sub6.i.i, i32* %arrayidx23.i.i, align 4, !tbaa !0
+  %indvars.iv.next.i.i = add i64 %indvars.iv.i.i, 1
+  %lftr.wideiv5 = trunc i64 %indvars.iv.next.i.i to i32
+  %exitcond6 = icmp eq i32 %lftr.wideiv5, 256
+  br i1 %exitcond6, label %split_ilist.exit.i, label %for.body20.i.i
+
+split_ilist.exit.i:                               ; preds = %for.body20.i.i
+  %nr27.i.i = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 5, i64 %indvars.iv.i, i32 0
+  store i32 %sub6.i.i, i32* %nr27.i.i, align 4, !tbaa !0
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv7 = trunc i64 %indvars.iv.next.i to i32
+  %exitcond8 = icmp eq i32 %lftr.wideiv7, 44
+  br i1 %exitcond8, label %return, label %for.body.i
+
+return:                                           ; preds = %split_ilist.exit.i, %entry
+  ret void
+}

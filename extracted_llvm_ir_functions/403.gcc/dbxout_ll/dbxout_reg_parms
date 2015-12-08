@@ -1,0 +1,168 @@
+define void @dbxout_reg_parms(%union.tree_node* %parms) #0 {
+entry:
+  %tobool151 = icmp eq %union.tree_node* %parms, null
+  br i1 %tobool151, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %parms.addr.0152 = phi %union.tree_node* [ %25, %for.inc ], [ %parms, %entry ]
+  %name = getelementptr inbounds %union.tree_node* %parms.addr.0152, i64 0, i32 0, i32 8
+  %0 = load %union.tree_node** %name, align 8, !tbaa !0
+  %tobool1 = icmp eq %union.tree_node* %0, null
+  br i1 %tobool1, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body
+  %u2 = getelementptr inbounds %union.tree_node* %parms.addr.0152, i64 0, i32 0, i32 19
+  %r = bitcast %union.anon.1* %u2 to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %r, align 8, !tbaa !0
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  br i1 %cmp, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %land.lhs.true
+  %rtl = getelementptr inbounds %union.tree_node* %parms.addr.0152, i64 0, i32 0, i32 17
+  %3 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %tobool4 = icmp eq %struct.rtx_def* %3, null
+  br i1 %tobool4, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %if.then
+  tail call void @make_decl_rtl(%union.tree_node* %parms.addr.0152, i8* null) #6
+  %4 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then, %cond.false
+  %5 = phi %struct.rtx_def* [ %4, %cond.false ], [ %3, %if.then ]
+  %6 = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load9 = load i32* %6, align 8
+  %bf.clear10 = and i32 %bf.load9, 65535
+  %cmp11 = icmp eq i32 %bf.clear10, 61
+  br i1 %cmp11, label %land.lhs.true12, label %if.else
+
+land.lhs.true12:                                  ; preds = %cond.end
+  %tobool15 = icmp eq %struct.rtx_def* %5, null
+  br i1 %tobool15, label %cond.false19, label %cond.end22
+
+cond.false19:                                     ; preds = %land.lhs.true12
+  tail call void @make_decl_rtl(%union.tree_node* %parms.addr.0152, i8* null) #6
+  %7 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  br label %cond.end22
+
+cond.end22:                                       ; preds = %land.lhs.true12, %cond.false19
+  %8 = phi %struct.rtx_def* [ %7, %cond.false19 ], [ %5, %land.lhs.true12 ]
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %8, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %9 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp24 = icmp ult i32 %9, 53
+  br i1 %cmp24, label %if.then25, label %if.else
+
+if.then25:                                        ; preds = %cond.end22
+  %type = getelementptr inbounds %union.tree_node* %parms.addr.0152, i64 0, i32 0, i32 0, i32 1
+  %10 = load %union.tree_node** %type, align 8, !tbaa !0
+  %tobool28 = icmp eq %struct.rtx_def* %8, null
+  br i1 %tobool28, label %cond.false32, label %cond.end35
+
+cond.false32:                                     ; preds = %if.then25
+  tail call void @make_decl_rtl(%union.tree_node* %parms.addr.0152, i8* null) #6
+  %11 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  br label %cond.end35
+
+cond.end35:                                       ; preds = %if.then25, %cond.false32
+  %cond36 = phi %struct.rtx_def* [ %11, %cond.false32 ], [ %8, %if.then25 ]
+  %call = tail call fastcc i32 @dbxout_symbol_location(%union.tree_node* %parms.addr.0152, %union.tree_node* %10, i8* null, %struct.rtx_def* %cond36) #8
+  br label %for.inc
+
+if.else:                                          ; preds = %cond.end22, %cond.end
+  %12 = phi %struct.rtx_def* [ %8, %cond.end22 ], [ %5, %cond.end ]
+  %tobool39 = icmp eq %struct.rtx_def* %12, null
+  br i1 %tobool39, label %cond.false43, label %cond.end46
+
+cond.false43:                                     ; preds = %if.else
+  tail call void @make_decl_rtl(%union.tree_node* %parms.addr.0152, i8* null) #6
+  %13 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  br label %cond.end46
+
+cond.end46:                                       ; preds = %if.else, %cond.false43
+  %14 = phi %struct.rtx_def* [ %13, %cond.false43 ], [ %12, %if.else ]
+  %15 = bitcast %struct.rtx_def* %14 to i32*
+  %bf.load48 = load i32* %15, align 8
+  %bf.clear49 = and i32 %bf.load48, 65535
+  %cmp50 = icmp eq i32 %bf.clear49, 65
+  br i1 %cmp50, label %if.then51, label %if.else66
+
+if.then51:                                        ; preds = %cond.end46
+  %type53 = getelementptr inbounds %union.tree_node* %parms.addr.0152, i64 0, i32 0, i32 0, i32 1
+  %16 = load %union.tree_node** %type53, align 8, !tbaa !0
+  %tobool56 = icmp eq %struct.rtx_def* %14, null
+  br i1 %tobool56, label %cond.false60, label %cond.end63
+
+cond.false60:                                     ; preds = %if.then51
+  tail call void @make_decl_rtl(%union.tree_node* %parms.addr.0152, i8* null) #6
+  %17 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  br label %cond.end63
+
+cond.end63:                                       ; preds = %if.then51, %cond.false60
+  %cond64 = phi %struct.rtx_def* [ %17, %cond.false60 ], [ %14, %if.then51 ]
+  %call65 = tail call fastcc i32 @dbxout_symbol_location(%union.tree_node* %parms.addr.0152, %union.tree_node* %16, i8* null, %struct.rtx_def* %cond64) #8
+  br label %for.inc
+
+if.else66:                                        ; preds = %cond.end46
+  %tobool69 = icmp eq %struct.rtx_def* %14, null
+  br i1 %tobool69, label %cond.false73, label %cond.end76
+
+cond.false73:                                     ; preds = %if.else66
+  tail call void @make_decl_rtl(%union.tree_node* %parms.addr.0152, i8* null) #6
+  %18 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %.phi.trans.insert = bitcast %struct.rtx_def* %18 to i32*
+  %bf.load78.pre = load i32* %.phi.trans.insert, align 8
+  br label %cond.end76
+
+cond.end76:                                       ; preds = %if.else66, %cond.false73
+  %bf.load78 = phi i32 [ %bf.load78.pre, %cond.false73 ], [ %bf.load48, %if.else66 ]
+  %19 = phi %struct.rtx_def* [ %18, %cond.false73 ], [ %14, %if.else66 ]
+  %bf.clear79 = and i32 %bf.load78, 65535
+  %cmp80 = icmp eq i32 %bf.clear79, 66
+  br i1 %cmp80, label %land.lhs.true81, label %for.inc
+
+land.lhs.true81:                                  ; preds = %cond.end76
+  %tobool84 = icmp eq %struct.rtx_def* %19, null
+  br i1 %tobool84, label %cond.false88, label %cond.end91
+
+cond.false88:                                     ; preds = %land.lhs.true81
+  tail call void @make_decl_rtl(%union.tree_node* %parms.addr.0152, i8* null) #6
+  %20 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  br label %cond.end91
+
+cond.end91:                                       ; preds = %land.lhs.true81, %cond.false88
+  %cond92 = phi %struct.rtx_def* [ %20, %cond.false88 ], [ %19, %land.lhs.true81 ]
+  %21 = load %struct.rtx_def** %r, align 8, !tbaa !0
+  %call96 = tail call i32 @rtx_equal_p(%struct.rtx_def* %cond92, %struct.rtx_def* %21) #6
+  %tobool97 = icmp eq i32 %call96, 0
+  br i1 %tobool97, label %if.then98, label %for.inc
+
+if.then98:                                        ; preds = %cond.end91
+  %type100 = getelementptr inbounds %union.tree_node* %parms.addr.0152, i64 0, i32 0, i32 0, i32 1
+  %22 = load %union.tree_node** %type100, align 8, !tbaa !0
+  %23 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %tobool103 = icmp eq %struct.rtx_def* %23, null
+  br i1 %tobool103, label %cond.false107, label %cond.end110
+
+cond.false107:                                    ; preds = %if.then98
+  tail call void @make_decl_rtl(%union.tree_node* %parms.addr.0152, i8* null) #6
+  %24 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  br label %cond.end110
+
+cond.end110:                                      ; preds = %if.then98, %cond.false107
+  %cond111 = phi %struct.rtx_def* [ %24, %cond.false107 ], [ %23, %if.then98 ]
+  %call112 = tail call fastcc i32 @dbxout_symbol_location(%union.tree_node* %parms.addr.0152, %union.tree_node* %22, i8* null, %struct.rtx_def* %cond111) #8
+  br label %for.inc
+
+for.inc:                                          ; preds = %cond.end91, %for.body, %land.lhs.true, %cond.end63, %cond.end110, %cond.end76, %cond.end35
+  %chain = getelementptr inbounds %union.tree_node* %parms.addr.0152, i64 0, i32 0, i32 0, i32 0
+  %25 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %tobool = icmp eq %union.tree_node* %25, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

@@ -1,0 +1,54 @@
+define internal void @cselib_invalidate_rtx(%struct.rtx_def* %dest, %struct.rtx_def* nocapture %ignore, i8* nocapture %data) #1 {
+entry:
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.backedge, %entry
+  %dest.addr.0 = phi %struct.rtx_def* [ %dest, %entry ], [ %dest.addr.0.be, %while.cond.backedge ]
+  %0 = bitcast %struct.rtx_def* %dest.addr.0 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.end22 [
+    i32 64, label %while.body
+    i32 132, label %while.body
+    i32 133, label %while.body
+    i32 63, label %while.body
+    i32 61, label %if.then
+    i32 66, label %if.then21
+  ]
+
+while.body:                                       ; preds = %while.cond, %while.cond, %while.cond, %while.cond
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest.addr.0, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.end22, %while.body
+  %dest.addr.0.be.in = phi %struct.rtx_def** [ %rtx, %while.body ], [ getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), %if.end22 ]
+  %dest.addr.0.be = load %struct.rtx_def** %dest.addr.0.be.in, align 8
+  br label %while.cond
+
+if.then:                                          ; preds = %while.cond
+  %arrayidx15 = getelementptr inbounds %struct.rtx_def* %dest.addr.0, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx15 to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !3
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear17 = and i32 %bf.lshr, 255
+  tail call fastcc void @cselib_invalidate_regno(i32 %1, i32 %bf.clear17) #7
+  br label %if.end22
+
+if.then21:                                        ; preds = %while.cond
+  %2 = load %struct.htab** @hash_table, align 8, !tbaa !0
+  %3 = getelementptr inbounds %struct.rtx_def* %dest.addr.0, i64 0, i32 0, i64 0
+  tail call void @htab_traverse(%struct.htab* %2, i32 (i8**, i8*)* @cselib_invalidate_mem_1, i8* %3) #10
+  br label %if.end22
+
+if.end22:                                         ; preds = %while.cond, %if.then21, %if.then
+  %bf.load23 = load i32* %0, align 8
+  %bf.lshr24 = lshr i32 %bf.load23, 16
+  %bf.clear25 = and i32 %bf.lshr24, 255
+  %call = tail call i32 @push_operand(%struct.rtx_def* %dest.addr.0, i32 %bf.clear25) #10
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end27, label %while.cond.backedge
+
+if.end27:                                         ; preds = %if.end22
+  ret void
+}

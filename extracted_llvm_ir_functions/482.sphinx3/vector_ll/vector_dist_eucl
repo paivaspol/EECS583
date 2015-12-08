@@ -1,0 +1,25 @@
+define double @vector_dist_eucl(float* nocapture %v1, float* nocapture %v2, i32 %len) #2 {
+entry:
+  %cmp16 = icmp sgt i32 %len, 0
+  br i1 %cmp16, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %d.017 = phi double [ %add, %for.body ], [ 0.000000e+00, %entry ]
+  %arrayidx = getelementptr inbounds float* %v1, i64 %indvars.iv
+  %0 = load float* %arrayidx, align 4, !tbaa !0
+  %arrayidx2 = getelementptr inbounds float* %v2, i64 %indvars.iv
+  %1 = load float* %arrayidx2, align 4, !tbaa !0
+  %sub = fsub float %0, %1
+  %mul = fmul float %sub, %sub
+  %conv = fpext float %mul to double
+  %add = fadd double %d.017, %conv
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %len
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %d.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add, %for.body ]
+  ret double %d.0.lcssa
+}

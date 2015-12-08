@@ -1,0 +1,16 @@
+define %struct.rtx_def* @df_pattern_emit_after(%struct.df* nocapture %df, %struct.rtx_def* %pattern, %struct.basic_block_def* nocapture %bb, %struct.rtx_def* %insn) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @emit_insn_after(%struct.rtx_def* %pattern, %struct.rtx_def* %insn) #8
+  %cmp = icmp eq %struct.rtx_def* %call, %insn
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  tail call fastcc void @df_insns_modify(%struct.df* %df, %struct.basic_block_def* %bb, %struct.rtx_def* %0, %struct.rtx_def* %call) #6
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  ret %struct.rtx_def* %call
+}

@@ -1,0 +1,108 @@
+define internal fastcc noalias i8* @munge(i8* %filename) #0 {
+entry:
+  %0 = load i8* %filename, align 1, !tbaa !1
+  %tobool74 = icmp eq i8 %0, 0
+  br i1 %tobool74, label %for.end13, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc10
+  %1 = phi i8 [ %3, %for.inc10 ], [ %0, %entry ]
+  %len.077 = phi i32 [ %inc12, %for.inc10 ], [ 0, %entry ]
+  %p.075 = phi i8* [ %incdec.ptr11, %for.inc10 ], [ %filename, %entry ]
+  %conv = sext i8 %1 to i32
+  switch i32 %conv, label %for.inc10 [
+    i32 32, label %for.cond1
+    i32 9, label %for.cond1
+    i32 36, label %sw.bb8
+  ]
+
+for.cond1:                                        ; preds = %for.body, %for.body, %land.rhs
+  %p.0.pn = phi i8* [ %q.0, %land.rhs ], [ %p.075, %for.body ], [ %p.075, %for.body ]
+  %len.1 = phi i32 [ %inc, %land.rhs ], [ %len.077, %for.body ], [ %len.077, %for.body ]
+  %q.0 = getelementptr inbounds i8* %p.0.pn, i64 -1
+  %cmp = icmp ult i8* %q.0, %filename
+  br i1 %cmp, label %for.end.critedge, label %land.rhs
+
+land.rhs:                                         ; preds = %for.cond1
+  %2 = load i8* %q.0, align 1, !tbaa !1
+  %cmp4 = icmp eq i8 %2, 92
+  %inc = add nsw i32 %len.1, 1
+  br i1 %cmp4, label %for.cond1, label %for.inc10
+
+for.end.critedge:                                 ; preds = %for.cond1
+  %inc.c = add nsw i32 %len.1, 1
+  br label %for.inc10
+
+sw.bb8:                                           ; preds = %for.body
+  %inc9 = add nsw i32 %len.077, 1
+  br label %for.inc10
+
+for.inc10:                                        ; preds = %land.rhs, %sw.bb8, %for.body, %for.end.critedge
+  %len.2 = phi i32 [ %len.077, %for.body ], [ %inc9, %sw.bb8 ], [ %inc.c, %for.end.critedge ], [ %inc, %land.rhs ]
+  %incdec.ptr11 = getelementptr inbounds i8* %p.075, i64 1
+  %inc12 = add nsw i32 %len.2, 1
+  %3 = load i8* %incdec.ptr11, align 1, !tbaa !1
+  %tobool = icmp eq i8 %3, 0
+  br i1 %tobool, label %for.cond.for.end13_crit_edge, label %for.body
+
+for.cond.for.end13_crit_edge:                     ; preds = %for.inc10
+  %phitmp = add i32 %len.2, 2
+  %phitmp79 = sext i32 %phitmp to i64
+  br label %for.end13
+
+for.end13:                                        ; preds = %for.cond.for.end13_crit_edge, %entry
+  %len.0.lcssa = phi i64 [ %phitmp79, %for.cond.for.end13_crit_edge ], [ 1, %entry ]
+  %call = tail call noalias i8* @xmalloc(i64 %len.0.lcssa) #5
+  %4 = load i8* %filename, align 1, !tbaa !1
+  %tobool1669 = icmp eq i8 %4, 0
+  br i1 %tobool1669, label %for.end41, label %for.body17
+
+for.body17:                                       ; preds = %for.end13, %sw.epilog37
+  %5 = phi i8 [ %8, %sw.epilog37 ], [ %4, %for.end13 ]
+  %dst.072 = phi i8* [ %incdec.ptr40, %sw.epilog37 ], [ %call, %for.end13 ]
+  %p.170 = phi i8* [ %incdec.ptr39, %sw.epilog37 ], [ %filename, %for.end13 ]
+  %conv18 = sext i8 %5 to i32
+  switch i32 %conv18, label %sw.epilog37 [
+    i32 32, label %for.cond21
+    i32 9, label %for.cond21
+    i32 36, label %sw.bb35
+  ]
+
+for.cond21:                                       ; preds = %for.body17, %for.body17, %land.rhs24
+  %p.1.pn = phi i8* [ %q.1, %land.rhs24 ], [ %p.170, %for.body17 ], [ %p.170, %for.body17 ]
+  %dst.1 = phi i8* [ %incdec.ptr30, %land.rhs24 ], [ %dst.072, %for.body17 ], [ %dst.072, %for.body17 ]
+  %q.1 = getelementptr inbounds i8* %p.1.pn, i64 -1
+  %cmp22 = icmp ult i8* %q.1, %filename
+  br i1 %cmp22, label %for.end33.critedge, label %land.rhs24
+
+land.rhs24:                                       ; preds = %for.cond21
+  %6 = load i8* %q.1, align 1, !tbaa !1
+  %cmp26 = icmp eq i8 %6, 92
+  %incdec.ptr30 = getelementptr inbounds i8* %dst.1, i64 1
+  store i8 92, i8* %dst.1, align 1, !tbaa !1
+  br i1 %cmp26, label %for.cond21, label %sw.epilog37
+
+for.end33.critedge:                               ; preds = %for.cond21
+  %incdec.ptr30.c = getelementptr inbounds i8* %dst.1, i64 1
+  store i8 92, i8* %dst.1, align 1, !tbaa !1
+  br label %sw.epilog37
+
+sw.bb35:                                          ; preds = %for.body17
+  %incdec.ptr36 = getelementptr inbounds i8* %dst.072, i64 1
+  store i8 36, i8* %dst.072, align 1, !tbaa !1
+  br label %sw.epilog37
+
+sw.epilog37:                                      ; preds = %land.rhs24, %for.body17, %for.end33.critedge, %sw.bb35
+  %dst.2 = phi i8* [ %dst.072, %for.body17 ], [ %incdec.ptr36, %sw.bb35 ], [ %incdec.ptr30.c, %for.end33.critedge ], [ %incdec.ptr30, %land.rhs24 ]
+  %7 = load i8* %p.170, align 1, !tbaa !1
+  store i8 %7, i8* %dst.2, align 1, !tbaa !1
+  %incdec.ptr39 = getelementptr inbounds i8* %p.170, i64 1
+  %incdec.ptr40 = getelementptr inbounds i8* %dst.2, i64 1
+  %8 = load i8* %incdec.ptr39, align 1, !tbaa !1
+  %tobool16 = icmp eq i8 %8, 0
+  br i1 %tobool16, label %for.end41, label %for.body17
+
+for.end41:                                        ; preds = %sw.epilog37, %for.end13
+  %dst.0.lcssa = phi i8* [ %call, %for.end13 ], [ %incdec.ptr40, %sw.epilog37 ]
+  store i8 0, i8* %dst.0.lcssa, align 1, !tbaa !1
+  ret i8* %call
+}

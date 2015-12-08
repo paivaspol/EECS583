@@ -1,0 +1,16 @@
+define i32 @tree_int_cst_compare(%union.tree_node* %t1, %union.tree_node* %t2) #3 {
+entry:
+  %call = tail call i32 @tree_int_cst_lt(%union.tree_node* %t1, %union.tree_node* %t2) #10
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.else, label %return
+
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 @tree_int_cst_lt(%union.tree_node* %t2, %union.tree_node* %t1) #10
+  %not.tobool2 = icmp ne i32 %call1, 0
+  %. = zext i1 %not.tobool2 to i32
+  br label %return
+
+return:                                           ; preds = %if.else, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %., %if.else ]
+  ret i32 %retval.0
+}

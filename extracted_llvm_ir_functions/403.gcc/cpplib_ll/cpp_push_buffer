@@ -1,0 +1,94 @@
+define %struct.cpp_buffer* @cpp_push_buffer(%struct.cpp_reader* %pfile, i8* %buffer, i64 %len, i32 %from_stage3, i32 %return_at_eof) #0 {
+entry:
+  %chunk_limit = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 33, i32 4
+  %0 = load i8** %chunk_limit, align 8, !tbaa !3
+  %next_free = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 33, i32 3
+  %1 = load i8** %next_free, align 8, !tbaa !3
+  %sub.ptr.lhs.cast = ptrtoint i8* %0 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp = icmp slt i64 %sub.ptr.sub, 144
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %buffer_ob = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 33
+  tail call void @_obstack_newchunk(%struct.obstack* %buffer_ob, i32 144) #8
+  %.pre = load i8** %next_free, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i8* [ %.pre, %if.then ], [ %1, %entry ]
+  %add.ptr = getelementptr inbounds i8* %2, i64 144
+  store i8* %add.ptr, i8** %next_free, align 8, !tbaa !3
+  %object_base = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 33, i32 2
+  %3 = load i8** %object_base, align 8, !tbaa !3
+  %cmp4 = icmp eq i8* %add.ptr, %3
+  br i1 %cmp4, label %if.then6, label %if.end7
+
+if.then6:                                         ; preds = %if.end
+  %maybe_empty_object = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 33, i32 10
+  %bf.load = load i8* %maybe_empty_object, align 8
+  %bf.set = or i8 %bf.load, 2
+  store i8 %bf.set, i8* %maybe_empty_object, align 8
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end, %if.then6
+  %sub.ptr.lhs.cast9 = ptrtoint i8* %add.ptr to i64
+  %alignment_mask = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 33, i32 6
+  %4 = load i32* %alignment_mask, align 4, !tbaa !2
+  %conv11 = sext i32 %4 to i64
+  %add = add nsw i64 %conv11, %sub.ptr.lhs.cast9
+  %neg = xor i32 %4, -1
+  %conv13 = sext i32 %neg to i64
+  %and = and i64 %add, %conv13
+  %add.ptr14 = getelementptr inbounds i8* null, i64 %and
+  store i8* %add.ptr14, i8** %next_free, align 8, !tbaa !3
+  %chunk = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 33, i32 1
+  %5 = load %struct._obstack_chunk** %chunk, align 8, !tbaa !3
+  %sub.ptr.lhs.cast17 = ptrtoint i8* %add.ptr14 to i64
+  %sub.ptr.rhs.cast18 = ptrtoint %struct._obstack_chunk* %5 to i64
+  %sub.ptr.sub19 = sub i64 %sub.ptr.lhs.cast17, %sub.ptr.rhs.cast18
+  %6 = load i8** %chunk_limit, align 8, !tbaa !3
+  %sub.ptr.lhs.cast22 = ptrtoint i8* %6 to i64
+  %sub.ptr.sub24 = sub i64 %sub.ptr.lhs.cast22, %sub.ptr.rhs.cast18
+  %cmp25 = icmp sgt i64 %sub.ptr.sub19, %sub.ptr.sub24
+  br i1 %cmp25, label %if.then27, label %if.end30
+
+if.then27:                                        ; preds = %if.end7
+  store i8* %6, i8** %next_free, align 8, !tbaa !3
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.then27, %if.end7
+  %7 = phi i8* [ %6, %if.then27 ], [ %add.ptr14, %if.end7 ]
+  store i8* %7, i8** %object_base, align 8, !tbaa !3
+  %8 = bitcast i8* %3 to %struct.cpp_buffer*
+  tail call void @llvm.memset.p0i8.i64(i8* %3, i8 0, i64 144, i32 8, i1 false)
+  %cur = bitcast i8* %3 to i8**
+  store i8* %buffer, i8** %cur, align 8, !tbaa !3
+  %buf = getelementptr inbounds i8* %3, i64 40
+  %9 = bitcast i8* %buf to i8**
+  store i8* %buffer, i8** %9, align 8, !tbaa !3
+  %line_base = getelementptr inbounds i8* %3, i64 24
+  %10 = bitcast i8* %line_base to i8**
+  store i8* %buffer, i8** %10, align 8, !tbaa !3
+  %add.ptr33 = getelementptr inbounds i8* %buffer, i64 %len
+  %rlimit = getelementptr inbounds i8* %3, i64 16
+  %11 = bitcast i8* %rlimit to i8**
+  store i8* %add.ptr33, i8** %11, align 8, !tbaa !3
+  %conv34 = trunc i32 %from_stage3 to i8
+  %12 = getelementptr inbounds i8* %3, i64 81
+  store i8 %conv34, i8* %12, align 1, !tbaa !0
+  %buffer36 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
+  %13 = load %struct.cpp_buffer** %buffer36, align 8, !tbaa !3
+  %prev = getelementptr inbounds i8* %3, i64 32
+  %14 = bitcast i8* %prev to %struct.cpp_buffer**
+  store %struct.cpp_buffer* %13, %struct.cpp_buffer** %14, align 8, !tbaa !3
+  %tobool = icmp ne i32 %return_at_eof, 0
+  %15 = getelementptr inbounds i8* %3, i64 83
+  %frombool = zext i1 %tobool to i8
+  store i8 %frombool, i8* %15, align 1, !tbaa !5
+  %16 = getelementptr inbounds i8* %3, i64 68
+  store i8 64, i8* %16, align 1, !tbaa !0
+  store %struct.cpp_buffer* %8, %struct.cpp_buffer** %buffer36, align 8, !tbaa !3
+  ret %struct.cpp_buffer* %8
+}

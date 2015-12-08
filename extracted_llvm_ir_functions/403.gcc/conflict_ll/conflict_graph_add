@@ -1,0 +1,123 @@
+define i32 @conflict_graph_add(%struct.conflict_graph_def* %graph, i32 %reg1, i32 %reg2) #0 {
+entry:
+  %dummy = alloca %struct.conflict_graph_arc_def, align 8
+  %cmp = icmp slt i32 %reg1, %reg2
+  %cond = select i1 %cmp, i32 %reg1, i32 %reg2
+  %cmp1 = icmp sgt i32 %reg1, %reg2
+  %cond5 = select i1 %cmp1, i32 %reg1, i32 %reg2
+  %cmp6 = icmp eq i32 %reg1, %reg2
+  br i1 %cmp6, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 207, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.conflict_graph_add, i64 0, i64 0)) #7
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %smaller7 = getelementptr inbounds %struct.conflict_graph_arc_def* %dummy, i64 0, i32 2
+  store i32 %cond, i32* %smaller7, align 8, !tbaa !0
+  %larger8 = getelementptr inbounds %struct.conflict_graph_arc_def* %dummy, i64 0, i32 3
+  store i32 %cond5, i32* %larger8, align 4, !tbaa !0
+  %arc_hash_table = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 0
+  %0 = load %struct.htab** %arc_hash_table, align 8, !tbaa !3
+  %1 = bitcast %struct.conflict_graph_arc_def* %dummy to i8*
+  %call = call i8** @htab_find_slot(%struct.htab* %0, i8* %1, i32 1) #6
+  %2 = load i8** %call, align 8, !tbaa !3
+  %cmp9 = icmp eq i8* %2, null
+  br i1 %cmp9, label %if.end11, label %return
+
+if.end11:                                         ; preds = %if.end
+  %chunk_limit = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 3, i32 4
+  %3 = load i8** %chunk_limit, align 8, !tbaa !3
+  %next_free = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 3, i32 3
+  %4 = load i8** %next_free, align 8, !tbaa !3
+  %sub.ptr.lhs.cast = ptrtoint i8* %3 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %4 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp12 = icmp slt i64 %sub.ptr.sub, 24
+  br i1 %cmp12, label %if.then14, label %if.end15
+
+if.then14:                                        ; preds = %if.end11
+  %arc_obstack = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 3
+  call void @_obstack_newchunk(%struct.obstack* %arc_obstack, i32 24) #6
+  %.pre = load i8** %next_free, align 8, !tbaa !3
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then14, %if.end11
+  %5 = phi i8* [ %.pre, %if.then14 ], [ %4, %if.end11 ]
+  %add.ptr = getelementptr inbounds i8* %5, i64 24
+  store i8* %add.ptr, i8** %next_free, align 8, !tbaa !3
+  %object_base = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 3, i32 2
+  %6 = load i8** %object_base, align 8, !tbaa !3
+  %cmp18 = icmp eq i8* %add.ptr, %6
+  br i1 %cmp18, label %if.then20, label %if.end21
+
+if.then20:                                        ; preds = %if.end15
+  %maybe_empty_object = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 3, i32 10
+  %bf.load = load i8* %maybe_empty_object, align 8
+  %bf.set = or i8 %bf.load, 2
+  store i8 %bf.set, i8* %maybe_empty_object, align 8
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.end15, %if.then20
+  %sub.ptr.lhs.cast23 = ptrtoint i8* %add.ptr to i64
+  %alignment_mask = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 3, i32 6
+  %7 = load i32* %alignment_mask, align 4, !tbaa !0
+  %conv25 = sext i32 %7 to i64
+  %add = add nsw i64 %conv25, %sub.ptr.lhs.cast23
+  %neg = xor i32 %7, -1
+  %conv27 = sext i32 %neg to i64
+  %and = and i64 %add, %conv27
+  %add.ptr28 = getelementptr inbounds i8* null, i64 %and
+  store i8* %add.ptr28, i8** %next_free, align 8, !tbaa !3
+  %chunk = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 3, i32 1
+  %8 = load %struct._obstack_chunk** %chunk, align 8, !tbaa !3
+  %sub.ptr.lhs.cast31 = ptrtoint i8* %add.ptr28 to i64
+  %sub.ptr.rhs.cast32 = ptrtoint %struct._obstack_chunk* %8 to i64
+  %sub.ptr.sub33 = sub i64 %sub.ptr.lhs.cast31, %sub.ptr.rhs.cast32
+  %9 = load i8** %chunk_limit, align 8, !tbaa !3
+  %sub.ptr.lhs.cast36 = ptrtoint i8* %9 to i64
+  %sub.ptr.sub38 = sub i64 %sub.ptr.lhs.cast36, %sub.ptr.rhs.cast32
+  %cmp39 = icmp sgt i64 %sub.ptr.sub33, %sub.ptr.sub38
+  br i1 %cmp39, label %if.then41, label %if.end44
+
+if.then41:                                        ; preds = %if.end21
+  store i8* %9, i8** %next_free, align 8, !tbaa !3
+  br label %if.end44
+
+if.end44:                                         ; preds = %if.then41, %if.end21
+  %10 = phi i8* [ %9, %if.then41 ], [ %add.ptr28, %if.end21 ]
+  store i8* %10, i8** %object_base, align 8, !tbaa !3
+  %11 = bitcast i8* %6 to %struct.conflict_graph_arc_def*
+  %smaller47 = getelementptr inbounds i8* %6, i64 16
+  %12 = bitcast i8* %smaller47 to i32*
+  store i32 %cond, i32* %12, align 4, !tbaa !0
+  %larger48 = getelementptr inbounds i8* %6, i64 20
+  %13 = bitcast i8* %larger48 to i32*
+  store i32 %cond5, i32* %13, align 4, !tbaa !0
+  %idxprom = sext i32 %cond to i64
+  %neighbor_heads = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 2
+  %14 = load %struct.conflict_graph_arc_def*** %neighbor_heads, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.conflict_graph_arc_def** %14, i64 %idxprom
+  %15 = load %struct.conflict_graph_arc_def** %arrayidx, align 8, !tbaa !3
+  %smaller_next = bitcast i8* %6 to %struct.conflict_graph_arc_def**
+  store %struct.conflict_graph_arc_def* %15, %struct.conflict_graph_arc_def** %smaller_next, align 8, !tbaa !3
+  %16 = load %struct.conflict_graph_arc_def*** %neighbor_heads, align 8, !tbaa !3
+  %arrayidx51 = getelementptr inbounds %struct.conflict_graph_arc_def** %16, i64 %idxprom
+  store %struct.conflict_graph_arc_def* %11, %struct.conflict_graph_arc_def** %arrayidx51, align 8, !tbaa !3
+  %idxprom52 = sext i32 %cond5 to i64
+  %17 = load %struct.conflict_graph_arc_def*** %neighbor_heads, align 8, !tbaa !3
+  %arrayidx54 = getelementptr inbounds %struct.conflict_graph_arc_def** %17, i64 %idxprom52
+  %18 = load %struct.conflict_graph_arc_def** %arrayidx54, align 8, !tbaa !3
+  %larger_next = getelementptr inbounds i8* %6, i64 8
+  %19 = bitcast i8* %larger_next to %struct.conflict_graph_arc_def**
+  store %struct.conflict_graph_arc_def* %18, %struct.conflict_graph_arc_def** %19, align 8, !tbaa !3
+  %20 = load %struct.conflict_graph_arc_def*** %neighbor_heads, align 8, !tbaa !3
+  %arrayidx57 = getelementptr inbounds %struct.conflict_graph_arc_def** %20, i64 %idxprom52
+  store %struct.conflict_graph_arc_def* %11, %struct.conflict_graph_arc_def** %arrayidx57, align 8, !tbaa !3
+  store i8* %6, i8** %call, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.end, %if.end44
+  %retval.0 = phi i32 [ 1, %if.end44 ], [ 0, %if.end ]
+  ret i32 %retval.0
+}

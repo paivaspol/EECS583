@@ -1,0 +1,39 @@
+define %struct.rtx_def* @gen_insv(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1, %struct.rtx_def* %operand2, %struct.rtx_def* %operand3) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %rtwint = getelementptr inbounds %struct.rtx_def* %operand1, i64 0, i32 1, i64 0, i32 0
+  %0 = load i64* %rtwint, align 8, !tbaa !4
+  %cmp = icmp eq i64 %0, 8
+  br i1 %cmp, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %entry
+  %rtwint9 = getelementptr inbounds %struct.rtx_def* %operand2, i64 0, i32 1, i64 0, i32 0
+  %1 = load i64* %rtwint9, align 8, !tbaa !4
+  %cmp10 = icmp eq i64 %1, 8
+  br i1 %cmp10, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  tail call void @end_sequence() #4
+  br label %return
+
+if.end:                                           ; preds = %lor.lhs.false
+  %call = tail call i32 @register_operand(%struct.rtx_def* %operand0, i32 0) #4
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then12, label %if.end13
+
+if.then12:                                        ; preds = %if.end
+  tail call void @end_sequence() #4
+  br label %return
+
+if.end13:                                         ; preds = %if.end
+  %call18 = tail call %struct.rtx_def* @gen_rtx_fmt_eee(i32 133, i32 4, %struct.rtx_def* %operand0, %struct.rtx_def* %operand1, %struct.rtx_def* %operand2) #4
+  %call19 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %call18, %struct.rtx_def* %operand3) #4
+  %call20 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call19) #4
+  %call21 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  br label %return
+
+return:                                           ; preds = %if.end13, %if.then12, %if.then
+  %retval.0 = phi %struct.rtx_def* [ null, %if.then ], [ %call21, %if.end13 ], [ null, %if.then12 ]
+  ret %struct.rtx_def* %retval.0
+}

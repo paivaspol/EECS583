@@ -1,0 +1,12 @@
+define void @debug_df_defno(i32 %defno) #0 {
+entry:
+  %0 = load %struct.df** @ddf, align 8, !tbaa !3
+  %idxprom = zext i32 %defno to i64
+  %defs = getelementptr inbounds %struct.df* %0, i64 0, i32 2
+  %1 = load %struct.ref*** %defs, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.ref** %1, i64 %idxprom
+  %2 = load %struct.ref** %arrayidx, align 8, !tbaa !3
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  tail call fastcc void @df_ref_debug(%struct.df* %0, %struct.ref* %2, %struct._IO_FILE* %3) #6
+  ret void
+}

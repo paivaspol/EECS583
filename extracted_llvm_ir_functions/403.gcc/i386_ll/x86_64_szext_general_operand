@@ -1,0 +1,35 @@
+define i32 @x86_64_szext_general_operand(%struct.rtx_def* %op, i32 %mode) #1 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @general_operand(%struct.rtx_def* %op, i32 %mode) #9
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call1 = tail call i32 @nonimmediate_operand(%struct.rtx_def* %op, i32 %mode) #9
+  %tobool2 = icmp eq i32 %call1, 0
+  br i1 %tobool2, label %if.end4, label %return
+
+if.end4:                                          ; preds = %if.end
+  %call5 = tail call i32 @x86_64_sign_extended_value(%struct.rtx_def* %op) #10
+  %tobool6 = icmp eq i32 %call5, 0
+  br i1 %tobool6, label %lor.rhs, label %lor.end
+
+lor.rhs:                                          ; preds = %if.end4
+  %call7 = tail call i32 @x86_64_zero_extended_value(%struct.rtx_def* %op) #10
+  %tobool8 = icmp ne i32 %call7, 0
+  br label %lor.end
+
+lor.end:                                          ; preds = %if.end4, %lor.rhs
+  %1 = phi i1 [ true, %if.end4 ], [ %tobool8, %lor.rhs ]
+  %lor.ext = zext i1 %1 to i32
+  br label %return
+
+return:                                           ; preds = %if.end, %lor.end, %if.then
+  %retval.0 = phi i32 [ %lor.ext, %lor.end ], [ %call, %if.then ], [ 1, %if.end ]
+  ret i32 %retval.0
+}

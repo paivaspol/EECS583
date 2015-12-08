@@ -1,0 +1,91 @@
+define void @lextree_hmm_histbin(%struct.lextree_t* nocapture %lextree, i32 %bestscr, i32* nocapture %bin, i32 %nbin, i32 %bw) #0 {
+entry:
+  %conv = sext i32 %nbin to i64
+  %call = tail call i8* @__ckd_calloc__(i64 %conv, i64 8, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 680) #4
+  %0 = bitcast i8* %call to %struct.gnode_s**
+  %active = getelementptr inbounds %struct.lextree_t* %lextree, i64 0, i32 5
+  %1 = load %struct.lextree_node_t*** %active, align 8, !tbaa !0
+  %n_active = getelementptr inbounds %struct.lextree_t* %lextree, i64 0, i32 7
+  %2 = load i32* %n_active, align 4, !tbaa !3
+  %cmp62 = icmp sgt i32 %2, 0
+  br i1 %cmp62, label %for.body.lr.ph, label %for.cond14.preheader
+
+for.body.lr.ph:                                   ; preds = %entry
+  %sub5 = add nsw i32 %nbin, -1
+  br label %for.body
+
+for.cond14.preheader:                             ; preds = %for.body, %entry
+  %cmp1559 = icmp sgt i32 %nbin, 0
+  br i1 %cmp1559, label %for.body17, label %for.end31
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv66 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next67, %for.body ]
+  %arrayidx = getelementptr inbounds %struct.lextree_node_t** %1, i64 %indvars.iv66
+  %3 = load %struct.lextree_node_t** %arrayidx, align 8, !tbaa !0
+  %bestscore = getelementptr inbounds %struct.lextree_node_t* %3, i64 0, i32 0, i32 4
+  %4 = load i32* %bestscore, align 4, !tbaa !3
+  %sub = sub nsw i32 %bestscr, %4
+  %div = sdiv i32 %sub, %bw
+  %cmp3 = icmp slt i32 %div, %nbin
+  %div.sub5 = select i1 %cmp3, i32 %div, i32 %sub5
+  %idxprom6 = sext i32 %div.sub5 to i64
+  %arrayidx7 = getelementptr inbounds i32* %bin, i64 %idxprom6
+  %5 = load i32* %arrayidx7, align 4, !tbaa !3
+  %inc = add nsw i32 %5, 1
+  store i32 %inc, i32* %arrayidx7, align 4, !tbaa !3
+  %arrayidx9 = getelementptr inbounds %struct.gnode_s** %0, i64 %idxprom6
+  %6 = load %struct.gnode_s** %arrayidx9, align 8, !tbaa !0
+  %7 = bitcast %struct.lextree_node_t* %3 to i8*
+  %call10 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %6, i8* %7) #4
+  store %struct.gnode_s* %call10, %struct.gnode_s** %arrayidx9, align 8, !tbaa !0
+  %indvars.iv.next67 = add i64 %indvars.iv66, 1
+  %8 = load i32* %n_active, align 4, !tbaa !3
+  %9 = trunc i64 %indvars.iv.next67 to i32
+  %cmp = icmp slt i32 %9, %8
+  br i1 %cmp, label %for.body, label %for.cond14.preheader
+
+for.body17:                                       ; preds = %for.cond14.preheader, %for.end26
+  %indvars.iv64 = phi i64 [ %indvars.iv.next65, %for.end26 ], [ 0, %for.cond14.preheader ]
+  %k.161 = phi i32 [ %k.2.lcssa, %for.end26 ], [ 0, %for.cond14.preheader ]
+  %arrayidx19 = getelementptr inbounds %struct.gnode_s** %0, i64 %indvars.iv64
+  %gn.055 = load %struct.gnode_s** %arrayidx19, align 8
+  %tobool56 = icmp eq %struct.gnode_s* %gn.055, null
+  br i1 %tobool56, label %for.end26, label %for.body21.lr.ph
+
+for.body21.lr.ph:                                 ; preds = %for.body17
+  %10 = sext i32 %k.161 to i64
+  br label %for.body21
+
+for.body21:                                       ; preds = %for.body21.lr.ph, %for.body21
+  %indvars.iv = phi i64 [ %10, %for.body21.lr.ph ], [ %indvars.iv.next, %for.body21 ]
+  %gn.058 = phi %struct.gnode_s* [ %gn.055, %for.body21.lr.ph ], [ %gn.0, %for.body21 ]
+  %k.257 = phi i32 [ %k.161, %for.body21.lr.ph ], [ %inc22, %for.body21 ]
+  %ptr = getelementptr inbounds %struct.gnode_s* %gn.058, i64 0, i32 0, i32 0
+  %11 = load i8** %ptr, align 8, !tbaa !0
+  %12 = bitcast i8* %11 to %struct.lextree_node_t*
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc22 = add nsw i32 %k.257, 1
+  %arrayidx24 = getelementptr inbounds %struct.lextree_node_t** %1, i64 %indvars.iv
+  store %struct.lextree_node_t* %12, %struct.lextree_node_t** %arrayidx24, align 8, !tbaa !0
+  %next = getelementptr inbounds %struct.gnode_s* %gn.058, i64 0, i32 1
+  %gn.0 = load %struct.gnode_s** %next, align 8
+  %tobool = icmp eq %struct.gnode_s* %gn.0, null
+  br i1 %tobool, label %for.cond20.for.end26_crit_edge, label %for.body21
+
+for.cond20.for.end26_crit_edge:                   ; preds = %for.body21
+  %.pre = load %struct.gnode_s** %arrayidx19, align 8, !tbaa !0
+  br label %for.end26
+
+for.end26:                                        ; preds = %for.cond20.for.end26_crit_edge, %for.body17
+  %13 = phi %struct.gnode_s* [ %.pre, %for.cond20.for.end26_crit_edge ], [ null, %for.body17 ]
+  %k.2.lcssa = phi i32 [ %inc22, %for.cond20.for.end26_crit_edge ], [ %k.161, %for.body17 ]
+  tail call void @glist_free(%struct.gnode_s* %13) #4
+  %indvars.iv.next65 = add i64 %indvars.iv64, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next65 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nbin
+  br i1 %exitcond, label %for.end31, label %for.body17
+
+for.end31:                                        ; preds = %for.end26, %for.cond14.preheader
+  tail call void @ckd_free(i8* %call) #4
+  ret void
+}

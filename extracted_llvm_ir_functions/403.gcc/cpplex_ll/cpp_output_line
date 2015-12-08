@@ -1,0 +1,32 @@
+define void @cpp_output_line(%struct.cpp_reader* %pfile, %struct._IO_FILE* nocapture %fp) #1 {
+entry:
+  %call = tail call %struct.cpp_token* @cpp_get_token(%struct.cpp_reader* %pfile) #9
+  %type9 = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2
+  %bf.load10 = load i8* %type9, align 2
+  %cmp11 = icmp eq i8 %bf.load10, 67
+  br i1 %cmp11, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.cond.backedge
+  %token.012 = phi %struct.cpp_token* [ %call1, %while.cond.backedge ], [ %call, %entry ]
+  tail call void @cpp_output_token(%struct.cpp_token* %token.012, %struct._IO_FILE* %fp) #10
+  %call1 = tail call %struct.cpp_token* @cpp_get_token(%struct.cpp_reader* %pfile) #9
+  %flags = getelementptr inbounds %struct.cpp_token* %call1, i64 0, i32 3
+  %0 = load i8* %flags, align 1, !tbaa !1
+  %and = and i8 %0, 1
+  %tobool = icmp eq i8 %and, 0
+  br i1 %tobool, label %while.cond.backedge, label %if.then
+
+if.then:                                          ; preds = %while.body
+  %call2 = tail call i32 @_IO_putc(i32 32, %struct._IO_FILE* %fp) #9
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.then, %while.body
+  %type = getelementptr inbounds %struct.cpp_token* %call1, i64 0, i32 2
+  %bf.load = load i8* %type, align 2
+  %cmp = icmp eq i8 %bf.load, 67
+  br i1 %cmp, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.cond.backedge, %entry
+  %call3 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %fp) #9
+  ret void
+}

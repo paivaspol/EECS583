@@ -1,0 +1,15 @@
+define i8* @ftp2desc(i32 %ftp) #2 {
+entry:
+  %0 = icmp ult i32 %ftp, 46
+  br i1 %0, label %if.then, label %return
+
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %ftp to i64
+  %descr = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %idxprom, i32 4
+  %1 = load i8** %descr, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i8* [ %1, %if.then ], [ getelementptr inbounds ([17 x i8]* @.str3, i64 0, i64 0), %entry ]
+  ret i8* %retval.0
+}

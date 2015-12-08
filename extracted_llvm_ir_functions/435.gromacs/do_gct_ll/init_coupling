@@ -1,0 +1,50 @@
+define %struct.t_coupl_rec* @init_coupling(%struct._IO_FILE* %log, i32 %nfile, %struct.t_filenm* %fnm, %struct.t_commrec* %cr, %struct.t_forcerec* %fr, %struct.t_mdatoms* %md, %struct.t_idef* %idef) #0 {
+entry:
+  %tcr = alloca %struct.t_coupl_rec*, align 8
+  %call = call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 61, i32 1, i32 288) #6
+  %0 = bitcast i8* %call to %struct.t_coupl_rec*
+  store %struct.t_coupl_rec* %0, %struct.t_coupl_rec** %tcr, align 8, !tbaa !0
+  %nodeid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  %1 = load i32* %nodeid, align 4, !tbaa !3
+  %cmp = icmp eq i32 %1, 0
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %threadid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
+  %2 = load i32* %threadid, align 4, !tbaa !3
+  %cmp1 = icmp eq i32 %2, 0
+  br i1 %cmp1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true
+  %call2 = call i8* @opt2fn(i8* getelementptr inbounds ([3 x i8]* @.str2, i64 0, i64 0), i32 %nfile, %struct.t_filenm* %fnm) #6
+  %3 = load %struct.t_coupl_rec** %tcr, align 8, !tbaa !0
+  call void @read_gct(i8* %call2, %struct.t_coupl_rec* %3) #6
+  %call3 = call i8* @opt2fn(i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), i32 %nfile, %struct.t_filenm* %fnm) #6
+  %4 = load %struct.t_coupl_rec** %tcr, align 8, !tbaa !0
+  call void @write_gct(i8* %call3, %struct.t_coupl_rec* %4, %struct.t_idef* %idef) #6
+  %.pre = load %struct.t_coupl_rec** %tcr, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %land.lhs.true, %entry
+  %5 = phi %struct.t_coupl_rec* [ %.pre, %if.then ], [ %0, %land.lhs.true ], [ %0, %entry ]
+  call void @copy_ff(%struct.t_coupl_rec* %5, %struct.t_forcerec* %fr, %struct.t_mdatoms* %md, %struct.t_idef* %idef) #6
+  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
+  %6 = load i32* %nnodes, align 4, !tbaa !3
+  %cmp4 = icmp sgt i32 %6, 1
+  br i1 %cmp4, label %if.then6, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end
+  %nthreads = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5
+  %7 = load i32* %nthreads, align 4, !tbaa !3
+  %cmp5 = icmp sgt i32 %7, 1
+  br i1 %cmp5, label %if.then6, label %if.end7
+
+if.then6:                                         ; preds = %lor.lhs.false, %if.end
+  call void @comm_tcr(%struct._IO_FILE* %log, %struct.t_commrec* %cr, %struct.t_coupl_rec** %tcr) #6
+  %.pre15 = load %struct.t_coupl_rec** %tcr, align 8, !tbaa !0
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.then6, %lor.lhs.false
+  %8 = phi %struct.t_coupl_rec* [ %.pre15, %if.then6 ], [ %5, %lor.lhs.false ]
+  ret %struct.t_coupl_rec* %8
+}

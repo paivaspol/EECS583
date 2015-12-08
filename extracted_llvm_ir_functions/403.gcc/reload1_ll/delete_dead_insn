@@ -1,0 +1,68 @@
+define internal fastcc void @delete_dead_insn(%struct.rtx_def* %insn) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @prev_real_insn(%struct.rtx_def* %insn) #7
+  %tobool = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 47
+  br i1 %cmp, label %land.lhs.true1, label %if.end
+
+land.lhs.true1:                                   ; preds = %land.lhs.true
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtx7 = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx7, align 8, !tbaa !3
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load8 = load i32* %3, align 8
+  %bf.clear9 = and i32 %bf.load8, 65535
+  %cmp10 = icmp eq i32 %bf.clear9, 61
+  br i1 %cmp10, label %land.lhs.true11, label %if.end
+
+land.lhs.true11:                                  ; preds = %land.lhs.true1
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx14 = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx14, align 8, !tbaa !3
+  %call15 = tail call i32 @reg_mentioned_p(%struct.rtx_def* %2, %struct.rtx_def* %4) #7
+  %tobool16 = icmp eq i32 %call15, 0
+  br i1 %tobool16, label %if.end, label %land.lhs.true17
+
+land.lhs.true17:                                  ; preds = %land.lhs.true11
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx19 to i32*
+  %5 = load i32* %rtuint, align 4, !tbaa !0
+  %call20 = tail call %struct.rtx_def* @find_regno_note(%struct.rtx_def* %insn, i32 1, i32 %5) #7
+  %tobool21 = icmp eq %struct.rtx_def* %call20, null
+  br i1 %tobool21, label %if.end, label %land.lhs.true22
+
+land.lhs.true22:                                  ; preds = %land.lhs.true17
+  %6 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %arrayidx27 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 1
+  %rtx28 = bitcast %union.rtunion_def* %arrayidx27 to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %rtx28, align 8, !tbaa !3
+  %call29 = tail call i32 @side_effects_p(%struct.rtx_def* %7) #7
+  %tobool30 = icmp eq i32 %call29, 0
+  br i1 %tobool30, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true22
+  tail call fastcc void @delete_dead_insn(%struct.rtx_def* %call) #9
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true22, %land.lhs.true17, %land.lhs.true11, %entry, %if.then, %land.lhs.true1, %land.lhs.true
+  %8 = bitcast %struct.rtx_def* %insn to i32*
+  %bf.load31 = load i32* %8, align 8
+  %bf.clear32 = and i32 %bf.load31, -65536
+  %bf.set = or i32 %bf.clear32, 37
+  store i32 %bf.set, i32* %8, align 8
+  %arrayidx34 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4
+  %rtint = bitcast %union.rtunion_def* %arrayidx34 to i32*
+  store i32 -99, i32* %rtint, align 4, !tbaa !0
+  %9 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3, i32 0
+  store i64 0, i64* %9, align 8, !tbaa !3
+  ret void
+}

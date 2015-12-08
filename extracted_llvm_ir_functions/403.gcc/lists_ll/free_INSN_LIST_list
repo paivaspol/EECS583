@@ -1,0 +1,27 @@
+define void @free_INSN_LIST_list(%struct.rtx_def** nocapture %listp) #0 {
+entry:
+  %0 = load %struct.rtx_def** %listp, align 8, !tbaa !0
+  %cmp = icmp eq %struct.rtx_def* %0, null
+  br i1 %cmp, label %return, label %while.cond.i
+
+while.cond.i:                                     ; preds = %entry, %while.cond.i
+  %.pn.i = phi %struct.rtx_def* [ %link.0.i, %while.cond.i ], [ %0, %entry ]
+  %link.0.in.in.i = getelementptr inbounds %struct.rtx_def* %.pn.i, i64 0, i32 1, i64 1
+  %link.0.in.i = bitcast %union.rtunion_def* %link.0.in.in.i to %struct.rtx_def**
+  %link.0.i = load %struct.rtx_def** %link.0.in.i, align 8
+  %tobool.i = icmp eq %struct.rtx_def* %link.0.i, null
+  br i1 %tobool.i, label %free_list.exit, label %while.cond.i
+
+free_list.exit:                                   ; preds = %while.cond.i
+  %1 = load %struct.rtx_def** @unused_insn_list, align 8, !tbaa !0
+  %2 = getelementptr inbounds %struct.rtx_def* %.pn.i, i64 0, i32 1, i64 1, i32 0
+  %.c.i = ptrtoint %struct.rtx_def* %1 to i64
+  store i64 %.c.i, i64* %2, align 8, !tbaa !0
+  %3 = load %struct.rtx_def** %listp, align 8, !tbaa !0
+  store %struct.rtx_def* %3, %struct.rtx_def** @unused_insn_list, align 8, !tbaa !0
+  store %struct.rtx_def* null, %struct.rtx_def** %listp, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %free_list.exit
+  ret void
+}

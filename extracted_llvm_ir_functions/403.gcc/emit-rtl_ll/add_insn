@@ -1,0 +1,49 @@
+define void @add_insn(%struct.rtx_def* %insn) #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit = getelementptr inbounds %struct.function* %0, i64 0, i32 3
+  %1 = load %struct.emit_status** %emit, align 8, !tbaa !4
+  %x_last_insn = getelementptr inbounds %struct.emit_status* %1, i64 0, i32 3
+  %2 = load %struct.rtx_def** %x_last_insn, align 8, !tbaa !4
+  %3 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 1, i32 0
+  %.c = ptrtoint %struct.rtx_def* %2 to i64
+  store i64 %.c, i64* %3, align 8, !tbaa !4
+  %4 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 2, i32 0
+  store i64 0, i64* %4, align 8, !tbaa !4
+  %5 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit4 = getelementptr inbounds %struct.function* %5, i64 0, i32 3
+  %6 = load %struct.emit_status** %emit4, align 8, !tbaa !4
+  %x_last_insn5 = getelementptr inbounds %struct.emit_status* %6, i64 0, i32 3
+  %7 = load %struct.rtx_def** %x_last_insn5, align 8, !tbaa !4
+  %cmp = icmp eq %struct.rtx_def* %7, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %8 = getelementptr inbounds %struct.rtx_def* %7, i64 0, i32 1, i64 2, i32 0
+  %insn.c = ptrtoint %struct.rtx_def* %insn to i64
+  store i64 %insn.c, i64* %8, align 8, !tbaa !4
+  %.pre = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit11.phi.trans.insert = getelementptr inbounds %struct.function* %.pre, i64 0, i32 3
+  %.pre23 = load %struct.emit_status** %emit11.phi.trans.insert, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %9 = phi %struct.emit_status* [ %6, %entry ], [ %.pre23, %if.then ]
+  %x_first_insn = getelementptr inbounds %struct.emit_status* %9, i64 0, i32 2
+  %10 = load %struct.rtx_def** %x_first_insn, align 8, !tbaa !4
+  %cmp12 = icmp eq %struct.rtx_def* %10, null
+  br i1 %cmp12, label %if.then13, label %if.end16
+
+if.then13:                                        ; preds = %if.end
+  store %struct.rtx_def* %insn, %struct.rtx_def** %x_first_insn, align 8, !tbaa !4
+  %.pre24 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit17.phi.trans.insert = getelementptr inbounds %struct.function* %.pre24, i64 0, i32 3
+  %.pre25 = load %struct.emit_status** %emit17.phi.trans.insert, align 8, !tbaa !4
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.then13, %if.end
+  %11 = phi %struct.emit_status* [ %.pre25, %if.then13 ], [ %9, %if.end ]
+  %x_last_insn18 = getelementptr inbounds %struct.emit_status* %11, i64 0, i32 3
+  store %struct.rtx_def* %insn, %struct.rtx_def** %x_last_insn18, align 8, !tbaa !4
+  ret void
+}

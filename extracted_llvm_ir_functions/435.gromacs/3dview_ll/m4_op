@@ -1,0 +1,35 @@
+define void @m4_op([4 x float]* nocapture %m, float* nocapture %x, float* nocapture %v) #0 {
+entry:
+  %arrayidx6 = getelementptr inbounds float* %x, i64 1
+  %arrayidx11 = getelementptr inbounds float* %x, i64 2
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arrayidx1 = getelementptr inbounds [4 x float]* %m, i64 0, i64 %indvars.iv
+  %0 = load float* %arrayidx1, align 4, !tbaa !0
+  %1 = load float* %x, align 4, !tbaa !0
+  %mul = fmul float %0, %1
+  %arrayidx5 = getelementptr inbounds [4 x float]* %m, i64 1, i64 %indvars.iv
+  %2 = load float* %arrayidx5, align 4, !tbaa !0
+  %3 = load float* %arrayidx6, align 4, !tbaa !0
+  %mul7 = fmul float %2, %3
+  %add = fadd float %mul, %mul7
+  %arrayidx10 = getelementptr inbounds [4 x float]* %m, i64 2, i64 %indvars.iv
+  %4 = load float* %arrayidx10, align 4, !tbaa !0
+  %5 = load float* %arrayidx11, align 4, !tbaa !0
+  %mul12 = fmul float %4, %5
+  %add13 = fadd float %add, %mul12
+  %arrayidx16 = getelementptr inbounds [4 x float]* %m, i64 3, i64 %indvars.iv
+  %6 = load float* %arrayidx16, align 4, !tbaa !0
+  %add17 = fadd float %6, %add13
+  %arrayidx19 = getelementptr inbounds float* %v, i64 %indvars.iv
+  store float %add17, float* %arrayidx19, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  ret void
+}

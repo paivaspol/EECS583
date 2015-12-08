@@ -1,0 +1,48 @@
+define float @gk(float %k, float %rc, float %r1) #0 {
+entry:
+  %0 = load float* @N0, align 4, !tbaa !0
+  %mul = fmul float %k, %k
+  %mul1 = fmul float %mul, %k
+  %mul2 = fmul float %mul1, %k
+  %mul3 = fmul float %mul2, %0
+  %1 = load float* @FourPi_V, align 4, !tbaa !0
+  %mul4 = fmul float %mul3, %k
+  %div = fdiv float %1, %mul4
+  %conv = fpext float %div to double
+  %2 = load float* @c1, align 4, !tbaa !0
+  %mul5 = fmul float %2, %k
+  %conv6 = fpext float %mul5 to double
+  %mul7 = fmul float %k, %rc
+  %conv8 = fpext float %mul7 to double
+  %call = tail call double @cos(double %conv8) #6
+  %mul9 = fmul double %call, %conv6
+  %3 = load float* @c2, align 4, !tbaa !0
+  %4 = load float* @c3, align 4, !tbaa !0
+  %mul10 = fmul float %4, %k
+  %mul11 = fmul float %mul10, %k
+  %add = fadd float %3, %mul11
+  %conv12 = fpext float %add to double
+  %call15 = tail call double @sin(double %conv8) #6
+  %mul16 = fmul double %call15, %conv12
+  %add17 = fadd double %mul9, %mul16
+  %5 = load float* @c4, align 4, !tbaa !0
+  %mul18 = fmul float %5, %k
+  %conv19 = fpext float %mul18 to double
+  %mul20 = fmul float %k, %r1
+  %conv21 = fpext float %mul20 to double
+  %call22 = tail call double @cos(double %conv21) #6
+  %mul23 = fmul double %call22, %conv19
+  %add24 = fadd double %mul23, %add17
+  %6 = load float* @c5, align 4, !tbaa !0
+  %7 = load float* @c6, align 4, !tbaa !0
+  %mul25 = fmul float %7, %k
+  %mul26 = fmul float %mul25, %k
+  %add27 = fadd float %6, %mul26
+  %conv28 = fpext float %add27 to double
+  %call31 = tail call double @sin(double %conv21) #6
+  %mul32 = fmul double %call31, %conv28
+  %add33 = fadd double %add24, %mul32
+  %mul34 = fmul double %conv, %add33
+  %conv35 = fptrunc double %mul34 to float
+  ret float %conv35
+}

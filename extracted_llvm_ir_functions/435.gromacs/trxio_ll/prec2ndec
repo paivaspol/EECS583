@@ -1,0 +1,17 @@
+define i32 @prec2ndec(float %prec) #1 {
+entry:
+  %cmp = fcmp ugt float %prec, 0.000000e+00
+  %conv1.pre = fpext float %prec to double
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([41 x i8]* @.str, i64 0, i64 0), double %conv1.pre) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %call = tail call double @log(double %conv1.pre) #6
+  %div = fdiv double %call, 0x40026BB1BBB55516
+  %add = fadd double %div, 5.000000e-01
+  %conv3 = fptosi double %add to i32
+  ret i32 %conv3
+}

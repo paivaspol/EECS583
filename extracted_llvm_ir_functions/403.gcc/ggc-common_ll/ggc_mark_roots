@@ -1,0 +1,85 @@
+define void @ggc_mark_roots() #0 {
+entry:
+  %call = tail call %struct.varray_head_tag* @varray_init(i64 4096, i64 8, i8* getelementptr inbounds ([18 x i8]* @.str1, i64 0, i64 0)) #5
+  store %struct.varray_head_tag* %call, %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !0
+  %x.035 = load %struct.ggc_root** @roots, align 8
+  %cmp36 = icmp eq %struct.ggc_root* %x.035, null
+  br i1 %cmp36, label %for.end6, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc5
+  %x.037 = phi %struct.ggc_root* [ %x.0, %for.inc5 ], [ %x.035, %entry ]
+  %nelt = getelementptr inbounds %struct.ggc_root* %x.037, i64 0, i32 2
+  %0 = load i32* %nelt, align 4, !tbaa !3
+  %cb1 = getelementptr inbounds %struct.ggc_root* %x.037, i64 0, i32 4
+  %1 = load void (i8*)** %cb1, align 8, !tbaa !0
+  %cmp332 = icmp sgt i32 %0, 0
+  br i1 %cmp332, label %for.body4.lr.ph, label %for.inc5
+
+for.body4.lr.ph:                                  ; preds = %for.body
+  %size = getelementptr inbounds %struct.ggc_root* %x.037, i64 0, i32 3
+  %base = getelementptr inbounds %struct.ggc_root* %x.037, i64 0, i32 1
+  %2 = load i32* %size, align 4, !tbaa !3
+  %3 = load i8** %base, align 8, !tbaa !0
+  %idx.ext = sext i32 %2 to i64
+  br label %for.body4
+
+for.body4:                                        ; preds = %for.body4, %for.body4.lr.ph
+  %i.034 = phi i32 [ 0, %for.body4.lr.ph ], [ %inc, %for.body4 ]
+  %elt.033 = phi i8* [ %3, %for.body4.lr.ph ], [ %add.ptr, %for.body4 ]
+  tail call void %1(i8* %elt.033) #5
+  %inc = add nsw i32 %i.034, 1
+  %add.ptr = getelementptr inbounds i8* %elt.033, i64 %idx.ext
+  %exitcond = icmp eq i32 %inc, %0
+  br i1 %exitcond, label %for.inc5, label %for.body4
+
+for.inc5:                                         ; preds = %for.body4, %for.body
+  %next = getelementptr inbounds %struct.ggc_root* %x.037, i64 0, i32 0
+  %x.0 = load %struct.ggc_root** %next, align 8
+  %cmp = icmp eq %struct.ggc_root* %x.0, null
+  br i1 %cmp, label %for.end6, label %for.body
+
+for.end6:                                         ; preds = %for.inc5, %entry
+  tail call fastcc void @ggc_mark_trees() #6
+  %4 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !0
+  %tobool = icmp eq %struct.varray_head_tag* %4, null
+  br i1 %tobool, label %do.end, label %if.then
+
+if.then:                                          ; preds = %for.end6
+  %5 = bitcast %struct.varray_head_tag* %4 to i8*
+  tail call void @free(i8* %5) #5
+  store %struct.varray_head_tag* null, %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !0
+  br label %do.end
+
+do.end:                                           ; preds = %for.end6, %if.then
+  %call7 = tail call %struct.varray_head_tag* @varray_init(i64 1024, i64 8, i8* getelementptr inbounds ([18 x i8]* @.str1, i64 0, i64 0)) #5
+  store %struct.varray_head_tag* %call7, %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !0
+  %y.029 = load %struct.d_htab_root** @d_htab_roots, align 8
+  %cmp930 = icmp eq %struct.d_htab_root* %y.029, null
+  br i1 %cmp930, label %for.end13, label %for.body10
+
+for.body10:                                       ; preds = %do.end, %for.body10
+  %y.031 = phi %struct.d_htab_root* [ %y.0, %for.body10 ], [ %y.029, %do.end ]
+  %htab = getelementptr inbounds %struct.d_htab_root* %y.031, i64 0, i32 1
+  %6 = load %struct.htab** %htab, align 8, !tbaa !0
+  %7 = bitcast %struct.d_htab_root* %y.031 to i8*
+  tail call void @htab_traverse(%struct.htab* %6, i32 (i8**, i8*)* @ggc_htab_delete, i8* %7) #5
+  %next12 = getelementptr inbounds %struct.d_htab_root* %y.031, i64 0, i32 0
+  %y.0 = load %struct.d_htab_root** %next12, align 8
+  %cmp9 = icmp eq %struct.d_htab_root* %y.0, null
+  br i1 %cmp9, label %for.end13, label %for.body10
+
+for.end13:                                        ; preds = %for.body10, %do.end
+  tail call fastcc void @ggc_mark_trees() #6
+  %8 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !0
+  %tobool15 = icmp eq %struct.varray_head_tag* %8, null
+  br i1 %tobool15, label %do.end18, label %if.then16
+
+if.then16:                                        ; preds = %for.end13
+  %9 = bitcast %struct.varray_head_tag* %8 to i8*
+  tail call void @free(i8* %9) #5
+  store %struct.varray_head_tag* null, %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !0
+  br label %do.end18
+
+do.end18:                                         ; preds = %for.end13, %if.then16
+  ret void
+}

@@ -1,0 +1,80 @@
+define void @matchseg_write(%struct._IO_FILE* nocapture %fp, %struct.kb_t* nocapture %kb, %struct.gnode_s* %hyp, i8* %hdr) #0 {
+entry:
+  %tobool47 = icmp eq %struct.gnode_s* %hyp, null
+  br i1 %tobool47, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %gn.050 = phi %struct.gnode_s* [ %5, %for.body ], [ %hyp, %entry ]
+  %lscr.049 = phi i32 [ %add3, %for.body ], [ 0, %entry ]
+  %ascr.048 = phi i32 [ %add, %for.body ], [ 0, %entry ]
+  %ptr = getelementptr inbounds %struct.gnode_s* %gn.050, i64 0, i32 0, i32 0
+  %0 = load i8** %ptr, align 8, !tbaa !0
+  %ascr1 = getelementptr inbounds i8* %0, i64 16
+  %1 = bitcast i8* %ascr1 to i32*
+  %2 = load i32* %1, align 4, !tbaa !3
+  %add = add nsw i32 %2, %ascr.048
+  %lscr2 = getelementptr inbounds i8* %0, i64 20
+  %3 = bitcast i8* %lscr2 to i32*
+  %4 = load i32* %3, align 4, !tbaa !3
+  %add3 = add nsw i32 %4, %lscr.049
+  %next = getelementptr inbounds %struct.gnode_s* %gn.050, i64 0, i32 1
+  %5 = load %struct.gnode_s** %next, align 8, !tbaa !0
+  %tobool = icmp eq %struct.gnode_s* %5, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %lscr.0.lcssa = phi i32 [ 0, %entry ], [ %add3, %for.body ]
+  %ascr.0.lcssa = phi i32 [ 0, %entry ], [ %add, %for.body ]
+  %kbcore = getelementptr inbounds %struct.kb_t* %kb, i64 0, i32 0
+  %6 = load %struct.kbcore_t** %kbcore, align 8, !tbaa !0
+  %dict4 = getelementptr inbounds %struct.kbcore_t* %6, i64 0, i32 2
+  %7 = load %struct.dict_t** %dict4, align 8, !tbaa !0
+  %tobool5 = icmp ne i8* %hdr, null
+  %cond = select i1 %tobool5, i8* %hdr, i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0)
+  %uttid = getelementptr inbounds %struct.kb_t* %kb, i64 0, i32 33
+  %8 = load i8** %uttid, align 8, !tbaa !0
+  %add6 = add nsw i32 %lscr.0.lcssa, %ascr.0.lcssa
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([24 x i8]* @.str, i64 0, i64 0), i8* %cond, i8* %8, i32 %add6, i32 %ascr.0.lcssa, i32 %lscr.0.lcssa) #5
+  br i1 %tobool47, label %for.end20, label %land.rhs.lr.ph
+
+land.rhs.lr.ph:                                   ; preds = %for.end
+  %word = getelementptr inbounds %struct.dict_t* %7, i64 0, i32 4
+  br label %land.rhs
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.body11
+  %gn.146 = phi %struct.gnode_s* [ %hyp, %land.rhs.lr.ph ], [ %20, %for.body11 ]
+  %next9 = getelementptr inbounds %struct.gnode_s* %gn.146, i64 0, i32 1
+  %9 = load %struct.gnode_s** %next9, align 8, !tbaa !0
+  %tobool10 = icmp eq %struct.gnode_s* %9, null
+  br i1 %tobool10, label %for.end20, label %for.body11
+
+for.body11:                                       ; preds = %land.rhs
+  %ptr13 = getelementptr inbounds %struct.gnode_s* %gn.146, i64 0, i32 0, i32 0
+  %10 = load i8** %ptr13, align 8, !tbaa !0
+  %sf = getelementptr inbounds i8* %10, i64 8
+  %11 = bitcast i8* %sf to i32*
+  %12 = load i32* %11, align 4, !tbaa !3
+  %ascr14 = getelementptr inbounds i8* %10, i64 16
+  %13 = bitcast i8* %ascr14 to i32*
+  %14 = load i32* %13, align 4, !tbaa !3
+  %lscr15 = getelementptr inbounds i8* %10, i64 20
+  %15 = bitcast i8* %lscr15 to i32*
+  %16 = load i32* %15, align 4, !tbaa !3
+  %id = bitcast i8* %10 to i32*
+  %17 = load i32* %id, align 4, !tbaa !3
+  %idxprom = sext i32 %17 to i64
+  %18 = load %struct.dictword_t** %word, align 8, !tbaa !0
+  %word16 = getelementptr inbounds %struct.dictword_t* %18, i64 %idxprom, i32 0
+  %19 = load i8** %word16, align 8, !tbaa !0
+  %call17 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([13 x i8]* @.str2, i64 0, i64 0), i32 %12, i32 %14, i32 %16, i8* %19) #5
+  %20 = load %struct.gnode_s** %next9, align 8, !tbaa !0
+  %tobool8 = icmp eq %struct.gnode_s* %20, null
+  br i1 %tobool8, label %for.end20, label %land.rhs
+
+for.end20:                                        ; preds = %for.body11, %land.rhs, %for.end
+  %nfr = getelementptr inbounds %struct.kb_t* %kb, i64 0, i32 8
+  %21 = load i32* %nfr, align 4, !tbaa !3
+  %call21 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i32 %21) #5
+  %call22 = tail call i32 @fflush(%struct._IO_FILE* %fp) #5
+  ret void
+}

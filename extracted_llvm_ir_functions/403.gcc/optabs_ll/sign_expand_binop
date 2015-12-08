@@ -1,0 +1,60 @@
+define %struct.rtx_def* @sign_expand_binop(i32 %mode, %struct.optab* %uoptab, %struct.optab* %soptab, %struct.rtx_def* %op0, %struct.rtx_def* %op1, %struct.rtx_def* %target, i32 %unsignedp, i32 %methods) #0 {
+entry:
+  %wide_soptab = alloca %struct.optab, align 8
+  %tobool = icmp ne i32 %unsignedp, 0
+  %cond = select i1 %tobool, %struct.optab* %uoptab, %struct.optab* %soptab
+  %0 = bitcast %struct.optab* %wide_soptab to i8*
+  call void @llvm.lifetime.start(i64 952, i8* %0) #3
+  %call = call %struct.rtx_def* @expand_binop(i32 %mode, %struct.optab* %cond, %struct.rtx_def* %op0, %struct.rtx_def* %op1, %struct.rtx_def* %target, i32 %unsignedp, i32 0) #7
+  %tobool1 = icmp ne %struct.rtx_def* %call, null
+  %cmp = icmp eq i32 %methods, 0
+  %or.cond = or i1 %tobool1, %cmp
+  br i1 %or.cond, label %cleanup, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = bitcast %struct.optab* %soptab to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 952, i32 8, i1 false), !tbaa.struct !10
+  %idxprom = sext i32 %mode to i64
+  %insn_code = getelementptr inbounds %struct.optab* %wide_soptab, i64 0, i32 1, i64 %idxprom, i32 0
+  store i32 1317, i32* %insn_code, align 8, !tbaa !6
+  %libfunc = getelementptr inbounds %struct.optab* %wide_soptab, i64 0, i32 1, i64 %idxprom, i32 1
+  store %struct.rtx_def* null, %struct.rtx_def** %libfunc, align 8, !tbaa !0
+  %call5 = call %struct.rtx_def* @expand_binop(i32 %mode, %struct.optab* %wide_soptab, %struct.rtx_def* %op0, %struct.rtx_def* %op1, %struct.rtx_def* %target, i32 %unsignedp, i32 2) #7
+  %cmp6.not = icmp ne %struct.rtx_def* %call5, null
+  %tobool.not = xor i1 %tobool, true
+  %brmerge = or i1 %cmp6.not, %tobool.not
+  br i1 %brmerge, label %if.end10, label %if.then8
+
+if.then8:                                         ; preds = %if.end
+  %call9 = call %struct.rtx_def* @expand_binop(i32 %mode, %struct.optab* %uoptab, %struct.rtx_def* %op0, %struct.rtx_def* %op1, %struct.rtx_def* %target, i32 %unsignedp, i32 2) #7
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.end, %if.then8
+  %temp.0 = phi %struct.rtx_def* [ %call9, %if.then8 ], [ %call5, %if.end ]
+  %tobool11 = icmp ne %struct.rtx_def* %temp.0, null
+  %cmp13 = icmp eq i32 %methods, 2
+  %or.cond76 = or i1 %tobool11, %cmp13
+  br i1 %or.cond76, label %cleanup, label %if.end15
+
+if.end15:                                         ; preds = %if.end10
+  %call16 = call %struct.rtx_def* @expand_binop(i32 %mode, %struct.optab* %cond, %struct.rtx_def* %op0, %struct.rtx_def* %op1, %struct.rtx_def* %target, i32 %unsignedp, i32 1) #7
+  %tobool17 = icmp ne %struct.rtx_def* %call16, null
+  %cmp19 = icmp eq i32 %methods, 1
+  %or.cond77 = or i1 %tobool17, %cmp19
+  br i1 %or.cond77, label %cleanup, label %if.end21
+
+if.end21:                                         ; preds = %if.end15
+  %call22 = call %struct.rtx_def* @expand_binop(i32 %mode, %struct.optab* %wide_soptab, %struct.rtx_def* %op0, %struct.rtx_def* %op1, %struct.rtx_def* %target, i32 %unsignedp, i32 %methods) #7
+  %cmp23.not = icmp ne %struct.rtx_def* %call22, null
+  %brmerge79 = or i1 %cmp23.not, %tobool.not
+  br i1 %brmerge79, label %cleanup, label %if.then27
+
+if.then27:                                        ; preds = %if.end21
+  %call28 = call %struct.rtx_def* @expand_binop(i32 %mode, %struct.optab* %uoptab, %struct.rtx_def* %op0, %struct.rtx_def* %op1, %struct.rtx_def* %target, i32 %unsignedp, i32 %methods) #7
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.end21, %if.end15, %if.end10, %entry, %if.then27
+  %retval.0 = phi %struct.rtx_def* [ %call28, %if.then27 ], [ %call, %entry ], [ %temp.0, %if.end10 ], [ %call16, %if.end15 ], [ %call22, %if.end21 ]
+  call void @llvm.lifetime.end(i64 952, i8* %0) #3
+  ret %struct.rtx_def* %retval.0
+}

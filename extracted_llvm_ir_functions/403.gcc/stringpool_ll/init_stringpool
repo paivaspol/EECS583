@@ -1,0 +1,10 @@
+define void @init_stringpool() #0 {
+entry:
+  %call = tail call %struct.ht* @ht_create(i32 14) #4
+  store %struct.ht* %call, %struct.ht** @ident_hash, align 8, !tbaa !0
+  %alloc_node = getelementptr inbounds %struct.ht* %call, i64 0, i32 2
+  store %struct.ht_identifier* (%struct.ht*)* @alloc_node, %struct.ht_identifier* (%struct.ht*)** %alloc_node, align 8, !tbaa !0
+  tail call void @gcc_obstack_init(%struct.obstack* @string_stack) #4
+  tail call void @ggc_add_root(i8* bitcast (%struct.ht** @ident_hash to i8*), i32 1, i32 8, void (i8*)* @mark_ident_hash) #4
+  ret void
+}

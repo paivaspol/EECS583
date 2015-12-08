@@ -1,0 +1,81 @@
+define internal fastcc i32 @ix86_save_reg(i32 %regno, i32 %maybe_eh_return) #2 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %lor.rhs, label %lor.end
+
+lor.rhs:                                          ; preds = %entry
+  %1 = load i32* @flag_pic, align 4, !tbaa !0
+  %lnot = icmp eq i32 %1, 0
+  %phitmp = select i1 %lnot, i32 -1, i32 3
+  br label %lor.end
+
+lor.end:                                          ; preds = %entry, %lor.rhs
+  %2 = phi i32 [ -1, %entry ], [ %phitmp, %lor.rhs ]
+  %cmp = icmp eq i32 %2, %regno
+  %3 = load %struct.function** @cfun, align 8, !tbaa !4
+  %uses_pic_offset_table = getelementptr inbounds %struct.function* %3, i64 0, i32 56
+  %4 = bitcast [4 x i8]* %uses_pic_offset_table to i32*
+  %bf.load = load i32* %4, align 8
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %lor.end
+  %5 = and i32 %bf.load, 3145856
+  %6 = icmp eq i32 %5, 0
+  br i1 %6, label %if.end, label %return
+
+if.end:                                           ; preds = %lor.end, %land.lhs.true
+  %bf.clear15 = and i32 %bf.load, 128
+  %tobool16 = icmp eq i32 %bf.clear15, 0
+  %tobool18 = icmp eq i32 %maybe_eh_return, 0
+  %or.cond53 = or i1 %tobool16, %tobool18
+  br i1 %or.cond53, label %if.end28, label %if.end24
+
+for.cond:                                         ; preds = %if.end24
+  %not.cmp20 = icmp ugt i32 %inc, 1
+  br i1 %not.cmp20, label %if.end28, label %if.end24
+
+if.end24:                                         ; preds = %if.end, %for.cond
+  %cond2155 = phi i32 [ %inc, %for.cond ], [ 0, %if.end ]
+  %cmp25 = icmp eq i32 %cond2155, %regno
+  %inc = add i32 %cond2155, 1
+  br i1 %cmp25, label %return, label %for.cond
+
+if.end28:                                         ; preds = %for.cond, %if.end
+  %idxprom = sext i32 %regno to i64
+  %arrayidx = getelementptr inbounds [53 x i8]* @regs_ever_live, i64 0, i64 %idxprom
+  %7 = load i8* %arrayidx, align 1, !tbaa !1
+  %tobool29 = icmp eq i8 %7, 0
+  br i1 %tobool29, label %land.end, label %land.lhs.true30
+
+land.lhs.true30:                                  ; preds = %if.end28
+  %arrayidx32 = getelementptr inbounds [53 x i8]* @call_used_regs, i64 0, i64 %idxprom
+  %8 = load i8* %arrayidx32, align 1, !tbaa !1
+  %tobool33 = icmp eq i8 %8, 0
+  br i1 %tobool33, label %land.lhs.true34, label %land.end
+
+land.lhs.true34:                                  ; preds = %land.lhs.true30
+  %arrayidx36 = getelementptr inbounds [53 x i8]* @fixed_regs, i64 0, i64 %idxprom
+  %9 = load i8* %arrayidx36, align 1, !tbaa !1
+  %tobool37 = icmp eq i8 %9, 0
+  br i1 %tobool37, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %land.lhs.true34
+  %cmp38 = icmp eq i32 %regno, 6
+  br i1 %cmp38, label %lor.rhs40, label %land.end
+
+lor.rhs40:                                        ; preds = %land.rhs
+  %10 = load i32* @frame_pointer_needed, align 4, !tbaa !0
+  %lnot42 = icmp eq i32 %10, 0
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %land.lhs.true34, %land.lhs.true30, %if.end28, %lor.rhs40
+  %11 = phi i1 [ false, %land.lhs.true34 ], [ false, %land.lhs.true30 ], [ false, %if.end28 ], [ true, %land.rhs ], [ %lnot42, %lor.rhs40 ]
+  %land.ext = zext i1 %11 to i32
+  br label %return
+
+return:                                           ; preds = %if.end24, %land.lhs.true, %land.end
+  %retval.0 = phi i32 [ %land.ext, %land.end ], [ 1, %land.lhs.true ], [ 1, %if.end24 ]
+  ret i32 %retval.0
+}

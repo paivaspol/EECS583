@@ -1,0 +1,165 @@
+define internal fastcc i32 @operand_equal_for_comparison_p(%union.tree_node* %arg0, %union.tree_node* %arg1, %union.tree_node* %other) #0 {
+entry:
+  %unsignedp1 = alloca i32, align 4
+  %unsignedpo = alloca i32, align 4
+  %call = call i32 @operand_equal_p(%union.tree_node* %arg0, %union.tree_node* %arg1, i32 0) #7
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %union.tree_node* %arg0, i64 0, i32 0, i32 0, i32 1
+  %0 = load %union.tree_node** %type, align 8, !tbaa !3
+  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %return [
+    i32 6, label %lor.lhs.false25
+    i32 10, label %lor.lhs.false25
+    i32 11, label %lor.lhs.false25
+    i32 12, label %lor.lhs.false25
+  ]
+
+lor.lhs.false25:                                  ; preds = %if.end, %if.end, %if.end, %if.end
+  %type27 = getelementptr inbounds %union.tree_node* %arg1, i64 0, i32 0, i32 0, i32 1
+  %2 = load %union.tree_node** %type27, align 8, !tbaa !3
+  %code29 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %code29 to i32*
+  %bf.load30 = load i32* %3, align 8
+  %bf.clear31 = and i32 %bf.load30, 255
+  switch i32 %bf.clear31, label %return [
+    i32 6, label %while.cond.preheader
+    i32 10, label %while.cond.preheader
+    i32 11, label %while.cond.preheader
+    i32 12, label %while.cond.preheader
+  ]
+
+while.cond.preheader:                             ; preds = %lor.lhs.false25, %lor.lhs.false25, %lor.lhs.false25, %lor.lhs.false25
+  %4 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 8, !tbaa !3
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.preheader, %land.rhs
+  %5 = phi %union.tree_node* [ %9, %land.rhs ], [ %0, %while.cond.preheader ]
+  %primarg0.0 = phi %union.tree_node* [ %7, %land.rhs ], [ %arg0, %while.cond.preheader ]
+  %code60 = getelementptr inbounds %union.tree_node* %primarg0.0, i64 0, i32 0, i32 0, i32 2
+  %6 = bitcast [4 x i8]* %code60 to i32*
+  %bf.load61 = load i32* %6, align 8
+  %bf.clear62 = and i32 %bf.load61, 255
+  %bf.clear62.off = add i32 %bf.clear62, -114
+  %switch = icmp ult i32 %bf.clear62.off, 3
+  br i1 %switch, label %land.lhs.true, label %while.cond96
+
+land.lhs.true:                                    ; preds = %while.cond
+  %operands = getelementptr inbounds %union.tree_node* %primarg0.0, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  %7 = load %union.tree_node** %arrayidx, align 8, !tbaa !3
+  %cmp76 = icmp eq %union.tree_node* %7, %4
+  br i1 %cmp76, label %while.cond96, label %land.rhs
+
+land.rhs:                                         ; preds = %land.lhs.true
+  %type79 = bitcast %union.tree_node* %5 to %struct.tree_type*
+  %mode = getelementptr inbounds %struct.tree_type* %type79, i64 0, i32 6
+  %8 = bitcast [4 x i8]* %mode to i32*
+  %bf.load80 = load i32* %8, align 4
+  %type86 = getelementptr inbounds %union.tree_node* %7, i64 0, i32 0, i32 0, i32 1
+  %9 = load %union.tree_node** %type86, align 8, !tbaa !3
+  %type87 = bitcast %union.tree_node* %9 to %struct.tree_type*
+  %mode88 = getelementptr inbounds %struct.tree_type* %type87, i64 0, i32 6
+  %10 = bitcast [4 x i8]* %mode88 to i32*
+  %bf.load89 = load i32* %10, align 4
+  %bf.lshr222 = xor i32 %bf.load89, %bf.load80
+  %11 = and i32 %bf.lshr222, 65024
+  %cmp92 = icmp eq i32 %11, 0
+  br i1 %cmp92, label %while.cond, label %while.cond96
+
+while.cond96:                                     ; preds = %while.cond, %land.lhs.true, %land.rhs, %land.rhs119
+  %12 = phi %union.tree_node* [ %16, %land.rhs119 ], [ %2, %land.rhs ], [ %2, %land.lhs.true ], [ %2, %while.cond ]
+  %primarg1.0 = phi %union.tree_node* [ %14, %land.rhs119 ], [ %arg1, %land.rhs ], [ %arg1, %land.lhs.true ], [ %arg1, %while.cond ]
+  %code98 = getelementptr inbounds %union.tree_node* %primarg1.0, i64 0, i32 0, i32 0, i32 2
+  %13 = bitcast [4 x i8]* %code98 to i32*
+  %bf.load99 = load i32* %13, align 8
+  %bf.clear100 = and i32 %bf.load99, 255
+  %bf.clear100.off = add i32 %bf.clear100, -114
+  %switch223 = icmp ult i32 %bf.clear100.off, 3
+  br i1 %switch223, label %land.lhs.true114, label %while.end143
+
+land.lhs.true114:                                 ; preds = %while.cond96
+  %operands116 = getelementptr inbounds %union.tree_node* %primarg1.0, i64 0, i32 0, i32 2
+  %arrayidx117 = bitcast i32* %operands116 to %union.tree_node**
+  %14 = load %union.tree_node** %arrayidx117, align 8, !tbaa !3
+  %cmp118 = icmp eq %union.tree_node* %14, %4
+  br i1 %cmp118, label %while.end143, label %land.rhs119
+
+land.rhs119:                                      ; preds = %land.lhs.true114
+  %type122 = bitcast %union.tree_node* %12 to %struct.tree_type*
+  %mode123 = getelementptr inbounds %struct.tree_type* %type122, i64 0, i32 6
+  %15 = bitcast [4 x i8]* %mode123 to i32*
+  %bf.load124 = load i32* %15, align 4
+  %type131 = getelementptr inbounds %union.tree_node* %14, i64 0, i32 0, i32 0, i32 1
+  %16 = load %union.tree_node** %type131, align 8, !tbaa !3
+  %type132 = bitcast %union.tree_node* %16 to %struct.tree_type*
+  %mode133 = getelementptr inbounds %struct.tree_type* %type132, i64 0, i32 6
+  %17 = bitcast [4 x i8]* %mode133 to i32*
+  %bf.load134 = load i32* %17, align 4
+  %bf.lshr125221 = xor i32 %bf.load134, %bf.load124
+  %18 = and i32 %bf.lshr125221, 65024
+  %cmp137 = icmp eq i32 %18, 0
+  br i1 %cmp137, label %while.cond96, label %while.end143
+
+while.end143:                                     ; preds = %while.cond96, %land.lhs.true114, %land.rhs119
+  %call144 = call i32 @operand_equal_p(%union.tree_node* %primarg0.0, %union.tree_node* %primarg1.0, i32 0) #7
+  %tobool145 = icmp eq i32 %call144, 0
+  br i1 %tobool145, label %if.end147, label %return
+
+if.end147:                                        ; preds = %while.end143
+  %call148 = call %union.tree_node* @get_narrower(%union.tree_node* %arg1, i32* %unsignedp1) #9
+  %call149 = call %union.tree_node* @get_narrower(%union.tree_node* %other, i32* %unsignedpo) #9
+  %19 = load %union.tree_node** %type27, align 8, !tbaa !3
+  %type152 = bitcast %union.tree_node* %19 to %struct.tree_type*
+  %precision = getelementptr inbounds %struct.tree_type* %type152, i64 0, i32 6
+  %20 = bitcast [4 x i8]* %precision to i32*
+  %bf.load153 = load i32* %20, align 4
+  %bf.clear154 = and i32 %bf.load153, 511
+  %21 = load i32* %unsignedp1, align 4, !tbaa !4
+  %22 = load i32* %unsignedpo, align 4, !tbaa !4
+  %cmp155 = icmp eq i32 %21, %22
+  br i1 %cmp155, label %land.lhs.true156, label %if.end185
+
+land.lhs.true156:                                 ; preds = %if.end147
+  %type158 = getelementptr inbounds %union.tree_node* %call148, i64 0, i32 0, i32 0, i32 1
+  %23 = load %union.tree_node** %type158, align 8, !tbaa !3
+  %type159 = bitcast %union.tree_node* %23 to %struct.tree_type*
+  %precision160 = getelementptr inbounds %struct.tree_type* %type159, i64 0, i32 6
+  %24 = bitcast [4 x i8]* %precision160 to i32*
+  %bf.load161 = load i32* %24, align 4
+  %bf.clear162 = and i32 %bf.load161, 511
+  %cmp163 = icmp ult i32 %bf.clear162, %bf.clear154
+  br i1 %cmp163, label %land.lhs.true164, label %if.end185
+
+land.lhs.true164:                                 ; preds = %land.lhs.true156
+  %type166 = getelementptr inbounds %union.tree_node* %call149, i64 0, i32 0, i32 0, i32 1
+  %25 = load %union.tree_node** %type166, align 8, !tbaa !3
+  %type167 = bitcast %union.tree_node* %25 to %struct.tree_type*
+  %precision168 = getelementptr inbounds %struct.tree_type* %type167, i64 0, i32 6
+  %26 = bitcast [4 x i8]* %precision168 to i32*
+  %bf.load169 = load i32* %26, align 4
+  %bf.clear170 = and i32 %bf.load169, 511
+  %cmp171 = icmp ult i32 %bf.clear170, %bf.clear154
+  br i1 %cmp171, label %if.then172, label %if.end185
+
+if.then172:                                       ; preds = %land.lhs.true164
+  %27 = load %union.tree_node** %type, align 8, !tbaa !3
+  %call178 = call %union.tree_node* @signed_or_unsigned_type(i32 %21, %union.tree_node* %23) #9
+  %call179 = call %union.tree_node* @convert(%union.tree_node* %call178, %union.tree_node* %call148) #9
+  %call180 = call %union.tree_node* @convert(%union.tree_node* %27, %union.tree_node* %call179) #9
+  %call181 = call i32 @operand_equal_p(%union.tree_node* %arg0, %union.tree_node* %call180, i32 0) #7
+  %tobool182 = icmp eq i32 %call181, 0
+  br i1 %tobool182, label %if.end185, label %return
+
+if.end185:                                        ; preds = %if.then172, %land.lhs.true164, %land.lhs.true156, %if.end147
+  br label %return
+
+return:                                           ; preds = %if.then172, %while.end143, %if.end, %lor.lhs.false25, %entry, %if.end185
+  %retval.0 = phi i32 [ 0, %if.end185 ], [ 1, %entry ], [ 0, %lor.lhs.false25 ], [ 0, %if.end ], [ 1, %while.end143 ], [ 1, %if.then172 ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,71 @@
+define void @get_stx_coordnum(i8* %infile, i32* %natoms) #0 {
+entry:
+  %title.i = alloca [4096 x i8], align 16
+  %fr = alloca %struct.t_trxframe, align 8
+  %tpx = alloca %struct.t_tpxheader, align 4
+  %0 = bitcast %struct.t_trxframe* %fr to i8*
+  call void @llvm.lifetime.start(i64 176, i8* %0) #4
+  %call = call i32 @fn2ftp(i8* %infile) #5
+  switch i32 %call, label %sw.default [
+    i32 13, label %sw.bb
+    i32 14, label %sw.bb1
+    i32 15, label %sw.bb5
+    i32 16, label %sw.bb5
+    i32 17, label %sw.bb5
+    i32 27, label %sw.bb7
+    i32 28, label %sw.bb7
+    i32 26, label %sw.bb7
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %1 = getelementptr inbounds [4096 x i8]* %title.i, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %1) #4
+  %call.i = call %struct._IO_FILE* @ffopen(i8* %infile, i8* getelementptr inbounds ([2 x i8]* @.str48, i64 0, i64 0)) #5
+  call fastcc void @get_coordnum_fp(%struct._IO_FILE* %call.i, i8* %1, i32* %natoms) #5
+  call void @ffclose(%struct._IO_FILE* %call.i) #5
+  call void @llvm.lifetime.end(i64 4096, i8* %1) #4
+  br label %sw.epilog
+
+sw.bb1:                                           ; preds = %entry
+  %call2 = call %struct._IO_FILE* @ffopen(i8* %infile, i8* getelementptr inbounds ([2 x i8]* @.str48, i64 0, i64 0)) #5
+  %title = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 7
+  store i8* null, i8** %title, align 8, !tbaa !0
+  %natoms3 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 2
+  store i32 -1, i32* %natoms3, align 8, !tbaa !3
+  %atoms = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 15
+  store %struct.t_atoms* null, %struct.t_atoms** %atoms, align 8, !tbaa !0
+  %x = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 19
+  store [3 x float]* null, [3 x float]** %x, align 8, !tbaa !0
+  %v = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 21
+  store [3 x float]* null, [3 x float]** %v, align 8, !tbaa !0
+  %f = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 23
+  store [3 x float]* null, [3 x float]** %f, align 8, !tbaa !0
+  %call4 = call i32 @read_g96_conf(%struct._IO_FILE* %call2, i8* %infile, %struct.t_trxframe* %fr) #8
+  store i32 %call4, i32* %natoms, align 4, !tbaa !3
+  call void @ffclose(%struct._IO_FILE* %call2) #5
+  br label %sw.epilog
+
+sw.bb5:                                           ; preds = %entry, %entry, %entry
+  %call6 = call %struct._IO_FILE* @ffopen(i8* %infile, i8* getelementptr inbounds ([2 x i8]* @.str48, i64 0, i64 0)) #5
+  call void @get_pdb_coordnum(%struct._IO_FILE* %call6, i32* %natoms) #5
+  call void @ffclose(%struct._IO_FILE* %call6) #5
+  br label %sw.epilog
+
+sw.bb7:                                           ; preds = %entry, %entry, %entry
+  %2 = bitcast %struct.t_tpxheader* %tpx to i8*
+  call void @llvm.lifetime.start(i64 40, i8* %2) #4
+  call void @read_tpxheader(i8* %infile, %struct.t_tpxheader* %tpx) #5
+  %natoms8 = getelementptr inbounds %struct.t_tpxheader* %tpx, i64 0, i32 6
+  %3 = load i32* %natoms8, align 4, !tbaa !3
+  store i32 %3, i32* %natoms, align 4, !tbaa !3
+  call void @llvm.lifetime.end(i64 40, i8* %2) #4
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %entry
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([38 x i8]* @.str49, i64 0, i64 0), i8* %infile) #5
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %sw.default, %sw.bb7, %sw.bb5, %sw.bb1, %sw.bb
+  call void @llvm.lifetime.end(i64 176, i8* %0) #4
+  ret void
+}

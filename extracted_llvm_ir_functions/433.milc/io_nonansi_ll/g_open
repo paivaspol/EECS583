@@ -1,0 +1,61 @@
+define noalias %struct._IO_FILE* @g_open(i8* %filename, i8* %mode) #0 {
+entry:
+  %0 = load i8* %mode, align 1, !tbaa !0
+  switch i8 %0, label %if.else17 [
+    i8 97, label %if.then
+    i8 119, label %if.end21
+    i8 114, label %if.then12
+  ]
+
+if.then:                                          ; preds = %entry
+  %1 = load i32* @this_node, align 4, !tbaa !2
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 %1) #5
+  br label %return
+
+if.then12:                                        ; preds = %entry
+  %call13 = tail call i8* @strchr(i8* %mode, i32 43) #6
+  %cmp14 = icmp ne i8* %call13, null
+  %. = select i1 %cmp14, i32 2, i32 0
+  br label %if.end21
+
+if.else17:                                        ; preds = %entry
+  %2 = load i32* @this_node, align 4, !tbaa !2
+  %call18 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([41 x i8]* @.str1, i64 0, i64 0), i32 %2, i8* %mode) #5
+  br label %return
+
+if.end21:                                         ; preds = %entry, %if.then12
+  %oflg.0 = phi i32 [ %., %if.then12 ], [ 65, %entry ]
+  %call22 = tail call i32 (i8*, i32, ...)* @open(i8* %filename, i32 %oflg.0, i32 420) #5
+  %cmp23 = icmp eq i32 %call22, -1
+  br i1 %cmp23, label %if.then25, label %if.end28
+
+if.then25:                                        ; preds = %if.end21
+  %3 = load i32* @this_node, align 4, !tbaa !2
+  %call26 = tail call i32* @__errno_location() #7
+  %4 = load i32* %call26, align 4, !tbaa !2
+  %call27 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([37 x i8]* @.str2, i64 0, i64 0), i32 %3, i32 %4, i8* %filename) #5
+  br label %return
+
+if.end28:                                         ; preds = %if.end21
+  %call29 = tail call noalias i8* @calloc(i64 1, i64 4) #5
+  %5 = bitcast i8* %call29 to i32*
+  %cmp30 = icmp eq i8* %call29, null
+  br i1 %cmp30, label %if.then32, label %if.end35
+
+if.then32:                                        ; preds = %if.end28
+  %6 = load i32* @this_node, align 4, !tbaa !2
+  %call33 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([33 x i8]* @.str3, i64 0, i64 0), i32 %6) #5
+  %7 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call34 = tail call i32 @fflush(%struct._IO_FILE* %7) #5
+  tail call void @terminate(i32 1) #5
+  br label %if.end35
+
+if.end35:                                         ; preds = %if.then32, %if.end28
+  store i32 %call22, i32* %5, align 4, !tbaa !2
+  %8 = bitcast i8* %call29 to %struct._IO_FILE*
+  br label %return
+
+return:                                           ; preds = %if.end35, %if.then25, %if.else17, %if.then
+  %retval.0 = phi %struct._IO_FILE* [ null, %if.then ], [ null, %if.then25 ], [ %8, %if.end35 ], [ null, %if.else17 ]
+  ret %struct._IO_FILE* %retval.0
+}

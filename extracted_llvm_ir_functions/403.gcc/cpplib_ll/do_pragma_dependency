@@ -1,0 +1,37 @@
+define internal void @do_pragma_dependency(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %call = tail call fastcc %struct.cpp_token* @parse_include(%struct.cpp_reader* %pfile) #9
+  %tobool = icmp eq %struct.cpp_token* %call, null
+  br i1 %tobool, label %if.end12, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call1 = tail call i32 @_cpp_compare_file_date(%struct.cpp_reader* %pfile, %struct.cpp_token* %call) #8
+  %cmp = icmp slt i32 %call1, 0
+  br i1 %cmp, label %if.then2, label %if.else
+
+if.then2:                                         ; preds = %if.end
+  %call3 = tail call i8* @cpp_token_as_text(%struct.cpp_reader* %pfile, %struct.cpp_token* %call) #8
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([22 x i8]* @.str17, i64 0, i64 0), i8* %call3) #8
+  br label %if.end12
+
+if.else:                                          ; preds = %if.end
+  %cmp4 = icmp sgt i32 %call1, 0
+  br i1 %cmp4, label %if.then5, label %if.end12
+
+if.then5:                                         ; preds = %if.else
+  %call6 = tail call i8* @cpp_token_as_text(%struct.cpp_reader* %pfile, %struct.cpp_token* %call) #8
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([30 x i8]* @.str18, i64 0, i64 0), i8* %call6) #8
+  %call7 = tail call %struct.cpp_token* @cpp_get_token(%struct.cpp_reader* %pfile) #8
+  %type = getelementptr inbounds %struct.cpp_token* %call7, i64 0, i32 2
+  %bf.load = load i8* %type, align 2
+  %cmp8 = icmp eq i8 %bf.load, 67
+  br i1 %cmp8, label %if.end12, label %if.then9
+
+if.then9:                                         ; preds = %if.then5
+  tail call void @_cpp_backup_tokens(%struct.cpp_reader* %pfile, i32 1) #8
+  tail call fastcc void @do_diagnostic(%struct.cpp_reader* %pfile, i32 0, i32 0) #9
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.then5, %entry, %if.else, %if.then9, %if.then2
+  ret void
+}

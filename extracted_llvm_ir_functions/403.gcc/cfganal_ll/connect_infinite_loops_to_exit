@@ -1,0 +1,134 @@
+define void @connect_infinite_loops_to_exit() #0 {
+entry:
+  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %sub.i = add nsw i32 %0, 2
+  %conv.i = sext i32 %sub.i to i64
+  %mul.i = shl nsw i64 %conv.i, 3
+  %call.i = call noalias i8* @xmalloc(i64 %mul.i) #6
+  %1 = bitcast i8* %call.i to %struct.basic_block_def**
+  %2 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %sub1.i = add nsw i32 %2, 2
+  %call2.i = call %struct.simple_bitmap_def* @sbitmap_alloc(i32 %sub1.i) #6
+  call void @sbitmap_zero(%struct.simple_bitmap_def* %call2.i) #6
+  store %struct.basic_block_def* getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1), %struct.basic_block_def** %1, align 8, !tbaa !0
+  %3 = load i32* getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1, i32 11), align 8, !tbaa !3
+  %sub.i6 = add nsw i32 %3, 2
+  %rem.i = and i32 %sub.i6, 63
+  %sh_prom.i = zext i32 %rem.i to i64
+  %shl.i = shl i64 1, %sh_prom.i
+  %div.i = lshr i32 %sub.i6, 6
+  %idxprom3.i = zext i32 %div.i to i64
+  %arrayidx4.i = getelementptr inbounds %struct.simple_bitmap_def* %call2.i, i64 0, i32 3, i64 %idxprom3.i
+  %4 = load i64* %arrayidx4.i, align 8, !tbaa !4
+  %or.i = or i64 %shl.i, %4
+  store i64 %or.i, i64* %arrayidx4.i, align 8, !tbaa !4
+  br label %while.body.i
+
+while.cond.loopexit.i:                            ; preds = %for.inc.i, %while.body.i
+  %5 = phi i32 [ %dec.i, %while.body.i ], [ %13, %for.inc.i ]
+  %cmp.i = icmp eq i32 %5, 0
+  br i1 %cmp.i, label %while.end.i, label %while.body.i
+
+while.body.i:                                     ; preds = %if.end, %while.cond.loopexit.i, %entry
+  %6 = phi i32 [ 1, %entry ], [ %5, %while.cond.loopexit.i ], [ 1, %if.end ]
+  %dec.i = add i32 %6, -1
+  %idxprom.i11 = zext i32 %dec.i to i64
+  %arrayidx.i12 = getelementptr inbounds %struct.basic_block_def** %1, i64 %idxprom.i11
+  %7 = load %struct.basic_block_def** %arrayidx.i12, align 8, !tbaa !0
+  %pred.i = getelementptr inbounds %struct.basic_block_def* %7, i64 0, i32 4
+  %e.046.i = load %struct.edge_def** %pred.i, align 8
+  %tobool47.i = icmp eq %struct.edge_def* %e.046.i, null
+  br i1 %tobool47.i, label %while.cond.loopexit.i, label %for.body.i
+
+for.body.i:                                       ; preds = %while.body.i, %for.inc.i
+  %8 = phi i32 [ %13, %for.inc.i ], [ %dec.i, %while.body.i ]
+  %e.048.i = phi %struct.edge_def* [ %e.0.i, %for.inc.i ], [ %e.046.i, %while.body.i ]
+  %src.i = getelementptr inbounds %struct.edge_def* %e.048.i, i64 0, i32 2
+  %9 = load %struct.basic_block_def** %src.i, align 8, !tbaa !0
+  %index.i = getelementptr inbounds %struct.basic_block_def* %9, i64 0, i32 11
+  %10 = load i32* %index.i, align 4, !tbaa !3
+  %sub.i13 = add nsw i32 %10, 2
+  %div.i14 = lshr i32 %sub.i13, 6
+  %idxprom2.i = zext i32 %div.i14 to i64
+  %arrayidx3.i = getelementptr inbounds %struct.simple_bitmap_def* %call2.i, i64 0, i32 3, i64 %idxprom2.i
+  %11 = load i64* %arrayidx3.i, align 8, !tbaa !4
+  %rem.i15 = and i32 %sub.i13, 63
+  %sh_prom.i16 = zext i32 %rem.i15 to i64
+  %12 = shl i64 1, %sh_prom.i16
+  %and44.i = and i64 %12, %11
+  %tobool7.i = icmp eq i64 %and44.i, 0
+  br i1 %tobool7.i, label %if.then.i, label %for.inc.i
+
+if.then.i:                                        ; preds = %for.body.i
+  %inc.i.i = add i32 %8, 1
+  %idxprom.i.i = zext i32 %8 to i64
+  %arrayidx.i.i = getelementptr inbounds %struct.basic_block_def** %1, i64 %idxprom.i.i
+  store %struct.basic_block_def* %9, %struct.basic_block_def** %arrayidx.i.i, align 8, !tbaa !0
+  %or.i.i = or i64 %12, %11
+  store i64 %or.i.i, i64* %arrayidx3.i, align 8, !tbaa !4
+  br label %for.inc.i
+
+for.inc.i:                                        ; preds = %if.then.i, %for.body.i
+  %13 = phi i32 [ %8, %for.body.i ], [ %inc.i.i, %if.then.i ]
+  %pred_next.i = getelementptr inbounds %struct.edge_def* %e.048.i, i64 0, i32 0
+  %e.0.i = load %struct.edge_def** %pred_next.i, align 8
+  %tobool.i = icmp eq %struct.edge_def* %e.0.i, null
+  br i1 %tobool.i, label %while.cond.loopexit.i, label %for.body.i
+
+while.end.i:                                      ; preds = %while.cond.loopexit.i
+  %14 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %sub9.i = add nsw i32 %14, 2
+  br label %for.cond10.i
+
+for.cond10.i:                                     ; preds = %for.body13.i, %while.end.i
+  %i.0.i = phi i32 [ %sub9.i, %while.end.i ], [ %dec11.i, %for.body13.i ]
+  %dec11.i = add nsw i32 %i.0.i, -1
+  %cmp12.i = icmp sgt i32 %i.0.i, 0
+  br i1 %cmp12.i, label %for.body13.i, label %while.end
+
+for.body13.i:                                     ; preds = %for.cond10.i
+  %div14.i = lshr i32 %dec11.i, 6
+  %idxprom15.i = zext i32 %div14.i to i64
+  %arrayidx18.i = getelementptr inbounds %struct.simple_bitmap_def* %call2.i, i64 0, i32 3, i64 %idxprom15.i
+  %15 = load i64* %arrayidx18.i, align 8, !tbaa !4
+  %rem19.i = and i32 %dec11.i, 63
+  %sh_prom20.i = zext i32 %rem19.i to i64
+  %16 = shl i64 1, %sh_prom20.i
+  %and2243.i = and i64 %15, %16
+  %tobool23.i = icmp eq i64 %and2243.i, 0
+  br i1 %tobool23.i, label %flow_dfs_compute_reverse_execute.exit, label %for.cond10.i
+
+flow_dfs_compute_reverse_execute.exit:            ; preds = %for.body13.i
+  %add.i = add nsw i32 %i.0.i, -3
+  %idxprom25.i = sext i32 %add.i to i64
+  %17 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
+  %data26.i = getelementptr inbounds %struct.varray_head_tag* %17, i64 0, i32 4
+  %bb27.i = bitcast %union.varray_data_tag* %data26.i to [1 x %struct.basic_block_def*]*
+  %arrayidx28.i = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb27.i, i64 0, i64 %idxprom25.i
+  %18 = load %struct.basic_block_def** %arrayidx28.i, align 8, !tbaa !0
+  %tobool = icmp eq %struct.basic_block_def* %18, null
+  br i1 %tobool, label %while.end, label %if.end
+
+if.end:                                           ; preds = %flow_dfs_compute_reverse_execute.exit
+  %call1 = call %struct.edge_def* @make_edge(%struct.basic_block_def* %18, %struct.basic_block_def* getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1), i32 16) #6
+  store %struct.basic_block_def* %18, %struct.basic_block_def** %1, align 8, !tbaa !0
+  %index.i22 = getelementptr inbounds %struct.basic_block_def* %18, i64 0, i32 11
+  %19 = load i32* %index.i22, align 4, !tbaa !3
+  %sub.i23 = add nsw i32 %19, 2
+  %rem.i24 = and i32 %sub.i23, 63
+  %sh_prom.i25 = zext i32 %rem.i24 to i64
+  %shl.i26 = shl i64 1, %sh_prom.i25
+  %div.i27 = lshr i32 %sub.i23, 6
+  %idxprom3.i28 = zext i32 %div.i27 to i64
+  %arrayidx4.i30 = getelementptr inbounds %struct.simple_bitmap_def* %call2.i, i64 0, i32 3, i64 %idxprom3.i28
+  %20 = load i64* %arrayidx4.i30, align 8, !tbaa !4
+  %or.i31 = or i64 %shl.i26, %20
+  store i64 %or.i31, i64* %arrayidx4.i30, align 8, !tbaa !4
+  br label %while.body.i
+
+while.end:                                        ; preds = %flow_dfs_compute_reverse_execute.exit, %for.cond10.i
+  call void @free(i8* %call.i) #6
+  %21 = bitcast %struct.simple_bitmap_def* %call2.i to i8*
+  call void @free(i8* %21) #6
+  ret void
+}

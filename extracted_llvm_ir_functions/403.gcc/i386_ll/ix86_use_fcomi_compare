@@ -1,0 +1,19 @@
+define i32 @ix86_use_fcomi_compare(i32 %code) #1 {
+entry:
+  %call = tail call i32 @swap_condition(i32 %code) #9
+  %call1 = tail call fastcc i32 @ix86_fp_comparison_cost(i32 %code) #10
+  %call2 = tail call fastcc i32 @ix86_fp_comparison_fcomi_cost(i32 %code) #10
+  %cmp = icmp eq i32 %call1, %call2
+  br i1 %cmp, label %lor.end, label %lor.rhs
+
+lor.rhs:                                          ; preds = %entry
+  %call3 = tail call fastcc i32 @ix86_fp_comparison_cost(i32 %call) #10
+  %call4 = tail call fastcc i32 @ix86_fp_comparison_fcomi_cost(i32 %call) #10
+  %cmp5 = icmp eq i32 %call3, %call4
+  br label %lor.end
+
+lor.end:                                          ; preds = %lor.rhs, %entry
+  %0 = phi i1 [ true, %entry ], [ %cmp5, %lor.rhs ]
+  %lor.ext = zext i1 %0 to i32
+  ret i32 %lor.ext
+}

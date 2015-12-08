@@ -1,0 +1,50 @@
+define internal fastcc void @destringize_and_run(%struct.cpp_reader* %pfile, %struct.cpp_string* nocapture %in) #0 {
+entry:
+  %len = getelementptr inbounds %struct.cpp_string* %in, i64 0, i32 0
+  %0 = load i32* %len, align 4, !tbaa !2
+  %add = add i32 %0, 1
+  %conv = zext i32 %add to i64
+  %1 = alloca i8, i64 %conv, align 1
+  %text = getelementptr inbounds %struct.cpp_string* %in, i64 0, i32 1
+  %2 = load i8** %text, align 8, !tbaa !3
+  %idx.ext = zext i32 %0 to i64
+  %add.ptr = getelementptr inbounds i8* %2, i64 %idx.ext
+  %cmp26 = icmp eq i32 %0, 0
+  br i1 %cmp26, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %if.end
+  %src.028 = phi i8* [ %incdec.ptr13, %if.end ], [ %2, %entry ]
+  %dest.027 = phi i8* [ %incdec.ptr14, %if.end ], [ %1, %entry ]
+  %3 = load i8* %src.028, align 1, !tbaa !0
+  %cmp4 = icmp eq i8 %3, 92
+  br i1 %cmp4, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %for.body
+  %arrayidx = getelementptr inbounds i8* %src.028, i64 1
+  %4 = load i8* %arrayidx, align 1, !tbaa !0
+  switch i8 %4, label %if.end [
+    i8 92, label %if.then
+    i8 34, label %if.then
+  ]
+
+if.then:                                          ; preds = %land.lhs.true, %land.lhs.true
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %if.then, %for.body
+  %5 = phi i8 [ %4, %if.then ], [ %3, %for.body ], [ 92, %land.lhs.true ]
+  %src.1 = phi i8* [ %arrayidx, %if.then ], [ %src.028, %for.body ], [ %src.028, %land.lhs.true ]
+  %incdec.ptr13 = getelementptr inbounds i8* %src.1, i64 1
+  %incdec.ptr14 = getelementptr inbounds i8* %dest.027, i64 1
+  store i8 %5, i8* %dest.027, align 1, !tbaa !0
+  %cmp = icmp ult i8* %incdec.ptr13, %add.ptr
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %if.end, %entry
+  %dest.0.lcssa = phi i8* [ %1, %entry ], [ %incdec.ptr14, %if.end ]
+  store i8 0, i8* %dest.0.lcssa, align 1, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint i8* %dest.0.lcssa to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  call fastcc void @run_directive(%struct.cpp_reader* %pfile, i32 11, i8* %1, i64 %sub.ptr.sub) #9
+  ret void
+}

@@ -1,0 +1,59 @@
+define %struct.rtx_def* @gen_sub3_insn(%struct.rtx_def* %r0, %struct.rtx_def* %r1, %struct.rtx_def* %c) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %r0 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %idxprom53 = zext i32 %bf.clear to i64
+  %1 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 2), align 16, !tbaa !0
+  %insn_code = getelementptr inbounds %struct.optab* %1, i64 0, i32 1, i64 %idxprom53, i32 0
+  %2 = load i32* %insn_code, align 4, !tbaa !6
+  %cmp = icmp eq i32 %2, 1317
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %idxprom1 = sext i32 %2 to i64
+  %operand = getelementptr inbounds [0 x %struct.insn_data]* @insn_data, i64 0, i64 %idxprom1, i32 3
+  %3 = load %struct.insn_operand_data** %operand, align 8, !tbaa !0
+  %predicate = getelementptr inbounds %struct.insn_operand_data* %3, i64 0, i32 0
+  %4 = load i32 (%struct.rtx_def*, i32)** %predicate, align 8, !tbaa !0
+  %mode = getelementptr inbounds %struct.insn_operand_data* %3, i64 0, i32 2
+  %5 = bitcast [2 x i8]* %mode to i16*
+  %bf.load8 = load i16* %5, align 8
+  %bf.cast = zext i16 %bf.load8 to i32
+  %call = tail call i32 %4(%struct.rtx_def* %r0, i32 %bf.cast) #8
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %return, label %lor.lhs.false9
+
+lor.lhs.false9:                                   ; preds = %lor.lhs.false
+  %predicate14 = getelementptr inbounds %struct.insn_operand_data* %3, i64 1, i32 0
+  %6 = load i32 (%struct.rtx_def*, i32)** %predicate14, align 8, !tbaa !0
+  %mode19 = getelementptr inbounds %struct.insn_operand_data* %3, i64 1, i32 2
+  %7 = bitcast [2 x i8]* %mode19 to i16*
+  %bf.load20 = load i16* %7, align 8
+  %bf.cast21 = zext i16 %bf.load20 to i32
+  %call22 = tail call i32 %6(%struct.rtx_def* %r1, i32 %bf.cast21) #8
+  %tobool23 = icmp eq i32 %call22, 0
+  br i1 %tobool23, label %return, label %lor.lhs.false24
+
+lor.lhs.false24:                                  ; preds = %lor.lhs.false9
+  %predicate29 = getelementptr inbounds %struct.insn_operand_data* %3, i64 2, i32 0
+  %8 = load i32 (%struct.rtx_def*, i32)** %predicate29, align 8, !tbaa !0
+  %mode34 = getelementptr inbounds %struct.insn_operand_data* %3, i64 2, i32 2
+  %9 = bitcast [2 x i8]* %mode34 to i16*
+  %bf.load35 = load i16* %9, align 8
+  %bf.cast36 = zext i16 %bf.load35 to i32
+  %call37 = tail call i32 %8(%struct.rtx_def* %c, i32 %bf.cast36) #8
+  %tobool38 = icmp eq i32 %call37, 0
+  br i1 %tobool38, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false24
+  %genfun = getelementptr inbounds [0 x %struct.insn_data]* @insn_data, i64 0, i64 %idxprom1, i32 2
+  %10 = load %struct.rtx_def* (%struct.rtx_def*, ...)** %genfun, align 8, !tbaa !0
+  %call41 = tail call %struct.rtx_def* (%struct.rtx_def*, ...)* %10(%struct.rtx_def* %r0, %struct.rtx_def* %r1, %struct.rtx_def* %c) #8
+  br label %return
+
+return:                                           ; preds = %entry, %lor.lhs.false, %lor.lhs.false9, %lor.lhs.false24, %if.end
+  %retval.0 = phi %struct.rtx_def* [ %call41, %if.end ], [ null, %lor.lhs.false24 ], [ null, %lor.lhs.false9 ], [ null, %lor.lhs.false ], [ null, %entry ]
+  ret %struct.rtx_def* %retval.0
+}

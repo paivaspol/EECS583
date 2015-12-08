@@ -1,0 +1,72 @@
+define %union.tree_node* @c_start_case(%union.tree_node* %exp) #0 {
+entry:
+  %0 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %0, %exp
+  br i1 %cmp, label %if.end43, label %if.then
+
+if.then:                                          ; preds = %entry
+  %type1 = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 0, i32 1
+  %1 = load %union.tree_node** %type1, align 8, !tbaa !0
+  %code3 = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %code3 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %if.then29 [
+    i32 6, label %if.else
+    i32 10, label %if.else
+    i32 11, label %if.else
+    i32 12, label %if.else
+    i32 0, label %if.else
+  ]
+
+if.then29:                                        ; preds = %if.then
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([31 x i8]* @.str146, i64 0, i64 0)) #8
+  %3 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 11), align 8, !tbaa !0
+  br label %if.end43
+
+if.else:                                          ; preds = %if.then, %if.then, %if.then, %if.then, %if.then
+  %4 = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 15
+  %5 = load %union.tree_node** %4, align 8, !tbaa !0
+  %6 = load i32* @warn_traditional, align 4, !tbaa !3
+  %tobool = icmp eq i32 %6, 0
+  %7 = load i32* @in_system_header, align 4, !tbaa !3
+  %tobool34 = icmp ne i32 %7, 0
+  %or.cond = or i1 %tobool, %tobool34
+  br i1 %or.cond, label %if.end, label %land.lhs.true35
+
+land.lhs.true35:                                  ; preds = %if.else
+  %8 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 7), align 8, !tbaa !0
+  %cmp36 = icmp eq %union.tree_node* %5, %8
+  %9 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 8), align 8, !tbaa !0
+  %cmp38 = icmp eq %union.tree_node* %5, %9
+  %or.cond63 = or i1 %cmp36, %cmp38
+  br i1 %or.cond63, label %if.then39, label %if.end
+
+if.then39:                                        ; preds = %land.lhs.true35
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([57 x i8]* @.str147, i64 0, i64 0)) #8
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true35, %if.else, %if.then39
+  %call = tail call %union.tree_node* @default_conversion(%union.tree_node* %exp) #7
+  br label %if.end43
+
+if.end43:                                         ; preds = %entry, %if.then29, %if.end
+  %orig_type.0 = phi %union.tree_node* [ %1, %if.end ], [ %1, %if.then29 ], [ %exp, %entry ]
+  %exp.addr.0 = phi %union.tree_node* [ %call, %if.end ], [ %3, %if.then29 ], [ %exp, %entry ]
+  %call44 = tail call noalias i8* @xmalloc(i64 24) #8
+  %10 = bitcast i8* %call44 to %struct.c_switch*
+  %call45 = tail call %union.tree_node* (i32, ...)* @build_stmt(i32 162, %union.tree_node* %exp.addr.0, %union.tree_node* null, %union.tree_node* %orig_type.0) #8
+  %switch_stmt = bitcast i8* %call44 to %union.tree_node**
+  store %union.tree_node* %call45, %union.tree_node** %switch_stmt, align 8, !tbaa !0
+  %call46 = tail call %struct.splay_tree_s* @splay_tree_new(i32 (i64, i64)* @case_compare, void (i64)* null, void (i64)* null) #8
+  %cases = getelementptr inbounds i8* %call44, i64 8
+  %11 = bitcast i8* %cases to %struct.splay_tree_s**
+  store %struct.splay_tree_s* %call46, %struct.splay_tree_s** %11, align 8, !tbaa !0
+  %12 = load %struct.c_switch** @switch_stack, align 8, !tbaa !0
+  %next = getelementptr inbounds i8* %call44, i64 16
+  %13 = bitcast i8* %next to %struct.c_switch**
+  store %struct.c_switch* %12, %struct.c_switch** %13, align 8, !tbaa !0
+  store %struct.c_switch* %10, %struct.c_switch** @switch_stack, align 8, !tbaa !0
+  %call48 = tail call %union.tree_node* @add_stmt(%union.tree_node* %call45) #8
+  ret %union.tree_node* %call48
+}

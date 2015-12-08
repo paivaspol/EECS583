@@ -1,0 +1,107 @@
+define void @ix86_expand_unary_operator(i32 %code, i32 %mode, %struct.rtx_def** nocapture %operands) #1 {
+entry:
+  %0 = load %struct.rtx_def** %operands, align 8, !tbaa !4
+  %arrayidx1 = getelementptr inbounds %struct.rtx_def** %operands, i64 1
+  %1 = load %struct.rtx_def** %arrayidx1, align 8, !tbaa !4
+  %2 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  br i1 %cmp, label %if.then, label %land.lhs.true
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %0, %struct.rtx_def* %1) #9
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.else, label %if.end11
+
+if.else:                                          ; preds = %if.then
+  %call3 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %mode) #9
+  br label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.else, %entry
+  %dst.0.ph = phi %struct.rtx_def* [ %call3, %if.else ], [ %0, %entry ]
+  %3 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load6 = load i32* %3, align 8
+  %bf.clear7 = and i32 %bf.load6, 65535
+  %cmp8 = icmp eq i32 %bf.clear7, 66
+  br i1 %cmp8, label %if.then9, label %if.end11
+
+if.then9:                                         ; preds = %land.lhs.true
+  %call10 = tail call %struct.rtx_def* @force_reg(i32 %mode, %struct.rtx_def* %1) #9
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.then, %if.then9, %land.lhs.true
+  %dst.073 = phi %struct.rtx_def* [ %dst.0.ph, %if.then9 ], [ %dst.0.ph, %land.lhs.true ], [ %0, %if.then ]
+  %src.0 = phi %struct.rtx_def* [ %call10, %if.then9 ], [ %1, %land.lhs.true ], [ %1, %if.then ]
+  %4 = load i32* @optimize, align 4, !tbaa !0
+  %tobool12 = icmp eq i32 %4, 0
+  %5 = load i32* @no_new_pseudos, align 4, !tbaa !0
+  %tobool14 = icmp ne i32 %5, 0
+  %or.cond = or i1 %tobool12, %tobool14
+  br i1 %or.cond, label %if.end28, label %if.then15
+
+if.then15:                                        ; preds = %if.end11
+  %6 = bitcast %struct.rtx_def* %dst.073 to i32*
+  %bf.load16 = load i32* %6, align 8
+  %bf.clear17 = and i32 %bf.load16, 65535
+  %cmp18 = icmp eq i32 %bf.clear17, 66
+  br i1 %cmp18, label %if.then19, label %if.end21
+
+if.then19:                                        ; preds = %if.then15
+  %call20 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %mode) #9
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then15, %if.then19
+  %dst.1 = phi %struct.rtx_def* [ %call20, %if.then19 ], [ %dst.073, %if.then15 ]
+  %7 = bitcast %struct.rtx_def* %src.0 to i32*
+  %bf.load22 = load i32* %7, align 8
+  %bf.clear23 = and i32 %bf.load22, 65535
+  %cmp24 = icmp eq i32 %bf.clear23, 66
+  br i1 %cmp24, label %if.then25, label %if.end28
+
+if.then25:                                        ; preds = %if.end21
+  %call26 = tail call %struct.rtx_def* @force_reg(i32 %mode, %struct.rtx_def* %src.0) #9
+  br label %if.end28
+
+if.end28:                                         ; preds = %if.end21, %if.then25, %if.end11
+  %dst.2 = phi %struct.rtx_def* [ %dst.073, %if.end11 ], [ %dst.1, %if.then25 ], [ %dst.1, %if.end21 ]
+  %src.1 = phi %struct.rtx_def* [ %src.0, %if.end11 ], [ %call26, %if.then25 ], [ %src.0, %if.end21 ]
+  %call29 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 %code, i32 %mode, %struct.rtx_def* %src.1) #9
+  %call30 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %dst.2, %struct.rtx_def* %call29) #9
+  %8 = load i32* @reload_in_progress, align 4, !tbaa !0
+  %tobool31 = icmp ne i32 %8, 0
+  %cmp32 = icmp eq i32 %code, 86
+  %or.cond71 = or i1 %tobool31, %cmp32
+  br i1 %or.cond71, label %if.then33, label %if.else38
+
+if.then33:                                        ; preds = %if.end28
+  br i1 %cmp32, label %if.end36, label %if.then35
+
+if.then35:                                        ; preds = %if.then33
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 7037, i8* getelementptr inbounds ([27 x i8]* @__FUNCTION__.ix86_expand_unary_operator, i64 0, i64 0)) #11
+  unreachable
+
+if.end36:                                         ; preds = %if.then33
+  %call37 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call30) #9
+  br label %if.end44
+
+if.else38:                                        ; preds = %if.end28
+  %call39 = tail call %struct.rtx_def* @gen_rtx_REG(i32 52, i32 17) #9
+  %call40 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 49, i32 0, %struct.rtx_def* %call39) #9
+  %call41 = tail call %struct.rtvec_def* (i32, ...)* @gen_rtvec(i32 2, %struct.rtx_def* %call30, %struct.rtx_def* %call40) #9
+  %call42 = tail call %struct.rtx_def* @gen_rtx_fmt_E(i32 39, i32 0, %struct.rtvec_def* %call41) #9
+  %call43 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call42) #9
+  br label %if.end44
+
+if.end44:                                         ; preds = %if.else38, %if.end36
+  %9 = load %struct.rtx_def** %operands, align 8, !tbaa !4
+  %cmp46 = icmp eq %struct.rtx_def* %dst.2, %9
+  br i1 %cmp46, label %if.end50, label %if.then47
+
+if.then47:                                        ; preds = %if.end44
+  %call49 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %9, %struct.rtx_def* %dst.2) #9
+  br label %if.end50
+
+if.end50:                                         ; preds = %if.end44, %if.then47
+  ret void
+}

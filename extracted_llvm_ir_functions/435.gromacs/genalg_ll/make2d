@@ -1,0 +1,21 @@
+define internal fastcc float** @make2d(i32 %n, i32 %m) #0 {
+entry:
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 88, i32 %n, i32 8) #4
+  %0 = bitcast i8* %call to float**
+  %cmp6 = icmp sgt i32 %n, 0
+  br i1 %cmp6, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %call1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str37, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 90, i32 %m, i32 4) #4
+  %1 = bitcast i8* %call1 to float*
+  %arrayidx = getelementptr inbounds float** %0, i64 %indvars.iv
+  store float* %1, float** %arrayidx, align 8, !tbaa !5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret float** %0
+}

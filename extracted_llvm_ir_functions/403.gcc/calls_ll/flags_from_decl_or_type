@@ -1,0 +1,66 @@
+define internal fastcc i32 @flags_from_decl_or_type(%union.tree_node* nocapture %exp) #2 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %idxprom100 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom100
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %1, 100
+  br i1 %cmp, label %if.end34, label %if.end43
+
+if.end34:                                         ; preds = %entry
+  %type3 = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 0, i32 1
+  %2 = load %union.tree_node** %type3, align 8, !tbaa !0
+  %malloc_flag = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 5
+  %3 = bitcast [8 x i8]* %malloc_flag to i64*
+  %bf.load13 = load i64* %3, align 8
+  %bf.cast = and i64 %bf.load13, 134217728
+  %tobool = icmp eq i64 %bf.cast, 0
+  %flags.0 = select i1 %tobool, i32 0, i32 4
+  %bf.cast30 = and i64 %bf.load13, 2147483648
+  %tobool31 = icmp eq i64 %bf.cast30, 0
+  %or33 = or i32 %flags.0, 4608
+  %flags.0.or33 = select i1 %tobool31, i32 %flags.0, i32 %or33
+  %bf.clear38 = lshr i32 %bf.load, 13
+  %4 = and i32 %bf.clear38, 16
+  %5 = or i32 %flags.0.or33, %4
+  %code68.phi.trans.insert = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 2
+  %.phi.trans.insert = bitcast [4 x i8]* %code68.phi.trans.insert to i32*
+  %bf.load69.pre = load i32* %.phi.trans.insert, align 8
+  br label %if.end43
+
+if.end43:                                         ; preds = %if.end34, %entry
+  %bf.load69 = phi i32 [ %bf.load, %entry ], [ %bf.load69.pre, %if.end34 ]
+  %flags.2 = phi i32 [ 0, %entry ], [ %5, %if.end34 ]
+  %type.0 = phi %union.tree_node* [ %exp, %entry ], [ %2, %if.end34 ]
+  %6 = and i32 %bf.load, 6144
+  %7 = icmp eq i32 %6, 4096
+  %or56 = or i32 %flags.2, 4097
+  %flags.3 = select i1 %7, i32 %or56, i32 %flags.2
+  %bf.clear53 = lshr i32 %bf.load, 10
+  %8 = and i32 %bf.clear53, 2
+  %9 = or i32 %flags.3, %8
+  %bf.clear70 = and i32 %bf.load69, 255
+  %cmp71 = icmp eq i32 %bf.clear70, 23
+  br i1 %cmp71, label %land.lhs.true73, label %if.end81
+
+land.lhs.true73:                                  ; preds = %if.end43
+  %type74 = bitcast %union.tree_node* %type.0 to %struct.tree_type*
+  %no_force_blk_flag = getelementptr inbounds %struct.tree_type* %type74, i64 0, i32 6
+  %10 = bitcast [4 x i8]* %no_force_blk_flag to i32*
+  %bf.load75 = load i32* %10, align 4
+  %bf.clear77 = and i32 %bf.load75, 131072
+  %tobool78 = icmp eq i32 %bf.clear77, 0
+  br i1 %tobool78, label %if.end81, label %if.then79
+
+if.then79:                                        ; preds = %land.lhs.true73
+  %or80 = and i32 %9, -5634
+  %and = or i32 %or80, 1024
+  br label %if.end81
+
+if.end81:                                         ; preds = %land.lhs.true73, %if.then79, %if.end43
+  %flags.5 = phi i32 [ %and, %if.then79 ], [ %9, %land.lhs.true73 ], [ %9, %if.end43 ]
+  ret i32 %flags.5
+}

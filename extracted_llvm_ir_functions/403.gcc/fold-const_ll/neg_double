@@ -1,0 +1,25 @@
+define i32 @neg_double(i64 %l1, i64 %h1, i64* nocapture %lv, i64* nocapture %hv) #0 {
+entry:
+  %cmp = icmp eq i64 %l1, 0
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  store i64 0, i64* %lv, align 8, !tbaa !0
+  %sub = sub nsw i64 0, %h1
+  store i64 %sub, i64* %hv, align 8, !tbaa !0
+  %and = and i64 %sub, %h1
+  %and.lobit = lshr i64 %and, 63
+  %0 = trunc i64 %and.lobit to i32
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %sub2 = sub i64 0, %l1
+  store i64 %sub2, i64* %lv, align 8, !tbaa !0
+  %neg = xor i64 %h1, -1
+  store i64 %neg, i64* %hv, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi i32 [ %0, %if.then ], [ 0, %if.else ]
+  ret i32 %retval.0
+}

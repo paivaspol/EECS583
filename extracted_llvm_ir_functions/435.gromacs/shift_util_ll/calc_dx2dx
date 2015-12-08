@@ -1,0 +1,47 @@
+define float @calc_dx2dx(float* nocapture %xi, float* nocapture %xj, float* nocapture %box, float* nocapture %dx) #0 {
+entry:
+  br label %for.body
+
+for.body:                                         ; preds = %if.end21, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %if.end21 ]
+  %dx2.045 = phi float [ 0.000000e+00, %entry ], [ %add25, %if.end21 ]
+  %arrayidx = getelementptr inbounds float* %xj, i64 %indvars.iv
+  %0 = load float* %arrayidx, align 4, !tbaa !0
+  %arrayidx2 = getelementptr inbounds float* %xi, i64 %indvars.iv
+  %1 = load float* %arrayidx2, align 4, !tbaa !0
+  %sub = fsub float %0, %1
+  %conv = fpext float %sub to double
+  %arrayidx4 = getelementptr inbounds float* %box, i64 %indvars.iv
+  %2 = load float* %arrayidx4, align 4, !tbaa !0
+  %conv5 = fpext float %2 to double
+  %mul = fmul double %conv5, -5.000000e-01
+  %cmp6 = fcmp olt double %conv, %mul
+  br i1 %cmp6, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.body
+  %add = fadd float %sub, %2
+  br label %if.end21
+
+if.else:                                          ; preds = %for.body
+  %mul14 = fmul double %conv5, 5.000000e-01
+  %cmp15 = fcmp ult double %conv, %mul14
+  br i1 %cmp15, label %if.end21, label %if.then17
+
+if.then17:                                        ; preds = %if.else
+  %sub20 = fsub float %sub, %2
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.else, %if.then17, %if.then
+  %ddx.0 = phi float [ %add, %if.then ], [ %sub20, %if.then17 ], [ %sub, %if.else ]
+  %arrayidx23 = getelementptr inbounds float* %dx, i64 %indvars.iv
+  store float %ddx.0, float* %arrayidx23, align 4, !tbaa !0
+  %mul24 = fmul float %ddx.0, %ddx.0
+  %add25 = fadd float %dx2.045, %mul24
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.end21
+  ret float %add25
+}

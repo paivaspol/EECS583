@@ -1,0 +1,61 @@
+define %struct.rtx_def* @ix86_libcall_value(i32 %mode) #1 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  switch i32 %mode, label %sw.default [
+    i32 15, label %sw.bb
+    i32 21, label %sw.bb
+    i32 16, label %sw.bb
+    i32 22, label %sw.bb
+    i32 18, label %sw.bb1
+    i32 24, label %sw.bb1
+  ]
+
+sw.bb:                                            ; preds = %if.then, %if.then, %if.then, %if.then
+  %call = tail call %struct.rtx_def* @gen_rtx_REG(i32 %mode, i32 21) #9
+  br label %return
+
+sw.bb1:                                           ; preds = %if.then, %if.then
+  %call2 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %mode, i32 8) #9
+  br label %return
+
+sw.default:                                       ; preds = %if.then
+  %call3 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %mode, i32 0) #9
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom
+  %1 = load i32* %arrayidx, align 4, !tbaa !9
+  %cmp = icmp eq i32 %1, 2
+  br i1 %cmp, label %land.lhs.true, label %cond.false
+
+land.lhs.true:                                    ; preds = %if.else
+  %and4 = and i32 %0, 32
+  %tobool5 = icmp eq i32 %and4, 0
+  br i1 %tobool5, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %land.lhs.true, %if.else
+  %cmp6 = icmp eq i32 %mode, 6
+  %cmp9 = icmp eq i32 %1, 7
+  %or.cond = or i1 %cmp6, %cmp9
+  br i1 %or.cond, label %cond.end, label %lor.rhs10
+
+lor.rhs10:                                        ; preds = %cond.false
+  %cmp13 = icmp eq i32 %1, 8
+  %phitmp = select i1 %cmp13, i32 21, i32 0
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %lor.rhs10, %land.lhs.true
+  %cond15 = phi i32 [ 8, %land.lhs.true ], [ 21, %cond.false ], [ %phitmp, %lor.rhs10 ]
+  %call16 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %mode, i32 %cond15) #9
+  br label %return
+
+return:                                           ; preds = %cond.end, %sw.default, %sw.bb1, %sw.bb
+  %retval.0 = phi %struct.rtx_def* [ %call3, %sw.default ], [ %call2, %sw.bb1 ], [ %call, %sw.bb ], [ %call16, %cond.end ]
+  ret %struct.rtx_def* %retval.0
+}

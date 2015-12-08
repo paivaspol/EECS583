@@ -1,0 +1,82 @@
+define void @cselib_init() #1 {
+entry:
+  %0 = load %struct.rtx_def** @callmem, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool, label %if.then, label %if.end34
+
+if.then:                                          ; preds = %entry
+  tail call void @gcc_obstack_init(%struct.obstack* @cselib_obstack) #10
+  %1 = load i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 4), align 8, !tbaa !0
+  %2 = load i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint i8* %1 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %2 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp = icmp slt i64 %sub.ptr.sub, 0
+  br i1 %cmp, label %if.then2, label %if.end
+
+if.then2:                                         ; preds = %if.then
+  tail call void @_obstack_newchunk(%struct.obstack* @cselib_obstack, i32 0) #10
+  %.pre = load i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then2, %if.then
+  %3 = phi i8* [ %.pre, %if.then2 ], [ %2, %if.then ]
+  %4 = load i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 2), align 8, !tbaa !0
+  %cmp5 = icmp eq i8* %3, %4
+  br i1 %cmp5, label %if.then7, label %if.end8
+
+if.then7:                                         ; preds = %if.end
+  %bf.load = load i8* getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 10), align 8
+  %bf.set = or i8 %bf.load, 2
+  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 10), align 8
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.end, %if.then7
+  %sub.ptr.lhs.cast10 = ptrtoint i8* %3 to i64
+  %5 = load i32* getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 6), align 8, !tbaa !3
+  %conv12 = sext i32 %5 to i64
+  %add = add nsw i64 %conv12, %sub.ptr.lhs.cast10
+  %neg = xor i32 %5, -1
+  %conv14 = sext i32 %neg to i64
+  %and = and i64 %add, %conv14
+  %add.ptr15 = getelementptr inbounds i8* null, i64 %and
+  store i8* %add.ptr15, i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %6 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 1), align 8, !tbaa !0
+  %sub.ptr.lhs.cast18 = ptrtoint i8* %add.ptr15 to i64
+  %sub.ptr.rhs.cast19 = ptrtoint %struct._obstack_chunk* %6 to i64
+  %sub.ptr.sub20 = sub i64 %sub.ptr.lhs.cast18, %sub.ptr.rhs.cast19
+  %7 = load i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 4), align 8, !tbaa !0
+  %sub.ptr.lhs.cast23 = ptrtoint i8* %7 to i64
+  %sub.ptr.sub25 = sub i64 %sub.ptr.lhs.cast23, %sub.ptr.rhs.cast19
+  %cmp26 = icmp sgt i64 %sub.ptr.sub20, %sub.ptr.sub25
+  br i1 %cmp26, label %if.then28, label %if.end31
+
+if.then28:                                        ; preds = %if.end8
+  store i8* %7, i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end31
+
+if.end31:                                         ; preds = %if.then28, %if.end8
+  %8 = phi i8* [ %7, %if.then28 ], [ %add.ptr15, %if.end8 ]
+  store i8* %8, i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 2), align 8, !tbaa !0
+  store i8* %4, i8** @cselib_startobj, align 8, !tbaa !0
+  %9 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
+  %call = tail call %struct.rtx_def* @gen_rtx_MEM(i32 51, %struct.rtx_def* %9) #10
+  store %struct.rtx_def* %call, %struct.rtx_def** @callmem, align 8, !tbaa !0
+  tail call void @ggc_add_rtx_root(%struct.rtx_def** @callmem, i32 1) #10
+  br label %if.end34
+
+if.end34:                                         ; preds = %entry, %if.end31
+  %call35 = tail call i32 @max_reg_num() #10
+  store i32 %call35, i32* @cselib_nregs, align 4, !tbaa !3
+  %conv36 = zext i32 %call35 to i64
+  %call37 = tail call %struct.varray_head_tag* @varray_init(i64 %conv36, i64 8, i8* getelementptr inbounds ([11 x i8]* @.str1, i64 0, i64 0)) #10
+  store %struct.varray_head_tag* %call37, %struct.varray_head_tag** @reg_values, align 8, !tbaa !0
+  %10 = load i32* @cselib_nregs, align 4, !tbaa !3
+  %conv38 = zext i32 %10 to i64
+  %call39 = tail call %struct.varray_head_tag* @varray_init(i64 %conv38, i64 4, i8* getelementptr inbounds ([10 x i8]* @.str2, i64 0, i64 0)) #10
+  store %struct.varray_head_tag* %call39, %struct.varray_head_tag** @used_regs, align 8, !tbaa !0
+  %call40 = tail call %struct.htab* @htab_create(i64 31, i32 (i8*)* @get_value_hash, i32 (i8*, i8*)* @entry_and_rtx_equal_p, void (i8*)* null) #10
+  store %struct.htab* %call40, %struct.htab** @hash_table, align 8, !tbaa !0
+  tail call fastcc void @clear_table(i32 1) #7
+  ret void
+}

@@ -1,0 +1,40 @@
+define void @store_by_pieces(%struct.rtx_def* %to, i64 %len, %struct.rtx_def* (i8*, i64, i32)* %constfun, i8* %constfundata, i32 %align) #0 {
+entry:
+  %data = alloca %struct.store_by_pieces, align 8
+  %0 = bitcast %struct.store_by_pieces* %data to i8*
+  call void @llvm.lifetime.start(i64 64, i8* %0) #5
+  %call = call fastcc i64 @move_by_pieces_ninsns(i64 %len) #10
+  %1 = load i32* @optimize_size, align 4, !tbaa !3
+  %tobool = icmp eq i32 %1, 0
+  br i1 %tobool, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %2 = load %struct.processor_costs** @ix86_cost, align 8, !tbaa !0
+  %move_ratio = getelementptr inbounds %struct.processor_costs* %2, i64 0, i32 10
+  %3 = load i32* %move_ratio, align 4, !tbaa !3
+  %phitmp = zext i32 %3 to i64
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi i64 [ %phitmp, %cond.false ], [ 3, %entry ]
+  %cmp = icmp ult i64 %call, %cond
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %cond.end
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 2400, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.store_by_pieces, i64 0, i64 0)) #9
+  unreachable
+
+if.end:                                           ; preds = %cond.end
+  %call2 = call %struct.rtx_def* @protect_from_queue(%struct.rtx_def* %to, i32 1) #10
+  %constfun3 = getelementptr inbounds %struct.store_by_pieces* %data, i64 0, i32 6
+  store %struct.rtx_def* (i8*, i64, i32)* %constfun, %struct.rtx_def* (i8*, i64, i32)** %constfun3, align 8, !tbaa !0
+  %constfundata4 = getelementptr inbounds %struct.store_by_pieces* %data, i64 0, i32 7
+  store i8* %constfundata, i8** %constfundata4, align 8, !tbaa !0
+  %len5 = getelementptr inbounds %struct.store_by_pieces* %data, i64 0, i32 4
+  store i64 %len, i64* %len5, align 8, !tbaa !7
+  %to6 = getelementptr inbounds %struct.store_by_pieces* %data, i64 0, i32 0
+  store %struct.rtx_def* %call2, %struct.rtx_def** %to6, align 8, !tbaa !0
+  call fastcc void @store_by_pieces_1(%struct.store_by_pieces* %data) #10
+  call void @llvm.lifetime.end(i64 64, i8* %0) #5
+  ret void
+}

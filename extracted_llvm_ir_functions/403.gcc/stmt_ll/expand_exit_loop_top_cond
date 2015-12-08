@@ -1,0 +1,14 @@
+define i32 @expand_exit_loop_top_cond(%struct.nesting* %whichloop, %union.tree_node* %cond) #0 {
+entry:
+  %call = tail call i32 @expand_exit_loop_if_false(%struct.nesting* %whichloop, %union.tree_node* %cond) #9
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call1 = tail call %struct.rtx_def* @emit_note(i8* null, i32 -92) #7
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0
+}

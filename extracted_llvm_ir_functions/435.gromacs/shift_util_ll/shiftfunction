@@ -1,0 +1,30 @@
+define float @shiftfunction(float %r1, float %rc, float %R) #3 {
+entry:
+  %cmp = fcmp ugt float %R, %r1
+  br i1 %cmp, label %if.else, label %return
+
+if.else:                                          ; preds = %entry
+  %cmp1 = fcmp ult float %R, %rc
+  br i1 %cmp1, label %if.end4, label %if.then2
+
+if.then2:                                         ; preds = %if.else
+  %mul = fmul float %R, %R
+  %conv3 = fdiv float -1.000000e+00, %mul
+  br label %return
+
+if.end4:                                          ; preds = %if.else
+  %sub = fsub float %R, %r1
+  %0 = load float* @A, align 4, !tbaa !0
+  %mul5 = fmul float %sub, %0
+  %mul6 = fmul float %sub, %mul5
+  %1 = load float* @B, align 4, !tbaa !0
+  %mul7 = fmul float %sub, %1
+  %mul8 = fmul float %sub, %mul7
+  %mul9 = fmul float %sub, %mul8
+  %add = fadd float %mul6, %mul9
+  br label %return
+
+return:                                           ; preds = %entry, %if.end4, %if.then2
+  %retval.0 = phi float [ %conv3, %if.then2 ], [ %add, %if.end4 ], [ 0.000000e+00, %entry ]
+  ret float %retval.0
+}

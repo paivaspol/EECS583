@@ -1,0 +1,31 @@
+define void @free_symtab(%struct.t_symtab* nocapture %symtab) #0 {
+entry:
+  %symbuf1 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 1
+  %0 = load %struct.symbuf** %symbuf1, align 8, !tbaa !0
+  %cmp16 = icmp eq %struct.symbuf* %0, null
+  br i1 %cmp16, label %while.end, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %entry
+  %nr = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 0
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %symbuf.017 = phi %struct.symbuf* [ %0, %while.body.lr.ph ], [ %3, %while.body ]
+  %bufsize = getelementptr inbounds %struct.symbuf* %symbuf.017, i64 0, i32 0
+  %1 = load i32* %bufsize, align 4, !tbaa !3
+  %2 = load i32* %nr, align 4, !tbaa !3
+  %cmp2 = icmp slt i32 %1, %2
+  %. = select i1 %cmp2, i32 %1, i32 %2
+  %sub = sub nsw i32 %2, %.
+  store i32 %sub, i32* %nr, align 4, !tbaa !3
+  %next = getelementptr inbounds %struct.symbuf* %symbuf.017, i64 0, i32 2
+  %3 = load %struct.symbuf** %next, align 8, !tbaa !0
+  %4 = bitcast %struct.symbuf* %symbuf.017 to i8*
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str3, i64 0, i64 0), i32 196, i8* %4) #5
+  %cmp = icmp eq %struct.symbuf* %3, null
+  br i1 %cmp, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  store %struct.symbuf* null, %struct.symbuf** %symbuf1, align 8, !tbaa !0
+  ret void
+}

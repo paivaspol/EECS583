@@ -1,0 +1,24 @@
+define void @rrotate_double(i64 %l1, i64 %h1, i64 %count, i32 %prec, i64* nocapture %lv, i64* nocapture %hv) #0 {
+entry:
+  %s1l = alloca i64, align 8
+  %s2l = alloca i64, align 8
+  %s1h = alloca i64, align 8
+  %s2h = alloca i64, align 8
+  %conv = zext i32 %prec to i64
+  %rem = srem i64 %count, %conv
+  %cmp = icmp slt i64 %rem, 0
+  %add = select i1 %cmp, i64 %conv, i64 0
+  %add.rem = add nsw i64 %add, %rem
+  call void @rshift_double(i64 %l1, i64 %h1, i64 %add.rem, i32 %prec, i64* %s1l, i64* %s1h, i32 0) #7
+  %sub = sub nsw i64 %conv, %add.rem
+  call void @lshift_double(i64 %l1, i64 %h1, i64 %sub, i32 %prec, i64* %s2l, i64* %s2h, i32 0) #7
+  %0 = load i64* %s1l, align 8, !tbaa !0
+  %1 = load i64* %s2l, align 8, !tbaa !0
+  %or = or i64 %1, %0
+  store i64 %or, i64* %lv, align 8, !tbaa !0
+  %2 = load i64* %s1h, align 8, !tbaa !0
+  %3 = load i64* %s2h, align 8, !tbaa !0
+  %or4 = or i64 %3, %2
+  store i64 %or4, i64* %hv, align 8, !tbaa !0
+  ret void
+}

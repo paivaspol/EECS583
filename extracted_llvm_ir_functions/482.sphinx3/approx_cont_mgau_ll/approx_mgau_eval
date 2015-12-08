@@ -1,0 +1,118 @@
+define i32 @approx_mgau_eval(%struct.gs_s* %gs, %struct.subvq_t* %svq, %struct.mgau_model_t* %g, %struct.kb_t* nocapture %kb, i32 %s, i32* nocapture %senscr, float* %feat, i32 %best_cid, i32 %svq_beam) #0 {
+entry:
+  %tobool = icmp eq %struct.gs_s* %gs, null
+  br i1 %tobool, label %if.else, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %gs4gs = getelementptr inbounds %struct.kb_t* %kb, i64 0, i32 25
+  %0 = load i32* %gs4gs, align 4, !tbaa !0
+  %tobool1 = icmp eq i32 %0, 0
+  br i1 %tobool1, label %if.else, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %idxprom = sext i32 %s to i64
+  %mgau = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 3
+  %1 = load %struct.mgau_t** %mgau, align 8, !tbaa !3
+  %n_comp = getelementptr inbounds %struct.mgau_t* %1, i64 %idxprom, i32 0
+  %2 = load i32* %n_comp, align 4, !tbaa !0
+  %call = tail call i32 @gs_mgau_shortlist(%struct.gs_s* %gs, i32 %s, i32 %2, float* %feat, i32 %best_cid) #2
+  %mgau_sl2 = getelementptr inbounds %struct.gs_s* %gs, i64 0, i32 9
+  %3 = load i32** %mgau_sl2, align 8, !tbaa !3
+  br label %if.end16
+
+if.else:                                          ; preds = %land.lhs.true, %entry
+  %tobool3 = icmp eq %struct.subvq_t* %svq, null
+  %idxprom12 = sext i32 %s to i64
+  %mgau13 = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 3
+  %4 = load %struct.mgau_t** %mgau13, align 8, !tbaa !3
+  %n_comp15 = getelementptr inbounds %struct.mgau_t* %4, i64 %idxprom12, i32 0
+  %5 = load i32* %n_comp15, align 4, !tbaa !0
+  br i1 %tobool3, label %if.end16, label %if.then4
+
+if.then4:                                         ; preds = %if.else
+  %call9 = tail call i32 @subvq_mgau_shortlist(%struct.subvq_t* %svq, i32 %s, i32 %5, i32 %svq_beam) #2
+  %mgau_sl10 = getelementptr inbounds %struct.subvq_t* %svq, i64 0, i32 9
+  %6 = load i32** %mgau_sl10, align 8, !tbaa !3
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.else, %if.then4, %if.then
+  %ng.0 = phi i32 [ %call, %if.then ], [ %call9, %if.then4 ], [ %5, %if.else ]
+  %mgau_sl.0 = phi i32* [ %3, %if.then ], [ %6, %if.then4 ], [ null, %if.else ]
+  %cmp = icmp eq i32 %ng.0, 0
+  br i1 %cmp, label %if.then17, label %if.end22
+
+if.then17:                                        ; preds = %if.end16
+  %idxprom18 = sext i32 %s to i64
+  %mgau19 = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 3
+  %7 = load %struct.mgau_t** %mgau19, align 8, !tbaa !3
+  %n_comp21 = getelementptr inbounds %struct.mgau_t* %7, i64 %idxprom18, i32 0
+  %8 = load i32* %n_comp21, align 4, !tbaa !0
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.then17, %if.end16
+  %ng.1 = phi i32 [ %8, %if.then17 ], [ %ng.0, %if.end16 ]
+  %mgau_sl.1 = phi i32* [ null, %if.then17 ], [ %mgau_sl.0, %if.end16 ]
+  %tobool23 = icmp ne %struct.subvq_t* %svq, null
+  br i1 %tobool23, label %land.lhs.true24, label %if.else34
+
+land.lhs.true24:                                  ; preds = %if.end22
+  %svq4svq = getelementptr inbounds %struct.kb_t* %kb, i64 0, i32 26
+  %9 = load i32* %svq4svq, align 4, !tbaa !0
+  %tobool25 = icmp eq i32 %9, 0
+  br i1 %tobool25, label %if.else34, label %if.then26
+
+if.then26:                                        ; preds = %land.lhs.true24
+  %idxprom27 = sext i32 %s to i64
+  %mgau28 = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 3
+  %10 = load %struct.mgau_t** %mgau28, align 8, !tbaa !3
+  %n_comp30 = getelementptr inbounds %struct.mgau_t* %10, i64 %idxprom27, i32 0
+  %11 = load i32* %n_comp30, align 4, !tbaa !0
+  %call31 = tail call i32 @subvq_mgau_eval(%struct.mgau_model_t* %g, %struct.subvq_t* %svq, i32 %s, i32 %11, i32* %mgau_sl.1) #2
+  %arrayidx33 = getelementptr inbounds i32* %senscr, i64 %idxprom27
+  store i32 %call31, i32* %arrayidx33, align 4, !tbaa !0
+  br label %if.end38
+
+if.else34:                                        ; preds = %land.lhs.true24, %if.end22
+  %call35 = tail call i32 @mgau_eval(%struct.mgau_model_t* %g, i32 %s, i32* %mgau_sl.1, float* %feat) #2
+  %idxprom36 = sext i32 %s to i64
+  %arrayidx37 = getelementptr inbounds i32* %senscr, i64 %idxprom36
+  store i32 %call35, i32* %arrayidx37, align 4, !tbaa !0
+  br label %if.end38
+
+if.end38:                                         ; preds = %if.else34, %if.then26
+  %12 = phi i32 [ %call35, %if.else34 ], [ %call31, %if.then26 ]
+  %idxprom39 = sext i32 %s to i64
+  %arrayidx40 = getelementptr inbounds i32* %senscr, i64 %idxprom39
+  %cmp41 = icmp sgt i32 %12, -939424097
+  %cmp43 = icmp eq i32* %mgau_sl.1, null
+  %or.cond = or i1 %cmp41, %cmp43
+  br i1 %or.cond, label %if.end68, label %if.else45
+
+if.else45:                                        ; preds = %if.end38
+  %mgau47 = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 3
+  %13 = load %struct.mgau_t** %mgau47, align 8, !tbaa !3
+  %n_comp49 = getelementptr inbounds %struct.mgau_t* %13, i64 %idxprom39, i32 0
+  %14 = load i32* %n_comp49, align 4, !tbaa !0
+  %add = add nsw i32 %14, %ng.1
+  br i1 %tobool23, label %land.lhs.true51, label %if.else62
+
+land.lhs.true51:                                  ; preds = %if.else45
+  %svq4svq52 = getelementptr inbounds %struct.kb_t* %kb, i64 0, i32 26
+  %15 = load i32* %svq4svq52, align 4, !tbaa !0
+  %tobool53 = icmp eq i32 %15, 0
+  br i1 %tobool53, label %if.else62, label %if.then54
+
+if.then54:                                        ; preds = %land.lhs.true51
+  %call59 = tail call i32 @subvq_mgau_eval(%struct.mgau_model_t* %g, %struct.subvq_t* %svq, i32 %s, i32 %14, i32* null) #2
+  store i32 %call59, i32* %arrayidx40, align 4, !tbaa !0
+  br label %if.end68
+
+if.else62:                                        ; preds = %land.lhs.true51, %if.else45
+  %call63 = tail call i32 @mgau_eval(%struct.mgau_model_t* %g, i32 %s, i32* null, float* %feat) #2
+  store i32 %call63, i32* %arrayidx40, align 4, !tbaa !0
+  br label %if.end68
+
+if.end68:                                         ; preds = %if.end38, %if.else62, %if.then54
+  %ng.2 = phi i32 [ %add, %if.then54 ], [ %add, %if.else62 ], [ %ng.1, %if.end38 ]
+  ret i32 %ng.2
+}

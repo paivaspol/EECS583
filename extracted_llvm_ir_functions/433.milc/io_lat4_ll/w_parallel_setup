@@ -1,0 +1,79 @@
+define noalias %struct.su3_matrix* @w_parallel_setup(%struct.gauge_file* nocapture %gf, i64* nocapture %checksum_offset) #0 {
+entry:
+  %myname = alloca [17 x i8], align 16
+  %0 = getelementptr inbounds [17 x i8]* %myname, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* getelementptr inbounds ([17 x i8]* @w_parallel_setup.myname, i64 0, i64 0), i64 17, i32 16, i1 false)
+  %parallel = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 5
+  %1 = load i32* %parallel, align 4, !tbaa !0
+  %tobool = icmp eq i32 %1, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([47 x i8]* @.str116, i64 0, i64 0), i8* %0) #9
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %call1 = call noalias i8* @calloc(i64 16384, i64 144) #9
+  %2 = bitcast i8* %call1 to %struct.su3_matrix*
+  %cmp = icmp eq i8* %call1, null
+  br i1 %cmp, label %if.then2, label %if.end6
+
+if.then2:                                         ; preds = %if.end
+  %3 = load i32* @this_node, align 4, !tbaa !0
+  %call4 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([31 x i8]* @.str102, i64 0, i64 0), i8* %0, i32 %3) #9
+  %4 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call5 = call i32 @fflush(%struct._IO_FILE* %4) #9
+  call void @terminate(i32 1) #9
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.then2, %if.end
+  %fp7 = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 0
+  %5 = load %struct._IO_FILE** %fp7, align 8, !tbaa !3
+  %header = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 1
+  %6 = load i32* @sites_on_node, align 4, !tbaa !0
+  %mul = shl nsw i32 %6, 2
+  %conv = sext i32 %mul to i64
+  %mul8 = mul i64 %conv, 144
+  %7 = load %struct.gauge_header** %header, align 8, !tbaa !3
+  %order = getelementptr inbounds %struct.gauge_header* %7, i64 0, i32 4
+  %8 = load i32* %order, align 4, !tbaa !0
+  %cmp10 = icmp eq i32 %8, 0
+  br i1 %cmp10, label %if.end15, label %if.else
+
+if.else:                                          ; preds = %if.end6
+  %9 = load i32* @volume, align 4, !tbaa !0
+  %conv13 = sext i32 %9 to i64
+  %mul14 = shl nsw i64 %conv13, 2
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.end6, %if.else
+  %coord_list_size.0 = phi i64 [ %mul14, %if.else ], [ 0, %if.end6 ]
+  %header_bytes = getelementptr inbounds %struct.gauge_header* %7, i64 0, i32 3
+  %10 = load i32* %header_bytes, align 4, !tbaa !0
+  %conv17 = sext i32 %10 to i64
+  %add = add nsw i64 %conv17, %coord_list_size.0
+  store i64 %add, i64* %checksum_offset, align 8, !tbaa !7
+  %add18 = add nsw i64 %add, 8
+  %11 = load i32* @this_node, align 4, !tbaa !0
+  %conv19 = sext i32 %11 to i64
+  %mul20 = mul nsw i64 %mul8, %conv19
+  %add21 = add nsw i64 %add18, %mul20
+  %call22 = call i32 @g_seek(%struct._IO_FILE* %5, i64 %add21, i32 0) #9
+  %cmp23 = icmp slt i32 %call22, 0
+  br i1 %cmp23, label %if.then25, label %if.end30
+
+if.then25:                                        ; preds = %if.end15
+  %12 = load i32* @this_node, align 4, !tbaa !0
+  %call27 = call i32* @__errno_location() #10
+  %13 = load i32* %call27, align 4, !tbaa !0
+  %filename = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 2
+  %14 = load i8** %filename, align 8, !tbaa !3
+  %call28 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([48 x i8]* @.str117, i64 0, i64 0), i8* %0, i32 %12, i64 %add21, i32 %13, i8* %14) #9
+  %15 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call29 = call i32 @fflush(%struct._IO_FILE* %15) #9
+  call void @terminate(i32 1) #9
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.then25, %if.end15
+  ret %struct.su3_matrix* %2
+}

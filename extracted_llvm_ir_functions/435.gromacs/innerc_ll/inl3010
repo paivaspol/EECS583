@@ -1,0 +1,212 @@
+define void @inl3010(i32 %nri, i32* nocapture %iinr, i32* nocapture %jindex, i32* nocapture %jjnr, i32* nocapture %shift, float* nocapture %shiftvec, float* nocapture %fshift, i32* nocapture %gid, float* nocapture %pos, float* nocapture %faction, float* nocapture %charge, float %facel, float* nocapture %Vc, float %tabscale, float* nocapture %VFtab, i32* nocapture %nsatoms) #0 {
+entry:
+  %cmp303 = icmp sgt i32 %nri, 0
+  br i1 %cmp303, label %for.body, label %for.end179
+
+for.body:                                         ; preds = %for.end169, %entry
+  %indvars.iv311 = phi i64 [ 0, %entry ], [ %indvars.iv.next312, %for.end169 ]
+  %add5 = mul i64 %indvars.iv311, 12884901888
+  %sext = add i64 %add5, 8589934592
+  %idxprom6 = ashr exact i64 %sext, 32
+  %arrayidx7 = getelementptr inbounds i32* %nsatoms, i64 %idxprom6
+  %0 = load i32* %arrayidx7, align 4, !tbaa !0
+  %arrayidx9 = getelementptr inbounds i32* %shift, i64 %indvars.iv311
+  %1 = load i32* %arrayidx9, align 4, !tbaa !0
+  %mul10 = mul nsw i32 %1, 3
+  %idxprom11 = sext i32 %mul10 to i64
+  %arrayidx12 = getelementptr inbounds float* %shiftvec, i64 %idxprom11
+  %2 = load float* %arrayidx12, align 4, !tbaa !3
+  %add13 = add nsw i32 %mul10, 1
+  %idxprom14 = sext i32 %add13 to i64
+  %arrayidx15 = getelementptr inbounds float* %shiftvec, i64 %idxprom14
+  %3 = load float* %arrayidx15, align 4, !tbaa !3
+  %add16 = add nsw i32 %mul10, 2
+  %idxprom17 = sext i32 %add16 to i64
+  %arrayidx18 = getelementptr inbounds float* %shiftvec, i64 %idxprom17
+  %4 = load float* %arrayidx18, align 4, !tbaa !3
+  %arrayidx20 = getelementptr inbounds i32* %iinr, i64 %indvars.iv311
+  %5 = load i32* %arrayidx20, align 4, !tbaa !0
+  %arrayidx23 = getelementptr inbounds i32* %jindex, i64 %indvars.iv311
+  %6 = load i32* %arrayidx23, align 4, !tbaa !0
+  %indvars.iv.next312 = add i64 %indvars.iv311, 1
+  %arrayidx26 = getelementptr inbounds i32* %jindex, i64 %indvars.iv.next312
+  %7 = load i32* %arrayidx26, align 4, !tbaa !0
+  %cmp28297 = icmp sgt i32 %0, 0
+  br i1 %cmp28297, label %for.body29.lr.ph, label %for.end169
+
+for.body29.lr.ph:                                 ; preds = %for.body
+  %cmp45288 = icmp slt i32 %6, %7
+  %arrayidx147 = getelementptr inbounds float* %fshift, i64 %idxprom11
+  %arrayidx153 = getelementptr inbounds float* %fshift, i64 %idxprom14
+  %arrayidx160 = getelementptr inbounds float* %fshift, i64 %idxprom17
+  %8 = sext i32 %6 to i64
+  %9 = sext i32 %5 to i64
+  %10 = mul i32 %5, 3
+  %11 = sext i32 %10 to i64
+  br label %for.body29
+
+for.body29:                                       ; preds = %for.end, %for.body29.lr.ph
+  %indvars.iv307 = phi i64 [ %11, %for.body29.lr.ph ], [ %indvars.iv.next308, %for.end ]
+  %indvars.iv305 = phi i64 [ %9, %for.body29.lr.ph ], [ %indvars.iv.next306, %for.end ]
+  %s.0299 = phi i32 [ 0, %for.body29.lr.ph ], [ %inc168, %for.end ]
+  %vctot.0298 = phi float [ 0.000000e+00, %for.body29.lr.ph ], [ %vctot.1.lcssa, %for.end ]
+  %arrayidx31 = getelementptr inbounds float* %pos, i64 %indvars.iv307
+  %12 = load float* %arrayidx31, align 4, !tbaa !3
+  %add32 = fadd float %2, %12
+  %13 = add nsw i64 %indvars.iv307, 1
+  %arrayidx35 = getelementptr inbounds float* %pos, i64 %13
+  %14 = load float* %arrayidx35, align 4, !tbaa !3
+  %add36 = fadd float %3, %14
+  %15 = add nsw i64 %indvars.iv307, 2
+  %arrayidx39 = getelementptr inbounds float* %pos, i64 %15
+  %16 = load float* %arrayidx39, align 4, !tbaa !3
+  %add40 = fadd float %4, %16
+  %arrayidx42 = getelementptr inbounds float* %charge, i64 %indvars.iv305
+  %17 = load float* %arrayidx42, align 4, !tbaa !3
+  %mul43 = fmul float %17, %facel
+  br i1 %cmp45288, label %for.body46, label %for.end
+
+for.body46:                                       ; preds = %for.body29, %for.body46
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body46 ], [ %8, %for.body29 ]
+  %vctot.1292 = phi float [ %add101, %for.body46 ], [ %vctot.0298, %for.body29 ]
+  %fix1.0291 = phi float [ %add105, %for.body46 ], [ 0.000000e+00, %for.body29 ]
+  %fiy1.0290 = phi float [ %add106, %for.body46 ], [ 0.000000e+00, %for.body29 ]
+  %fiz1.0289 = phi float [ %add107, %for.body46 ], [ 0.000000e+00, %for.body29 ]
+  %arrayidx48 = getelementptr inbounds i32* %jjnr, i64 %indvars.iv
+  %18 = load i32* %arrayidx48, align 4, !tbaa !0
+  %mul49 = mul nsw i32 %18, 3
+  %idxprom50 = sext i32 %mul49 to i64
+  %arrayidx51 = getelementptr inbounds float* %pos, i64 %idxprom50
+  %19 = load float* %arrayidx51, align 4, !tbaa !3
+  %add52 = add nsw i32 %mul49, 1
+  %idxprom53 = sext i32 %add52 to i64
+  %arrayidx54 = getelementptr inbounds float* %pos, i64 %idxprom53
+  %20 = load float* %arrayidx54, align 4, !tbaa !3
+  %add55 = add nsw i32 %mul49, 2
+  %idxprom56 = sext i32 %add55 to i64
+  %arrayidx57 = getelementptr inbounds float* %pos, i64 %idxprom56
+  %21 = load float* %arrayidx57, align 4, !tbaa !3
+  %sub = fsub float %add32, %19
+  %sub58 = fsub float %add36, %20
+  %sub59 = fsub float %add40, %21
+  %mul60 = fmul float %sub, %sub
+  %mul61 = fmul float %sub58, %sub58
+  %add62 = fadd float %mul60, %mul61
+  %mul63 = fmul float %sub59, %sub59
+  %add64 = fadd float %add62, %mul63
+  %conv = fpext float %add64 to double
+  %call = tail call double @sqrt(double %conv) #2
+  %div = fdiv double 1.000000e+00, %call
+  %conv65 = fptrunc double %div to float
+  %mul66 = fmul float %add64, %conv65
+  %mul67 = fmul float %mul66, %tabscale
+  %conv68 = fptosi float %mul67 to i32
+  %conv69 = sitofp i32 %conv68 to float
+  %sub70 = fsub float %mul67, %conv69
+  %mul71 = fmul float %sub70, %sub70
+  %mul72 = shl nsw i32 %conv68, 2
+  %idxprom73 = sext i32 %18 to i64
+  %arrayidx74 = getelementptr inbounds float* %charge, i64 %idxprom73
+  %22 = load float* %arrayidx74, align 4, !tbaa !3
+  %mul75 = fmul float %mul43, %22
+  %idxprom76 = sext i32 %mul72 to i64
+  %arrayidx77 = getelementptr inbounds float* %VFtab, i64 %idxprom76
+  %23 = load float* %arrayidx77, align 4, !tbaa !3
+  %add78285 = or i32 %mul72, 1
+  %idxprom79 = sext i32 %add78285 to i64
+  %arrayidx80 = getelementptr inbounds float* %VFtab, i64 %idxprom79
+  %24 = load float* %arrayidx80, align 4, !tbaa !3
+  %add81286 = or i32 %mul72, 2
+  %idxprom82 = sext i32 %add81286 to i64
+  %arrayidx83 = getelementptr inbounds float* %VFtab, i64 %idxprom82
+  %25 = load float* %arrayidx83, align 4, !tbaa !3
+  %mul84 = fmul float %25, %sub70
+  %add85287 = or i32 %mul72, 3
+  %idxprom86 = sext i32 %add85287 to i64
+  %arrayidx87 = getelementptr inbounds float* %VFtab, i64 %idxprom86
+  %26 = load float* %arrayidx87, align 4, !tbaa !3
+  %mul88 = fmul float %26, %mul71
+  %add89 = fadd float %24, %mul84
+  %add90 = fadd float %add89, %mul88
+  %mul91 = fmul float %sub70, %add90
+  %add92 = fadd float %23, %mul91
+  %add93 = fadd float %mul84, %add90
+  %mul94 = fmul float %mul88, 2.000000e+00
+  %add95 = fadd float %mul94, %add93
+  %mul96 = fmul float %mul75, %add92
+  %mul97 = fmul float %mul75, %add95
+  %mul98 = fmul float %mul97, %tabscale
+  %27 = fmul float %conv65, %mul98
+  %mul100 = fsub float -0.000000e+00, %27
+  %add101 = fadd float %vctot.1292, %mul96
+  %mul102 = fmul float %sub, %mul100
+  %mul103 = fmul float %sub58, %mul100
+  %mul104 = fmul float %sub59, %mul100
+  %add105 = fadd float %fix1.0291, %mul102
+  %add106 = fadd float %fiy1.0290, %mul103
+  %add107 = fadd float %fiz1.0289, %mul104
+  %arrayidx109 = getelementptr inbounds float* %faction, i64 %idxprom50
+  %28 = load float* %arrayidx109, align 4, !tbaa !3
+  %sub110 = fsub float %28, %mul102
+  store float %sub110, float* %arrayidx109, align 4, !tbaa !3
+  %arrayidx115 = getelementptr inbounds float* %faction, i64 %idxprom53
+  %29 = load float* %arrayidx115, align 4, !tbaa !3
+  %sub116 = fsub float %29, %mul103
+  store float %sub116, float* %arrayidx115, align 4, !tbaa !3
+  %arrayidx122 = getelementptr inbounds float* %faction, i64 %idxprom56
+  %30 = load float* %arrayidx122, align 4, !tbaa !3
+  %sub123 = fsub float %30, %mul104
+  store float %sub123, float* %arrayidx122, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %31 = trunc i64 %indvars.iv.next to i32
+  %cmp45 = icmp slt i32 %31, %7
+  br i1 %cmp45, label %for.body46, label %for.end
+
+for.end:                                          ; preds = %for.body46, %for.body29
+  %vctot.1.lcssa = phi float [ %vctot.0298, %for.body29 ], [ %add101, %for.body46 ]
+  %fix1.0.lcssa = phi float [ 0.000000e+00, %for.body29 ], [ %add105, %for.body46 ]
+  %fiy1.0.lcssa = phi float [ 0.000000e+00, %for.body29 ], [ %add106, %for.body46 ]
+  %fiz1.0.lcssa = phi float [ 0.000000e+00, %for.body29 ], [ %add107, %for.body46 ]
+  %arrayidx128 = getelementptr inbounds float* %faction, i64 %indvars.iv307
+  %32 = load float* %arrayidx128, align 4, !tbaa !3
+  %add129 = fadd float %fix1.0.lcssa, %32
+  store float %add129, float* %arrayidx128, align 4, !tbaa !3
+  %arrayidx134 = getelementptr inbounds float* %faction, i64 %13
+  %33 = load float* %arrayidx134, align 4, !tbaa !3
+  %add135 = fadd float %fiy1.0.lcssa, %33
+  store float %add135, float* %arrayidx134, align 4, !tbaa !3
+  %arrayidx141 = getelementptr inbounds float* %faction, i64 %15
+  %34 = load float* %arrayidx141, align 4, !tbaa !3
+  %add142 = fadd float %fiz1.0.lcssa, %34
+  store float %add142, float* %arrayidx141, align 4, !tbaa !3
+  %35 = load float* %arrayidx147, align 4, !tbaa !3
+  %add148 = fadd float %fix1.0.lcssa, %35
+  store float %add148, float* %arrayidx147, align 4, !tbaa !3
+  %36 = load float* %arrayidx153, align 4, !tbaa !3
+  %add154 = fadd float %fiy1.0.lcssa, %36
+  store float %add154, float* %arrayidx153, align 4, !tbaa !3
+  %37 = load float* %arrayidx160, align 4, !tbaa !3
+  %add161 = fadd float %fiz1.0.lcssa, %37
+  store float %add161, float* %arrayidx160, align 4, !tbaa !3
+  %indvars.iv.next306 = add i64 %indvars.iv305, 1
+  %indvars.iv.next308 = add i64 %indvars.iv307, 3
+  %inc168 = add nsw i32 %s.0299, 1
+  %exitcond = icmp eq i32 %inc168, %0
+  br i1 %exitcond, label %for.end169, label %for.body29
+
+for.end169:                                       ; preds = %for.end, %for.body
+  %vctot.0.lcssa = phi float [ 0.000000e+00, %for.body ], [ %vctot.1.lcssa, %for.end ]
+  %arrayidx171 = getelementptr inbounds i32* %gid, i64 %indvars.iv311
+  %38 = load i32* %arrayidx171, align 4, !tbaa !0
+  %idxprom172 = sext i32 %38 to i64
+  %arrayidx173 = getelementptr inbounds float* %Vc, i64 %idxprom172
+  %39 = load float* %arrayidx173, align 4, !tbaa !3
+  %add174 = fadd float %vctot.0.lcssa, %39
+  store float %add174, float* %arrayidx173, align 4, !tbaa !3
+  %lftr.wideiv = trunc i64 %indvars.iv.next312 to i32
+  %exitcond313 = icmp eq i32 %lftr.wideiv, %nri
+  br i1 %exitcond313, label %for.end179, label %for.body
+
+for.end179:                                       ; preds = %for.end169, %entry
+  ret void
+}

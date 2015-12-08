@@ -1,0 +1,36 @@
+define i32 @binary_fp_operator(%struct.rtx_def* nocapture %op, i32 %mode) #2 {
+entry:
+  %cmp = icmp eq i32 %mode, 0
+  %.phi.trans.insert = bitcast %struct.rtx_def* %op to i32*
+  %bf.load2.pre = load i32* %.phi.trans.insert, align 8
+  br i1 %cmp, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %bf.lshr = lshr i32 %bf.load2.pre, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %cmp1 = icmp eq i32 %bf.clear, %mode
+  br i1 %cmp1, label %if.end, label %return
+
+if.end:                                           ; preds = %entry, %land.lhs.true
+  %bf.clear3 = and i32 %bf.load2.pre, 65535
+  switch i32 %bf.clear3, label %return [
+    i32 75, label %sw.bb
+    i32 76, label %sw.bb
+    i32 78, label %sw.bb
+    i32 79, label %sw.bb
+  ]
+
+sw.bb:                                            ; preds = %if.end, %if.end, %if.end, %if.end
+  %bf.lshr5 = lshr i32 %bf.load2.pre, 16
+  %bf.clear6 = and i32 %bf.lshr5, 255
+  %idxprom11 = zext i32 %bf.clear6 to i64
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom11
+  %0 = load i32* %arrayidx, align 4, !tbaa !9
+  %cmp7 = icmp eq i32 %0, 2
+  %conv = zext i1 %cmp7 to i32
+  br label %return
+
+return:                                           ; preds = %if.end, %land.lhs.true, %sw.bb
+  %retval.0 = phi i32 [ %conv, %sw.bb ], [ 0, %land.lhs.true ], [ 0, %if.end ]
+  ret i32 %retval.0
+}

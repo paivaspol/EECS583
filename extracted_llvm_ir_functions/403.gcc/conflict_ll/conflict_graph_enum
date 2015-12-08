@@ -1,0 +1,33 @@
+define void @conflict_graph_enum(%struct.conflict_graph_def* nocapture %graph, i32 %reg, i32 (i32, i32, i8*)* nocapture %enum_fn, i8* %extra) #0 {
+entry:
+  %idxprom = sext i32 %reg to i64
+  %neighbor_heads = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 2
+  %0 = load %struct.conflict_graph_arc_def*** %neighbor_heads, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.conflict_graph_arc_def** %0, i64 %idxprom
+  %arc.010 = load %struct.conflict_graph_arc_def** %arrayidx, align 8
+  %cmp11 = icmp eq %struct.conflict_graph_arc_def* %arc.010, null
+  br i1 %cmp11, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %if.end
+  %arc.012 = phi %struct.conflict_graph_arc_def* [ %arc.0, %if.end ], [ %arc.010, %entry ]
+  %smaller = getelementptr inbounds %struct.conflict_graph_arc_def* %arc.012, i64 0, i32 2
+  %1 = load i32* %smaller, align 4, !tbaa !0
+  %larger = getelementptr inbounds %struct.conflict_graph_arc_def* %arc.012, i64 0, i32 3
+  %2 = load i32* %larger, align 4, !tbaa !0
+  %call = tail call i32 %enum_fn(i32 %1, i32 %2, i8* %extra) #6
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %while.end
+
+if.end:                                           ; preds = %while.body
+  %3 = load i32* %larger, align 4, !tbaa !0
+  %cmp2 = icmp sgt i32 %3, %reg
+  %smaller_next = getelementptr inbounds %struct.conflict_graph_arc_def* %arc.012, i64 0, i32 0
+  %larger_next = getelementptr inbounds %struct.conflict_graph_arc_def* %arc.012, i64 0, i32 1
+  %arc.0.in.be = select i1 %cmp2, %struct.conflict_graph_arc_def** %smaller_next, %struct.conflict_graph_arc_def** %larger_next
+  %arc.0 = load %struct.conflict_graph_arc_def** %arc.0.in.be, align 8
+  %cmp = icmp eq %struct.conflict_graph_arc_def* %arc.0, null
+  br i1 %cmp, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.end, %while.body, %entry
+  ret void
+}

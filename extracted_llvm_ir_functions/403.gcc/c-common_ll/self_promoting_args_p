@@ -1,0 +1,38 @@
+define i32 @self_promoting_args_p(%union.tree_node* %parms) #4 {
+entry:
+  %0 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 27), align 8, !tbaa !3
+  %1 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 24), align 8, !tbaa !3
+  br label %for.cond
+
+for.cond:                                         ; preds = %if.end8, %entry
+  %t.0 = phi %union.tree_node* [ %parms, %entry ], [ %4, %if.end8 ]
+  %tobool = icmp eq %union.tree_node* %t.0, null
+  br i1 %tobool, label %return, label %for.body
+
+for.body:                                         ; preds = %for.cond
+  %value = getelementptr inbounds %union.tree_node* %t.0, i64 0, i32 0, i32 2
+  %2 = bitcast i32* %value to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !3
+  %chain = getelementptr inbounds %union.tree_node* %t.0, i64 0, i32 0, i32 0, i32 0
+  %4 = load %union.tree_node** %chain, align 8, !tbaa !3
+  %notlhs = icmp eq %union.tree_node* %4, null
+  %notrhs = icmp ne %union.tree_node* %3, %0
+  %or.cond.not = and i1 %notrhs, %notlhs
+  %cmp2 = icmp eq %union.tree_node* %3, null
+  %or.cond19 = or i1 %or.cond.not, %cmp2
+  br i1 %or.cond19, label %return, label %if.end4
+
+if.end4:                                          ; preds = %for.body
+  %5 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 15
+  %6 = load %union.tree_node** %5, align 8, !tbaa !3
+  %cmp6 = icmp eq %union.tree_node* %6, %1
+  br i1 %cmp6, label %return, label %if.end8
+
+if.end8:                                          ; preds = %if.end4
+  %call = tail call zeroext i1 @c_promoting_integer_type_p(%union.tree_node* %3) #9
+  br i1 %call, label %return, label %for.cond
+
+return:                                           ; preds = %for.body, %for.cond, %if.end8, %if.end4
+  %retval.0 = phi i32 [ 0, %for.body ], [ 0, %if.end4 ], [ 0, %if.end8 ], [ 1, %for.cond ]
+  ret i32 %retval.0
+}

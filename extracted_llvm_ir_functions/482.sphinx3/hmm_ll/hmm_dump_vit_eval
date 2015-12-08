@@ -1,0 +1,39 @@
+define i32 @hmm_dump_vit_eval(%struct.hmm_t* nocapture %hmm, i32 %n_state, i16* %senid, i32* %senscr, %struct._IO_FILE* %fp) #0 {
+entry:
+  %tobool = icmp ne %struct._IO_FILE* %fp, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @hmm_dump(%struct.hmm_t* %hmm, i32 %n_state, i16* %senid, i32* %senscr, %struct._IO_FILE* %fp) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  switch i32 %n_state, label %if.else5 [
+    i32 5, label %if.then1
+    i32 3, label %if.then3
+  ]
+
+if.then1:                                         ; preds = %if.end
+  %call = tail call i32 @hmm_vit_eval_5st(%struct.hmm_t* %hmm, i16* %senid, i32* %senscr) #5
+  br label %if.end7
+
+if.then3:                                         ; preds = %if.end
+  %call4 = tail call i32 @hmm_vit_eval_3st(%struct.hmm_t* %hmm, i16* %senid, i32* %senscr) #5
+  br label %if.end7
+
+if.else5:                                         ; preds = %if.end
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([51 x i8]* @.str7, i64 0, i64 0), i64 427, i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0)) #4
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([25 x i8]* @.str9, i64 0, i64 0), i32 %n_state) #4
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.then3, %if.else5, %if.then1
+  %bs.0 = phi i32 [ %call, %if.then1 ], [ %call4, %if.then3 ], [ 0, %if.else5 ]
+  br i1 %tobool, label %if.then9, label %if.end10
+
+if.then9:                                         ; preds = %if.end7
+  tail call void @hmm_dump(%struct.hmm_t* %hmm, i32 %n_state, i16* %senid, i32* %senscr, %struct._IO_FILE* %fp) #5
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.then9, %if.end7
+  ret i32 %bs.0
+}

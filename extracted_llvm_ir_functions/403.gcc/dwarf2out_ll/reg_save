@@ -1,0 +1,54 @@
+define internal fastcc void @reg_save(i8* %label, i32 %reg, i32 %sreg, i64 %offset) #1 {
+entry:
+  %call.i = tail call noalias i8* @xmalloc(i64 32) #9
+  %0 = bitcast i8* %call.i to %struct.dw_cfi_struct*
+  %dw_cfi_next.i = bitcast i8* %call.i to %struct.dw_cfi_struct**
+  store %struct.dw_cfi_struct* null, %struct.dw_cfi_struct** %dw_cfi_next.i, align 8, !tbaa !4
+  %dw_cfi_oprnd1.i = getelementptr inbounds i8* %call.i, i64 16
+  tail call void @llvm.memset.p0i8.i64(i8* %dw_cfi_oprnd1.i, i8 0, i64 16, i32 8, i1 false) #5
+  %conv = zext i32 %reg to i64
+  %1 = bitcast i8* %dw_cfi_oprnd1.i to i64*
+  store i64 %conv, i64* %1, align 8, !tbaa !6
+  %cmp = icmp eq i32 %sreg, -1
+  br i1 %cmp, label %if.then, label %if.else12
+
+if.then:                                          ; preds = %entry
+  %tobool = icmp ugt i32 %reg, 63
+  %dw_cfi_opc = getelementptr inbounds i8* %call.i, i64 8
+  %2 = bitcast i8* %dw_cfi_opc to i32*
+  %. = select i1 %tobool, i32 5, i32 128
+  %3 = load i32* @target_flags, align 4, !tbaa !0
+  %and4 = lshr i32 %3, 23
+  %4 = and i32 %and4, 4
+  %sub = sub i32 -4, %4
+  %conv6 = sext i32 %sub to i64
+  %div = sdiv i64 %offset, %conv6
+  %cmp7 = icmp slt i64 %div, 0
+  %.. = select i1 %cmp7, i32 17, i32 %.
+  store i32 %.., i32* %2, align 4, !tbaa !8
+  %dw_cfi_offset = getelementptr inbounds i8* %call.i, i64 24
+  %5 = bitcast i8* %dw_cfi_offset to i64*
+  store i64 %div, i64* %5, align 8, !tbaa !6
+  br label %if.end22
+
+if.else12:                                        ; preds = %entry
+  %cmp13 = icmp eq i32 %sreg, %reg
+  br i1 %cmp13, label %return, label %if.else16
+
+if.else16:                                        ; preds = %if.else12
+  %dw_cfi_opc17 = getelementptr inbounds i8* %call.i, i64 8
+  %6 = bitcast i8* %dw_cfi_opc17 to i32*
+  store i32 9, i32* %6, align 4, !tbaa !8
+  %conv18 = zext i32 %sreg to i64
+  %dw_cfi_reg_num20 = getelementptr inbounds i8* %call.i, i64 24
+  %7 = bitcast i8* %dw_cfi_reg_num20 to i64*
+  store i64 %conv18, i64* %7, align 8, !tbaa !6
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.else16, %if.then
+  tail call fastcc void @add_fde_cfi(i8* %label, %struct.dw_cfi_struct* %0) #10
+  br label %return
+
+return:                                           ; preds = %if.else12, %if.end22
+  ret void
+}

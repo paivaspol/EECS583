@@ -1,0 +1,14 @@
+define internal fastcc %struct.rtx_def* @reversed_comparison(%struct.rtx_def* %exp, i32 %mode, %struct.rtx_def* %op0, %struct.rtx_def* %op1) #0 {
+entry:
+  %call = tail call fastcc i32 @combine_reversed_comparison_code(%struct.rtx_def* %exp) #7
+  %cmp = icmp eq i32 %call, 0
+  br i1 %cmp, label %return, label %if.else
+
+if.else:                                          ; preds = %entry
+  %call1 = tail call fastcc %struct.rtx_def* @gen_binary(i32 %call, i32 %mode, %struct.rtx_def* %op0, %struct.rtx_def* %op1) #7
+  br label %return
+
+return:                                           ; preds = %entry, %if.else
+  %retval.0 = phi %struct.rtx_def* [ %call1, %if.else ], [ null, %entry ]
+  ret %struct.rtx_def* %retval.0
+}

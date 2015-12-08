@@ -1,0 +1,165 @@
+define void @dwarf2out_add_library_unit_info(i8* %filename, i8* %context_list) #1 {
+entry:
+  %cmp = icmp eq i8* %filename, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct.die_struct** @comp_unit_die, align 8, !tbaa !4
+  %call.i = tail call noalias i8* @xcalloc(i64 1, i64 72) #9
+  %1 = bitcast i8* %call.i to %struct.die_struct*
+  %die_tag.i = bitcast i8* %call.i to i32*
+  store i32 30, i32* %die_tag.i, align 4, !tbaa !12
+  %cmp.i = icmp eq %struct.die_struct* %0, null
+  br i1 %cmp.i, label %if.else.i, label %if.then.i
+
+if.then.i:                                        ; preds = %if.then
+  %cmp1.i.i = icmp eq i8* %call.i, null
+  br i1 %cmp1.i.i, label %new_die.exit, label %if.then.i.i
+
+if.then.i.i:                                      ; preds = %if.then.i
+  %cmp2.i.i = icmp eq %struct.die_struct* %1, %0
+  br i1 %cmp2.i.i, label %if.then3.i.i, label %if.end.i.i
+
+if.then3.i.i:                                     ; preds = %if.then.i.i
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 5026, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.add_child_die, i64 0, i64 0)) #12
+  unreachable
+
+if.end.i.i:                                       ; preds = %if.then.i.i
+  %die_parent.i.i = getelementptr inbounds i8* %call.i, i64 24
+  %2 = bitcast i8* %die_parent.i.i to %struct.die_struct**
+  store %struct.die_struct* %0, %struct.die_struct** %2, align 8, !tbaa !4
+  %die_child.i.i = getelementptr inbounds %struct.die_struct* %0, i64 0, i32 4
+  %3 = load %struct.die_struct** %die_child.i.i, align 8, !tbaa !4
+  %die_sib.i.i = getelementptr inbounds i8* %call.i, i64 40
+  %4 = bitcast i8* %die_sib.i.i to %struct.die_struct**
+  store %struct.die_struct* %3, %struct.die_struct** %4, align 8, !tbaa !4
+  store %struct.die_struct* %1, %struct.die_struct** %die_child.i.i, align 8, !tbaa !4
+  br label %new_die.exit
+
+if.else.i:                                        ; preds = %if.then
+  %call1.i = tail call noalias i8* @xmalloc(i64 24) #9
+  %5 = bitcast i8* %call1.i to %struct.limbo_die_struct*
+  %die2.i = bitcast i8* %call1.i to %struct.die_struct**
+  store %struct.die_struct* %1, %struct.die_struct** %die2.i, align 8, !tbaa !4
+  %created_for.i = getelementptr inbounds i8* %call1.i, i64 8
+  %6 = bitcast i8* %created_for.i to %union.tree_node**
+  store %union.tree_node* null, %union.tree_node** %6, align 8, !tbaa !4
+  %7 = load %struct.limbo_die_struct** @limbo_die_list, align 8, !tbaa !4
+  %next.i = getelementptr inbounds i8* %call1.i, i64 16
+  %8 = bitcast i8* %next.i to %struct.limbo_die_struct**
+  store %struct.limbo_die_struct* %7, %struct.limbo_die_struct** %8, align 8, !tbaa !4
+  store %struct.limbo_die_struct* %5, %struct.limbo_die_struct** @limbo_die_list, align 8, !tbaa !4
+  br label %new_die.exit
+
+new_die.exit:                                     ; preds = %if.then.i, %if.end.i.i, %if.else.i
+  %call1 = tail call %union.tree_node* @get_identifier(i8* %context_list) #9
+  %9 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 27), align 8, !tbaa !4
+  %call2 = tail call %union.tree_node* @build_decl(i32 31, %union.tree_node* %call1, %union.tree_node* %9) #9
+  %public_flag = getelementptr inbounds %union.tree_node* %call2, i64 0, i32 0, i32 0, i32 2
+  %10 = bitcast [4 x i8]* %public_flag to i32*
+  %bf.load = load i32* %10, align 8
+  %bf.set = or i32 %bf.load, 524288
+  store i32 %bf.set, i32* %10, align 8
+  %cmp.i9 = icmp eq i8* %context_list, null
+  br i1 %cmp.i9, label %add_name_attribute.exit, label %land.lhs.true.i
+
+land.lhs.true.i:                                  ; preds = %new_die.exit
+  %11 = load i8* %context_list, align 1, !tbaa !1
+  %cmp1.i = icmp eq i8 %11, 0
+  br i1 %cmp1.i, label %add_name_attribute.exit, label %if.then.i10
+
+if.then.i10:                                      ; preds = %land.lhs.true.i
+  %12 = load i8* (i8*)** @demangle_name_func, align 8, !tbaa !4
+  %tobool.i = icmp eq i8* (i8*)* %12, null
+  br i1 %tobool.i, label %if.end.i, label %if.then3.i
+
+if.then3.i:                                       ; preds = %if.then.i10
+  %call.i11 = tail call i8* %12(i8* %context_list) #9
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.then3.i, %if.then.i10
+  %name_string.addr.0.i = phi i8* [ %call.i11, %if.then3.i ], [ %context_list, %if.then.i10 ]
+  %call.i.i = tail call noalias i8* @xmalloc(i64 40) #9
+  %13 = bitcast i8* %call.i.i to %struct.dw_attr_struct*
+  %14 = load %struct.ht** @debug_str_hash, align 8, !tbaa !4
+  %tobool.i.i = icmp eq %struct.ht* %14, null
+  br i1 %tobool.i.i, label %if.then.i.i12, label %if.end.i.i13
+
+if.then.i.i12:                                    ; preds = %if.end.i
+  %call1.i.i = tail call %struct.ht* @ht_create(i32 10) #9
+  store %struct.ht* %call1.i.i, %struct.ht** @debug_str_hash, align 8, !tbaa !4
+  %alloc_node.i.i = getelementptr inbounds %struct.ht* %call1.i.i, i64 0, i32 2
+  store %struct.ht_identifier* (%struct.ht*)* @indirect_string_alloc, %struct.ht_identifier* (%struct.ht*)** %alloc_node.i.i, align 8, !tbaa !4
+  %.pre.i.i = load %struct.ht** @debug_str_hash, align 8, !tbaa !4
+  br label %if.end.i.i13
+
+if.end.i.i13:                                     ; preds = %if.then.i.i12, %if.end.i
+  %15 = phi %struct.ht* [ %14, %if.end.i ], [ %.pre.i.i, %if.then.i.i12 ]
+  %call2.i.i = tail call i64 @strlen(i8* %name_string.addr.0.i) #11
+  %conv.i.i = trunc i64 %call2.i.i to i32
+  %call3.i.i = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %15, i8* %name_string.addr.0.i, i32 %conv.i.i, i32 1) #9
+  %16 = bitcast %struct.ht_identifier* %call3.i.i to %struct.indirect_string_node*
+  %17 = getelementptr inbounds %struct.ht_identifier* %call3.i.i, i64 1, i32 0
+  %18 = load i32* %17, align 4, !tbaa !0
+  %inc.i.i = add i32 %18, 1
+  store i32 %inc.i.i, i32* %17, align 4, !tbaa !0
+  %dw_attr_next.i.i = getelementptr inbounds i8* %call.i.i, i64 8
+  %19 = bitcast i8* %dw_attr_next.i.i to %struct.dw_attr_struct**
+  store %struct.dw_attr_struct* null, %struct.dw_attr_struct** %19, align 8, !tbaa !4
+  %dw_attr.i.i = bitcast i8* %call.i.i to i32*
+  store i32 3, i32* %dw_attr.i.i, align 4, !tbaa !11
+  %dw_attr_val.i.i = getelementptr inbounds i8* %call.i.i, i64 16
+  %val_class.i.i = bitcast i8* %dw_attr_val.i.i to i32*
+  store i32 14, i32* %val_class.i.i, align 4, !tbaa !1
+  %v.i.i = getelementptr inbounds i8* %call.i.i, i64 24
+  %val_str.i.i = bitcast i8* %v.i.i to %struct.indirect_string_node**
+  store %struct.indirect_string_node* %16, %struct.indirect_string_node** %val_str.i.i, align 8, !tbaa !4
+  %cmp.i.i.i = icmp eq i8* %call.i, null
+  %cmp1.i.i.i = icmp eq i8* %call.i.i, null
+  %or.cond.i.i.i = or i1 %cmp.i.i.i, %cmp1.i.i.i
+  br i1 %or.cond.i.i.i, label %add_name_attribute.exit, label %if.then.i.i.i
+
+if.then.i.i.i:                                    ; preds = %if.end.i.i13
+  %die_attr.i.i.i = getelementptr inbounds i8* %call.i, i64 16
+  %20 = bitcast i8* %die_attr.i.i.i to %struct.dw_attr_struct**
+  %21 = load %struct.dw_attr_struct** %20, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %21, %struct.dw_attr_struct** %19, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %13, %struct.dw_attr_struct** %20, align 8, !tbaa !4
+  br label %add_name_attribute.exit
+
+add_name_attribute.exit:                          ; preds = %new_die.exit, %land.lhs.true.i, %if.end.i.i13, %if.then.i.i.i
+  %call3 = tail call fastcc i32 @lookup_filename(i8* %filename) #10
+  %conv = zext i32 %call3 to i64
+  %call.i14 = tail call noalias i8* @xmalloc(i64 40) #9
+  %dw_attr_next.i = getelementptr inbounds i8* %call.i14, i64 8
+  %22 = bitcast i8* %dw_attr_next.i to %struct.dw_attr_struct**
+  store %struct.dw_attr_struct* null, %struct.dw_attr_struct** %22, align 8, !tbaa !4
+  %dw_attr.i = bitcast i8* %call.i14 to i32*
+  store i32 58, i32* %dw_attr.i, align 4, !tbaa !11
+  %dw_attr_val.i = getelementptr inbounds i8* %call.i14, i64 16
+  %val_class.i = bitcast i8* %dw_attr_val.i to i32*
+  store i32 6, i32* %val_class.i, align 4, !tbaa !1
+  %v.i = getelementptr inbounds i8* %call.i14, i64 24
+  %val_unsigned.i = bitcast i8* %v.i to i64*
+  store i64 %conv, i64* %val_unsigned.i, align 8, !tbaa !6
+  %cmp.i.i = icmp eq i8* %call.i, null
+  %cmp1.i.i15 = icmp eq i8* %call.i14, null
+  %or.cond.i.i = or i1 %cmp.i.i, %cmp1.i.i15
+  br i1 %or.cond.i.i, label %add_AT_unsigned.exit, label %if.then.i.i16
+
+if.then.i.i16:                                    ; preds = %add_name_attribute.exit
+  %23 = bitcast i8* %call.i14 to %struct.dw_attr_struct*
+  %die_attr.i.i = getelementptr inbounds i8* %call.i, i64 16
+  %24 = bitcast i8* %die_attr.i.i to %struct.dw_attr_struct**
+  %25 = load %struct.dw_attr_struct** %24, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %25, %struct.dw_attr_struct** %22, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %23, %struct.dw_attr_struct** %24, align 8, !tbaa !4
+  br label %add_AT_unsigned.exit
+
+add_AT_unsigned.exit:                             ; preds = %add_name_attribute.exit, %if.then.i.i16
+  tail call fastcc void @add_pubname(%union.tree_node* %call2, %struct.die_struct* %1) #10
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %add_AT_unsigned.exit
+  ret void
+}

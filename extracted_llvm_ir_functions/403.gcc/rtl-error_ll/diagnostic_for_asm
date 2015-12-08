@@ -1,0 +1,77 @@
+define internal fastcc void @diagnostic_for_asm(%struct.rtx_def* nocapture %insn, i8* %msg, [1 x %struct.__va_list_tag]* %args_ptr, i32 %warn) #0 {
+entry:
+  %dc = alloca %struct.diagnostic_context, align 8
+  %0 = bitcast %struct.diagnostic_context* %dc to i8*
+  call void @llvm.lifetime.start(i64 376, i8* %0) #1
+  call void @set_diagnostic_context(%struct.diagnostic_context* %dc, i8* %msg, [1 x %struct.__va_list_tag]* %args_ptr, i8* null, i32 0, i32 %warn) #6
+  %file = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 3
+  %line = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 4
+  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx.i = bitcast %union.rtunion_def* %arrayidx.i to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx.i, align 8, !tbaa !0
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load.i = load i32* %2, align 8
+  %bf.clear.i = and i32 %bf.load.i, 65535
+  switch i32 %bf.clear.i, label %if.else62.i [
+    i32 47, label %land.lhs.true.i
+    i32 41, label %if.end56.i
+    i32 39, label %land.lhs.true18.i
+  ]
+
+land.lhs.true.i:                                  ; preds = %entry
+  %arrayidx2.i = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 1
+  %rtx3.i = bitcast %union.rtunion_def* %arrayidx2.i to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx3.i, align 8, !tbaa !0
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load4.i = load i32* %4, align 8
+  %bf.clear5.i = and i32 %bf.load4.i, 65535
+  %cmp6.i = icmp eq i32 %bf.clear5.i, 41
+  br i1 %cmp6.i, label %if.end56.i, label %if.else62.i
+
+land.lhs.true18.i:                                ; preds = %entry
+  %arrayidx20.i = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtvec.i = bitcast %union.rtunion_def* %arrayidx20.i to %struct.rtvec_def**
+  %5 = load %struct.rtvec_def** %rtvec.i, align 8, !tbaa !0
+  %arrayidx21.i = getelementptr inbounds %struct.rtvec_def* %5, i64 0, i32 1, i64 0
+  %6 = load %struct.rtx_def** %arrayidx21.i, align 8, !tbaa !0
+  %7 = bitcast %struct.rtx_def* %6 to i32*
+  %bf.load22.i = load i32* %7, align 8
+  %bf.clear23.i = and i32 %bf.load22.i, 65535
+  switch i32 %bf.clear23.i, label %if.else62.i [
+    i32 47, label %if.then25.i
+    i32 41, label %if.end56.i
+  ]
+
+if.then25.i:                                      ; preds = %land.lhs.true18.i
+  %arrayidx32.i = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 1
+  %rtx33.i = bitcast %union.rtunion_def* %arrayidx32.i to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %rtx33.i, align 8, !tbaa !0
+  br label %if.end56.i
+
+if.end56.i:                                       ; preds = %land.lhs.true18.i, %if.then25.i, %land.lhs.true.i, %entry
+  %asmop.0.i = phi %struct.rtx_def* [ %8, %if.then25.i ], [ %3, %land.lhs.true.i ], [ %1, %entry ], [ %6, %land.lhs.true18.i ]
+  %tobool.i = icmp eq %struct.rtx_def* %asmop.0.i, null
+  br i1 %tobool.i, label %if.else62.i, label %if.then57.i
+
+if.then57.i:                                      ; preds = %if.end56.i
+  %arrayidx59.i = getelementptr inbounds %struct.rtx_def* %asmop.0.i, i64 0, i32 1, i64 5
+  %rtstr.i = bitcast %union.rtunion_def* %arrayidx59.i to i8**
+  %9 = load i8** %rtstr.i, align 8, !tbaa !0
+  store i8* %9, i8** %file, align 8, !tbaa !0
+  %arrayidx61.i = getelementptr inbounds %struct.rtx_def* %asmop.0.i, i64 0, i32 1, i64 6
+  %rtint.i = bitcast %union.rtunion_def* %arrayidx61.i to i32*
+  br label %file_and_line_for_asm.exit
+
+if.else62.i:                                      ; preds = %land.lhs.true18.i, %if.end56.i, %land.lhs.true.i, %entry
+  %10 = load i8** @input_filename, align 8, !tbaa !0
+  store i8* %10, i8** %file, align 8, !tbaa !0
+  br label %file_and_line_for_asm.exit
+
+file_and_line_for_asm.exit:                       ; preds = %if.then57.i, %if.else62.i
+  %storemerge.in.i = phi i32* [ @lineno, %if.else62.i ], [ %rtint.i, %if.then57.i ]
+  %storemerge.i = load i32* %storemerge.in.i, align 4
+  store i32 %storemerge.i, i32* %line, align 8, !tbaa !3
+  call void @report_diagnostic(%struct.diagnostic_context* %dc) #6
+  call void @llvm.lifetime.end(i64 376, i8* %0) #1
+  ret void
+}

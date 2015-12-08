@@ -1,0 +1,46 @@
+define i32 @promote_mode(%union.tree_node* nocapture %type, i32 %mode, i32* nocapture %punsignedp, i32 %for_call) #1 {
+entry:
+  %code1 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code1 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %1 = load i32* %punsignedp, align 4, !tbaa !5
+  switch i32 %bf.clear, label %sw.epilog [
+    i32 6, label %do.body
+    i32 10, label %do.body
+    i32 11, label %do.body
+    i32 12, label %do.body
+    i32 7, label %do.body
+    i32 14, label %do.body
+  ]
+
+do.body:                                          ; preds = %entry, %entry, %entry, %entry, %entry, %entry
+  switch i32 %mode, label %sw.epilog [
+    i32 3, label %land.lhs.true
+    i32 2, label %land.lhs.true3
+  ]
+
+land.lhs.true:                                    ; preds = %do.body
+  %2 = load i32* @x86_promote_hi_regs, align 4, !tbaa !5
+  %3 = load i32* @ix86_cpu, align 4, !tbaa !6
+  %shl = shl i32 1, %3
+  %and = and i32 %shl, %2
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %sw.epilog, label %if.then
+
+land.lhs.true3:                                   ; preds = %do.body
+  %4 = load i32* @x86_promote_qi_regs, align 4, !tbaa !5
+  %5 = load i32* @ix86_cpu, align 4, !tbaa !6
+  %shl4 = shl i32 1, %5
+  %and5 = and i32 %shl4, %4
+  %tobool6 = icmp eq i32 %and5, 0
+  br i1 %tobool6, label %sw.epilog, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true, %land.lhs.true3
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %land.lhs.true, %do.body, %land.lhs.true3, %entry, %if.then
+  %mode.addr.0 = phi i32 [ %mode, %entry ], [ 4, %if.then ], [ 2, %land.lhs.true3 ], [ %mode, %do.body ], [ 3, %land.lhs.true ]
+  store i32 %1, i32* %punsignedp, align 4, !tbaa !5
+  ret i32 %mode.addr.0
+}

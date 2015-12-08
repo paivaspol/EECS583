@@ -1,0 +1,120 @@
+define void @init_expr_once() #0 {
+entry:
+  %num_clobbers = alloca i32, align 4
+  call void @start_sequence() #8
+  %0 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !tbaa !0
+  %call = call %struct.rtx_def* @gen_rtx_MEM(i32 0, %struct.rtx_def* %0) #8
+  %1 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 3), align 8, !tbaa !0
+  %call1 = call %struct.rtx_def* @gen_rtx_MEM(i32 0, %struct.rtx_def* %1) #8
+  %call2 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* null, %struct.rtx_def* null) #8
+  %call3 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call2) #8
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call3, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %3 = bitcast %struct.rtx_def* %call to i32*
+  %4 = bitcast %struct.rtx_def* %call1 to i32*
+  %5 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 1, i32 0
+  %call.c = ptrtoint %struct.rtx_def* %call to i64
+  %6 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0, i32 0
+  %call1.c = ptrtoint %struct.rtx_def* %call1 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc82, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc82 ]
+  %arrayidx4 = getelementptr inbounds [59 x i8]* @direct_store, i64 0, i64 %indvars.iv
+  store i8 0, i8* %arrayidx4, align 1, !tbaa !1
+  %arrayidx6 = getelementptr inbounds [59 x i8]* @direct_load, i64 0, i64 %indvars.iv
+  store i8 0, i8* %arrayidx6, align 1, !tbaa !1
+  %bf.load = load i32* %3, align 8
+  %7 = shl i64 %indvars.iv, 16
+  %bf.clear = and i32 %bf.load, -16711681
+  %8 = trunc i64 %7 to i32
+  %bf.set = or i32 %bf.clear, %8
+  store i32 %bf.set, i32* %3, align 8
+  %bf.load7 = load i32* %4, align 8
+  %bf.clear10 = and i32 %bf.load7, -16711681
+  %bf.set11 = or i32 %bf.clear10, %8
+  store i32 %bf.set11, i32* %4, align 8
+  %9 = trunc i64 %indvars.iv to i32
+  switch i32 %9, label %land.rhs [
+    i32 51, label %for.inc82
+    i32 0, label %for.inc82
+  ]
+
+land.rhs:                                         ; preds = %for.body, %for.inc
+  %regno.0129 = phi i32 [ %inc, %for.inc ], [ 0, %for.body ]
+  %10 = load i8* %arrayidx6, align 1, !tbaa !1
+  %cmp18 = icmp eq i8 %10, 0
+  br i1 %cmp18, label %for.body25, label %lor.rhs
+
+lor.rhs:                                          ; preds = %land.rhs
+  %11 = load i8* %arrayidx4, align 1, !tbaa !1
+  %cmp23 = icmp eq i8 %11, 0
+  br i1 %cmp23, label %for.body25, label %for.inc82
+
+for.body25:                                       ; preds = %land.rhs, %lor.rhs
+  %call26 = call i32 @ix86_hard_regno_mode_ok(i32 %regno.0129, i32 %9) #8
+  %tobool = icmp eq i32 %call26, 0
+  br i1 %tobool, label %for.inc, label %if.end
+
+if.end:                                           ; preds = %for.body25
+  %call28 = call %struct.rtx_def* @gen_rtx_REG(i32 %9, i32 %regno.0129) #8
+  store i64 %call.c, i64* %5, align 8, !tbaa !0
+  %call28.c = ptrtoint %struct.rtx_def* %call28 to i64
+  store i64 %call28.c, i64* %6, align 8, !tbaa !0
+  %call35 = call i32 @recog(%struct.rtx_def* %2, %struct.rtx_def* %call3, i32* %num_clobbers) #8
+  %cmp36 = icmp sgt i32 %call35, -1
+  br i1 %cmp36, label %if.then38, label %if.end41
+
+if.then38:                                        ; preds = %if.end
+  store i8 1, i8* %arrayidx6, align 1, !tbaa !1
+  br label %if.end41
+
+if.end41:                                         ; preds = %if.then38, %if.end
+  store i64 %call1.c, i64* %5, align 8, !tbaa !0
+  store i64 %call28.c, i64* %6, align 8, !tbaa !0
+  %call48 = call i32 @recog(%struct.rtx_def* %2, %struct.rtx_def* %call3, i32* %num_clobbers) #8
+  %cmp49 = icmp sgt i32 %call48, -1
+  br i1 %cmp49, label %if.then51, label %if.end54
+
+if.then51:                                        ; preds = %if.end41
+  store i8 1, i8* %arrayidx6, align 1, !tbaa !1
+  br label %if.end54
+
+if.end54:                                         ; preds = %if.then51, %if.end41
+  store i64 %call28.c, i64* %5, align 8, !tbaa !0
+  store i64 %call.c, i64* %6, align 8, !tbaa !0
+  %call61 = call i32 @recog(%struct.rtx_def* %2, %struct.rtx_def* %call3, i32* %num_clobbers) #8
+  %cmp62 = icmp sgt i32 %call61, -1
+  br i1 %cmp62, label %if.then64, label %if.end67
+
+if.then64:                                        ; preds = %if.end54
+  store i8 1, i8* %arrayidx4, align 1, !tbaa !1
+  br label %if.end67
+
+if.end67:                                         ; preds = %if.then64, %if.end54
+  store i64 %call28.c, i64* %5, align 8, !tbaa !0
+  store i64 %call1.c, i64* %6, align 8, !tbaa !0
+  %call74 = call i32 @recog(%struct.rtx_def* %2, %struct.rtx_def* %call3, i32* %num_clobbers) #8
+  %cmp75 = icmp sgt i32 %call74, -1
+  br i1 %cmp75, label %if.then77, label %for.inc
+
+if.then77:                                        ; preds = %if.end67
+  store i8 1, i8* %arrayidx4, align 1, !tbaa !1
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body25, %if.end67, %if.then77
+  %inc = add nsw i32 %regno.0129, 1
+  %cmp15 = icmp slt i32 %inc, 53
+  br i1 %cmp15, label %land.rhs, label %for.inc82
+
+for.inc82:                                        ; preds = %for.inc, %lor.rhs, %for.body, %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 59
+  br i1 %exitcond, label %for.end83, label %for.body
+
+for.end83:                                        ; preds = %for.inc82
+  call void @end_sequence() #8
+  ret void
+}

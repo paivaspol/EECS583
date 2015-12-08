@@ -1,0 +1,146 @@
+define i32 @subvq_frame_eval(%struct.subvq_t* %vq, %struct.mgau_model_t* %g, i32 %beam, float* %feat, i32* %sen_active, i32* nocapture %senscr) #0 {
+entry:
+  %tobool = icmp eq %struct.subvq_t* %vq, null
+  br i1 %tobool, label %for.cond.preheader, label %if.else18
+
+for.cond.preheader:                               ; preds = %entry
+  %n_mgau = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 0
+  %0 = load i32* %n_mgau, align 4, !tbaa !0
+  %cmp117 = icmp sgt i32 %0, 0
+  br i1 %cmp117, label %for.body.lr.ph, label %for.end62
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %tobool1 = icmp eq i32* %sen_active, null
+  %mgau = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 3
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv133 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next134, %for.inc ]
+  %ng.0121 = phi i32 [ 0, %for.body.lr.ph ], [ %ng.1, %for.inc ]
+  %ns.0120 = phi i32 [ 0, %for.body.lr.ph ], [ %ns.1, %for.inc ]
+  %best.0119 = phi i32 [ -2147483648, %for.body.lr.ph ], [ %best.2, %for.inc ]
+  br i1 %tobool1, label %if.then3, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %for.body
+  %arrayidx = getelementptr inbounds i32* %sen_active, i64 %indvars.iv133
+  %1 = load i32* %arrayidx, align 4, !tbaa !0
+  %tobool2 = icmp eq i32 %1, 0
+  br i1 %tobool2, label %if.else, label %if.then3
+
+if.then3:                                         ; preds = %lor.lhs.false, %for.body
+  %2 = trunc i64 %indvars.iv133 to i32
+  %call = tail call i32 @mgau_eval(%struct.mgau_model_t* %g, i32 %2, i32* null, float* %feat) #5
+  %arrayidx5 = getelementptr inbounds i32* %senscr, i64 %indvars.iv133
+  store i32 %call, i32* %arrayidx5, align 4, !tbaa !0
+  %cmp8 = icmp slt i32 %best.0119, %call
+  %call.best.0 = select i1 %cmp8, i32 %call, i32 %best.0119
+  %inc = add nsw i32 %ns.0120, 1
+  %3 = load %struct.mgau_t** %mgau, align 8, !tbaa !3
+  %n_comp = getelementptr inbounds %struct.mgau_t* %3, i64 %indvars.iv133, i32 0
+  %4 = load i32* %n_comp, align 4, !tbaa !0
+  %add = add nsw i32 %4, %ng.0121
+  br label %for.inc
+
+if.else:                                          ; preds = %lor.lhs.false
+  %arrayidx15 = getelementptr inbounds i32* %senscr, i64 %indvars.iv133
+  store i32 -939524096, i32* %arrayidx15, align 4, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then3, %if.else
+  %best.2 = phi i32 [ %call.best.0, %if.then3 ], [ %best.0119, %if.else ]
+  %ns.1 = phi i32 [ %inc, %if.then3 ], [ %ns.0120, %if.else ]
+  %ng.1 = phi i32 [ %add, %if.then3 ], [ %ng.0121, %if.else ]
+  %indvars.iv.next134 = add i64 %indvars.iv133, 1
+  %5 = load i32* %n_mgau, align 4, !tbaa !0
+  %6 = trunc i64 %indvars.iv.next134 to i32
+  %cmp = icmp slt i32 %6, %5
+  br i1 %cmp, label %for.body, label %if.end53
+
+if.else18:                                        ; preds = %entry
+  tail call void @subvq_gautbl_eval_logs3(%struct.subvq_t* %vq, float* %feat) #7
+  %n_mgau20 = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 0
+  %7 = load i32* %n_mgau20, align 4, !tbaa !0
+  %cmp21125 = icmp sgt i32 %7, 0
+  br i1 %cmp21125, label %for.body22.lr.ph, label %for.end62
+
+for.body22.lr.ph:                                 ; preds = %if.else18
+  %tobool23 = icmp eq i32* %sen_active, null
+  %mgau30 = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 3
+  %mgau_sl = getelementptr inbounds %struct.subvq_t* %vq, i64 0, i32 9
+  br label %for.body22
+
+for.body22:                                       ; preds = %for.body22.lr.ph, %for.inc50
+  %indvars.iv135 = phi i64 [ 0, %for.body22.lr.ph ], [ %indvars.iv.next136, %for.inc50 ]
+  %ng.2129 = phi i32 [ 0, %for.body22.lr.ph ], [ %ng.3, %for.inc50 ]
+  %ns.2128 = phi i32 [ 0, %for.body22.lr.ph ], [ %ns.3, %for.inc50 ]
+  %best.3127 = phi i32 [ -2147483648, %for.body22.lr.ph ], [ %best.5, %for.inc50 ]
+  br i1 %tobool23, label %if.then28, label %lor.lhs.false24
+
+lor.lhs.false24:                                  ; preds = %for.body22
+  %arrayidx26 = getelementptr inbounds i32* %sen_active, i64 %indvars.iv135
+  %8 = load i32* %arrayidx26, align 4, !tbaa !0
+  %tobool27 = icmp eq i32 %8, 0
+  br i1 %tobool27, label %if.else46, label %if.then28
+
+if.then28:                                        ; preds = %lor.lhs.false24, %for.body22
+  %9 = load %struct.mgau_t** %mgau30, align 8, !tbaa !3
+  %n_comp32 = getelementptr inbounds %struct.mgau_t* %9, i64 %indvars.iv135, i32 0
+  %10 = load i32* %n_comp32, align 4, !tbaa !0
+  %11 = trunc i64 %indvars.iv135 to i32
+  %call33 = tail call i32 @subvq_mgau_shortlist(%struct.subvq_t* %vq, i32 %11, i32 %10, i32 %beam) #7
+  %add34 = add nsw i32 %call33, %ng.2129
+  %12 = load i32** %mgau_sl, align 8, !tbaa !3
+  %call35 = tail call i32 @mgau_eval(%struct.mgau_model_t* %g, i32 %11, i32* %12, float* %feat) #5
+  %arrayidx37 = getelementptr inbounds i32* %senscr, i64 %indvars.iv135
+  store i32 %call35, i32* %arrayidx37, align 4, !tbaa !0
+  %cmp40 = icmp slt i32 %best.3127, %call35
+  %call35.best.3 = select i1 %cmp40, i32 %call35, i32 %best.3127
+  %inc45 = add nsw i32 %ns.2128, 1
+  br label %for.inc50
+
+if.else46:                                        ; preds = %lor.lhs.false24
+  %arrayidx48 = getelementptr inbounds i32* %senscr, i64 %indvars.iv135
+  store i32 -939524096, i32* %arrayidx48, align 4, !tbaa !0
+  br label %for.inc50
+
+for.inc50:                                        ; preds = %if.then28, %if.else46
+  %best.5 = phi i32 [ %call35.best.3, %if.then28 ], [ %best.3127, %if.else46 ]
+  %ns.3 = phi i32 [ %inc45, %if.then28 ], [ %ns.2128, %if.else46 ]
+  %ng.3 = phi i32 [ %add34, %if.then28 ], [ %ng.2129, %if.else46 ]
+  %indvars.iv.next136 = add i64 %indvars.iv135, 1
+  %13 = load i32* %n_mgau20, align 4, !tbaa !0
+  %14 = trunc i64 %indvars.iv.next136 to i32
+  %cmp21 = icmp slt i32 %14, %13
+  br i1 %cmp21, label %for.body22, label %if.end53
+
+if.end53:                                         ; preds = %for.inc50, %for.inc
+  %15 = phi i32 [ %5, %for.inc ], [ %13, %for.inc50 ]
+  %best.6 = phi i32 [ %best.2, %for.inc ], [ %best.5, %for.inc50 ]
+  %ns.4 = phi i32 [ %ns.1, %for.inc ], [ %ns.3, %for.inc50 ]
+  %ng.4 = phi i32 [ %ng.1, %for.inc ], [ %ng.3, %for.inc50 ]
+  %n_mgau55 = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 0
+  %cmp56115 = icmp sgt i32 %15, 0
+  br i1 %cmp56115, label %for.body57, label %for.end62
+
+for.body57:                                       ; preds = %if.end53, %for.body57
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body57 ], [ 0, %if.end53 ]
+  %arrayidx59 = getelementptr inbounds i32* %senscr, i64 %indvars.iv
+  %16 = load i32* %arrayidx59, align 4, !tbaa !0
+  %sub = sub nsw i32 %16, %best.6
+  store i32 %sub, i32* %arrayidx59, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %17 = load i32* %n_mgau55, align 4, !tbaa !0
+  %18 = trunc i64 %indvars.iv.next to i32
+  %cmp56 = icmp slt i32 %18, %17
+  br i1 %cmp56, label %for.body57, label %for.end62
+
+for.end62:                                        ; preds = %if.else18, %for.cond.preheader, %for.body57, %if.end53
+  %ng.4141 = phi i32 [ %ng.4, %if.end53 ], [ %ng.4, %for.body57 ], [ 0, %for.cond.preheader ], [ 0, %if.else18 ]
+  %ns.4140 = phi i32 [ %ns.4, %if.end53 ], [ %ns.4, %for.body57 ], [ 0, %for.cond.preheader ], [ 0, %if.else18 ]
+  %best.6139 = phi i32 [ %best.6, %if.end53 ], [ %best.6, %for.body57 ], [ -2147483648, %for.cond.preheader ], [ -2147483648, %if.else18 ]
+  %frm_sen_eval = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 5
+  store i32 %ns.4140, i32* %frm_sen_eval, align 4, !tbaa !0
+  %frm_gau_eval = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 6
+  store i32 %ng.4141, i32* %frm_gau_eval, align 4, !tbaa !0
+  ret i32 %best.6139
+}

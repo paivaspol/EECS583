@@ -1,0 +1,15 @@
+define i32 @do_per_step(i32 %step, i32 %nstep) #3 {
+entry:
+  %cmp = icmp eq i32 %nstep, 0
+  br i1 %cmp, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %rem = srem i32 %step, %nstep
+  %cmp1 = icmp eq i32 %rem, 0
+  %conv = zext i1 %cmp1 to i32
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ %conv, %if.then ], [ 0, %entry ]
+  ret i32 %retval.0
+}

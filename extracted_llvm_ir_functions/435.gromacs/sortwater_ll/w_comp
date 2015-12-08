@@ -1,0 +1,52 @@
+define internal i32 @w_comp(i8* nocapture %a, i8* nocapture %b) #2 {
+entry:
+  %0 = bitcast i8* %a to i32*
+  %1 = bitcast i8* %b to i32*
+  %call = tail call fastcc float @box_weight(i32* %0, [3 x float]* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 0)) #6
+  %call1 = tail call fastcc float @box_weight(i32* %1, [3 x float]* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 0)) #6
+  %sub = fsub float %call, %call1
+  %fabsf = tail call float @fabsf(float %sub) #7
+  %2 = fpext float %fabsf to double
+  %cmp = fcmp olt double %2, 1.000000e-04
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %3 = load i32* %0, align 4, !tbaa !0
+  %mul.i = mul nsw i32 %3, %3
+  %arrayidx2.i = getelementptr inbounds i8* %a, i64 4
+  %4 = bitcast i8* %arrayidx2.i to i32*
+  %5 = load i32* %4, align 4, !tbaa !0
+  %mul4.i = mul nsw i32 %5, %5
+  %add.i = add nsw i32 %mul4.i, %mul.i
+  %arrayidx5.i = getelementptr inbounds i8* %a, i64 8
+  %6 = bitcast i8* %arrayidx5.i to i32*
+  %7 = load i32* %6, align 4, !tbaa !0
+  %mul7.i = mul nsw i32 %7, %7
+  %add8.i = add nsw i32 %add.i, %mul7.i
+  %conv.i = sitofp i32 %add8.i to float
+  %8 = load i32* %1, align 4, !tbaa !0
+  %mul.i18 = mul nsw i32 %8, %8
+  %arrayidx2.i19 = getelementptr inbounds i8* %b, i64 4
+  %9 = bitcast i8* %arrayidx2.i19 to i32*
+  %10 = load i32* %9, align 4, !tbaa !0
+  %mul4.i21 = mul nsw i32 %10, %10
+  %add.i22 = add nsw i32 %mul4.i21, %mul.i18
+  %arrayidx5.i23 = getelementptr inbounds i8* %b, i64 8
+  %11 = bitcast i8* %arrayidx5.i23 to i32*
+  %12 = load i32* %11, align 4, !tbaa !0
+  %mul7.i25 = mul nsw i32 %12, %12
+  %add8.i26 = add nsw i32 %add.i22, %mul7.i25
+  %conv.i27 = sitofp i32 %add8.i26 to float
+  %sub6 = fsub float %conv.i, %conv.i27
+  %conv7 = fptosi float %sub6 to i32
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %cmp8 = fcmp olt float %call, %call1
+  %. = select i1 %cmp8, i32 -1, i32 1
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi i32 [ %conv7, %if.then ], [ %., %if.else ]
+  ret i32 %retval.0
+}

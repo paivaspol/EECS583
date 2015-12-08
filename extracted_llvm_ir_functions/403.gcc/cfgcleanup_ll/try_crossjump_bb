@@ -1,0 +1,110 @@
+define internal fastcc zeroext i1 @try_crossjump_bb(i32 %mode, %struct.basic_block_def* nocapture %bb) #0 {
+entry:
+  %pred = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 4
+  %0 = load %struct.edge_def** %pred, align 8, !tbaa !3
+  %tobool = icmp eq %struct.edge_def* %0, null
+  br i1 %tobool, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %pred_next = getelementptr inbounds %struct.edge_def* %0, i64 0, i32 0
+  %1 = load %struct.edge_def** %pred_next, align 8, !tbaa !3
+  %tobool2 = icmp eq %struct.edge_def* %1, null
+  br i1 %tobool2, label %return, label %for.body
+
+for.body:                                         ; preds = %lor.lhs.false, %for.inc
+  %fallthru.082 = phi %struct.edge_def* [ %3, %for.inc ], [ %0, %lor.lhs.false ]
+  %flags = getelementptr inbounds %struct.edge_def* %fallthru.082, i64 0, i32 6
+  %2 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %2, 1
+  %tobool5 = icmp eq i32 %and, 0
+  br i1 %tobool5, label %for.inc, label %for.body12.lr.ph.lr.ph
+
+for.inc:                                          ; preds = %for.body
+  %pred_next8 = getelementptr inbounds %struct.edge_def* %fallthru.082, i64 0, i32 0
+  %3 = load %struct.edge_def** %pred_next8, align 8, !tbaa !3
+  %tobool4 = icmp eq %struct.edge_def* %3, null
+  br i1 %tobool4, label %for.body12.lr.ph.lr.ph, label %for.body
+
+for.body12.lr.ph.lr.ph:                           ; preds = %for.body, %for.inc
+  %tobool4.lcssa = phi i1 [ true, %for.body ], [ false, %for.inc ]
+  %fallthru.0.lcssa = phi %struct.edge_def* [ %fallthru.082, %for.body ], [ null, %for.inc ]
+  br label %for.body12.lr.ph
+
+for.body12.lr.ph:                                 ; preds = %for.body12.lr.ph.lr.ph, %for.cond10.outer.backedge
+  %changed.0.ph89 = phi i8 [ 0, %for.body12.lr.ph.lr.ph ], [ 1, %for.cond10.outer.backedge ]
+  %e.0.ph88 = phi %struct.edge_def* [ %0, %for.body12.lr.ph.lr.ph ], [ %e.0.ph.be, %for.cond10.outer.backedge ]
+  br label %for.body12
+
+for.body12:                                       ; preds = %for.body12.lr.ph, %for.cond10.backedge
+  %e.080 = phi %struct.edge_def* [ %e.0.ph88, %for.body12.lr.ph ], [ %4, %for.cond10.backedge ]
+  %pred_next13 = getelementptr inbounds %struct.edge_def* %e.080, i64 0, i32 0
+  %4 = load %struct.edge_def** %pred_next13, align 8, !tbaa !3
+  br i1 %tobool4.lcssa, label %if.then15, label %if.end21
+
+if.then15:                                        ; preds = %for.body12
+  %cmp = icmp eq %struct.edge_def* %e.080, %fallthru.0.lcssa
+  br i1 %cmp, label %for.cond10.backedge, label %if.end17
+
+if.end17:                                         ; preds = %if.then15
+  %call = tail call fastcc zeroext i1 @try_crossjump_to_edge(i32 %mode, %struct.edge_def* %e.080, %struct.edge_def* %fallthru.0.lcssa) #6
+  br i1 %call, label %for.cond10.outer.backedge, label %if.end21
+
+for.cond10.outer.backedge:                        ; preds = %if.end41, %if.end17
+  %e.0.ph.be = load %struct.edge_def** %pred, align 8
+  %tobool1179 = icmp eq %struct.edge_def* %e.0.ph.be, null
+  br i1 %tobool1179, label %for.end49, label %for.body12.lr.ph
+
+if.end21:                                         ; preds = %if.end17, %for.body12
+  %src = getelementptr inbounds %struct.edge_def* %e.080, i64 0, i32 2
+  %5 = load %struct.basic_block_def** %src, align 8, !tbaa !3
+  %succ = getelementptr inbounds %struct.basic_block_def* %5, i64 0, i32 5
+  %6 = load %struct.edge_def** %succ, align 8, !tbaa !3
+  %cmp22 = icmp eq %struct.edge_def* %6, %e.080
+  br i1 %cmp22, label %if.end24, label %for.cond10.backedge
+
+for.cond10.backedge:                              ; preds = %if.end24, %for.cond26.backedge, %if.end21, %if.then15
+  %tobool11 = icmp eq %struct.edge_def* %4, null
+  br i1 %tobool11, label %for.end49, label %for.body12
+
+if.end24:                                         ; preds = %if.end21
+  %7 = load %struct.edge_def** %pred, align 8, !tbaa !3
+  %tobool2777 = icmp eq %struct.edge_def* %7, null
+  br i1 %tobool2777, label %for.cond10.backedge, label %for.body28
+
+for.body28:                                       ; preds = %if.end24, %for.cond26.backedge
+  %e2.078 = phi %struct.edge_def* [ %8, %for.cond26.backedge ], [ %7, %if.end24 ]
+  %pred_next29 = getelementptr inbounds %struct.edge_def* %e2.078, i64 0, i32 0
+  %8 = load %struct.edge_def** %pred_next29, align 8, !tbaa !3
+  %cmp30 = icmp eq %struct.edge_def* %e2.078, %e.080
+  %cmp33 = icmp eq %struct.edge_def* %e2.078, %fallthru.0.lcssa
+  %or.cond = or i1 %cmp30, %cmp33
+  br i1 %or.cond, label %for.cond26.backedge, label %if.end35
+
+if.end35:                                         ; preds = %for.body28
+  %9 = load %struct.basic_block_def** %src, align 8, !tbaa !3
+  %index = getelementptr inbounds %struct.basic_block_def* %9, i64 0, i32 11
+  %10 = load i32* %index, align 4, !tbaa !0
+  %src37 = getelementptr inbounds %struct.edge_def* %e2.078, i64 0, i32 2
+  %11 = load %struct.basic_block_def** %src37, align 8, !tbaa !3
+  %index38 = getelementptr inbounds %struct.basic_block_def* %11, i64 0, i32 11
+  %12 = load i32* %index38, align 4, !tbaa !0
+  %cmp39 = icmp sgt i32 %10, %12
+  br i1 %cmp39, label %for.cond26.backedge, label %if.end41
+
+if.end41:                                         ; preds = %if.end35
+  %call42 = tail call fastcc zeroext i1 @try_crossjump_to_edge(i32 %mode, %struct.edge_def* %e.080, %struct.edge_def* %e2.078) #6
+  br i1 %call42, label %for.cond10.outer.backedge, label %for.cond26.backedge
+
+for.cond26.backedge:                              ; preds = %if.end41, %if.end35, %for.body28
+  %tobool27 = icmp eq %struct.edge_def* %8, null
+  br i1 %tobool27, label %for.cond10.backedge, label %for.body28
+
+for.end49:                                        ; preds = %for.cond10.outer.backedge, %for.cond10.backedge
+  %changed.0.ph86 = phi i8 [ %changed.0.ph89, %for.cond10.backedge ], [ 1, %for.cond10.outer.backedge ]
+  %tobool50 = icmp ne i8 %changed.0.ph86, 0
+  br label %return
+
+return:                                           ; preds = %entry, %lor.lhs.false, %for.end49
+  %retval.0 = phi i1 [ %tobool50, %for.end49 ], [ false, %lor.lhs.false ], [ false, %entry ]
+  ret i1 %retval.0
+}

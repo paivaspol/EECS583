@@ -1,0 +1,175 @@
+define void @w_checkpoint(%struct.gauge_file* %gf) #0 {
+entry:
+  %checksum_offset = alloca i64, align 8
+  %myname = alloca [13 x i8], align 1
+  %0 = getelementptr inbounds [13 x i8]* %myname, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* getelementptr inbounds ([13 x i8]* @w_checkpoint.myname, i64 0, i64 0), i64 13, i32 1, i1 false)
+  %fp1 = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 0
+  %1 = load %struct._IO_FILE** %fp1, align 8, !tbaa !3
+  %call = call %struct.su3_matrix* @w_parallel_setup(%struct.gauge_file* %gf, i64* %checksum_offset) #8
+  %sum31 = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 6, i32 0
+  store i32 0, i32* %sum31, align 4, !tbaa !0
+  %sum29 = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 6, i32 1
+  store i32 0, i32* %sum29, align 4, !tbaa !0
+  %2 = load i32* @sites_on_node, align 4, !tbaa !0
+  %conv = sext i32 %2 to i64
+  %mul = mul i64 %conv, 144
+  %3 = load i32* @this_node, align 4, !tbaa !0
+  %conv3 = sext i32 %3 to i64
+  %mul4 = mul i64 %mul, %conv3
+  %cmp125 = icmp sgt i32 %2, 0
+  br i1 %cmp125, label %for.body.lr.ph, label %entry.for.end63_crit_edge
+
+entry.for.end63_crit_edge:                        ; preds = %entry
+  %.pre133 = bitcast %struct.su3_matrix* %call to i8*
+  br label %for.end63
+
+for.body.lr.ph:                                   ; preds = %entry
+  %rem10 = urem i64 %mul4, 31
+  %rem = urem i64 %mul4, 29
+  %conv11 = trunc i64 %rem10 to i32
+  %conv5 = trunc i64 %rem to i32
+  %4 = bitcast %struct.su3_matrix* %call to i8*
+  %filename = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 2
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc60.for.body_crit_edge, %for.body.lr.ph
+  %.pre130 = phi i32 [ 0, %for.body.lr.ph ], [ %.pre130.pre, %for.inc60.for.body_crit_edge ]
+  %.pre = phi i32 [ 0, %for.body.lr.ph ], [ %.pre.pre, %for.inc60.for.body_crit_edge ]
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc60.for.body_crit_edge ]
+  %buf_length.0128 = phi i32 [ 0, %for.body.lr.ph ], [ %buf_length.1, %for.inc60.for.body_crit_edge ]
+  %rank31.0127 = phi i32 [ %conv11, %for.body.lr.ph ], [ %.inc34, %for.inc60.for.body_crit_edge ]
+  %rank29.0126 = phi i32 [ %conv5, %for.body.lr.ph ], [ %.inc, %for.inc60.for.body_crit_edge ]
+  %mul13 = shl nsw i32 %buf_length.0128, 2
+  %idxprom = sext i32 %mul13 to i64
+  %arrayidx = getelementptr inbounds %struct.su3_matrix* %call, i64 %idxprom
+  %5 = bitcast %struct.su3_matrix* %arrayidx to i8*
+  %6 = load %struct.site** @lattice, align 8, !tbaa !3
+  %arraydecay = getelementptr inbounds %struct.site* %6, i64 %indvars.iv, i32 8, i64 0
+  %7 = bitcast %struct.su3_matrix* %arraydecay to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* %7, i64 576, i32 1, i1 false)
+  %8 = bitcast %struct.su3_matrix* %arrayidx to i32*
+  br label %for.body22
+
+for.body22:                                       ; preds = %for.body22, %for.body
+  %9 = phi i32 [ %.pre130, %for.body ], [ %xor31, %for.body22 ]
+  %10 = phi i32 [ %.pre, %for.body ], [ %xor, %for.body22 ]
+  %rank31.1124 = phi i32 [ %rank31.0127, %for.body ], [ %.inc34, %for.body22 ]
+  %rank29.1123 = phi i32 [ %rank29.0126, %for.body ], [ %.inc, %for.body22 ]
+  %k.0122 = phi i32 [ 0, %for.body ], [ %inc39, %for.body22 ]
+  %val.0121 = phi i32* [ %8, %for.body ], [ %incdec.ptr, %for.body22 ]
+  %11 = load i32* %val.0121, align 4, !tbaa !0
+  %shl = shl i32 %11, %rank29.1123
+  %sub = sub nsw i32 32, %rank29.1123
+  %shr = lshr i32 %11, %sub
+  %or = or i32 %shl, %shr
+  %xor = xor i32 %or, %10
+  store i32 %xor, i32* %sum29, align 4, !tbaa !0
+  %12 = load i32* %val.0121, align 4, !tbaa !0
+  %shl25 = shl i32 %12, %rank31.1124
+  %sub26 = sub nsw i32 32, %rank31.1124
+  %shr27 = lshr i32 %12, %sub26
+  %or28 = or i32 %shl25, %shr27
+  %xor31 = xor i32 %or28, %9
+  store i32 %xor31, i32* %sum31, align 4, !tbaa !0
+  %inc = add nsw i32 %rank29.1123, 1
+  %cmp32 = icmp sgt i32 %rank29.1123, 27
+  %.inc = select i1 %cmp32, i32 0, i32 %inc
+  %inc34 = add nsw i32 %rank31.1124, 1
+  %cmp35 = icmp sgt i32 %rank31.1124, 29
+  %.inc34 = select i1 %cmp35, i32 0, i32 %inc34
+  %inc39 = add nsw i32 %k.0122, 1
+  %incdec.ptr = getelementptr inbounds i32* %val.0121, i64 1
+  %exitcond = icmp eq i32 %inc39, 144
+  br i1 %exitcond, label %for.end, label %for.body22
+
+for.end:                                          ; preds = %for.body22
+  %inc40 = add nsw i32 %buf_length.0128, 1
+  %cmp41 = icmp eq i32 %inc40, 4096
+  br i1 %cmp41, label %if.then46, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %for.end
+  %13 = load i32* @sites_on_node, align 4, !tbaa !0
+  %sub43 = add nsw i32 %13, -1
+  %14 = trunc i64 %indvars.iv to i32
+  %cmp44 = icmp eq i32 %14, %sub43
+  br i1 %cmp44, label %if.then46, label %for.inc60
+
+if.then46:                                        ; preds = %lor.lhs.false, %for.end
+  %15 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call47 = call i32 @fflush(%struct._IO_FILE* %15) #9
+  %conv48 = sext i32 %inc40 to i64
+  %call49 = call i64 @g_write(i8* %4, i64 576, i64 %conv48, %struct._IO_FILE* %1) #9
+  %conv50 = trunc i64 %call49 to i32
+  %cmp51 = icmp eq i32 %conv50, %inc40
+  br i1 %cmp51, label %for.inc60, label %if.then53
+
+if.then53:                                        ; preds = %if.then46
+  %16 = load i32* @this_node, align 4, !tbaa !0
+  %call55 = call i32* @__errno_location() #10
+  %17 = load i32* %call55, align 4, !tbaa !0
+  %18 = load i8** %filename, align 8, !tbaa !3
+  %call56 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([56 x i8]* @.str119, i64 0, i64 0), i8* %0, i32 %16, i32 %17, i8* %18) #9
+  %19 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call57 = call i32 @fflush(%struct._IO_FILE* %19) #9
+  call void @terminate(i32 1) #9
+  br label %for.inc60
+
+for.inc60:                                        ; preds = %if.then46, %if.then53, %lor.lhs.false
+  %buf_length.1 = phi i32 [ %inc40, %lor.lhs.false ], [ 0, %if.then53 ], [ 0, %if.then46 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %20 = load i32* @sites_on_node, align 4, !tbaa !0
+  %21 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %21, %20
+  br i1 %cmp, label %for.inc60.for.body_crit_edge, label %for.end63
+
+for.inc60.for.body_crit_edge:                     ; preds = %for.inc60
+  %.pre.pre = load i32* %sum29, align 4, !tbaa !0
+  %.pre130.pre = load i32* %sum31, align 4, !tbaa !0
+  br label %for.body
+
+for.end63:                                        ; preds = %for.inc60, %entry.for.end63_crit_edge
+  %.pre-phi = phi i8* [ %.pre133, %entry.for.end63_crit_edge ], [ %4, %for.inc60 ]
+  call void @free(i8* %.pre-phi) #9
+  call void @g_xor32(i32* %sum29) #9
+  call void @g_xor32(i32* %sum31) #9
+  %22 = load i32* @this_node, align 4, !tbaa !0
+  %cmp68 = icmp eq i32 %22, 0
+  br i1 %cmp68, label %if.then70, label %if.end85
+
+if.then70:                                        ; preds = %for.end63
+  %23 = load i64* %checksum_offset, align 8, !tbaa !7
+  %call71 = call i32 @g_seek(%struct._IO_FILE* %1, i64 %23, i32 0) #9
+  %cmp72 = icmp slt i32 %call71, 0
+  br i1 %cmp72, label %if.then74, label %if.then70.if.end80_crit_edge
+
+if.then70.if.end80_crit_edge:                     ; preds = %if.then70
+  %filename81.pre = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 2
+  br label %if.end80
+
+if.then74:                                        ; preds = %if.then70
+  %24 = load i32* @this_node, align 4, !tbaa !0
+  %call76 = call i32* @__errno_location() #10
+  %25 = load i32* %call76, align 4, !tbaa !0
+  %filename77 = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 2
+  %26 = load i8** %filename77, align 8, !tbaa !3
+  %call78 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([61 x i8]* @.str120, i64 0, i64 0), i8* %0, i32 %24, i64 %23, i32 %25, i8* %26) #9
+  %27 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call79 = call i32 @fflush(%struct._IO_FILE* %27) #9
+  call void @terminate(i32 1) #9
+  br label %if.end80
+
+if.end80:                                         ; preds = %if.then70.if.end80_crit_edge, %if.then74
+  %filename81.pre-phi = phi i8** [ %filename81.pre, %if.then70.if.end80_crit_edge ], [ %filename77, %if.then74 ]
+  call void @write_checksum(i32 1, %struct.gauge_file* %gf) #8
+  %28 = load i8** %filename81.pre-phi, align 8, !tbaa !3
+  %call82 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([46 x i8]* @.str122, i64 0, i64 0), i8* %28) #9
+  %header = getelementptr inbounds %struct.gauge_file* %gf, i64 0, i32 1
+  %29 = load %struct.gauge_header** %header, align 8, !tbaa !3
+  %arraydecay83 = getelementptr inbounds %struct.gauge_header* %29, i64 0, i32 1, i64 0
+  %call84 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([15 x i8]* @.str49, i64 0, i64 0), i8* %arraydecay83) #9
+  br label %if.end85
+
+if.end85:                                         ; preds = %if.end80, %for.end63
+  ret void
+}

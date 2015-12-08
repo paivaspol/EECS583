@@ -1,0 +1,75 @@
+define i32 @refers_to_mem_for_reload_p(%struct.rtx_def* nocapture %x) #4 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.end10 [
+    i32 66, label %return
+    i32 61, label %if.then4
+  ]
+
+if.then4:                                         ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp5 = icmp ugt i32 %1, 52
+  br i1 %cmp5, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %if.then4
+  %idxprom = zext i32 %1 to i64
+  %2 = load %struct.rtx_def*** @reg_equiv_memory_loc, align 8, !tbaa !5
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def** %2, i64 %idxprom
+  %3 = load %struct.rtx_def** %arrayidx9, align 8, !tbaa !5
+  %tobool = icmp ne %struct.rtx_def* %3, null
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %if.then4
+  %4 = phi i1 [ false, %if.then4 ], [ %tobool, %land.rhs ]
+  %land.ext = zext i1 %4 to i32
+  br label %return
+
+if.end10:                                         ; preds = %entry
+  %idxprom1350 = zext i32 %bf.clear to i64
+  %arrayidx14 = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom1350
+  %5 = load i8** %arrayidx14, align 8, !tbaa !5
+  %arrayidx18 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom1350
+  %6 = load i8* %arrayidx18, align 1, !tbaa !1
+  %cmp1952 = icmp eq i8 %6, 0
+  br i1 %cmp1952, label %return, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.end10
+  %7 = zext i8 %6 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %indvars.iv = phi i64 [ %7, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond.backedge ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %arrayidx22 = getelementptr inbounds i8* %5, i64 %indvars.iv.next
+  %8 = load i8* %arrayidx22, align 1, !tbaa !1
+  %cmp24 = icmp eq i8 %8, 101
+  br i1 %cmp24, label %land.lhs.true, label %for.cond.backedge
+
+land.lhs.true:                                    ; preds = %for.body
+  %arrayidx28 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next
+  %rtx = bitcast %union.rtunion_def* %arrayidx28 to %struct.rtx_def**
+  %9 = load %struct.rtx_def** %rtx, align 8, !tbaa !5
+  %10 = bitcast %struct.rtx_def* %9 to i32*
+  %bf.load29 = load i32* %10, align 8
+  %bf.clear30 = and i32 %bf.load29, 65535
+  %cmp31 = icmp eq i32 %bf.clear30, 66
+  br i1 %cmp31, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true
+  %call = tail call i32 @refers_to_mem_for_reload_p(%struct.rtx_def* %9) #7
+  %tobool37 = icmp eq i32 %call, 0
+  br i1 %tobool37, label %for.cond.backedge, label %return
+
+for.cond.backedge:                                ; preds = %lor.lhs.false, %for.body
+  %11 = trunc i64 %indvars.iv.next to i32
+  %cmp19 = icmp sgt i32 %11, 0
+  br i1 %cmp19, label %for.body, label %return
+
+return:                                           ; preds = %if.end10, %land.lhs.true, %lor.lhs.false, %for.cond.backedge, %entry, %land.end
+  %retval.0 = phi i32 [ %land.ext, %land.end ], [ 1, %entry ], [ 0, %if.end10 ], [ 1, %land.lhs.true ], [ 1, %lor.lhs.false ], [ 0, %for.cond.backedge ]
+  ret i32 %retval.0
+}

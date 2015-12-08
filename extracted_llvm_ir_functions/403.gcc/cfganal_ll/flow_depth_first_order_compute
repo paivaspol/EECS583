@@ -1,0 +1,151 @@
+define i32 @flow_depth_first_order_compute(i32* %dfs_order, i32* %rc_order) #0 {
+entry:
+  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %sub = add nsw i32 %0, -1
+  %add = add nsw i32 %0, 1
+  %conv = sext i32 %add to i64
+  %mul = shl nsw i64 %conv, 3
+  %call = tail call noalias i8* @xmalloc(i64 %mul) #6
+  %1 = bitcast i8* %call to %struct.edge_def**
+  %2 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %call1 = tail call %struct.simple_bitmap_def* @sbitmap_alloc(i32 %2) #6
+  tail call void @sbitmap_zero(%struct.simple_bitmap_def* %call1) #6
+  %3 = load %struct.edge_def** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0, i32 5), align 8, !tbaa !0
+  store %struct.edge_def* %3, %struct.edge_def** %1, align 8, !tbaa !0
+  %tobool20 = icmp eq i32* %dfs_order, null
+  %tobool32 = icmp eq i32* %rc_order, null
+  br label %while.cond.outer
+
+while.cond.outer:                                 ; preds = %if.end51, %if.then33, %if.then54, %entry
+  %rcnum.0.ph = phi i32 [ %sub, %entry ], [ %rcnum.1, %if.then54 ], [ %dec, %if.then33 ], [ %rcnum.1, %if.end51 ]
+  %dfsnum.0.ph = phi i32 [ 0, %entry ], [ %dfsnum.0, %if.then54 ], [ %inc25, %if.then33 ], [ %dfsnum.0, %if.end51 ]
+  %sp.0.ph = phi i32 [ 1, %entry ], [ %sp.0.ph109, %if.then54 ], [ %sp.0.ph109, %if.then33 ], [ %sub2, %if.end51 ]
+  %4 = sext i32 %sp.0.ph to i64
+  br label %while.cond.outer107
+
+while.cond.outer107:                              ; preds = %while.cond.outer, %if.then27
+  %indvars.iv146 = phi i64 [ %4, %while.cond.outer ], [ %indvars.iv.next147, %if.then27 ]
+  %dfsnum.0.ph108 = phi i32 [ %dfsnum.0.ph, %while.cond.outer ], [ %inc25, %if.then27 ]
+  %sp.0.ph109 = phi i32 [ %sp.0.ph, %while.cond.outer ], [ %inc29, %if.then27 ]
+  %5 = trunc i64 %indvars.iv146 to i32
+  %tobool = icmp eq i32 %5, 0
+  %6 = add nsw i64 %indvars.iv146, -1
+  %sub2 = add nsw i32 %sp.0.ph109, -1
+  %arrayidx4 = getelementptr inbounds %struct.edge_def** %1, i64 %6
+  %7 = sext i32 %dfsnum.0.ph108 to i64
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.outer107, %if.else
+  %indvars.iv = phi i64 [ %7, %while.cond.outer107 ], [ %indvars.iv.next, %if.else ]
+  %dfsnum.0 = phi i32 [ %dfsnum.0.ph108, %while.cond.outer107 ], [ %inc25, %if.else ]
+  br i1 %tobool, label %while.end, label %while.body
+
+while.body:                                       ; preds = %while.cond
+  %8 = load %struct.edge_def** %arrayidx4, align 8, !tbaa !0
+  %src5 = getelementptr inbounds %struct.edge_def* %8, i64 0, i32 2
+  %9 = load %struct.basic_block_def** %src5, align 8, !tbaa !0
+  %dest6 = getelementptr inbounds %struct.edge_def* %8, i64 0, i32 3
+  %10 = load %struct.basic_block_def** %dest6, align 8, !tbaa !0
+  %cmp = icmp eq %struct.basic_block_def* %10, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1)
+  br i1 %cmp, label %if.else39, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %while.body
+  %index = getelementptr inbounds %struct.basic_block_def* %10, i64 0, i32 11
+  %11 = load i32* %index, align 4, !tbaa !3
+  %div = lshr i32 %11, 6
+  %idxprom8 = zext i32 %div to i64
+  %arrayidx9 = getelementptr inbounds %struct.simple_bitmap_def* %call1, i64 0, i32 3, i64 %idxprom8
+  %12 = load i64* %arrayidx9, align 8, !tbaa !4
+  %rem = and i32 %11, 63
+  %sh_prom = zext i32 %rem to i64
+  %13 = shl i64 1, %sh_prom
+  %and105 = and i64 %13, %12
+  %tobool11 = icmp eq i64 %and105, 0
+  br i1 %tobool11, label %if.then, label %if.else39
+
+if.then:                                          ; preds = %land.lhs.true
+  %or = or i64 %13, %12
+  store i64 %or, i64* %arrayidx9, align 8, !tbaa !4
+  br i1 %tobool20, label %if.end, label %if.then21
+
+if.then21:                                        ; preds = %if.then
+  %arrayidx24 = getelementptr inbounds i32* %dfs_order, i64 %indvars.iv
+  store i32 %11, i32* %arrayidx24, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then21
+  %inc25 = add nsw i32 %dfsnum.0, 1
+  %succ = getelementptr inbounds %struct.basic_block_def* %10, i64 0, i32 5
+  %14 = load %struct.edge_def** %succ, align 8, !tbaa !0
+  %tobool26 = icmp eq %struct.edge_def* %14, null
+  br i1 %tobool26, label %if.else, label %if.then27
+
+if.then27:                                        ; preds = %if.end
+  %indvars.iv.next147 = add i64 %indvars.iv146, 1
+  %inc29 = add nsw i32 %sp.0.ph109, 1
+  %arrayidx31 = getelementptr inbounds %struct.edge_def** %1, i64 %indvars.iv146
+  store %struct.edge_def* %14, %struct.edge_def** %arrayidx31, align 8, !tbaa !0
+  br label %while.cond.outer107
+
+if.else:                                          ; preds = %if.end
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %tobool32, label %while.cond, label %if.then33
+
+if.then33:                                        ; preds = %if.else
+  %15 = load i32* %index, align 4, !tbaa !3
+  %dec = add nsw i32 %rcnum.0.ph, -1
+  %idxprom35 = sext i32 %rcnum.0.ph to i64
+  %arrayidx36 = getelementptr inbounds i32* %rc_order, i64 %idxprom35
+  store i32 %15, i32* %arrayidx36, align 4, !tbaa !3
+  br label %while.cond.outer
+
+if.else39:                                        ; preds = %land.lhs.true, %while.body
+  %succ_next = getelementptr inbounds %struct.edge_def* %8, i64 0, i32 1
+  %16 = load %struct.edge_def** %succ_next, align 8, !tbaa !0
+  %tobool40 = icmp ne %struct.edge_def* %16, null
+  %cmp42 = icmp eq %struct.basic_block_def* %9, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0)
+  %or.cond = or i1 %tobool40, %cmp42
+  %or.cond106 = or i1 %or.cond, %tobool32
+  br i1 %or.cond106, label %if.end51, label %if.then46
+
+if.then46:                                        ; preds = %if.else39
+  %index47 = getelementptr inbounds %struct.basic_block_def* %9, i64 0, i32 11
+  %17 = load i32* %index47, align 4, !tbaa !3
+  %dec48 = add nsw i32 %rcnum.0.ph, -1
+  %idxprom49 = sext i32 %rcnum.0.ph to i64
+  %arrayidx50 = getelementptr inbounds i32* %rc_order, i64 %idxprom49
+  store i32 %17, i32* %arrayidx50, align 4, !tbaa !3
+  br label %if.end51
+
+if.end51:                                         ; preds = %if.else39, %if.then46
+  %rcnum.1 = phi i32 [ %rcnum.0.ph, %if.else39 ], [ %dec48, %if.then46 ]
+  %tobool53 = icmp eq %struct.edge_def* %16, null
+  br i1 %tobool53, label %while.cond.outer, label %if.then54
+
+if.then54:                                        ; preds = %if.end51
+  store %struct.edge_def* %16, %struct.edge_def** %arrayidx4, align 8, !tbaa !0
+  br label %while.cond.outer
+
+while.end:                                        ; preds = %while.cond
+  tail call void @free(i8* %call) #6
+  %18 = bitcast %struct.simple_bitmap_def* %call1 to i8*
+  tail call void @free(i8* %18) #6
+  %19 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %cmp63 = icmp sgt i32 %dfsnum.0, %19
+  br i1 %cmp63, label %if.then65, label %if.end66
+
+if.then65:                                        ; preds = %while.end
+  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str19, i64 0, i64 0), i32 969, i8* getelementptr inbounds ([31 x i8]* @__FUNCTION__.flow_depth_first_order_compute, i64 0, i64 0)) #8
+  unreachable
+
+if.end66:                                         ; preds = %while.end
+  %cmp67 = icmp slt i32 %dfsnum.0, %19
+  br i1 %cmp67, label %if.then69, label %if.end70
+
+if.then69:                                        ; preds = %if.end66
+  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str19, i64 0, i64 0), i32 973, i8* getelementptr inbounds ([31 x i8]* @__FUNCTION__.flow_depth_first_order_compute, i64 0, i64 0)) #8
+  unreachable
+
+if.end70:                                         ; preds = %if.end66
+  ret i32 %dfsnum.0
+}

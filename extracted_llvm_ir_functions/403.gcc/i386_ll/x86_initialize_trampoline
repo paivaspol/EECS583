@@ -1,0 +1,99 @@
+define void @x86_initialize_trampoline(%struct.rtx_def* %tramp, %struct.rtx_def* %fnaddr, %struct.rtx_def* %cxt) #1 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 2), align 8, !tbaa !4
+  %call = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tramp, i64 10) #9
+  %call1 = tail call %struct.rtx_def* @expand_binop(i32 4, %struct.optab* %1, %struct.rtx_def* %fnaddr, %struct.rtx_def* %call, %struct.rtx_def* null, i32 1, i32 0) #9
+  %call2 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 2, %struct.rtx_def* %tramp) #9
+  %call3 = tail call i64 @trunc_int_for_mode(i64 185, i32 2) #9
+  %call4 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %call3) #9
+  %call5 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call2, %struct.rtx_def* %call4) #9
+  %call6 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tramp, i64 1) #9
+  %call7 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 4, %struct.rtx_def* %call6) #9
+  %call8 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call7, %struct.rtx_def* %cxt) #9
+  %call9 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tramp, i64 5) #9
+  %call10 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 2, %struct.rtx_def* %call9) #9
+  %call11 = tail call i64 @trunc_int_for_mode(i64 233, i32 2) #9
+  %call12 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %call11) #9
+  %call13 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call10, %struct.rtx_def* %call12) #9
+  %call14 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tramp, i64 6) #9
+  %call15 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 4, %struct.rtx_def* %call14) #9
+  %call16 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call15, %struct.rtx_def* %call1) #9
+  br label %if.end76
+
+if.else:                                          ; preds = %entry
+  %call17 = tail call i32 @x86_64_zero_extended_value(%struct.rtx_def* %fnaddr) #10
+  %tobool18 = icmp eq i32 %call17, 0
+  br i1 %tobool18, label %if.else32, label %if.then19
+
+if.then19:                                        ; preds = %if.else
+  %call20 = tail call %struct.rtx_def* @copy_to_mode_reg(i32 5, %struct.rtx_def* %fnaddr) #9
+  %call21 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tramp, i64 0) #9
+  %call22 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 3, %struct.rtx_def* %call21) #9
+  %call23 = tail call i64 @trunc_int_for_mode(i64 47937, i32 3) #9
+  %call24 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %call23) #9
+  %call25 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call22, %struct.rtx_def* %call24) #9
+  %call27 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tramp, i64 2) #9
+  %call28 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 4, %struct.rtx_def* %call27) #9
+  %call29 = tail call %struct.rtx_def* @gen_lowpart(i32 4, %struct.rtx_def* %call20) #9
+  %call30 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call28, %struct.rtx_def* %call29) #9
+  br label %if.end
+
+if.else32:                                        ; preds = %if.else
+  %call34 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tramp, i64 0) #9
+  %call35 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 3, %struct.rtx_def* %call34) #9
+  %call36 = tail call i64 @trunc_int_for_mode(i64 47945, i32 3) #9
+  %call37 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %call36) #9
+  %call38 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call35, %struct.rtx_def* %call37) #9
+  %call41 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tramp, i64 2) #9
+  %call42 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 5, %struct.rtx_def* %call41) #9
+  %call43 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call42, %struct.rtx_def* %fnaddr) #9
+  br label %if.end
+
+if.end:                                           ; preds = %if.else32, %if.then19
+  %offset.0 = phi i32 [ 6, %if.then19 ], [ 10, %if.else32 ]
+  %conv45106 = zext i32 %offset.0 to i64
+  %call46 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tramp, i64 %conv45106) #9
+  %call47 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 3, %struct.rtx_def* %call46) #9
+  %call48 = tail call i64 @trunc_int_for_mode(i64 47689, i32 3) #9
+  %call49 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %call48) #9
+  %call50 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call47, %struct.rtx_def* %call49) #9
+  %add51 = add nsw i32 %offset.0, 2
+  %conv52107 = zext i32 %add51 to i64
+  %call53 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tramp, i64 %conv52107) #9
+  %call54 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 5, %struct.rtx_def* %call53) #9
+  %call55 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call54, %struct.rtx_def* %cxt) #9
+  %add56 = add nsw i32 %offset.0, 10
+  %conv57108 = zext i32 %add56 to i64
+  %call58 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tramp, i64 %conv57108) #9
+  %call59 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 3, %struct.rtx_def* %call58) #9
+  %call60 = tail call i64 @trunc_int_for_mode(i64 65353, i32 3) #9
+  %call61 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %call60) #9
+  %call62 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call59, %struct.rtx_def* %call61) #9
+  %add63 = add nsw i32 %offset.0, 12
+  %conv64109 = zext i32 %add63 to i64
+  %call65 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %tramp, i64 %conv64109) #9
+  %call66 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 2, %struct.rtx_def* %call65) #9
+  %call67 = tail call i64 @trunc_int_for_mode(i64 227, i32 2) #9
+  %call68 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %call67) #9
+  %call69 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call66, %struct.rtx_def* %call68) #9
+  %add70 = add nsw i32 %offset.0, 13
+  %2 = load i32* @target_flags, align 4, !tbaa !0
+  %and71 = and i32 %2, 33554432
+  %tobool72 = icmp ne i32 %and71, 0
+  %cond = select i1 %tobool72, i32 23, i32 10
+  %cmp = icmp ugt i32 %add70, %cond
+  br i1 %cmp, label %if.then74, label %if.end76
+
+if.then74:                                        ; preds = %if.end
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 10894, i8* getelementptr inbounds ([26 x i8]* @__FUNCTION__.x86_initialize_trampoline, i64 0, i64 0)) #11
+  unreachable
+
+if.end76:                                         ; preds = %if.end, %if.then
+  ret void
+}

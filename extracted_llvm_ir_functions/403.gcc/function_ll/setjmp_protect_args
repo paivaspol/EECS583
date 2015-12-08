@@ -1,0 +1,74 @@
+define void @setjmp_protect_args() #0 {
+entry:
+  %0 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %arguments = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 10
+  %decl.084 = load %union.tree_node** %arguments, align 8
+  %tobool85 = icmp eq %union.tree_node* %decl.084, null
+  br i1 %tobool85, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %decl.086 = phi %union.tree_node* [ %decl.0, %for.inc ], [ %decl.084, %entry ]
+  %code = getelementptr inbounds %union.tree_node* %decl.086, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %bf.clear.off = add i32 %bf.clear, -34
+  %switch = icmp ult i32 %bf.clear.off, 2
+  br i1 %switch, label %land.lhs.true, label %for.inc
+
+land.lhs.true:                                    ; preds = %for.body
+  %rtl = getelementptr inbounds %union.tree_node* %decl.086, i64 0, i32 0, i32 17
+  %2 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %tobool8 = icmp eq %struct.rtx_def* %2, null
+  br i1 %tobool8, label %cond.end, label %cond.end24
+
+cond.end:                                         ; preds = %land.lhs.true
+  tail call void @make_decl_rtl(%union.tree_node* %decl.086, i8* null) #10
+  %3 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %cmp13 = icmp eq %struct.rtx_def* %3, null
+  br i1 %cmp13, label %for.inc, label %cond.end24
+
+cond.end24:                                       ; preds = %land.lhs.true, %cond.end
+  %4 = phi %struct.rtx_def* [ %3, %cond.end ], [ %2, %land.lhs.true ]
+  %5 = bitcast %struct.rtx_def* %4 to i32*
+  %bf.load26 = load i32* %5, align 8
+  %bf.clear27 = and i32 %bf.load26, 65535
+  %cmp28 = icmp eq i32 %bf.clear27, 61
+  br i1 %cmp28, label %land.lhs.true59, label %cond.end39
+
+cond.end39:                                       ; preds = %cond.end24
+  %bf.clear42 = and i32 %bf.load26, 65535
+  %cmp43 = icmp eq i32 %bf.clear42, 66
+  br i1 %cmp43, label %cond.end54, label %for.inc
+
+cond.end54:                                       ; preds = %cond.end39
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %7 = bitcast %struct.rtx_def* %6 to i32*
+  %bf.load56 = load i32* %7, align 8
+  %bf.clear57 = and i32 %bf.load56, 65535
+  %cmp58 = icmp eq i32 %bf.clear57, 70
+  br i1 %cmp58, label %land.lhs.true59, label %for.inc
+
+land.lhs.true59:                                  ; preds = %cond.end54, %cond.end24
+  %regdecl_flag = getelementptr inbounds %union.tree_node* %decl.086, i64 0, i32 0, i32 5
+  %8 = bitcast [8 x i8]* %regdecl_flag to i64*
+  %bf.load61 = load i64* %8, align 8
+  %bf.cast = and i64 %bf.load61, 1024
+  %tobool63 = icmp eq i64 %bf.cast, 0
+  br i1 %tobool63, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %land.lhs.true59
+  tail call void @put_var_into_stack(%union.tree_node* %decl.086) #9
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %land.lhs.true59, %cond.end, %cond.end39, %cond.end54, %if.then
+  %chain = getelementptr inbounds %union.tree_node* %decl.086, i64 0, i32 0, i32 0, i32 0
+  %decl.0 = load %union.tree_node** %chain, align 8
+  %tobool = icmp eq %union.tree_node* %decl.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

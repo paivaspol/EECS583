@@ -1,0 +1,44 @@
+define i32 @regno_clobbered_at_setjmp(i32 %regno) #0 {
+entry:
+  %0 = load i32* @n_basic_blocks, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, 0
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %idxprom = sext i32 %regno to i64
+  %1 = load %struct.varray_head_tag** @reg_n_info, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4
+  %reg = bitcast %union.varray_data_tag* %data to [1 x %struct.reg_info_def*]*
+  %arrayidx = getelementptr inbounds [1 x %struct.reg_info_def*]* %reg, i64 0, i64 %idxprom
+  %2 = load %struct.reg_info_def** %arrayidx, align 8, !tbaa !3
+  %sets = getelementptr inbounds %struct.reg_info_def* %2, i64 0, i32 3
+  %3 = load i32* %sets, align 4, !tbaa !0
+  %cmp1 = icmp sgt i32 %3, 1
+  br i1 %cmp1, label %land.rhs, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end
+  %4 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
+  %data2 = getelementptr inbounds %struct.varray_head_tag* %4, i64 0, i32 4
+  %arrayidx3 = bitcast %union.varray_data_tag* %data2 to %struct.basic_block_def**
+  %5 = load %struct.basic_block_def** %arrayidx3, align 8, !tbaa !3
+  %global_live_at_start = getelementptr inbounds %struct.basic_block_def* %5, i64 0, i32 8
+  %6 = load %struct.bitmap_head_def** %global_live_at_start, align 8, !tbaa !3
+  %call = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %6, i32 %regno) #6
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %lor.lhs.false, %if.end
+  %7 = load %struct.bitmap_head_def** @regs_live_at_setjmp, align 8, !tbaa !3
+  %call4 = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %7, i32 %regno) #6
+  %tobool5 = icmp ne i32 %call4, 0
+  br label %land.end
+
+land.end:                                         ; preds = %lor.lhs.false, %land.rhs
+  %8 = phi i1 [ false, %lor.lhs.false ], [ %tobool5, %land.rhs ]
+  %land.ext = zext i1 %8 to i32
+  br label %return
+
+return:                                           ; preds = %entry, %land.end
+  %retval.0 = phi i32 [ %land.ext, %land.end ], [ 0, %entry ]
+  ret i32 %retval.0
+}

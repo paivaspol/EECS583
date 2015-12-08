@@ -1,0 +1,30 @@
+define internal i32 @df_rtx_reg_replace(%struct.rtx_def** %px, i8* nocapture %data) #0 {
+entry:
+  %0 = load %struct.rtx_def** %px, align 8, !tbaa !3
+  %cmp = icmp eq %struct.rtx_def* %0, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %match = bitcast i8* %data to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %match, align 8, !tbaa !3
+  %cmp1 = icmp eq %struct.rtx_def* %0, %1
+  br i1 %cmp1, label %if.then2, label %return
+
+if.then2:                                         ; preds = %if.end
+  %insn = getelementptr inbounds i8* %data, i64 16
+  %2 = bitcast i8* %insn to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %2, align 8, !tbaa !3
+  %replacement = getelementptr inbounds i8* %data, i64 8
+  %4 = bitcast i8* %replacement to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %4, align 8, !tbaa !3
+  %call = tail call i32 @validate_change(%struct.rtx_def* %3, %struct.rtx_def** %px, %struct.rtx_def* %5, i32 1) #8
+  %modified = getelementptr inbounds i8* %data, i64 24
+  %6 = bitcast i8* %modified to i32*
+  %7 = load i32* %6, align 4, !tbaa !4
+  %inc = add nsw i32 %7, 1
+  store i32 %inc, i32* %6, align 4, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then2, %entry
+  ret i32 0
+}

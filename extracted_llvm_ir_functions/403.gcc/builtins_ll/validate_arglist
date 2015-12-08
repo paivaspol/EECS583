@@ -1,0 +1,73 @@
+define internal i32 @validate_arglist(%union.tree_node* %arglist, ...) #0 {
+entry:
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %gp_offset_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 0
+  %0 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 3
+  %overflow_arg_area_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 2
+  %gp_offset.pre = load i32* %gp_offset_p, align 16
+  br label %do.body
+
+do.body:                                          ; preds = %sw.epilog, %entry
+  %gp_offset = phi i32 [ %gp_offset.pre, %entry ], [ %gp_offset19, %sw.epilog ]
+  %arglist.addr.0 = phi %union.tree_node* [ %arglist, %entry ], [ %9, %sw.epilog ]
+  %fits_in_gp = icmp ult i32 %gp_offset, 41
+  br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem
+
+vaarg.in_reg:                                     ; preds = %do.body
+  %reg_save_area = load i8** %0, align 16
+  %1 = sext i32 %gp_offset to i64
+  %2 = getelementptr i8* %reg_save_area, i64 %1
+  %3 = add i32 %gp_offset, 8
+  store i32 %3, i32* %gp_offset_p, align 16
+  br label %vaarg.end
+
+vaarg.in_mem:                                     ; preds = %do.body
+  %overflow_arg_area = load i8** %overflow_arg_area_p, align 8
+  %overflow_arg_area.next = getelementptr i8* %overflow_arg_area, i64 8
+  store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p, align 8
+  br label %vaarg.end
+
+vaarg.end:                                        ; preds = %vaarg.in_mem, %vaarg.in_reg
+  %gp_offset19 = phi i32 [ %3, %vaarg.in_reg ], [ %gp_offset, %vaarg.in_mem ]
+  %vaarg.addr.in = phi i8* [ %2, %vaarg.in_reg ], [ %overflow_arg_area, %vaarg.in_mem ]
+  %vaarg.addr = bitcast i8* %vaarg.addr.in to i32*
+  %4 = load i32* %vaarg.addr, align 4
+  switch i32 %4, label %sw.default [
+    i32 0, label %end
+    i32 5, label %sw.bb3
+  ]
+
+sw.bb3:                                           ; preds = %vaarg.end
+  %cmp = icmp eq %union.tree_node* %arglist.addr.0, null
+  %conv = zext i1 %cmp to i32
+  br label %end
+
+sw.default:                                       ; preds = %vaarg.end
+  %cmp4 = icmp eq %union.tree_node* %arglist.addr.0, null
+  br i1 %cmp4, label %end, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %sw.default
+  %value = getelementptr inbounds %union.tree_node* %arglist.addr.0, i64 0, i32 0, i32 2
+  %5 = bitcast i32* %value to %union.tree_node**
+  %6 = load %union.tree_node** %5, align 8, !tbaa !3
+  %type = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 0, i32 1
+  %7 = load %union.tree_node** %type, align 8, !tbaa !3
+  %code7 = getelementptr inbounds %union.tree_node* %7, i64 0, i32 0, i32 0, i32 2
+  %8 = bitcast [4 x i8]* %code7 to i32*
+  %bf.load = load i32* %8, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp8 = icmp eq i32 %4, %bf.clear
+  br i1 %cmp8, label %sw.epilog, label %end
+
+sw.epilog:                                        ; preds = %lor.lhs.false
+  %chain = getelementptr inbounds %union.tree_node* %arglist.addr.0, i64 0, i32 0, i32 0, i32 0
+  %9 = load %union.tree_node** %chain, align 8, !tbaa !3
+  br label %do.body
+
+end:                                              ; preds = %vaarg.end, %lor.lhs.false, %sw.default, %sw.bb3
+  %res.0 = phi i32 [ %conv, %sw.bb3 ], [ 1, %vaarg.end ], [ 0, %lor.lhs.false ], [ 0, %sw.default ]
+  call void @llvm.va_end(i8* %arraydecay1)
+  ret i32 %res.0
+}

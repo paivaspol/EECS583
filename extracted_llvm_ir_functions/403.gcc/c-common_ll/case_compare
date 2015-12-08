@@ -1,0 +1,23 @@
+define i32 @case_compare(i64 %k1, i64 %k2) #0 {
+entry:
+  %tobool = icmp eq i64 %k1, 0
+  %tobool2 = icmp ne i64 %k2, 0
+  br i1 %tobool, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %cond = sext i1 %tobool2 to i32
+  br label %return
+
+if.else:                                          ; preds = %entry
+  br i1 %tobool2, label %if.end6, label %return
+
+if.end6:                                          ; preds = %if.else
+  %0 = inttoptr i64 %k1 to %union.tree_node*
+  %1 = inttoptr i64 %k2 to %union.tree_node*
+  %call = tail call i32 @tree_int_cst_compare(%union.tree_node* %0, %union.tree_node* %1) #8
+  br label %return
+
+return:                                           ; preds = %if.else, %if.end6, %if.then
+  %retval.0 = phi i32 [ %call, %if.end6 ], [ %cond, %if.then ], [ 1, %if.else ]
+  ret i32 %retval.0
+}

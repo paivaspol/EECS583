@@ -1,0 +1,15 @@
+define i32 @ereal_cmp(%struct.realvaluetype* byval nocapture align 8 %x, %struct.realvaluetype* byval nocapture align 8 %y) #0 {
+entry:
+  %ex = alloca [6 x i16], align 2
+  %ey = alloca [6 x i16], align 2
+  %0 = bitcast [6 x i16]* %ex to i8*
+  %1 = bitcast %struct.realvaluetype* %x to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false)
+  %2 = bitcast [6 x i16]* %ey to i8*
+  %3 = bitcast %struct.realvaluetype* %y to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %3, i64 12, i32 2, i1 false)
+  %arraydecay = getelementptr inbounds [6 x i16]* %ex, i64 0, i64 0
+  %arraydecay1 = getelementptr inbounds [6 x i16]* %ey, i64 0, i64 0
+  %call = call fastcc i32 @ecmp(i16* %arraydecay, i16* %arraydecay1) #6
+  ret i32 %call
+}

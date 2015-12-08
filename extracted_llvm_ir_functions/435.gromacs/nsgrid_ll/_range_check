@@ -1,0 +1,15 @@
+define internal fastcc void @_range_check(i8* %s, i32 %i, i32 %nr, i32 %line) #0 {
+entry:
+  %cmp = icmp sgt i32 %i, -1
+  %cmp1 = icmp slt i32 %i, %nr
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sub = add nsw i32 %nr, -1
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([48 x i8]* @.str33, i64 0, i64 0), i8* %s, i32 %i, i32 %sub, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 %line) #5
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

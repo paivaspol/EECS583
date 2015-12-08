@@ -1,0 +1,19 @@
+define i32 @x86_64_immediate_operand(%struct.rtx_def* %op, i32 %mode) #1 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @immediate_operand(%struct.rtx_def* %op, i32 %mode) #9
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call1 = tail call i32 @x86_64_sign_extended_value(%struct.rtx_def* %op) #10
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then
+  %retval.0 = phi i32 [ %call1, %if.end ], [ %call, %if.then ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,104 @@
+define internal i32 @mark_references(%struct.rtx_def** nocapture %current_rtx, i8* %data) #0 {
+entry:
+  %0 = load %struct.rtx_def** %current_rtx, align 8, !tbaa !0
+  %cmp = icmp eq %struct.rtx_def* %0, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.else78 [
+    i32 47, label %if.then2
+    i32 61, label %if.then58
+    i32 49, label %return
+  ]
+
+if.then2:                                         ; preds = %if.end
+  %fld = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load3 = load i32* %3, align 8
+  %bf.clear4 = and i32 %bf.load3, 65535
+  switch i32 %bf.clear4, label %if.end46 [
+    i32 64, label %while.cond
+    i32 63, label %while.cond
+    i32 132, label %while.cond
+    i32 133, label %while.cond
+  ]
+
+while.cond:                                       ; preds = %if.then2, %if.then2, %if.then2, %if.then2, %while.body
+  %bf.load18 = phi i32 [ %bf.load18.pre, %while.body ], [ %bf.load3, %if.then2 ], [ %bf.load3, %if.then2 ], [ %bf.load3, %if.then2 ], [ %bf.load3, %if.then2 ]
+  %reg.0 = phi %struct.rtx_def* [ %4, %while.body ], [ %2, %if.then2 ], [ %2, %if.then2 ], [ %2, %if.then2 ], [ %2, %if.then2 ]
+  %bf.clear19 = and i32 %bf.load18, 65535
+  switch i32 %bf.clear19, label %if.end46 [
+    i32 64, label %while.body
+    i32 63, label %while.body
+    i32 132, label %while.body
+    i32 133, label %while.body
+    i32 61, label %if.then38
+  ]
+
+while.body:                                       ; preds = %while.cond, %while.cond, %while.cond, %while.cond
+  %arrayidx33 = getelementptr inbounds %struct.rtx_def* %reg.0, i64 0, i32 1, i64 0
+  %rtx34 = bitcast %union.rtunion_def* %arrayidx33 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx34, align 8, !tbaa !0
+  %.phi.trans.insert = bitcast %struct.rtx_def* %4 to i32*
+  %bf.load18.pre = load i32* %.phi.trans.insert, align 8
+  br label %while.cond
+
+if.then38:                                        ; preds = %while.cond
+  %arrayidx40 = getelementptr inbounds %struct.rtx_def* %reg.0, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx40 to i32*
+  %5 = load i32* %rtuint, align 4, !tbaa !4
+  %rem = and i32 %5, 63
+  %sh_prom = zext i32 %rem to i64
+  %shl = shl i64 1, %sh_prom
+  %div = lshr i32 %5, 6
+  %idxprom = zext i32 %div to i64
+  %elms = getelementptr inbounds i8* %data, i64 16
+  %6 = bitcast i8* %elms to [1 x i64]*
+  %arrayidx44 = getelementptr inbounds [1 x i64]* %6, i64 0, i64 %idxprom
+  %7 = load i64* %arrayidx44, align 8, !tbaa !3
+  %or = or i64 %shl, %7
+  store i64 %or, i64* %arrayidx44, align 8, !tbaa !3
+  %bf.load47.pre = load i32* %3, align 8
+  br label %if.end46
+
+if.end46:                                         ; preds = %while.cond, %if.then2, %if.then38
+  %bf.load47 = phi i32 [ %bf.load3, %if.then2 ], [ %bf.load47.pre, %if.then38 ], [ %bf.load3, %while.cond ]
+  %bf.clear48 = and i32 %bf.load47, 65535
+  %cmp49 = icmp eq i32 %bf.clear48, 61
+  br i1 %cmp49, label %if.then50, label %return
+
+if.then50:                                        ; preds = %if.end46
+  %arrayidx52 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 1
+  %rtx53 = bitcast %union.rtunion_def* %arrayidx52 to %struct.rtx_def**
+  %call = tail call i32 @for_each_rtx(%struct.rtx_def** %rtx53, i32 (%struct.rtx_def**, i8*)* @mark_references, i8* %data) #3
+  br label %return
+
+if.then58:                                        ; preds = %if.end
+  %arrayidx60 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtuint61 = bitcast %union.rtunion_def* %arrayidx60 to i32*
+  %8 = load i32* %rtuint61, align 4, !tbaa !4
+  %rem62 = and i32 %8, 63
+  %sh_prom63 = zext i32 %rem62 to i64
+  %shl64 = shl i64 1, %sh_prom63
+  %div68 = lshr i32 %8, 6
+  %idxprom69 = zext i32 %div68 to i64
+  %elms70 = getelementptr inbounds i8* %data, i64 16
+  %9 = bitcast i8* %elms70 to [1 x i64]*
+  %arrayidx71 = getelementptr inbounds [1 x i64]* %9, i64 0, i64 %idxprom69
+  %10 = load i64* %arrayidx71, align 8, !tbaa !3
+  %or72 = or i64 %shl64, %10
+  store i64 %or72, i64* %arrayidx71, align 8, !tbaa !3
+  br label %return
+
+if.else78:                                        ; preds = %if.end
+  br label %return
+
+return:                                           ; preds = %if.end, %if.end46, %entry, %if.else78, %if.then58, %if.then50
+  %retval.0 = phi i32 [ -1, %if.then50 ], [ -1, %if.then58 ], [ 0, %if.else78 ], [ 0, %entry ], [ 0, %if.end46 ], [ -1, %if.end ]
+  ret i32 %retval.0
+}

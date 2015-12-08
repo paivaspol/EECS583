@@ -1,0 +1,43 @@
+define i32 @logs3_add(i32 %logp, i32 %logq) #0 {
+entry:
+  %cmp = icmp sgt i32 %logp, %logq
+  %sub = sub nsw i32 %logp, %logq
+  %sub1 = sub nsw i32 %logq, %logp
+  %d.0 = select i1 %cmp, i32 %sub, i32 %sub1
+  %r.0 = select i1 %cmp, i32 %logp, i32 %logq
+  %0 = load i32* @add_tbl_size, align 4, !tbaa !0
+  %cmp2 = icmp slt i32 %d.0, %0
+  br i1 %cmp2, label %if.then3, label %if.end14
+
+if.then3:                                         ; preds = %entry
+  %1 = load i32* @USE_LOG3_ADD_TABLE, align 4, !tbaa !0
+  %tobool = icmp eq i32 %1, 0
+  br i1 %tobool, label %if.else5, label %if.then4
+
+if.then4:                                         ; preds = %if.then3
+  %idxprom = sext i32 %d.0 to i64
+  %2 = load i16** @add_tbl, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i16* %2, i64 %idxprom
+  %3 = load i16* %arrayidx, align 2, !tbaa !5
+  %conv = zext i16 %3 to i32
+  %add = add nsw i32 %conv, %r.0
+  br label %if.end14
+
+if.else5:                                         ; preds = %if.then3
+  %4 = load double* @F, align 8, !tbaa !4
+  %conv6 = sitofp i32 %d.0 to double
+  %call = tail call double @pow(double %4, double %conv6) #4
+  %add7 = fadd double %call, 1.000000e+00
+  %call8 = tail call double @log(double %add7) #4
+  %5 = load double* @invlogB, align 8, !tbaa !4
+  %mul = fmul double %call8, %5
+  %add9 = fadd double %mul, 5.000000e-01
+  %conv10 = sitofp i32 %r.0 to double
+  %add11 = fadd double %conv10, %add9
+  %conv12 = fptosi double %add11 to i32
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.then4, %if.else5, %entry
+  %r.1 = phi i32 [ %add, %if.then4 ], [ %conv12, %if.else5 ], [ %r.0, %entry ]
+  ret i32 %r.1
+}

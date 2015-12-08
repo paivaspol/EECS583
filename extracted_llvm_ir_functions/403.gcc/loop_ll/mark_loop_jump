@@ -1,0 +1,268 @@
+define internal fastcc void @mark_loop_jump(%struct.rtx_def* %x, %struct.loop* %loop) #0 {
+entry:
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %tailrecurse.backedge, %entry
+  %x.tr = phi %struct.rtx_def* [ %x, %entry ], [ %x.tr.be, %tailrecurse.backedge ]
+  %0 = bitcast %struct.rtx_def* %x.tr to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.default [
+    i32 59, label %return
+    i32 48, label %return
+    i32 49, label %return
+    i32 61, label %return
+    i32 66, label %return
+    i32 54, label %return
+    i32 55, label %return
+    i32 51, label %return
+    i32 58, label %sw.bb1
+    i32 75, label %sw.bb2
+    i32 76, label %sw.bb2
+    i32 78, label %sw.bb2
+    i32 135, label %sw.bb9
+    i32 120, label %sw.bb13
+    i32 121, label %sw.bb13
+    i32 67, label %sw.bb17
+    i32 47, label %sw.bb71
+    i32 72, label %sw.bb81
+    i32 39, label %for.cond89.preheader
+    i32 44, label %for.cond89.preheader
+    i32 45, label %for.cond103.preheader
+  ]
+
+for.cond103.preheader:                            ; preds = %tailrecurse
+  %arrayidx105 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 1
+  %rtvec106 = bitcast %union.rtunion_def* %arrayidx105 to %struct.rtvec_def**
+  %1 = load %struct.rtvec_def** %rtvec106, align 8, !tbaa !4
+  %num_elem107225 = getelementptr inbounds %struct.rtvec_def* %1, i64 0, i32 0
+  %2 = load i32* %num_elem107225, align 4, !tbaa !3
+  %cmp108226 = icmp sgt i32 %2, 0
+  br i1 %cmp108226, label %for.body109, label %return
+
+for.cond89.preheader:                             ; preds = %tailrecurse, %tailrecurse
+  %arrayidx91 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 0
+  %rtvec = bitcast %union.rtunion_def* %arrayidx91 to %struct.rtvec_def**
+  %3 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  %num_elem221 = getelementptr inbounds %struct.rtvec_def* %3, i64 0, i32 0
+  %4 = load i32* %num_elem221, align 4, !tbaa !3
+  %cmp92222 = icmp sgt i32 %4, 0
+  br i1 %cmp92222, label %for.body93, label %return
+
+sw.bb1:                                           ; preds = %tailrecurse
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 0
+  br label %tailrecurse.backedge
+
+tailrecurse.backedge:                             ; preds = %sw.bb1, %sw.bb2, %sw.bb9, %sw.bb13, %sw.bb81, %if.then76
+  %x.tr.be.in.in = phi %union.rtunion_def* [ %arrayidx, %sw.bb1 ], [ %arrayidx7, %sw.bb2 ], [ %arrayidx11, %sw.bb9 ], [ %arrayidx15, %sw.bb13 ], [ %arrayidx86, %sw.bb81 ], [ %arrayidx78, %if.then76 ]
+  %x.tr.be.in = bitcast %union.rtunion_def* %x.tr.be.in.in to %struct.rtx_def**
+  %x.tr.be = load %struct.rtx_def** %x.tr.be.in, align 8
+  br label %tailrecurse
+
+sw.bb2:                                           ; preds = %tailrecurse, %tailrecurse, %tailrecurse
+  %fld3 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1
+  %rtx5 = bitcast [1 x %union.rtunion_def]* %fld3 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx5, align 8, !tbaa !4
+  tail call fastcc void @mark_loop_jump(%struct.rtx_def* %5, %struct.loop* %loop) #10
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 1
+  br label %tailrecurse.backedge
+
+sw.bb9:                                           ; preds = %tailrecurse
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 1
+  br label %tailrecurse.backedge
+
+sw.bb13:                                          ; preds = %tailrecurse, %tailrecurse
+  %arrayidx15 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 0
+  br label %tailrecurse.backedge
+
+sw.bb17:                                          ; preds = %tailrecurse
+  %fld18 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1
+  %rtx20 = bitcast [1 x %union.rtunion_def]* %fld18 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx20, align 8, !tbaa !4
+  %arrayidx22 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx22 to i32*
+  %7 = load i32* %rtint, align 4, !tbaa !3
+  %idxprom = sext i32 %7 to i64
+  %8 = load %struct.loop*** @uid_loop, align 8, !tbaa !4
+  %arrayidx23 = getelementptr inbounds %struct.loop** %8, i64 %idxprom
+  %9 = load %struct.loop** %arrayidx23, align 8, !tbaa !4
+  %tobool = icmp ne %struct.loop* %9, null
+  br i1 %tobool, label %for.cond.preheader, label %if.end26
+
+for.cond.preheader:                               ; preds = %sw.bb17
+  %cmp217 = icmp eq %struct.loop* %9, %loop
+  br i1 %cmp217, label %if.end26, label %for.inc
+
+for.inc:                                          ; preds = %for.cond.preheader, %for.inc
+  %outer_loop.0219 = phi %struct.loop* [ %10, %for.inc ], [ %9, %for.cond.preheader ]
+  %outer = getelementptr inbounds %struct.loop* %outer_loop.0219, i64 0, i32 17
+  %10 = load %struct.loop** %outer, align 8, !tbaa !4
+  %tobool24 = icmp eq %struct.loop* %10, null
+  %cmp = icmp eq %struct.loop* %10, %loop
+  %or.cond = or i1 %tobool24, %cmp
+  br i1 %or.cond, label %if.end26, label %for.inc
+
+if.end26:                                         ; preds = %for.cond.preheader, %for.inc, %sw.bb17
+  %outer_loop.1 = phi %struct.loop* [ null, %sw.bb17 ], [ %loop, %for.cond.preheader ], [ %10, %for.inc ]
+  %tobool27 = icmp ne %struct.loop* %loop, null
+  %tobool28 = icmp eq %struct.loop* %outer_loop.1, null
+  %or.cond204 = and i1 %tobool27, %tobool28
+  br i1 %or.cond204, label %if.then29, label %if.end43
+
+if.then29:                                        ; preds = %if.end26
+  %bf.set = or i32 %bf.load, 268435456
+  store i32 %bf.set, i32* %0, align 8
+  %exit_labels = getelementptr inbounds %struct.loop* %loop, i64 0, i32 31
+  %11 = load %struct.rtx_def** %exit_labels, align 8, !tbaa !4
+  %12 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 1, i32 0
+  %.c = ptrtoint %struct.rtx_def* %11 to i64
+  store i64 %.c, i64* %12, align 8, !tbaa !4
+  store %struct.rtx_def* %x.tr, %struct.rtx_def** %exit_labels, align 8, !tbaa !4
+  %cmp38213 = icmp eq %struct.loop* %9, %loop
+  br i1 %cmp38213, label %if.end43, label %for.body39
+
+for.body39:                                       ; preds = %if.then29, %for.body39
+  %outer_loop.2215 = phi %struct.loop* [ %14, %for.body39 ], [ %loop, %if.then29 ]
+  %exit_count = getelementptr inbounds %struct.loop* %outer_loop.2215, i64 0, i32 32
+  %13 = load i32* %exit_count, align 4, !tbaa !3
+  %inc = add nsw i32 %13, 1
+  store i32 %inc, i32* %exit_count, align 4, !tbaa !3
+  %outer41 = getelementptr inbounds %struct.loop* %outer_loop.2215, i64 0, i32 17
+  %14 = load %struct.loop** %outer41, align 8, !tbaa !4
+  %tobool37 = icmp eq %struct.loop* %14, null
+  %cmp38 = icmp eq %struct.loop* %14, %9
+  %or.cond205 = or i1 %tobool37, %cmp38
+  br i1 %or.cond205, label %if.end43, label %for.body39
+
+if.end43:                                         ; preds = %if.then29, %for.body39, %if.end26
+  br i1 %tobool, label %for.body49.preheader, label %return
+
+for.body49.preheader:                             ; preds = %if.end43
+  %tobool51209 = icmp eq %struct.loop* %loop, null
+  br label %for.body49
+
+for.body49:                                       ; preds = %for.body49.preheader, %if.end66
+  %dest_loop.0 = phi %struct.loop* [ %20, %if.end66 ], [ %9, %for.body49.preheader ]
+  br i1 %tobool51209, label %for.end58, label %for.body52
+
+for.body52:                                       ; preds = %for.body49, %for.inc56
+  %outer_loop.3210 = phi %struct.loop* [ %15, %for.inc56 ], [ %loop, %for.body49 ]
+  %cmp53 = icmp eq %struct.loop* %dest_loop.0, %outer_loop.3210
+  br i1 %cmp53, label %return, label %for.inc56
+
+for.inc56:                                        ; preds = %for.body52
+  %outer57 = getelementptr inbounds %struct.loop* %outer_loop.3210, i64 0, i32 17
+  %15 = load %struct.loop** %outer57, align 8, !tbaa !4
+  %tobool51 = icmp eq %struct.loop* %15, null
+  br i1 %tobool51, label %for.end58, label %for.body52
+
+for.end58:                                        ; preds = %for.inc56, %for.body49
+  %16 = load %struct._IO_FILE** @loop_dump_stream, align 8, !tbaa !4
+  %tobool59 = icmp eq %struct._IO_FILE* %16, null
+  %invalid67.pre = getelementptr inbounds %struct.loop* %dest_loop.0, i64 0, i32 21
+  br i1 %tobool59, label %if.end66, label %land.lhs.true60
+
+land.lhs.true60:                                  ; preds = %for.end58
+  %17 = load i32* %invalid67.pre, align 4, !tbaa !3
+  %tobool61 = icmp eq i32 %17, 0
+  br i1 %tobool61, label %if.then62, label %if.end66
+
+if.then62:                                        ; preds = %land.lhs.true60
+  %start = getelementptr inbounds %struct.loop* %dest_loop.0, i64 0, i32 26
+  %18 = load %struct.rtx_def** %start, align 8, !tbaa !4
+  %arrayidx64 = getelementptr inbounds %struct.rtx_def* %18, i64 0, i32 1, i64 0
+  %rtint65 = bitcast %union.rtunion_def* %arrayidx64 to i32*
+  %19 = load i32* %rtint65, align 4, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %16, i8* getelementptr inbounds ([51 x i8]* @.str34, i64 0, i64 0), i32 %19) #8
+  br label %if.end66
+
+if.end66:                                         ; preds = %for.end58, %land.lhs.true60, %if.then62
+  store i32 1, i32* %invalid67.pre, align 4, !tbaa !3
+  %outer69 = getelementptr inbounds %struct.loop* %dest_loop.0, i64 0, i32 17
+  %20 = load %struct.loop** %outer69, align 8, !tbaa !4
+  %tobool48.old = icmp eq %struct.loop* %20, null
+  br i1 %tobool48.old, label %return, label %for.body49
+
+sw.bb71:                                          ; preds = %tailrecurse
+  %fld72 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1
+  %rtx74 = bitcast [1 x %union.rtunion_def]* %fld72 to %struct.rtx_def**
+  %21 = load %struct.rtx_def** %rtx74, align 8, !tbaa !4
+  %22 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !4
+  %cmp75 = icmp eq %struct.rtx_def* %21, %22
+  br i1 %cmp75, label %if.then76, label %return
+
+if.then76:                                        ; preds = %sw.bb71
+  %arrayidx78 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 1
+  br label %tailrecurse.backedge
+
+sw.bb81:                                          ; preds = %tailrecurse
+  %arrayidx83 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 1
+  %rtx84 = bitcast %union.rtunion_def* %arrayidx83 to %struct.rtx_def**
+  %23 = load %struct.rtx_def** %rtx84, align 8, !tbaa !4
+  tail call fastcc void @mark_loop_jump(%struct.rtx_def* %23, %struct.loop* %loop) #10
+  %arrayidx86 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 2
+  br label %tailrecurse.backedge
+
+for.body93:                                       ; preds = %for.cond89.preheader, %for.body93
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body93 ], [ 0, %for.cond89.preheader ]
+  %24 = phi %struct.rtvec_def* [ %26, %for.body93 ], [ %3, %for.cond89.preheader ]
+  %arrayidx98 = getelementptr inbounds %struct.rtvec_def* %24, i64 0, i32 1, i64 %indvars.iv
+  %25 = load %struct.rtx_def** %arrayidx98, align 8, !tbaa !4
+  tail call fastcc void @mark_loop_jump(%struct.rtx_def* %25, %struct.loop* %loop) #10
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %26 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %26, i64 0, i32 0
+  %27 = load i32* %num_elem, align 4, !tbaa !3
+  %28 = trunc i64 %indvars.iv.next to i32
+  %cmp92 = icmp slt i32 %28, %27
+  br i1 %cmp92, label %for.body93, label %return
+
+for.body109:                                      ; preds = %for.cond103.preheader, %for.body109
+  %indvars.iv237 = phi i64 [ %indvars.iv.next238, %for.body109 ], [ 0, %for.cond103.preheader ]
+  %29 = phi %struct.rtvec_def* [ %31, %for.body109 ], [ %1, %for.cond103.preheader ]
+  %arrayidx115 = getelementptr inbounds %struct.rtvec_def* %29, i64 0, i32 1, i64 %indvars.iv237
+  %30 = load %struct.rtx_def** %arrayidx115, align 8, !tbaa !4
+  tail call fastcc void @mark_loop_jump(%struct.rtx_def* %30, %struct.loop* %loop) #10
+  %indvars.iv.next238 = add i64 %indvars.iv237, 1
+  %31 = load %struct.rtvec_def** %rtvec106, align 8, !tbaa !4
+  %num_elem107 = getelementptr inbounds %struct.rtvec_def* %31, i64 0, i32 0
+  %32 = load i32* %num_elem107, align 4, !tbaa !3
+  %33 = trunc i64 %indvars.iv.next238 to i32
+  %cmp108 = icmp slt i32 %33, %32
+  br i1 %cmp108, label %for.body109, label %return
+
+sw.default:                                       ; preds = %tailrecurse
+  %tobool119 = icmp eq %struct.loop* %loop, null
+  br i1 %tobool119, label %return, label %for.body123
+
+for.body123:                                      ; preds = %if.end134, %sw.default
+  %outer_loop.4207 = phi %struct.loop* [ %loop, %sw.default ], [ %38, %if.end134 ]
+  %34 = load %struct._IO_FILE** @loop_dump_stream, align 8, !tbaa !4
+  %tobool124 = icmp eq %struct._IO_FILE* %34, null
+  %invalid135.pre = getelementptr inbounds %struct.loop* %outer_loop.4207, i64 0, i32 21
+  br i1 %tobool124, label %if.end134, label %land.lhs.true125
+
+land.lhs.true125:                                 ; preds = %for.body123
+  %35 = load i32* %invalid135.pre, align 4, !tbaa !3
+  %tobool127 = icmp eq i32 %35, 0
+  br i1 %tobool127, label %if.then128, label %if.end134
+
+if.then128:                                       ; preds = %land.lhs.true125
+  %start129 = getelementptr inbounds %struct.loop* %outer_loop.4207, i64 0, i32 26
+  %36 = load %struct.rtx_def** %start129, align 8, !tbaa !4
+  %arrayidx131 = getelementptr inbounds %struct.rtx_def* %36, i64 0, i32 1, i64 0
+  %rtint132 = bitcast %union.rtunion_def* %arrayidx131 to i32*
+  %37 = load i32* %rtint132, align 4, !tbaa !3
+  %call133 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %34, i8* getelementptr inbounds ([47 x i8]* @.str35, i64 0, i64 0), i32 %37) #8
+  br label %if.end134
+
+if.end134:                                        ; preds = %for.body123, %land.lhs.true125, %if.then128
+  store i32 1, i32* %invalid135.pre, align 4, !tbaa !3
+  %outer137 = getelementptr inbounds %struct.loop* %outer_loop.4207, i64 0, i32 17
+  %38 = load %struct.loop** %outer137, align 8, !tbaa !4
+  %tobool122 = icmp eq %struct.loop* %38, null
+  br i1 %tobool122, label %return, label %for.body123
+
+return:                                           ; preds = %sw.bb71, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %for.cond103.preheader, %for.body109, %for.cond89.preheader, %for.body93, %if.end66, %for.body52, %if.end134, %sw.default, %if.end43
+  ret void
+}

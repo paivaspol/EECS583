@@ -1,0 +1,58 @@
+define internal fastcc void @mark_weak(%union.tree_node* %decl) #0 {
+entry:
+  %weak_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 5
+  %0 = bitcast [8 x i8]* %weak_flag to i64*
+  %bf.load = load i64* %0, align 8
+  %bf.set = or i64 %bf.load, 8388608
+  store i64 %bf.set, i64* %0, align 8
+  %rtl = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 17
+  %1 = load %struct.rtx_def** %rtl, align 8, !tbaa !3
+  %cmp = icmp eq %struct.rtx_def* %1, null
+  br i1 %cmp, label %if.end, label %cond.end
+
+cond.end:                                         ; preds = %entry
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load9 = load i32* %2, align 8
+  %bf.clear10 = and i32 %bf.load9, 65535
+  %cmp11 = icmp eq i32 %bf.clear10, 66
+  br i1 %cmp11, label %cond.end22, label %if.end
+
+cond.end22:                                       ; preds = %cond.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %tobool24 = icmp eq %struct.rtx_def* %3, null
+  br i1 %tobool24, label %if.end, label %cond.end35
+
+cond.end35:                                       ; preds = %cond.end22
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load40 = load i32* %4, align 8
+  %bf.clear41 = and i32 %bf.load40, 65535
+  %cmp42 = icmp eq i32 %bf.clear41, 68
+  br i1 %cmp42, label %if.then, label %if.end
+
+if.then:                                          ; preds = %cond.end35
+  %tobool45 = icmp eq %struct.rtx_def* %1, null
+  br i1 %tobool45, label %cond.false49, label %cond.end52
+
+cond.false49:                                     ; preds = %if.then
+  tail call void @make_decl_rtl(%union.tree_node* %decl, i8* null) #10
+  %5 = load %struct.rtx_def** %rtl, align 8, !tbaa !3
+  %arrayidx55.phi.trans.insert = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 0
+  %rtx56.phi.trans.insert = bitcast %union.rtunion_def* %arrayidx55.phi.trans.insert to %struct.rtx_def**
+  %.pre73 = load %struct.rtx_def** %rtx56.phi.trans.insert, align 8, !tbaa !3
+  %.phi.trans.insert = bitcast %struct.rtx_def* %.pre73 to i32*
+  %bf.load57.pre = load i32* %.phi.trans.insert, align 8
+  br label %cond.end52
+
+cond.end52:                                       ; preds = %if.then, %cond.false49
+  %bf.load57 = phi i32 [ %bf.load57.pre, %cond.false49 ], [ %bf.load40, %if.then ]
+  %6 = phi %struct.rtx_def* [ %.pre73, %cond.false49 ], [ %3, %if.then ]
+  %7 = bitcast %struct.rtx_def* %6 to i32*
+  %bf.set59 = or i32 %bf.load57, 1073741824
+  store i32 %bf.set59, i32* %7, align 8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %cond.end22, %cond.end52, %cond.end35, %cond.end
+  ret void
+}

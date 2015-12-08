@@ -1,0 +1,20 @@
+define i32 @lmclass_get_nclass(%struct.lmclass_set_s* nocapture %set) #5 {
+entry:
+  %lmclass_list = getelementptr inbounds %struct.lmclass_set_s* %set, i64 0, i32 0
+  %cl.03 = load %struct.lmclass_s** %lmclass_list, align 8
+  %tobool4 = icmp eq %struct.lmclass_s* %cl.03, null
+  br i1 %tobool4, label %for.end, label %for.inc
+
+for.inc:                                          ; preds = %entry, %for.inc
+  %cl.06 = phi %struct.lmclass_s* [ %cl.0, %for.inc ], [ %cl.03, %entry ]
+  %n.05 = phi i32 [ %inc, %for.inc ], [ 0, %entry ]
+  %next = getelementptr inbounds %struct.lmclass_s* %cl.06, i64 0, i32 2
+  %inc = add nsw i32 %n.05, 1
+  %cl.0 = load %struct.lmclass_s** %next, align 8
+  %tobool = icmp eq %struct.lmclass_s* %cl.0, null
+  br i1 %tobool, label %for.end, label %for.inc
+
+for.end:                                          ; preds = %for.inc, %entry
+  %n.0.lcssa = phi i32 [ 0, %entry ], [ %inc, %for.inc ]
+  ret i32 %n.0.lcssa
+}

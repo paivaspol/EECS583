@@ -1,0 +1,19 @@
+define internal fastcc void @rename_registers(i32 %nregs, i32* nocapture %idom) #0 {
+entry:
+  %mul = mul nsw i32 %nregs, 3
+  %conv = sext i32 %mul to i64
+  %call = call %struct.varray_head_tag* @varray_init(i64 %conv, i64 8, i8* getelementptr inbounds ([15 x i8]* @.str9, i64 0, i64 0)) #6
+  store %struct.varray_head_tag* %call, %struct.varray_head_tag** @ssa_definition, align 8, !tbaa !0
+  %call.i = call %struct.htab* @htab_create(i64 64, i32 (i8*)* @ssa_rename_from_hash_function, i32 (i8*, i8*)* @ssa_rename_from_equal, void (i8*)* @ssa_rename_from_delete) #6
+  store %struct.htab* %call.i, %struct.htab** @ssa_rename_from_ht, align 8, !tbaa !0
+  %conv1 = sext i32 %nregs to i64
+  %mul2 = shl nsw i64 %conv1, 3
+  %0 = alloca %struct.rtx_def*, i64 %conv1, align 1
+  store %struct.rtx_def** %0, %struct.rtx_def*** @ssa_rename_to_pseudo, align 8, !tbaa !0
+  %1 = bitcast %struct.rtx_def** %0 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 %mul2, i32 1, i1 false)
+  call void @llvm.memset.p0i8.i64(i8* bitcast ([53 x [59 x %struct.rtx_def*]]* @ssa_rename_to_hard to i8*), i8 0, i64 25016, i32 16, i1 false)
+  call fastcc void @rename_block(i32 0, i32* %idom) #7
+  store %struct.rtx_def** null, %struct.rtx_def*** @ssa_rename_to_pseudo, align 8, !tbaa !0
+  ret void
+}

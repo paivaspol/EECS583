@@ -1,0 +1,86 @@
+define void @real_value_truncate(%struct.realvaluetype* noalias nocapture sret %agg.result, i32 %mode, %struct.realvaluetype* byval nocapture align 8 %arg) #0 {
+entry:
+  %e = alloca [6 x i16], align 2
+  %t = alloca [6 x i16], align 2
+  %r.sroa.0 = alloca [3 x i64], align 8
+  %0 = bitcast [6 x i16]* %e to i8*
+  %1 = bitcast %struct.realvaluetype* %arg to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false)
+  %arraydecay = getelementptr inbounds [6 x i16]* %e, i64 0, i64 0
+  %arrayidx.i = getelementptr inbounds [6 x i16]* %e, i64 0, i64 5
+  %2 = load i16* %arrayidx.i, align 2, !tbaa !0
+  %and.i = and i16 %2, 32767
+  %cmp.i = icmp eq i16 %and.i, 32767
+  br i1 %cmp.i, label %for.body.i, label %if.end
+
+for.body.i:                                       ; preds = %entry, %for.inc.i
+  %i.012.i = phi i32 [ %inc.i, %for.inc.i ], [ 0, %entry ]
+  %x.addr.011.i = phi i16* [ %incdec.ptr.i, %for.inc.i ], [ %arraydecay, %entry ]
+  %3 = load i16* %x.addr.011.i, align 2, !tbaa !0
+  %cmp5.i = icmp eq i16 %3, 0
+  br i1 %cmp5.i, label %for.inc.i, label %if.then
+
+for.inc.i:                                        ; preds = %for.body.i
+  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1
+  %inc.i = add nsw i32 %i.012.i, 1
+  %cmp2.i = icmp slt i32 %inc.i, 5
+  br i1 %cmp2.i, label %for.body.i, label %if.end
+
+if.then:                                          ; preds = %for.body.i
+  %4 = bitcast %struct.realvaluetype* %agg.result to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %4, i8* %1, i64 24, i32 8, i1 false), !tbaa.struct !3
+  br label %return
+
+if.end:                                           ; preds = %for.inc.i, %entry
+  %arraydecay1 = getelementptr inbounds [6 x i16]* %t, i64 0, i64 0
+  %x4.i = bitcast [6 x i16]* %t to i8*
+  call void @llvm.memset.p0i8.i64(i8* %x4.i, i8 0, i64 12, i32 2, i1 false) #1
+  switch i32 %mode, label %sw.default [
+    i32 18, label %sw.bb
+    i32 17, label %sw.bb
+    i32 16, label %sw.bb6
+    i32 15, label %sw.bb11
+    i32 13, label %sw.bb11
+    i32 4, label %sw.bb16
+  ]
+
+sw.bb:                                            ; preds = %if.end, %if.end
+  call fastcc void @etoe64(i16* %arraydecay, i16* %arraydecay1) #6
+  call fastcc void @e64toe(i16* %arraydecay1, i16* %arraydecay1) #6
+  br label %do.body
+
+sw.bb6:                                           ; preds = %if.end
+  call fastcc void @etoe53(i16* %arraydecay, i16* %arraydecay1) #6
+  call fastcc void @e53toe(i16* %arraydecay1, i16* %arraydecay1) #6
+  br label %do.body
+
+sw.bb11:                                          ; preds = %if.end, %if.end
+  call fastcc void @etoe24(i16* %arraydecay, i16* %arraydecay1) #6
+  call fastcc void @e24toe(i16* %arraydecay1, i16* %arraydecay1) #6
+  br label %do.body
+
+sw.bb16:                                          ; preds = %if.end
+  %r.sroa.029 = bitcast [3 x i64]* %r.sroa.0 to %struct.realvaluetype*
+  call void @etrunci(%struct.realvaluetype* sret %r.sroa.029, %struct.realvaluetype* byval align 8 %arg) #6
+  %r.sroa.0.0.cast17 = bitcast [3 x i64]* %r.sroa.0 to i8*
+  %r.sroa.0.0.cast18 = bitcast %struct.realvaluetype* %agg.result to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %r.sroa.0.0.cast18, i8* %r.sroa.0.0.cast17, i64 24, i32 8, i1 false)
+  br label %return
+
+sw.default:                                       ; preds = %if.end
+  %5 = bitcast %struct.realvaluetype* %agg.result to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* %1, i64 24, i32 8, i1 false), !tbaa.struct !3
+  br label %return
+
+do.body:                                          ; preds = %sw.bb, %sw.bb6, %sw.bb11
+  %r.sroa.0.0.cast21 = bitcast [3 x i64]* %r.sroa.0 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %r.sroa.0.0.cast21, i8* %x4.i, i64 12, i32 2, i1 false)
+  %r.sroa.0.12.raw_idx = getelementptr inbounds i8* %r.sroa.0.0.cast21, i64 12
+  call void @llvm.memset.p0i8.i64(i8* %r.sroa.0.12.raw_idx, i8 0, i64 12, i32 4, i1 false)
+  %r.sroa.0.0.cast22 = bitcast %struct.realvaluetype* %agg.result to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %r.sroa.0.0.cast22, i8* %r.sroa.0.0.cast21, i64 24, i32 8, i1 false)
+  br label %return
+
+return:                                           ; preds = %do.body, %sw.default, %sw.bb16, %if.then
+  ret void
+}

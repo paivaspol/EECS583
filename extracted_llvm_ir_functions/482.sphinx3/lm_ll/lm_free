@@ -1,0 +1,60 @@
+define void @lm_free(%struct.lm_s* %lm) #2 {
+entry:
+  %n_ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 0
+  %0 = load i32* %n_ug, align 4, !tbaa !3
+  %cmp15 = icmp sgt i32 %0, 0
+  %wordstr = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 4
+  br i1 %cmp15, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %1 = load i8*** %wordstr, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8** %1, i64 %indvars.iv
+  %2 = load i8** %arrayidx, align 8, !tbaa !0
+  tail call void @ckd_free(i8* %2) #8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %3 = load i32* %n_ug, align 4, !tbaa !3
+  %4 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %4, %3
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %entry, %for.body
+  %membg = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 12
+  %5 = load %struct.membg_t** %membg, align 8, !tbaa !0
+  %6 = bitcast %struct.membg_t* %5 to i8*
+  tail call void @ckd_free(i8* %6) #8
+  %7 = load i8*** %wordstr, align 8, !tbaa !0
+  %8 = bitcast i8** %7 to i8*
+  tail call void @ckd_free(i8* %8) #8
+  %tgcache = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 27
+  %9 = load %struct.lm_tgcache_entry_t** %tgcache, align 8, !tbaa !0
+  %10 = bitcast %struct.lm_tgcache_entry_t* %9 to i8*
+  tail call void @ckd_free(i8* %10) #8
+  %tg_segbase = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 17
+  %11 = load i32** %tg_segbase, align 8, !tbaa !0
+  %12 = bitcast i32* %11 to i8*
+  tail call void @ckd_free(i8* %12) #8
+  %tgprob = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 15
+  %13 = load %union.lmlog_t** %tgprob, align 8, !tbaa !0
+  %14 = bitcast %union.lmlog_t* %13 to i8*
+  tail call void @ckd_free(i8* %14) #8
+  %tgbowt = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 16
+  %15 = load %union.lmlog_t** %tgbowt, align 8, !tbaa !0
+  %16 = bitcast %union.lmlog_t* %15 to i8*
+  tail call void @ckd_free(i8* %16) #8
+  %bgprob = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 14
+  %17 = load %union.lmlog_t** %bgprob, align 8, !tbaa !0
+  %18 = bitcast %union.lmlog_t* %17 to i8*
+  tail call void @ckd_free(i8* %18) #8
+  %tginfo = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 13
+  %19 = load %struct.tginfo_s*** %tginfo, align 8, !tbaa !0
+  %20 = bitcast %struct.tginfo_s** %19 to i8*
+  tail call void @ckd_free(i8* %20) #8
+  %ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 9
+  %21 = load %struct.ug_t** %ug, align 8, !tbaa !0
+  %22 = bitcast %struct.ug_t* %21 to i8*
+  tail call void @ckd_free(i8* %22) #8
+  %23 = bitcast %struct.lm_s* %lm to i8*
+  tail call void @ckd_free(i8* %23) #8
+  ret void
+}

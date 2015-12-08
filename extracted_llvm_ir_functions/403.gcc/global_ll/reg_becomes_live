@@ -1,0 +1,138 @@
+define internal void @reg_becomes_live(%struct.rtx_def* nocapture %reg, %struct.rtx_def* nocapture %setter, i8* %regs_set) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %reg to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 63
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %.phi.trans.insert = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load1.pre = load i32* %.phi.trans.insert, align 8
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %bf.load1 = phi i32 [ %bf.load1.pre, %if.then ], [ %bf.load, %entry ]
+  %reg.addr.0 = phi %struct.rtx_def* [ %1, %if.then ], [ %reg, %entry ]
+  %bf.clear2 = and i32 %bf.load1, 65535
+  %cmp3 = icmp eq i32 %bf.clear2, 61
+  br i1 %cmp3, label %if.end5, label %if.end79
+
+if.end5:                                          ; preds = %if.end
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %reg.addr.0, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx7 to i32*
+  %2 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp8 = icmp slt i32 %2, 53
+  br i1 %cmp8, label %if.then9, label %if.else
+
+if.then9:                                         ; preds = %if.end5
+  %.off = add i32 %2, -8
+  %3 = icmp ult i32 %.off, 8
+  %.off106 = add i32 %2, -21
+  %4 = icmp ult i32 %.off106, 8
+  %or.cond = or i1 %3, %4
+  %.off107 = add i32 %2, -45
+  %5 = icmp ult i32 %.off107, 8
+  %or.cond113 = or i1 %or.cond, %5
+  %.off108 = add i32 %2, -29
+  %6 = icmp ult i32 %.off108, 8
+  %or.cond115 = or i1 %or.cond113, %6
+  %bf.lshr = lshr i32 %bf.load1, 16
+  %bf.clear24 = and i32 %bf.lshr, 255
+  br i1 %or.cond115, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %if.then9
+  %idxprom110 = zext i32 %bf.clear24 to i64
+  %arrayidx25 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom110
+  %7 = load i32* %arrayidx25, align 4, !tbaa !6
+  %cmp26 = icmp eq i32 %7, 5
+  br i1 %cmp26, label %while.body.lr.ph, label %lor.rhs
+
+lor.rhs:                                          ; preds = %cond.true
+  %cmp32 = icmp eq i32 %7, 6
+  %phitmp = select i1 %cmp32, i32 2, i32 1
+  br label %while.body.lr.ph
+
+cond.false:                                       ; preds = %if.then9
+  switch i32 %bf.clear24, label %while.cond.preheader [
+    i32 18, label %cond.true37
+    i32 24, label %cond.true44
+  ]
+
+cond.true37:                                      ; preds = %cond.false
+  %8 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %8, 25
+  %9 = and i32 %and, 1
+  %10 = xor i32 %9, 3
+  br label %while.body.lr.ph
+
+cond.true44:                                      ; preds = %cond.false
+  %11 = load i32* @target_flags, align 4, !tbaa !0
+  %and45 = lshr i32 %11, 24
+  %12 = and i32 %and45, 2
+  %13 = xor i32 %12, 6
+  br label %while.body.lr.ph
+
+while.cond.preheader:                             ; preds = %cond.false
+  %idxprom52109 = zext i32 %bf.clear24 to i64
+  %arrayidx53 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom52109
+  %14 = load i8* %arrayidx53, align 1, !tbaa !1
+  %conv = zext i8 %14 to i32
+  %15 = load i32* @target_flags, align 4, !tbaa !0
+  %and54 = lshr i32 %15, 23
+  %16 = and i32 %and54, 4
+  %17 = add i32 %16, 4
+  %add = add i32 %conv, -1
+  %sub = add i32 %add, %17
+  %div = sdiv i32 %sub, %17
+  %cmp65117 = icmp sgt i32 %div, 0
+  br i1 %cmp65117, label %while.body.lr.ph, label %if.end79
+
+while.body.lr.ph:                                 ; preds = %cond.true, %lor.rhs, %cond.true37, %cond.true44, %while.cond.preheader
+  %nregs.0.ph122 = phi i32 [ %div, %while.cond.preheader ], [ %13, %cond.true44 ], [ %10, %cond.true37 ], [ %phitmp, %lor.rhs ], [ 2, %cond.true ]
+  %18 = bitcast i8* %regs_set to %struct.bitmap_head_def*
+  %19 = sext i32 %2 to i64
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end71
+  %indvars.iv = phi i64 [ %19, %while.body.lr.ph ], [ %indvars.iv.next, %if.end71 ]
+  %dec119.in = phi i32 [ %nregs.0.ph122, %while.body.lr.ph ], [ %dec119, %if.end71 ]
+  %dec119 = add nsw i32 %dec119.in, -1
+  %20 = load %struct.bitmap_head_def** @live_relevant_regs, align 8, !tbaa !3
+  %21 = trunc i64 %indvars.iv to i32
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %20, i32 %21) #5
+  %arrayidx68 = getelementptr inbounds [53 x i8]* @fixed_regs, i64 0, i64 %indvars.iv
+  %22 = load i8* %arrayidx68, align 1, !tbaa !1
+  %tobool69 = icmp eq i8 %22, 0
+  br i1 %tobool69, label %if.then70, label %if.end71
+
+if.then70:                                        ; preds = %while.body
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %18, i32 %21) #5
+  br label %if.end71
+
+if.end71:                                         ; preds = %while.body, %if.then70
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %cmp65 = icmp sgt i32 %dec119, 0
+  br i1 %cmp65, label %while.body, label %if.end79
+
+if.else:                                          ; preds = %if.end5
+  %idxprom72 = sext i32 %2 to i64
+  %23 = load i16** @reg_renumber, align 8, !tbaa !3
+  %arrayidx73 = getelementptr inbounds i16* %23, i64 %idxprom72
+  %24 = load i16* %arrayidx73, align 2, !tbaa !5
+  %cmp75 = icmp sgt i16 %24, -1
+  br i1 %cmp75, label %if.then77, label %if.end79
+
+if.then77:                                        ; preds = %if.else
+  %25 = load %struct.bitmap_head_def** @live_relevant_regs, align 8, !tbaa !3
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %25, i32 %2) #5
+  %26 = bitcast i8* %regs_set to %struct.bitmap_head_def*
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %26, i32 %2) #5
+  br label %if.end79
+
+if.end79:                                         ; preds = %while.cond.preheader, %if.end71, %if.end, %if.else, %if.then77
+  ret void
+}

@@ -1,0 +1,93 @@
+define internal fastcc i32 @swap_rtx_condition_1(%struct.rtx_def* nocapture %pat) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %pat to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom70 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom70
+  %1 = load i8* %arrayidx, align 1, !tbaa !0
+  %cmp = icmp eq i8 %1, 60
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @swap_condition(i32 %bf.clear) #6
+  %bf.load4 = load i32* %0, align 8
+  %bf.value = and i32 %call, 65535
+  %bf.clear5 = and i32 %bf.load4, -65536
+  %bf.set = or i32 %bf.clear5, %bf.value
+  store i32 %bf.set, i32* %0, align 8
+  br label %if.end53
+
+if.else:                                          ; preds = %entry
+  %arrayidx9 = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom70
+  %2 = load i8** %arrayidx9, align 8, !tbaa !2
+  %arrayidx13 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom70
+  %3 = load i8* %arrayidx13, align 1, !tbaa !0
+  %conv14 = zext i8 %3 to i32
+  br label %for.cond.outer
+
+for.cond.outer:                                   ; preds = %if.then43, %for.body29, %if.then22, %if.else
+  %i.0.in.ph = phi i32 [ %conv14, %if.else ], [ %i.0, %if.then22 ], [ %i.0, %for.body29 ], [ %i.0, %if.then43 ]
+  %r.0.ph = phi i32 [ 0, %if.else ], [ %r.0.ph, %if.then22 ], [ %or, %for.body29 ], [ %or48, %if.then43 ]
+  %4 = sext i32 %i.0.in.ph to i64
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond.outer, %for.body
+  %indvars.iv = phi i64 [ %4, %for.cond.outer ], [ %indvars.iv.next, %for.body ]
+  %i.0.in = phi i32 [ %i.0.in.ph, %for.cond.outer ], [ %i.0, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %i.0 = add nsw i32 %i.0.in, -1
+  %5 = trunc i64 %indvars.iv to i32
+  %cmp15 = icmp sgt i32 %5, 0
+  br i1 %cmp15, label %for.body, label %if.end53
+
+for.body:                                         ; preds = %for.cond
+  %arrayidx18 = getelementptr inbounds i8* %2, i64 %indvars.iv.next
+  %6 = load i8* %arrayidx18, align 1, !tbaa !0
+  switch i8 %6, label %for.cond [
+    i8 69, label %if.then22
+    i8 101, label %if.then43
+  ]
+
+if.then22:                                        ; preds = %for.body
+  %arrayidx24 = getelementptr inbounds %struct.rtx_def* %pat, i64 0, i32 1, i64 %indvars.iv.next
+  %rtvec = bitcast %union.rtunion_def* %arrayidx24 to %struct.rtvec_def**
+  %7 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !2
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %7, i64 0, i32 0
+  %8 = load i32* %num_elem, align 4, !tbaa !3
+  %cmp2772 = icmp sgt i32 %8, 0
+  br i1 %cmp2772, label %for.body29.lr.ph, label %for.cond.outer
+
+for.body29.lr.ph:                                 ; preds = %if.then22
+  %9 = sext i32 %8 to i64
+  br label %for.body29
+
+for.body29:                                       ; preds = %for.body29.for.body29_crit_edge, %for.body29.lr.ph
+  %10 = phi %struct.rtvec_def* [ %7, %for.body29.lr.ph ], [ %.pre, %for.body29.for.body29_crit_edge ]
+  %indvars.iv82 = phi i64 [ %9, %for.body29.lr.ph ], [ %indvars.iv.next83, %for.body29.for.body29_crit_edge ]
+  %r.173 = phi i32 [ %r.0.ph, %for.body29.lr.ph ], [ %or, %for.body29.for.body29_crit_edge ]
+  %indvars.iv.next83 = add i64 %indvars.iv82, -1
+  %arrayidx35 = getelementptr inbounds %struct.rtvec_def* %10, i64 0, i32 1, i64 %indvars.iv.next83
+  %11 = load %struct.rtx_def** %arrayidx35, align 8, !tbaa !2
+  %call36 = tail call fastcc i32 @swap_rtx_condition_1(%struct.rtx_def* %11) #7
+  %or = or i32 %call36, %r.173
+  %12 = trunc i64 %indvars.iv.next83 to i32
+  %cmp27 = icmp sgt i32 %12, 0
+  br i1 %cmp27, label %for.body29.for.body29_crit_edge, label %for.cond.outer
+
+for.body29.for.body29_crit_edge:                  ; preds = %for.body29
+  %.pre = load %struct.rtvec_def** %rtvec, align 8, !tbaa !2
+  br label %for.body29
+
+if.then43:                                        ; preds = %for.body
+  %arrayidx46 = getelementptr inbounds %struct.rtx_def* %pat, i64 0, i32 1, i64 %indvars.iv.next
+  %rtx = bitcast %union.rtunion_def* %arrayidx46 to %struct.rtx_def**
+  %13 = load %struct.rtx_def** %rtx, align 8, !tbaa !2
+  %call47 = tail call fastcc i32 @swap_rtx_condition_1(%struct.rtx_def* %13) #7
+  %or48 = or i32 %call47, %r.0.ph
+  br label %for.cond.outer
+
+if.end53:                                         ; preds = %for.cond, %if.then
+  %r.3 = phi i32 [ 1, %if.then ], [ %r.0.ph, %for.cond ]
+  ret i32 %r.3
+}

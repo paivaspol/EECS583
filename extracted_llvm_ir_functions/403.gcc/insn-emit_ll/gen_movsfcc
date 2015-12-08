@@ -1,0 +1,29 @@
+define %struct.rtx_def* @gen_movsfcc(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1, %struct.rtx_def* %operand2, %struct.rtx_def* %operand3) #0 {
+entry:
+  %operands = alloca [4 x %struct.rtx_def*], align 16
+  call void @start_sequence() #4
+  %arrayidx = getelementptr inbounds [4 x %struct.rtx_def*]* %operands, i64 0, i64 0
+  store %struct.rtx_def* %operand0, %struct.rtx_def** %arrayidx, align 16, !tbaa !0
+  %arrayidx1 = getelementptr inbounds [4 x %struct.rtx_def*]* %operands, i64 0, i64 1
+  store %struct.rtx_def* %operand1, %struct.rtx_def** %arrayidx1, align 8, !tbaa !0
+  %arrayidx2 = getelementptr inbounds [4 x %struct.rtx_def*]* %operands, i64 0, i64 2
+  store %struct.rtx_def* %operand2, %struct.rtx_def** %arrayidx2, align 16, !tbaa !0
+  %arrayidx3 = getelementptr inbounds [4 x %struct.rtx_def*]* %operands, i64 0, i64 3
+  store %struct.rtx_def* %operand3, %struct.rtx_def** %arrayidx3, align 8, !tbaa !0
+  %call = call i32 @ix86_expand_fp_movcc(%struct.rtx_def** %arrayidx) #4
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  call void @end_sequence() #4
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call4 = call %struct.rtx_def* @gen_sequence() #4
+  call void @end_sequence() #4
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then
+  %retval.0 = phi %struct.rtx_def* [ %call4, %if.end ], [ null, %if.then ]
+  ret %struct.rtx_def* %retval.0
+}

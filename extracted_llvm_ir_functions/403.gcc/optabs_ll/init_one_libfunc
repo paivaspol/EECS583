@@ -1,0 +1,33 @@
+define %struct.rtx_def* @init_one_libfunc(i8* %name) #0 {
+entry:
+  %call = tail call %union.tree_node* @get_identifier(i8* %name) #8
+  %0 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 5), align 8, !tbaa !0
+  %call1 = tail call %union.tree_node* @build_function_type(%union.tree_node* %0, %union.tree_node* null) #8
+  %call2 = tail call %union.tree_node* @build_decl(i32 30, %union.tree_node* %call, %union.tree_node* %call1) #8
+  %artificial_flag = getelementptr inbounds %union.tree_node* %call2, i64 0, i32 0, i32 5
+  %1 = bitcast [8 x i8]* %artificial_flag to i64*
+  %bf.load = load i64* %1, align 8
+  %bf.set7 = or i64 %bf.load, 4194560
+  store i64 %bf.set7, i64* %1, align 8
+  %public_flag = getelementptr inbounds %union.tree_node* %call2, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %public_flag to i32*
+  %bf.load8 = load i32* %2, align 8
+  %bf.set10 = or i32 %bf.load8, 524288
+  store i32 %bf.set10, i32* %2, align 8
+  %rtl = getelementptr inbounds %union.tree_node* %call2, i64 0, i32 0, i32 17
+  %3 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %3, null
+  br i1 %tobool, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %entry
+  tail call void @make_decl_rtl(%union.tree_node* %call2, i8* null) #8
+  %4 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi %struct.rtx_def* [ %4, %cond.false ], [ %3, %entry ]
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %cond, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  ret %struct.rtx_def* %5
+}

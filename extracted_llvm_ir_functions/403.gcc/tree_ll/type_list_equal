@@ -1,0 +1,67 @@
+define i32 @type_list_equal(%union.tree_node* %l1, %union.tree_node* %l2) #0 {
+entry:
+  %tobool138 = icmp ne %union.tree_node* %l2, null
+  %not.tobool39 = icmp ne %union.tree_node* %l1, null
+  %.tobool140 = and i1 %tobool138, %not.tobool39
+  br i1 %.tobool140, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.inc
+  %t2.042 = phi %union.tree_node* [ %15, %for.inc ], [ %l2, %entry ]
+  %t1.041 = phi %union.tree_node* [ %14, %for.inc ], [ %l1, %entry ]
+  %value = getelementptr inbounds %union.tree_node* %t1.041, i64 0, i32 0, i32 2
+  %0 = bitcast i32* %value to %union.tree_node**
+  %1 = load %union.tree_node** %0, align 8, !tbaa !0
+  %value3 = getelementptr inbounds %union.tree_node* %t2.042, i64 0, i32 0, i32 2
+  %2 = bitcast i32* %value3 to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %1, %3
+  br i1 %cmp, label %lor.lhs.false, label %return
+
+lor.lhs.false:                                    ; preds = %for.body
+  %purpose = getelementptr inbounds %union.tree_node* %t1.041, i64 0, i32 0, i32 1
+  %4 = load i8** %purpose, align 8
+  %purpose6 = getelementptr inbounds %union.tree_node* %t2.042, i64 0, i32 0, i32 1
+  %5 = load i8** %purpose6, align 8
+  %cmp7 = icmp eq i8* %4, %5
+  br i1 %cmp7, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %lor.lhs.false
+  %6 = bitcast i8* %4 to %union.tree_node*
+  %7 = bitcast i8* %5 to %union.tree_node*
+  %call = tail call i32 @simple_cst_equal(%union.tree_node* %6, %union.tree_node* %7) #10
+  %cmp12 = icmp eq i32 %call, 1
+  br i1 %cmp12, label %land.lhs.true13, label %return
+
+land.lhs.true13:                                  ; preds = %land.lhs.true
+  %8 = load i8** %purpose, align 8
+  %type = getelementptr inbounds i8* %8, i64 8
+  %9 = bitcast i8* %type to %union.tree_node**
+  %10 = load %union.tree_node** %9, align 8, !tbaa !0
+  %11 = load i8** %purpose6, align 8
+  %type19 = getelementptr inbounds i8* %11, i64 8
+  %12 = bitcast i8* %type19 to %union.tree_node**
+  %13 = load %union.tree_node** %12, align 8, !tbaa !0
+  %cmp20 = icmp eq %union.tree_node* %10, %13
+  br i1 %cmp20, label %for.inc, label %return
+
+for.inc:                                          ; preds = %lor.lhs.false, %land.lhs.true13
+  %chain = getelementptr inbounds %union.tree_node* %t1.041, i64 0, i32 0, i32 0, i32 0
+  %14 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %chain23 = getelementptr inbounds %union.tree_node* %t2.042, i64 0, i32 0, i32 0, i32 0
+  %15 = load %union.tree_node** %chain23, align 8, !tbaa !0
+  %tobool1 = icmp ne %union.tree_node* %15, null
+  %not.tobool = icmp ne %union.tree_node* %14, null
+  %.tobool1 = and i1 %tobool1, %not.tobool
+  br i1 %.tobool1, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  %t2.0.lcssa = phi %union.tree_node* [ %l2, %entry ], [ %15, %for.inc ]
+  %t1.0.lcssa = phi %union.tree_node* [ %l1, %entry ], [ %14, %for.inc ]
+  %cmp24 = icmp eq %union.tree_node* %t1.0.lcssa, %t2.0.lcssa
+  %conv = zext i1 %cmp24 to i32
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %land.lhs.true13, %for.body, %for.end
+  %retval.0 = phi i32 [ %conv, %for.end ], [ 0, %for.body ], [ 0, %land.lhs.true13 ], [ 0, %land.lhs.true ]
+  ret i32 %retval.0
+}

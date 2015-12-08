@@ -1,0 +1,176 @@
+define zeroext i1 @mark_dfs_back_edges() #0 {
+entry:
+  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %conv = sext i32 %0 to i64
+  %call = tail call noalias i8* @xcalloc(i64 %conv, i64 4) #6
+  %1 = bitcast i8* %call to i32*
+  %2 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %conv1 = sext i32 %2 to i64
+  %call2 = tail call noalias i8* @xcalloc(i64 %conv1, i64 4) #6
+  %3 = bitcast i8* %call2 to i32*
+  %4 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %add = add nsw i32 %4, 1
+  %conv3 = sext i32 %add to i64
+  %mul = shl nsw i64 %conv3, 3
+  %call4 = tail call noalias i8* @xmalloc(i64 %mul) #6
+  %5 = bitcast i8* %call4 to %struct.edge_def**
+  %6 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %call5 = tail call %struct.simple_bitmap_def* @sbitmap_alloc(i32 %6) #6
+  tail call void @sbitmap_zero(%struct.simple_bitmap_def* %call5) #6
+  %7 = load %struct.edge_def** getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0, i32 5), align 8, !tbaa !0
+  store %struct.edge_def* %7, %struct.edge_def** %5, align 8, !tbaa !0
+  br label %while.body.lr.ph.lr.ph
+
+while.body.lr.ph.lr.ph:                           ; preds = %entry, %while.cond.outer.backedge
+  %sp.0.ph176 = phi i32 [ 1, %entry ], [ %sp.0.ph.be, %while.cond.outer.backedge ]
+  %prenum.0.ph175 = phi i32 [ 1, %entry ], [ %prenum.0159, %while.cond.outer.backedge ]
+  %postnum.0.ph174 = phi i32 [ 1, %entry ], [ %postnum.1230, %while.cond.outer.backedge ]
+  %found.0.ph173 = phi i8 [ 0, %entry ], [ %found.1227229, %while.cond.outer.backedge ]
+  br label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %while.body.lr.ph.lr.ph, %if.else
+  %sp.0.ph128168 = phi i32 [ %sp.0.ph176, %while.body.lr.ph.lr.ph ], [ %sp.0160, %if.else ]
+  %prenum.0.ph127167 = phi i32 [ %prenum.0.ph175, %while.body.lr.ph.lr.ph ], [ %inc24, %if.else ]
+  %postnum.0.ph126166 = phi i32 [ %postnum.0.ph174, %while.body.lr.ph.lr.ph ], [ %inc34, %if.else ]
+  %8 = sext i32 %sp.0.ph128168 to i64
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.then29
+  %indvars.iv = phi i64 [ %8, %while.body.lr.ph ], [ %indvars.iv.next, %if.then29 ]
+  %sp.0160 = phi i32 [ %sp.0.ph128168, %while.body.lr.ph ], [ %inc31, %if.then29 ]
+  %prenum.0159 = phi i32 [ %prenum.0.ph127167, %while.body.lr.ph ], [ %inc24, %if.then29 ]
+  %9 = add nsw i64 %indvars.iv, -1
+  %sub = add nsw i32 %sp.0160, -1
+  %arrayidx7 = getelementptr inbounds %struct.edge_def** %5, i64 %9
+  %10 = load %struct.edge_def** %arrayidx7, align 8, !tbaa !0
+  %src8 = getelementptr inbounds %struct.edge_def* %10, i64 0, i32 2
+  %11 = load %struct.basic_block_def** %src8, align 8, !tbaa !0
+  %dest9 = getelementptr inbounds %struct.edge_def* %10, i64 0, i32 3
+  %12 = load %struct.basic_block_def** %dest9, align 8, !tbaa !0
+  %flags = getelementptr inbounds %struct.edge_def* %10, i64 0, i32 6
+  %13 = load i32* %flags, align 4, !tbaa !3
+  %and = and i32 %13, -33
+  store i32 %and, i32* %flags, align 4, !tbaa !3
+  %cmp = icmp eq %struct.basic_block_def* %12, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1)
+  br i1 %cmp, label %if.end62, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %while.body
+  %index = getelementptr inbounds %struct.basic_block_def* %12, i64 0, i32 11
+  %14 = load i32* %index, align 4, !tbaa !3
+  %div = lshr i32 %14, 6
+  %idxprom11 = zext i32 %div to i64
+  %arrayidx12 = getelementptr inbounds %struct.simple_bitmap_def* %call5, i64 0, i32 3, i64 %idxprom11
+  %15 = load i64* %arrayidx12, align 8, !tbaa !4
+  %rem = and i32 %14, 63
+  %sh_prom = zext i32 %rem to i64
+  %16 = shl i64 1, %sh_prom
+  %and14123 = and i64 %16, %15
+  %tobool15 = icmp eq i64 %and14123, 0
+  br i1 %tobool15, label %if.then, label %if.else38
+
+if.then:                                          ; preds = %land.lhs.true
+  %or = or i64 %16, %15
+  store i64 %or, i64* %arrayidx12, align 8, !tbaa !4
+  %inc24 = add nsw i32 %prenum.0159, 1
+  %idxprom26 = sext i32 %14 to i64
+  %arrayidx27 = getelementptr inbounds i32* %1, i64 %idxprom26
+  store i32 %prenum.0159, i32* %arrayidx27, align 4, !tbaa !3
+  %succ = getelementptr inbounds %struct.basic_block_def* %12, i64 0, i32 5
+  %17 = load %struct.edge_def** %succ, align 8, !tbaa !0
+  %tobool28 = icmp eq %struct.edge_def* %17, null
+  br i1 %tobool28, label %if.else, label %if.then29
+
+if.then29:                                        ; preds = %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc31 = add nsw i32 %sp.0160, 1
+  %arrayidx33 = getelementptr inbounds %struct.edge_def** %5, i64 %indvars.iv
+  store %struct.edge_def* %17, %struct.edge_def** %arrayidx33, align 8, !tbaa !0
+  %18 = trunc i64 %indvars.iv.next to i32
+  %tobool = icmp eq i32 %18, 0
+  br i1 %tobool, label %while.end, label %while.body
+
+if.else:                                          ; preds = %if.then
+  %inc34 = add nsw i32 %postnum.0.ph126166, 1
+  %arrayidx37 = getelementptr inbounds i32* %3, i64 %idxprom26
+  store i32 %postnum.0.ph126166, i32* %arrayidx37, align 4, !tbaa !3
+  %tobool158 = icmp eq i32 %sp.0160, 0
+  br i1 %tobool158, label %while.end, label %while.body.lr.ph
+
+if.else38:                                        ; preds = %land.lhs.true
+  %cmp42 = icmp eq %struct.basic_block_def* %11, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0)
+  br i1 %cmp42, label %if.end62.thread, label %land.lhs.true44
+
+if.end62.thread:                                  ; preds = %if.else38
+  %succ_next223 = getelementptr inbounds %struct.edge_def* %10, i64 0, i32 1
+  %19 = load %struct.edge_def** %succ_next223, align 8, !tbaa !0
+  br label %if.end72
+
+land.lhs.true44:                                  ; preds = %if.else38
+  %index45 = getelementptr inbounds %struct.basic_block_def* %11, i64 0, i32 11
+  %20 = load i32* %index45, align 4, !tbaa !3
+  %idxprom46 = sext i32 %20 to i64
+  %arrayidx47 = getelementptr inbounds i32* %1, i64 %idxprom46
+  %21 = load i32* %arrayidx47, align 4, !tbaa !3
+  %idxprom49 = sext i32 %14 to i64
+  %arrayidx50 = getelementptr inbounds i32* %1, i64 %idxprom49
+  %22 = load i32* %arrayidx50, align 4, !tbaa !3
+  %cmp51 = icmp slt i32 %21, %22
+  br i1 %cmp51, label %if.end62, label %land.lhs.true53
+
+land.lhs.true53:                                  ; preds = %land.lhs.true44
+  %arrayidx56 = getelementptr inbounds i32* %3, i64 %idxprom49
+  %23 = load i32* %arrayidx56, align 4, !tbaa !3
+  %cmp57 = icmp eq i32 %23, 0
+  br i1 %cmp57, label %if.then59, label %if.end62
+
+if.then59:                                        ; preds = %land.lhs.true53
+  %or61 = or i32 %13, 32
+  store i32 %or61, i32* %flags, align 4, !tbaa !3
+  br label %if.end62
+
+if.end62:                                         ; preds = %while.body, %land.lhs.true44, %if.then59, %land.lhs.true53
+  %found.1 = phi i8 [ 1, %if.then59 ], [ %found.0.ph173, %land.lhs.true53 ], [ %found.0.ph173, %land.lhs.true44 ], [ %found.0.ph173, %while.body ]
+  %succ_next = getelementptr inbounds %struct.edge_def* %10, i64 0, i32 1
+  %24 = load %struct.edge_def** %succ_next, align 8, !tbaa !0
+  %tobool63 = icmp ne %struct.edge_def* %24, null
+  %cmp65 = icmp eq %struct.basic_block_def* %11, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0)
+  %or.cond124 = or i1 %tobool63, %cmp65
+  br i1 %or.cond124, label %if.end72, label %if.end72.thread
+
+if.end72.thread:                                  ; preds = %if.end62
+  %inc68 = add nsw i32 %postnum.0.ph126166, 1
+  %index69 = getelementptr inbounds %struct.basic_block_def* %11, i64 0, i32 11
+  %25 = load i32* %index69, align 4, !tbaa !3
+  %idxprom70 = sext i32 %25 to i64
+  %arrayidx71 = getelementptr inbounds i32* %3, i64 %idxprom70
+  store i32 %postnum.0.ph126166, i32* %arrayidx71, align 4, !tbaa !3
+  br label %while.cond.outer.backedge
+
+if.end72:                                         ; preds = %if.end62.thread, %if.end62
+  %found.1227 = phi i8 [ %found.1, %if.end62 ], [ %found.0.ph173, %if.end62.thread ]
+  %26 = phi %struct.edge_def* [ %24, %if.end62 ], [ %19, %if.end62.thread ]
+  %tobool74 = icmp eq %struct.edge_def* %26, null
+  br i1 %tobool74, label %while.cond.outer.backedge, label %if.then75
+
+if.then75:                                        ; preds = %if.end72
+  store %struct.edge_def* %26, %struct.edge_def** %arrayidx7, align 8, !tbaa !0
+  br label %while.cond.outer.backedge
+
+while.cond.outer.backedge:                        ; preds = %if.end72.thread, %if.then75, %if.end72
+  %postnum.1230 = phi i32 [ %postnum.0.ph126166, %if.then75 ], [ %postnum.0.ph126166, %if.end72 ], [ %inc68, %if.end72.thread ]
+  %found.1227229 = phi i8 [ %found.1227, %if.then75 ], [ %found.1227, %if.end72 ], [ %found.1, %if.end72.thread ]
+  %sp.0.ph.be = phi i32 [ %sp.0160, %if.then75 ], [ %sub, %if.end72 ], [ %sub, %if.end72.thread ]
+  %tobool158165 = icmp eq i32 %sp.0.ph.be, 0
+  br i1 %tobool158165, label %while.end, label %while.body.lr.ph.lr.ph
+
+while.end:                                        ; preds = %if.else, %while.cond.outer.backedge, %if.then29
+  %found.0.ph171 = phi i8 [ %found.0.ph173, %if.then29 ], [ %found.0.ph173, %if.else ], [ %found.1227229, %while.cond.outer.backedge ]
+  tail call void @free(i8* %call) #6
+  tail call void @free(i8* %call2) #6
+  tail call void @free(i8* %call4) #6
+  %27 = bitcast %struct.simple_bitmap_def* %call5 to i8*
+  tail call void @free(i8* %27) #6
+  %28 = and i8 %found.0.ph171, 1
+  %tobool83 = icmp ne i8 %28, 0
+  ret i1 %tobool83
+}

@@ -1,0 +1,60 @@
+define void @get_block_head_tail(i32 %b, %struct.rtx_def** nocapture %headp, %struct.rtx_def** nocapture %tailp) #0 {
+entry:
+  %idxprom = sext i32 %b to i64
+  %0 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %0, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom
+  %1 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !3
+  %head1 = getelementptr inbounds %struct.basic_block_def* %1, i64 0, i32 0
+  %2 = load %struct.rtx_def** %head1, align 8, !tbaa !3
+  %end = getelementptr inbounds %struct.basic_block_def* %1, i64 0, i32 1
+  %3 = load %struct.rtx_def** %end, align 8, !tbaa !3
+  %cmp3948 = icmp eq %struct.rtx_def* %2, %3
+  br i1 %cmp3948, label %while.end, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %entry, %while.cond.outer.backedge
+  %tail.0.ph50 = phi %struct.rtx_def* [ %tail.040, %while.cond.outer.backedge ], [ %3, %entry ]
+  %head.0.ph49 = phi %struct.rtx_def* [ %head.0.ph.be, %while.cond.outer.backedge ], [ %2, %entry ]
+  %4 = bitcast %struct.rtx_def* %head.0.ph49 to i32*
+  %bf.load = load i32* %4, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp6 = icmp eq i32 %bf.clear, 37
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.then11
+  %tail.040 = phi %struct.rtx_def* [ %tail.0.ph50, %while.body.lr.ph ], [ %6, %if.then11 ]
+  br i1 %cmp6, label %while.cond.outer.backedge, label %if.else
+
+while.cond.outer.backedge:                        ; preds = %if.else15, %while.body
+  %head.0.ph.be.in.in = getelementptr inbounds %struct.rtx_def* %head.0.ph49, i64 0, i32 1, i64 2
+  %head.0.ph.be.in = bitcast %union.rtunion_def* %head.0.ph.be.in.in to %struct.rtx_def**
+  %head.0.ph.be = load %struct.rtx_def** %head.0.ph.be.in, align 8
+  %cmp39 = icmp eq %struct.rtx_def* %head.0.ph.be, %tail.040
+  br i1 %cmp39, label %while.end, label %while.body.lr.ph
+
+if.else:                                          ; preds = %while.body
+  %5 = bitcast %struct.rtx_def* %tail.040 to i32*
+  %bf.load8 = load i32* %5, align 8
+  %bf.clear9 = and i32 %bf.load8, 65535
+  %cmp10 = icmp eq i32 %bf.clear9, 37
+  br i1 %cmp10, label %if.then11, label %if.else15
+
+if.then11:                                        ; preds = %if.else
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %tail.040, i64 0, i32 1, i64 1
+  %rtx14 = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx14, align 8, !tbaa !3
+  %cmp = icmp eq %struct.rtx_def* %head.0.ph49, %6
+  br i1 %cmp, label %while.end, label %while.body
+
+if.else15:                                        ; preds = %if.else
+  %cmp18 = icmp eq i32 %bf.clear, 36
+  br i1 %cmp18, label %while.cond.outer.backedge, label %while.end
+
+while.end:                                        ; preds = %if.else15, %if.then11, %while.cond.outer.backedge, %entry
+  %head.0.ph44 = phi %struct.rtx_def* [ %head.0.ph49, %if.then11 ], [ %2, %entry ], [ %tail.040, %while.cond.outer.backedge ], [ %head.0.ph49, %if.else15 ]
+  %tail.037 = phi %struct.rtx_def* [ %head.0.ph49, %if.then11 ], [ %2, %entry ], [ %tail.040, %while.cond.outer.backedge ], [ %tail.040, %if.else15 ]
+  store %struct.rtx_def* %head.0.ph44, %struct.rtx_def** %headp, align 8, !tbaa !3
+  store %struct.rtx_def* %tail.037, %struct.rtx_def** %tailp, align 8, !tbaa !3
+  ret void
+}

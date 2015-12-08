@@ -1,0 +1,10 @@
+define void @fnotice(%struct._IO_FILE* nocapture %file, i8* nocapture %msgid, ...) #2 {
+entry:
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %call = call i32 @vfprintf(%struct._IO_FILE* %file, i8* %msgid, %struct.__va_list_tag* %arraydecay) #10
+  call void @llvm.va_end(i8* %arraydecay1)
+  ret void
+}

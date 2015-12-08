@@ -1,0 +1,37 @@
+define internal fastcc void @lextree_subtree_print(%struct.lextree_node_t* nocapture %ln, i32 %level, %struct.dict_t* nocapture %dict, %struct._IO_FILE* nocapture %fp) #0 {
+entry:
+  %cmp17 = icmp sgt i32 %level, 0
+  br i1 %cmp17, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %i.018 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str11, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %fp)
+  %inc = add nsw i32 %i.018, 1
+  %exitcond = icmp eq i32 %inc, %level
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  tail call fastcc void @lextree_node_print(%struct.lextree_node_t* %ln, %struct.dict_t* %dict, %struct._IO_FILE* %fp) #5
+  %children = getelementptr inbounds %struct.lextree_node_t* %ln, i64 0, i32 1
+  %gn.014 = load %struct.gnode_s** %children, align 8
+  %tobool15 = icmp eq %struct.gnode_s* %gn.014, null
+  br i1 %tobool15, label %for.end4, label %for.body2.lr.ph
+
+for.body2.lr.ph:                                  ; preds = %for.end
+  %add = add nsw i32 %level, 1
+  br label %for.body2
+
+for.body2:                                        ; preds = %for.body2.lr.ph, %for.body2
+  %gn.016 = phi %struct.gnode_s* [ %gn.014, %for.body2.lr.ph ], [ %gn.0, %for.body2 ]
+  %ptr = getelementptr inbounds %struct.gnode_s* %gn.016, i64 0, i32 0, i32 0
+  %1 = load i8** %ptr, align 8, !tbaa !0
+  %2 = bitcast i8* %1 to %struct.lextree_node_t*
+  tail call fastcc void @lextree_subtree_print(%struct.lextree_node_t* %2, i32 %add, %struct.dict_t* %dict, %struct._IO_FILE* %fp) #5
+  %next = getelementptr inbounds %struct.gnode_s* %gn.016, i64 0, i32 1
+  %gn.0 = load %struct.gnode_s** %next, align 8
+  %tobool = icmp eq %struct.gnode_s* %gn.0, null
+  br i1 %tobool, label %for.end4, label %for.body2
+
+for.end4:                                         ; preds = %for.body2, %for.end
+  ret void
+}

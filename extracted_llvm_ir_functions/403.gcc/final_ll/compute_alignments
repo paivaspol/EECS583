@@ -1,0 +1,166 @@
+define void @compute_alignments() #0 {
+entry:
+  %0 = load %struct.label_alignment** @label_align, align 8, !tbaa !0
+  %tobool = icmp eq %struct.label_alignment* %0, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = bitcast %struct.label_alignment* %0 to i8*
+  tail call void @free(i8* %1) #8
+  store %struct.label_alignment* null, %struct.label_alignment** @label_align, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %call = tail call i32 @max_label_num() #8
+  store i32 %call, i32* @max_labelno, align 4, !tbaa !4
+  %call1 = tail call i32 @get_first_label_num() #8
+  store i32 %call1, i32* @min_labelno, align 4, !tbaa !4
+  %2 = load i32* @max_labelno, align 4, !tbaa !4
+  %sub = sub i32 1, %call1
+  %add = add i32 %sub, %2
+  %conv = sext i32 %add to i64
+  %call2 = tail call noalias i8* @xcalloc(i64 %conv, i64 4) #8
+  %3 = bitcast i8* %call2 to %struct.label_alignment*
+  store %struct.label_alignment* %3, %struct.label_alignment** @label_align, align 8, !tbaa !0
+  %4 = load i32* @optimize, align 4, !tbaa !4
+  %tobool3 = icmp eq i32 %4, 0
+  %5 = load i32* @optimize_size, align 4, !tbaa !4
+  %tobool4 = icmp ne i32 %5, 0
+  %or.cond = or i1 %tobool3, %tobool4
+  br i1 %or.cond, label %for.end87, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.end
+  %6 = load i32* @n_basic_blocks, align 4, !tbaa !4
+  %cmp126 = icmp sgt i32 %6, 0
+  br i1 %cmp126, label %for.body.lr.ph, label %for.end87
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %.pre = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc86
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc86 ]
+  %data = getelementptr inbounds %struct.varray_head_tag* %.pre, i64 0, i32 4
+  %bb8 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb8, i64 0, i64 %indvars.iv
+  %7 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
+  %head = getelementptr inbounds %struct.basic_block_def* %7, i64 0, i32 0
+  %8 = load %struct.rtx_def** %head, align 8, !tbaa !0
+  %9 = bitcast %struct.rtx_def* %8 to i32*
+  %bf.load = load i32* %9, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp9 = icmp eq i32 %bf.clear, 36
+  br i1 %cmp9, label %if.end12, label %for.inc86
+
+if.end12:                                         ; preds = %for.body
+  %10 = load i32* @align_labels_log, align 4, !tbaa !4
+  %11 = load i32* @align_labels_max_skip, align 4, !tbaa !4
+  %pred = getelementptr inbounds %struct.basic_block_def* %7, i64 0, i32 4
+  %e.0118 = load %struct.edge_def** %pred, align 8
+  %tobool14119 = icmp eq %struct.edge_def* %e.0118, null
+  br i1 %tobool14119, label %lor.lhs.false31, label %for.body15
+
+for.body15:                                       ; preds = %if.end12, %for.body15
+  %e.0123 = phi %struct.edge_def* [ %e.0, %for.body15 ], [ %e.0118, %if.end12 ]
+  %has_fallthru.0122 = phi i32 [ %has_fallthru.1, %for.body15 ], [ 0, %if.end12 ]
+  %branch_frequency.0121 = phi i32 [ %branch_frequency.1, %for.body15 ], [ 0, %if.end12 ]
+  %fallthru_frequency.0120 = phi i32 [ %fallthru_frequency.1, %for.body15 ], [ 0, %if.end12 ]
+  %flags = getelementptr inbounds %struct.edge_def* %e.0123, i64 0, i32 6
+  %12 = load i32* %flags, align 4, !tbaa !4
+  %and = and i32 %12, 1
+  %tobool16 = icmp eq i32 %and, 0
+  %src20 = getelementptr inbounds %struct.edge_def* %e.0123, i64 0, i32 2
+  %13 = load %struct.basic_block_def** %src20, align 8, !tbaa !0
+  %frequency21 = getelementptr inbounds %struct.basic_block_def* %13, i64 0, i32 14
+  %14 = load i32* %frequency21, align 4, !tbaa !4
+  %probability22 = getelementptr inbounds %struct.edge_def* %e.0123, i64 0, i32 7
+  %15 = load i32* %probability22, align 4, !tbaa !4
+  %mul23 = mul nsw i32 %15, %14
+  %add24 = add nsw i32 %mul23, 5000
+  %div25 = sdiv i32 %add24, 10000
+  %add19 = select i1 %tobool16, i32 0, i32 %div25
+  %fallthru_frequency.1 = add nsw i32 %add19, %fallthru_frequency.0120
+  %add26 = select i1 %tobool16, i32 %div25, i32 0
+  %branch_frequency.1 = add nsw i32 %add26, %branch_frequency.0121
+  %has_fallthru.1 = select i1 %tobool16, i32 %has_fallthru.0122, i32 1
+  %pred_next = getelementptr inbounds %struct.edge_def* %e.0123, i64 0, i32 0
+  %e.0 = load %struct.edge_def** %pred_next, align 8
+  %tobool14 = icmp eq %struct.edge_def* %e.0, null
+  br i1 %tobool14, label %for.end, label %for.body15
+
+for.end:                                          ; preds = %for.body15
+  %phitmp = icmp eq i32 %has_fallthru.1, 0
+  br i1 %phitmp, label %land.lhs.true, label %land.lhs.true59
+
+land.lhs.true:                                    ; preds = %for.end
+  %cmp29 = icmp sgt i32 %branch_frequency.1, 1000
+  br i1 %cmp29, label %if.then52, label %lor.lhs.false31
+
+lor.lhs.false31:                                  ; preds = %if.end12, %land.lhs.true
+  %frequency32 = getelementptr inbounds %struct.basic_block_def* %7, i64 0, i32 14
+  %16 = load i32* %frequency32, align 4, !tbaa !4
+  %17 = add nsw i64 %indvars.iv, -1
+  %arrayidx37 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb8, i64 0, i64 %17
+  %18 = load %struct.basic_block_def** %arrayidx37, align 8, !tbaa !0
+  %frequency38 = getelementptr inbounds %struct.basic_block_def* %18, i64 0, i32 14
+  %19 = load i32* %frequency38, align 4, !tbaa !4
+  %mul39 = mul nsw i32 %19, 10
+  %cmp40 = icmp sgt i32 %16, %mul39
+  br i1 %cmp40, label %land.lhs.true42, label %if.end72
+
+land.lhs.true42:                                  ; preds = %lor.lhs.false31
+  %20 = load i32* getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0, i32 14), align 8, !tbaa !4
+  %div49 = sdiv i32 %20, 2
+  %cmp50 = icmp sgt i32 %19, %div49
+  br i1 %cmp50, label %if.end72, label %if.then52
+
+if.then52:                                        ; preds = %land.lhs.true42, %land.lhs.true
+  %21 = load i32* @align_jumps_log, align 4, !tbaa !4
+  %cmp53 = icmp slt i32 %10, %21
+  %22 = load i32* @align_jumps_max_skip, align 4, !tbaa !4
+  %. = select i1 %cmp53, i32 %22, i32 %11
+  %.113 = select i1 %cmp53, i32 %21, i32 %10
+  br label %if.end72
+
+land.lhs.true59:                                  ; preds = %for.end
+  %add60 = add nsw i32 %branch_frequency.1, %fallthru_frequency.1
+  %cmp61 = icmp sgt i32 %add60, 1000
+  %mul64 = mul nsw i32 %fallthru_frequency.1, 5
+  %cmp65 = icmp sgt i32 %branch_frequency.1, %mul64
+  %or.cond114 = and i1 %cmp61, %cmp65
+  br i1 %or.cond114, label %if.then67, label %if.end72
+
+if.then67:                                        ; preds = %land.lhs.true59
+  %23 = load i32* @align_loops_log, align 4, !tbaa !4
+  %cmp68 = icmp slt i32 %10, %23
+  %24 = load i32* @align_loops_max_skip, align 4, !tbaa !4
+  %.max_skip.0 = select i1 %cmp68, i32 %24, i32 %11
+  %.max_log.0 = select i1 %cmp68, i32 %23, i32 %10
+  br label %if.end72
+
+if.end72:                                         ; preds = %land.lhs.true59, %if.then52, %land.lhs.true42, %lor.lhs.false31, %if.then67
+  %max_skip.1 = phi i32 [ %.max_skip.0, %if.then67 ], [ %11, %lor.lhs.false31 ], [ %11, %land.lhs.true42 ], [ %., %if.then52 ], [ %11, %land.lhs.true59 ]
+  %max_log.1 = phi i32 [ %.max_log.0, %if.then67 ], [ %10, %lor.lhs.false31 ], [ %10, %land.lhs.true42 ], [ %.113, %if.then52 ], [ %10, %land.lhs.true59 ]
+  %conv73 = trunc i32 %max_log.1 to i16
+  %arrayidx74 = getelementptr inbounds %struct.rtx_def* %8, i64 0, i32 1, i64 5
+  %rtint = bitcast %union.rtunion_def* %arrayidx74 to i32*
+  %25 = load i32* %rtint, align 4, !tbaa !4
+  %26 = load i32* @min_labelno, align 4, !tbaa !4
+  %sub75 = sub nsw i32 %25, %26
+  %idxprom76 = sext i32 %sub75 to i64
+  %alignment = getelementptr inbounds %struct.label_alignment* %3, i64 %idxprom76, i32 0
+  store i16 %conv73, i16* %alignment, align 2, !tbaa !5
+  %conv78 = trunc i32 %max_skip.1 to i16
+  %max_skip85 = getelementptr inbounds %struct.label_alignment* %3, i64 %idxprom76, i32 1
+  store i16 %conv78, i16* %max_skip85, align 2, !tbaa !5
+  br label %for.inc86
+
+for.inc86:                                        ; preds = %for.body, %if.end72
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %27 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %27, %6
+  br i1 %cmp, label %for.body, label %for.end87
+
+for.end87:                                        ; preds = %for.cond.preheader, %for.inc86, %if.end
+  ret void
+}

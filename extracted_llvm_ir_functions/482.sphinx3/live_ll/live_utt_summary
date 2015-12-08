@@ -1,0 +1,51 @@
+define void @live_utt_summary() #0 {
+entry:
+  tail call void @_E__pr_info_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 354, i8* getelementptr inbounds ([5 x i8]* @.str19, i64 0, i64 0)) #3
+  %0 = load %struct.kb_t** @kb, align 8, !tbaa !0
+  %tot_fr = getelementptr inbounds %struct.kb_t* %0, i64 0, i32 43
+  %1 = load i32* %tot_fr, align 4, !tbaa !3
+  %tot_sen_eval = getelementptr inbounds %struct.kb_t* %0, i64 0, i32 44
+  %2 = load double* %tot_sen_eval, align 8, !tbaa !5
+  %conv = sitofp i32 %1 to double
+  %div = fdiv double %2, %conv
+  %conv2 = fptosi double %div to i32
+  %tot_gau_eval = getelementptr inbounds %struct.kb_t* %0, i64 0, i32 45
+  %3 = load double* %tot_gau_eval, align 8, !tbaa !5
+  %div5 = fdiv double %3, %conv
+  %conv6 = fptosi double %div5 to i32
+  %tot_hmm_eval = getelementptr inbounds %struct.kb_t* %0, i64 0, i32 46
+  %4 = load double* %tot_hmm_eval, align 8, !tbaa !5
+  %div9 = fdiv double %4, %conv
+  %conv10 = fptosi double %div9 to i32
+  %tot_wd_exit = getelementptr inbounds %struct.kb_t* %0, i64 0, i32 47
+  %5 = load double* %tot_wd_exit, align 8, !tbaa !5
+  %div13 = fdiv double %5, %conv
+  %conv14 = fptosi double %div13 to i32
+  tail call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([98 x i8]* @.str20, i64 0, i64 0), i32 %1, i32 %conv2, i32 %conv6, double 0.000000e+00, double 0.000000e+00, i32 %conv10, i32 %conv14, double 0.000000e+00) #3
+  %6 = load i32* @confp_open, align 4, !tbaa !3
+  %tobool = icmp eq i32 %6, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %7 = load %struct._IO_FILE** @confp, align 8, !tbaa !0
+  %call = tail call i32 @fclose(%struct._IO_FILE* %7) #3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %call15 = tail call %struct._IO_FILE* @fopen(i8* getelementptr inbounds ([21 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str22, i64 0, i64 0)) #3
+  store %struct._IO_FILE* %call15, %struct._IO_FILE** @confp, align 8, !tbaa !0
+  %cmp = icmp eq %struct._IO_FILE* %call15, null
+  br i1 %cmp, label %if.then17, label %if.end18
+
+if.then17:                                        ; preds = %if.end
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 365, i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0)) #3
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([35 x i8]* @.str23, i64 0, i64 0)) #3
+  %.pre = load %struct._IO_FILE** @confp, align 8, !tbaa !0
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.then17, %if.end
+  %8 = phi %struct._IO_FILE* [ %.pre, %if.then17 ], [ %call15, %if.end ]
+  %9 = load i64* @tot_considered, align 8, !tbaa !6
+  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %8, i8* getelementptr inbounds ([29 x i8]* @.str24, i64 0, i64 0), i64 %9) #3
+  ret void
+}

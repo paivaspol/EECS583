@@ -1,0 +1,513 @@
+define internal fastcc void @verify_tree(%union.tree_node* %x, %struct.tlist** nocapture %pbefore_sp, %struct.tlist** %pno_sp, %union.tree_node* %writer) #0 {
+entry:
+  %tmp_before = alloca %struct.tlist*, align 8
+  %tmp_nosp = alloca %struct.tlist*, align 8
+  %tmp_list2 = alloca %struct.tlist*, align 8
+  %tmp_list3 = alloca %struct.tlist*, align 8
+  %cmp = icmp eq %union.tree_node* %x, null
+  br i1 %cmp, label %sw.epilog150, label %restart.preheader
+
+restart.preheader:                                ; preds = %entry
+  %code1341 = getelementptr inbounds %union.tree_node* %x, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code1341 to i32*
+  %bf.load342 = load i32* %0, align 8
+  %1 = and i32 %bf.load342, 254
+  %2 = icmp eq i32 %1, 34
+  br i1 %2, label %if.then2, label %if.end4
+
+if.then2:                                         ; preds = %if.end128, %restart.preheader
+  %x.addr.0.lcssa = phi %union.tree_node* [ %x, %restart.preheader ], [ %91, %if.end128 ]
+  %writer.addr.0.lcssa = phi %union.tree_node* [ %writer, %restart.preheader ], [ null, %if.end128 ]
+  %3 = load %struct.tlist** %pno_sp, align 8, !tbaa !3
+  %call3 = call fastcc %struct.tlist* @new_tlist(%struct.tlist* %3, %union.tree_node* %x.addr.0.lcssa, %union.tree_node* %writer.addr.0.lcssa) #9
+  store %struct.tlist* %call3, %struct.tlist** %pno_sp, align 8, !tbaa !3
+  br label %sw.epilog150
+
+if.end4:                                          ; preds = %restart.preheader, %if.end128
+  %bf.load137 = phi i32 [ %bf.load, %if.end128 ], [ %bf.load342, %restart.preheader ]
+  %idxprom239344.pn.in.in = phi i32 [ %bf.load, %if.end128 ], [ %bf.load342, %restart.preheader ]
+  %x.addr.0346 = phi %union.tree_node* [ %91, %if.end128 ], [ %x, %restart.preheader ]
+  %idxprom239344.pn.in = and i32 %idxprom239344.pn.in.in, 255
+  %idxprom239344.pn = zext i32 %idxprom239344.pn.in to i64
+  %.in = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom239344.pn
+  %4 = load i8* %.in, align 1
+  switch i32 %idxprom239344.pn.in, label %sw.epilog [
+    i32 46, label %sw.epilog150
+    i32 47, label %sw.bb5
+    i32 91, label %sw.bb5
+    i32 92, label %sw.bb5
+    i32 51, label %sw.bb10
+    i32 129, label %sw.bb20
+    i32 130, label %sw.bb20
+    i32 131, label %sw.bb20
+    i32 132, label %sw.bb20
+    i32 48, label %sw.bb24
+    i32 53, label %sw.bb45
+    i32 2, label %while.cond.preheader
+    i32 118, label %for.cond.preheader
+  ]
+
+for.cond.preheader:                               ; preds = %if.end4
+  %t.0300 = load %struct.tlist_cache** @save_expr_cache, align 8
+  %tobool62301 = icmp eq %struct.tlist_cache* %t.0300, null
+  br i1 %tobool62301, label %if.then67, label %for.body
+
+while.cond.preheader:                             ; preds = %if.end4
+  %tobool59296 = icmp eq %union.tree_node* %x.addr.0346, null
+  br i1 %tobool59296, label %sw.epilog150, label %while.body
+
+sw.bb5:                                           ; preds = %if.end4, %if.end4, %if.end4
+  store %struct.tlist* null, %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_before, align 8, !tbaa !3
+  %operands = getelementptr inbounds %union.tree_node* %x.addr.0346, i64 0, i32 0, i32 2
+  %arrayidx6 = bitcast i32* %operands to %union.tree_node**
+  %5 = load %union.tree_node** %arrayidx6, align 8, !tbaa !3
+  call fastcc void @verify_tree(%union.tree_node* %5, %struct.tlist** %tmp_before, %struct.tlist** %tmp_nosp, %union.tree_node* null) #9
+  %6 = load %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  call fastcc void @warn_for_collisions(%struct.tlist* %6) #9
+  %7 = load %struct.tlist** %tmp_before, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %pbefore_sp, %struct.tlist* %7, i32 0) #9
+  %8 = load %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %pbefore_sp, %struct.tlist* %8, i32 0) #9
+  %arrayidx9 = getelementptr inbounds i32* %operands, i64 2
+  %9 = bitcast i32* %arrayidx9 to %union.tree_node**
+  %10 = load %union.tree_node** %9, align 8, !tbaa !3
+  call fastcc void @verify_tree(%union.tree_node* %10, %struct.tlist** %tmp_list3, %struct.tlist** %pno_sp, %union.tree_node* null) #9
+  %11 = load %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %pbefore_sp, %struct.tlist* %11, i32 0) #9
+  br label %sw.epilog150
+
+sw.bb10:                                          ; preds = %if.end4
+  store %struct.tlist* null, %struct.tlist** %tmp_list2, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_before, align 8, !tbaa !3
+  %operands12 = getelementptr inbounds %union.tree_node* %x.addr.0346, i64 0, i32 0, i32 2
+  %arrayidx13 = bitcast i32* %operands12 to %union.tree_node**
+  %12 = load %union.tree_node** %arrayidx13, align 8, !tbaa !3
+  call fastcc void @verify_tree(%union.tree_node* %12, %struct.tlist** %tmp_before, %struct.tlist** %tmp_list2, %union.tree_node* null) #9
+  %13 = load %struct.tlist** %tmp_list2, align 8, !tbaa !3
+  call fastcc void @warn_for_collisions(%struct.tlist* %13) #9
+  %14 = load %struct.tlist** %tmp_before, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %pbefore_sp, %struct.tlist* %14, i32 0) #9
+  %15 = load %struct.tlist** %tmp_list2, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %pbefore_sp, %struct.tlist* %15, i32 1) #9
+  store %struct.tlist* null, %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  %arrayidx16 = getelementptr inbounds i32* %operands12, i64 2
+  %16 = bitcast i32* %arrayidx16 to %union.tree_node**
+  %17 = load %union.tree_node** %16, align 8, !tbaa !3
+  call fastcc void @verify_tree(%union.tree_node* %17, %struct.tlist** %tmp_list3, %struct.tlist** %tmp_nosp, %union.tree_node* null) #9
+  %18 = load %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  call fastcc void @warn_for_collisions(%struct.tlist* %18) #9
+  %19 = load %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %pbefore_sp, %struct.tlist* %19, i32 0) #9
+  store %struct.tlist* null, %struct.tlist** %tmp_list2, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  %arrayidx19 = getelementptr inbounds i32* %operands12, i64 4
+  %20 = bitcast i32* %arrayidx19 to %union.tree_node**
+  %21 = load %union.tree_node** %20, align 8, !tbaa !3
+  call fastcc void @verify_tree(%union.tree_node* %21, %struct.tlist** %tmp_list3, %struct.tlist** %tmp_list2, %union.tree_node* null) #9
+  %22 = load %struct.tlist** %tmp_list2, align 8, !tbaa !3
+  call fastcc void @warn_for_collisions(%struct.tlist* %22) #9
+  %23 = load %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %pbefore_sp, %struct.tlist* %23, i32 0) #9
+  %24 = load %struct.tlist** %tmp_list2, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %tmp_nosp, %struct.tlist* %24, i32 0) #9
+  %25 = load %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  %tobool19.i240 = icmp eq %struct.tlist* %25, null
+  br i1 %tobool19.i240, label %sw.epilog150, label %while.body.i244.preheader
+
+while.body.i244.preheader:                        ; preds = %sw.bb10
+  %.pre378 = load %struct.tlist** %pno_sp, align 8, !tbaa !3
+  br label %while.body.i244
+
+while.body.i244:                                  ; preds = %while.body.i244.preheader, %while.body.i244
+  %26 = phi %struct.tlist* [ %add.addr.020.i242, %while.body.i244 ], [ %.pre378, %while.body.i244.preheader ]
+  %add.addr.020.i242 = phi %struct.tlist* [ %27, %while.body.i244 ], [ %25, %while.body.i244.preheader ]
+  %next1.i243 = getelementptr inbounds %struct.tlist* %add.addr.020.i242, i64 0, i32 0
+  %27 = load %struct.tlist** %next1.i243, align 8, !tbaa !3
+  store %struct.tlist* %26, %struct.tlist** %next1.i243, align 8, !tbaa !3
+  store %struct.tlist* %add.addr.020.i242, %struct.tlist** %pno_sp, align 8, !tbaa !3
+  %tobool.i245 = icmp eq %struct.tlist* %27, null
+  br i1 %tobool.i245, label %sw.epilog150, label %while.body.i244
+
+sw.bb20:                                          ; preds = %if.end4, %if.end4, %if.end4, %if.end4
+  %operands22 = getelementptr inbounds %union.tree_node* %x.addr.0346, i64 0, i32 0, i32 2
+  %arrayidx23 = bitcast i32* %operands22 to %union.tree_node**
+  %28 = load %union.tree_node** %arrayidx23, align 8, !tbaa !3
+  call fastcc void @verify_tree(%union.tree_node* %28, %struct.tlist** %pno_sp, %struct.tlist** %pno_sp, %union.tree_node* %x.addr.0346) #9
+  br label %sw.epilog150
+
+sw.bb24:                                          ; preds = %if.end4
+  store %struct.tlist* null, %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_before, align 8, !tbaa !3
+  %operands26 = getelementptr inbounds %union.tree_node* %x.addr.0346, i64 0, i32 0, i32 2
+  %arrayidx27 = getelementptr inbounds i32* %operands26, i64 2
+  %29 = bitcast i32* %arrayidx27 to %union.tree_node**
+  %30 = load %union.tree_node** %29, align 8, !tbaa !3
+  call fastcc void @verify_tree(%union.tree_node* %30, %struct.tlist** %tmp_before, %struct.tlist** %tmp_nosp, %union.tree_node* null) #9
+  %arrayidx30 = bitcast i32* %operands26 to %union.tree_node**
+  %31 = load %union.tree_node** %arrayidx30, align 8, !tbaa !3
+  call fastcc void @verify_tree(%union.tree_node* %31, %struct.tlist** %tmp_list3, %struct.tlist** %tmp_list3, %union.tree_node* %x.addr.0346) #9
+  %32 = load %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  call fastcc void @add_tlist(%struct.tlist** %tmp_before, %struct.tlist* %32, %union.tree_node* %x.addr.0346, i32 1) #9
+  %33 = load %struct.tlist** %tmp_before, align 8, !tbaa !3
+  call fastcc void @warn_for_collisions(%struct.tlist* %33) #9
+  %34 = load %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  %tobool19.i254 = icmp eq %struct.tlist* %34, null
+  br i1 %tobool19.i254, label %add_tlist.exit260, label %while.body.i258
+
+while.body.i258:                                  ; preds = %sw.bb24, %while.cond.backedge.i
+  %add.addr.020.i256 = phi %struct.tlist* [ %35, %while.cond.backedge.i ], [ %34, %sw.bb24 ]
+  %next1.i257 = getelementptr inbounds %struct.tlist* %add.addr.020.i256, i64 0, i32 0
+  %35 = load %struct.tlist** %next1.i257, align 8, !tbaa !3
+  %36 = load %struct.tlist** %pno_sp, align 8, !tbaa !3
+  store %struct.tlist* %36, %struct.tlist** %next1.i257, align 8, !tbaa !3
+  %writer.i = getelementptr inbounds %struct.tlist* %add.addr.020.i256, i64 0, i32 2
+  %37 = load %union.tree_node** %writer.i, align 8, !tbaa !3
+  %cmp.i = icmp eq %union.tree_node* %37, %x.addr.0346
+  br i1 %cmp.i, label %while.cond.backedge.i, label %if.then5.i
+
+while.cond.backedge.i:                            ; preds = %if.then5.i, %while.body.i258
+  %tobool.i259 = icmp eq %struct.tlist* %35, null
+  br i1 %tobool.i259, label %add_tlist.exit260, label %while.body.i258
+
+if.then5.i:                                       ; preds = %while.body.i258
+  store %struct.tlist* %add.addr.020.i256, %struct.tlist** %pno_sp, align 8, !tbaa !3
+  br label %while.cond.backedge.i
+
+add_tlist.exit260:                                ; preds = %while.cond.backedge.i, %sw.bb24
+  %38 = load %union.tree_node** %arrayidx30, align 8, !tbaa !3
+  %39 = load %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  call fastcc void @warn_for_collisions_1(%union.tree_node* %38, %union.tree_node* %x.addr.0346, %struct.tlist* %39, i32 1) #9
+  %40 = load %struct.tlist** %tmp_before, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %pbefore_sp, %struct.tlist* %40, i32 0) #9
+  %41 = load %union.tree_node** %arrayidx30, align 8, !tbaa !3
+  %code.i261 = getelementptr inbounds %union.tree_node* %41, i64 0, i32 0, i32 0, i32 2
+  %42 = bitcast [4 x i8]* %code.i261 to i32*
+  %bf.load.i262 = load i32* %42, align 8
+  %43 = and i32 %bf.load.i262, 254
+  %44 = icmp eq i32 %43, 34
+  br i1 %44, label %if.then39, label %if.end44
+
+if.then39:                                        ; preds = %add_tlist.exit260
+  %call43 = call fastcc %struct.tlist* @new_tlist(%struct.tlist* null, %union.tree_node* %41, %union.tree_node* %x.addr.0346) #9
+  call fastcc void @merge_tlist(%struct.tlist** %tmp_nosp, %struct.tlist* %call43, i32 0) #9
+  br label %if.end44
+
+if.end44:                                         ; preds = %add_tlist.exit260, %if.then39
+  %45 = load %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  call fastcc void @add_tlist(%struct.tlist** %pno_sp, %struct.tlist* %45, %union.tree_node* null, i32 1) #9
+  br label %sw.epilog150
+
+sw.bb45:                                          ; preds = %if.end4
+  store %struct.tlist* null, %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_list2, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_before, align 8, !tbaa !3
+  %operands47 = getelementptr inbounds %union.tree_node* %x.addr.0346, i64 0, i32 0, i32 2
+  %arrayidx48 = bitcast i32* %operands47 to %union.tree_node**
+  %46 = load %union.tree_node** %arrayidx48, align 8, !tbaa !3
+  call fastcc void @verify_tree(%union.tree_node* %46, %struct.tlist** %tmp_before, %struct.tlist** %tmp_nosp, %union.tree_node* null) #9
+  %arrayidx51 = getelementptr inbounds i32* %operands47, i64 2
+  %47 = bitcast i32* %arrayidx51 to %union.tree_node**
+  %48 = load %union.tree_node** %47, align 8, !tbaa !3
+  %tobool52 = icmp eq %union.tree_node* %48, null
+  br i1 %tobool52, label %if.end57, label %if.then53
+
+if.then53:                                        ; preds = %sw.bb45
+  call fastcc void @verify_tree(%union.tree_node* %48, %struct.tlist** %tmp_list2, %struct.tlist** %tmp_list3, %union.tree_node* null) #9
+  br label %if.end57
+
+if.end57:                                         ; preds = %sw.bb45, %if.then53
+  %49 = load %struct.tlist** %tmp_list2, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %tmp_list3, %struct.tlist* %49, i32 0) #9
+  %50 = load %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  %tobool19.i273 = icmp eq %struct.tlist* %50, null
+  br i1 %tobool19.i273, label %add_tlist.exit281, label %while.body.i277.preheader
+
+while.body.i277.preheader:                        ; preds = %if.end57
+  %.pre381 = load %struct.tlist** %tmp_before, align 8, !tbaa !3
+  br label %while.body.i277
+
+while.body.i277:                                  ; preds = %while.body.i277.preheader, %while.body.i277
+  %51 = phi %struct.tlist* [ %add.addr.020.i275, %while.body.i277 ], [ %.pre381, %while.body.i277.preheader ]
+  %add.addr.020.i275 = phi %struct.tlist* [ %52, %while.body.i277 ], [ %50, %while.body.i277.preheader ]
+  %next1.i276 = getelementptr inbounds %struct.tlist* %add.addr.020.i275, i64 0, i32 0
+  %52 = load %struct.tlist** %next1.i276, align 8, !tbaa !3
+  store %struct.tlist* %51, %struct.tlist** %next1.i276, align 8, !tbaa !3
+  store %struct.tlist* %add.addr.020.i275, %struct.tlist** %tmp_before, align 8, !tbaa !3
+  %tobool.i278 = icmp eq %struct.tlist* %52, null
+  br i1 %tobool.i278, label %add_tlist.exit281, label %while.body.i277
+
+add_tlist.exit281:                                ; preds = %while.body.i277, %if.end57
+  %53 = load %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  %tobool19.i282 = icmp eq %struct.tlist* %53, null
+  %.pre384 = load %struct.tlist** %tmp_before, align 8, !tbaa !3
+  br i1 %tobool19.i282, label %add_tlist.exit290, label %while.body.i286
+
+while.body.i286:                                  ; preds = %add_tlist.exit281, %while.body.i286
+  %54 = phi %struct.tlist* [ %add.addr.020.i284, %while.body.i286 ], [ %.pre384, %add_tlist.exit281 ]
+  %add.addr.020.i284 = phi %struct.tlist* [ %55, %while.body.i286 ], [ %53, %add_tlist.exit281 ]
+  %next1.i285 = getelementptr inbounds %struct.tlist* %add.addr.020.i284, i64 0, i32 0
+  %55 = load %struct.tlist** %next1.i285, align 8, !tbaa !3
+  store %struct.tlist* %54, %struct.tlist** %next1.i285, align 8, !tbaa !3
+  store %struct.tlist* %add.addr.020.i284, %struct.tlist** %tmp_before, align 8, !tbaa !3
+  %tobool.i287 = icmp eq %struct.tlist* %55, null
+  br i1 %tobool.i287, label %add_tlist.exit290, label %while.body.i286
+
+add_tlist.exit290:                                ; preds = %add_tlist.exit281, %while.body.i286
+  %56 = phi %struct.tlist* [ %add.addr.020.i284, %while.body.i286 ], [ %.pre384, %add_tlist.exit281 ]
+  call fastcc void @warn_for_collisions(%struct.tlist* %56) #9
+  %57 = load %struct.tlist** %tmp_before, align 8, !tbaa !3
+  %tobool19.i264 = icmp eq %struct.tlist* %57, null
+  br i1 %tobool19.i264, label %sw.epilog150, label %while.body.i268.preheader
+
+while.body.i268.preheader:                        ; preds = %add_tlist.exit290
+  %.pre379 = load %struct.tlist** %pbefore_sp, align 8, !tbaa !3
+  br label %while.body.i268
+
+while.body.i268:                                  ; preds = %while.body.i268.preheader, %while.body.i268
+  %58 = phi %struct.tlist* [ %add.addr.020.i266, %while.body.i268 ], [ %.pre379, %while.body.i268.preheader ]
+  %add.addr.020.i266 = phi %struct.tlist* [ %59, %while.body.i268 ], [ %57, %while.body.i268.preheader ]
+  %next1.i267 = getelementptr inbounds %struct.tlist* %add.addr.020.i266, i64 0, i32 0
+  %59 = load %struct.tlist** %next1.i267, align 8, !tbaa !3
+  store %struct.tlist* %58, %struct.tlist** %next1.i267, align 8, !tbaa !3
+  store %struct.tlist* %add.addr.020.i266, %struct.tlist** %pbefore_sp, align 8, !tbaa !3
+  %tobool.i269 = icmp eq %struct.tlist* %59, null
+  br i1 %tobool.i269, label %sw.epilog150, label %while.body.i268
+
+while.body:                                       ; preds = %while.cond.preheader, %add_tlist.exit253
+  %x.addr.1297 = phi %union.tree_node* [ %66, %add_tlist.exit253 ], [ %x.addr.0346, %while.cond.preheader ]
+  store %struct.tlist* null, %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_before, align 8, !tbaa !3
+  %value = getelementptr inbounds %union.tree_node* %x.addr.1297, i64 0, i32 0, i32 2
+  %60 = bitcast i32* %value to %union.tree_node**
+  %61 = load %union.tree_node** %60, align 8, !tbaa !3
+  call fastcc void @verify_tree(%union.tree_node* %61, %struct.tlist** %tmp_before, %struct.tlist** %tmp_nosp, %union.tree_node* null) #9
+  %62 = load %struct.tlist** %tmp_before, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %tmp_nosp, %struct.tlist* %62, i32 0) #9
+  %63 = load %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  %tobool19.i247 = icmp eq %struct.tlist* %63, null
+  br i1 %tobool19.i247, label %add_tlist.exit253, label %while.body.i251.preheader
+
+while.body.i251.preheader:                        ; preds = %while.body
+  %.pre382 = load %struct.tlist** %pno_sp, align 8, !tbaa !3
+  br label %while.body.i251
+
+while.body.i251:                                  ; preds = %while.body.i251.preheader, %while.body.i251
+  %64 = phi %struct.tlist* [ %add.addr.020.i249, %while.body.i251 ], [ %.pre382, %while.body.i251.preheader ]
+  %add.addr.020.i249 = phi %struct.tlist* [ %65, %while.body.i251 ], [ %63, %while.body.i251.preheader ]
+  %next1.i250 = getelementptr inbounds %struct.tlist* %add.addr.020.i249, i64 0, i32 0
+  %65 = load %struct.tlist** %next1.i250, align 8, !tbaa !3
+  store %struct.tlist* %64, %struct.tlist** %next1.i250, align 8, !tbaa !3
+  store %struct.tlist* %add.addr.020.i249, %struct.tlist** %pno_sp, align 8, !tbaa !3
+  %tobool.i252 = icmp eq %struct.tlist* %65, null
+  br i1 %tobool.i252, label %add_tlist.exit253, label %while.body.i251
+
+add_tlist.exit253:                                ; preds = %while.body.i251, %while.body
+  %chain = getelementptr inbounds %union.tree_node* %x.addr.1297, i64 0, i32 0, i32 0, i32 0
+  %66 = load %union.tree_node** %chain, align 8, !tbaa !3
+  %tobool59 = icmp eq %union.tree_node* %66, null
+  br i1 %tobool59, label %sw.epilog150, label %while.body
+
+for.cond:                                         ; preds = %for.body
+  %next = getelementptr inbounds %struct.tlist_cache* %t.0302, i64 0, i32 0
+  %t.0 = load %struct.tlist_cache** %next, align 8
+  %tobool62 = icmp eq %struct.tlist_cache* %t.0, null
+  br i1 %tobool62, label %if.then67, label %for.body
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %t.0302 = phi %struct.tlist_cache* [ %t.0, %for.cond ], [ %t.0300, %for.cond.preheader ]
+  %expr = getelementptr inbounds %struct.tlist_cache* %t.0302, i64 0, i32 3
+  %67 = load %union.tree_node** %expr, align 8, !tbaa !3
+  %cmp63 = icmp eq %union.tree_node* %67, %x.addr.0346
+  br i1 %cmp63, label %if.end117, label %for.cond
+
+if.then67:                                        ; preds = %for.cond, %for.cond.preheader
+  %68 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 4), align 8, !tbaa !3
+  %69 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %sub.ptr.lhs.cast = ptrtoint i8* %68 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %69 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp68 = icmp slt i64 %sub.ptr.sub, 32
+  br i1 %cmp68, label %if.then70, label %if.end71
+
+if.then70:                                        ; preds = %if.then67
+  call void @_obstack_newchunk(%struct.obstack* @tlist_obstack, i32 32) #8
+  %.pre383 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
+  br label %if.end71
+
+if.end71:                                         ; preds = %if.then70, %if.then67
+  %70 = phi i8* [ %.pre383, %if.then70 ], [ %69, %if.then67 ]
+  %add.ptr = getelementptr inbounds i8* %70, i64 32
+  store i8* %add.ptr, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %71 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 2), align 8, !tbaa !3
+  %cmp75 = icmp eq i8* %add.ptr, %71
+  br i1 %cmp75, label %if.then77, label %if.end80
+
+if.then77:                                        ; preds = %if.end71
+  %bf.load78 = load i8* getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 10), align 8
+  %bf.set = or i8 %bf.load78, 2
+  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 10), align 8
+  br label %if.end80
+
+if.end80:                                         ; preds = %if.end71, %if.then77
+  %sub.ptr.lhs.cast82 = ptrtoint i8* %add.ptr to i64
+  %72 = load i32* getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 6), align 8, !tbaa !0
+  %conv84 = sext i32 %72 to i64
+  %add = add nsw i64 %conv84, %sub.ptr.lhs.cast82
+  %neg = xor i32 %72, -1
+  %conv86 = sext i32 %neg to i64
+  %and = and i64 %add, %conv86
+  %add.ptr87 = getelementptr inbounds i8* null, i64 %and
+  store i8* %add.ptr87, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %73 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 1), align 8, !tbaa !3
+  %sub.ptr.lhs.cast90 = ptrtoint i8* %add.ptr87 to i64
+  %sub.ptr.rhs.cast91 = ptrtoint %struct._obstack_chunk* %73 to i64
+  %sub.ptr.sub92 = sub i64 %sub.ptr.lhs.cast90, %sub.ptr.rhs.cast91
+  %74 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 4), align 8, !tbaa !3
+  %sub.ptr.lhs.cast95 = ptrtoint i8* %74 to i64
+  %sub.ptr.sub97 = sub i64 %sub.ptr.lhs.cast95, %sub.ptr.rhs.cast91
+  %cmp98 = icmp sgt i64 %sub.ptr.sub92, %sub.ptr.sub97
+  br i1 %cmp98, label %if.then100, label %if.end103
+
+if.then100:                                       ; preds = %if.end80
+  store i8* %74, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
+  br label %if.end103
+
+if.end103:                                        ; preds = %if.end80, %if.then100
+  %75 = phi i8* [ %74, %if.then100 ], [ %add.ptr87, %if.end80 ]
+  store i8* %75, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 2), align 8, !tbaa !3
+  %76 = bitcast i8* %71 to %struct.tlist_cache*
+  %77 = load %struct.tlist_cache** @save_expr_cache, align 8, !tbaa !3
+  %next106 = bitcast i8* %71 to %struct.tlist_cache**
+  store %struct.tlist_cache* %77, %struct.tlist_cache** %next106, align 8, !tbaa !3
+  %expr107 = getelementptr inbounds i8* %71, i64 24
+  %78 = bitcast i8* %expr107 to %union.tree_node**
+  store %union.tree_node* %x.addr.0346, %union.tree_node** %78, align 8, !tbaa !3
+  store %struct.tlist_cache* %76, %struct.tlist_cache** @save_expr_cache, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_before, align 8, !tbaa !3
+  %operands109 = getelementptr inbounds %union.tree_node* %x.addr.0346, i64 0, i32 0, i32 2
+  %arrayidx110 = bitcast i32* %operands109 to %union.tree_node**
+  %79 = load %union.tree_node** %arrayidx110, align 8, !tbaa !3
+  call fastcc void @verify_tree(%union.tree_node* %79, %struct.tlist** %tmp_before, %struct.tlist** %tmp_nosp, %union.tree_node* null) #9
+  %80 = load %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  call fastcc void @warn_for_collisions(%struct.tlist* %80) #9
+  store %struct.tlist* null, %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  %81 = load %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  %tobool112298 = icmp eq %struct.tlist* %81, null
+  br i1 %tobool112298, label %while.end116, label %while.body113
+
+while.body113:                                    ; preds = %if.end103, %while.body113
+  %82 = phi %struct.tlist* [ %84, %while.body113 ], [ %81, %if.end103 ]
+  %next115 = getelementptr inbounds %struct.tlist* %82, i64 0, i32 0
+  %83 = load %struct.tlist** %next115, align 8, !tbaa !3
+  store %struct.tlist* %83, %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %tmp_list3, %struct.tlist* %82, i32 0) #9
+  %84 = load %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  %tobool112 = icmp eq %struct.tlist* %84, null
+  br i1 %tobool112, label %while.end116, label %while.body113
+
+while.end116:                                     ; preds = %while.body113, %if.end103
+  %85 = load %struct.tlist** %tmp_before, align 8, !tbaa !3
+  %cache_before_sp = getelementptr inbounds i8* %71, i64 8
+  %86 = bitcast i8* %cache_before_sp to %struct.tlist**
+  store %struct.tlist* %85, %struct.tlist** %86, align 8, !tbaa !3
+  %87 = load %struct.tlist** %tmp_list3, align 8, !tbaa !3
+  %cache_after_sp = getelementptr inbounds i8* %71, i64 16
+  %88 = bitcast i8* %cache_after_sp to %struct.tlist**
+  store %struct.tlist* %87, %struct.tlist** %88, align 8, !tbaa !3
+  br label %if.end117
+
+if.end117:                                        ; preds = %for.body, %while.end116
+  %t.1 = phi %struct.tlist_cache* [ %76, %while.end116 ], [ %t.0302, %for.body ]
+  %cache_before_sp118 = getelementptr inbounds %struct.tlist_cache* %t.1, i64 0, i32 1
+  %89 = load %struct.tlist** %cache_before_sp118, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %pbefore_sp, %struct.tlist* %89, i32 1) #9
+  %cache_after_sp119 = getelementptr inbounds %struct.tlist_cache* %t.1, i64 0, i32 2
+  %90 = load %struct.tlist** %cache_after_sp119, align 8, !tbaa !3
+  call fastcc void @add_tlist(%struct.tlist** %pno_sp, %struct.tlist* %90, %union.tree_node* null, i32 1) #9
+  br label %sw.epilog150
+
+sw.epilog:                                        ; preds = %if.end4
+  %cmp121 = icmp eq i8 %4, 49
+  br i1 %cmp121, label %if.then123, label %if.end132
+
+if.then123:                                       ; preds = %sw.epilog
+  %call124 = call i32 @first_rtl_op(i32 %idxprom239344.pn.in) #8
+  %cmp125 = icmp eq i32 %call124, 0
+  br i1 %cmp125, label %sw.epilog150, label %if.end128
+
+if.end128:                                        ; preds = %if.then123
+  %operands130 = getelementptr inbounds %union.tree_node* %x.addr.0346, i64 0, i32 0, i32 2
+  %arrayidx131 = bitcast i32* %operands130 to %union.tree_node**
+  %91 = load %union.tree_node** %arrayidx131, align 8, !tbaa !3
+  %code1 = getelementptr inbounds %union.tree_node* %91, i64 0, i32 0, i32 0, i32 2
+  %92 = bitcast [4 x i8]* %code1 to i32*
+  %bf.load = load i32* %92, align 8
+  %93 = and i32 %bf.load, 254
+  %94 = icmp eq i32 %93, 34
+  br i1 %94, label %if.then2, label %if.end4
+
+if.end132:                                        ; preds = %sw.epilog
+  %conv120 = sext i8 %4 to i32
+  switch i32 %conv120, label %sw.epilog150 [
+    i32 114, label %sw.bb134
+    i32 60, label %sw.bb134
+    i32 50, label %sw.bb134
+    i32 98, label %sw.bb134
+    i32 101, label %sw.bb134
+    i32 115, label %sw.bb134
+    i32 120, label %sw.bb134
+  ]
+
+sw.bb134:                                         ; preds = %if.end132, %if.end132, %if.end132, %if.end132, %if.end132, %if.end132, %if.end132
+  %bf.clear138 = and i32 %bf.load137, 255
+  %call139 = call i32 @first_rtl_op(i32 %bf.clear138) #8
+  %cmp141291 = icmp sgt i32 %call139, 0
+  br i1 %cmp141291, label %for.body143.lr.ph, label %sw.epilog150
+
+for.body143.lr.ph:                                ; preds = %sw.bb134
+  %operands146 = getelementptr inbounds %union.tree_node* %x.addr.0346, i64 0, i32 0, i32 2
+  %95 = bitcast i32* %operands146 to [1 x %union.tree_node*]*
+  br label %for.body143
+
+for.body143:                                      ; preds = %add_tlist.exit, %for.body143.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body143.lr.ph ], [ %indvars.iv.next, %add_tlist.exit ]
+  store %struct.tlist* null, %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %tmp_before, align 8, !tbaa !3
+  %arrayidx147 = getelementptr inbounds [1 x %union.tree_node*]* %95, i64 0, i64 %indvars.iv
+  %96 = load %union.tree_node** %arrayidx147, align 8, !tbaa !3
+  call fastcc void @verify_tree(%union.tree_node* %96, %struct.tlist** %tmp_before, %struct.tlist** %tmp_nosp, %union.tree_node* null) #9
+  %97 = load %struct.tlist** %tmp_before, align 8, !tbaa !3
+  call fastcc void @merge_tlist(%struct.tlist** %tmp_nosp, %struct.tlist* %97, i32 0) #9
+  %98 = load %struct.tlist** %tmp_nosp, align 8, !tbaa !3
+  %tobool19.i = icmp eq %struct.tlist* %98, null
+  br i1 %tobool19.i, label %add_tlist.exit, label %while.body.i.preheader
+
+while.body.i.preheader:                           ; preds = %for.body143
+  %.pre = load %struct.tlist** %pno_sp, align 8, !tbaa !3
+  br label %while.body.i
+
+while.body.i:                                     ; preds = %while.body.i.preheader, %while.body.i
+  %99 = phi %struct.tlist* [ %add.addr.020.i, %while.body.i ], [ %.pre, %while.body.i.preheader ]
+  %add.addr.020.i = phi %struct.tlist* [ %100, %while.body.i ], [ %98, %while.body.i.preheader ]
+  %next1.i = getelementptr inbounds %struct.tlist* %add.addr.020.i, i64 0, i32 0
+  %100 = load %struct.tlist** %next1.i, align 8, !tbaa !3
+  store %struct.tlist* %99, %struct.tlist** %next1.i, align 8, !tbaa !3
+  store %struct.tlist* %add.addr.020.i, %struct.tlist** %pno_sp, align 8, !tbaa !3
+  %tobool.i = icmp eq %struct.tlist* %100, null
+  br i1 %tobool.i, label %add_tlist.exit, label %while.body.i
+
+add_tlist.exit:                                   ; preds = %while.body.i, %for.body143
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %call139
+  br i1 %exitcond, label %sw.epilog150, label %for.body143
+
+sw.epilog150:                                     ; preds = %if.then123, %if.end4, %while.cond.preheader, %add_tlist.exit253, %while.body.i268, %while.body.i244, %sw.bb134, %add_tlist.exit, %add_tlist.exit290, %sw.bb10, %entry, %if.then2, %sw.bb5, %sw.bb20, %if.end44, %if.end117, %if.end132
+  ret void
+}

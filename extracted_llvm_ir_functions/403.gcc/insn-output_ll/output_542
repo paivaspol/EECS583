@@ -1,0 +1,14 @@
+define internal i8* @output_542(%struct.rtx_def** %operands, %struct.rtx_def* %insn) #1 {
+entry:
+  %0 = load i32* @which_alternative, align 4, !tbaa !3
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %call = tail call i8* @output_387_binary_op(%struct.rtx_def* %insn, %struct.rtx_def** %operands) #6
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi i8* [ %call, %cond.false ], [ getelementptr inbounds ([2 x i8]* @.str38, i64 0, i64 0), %entry ]
+  ret i8* %cond
+}

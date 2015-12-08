@@ -1,0 +1,9 @@
+define i32 @get_pool_offset(%struct.rtx_def* nocapture %addr) #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !3
+  %call = tail call fastcc %struct.pool_constant* @find_pool_constant(%struct.function* %0, %struct.rtx_def* %addr) #10
+  %offset = getelementptr inbounds %struct.pool_constant* %call, i64 0, i32 7
+  %1 = load i64* %offset, align 8, !tbaa !10
+  %conv = trunc i64 %1 to i32
+  ret i32 %conv
+}

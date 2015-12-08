@@ -1,0 +1,84 @@
+define internal fastcc i32 @find_basic_block(%struct.rtx_def* %insn, i32 %search_limit) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @prev_nonnote_insn(%struct.rtx_def* %insn) #5
+  %tobool46 = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool46, label %for.end.thread, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry, %for.inc
+  %search_limit.addr.048 = phi i32 [ %dec, %for.inc ], [ %search_limit, %entry ]
+  %insn.addr.047 = phi %struct.rtx_def* [ %call2, %for.inc ], [ %call, %entry ]
+  %0 = bitcast %struct.rtx_def* %insn.addr.047 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 35
+  %cmp1 = icmp eq i32 %search_limit.addr.048, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %for.end, label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true
+  %call2 = tail call %struct.rtx_def* @prev_nonnote_insn(%struct.rtx_def* %insn.addr.047) #5
+  %dec = add nsw i32 %search_limit.addr.048, -1
+  %tobool = icmp eq %struct.rtx_def* %call2, null
+  br i1 %tobool, label %for.end.thread, label %land.lhs.true
+
+for.end.thread:                                   ; preds = %entry, %for.inc
+  %search_limit.addr.0.lcssa.ph = phi i32 [ %search_limit, %entry ], [ %dec, %for.inc ]
+  %cmp357 = icmp eq i32 %search_limit.addr.0.lcssa.ph, 0
+  %.mux59 = sext i1 %cmp357 to i32
+  br label %return
+
+for.end:                                          ; preds = %land.lhs.true
+  %cmp3 = icmp eq i32 %search_limit.addr.048, 0
+  %.mux = sext i1 %cmp3 to i32
+  br i1 %cmp3, label %return, label %if.end6
+
+if.end6:                                          ; preds = %for.end
+  %call7 = tail call %struct.rtx_def* @next_nonnote_insn(%struct.rtx_def* %insn.addr.047) #5
+  %tobool944 = icmp eq %struct.rtx_def* %call7, null
+  br i1 %tobool944, label %return, label %land.rhs10
+
+land.rhs10:                                       ; preds = %if.end6, %for.inc24
+  %insn.addr.145 = phi %struct.rtx_def* [ %call25, %for.inc24 ], [ %call7, %if.end6 ]
+  %1 = bitcast %struct.rtx_def* %insn.addr.145 to i32*
+  %bf.load11 = load i32* %1, align 8
+  %bf.clear12 = and i32 %bf.load11, 65535
+  %cmp13 = icmp eq i32 %bf.clear12, 36
+  br i1 %cmp13, label %for.cond16.preheader, label %return
+
+for.cond16.preheader:                             ; preds = %land.rhs10
+  %2 = load i32* @n_basic_blocks, align 4, !tbaa !4
+  %cmp1741 = icmp sgt i32 %2, 0
+  br i1 %cmp1741, label %for.body18.lr.ph, label %for.inc24
+
+for.body18.lr.ph:                                 ; preds = %for.cond16.preheader
+  %3 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  br label %for.body18
+
+for.cond16:                                       ; preds = %for.body18
+  %inc = add nsw i32 %i.042, 1
+  %4 = trunc i64 %indvars.iv.next to i32
+  %cmp17 = icmp slt i32 %4, %2
+  br i1 %cmp17, label %for.body18, label %for.inc24
+
+for.body18:                                       ; preds = %for.body18.lr.ph, %for.cond16
+  %indvars.iv = phi i64 [ 0, %for.body18.lr.ph ], [ %indvars.iv.next, %for.cond16 ]
+  %i.042 = phi i32 [ 0, %for.body18.lr.ph ], [ %inc, %for.cond16 ]
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv
+  %5 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
+  %head = getelementptr inbounds %struct.basic_block_def* %5, i64 0, i32 0
+  %6 = load %struct.rtx_def** %head, align 8, !tbaa !0
+  %cmp19 = icmp eq %struct.rtx_def* %insn.addr.145, %6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp19, label %return, label %for.cond16
+
+for.inc24:                                        ; preds = %for.cond16, %for.cond16.preheader
+  %call25 = tail call %struct.rtx_def* @next_nonnote_insn(%struct.rtx_def* %insn.addr.145) #5
+  %tobool9 = icmp eq %struct.rtx_def* %call25, null
+  br i1 %tobool9, label %return, label %land.rhs10
+
+return:                                           ; preds = %if.end6, %land.rhs10, %for.inc24, %for.body18, %for.end.thread, %for.end
+  %retval.0 = phi i32 [ %.mux, %for.end ], [ %.mux59, %for.end.thread ], [ %i.042, %for.body18 ], [ -1, %for.inc24 ], [ -1, %land.rhs10 ], [ -1, %if.end6 ]
+  ret i32 %retval.0
+}

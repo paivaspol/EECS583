@@ -1,0 +1,121 @@
+define internal fastcc void @find_single_use_in_loop(%struct.loop_regs* %regs, %struct.rtx_def* %insn, %struct.rtx_def* nocapture %x) #0 {
+entry:
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %if.end, %entry
+  %x.tr = phi %struct.rtx_def* [ %x, %entry ], [ %8, %if.end ]
+  %0 = bitcast %struct.rtx_def* %x.tr to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom118 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom118
+  %1 = load i8** %arrayidx, align 8, !tbaa !4
+  switch i32 %bf.clear, label %if.else34 [
+    i32 61, label %if.then
+    i32 47, label %if.then21
+  ]
+
+if.then:                                          ; preds = %tailrecurse
+  %arrayidx1 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx1 to i32*
+  %2 = load i32* %rtuint, align 4, !tbaa !3
+  %idxprom2 = zext i32 %2 to i64
+  %array = getelementptr inbounds %struct.loop_regs* %regs, i64 0, i32 2
+  %3 = load %struct.loop_reg** %array, align 8, !tbaa !4
+  %single_usage = getelementptr inbounds %struct.loop_reg* %3, i64 %idxprom2, i32 2
+  %4 = load %struct.rtx_def** %single_usage, align 8, !tbaa !4
+  %cmp4 = icmp eq %struct.rtx_def* %4, null
+  %cmp12 = icmp eq %struct.rtx_def* %4, %insn
+  %or.cond = or i1 %cmp4, %cmp12
+  %5 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !4
+  %cond = select i1 %or.cond, %struct.rtx_def* %insn, %struct.rtx_def* %5
+  store %struct.rtx_def* %cond, %struct.rtx_def** %single_usage, align 8, !tbaa !4
+  br label %if.end83
+
+if.then21:                                        ; preds = %tailrecurse
+  %fld22 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld22 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %7 = bitcast %struct.rtx_def* %6 to i32*
+  %bf.load24 = load i32* %7, align 8
+  %bf.clear25 = and i32 %bf.load24, 65535
+  %cmp26 = icmp eq i32 %bf.clear25, 61
+  br i1 %cmp26, label %if.end, label %if.then27
+
+if.then27:                                        ; preds = %if.then21
+  tail call fastcc void @find_single_use_in_loop(%struct.loop_regs* %regs, %struct.rtx_def* %insn, %struct.rtx_def* %6) #10
+  br label %if.end
+
+if.end:                                           ; preds = %if.then21, %if.then27
+  %arrayidx32 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 1
+  %rtx33 = bitcast %union.rtunion_def* %arrayidx32 to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %rtx33, align 8, !tbaa !4
+  br label %tailrecurse
+
+if.else34:                                        ; preds = %tailrecurse
+  %arrayidx36 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom118
+  %9 = load i8* %arrayidx36, align 1, !tbaa !1
+  %cmp37123 = icmp eq i8 %9, 0
+  br i1 %cmp37123, label %if.end83, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.else34
+  %10 = zext i8 %9 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %indvars.iv128 = phi i64 [ %10, %for.body.lr.ph ], [ %indvars.iv.next129, %for.cond.backedge ]
+  %indvars.iv.next129 = add i64 %indvars.iv128, -1
+  %arrayidx40 = getelementptr inbounds i8* %1, i64 %indvars.iv.next129
+  %11 = load i8* %arrayidx40, align 1, !tbaa !1
+  switch i8 %11, label %for.cond.backedge [
+    i8 101, label %land.lhs.true44
+    i8 69, label %if.then62
+  ]
+
+land.lhs.true44:                                  ; preds = %for.body
+  %arrayidx47 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 %indvars.iv.next129
+  %rtx48 = bitcast %union.rtunion_def* %arrayidx47 to %struct.rtx_def**
+  %12 = load %struct.rtx_def** %rtx48, align 8, !tbaa !4
+  %cmp49 = icmp eq %struct.rtx_def* %12, null
+  br i1 %cmp49, label %for.cond.backedge, label %if.then51
+
+if.then51:                                        ; preds = %land.lhs.true44
+  tail call fastcc void @find_single_use_in_loop(%struct.loop_regs* %regs, %struct.rtx_def* %insn, %struct.rtx_def* %12) #10
+  br label %for.cond.backedge
+
+for.cond.backedge:                                ; preds = %for.body, %land.lhs.true44, %if.then62, %for.body70, %if.then51
+  %13 = trunc i64 %indvars.iv.next129 to i32
+  %cmp37 = icmp sgt i32 %13, 0
+  br i1 %cmp37, label %for.body, label %if.end83
+
+if.then62:                                        ; preds = %for.body
+  %arrayidx65 = getelementptr inbounds %struct.rtx_def* %x.tr, i64 0, i32 1, i64 %indvars.iv.next129
+  %rtvec = bitcast %union.rtunion_def* %arrayidx65 to %struct.rtvec_def**
+  %14 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %14, i64 0, i32 0
+  %15 = load i32* %num_elem, align 4, !tbaa !3
+  %cmp68120 = icmp sgt i32 %15, 0
+  br i1 %cmp68120, label %for.body70.lr.ph, label %for.cond.backedge
+
+for.body70.lr.ph:                                 ; preds = %if.then62
+  %16 = sext i32 %15 to i64
+  br label %for.body70
+
+for.body70:                                       ; preds = %for.body70.for.body70_crit_edge, %for.body70.lr.ph
+  %17 = phi %struct.rtvec_def* [ %14, %for.body70.lr.ph ], [ %.pre, %for.body70.for.body70_crit_edge ]
+  %indvars.iv = phi i64 [ %16, %for.body70.lr.ph ], [ %indvars.iv.next, %for.body70.for.body70_crit_edge ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %arrayidx76 = getelementptr inbounds %struct.rtvec_def* %17, i64 0, i32 1, i64 %indvars.iv.next
+  %18 = load %struct.rtx_def** %arrayidx76, align 8, !tbaa !4
+  tail call fastcc void @find_single_use_in_loop(%struct.loop_regs* %regs, %struct.rtx_def* %insn, %struct.rtx_def* %18) #10
+  %19 = trunc i64 %indvars.iv.next to i32
+  %cmp68 = icmp sgt i32 %19, 0
+  br i1 %cmp68, label %for.body70.for.body70_crit_edge, label %for.cond.backedge
+
+for.body70.for.body70_crit_edge:                  ; preds = %for.body70
+  %.pre = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  br label %for.body70
+
+if.end83:                                         ; preds = %if.else34, %for.cond.backedge, %if.then
+  ret void
+}

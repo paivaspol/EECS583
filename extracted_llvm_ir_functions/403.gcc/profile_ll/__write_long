@@ -1,0 +1,41 @@
+define internal fastcc void @__write_long(i64 %value, %struct._IO_FILE* nocapture %file) #0 {
+entry:
+  %c = alloca [10 x i8], align 1
+  %cmp.i = icmp slt i64 %value, 0
+  %sub.i = sub nsw i64 0, %value
+  %sub.value.i = select i1 %cmp.i, i64 %sub.i, i64 %value
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.body.i, %entry
+  %i.05.i = phi i64 [ 0, %entry ], [ %inc.i, %for.body.i ]
+  %value.addr.14.i = phi i64 [ %sub.value.i, %entry ], [ %div.i, %for.body.i ]
+  %cmp10.i = icmp eq i64 %i.05.i, 3
+  %conv.i = select i1 %cmp10.i, i64 127, i64 255
+  %and.i = and i64 %conv.i, %value.addr.14.i
+  %conv12.i = trunc i64 %and.i to i8
+  %arrayidx.i = getelementptr inbounds [10 x i8]* %c, i64 0, i64 %i.05.i
+  store i8 %conv12.i, i8* %arrayidx.i, align 1, !tbaa !1
+  %div.i = sdiv i64 %value.addr.14.i, 256
+  %inc.i = add i64 %i.05.i, 1
+  %exitcond.i = icmp eq i64 %inc.i, 4
+  br i1 %exitcond.i, label %for.end.i, label %for.body.i
+
+for.end.i:                                        ; preds = %for.body.i
+  %arraydecay = getelementptr inbounds [10 x i8]* %c, i64 0, i64 0
+  %cond.i = select i1 %cmp.i, i8 -128, i8 0
+  switch i64 %div.i, label %return [
+    i64 -1, label %if.else
+    i64 0, label %if.else
+  ]
+
+if.else:                                          ; preds = %for.end.i, %for.end.i
+  %arrayidx26.i = getelementptr inbounds [10 x i8]* %c, i64 0, i64 3
+  %0 = load i8* %arrayidx26.i, align 1, !tbaa !1
+  %or.i = or i8 %0, %cond.i
+  store i8 %or.i, i8* %arrayidx26.i, align 1, !tbaa !1
+  %call2 = call i64 @fwrite(i8* %arraydecay, i64 1, i64 4, %struct._IO_FILE* %file) #7
+  br label %return
+
+return:                                           ; preds = %for.end.i, %if.else
+  ret void
+}

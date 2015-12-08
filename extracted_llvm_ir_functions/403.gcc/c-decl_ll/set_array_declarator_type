@@ -1,0 +1,29 @@
+define %union.tree_node* @set_array_declarator_type(%union.tree_node* %decl, %union.tree_node* %type, i32 %abstract_p) #0 {
+entry:
+  %operands = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  store %union.tree_node* %type, %union.tree_node** %arrayidx, align 8, !tbaa !0
+  %tobool = icmp eq i32 %abstract_p, 0
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %type1 = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 1
+  %0 = load %union.tree_node** %type1, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %0, null
+  br i1 %cmp, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %land.lhs.true
+  %static_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %static_flag to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 262144
+  %tobool3 = icmp eq i32 %bf.clear, 0
+  br i1 %tobool3, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %land.lhs.true
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([49 x i8]* @.str168, i64 0, i64 0)) #8
+  br label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false, %entry, %if.then
+  ret %union.tree_node* %decl
+}

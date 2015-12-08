@@ -1,0 +1,53 @@
+define internal fastcc void @df_def_unlink(%struct.df* nocapture %df, %struct.ref* %def) #0 {
+entry:
+  %reg = getelementptr inbounds %struct.ref* %def, i64 0, i32 0
+  %0 = load %struct.rtx_def** %reg, align 8, !tbaa !3
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 63
+  br i1 %cmp, label %cond.true, label %cond.end
+
+cond.true:                                        ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi %struct.rtx_def* [ %2, %cond.true ], [ %0, %entry ]
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %cond, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx4 to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !4
+  %chain = getelementptr inbounds %struct.ref* %def, i64 0, i32 3
+  %du_link.021 = load %struct.df_link** %chain, align 8
+  %tobool22 = icmp eq %struct.df_link* %du_link.021, null
+  br i1 %tobool22, label %for.end, label %for.body
+
+for.body:                                         ; preds = %cond.end, %for.body
+  %du_link.023 = phi %struct.df_link* [ %du_link.0, %for.body ], [ %du_link.021, %cond.end ]
+  %ref = getelementptr inbounds %struct.df_link* %du_link.023, i64 0, i32 1
+  %4 = load %struct.ref** %ref, align 8, !tbaa !3
+  %chain5 = getelementptr inbounds %struct.ref* %4, i64 0, i32 3
+  %call = tail call fastcc %struct.df_link* @df_ref_unlink(%struct.df_link** %chain5, %struct.ref* %def) #6
+  %next = getelementptr inbounds %struct.df_link* %du_link.023, i64 0, i32 0
+  %du_link.0 = load %struct.df_link** %next, align 8
+  %tobool = icmp eq %struct.df_link* %du_link.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %cond.end
+  store %struct.df_link* null, %struct.df_link** %chain, align 8, !tbaa !3
+  %idxprom = zext i32 %3 to i64
+  %regs = getelementptr inbounds %struct.df* %df, i64 0, i32 5
+  %5 = load %struct.reg_info** %regs, align 8, !tbaa !3
+  %defs = getelementptr inbounds %struct.reg_info* %5, i64 %idxprom, i32 0
+  %call8 = tail call fastcc %struct.df_link* @df_ref_unlink(%struct.df_link** %defs, %struct.ref* %def) #6
+  %id = getelementptr inbounds %struct.ref* %def, i64 0, i32 5
+  %6 = load i32* %id, align 4, !tbaa !4
+  %idxprom9 = sext i32 %6 to i64
+  %defs10 = getelementptr inbounds %struct.df* %df, i64 0, i32 2
+  %7 = load %struct.ref*** %defs10, align 8, !tbaa !3
+  %arrayidx11 = getelementptr inbounds %struct.ref** %7, i64 %idxprom9
+  store %struct.ref* null, %struct.ref** %arrayidx11, align 8, !tbaa !3
+  ret void
+}

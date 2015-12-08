@@ -1,0 +1,15 @@
+define %struct.rtx_def* @immed_real_const(%union.tree_node* %exp) #0 {
+entry:
+  %real_cst1 = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 2
+  %0 = bitcast i32* %real_cst1 to %struct.realvaluetype*
+  %type = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 0, i32 1
+  %1 = load %union.tree_node** %type, align 8, !tbaa !3
+  %type2 = bitcast %union.tree_node* %1 to %struct.tree_type*
+  %mode = getelementptr inbounds %struct.tree_type* %type2, i64 0, i32 6
+  %2 = bitcast [4 x i8]* %mode to i32*
+  %bf.load = load i32* %2, align 4
+  %bf.lshr = lshr i32 %bf.load, 9
+  %bf.clear = and i32 %bf.lshr, 127
+  %call = tail call %struct.rtx_def* @immed_real_const_1(%struct.realvaluetype* byval align 8 %0, i32 %bf.clear) #10
+  ret %struct.rtx_def* %call
+}

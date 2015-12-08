@@ -1,0 +1,54 @@
+define noalias i8** @fe_create_2d(i32 %d1, i32 %d2, i32 %elem_size) #0 {
+entry:
+  %mul = mul nsw i32 %d2, %d1
+  %conv = sext i32 %mul to i64
+  %conv1 = sext i32 %elem_size to i64
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 %conv1) #5
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str7, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %0)
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %conv4 = sext i32 %d1 to i64
+  %call5 = tail call noalias i8* @calloc(i64 %conv4, i64 8) #5
+  %2 = bitcast i8* %call5 to i8**
+  %cmp6 = icmp eq i8* %call5, null
+  br i1 %cmp6, label %if.then8, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.end
+  %cmp1127 = icmp sgt i32 %d1, 0
+  br i1 %cmp1127, label %for.body.lr.ph, label %return
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %3 = sext i32 %d2 to i64
+  br label %for.body
+
+if.then8:                                         ; preds = %if.end
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str7, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %4)
+  tail call void @free(i8* %call) #5
+  br label %return
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv30 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next31, %for.body ]
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %6 = trunc i64 %indvars.iv to i32
+  %mul13 = mul nsw i32 %6, %elem_size
+  %idxprom = sext i32 %mul13 to i64
+  %arrayidx = getelementptr inbounds i8* %call, i64 %idxprom
+  %arrayidx15 = getelementptr inbounds i8** %2, i64 %indvars.iv30
+  store i8* %arrayidx, i8** %arrayidx15, align 8, !tbaa !3
+  %indvars.iv.next31 = add i64 %indvars.iv30, 1
+  %indvars.iv.next = add i64 %indvars.iv, %3
+  %lftr.wideiv = trunc i64 %indvars.iv.next31 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %d1
+  br i1 %exitcond, label %return, label %for.body
+
+return:                                           ; preds = %for.cond.preheader, %for.body, %if.then8, %if.then
+  %retval.0 = phi i8** [ null, %if.then ], [ null, %if.then8 ], [ %2, %for.body ], [ %2, %for.cond.preheader ]
+  ret i8** %retval.0
+}

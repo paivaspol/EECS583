@@ -1,0 +1,33 @@
+define %struct.rtx_def* @gen_zero_extendhisi2(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %0 = load i32* @x86_zero_extend_with_and, align 4, !tbaa !3
+  %1 = load i32* @ix86_cpu, align 4, !tbaa !5
+  %shl = shl i32 1, %1
+  %and = and i32 %shl, %0
+  %tobool = icmp eq i32 %and, 0
+  %2 = load i32* @optimize_size, align 4, !tbaa !3
+  %tobool2 = icmp ne i32 %2, 0
+  %or.cond = or i1 %tobool, %tobool2
+  br i1 %or.cond, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.rtx_def* @force_reg(i32 3, %struct.rtx_def* %operand1) #4
+  %call7 = tail call %struct.rtx_def* @gen_zero_extendhisi2_and(%struct.rtx_def* %operand0, %struct.rtx_def* %call) #6
+  %call8 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call7) #4
+  %call9 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call12 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 121, i32 4, %struct.rtx_def* %operand1) #4
+  %call13 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %operand0, %struct.rtx_def* %call12) #4
+  %call14 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call13) #4
+  %call15 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then
+  %retval.0 = phi %struct.rtx_def* [ %call15, %if.end ], [ %call9, %if.then ]
+  ret %struct.rtx_def* %retval.0
+}

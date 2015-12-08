@@ -1,0 +1,23 @@
+define void @gmx_fio_seek(i32 %fio, i64 %fpos) #1 {
+entry:
+  tail call fastcc void @_gmx_fio_check(i32 %fio, i32 852) #9
+  %idxprom = sext i32 %fio to i64
+  %0 = load %struct.t_fileio** @FIO, align 8, !tbaa !3
+  %fp = getelementptr inbounds %struct.t_fileio* %0, i64 %idxprom, i32 7
+  %1 = load %struct._IO_FILE** %fp, align 8, !tbaa !3
+  %tobool = icmp eq %struct._IO_FILE* %1, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @fseek(%struct._IO_FILE* %1, i64 %fpos, i32 0) #7
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %fn = getelementptr inbounds %struct.t_fileio* %0, i64 %idxprom, i32 6
+  %2 = load i8** %fn, align 8, !tbaa !3
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([24 x i8]* @.str30, i64 0, i64 0), i8* %2) #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void
+}

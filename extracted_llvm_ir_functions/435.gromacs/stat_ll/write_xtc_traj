@@ -1,0 +1,183 @@
+define void @write_xtc_traj(%struct._IO_FILE* %log, %struct.t_commrec* nocapture %cr, i8* %xtc_traj, %struct.t_nsborder* %nsb, %struct.t_mdatoms* nocapture %md, i32 %step, float %t, [3 x float]* %xx, [3 x float]* %box, float %prec) #0 {
+entry:
+  %.b = load i1* @write_xtc_traj.bFirst, align 1
+  br i1 %.b, label %if.end18, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %nodeid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  %0 = load i32* %nodeid, align 4, !tbaa !3
+  %cmp = icmp eq i32 %0, 0
+  br i1 %cmp, label %land.lhs.true1, label %if.end18
+
+land.lhs.true1:                                   ; preds = %land.lhs.true
+  %threadid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
+  %1 = load i32* %threadid, align 4, !tbaa !3
+  %cmp2 = icmp eq i32 %1, 0
+  br i1 %cmp2, label %if.then, label %if.end18
+
+if.then:                                          ; preds = %land.lhs.true1
+  %call = tail call i32 @open_xtc(i8* %xtc_traj, i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0)) #5
+  store i32 %call, i32* @xd, align 4, !tbaa !3
+  store i32 0, i32* @write_xtc_traj.natoms, align 4, !tbaa !3
+  %nr = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 1
+  %2 = load i32* %nr, align 4, !tbaa !3
+  %cmp392 = icmp sgt i32 %2, 0
+  br i1 %cmp392, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.then
+  %cXTC = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 18
+  %3 = load i16** %cXTC, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %4 = phi i32 [ %2, %for.body.lr.ph ], [ %7, %for.inc ]
+  %5 = phi i32 [ 0, %for.body.lr.ph ], [ %8, %for.inc ]
+  %indvars.iv94 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next95, %for.inc ]
+  %arrayidx = getelementptr inbounds i16* %3, i64 %indvars.iv94
+  %6 = load i16* %arrayidx, align 2, !tbaa !5
+  %cmp4 = icmp eq i16 %6, 0
+  br i1 %cmp4, label %if.then6, label %for.inc
+
+if.then6:                                         ; preds = %for.body
+  %inc = add nsw i32 %5, 1
+  store i32 %inc, i32* @write_xtc_traj.natoms, align 4, !tbaa !3
+  %.pre98 = load i32* %nr, align 4, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then6
+  %7 = phi i32 [ %4, %for.body ], [ %.pre98, %if.then6 ]
+  %8 = phi i32 [ %5, %for.body ], [ %inc, %if.then6 ]
+  %indvars.iv.next95 = add i64 %indvars.iv94, 1
+  %9 = trunc i64 %indvars.iv.next95 to i32
+  %cmp3 = icmp slt i32 %9, %7
+  br i1 %cmp3, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %if.then
+  %10 = phi i32 [ %2, %if.then ], [ %7, %for.inc ]
+  %11 = phi i32 [ 0, %if.then ], [ %8, %for.inc ]
+  %tobool8 = icmp eq %struct._IO_FILE* %log, null
+  br i1 %tobool8, label %if.end11, label %if.then9
+
+if.then9:                                         ; preds = %for.end
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([49 x i8]* @.str6, i64 0, i64 0), i32 %11) #5
+  %.pre96 = load i32* @write_xtc_traj.natoms, align 4, !tbaa !3
+  %.pre97 = load i32* %nr, align 4, !tbaa !3
+  br label %if.end11
+
+if.end11:                                         ; preds = %for.end, %if.then9
+  %12 = phi i32 [ %10, %for.end ], [ %.pre97, %if.then9 ]
+  %13 = phi i32 [ %11, %for.end ], [ %.pre96, %if.then9 ]
+  %cmp13 = icmp eq i32 %13, %12
+  br i1 %cmp13, label %if.end17, label %if.then15
+
+if.then15:                                        ; preds = %if.end11
+  %call16 = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0), i32 252, i32 %13, i32 12) #5
+  %14 = bitcast i8* %call16 to [3 x float]*
+  store [3 x float]* %14, [3 x float]** @write_xtc_traj.x_sel, align 8, !tbaa !0
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.end11, %if.then15
+  store i1 true, i1* @write_xtc_traj.bFirst, align 1
+  br label %if.end18
+
+if.end18:                                         ; preds = %entry, %if.end17, %land.lhs.true1, %land.lhs.true
+  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
+  %15 = load i32* %nnodes, align 4, !tbaa !3
+  %cmp19 = icmp sgt i32 %15, 1
+  br i1 %cmp19, label %if.then21, label %if.end22
+
+if.then21:                                        ; preds = %if.end18
+  %left = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
+  %16 = load i32* %left, align 4, !tbaa !3
+  %right = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
+  %17 = load i32* %right, align 4, !tbaa !3
+  tail call fastcc void @moveit(%struct._IO_FILE* %log, i32 %16, i32 %17, i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), [3 x float]* %xx, %struct.t_nsborder* %nsb) #6
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.then21, %if.end18
+  %tobool23 = icmp eq [3 x float]* %xx, null
+  br i1 %tobool23, label %if.end65, label %land.lhs.true24
+
+land.lhs.true24:                                  ; preds = %if.end22
+  %nodeid25 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  %18 = load i32* %nodeid25, align 4, !tbaa !3
+  %cmp26 = icmp eq i32 %18, 0
+  br i1 %cmp26, label %land.lhs.true28, label %if.end65
+
+land.lhs.true28:                                  ; preds = %land.lhs.true24
+  %threadid29 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
+  %19 = load i32* %threadid29, align 4, !tbaa !3
+  %cmp30 = icmp eq i32 %19, 0
+  br i1 %cmp30, label %if.then32, label %if.end65
+
+if.then32:                                        ; preds = %land.lhs.true28
+  %20 = load i32* @write_xtc_traj.natoms, align 4, !tbaa !3
+  %nr33 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 1
+  %21 = load i32* %nr33, align 4, !tbaa !3
+  %cmp34 = icmp eq i32 %20, %21
+  br i1 %cmp34, label %if.then36, label %for.cond37.preheader
+
+for.cond37.preheader:                             ; preds = %if.then32
+  %cmp3989 = icmp sgt i32 %21, 0
+  br i1 %cmp3989, label %for.body41.lr.ph, label %for.cond37.preheader.if.end59.loopexit_crit_edge
+
+for.cond37.preheader.if.end59.loopexit_crit_edge: ; preds = %for.cond37.preheader
+  %.pre.pre = load [3 x float]** @write_xtc_traj.x_sel, align 8, !tbaa !0
+  br label %if.end59
+
+for.body41.lr.ph:                                 ; preds = %for.cond37.preheader
+  %cXTC43 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 18
+  %22 = load i16** %cXTC43, align 8, !tbaa !0
+  %23 = load [3 x float]** @write_xtc_traj.x_sel, align 8, !tbaa !0
+  br label %for.body41
+
+if.then36:                                        ; preds = %if.then32
+  store [3 x float]* %xx, [3 x float]** @write_xtc_traj.x_sel, align 8, !tbaa !0
+  br label %if.end59
+
+for.body41:                                       ; preds = %for.body41.lr.ph, %for.inc56
+  %indvars.iv = phi i64 [ 0, %for.body41.lr.ph ], [ %indvars.iv.next, %for.inc56 ]
+  %j.091 = phi i32 [ 0, %for.body41.lr.ph ], [ %j.1, %for.inc56 ]
+  %arrayidx44 = getelementptr inbounds i16* %22, i64 %indvars.iv
+  %24 = load i16* %arrayidx44, align 2, !tbaa !5
+  %cmp46 = icmp eq i16 %24, 0
+  br i1 %cmp46, label %if.then48, label %for.inc56
+
+if.then48:                                        ; preds = %for.body41
+  %arraydecay = getelementptr inbounds [3 x float]* %xx, i64 %indvars.iv, i64 0
+  %idxprom51 = sext i32 %j.091 to i64
+  %arraydecay53 = getelementptr inbounds [3 x float]* %23, i64 %idxprom51, i64 0
+  %25 = load float* %arraydecay, align 4, !tbaa !4
+  store float %25, float* %arraydecay53, align 4, !tbaa !4
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %xx, i64 %indvars.iv, i64 1
+  %26 = load float* %arrayidx2.i, align 4, !tbaa !4
+  %arrayidx3.i = getelementptr inbounds [3 x float]* %23, i64 %idxprom51, i64 1
+  store float %26, float* %arrayidx3.i, align 4, !tbaa !4
+  %arrayidx4.i = getelementptr inbounds [3 x float]* %xx, i64 %indvars.iv, i64 2
+  %27 = load float* %arrayidx4.i, align 4, !tbaa !4
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %23, i64 %idxprom51, i64 2
+  store float %27, float* %arrayidx5.i, align 4, !tbaa !4
+  %inc54 = add nsw i32 %j.091, 1
+  br label %for.inc56
+
+for.inc56:                                        ; preds = %for.body41, %if.then48
+  %j.1 = phi i32 [ %inc54, %if.then48 ], [ %j.091, %for.body41 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %28 = trunc i64 %indvars.iv.next to i32
+  %cmp39 = icmp slt i32 %28, %21
+  br i1 %cmp39, label %for.body41, label %if.end59
+
+if.end59:                                         ; preds = %for.cond37.preheader.if.end59.loopexit_crit_edge, %for.inc56, %if.then36
+  %29 = phi [3 x float]* [ %xx, %if.then36 ], [ %.pre.pre, %for.cond37.preheader.if.end59.loopexit_crit_edge ], [ %23, %for.inc56 ]
+  %30 = load i32* @xd, align 4, !tbaa !3
+  %call60 = tail call i32 @write_xtc(i32 %30, i32 %20, i32 %step, float %t, [3 x float]* %box, [3 x float]* %29, float %prec) #5
+  %cmp61 = icmp eq i32 %call60, 0
+  br i1 %cmp61, label %if.then63, label %if.end65
+
+if.then63:                                        ; preds = %if.end59
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([10 x i8]* @.str8, i64 0, i64 0)) #5
+  br label %if.end65
+
+if.end65:                                         ; preds = %if.end22, %if.end59, %if.then63, %land.lhs.true28, %land.lhs.true24
+  ret void
+}

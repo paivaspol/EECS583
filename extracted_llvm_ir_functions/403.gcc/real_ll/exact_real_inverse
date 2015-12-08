@@ -1,0 +1,156 @@
+define i32 @exact_real_inverse(i32 %mode, %struct.realvaluetype* nocapture %r) #0 {
+entry:
+  %e = alloca [6 x i16], align 2
+  %einv = alloca [6 x i16], align 2
+  %rinv = alloca %struct.realvaluetype, align 8
+  %tmp = alloca %struct.realvaluetype, align 8
+  %0 = bitcast [6 x i16]* %e to i8*
+  %1 = bitcast %struct.realvaluetype* %r to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false)
+  %arraydecay = getelementptr inbounds [6 x i16]* %e, i64 0, i64 0
+  %arrayidx.i65 = getelementptr inbounds [6 x i16]* %e, i64 0, i64 5
+  %2 = load i16* %arrayidx.i65, align 2, !tbaa !0
+  %and.i66 = and i16 %2, 32767
+  %cmp.i67 = icmp eq i16 %and.i66, 32767
+  br i1 %cmp.i67, label %for.body.i, label %lor.lhs.false4
+
+for.body.i:                                       ; preds = %entry, %for.inc.i
+  %i.012.i = phi i32 [ %inc.i, %for.inc.i ], [ 0, %entry ]
+  %x.addr.011.i = phi i16* [ %incdec.ptr.i, %for.inc.i ], [ %arraydecay, %entry ]
+  %3 = load i16* %x.addr.011.i, align 2, !tbaa !0
+  %cmp5.i = icmp eq i16 %3, 0
+  br i1 %cmp5.i, label %for.inc.i, label %lor.lhs.false
+
+for.inc.i:                                        ; preds = %for.body.i
+  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1
+  %inc.i = add nsw i32 %i.012.i, 1
+  %cmp2.i = icmp slt i32 %inc.i, 5
+  br i1 %cmp2.i, label %for.body.i, label %eisinf.exit
+
+eisinf.exit:                                      ; preds = %for.inc.i
+  br i1 %cmp.i67, label %return, label %lor.lhs.false4
+
+lor.lhs.false:                                    ; preds = %for.body.i
+  br i1 %cmp.i67, label %for.body.i75, label %lor.lhs.false4
+
+for.body.i75:                                     ; preds = %lor.lhs.false, %for.inc.i79
+  %i.012.i72 = phi i32 [ %inc.i77, %for.inc.i79 ], [ 0, %lor.lhs.false ]
+  %x.addr.011.i73 = phi i16* [ %incdec.ptr.i76, %for.inc.i79 ], [ %arraydecay, %lor.lhs.false ]
+  %4 = load i16* %x.addr.011.i73, align 2, !tbaa !0
+  %cmp5.i74 = icmp eq i16 %4, 0
+  br i1 %cmp5.i74, label %for.inc.i79, label %return
+
+for.inc.i79:                                      ; preds = %for.body.i75
+  %incdec.ptr.i76 = getelementptr inbounds i16* %x.addr.011.i73, i64 1
+  %inc.i77 = add nsw i32 %i.012.i72, 1
+  %cmp2.i78 = icmp slt i32 %inc.i77, 5
+  br i1 %cmp2.i78, label %for.body.i75, label %lor.lhs.false4
+
+lor.lhs.false4:                                   ; preds = %entry, %eisinf.exit, %for.inc.i79, %lor.lhs.false
+  %call6 = call fastcc i32 @ecmp(i16* %arraydecay, i16* getelementptr inbounds ([6 x i16]* @ezero, i64 0, i64 0)) #6
+  %cmp = icmp eq i32 %call6, 0
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false4
+  %arrayidx = getelementptr inbounds [6 x i16]* %e, i64 0, i64 4
+  %5 = load i16* %arrayidx, align 2, !tbaa !0
+  %cmp7 = icmp eq i16 %5, -32768
+  br i1 %cmp7, label %for.body, label %return
+
+for.cond:                                         ; preds = %for.body
+  %6 = trunc i64 %indvars.iv.next136 to i32
+  %cmp11 = icmp slt i32 %6, 4
+  br i1 %cmp11, label %for.body, label %for.end
+
+for.body:                                         ; preds = %if.end, %for.cond
+  %indvars.iv135 = phi i64 [ %indvars.iv.next136, %for.cond ], [ 0, %if.end ]
+  %arrayidx13 = getelementptr inbounds [6 x i16]* %e, i64 0, i64 %indvars.iv135
+  %7 = load i16* %arrayidx13, align 2, !tbaa !0
+  %cmp15 = icmp eq i16 %7, 0
+  %indvars.iv.next136 = add i64 %indvars.iv135, 1
+  br i1 %cmp15, label %for.cond, label %return
+
+for.end:                                          ; preds = %for.cond
+  %arraydecay20 = getelementptr inbounds [6 x i16]* %einv, i64 0, i64 0
+  call fastcc void @ediv(i16* %arraydecay, i16* getelementptr inbounds ([6 x i16]* @eone, i64 0, i64 0), i16* %arraydecay20) #6
+  %8 = bitcast %struct.realvaluetype* %rinv to i8*
+  %9 = bitcast [6 x i16]* %einv to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %8, i8* %9, i64 12, i32 2, i1 false)
+  %add.ptr = getelementptr inbounds i8* %8, i64 12
+  call void @llvm.memset.p0i8.i64(i8* %add.ptr, i8 0, i64 12, i32 4, i1 false)
+  call void @real_value_truncate(%struct.realvaluetype* sret %tmp, i32 %mode, %struct.realvaluetype* byval align 8 %rinv) #6
+  %10 = bitcast %struct.realvaluetype* %tmp to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %8, i8* %10, i64 24, i32 8, i1 false), !tbaa.struct !3
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %9, i8* %10, i64 12, i32 2, i1 false)
+  %arrayidx21 = getelementptr inbounds [6 x i16]* %einv, i64 0, i64 4
+  %11 = load i16* %arrayidx21, align 2, !tbaa !0
+  %cmp23 = icmp eq i16 %11, -32768
+  br i1 %cmp23, label %for.body30, label %return
+
+for.cond27:                                       ; preds = %for.body30
+  %12 = trunc i64 %indvars.iv.next to i32
+  %cmp28 = icmp slt i32 %12, 4
+  br i1 %cmp28, label %for.body30, label %for.end40
+
+for.body30:                                       ; preds = %for.end, %for.cond27
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond27 ], [ 0, %for.end ]
+  %arrayidx32 = getelementptr inbounds [6 x i16]* %einv, i64 0, i64 %indvars.iv
+  %13 = load i16* %arrayidx32, align 2, !tbaa !0
+  %cmp34 = icmp eq i16 %13, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp34, label %for.cond27, label %return
+
+for.end40:                                        ; preds = %for.cond27
+  %arrayidx.i103 = getelementptr inbounds [6 x i16]* %einv, i64 0, i64 5
+  %14 = load i16* %arrayidx.i103, align 2, !tbaa !0
+  %and.i104 = and i16 %14, 32767
+  %cmp.i105 = icmp eq i16 %and.i104, 32767
+  br i1 %cmp.i105, label %for.body.i109, label %lor.lhs.false48
+
+for.body.i109:                                    ; preds = %for.end40, %for.inc.i113
+  %i.012.i106 = phi i32 [ %inc.i111, %for.inc.i113 ], [ 0, %for.end40 ]
+  %x.addr.011.i107 = phi i16* [ %incdec.ptr.i110, %for.inc.i113 ], [ %arraydecay20, %for.end40 ]
+  %15 = load i16* %x.addr.011.i107, align 2, !tbaa !0
+  %cmp5.i108 = icmp eq i16 %15, 0
+  br i1 %cmp5.i108, label %for.inc.i113, label %lor.lhs.false44
+
+for.inc.i113:                                     ; preds = %for.body.i109
+  %incdec.ptr.i110 = getelementptr inbounds i16* %x.addr.011.i107, i64 1
+  %inc.i111 = add nsw i32 %i.012.i106, 1
+  %cmp2.i112 = icmp slt i32 %inc.i111, 5
+  br i1 %cmp2.i112, label %for.body.i109, label %eisinf.exit102
+
+eisinf.exit102:                                   ; preds = %for.inc.i113
+  br i1 %cmp.i105, label %return, label %lor.lhs.false48
+
+lor.lhs.false44:                                  ; preds = %for.body.i109
+  br i1 %cmp.i105, label %for.body.i88, label %lor.lhs.false48
+
+for.body.i88:                                     ; preds = %lor.lhs.false44, %for.inc.i92
+  %i.012.i85 = phi i32 [ %inc.i90, %for.inc.i92 ], [ 0, %lor.lhs.false44 ]
+  %x.addr.011.i86 = phi i16* [ %incdec.ptr.i89, %for.inc.i92 ], [ %arraydecay20, %lor.lhs.false44 ]
+  %16 = load i16* %x.addr.011.i86, align 2, !tbaa !0
+  %cmp5.i87 = icmp eq i16 %16, 0
+  br i1 %cmp5.i87, label %for.inc.i92, label %return
+
+for.inc.i92:                                      ; preds = %for.body.i88
+  %incdec.ptr.i89 = getelementptr inbounds i16* %x.addr.011.i86, i64 1
+  %inc.i90 = add nsw i32 %i.012.i85, 1
+  %cmp2.i91 = icmp slt i32 %inc.i90, 5
+  br i1 %cmp2.i91, label %for.body.i88, label %lor.lhs.false48
+
+lor.lhs.false48:                                  ; preds = %for.end40, %eisinf.exit102, %for.inc.i92, %lor.lhs.false44
+  %call50 = call fastcc i32 @ecmp(i16* %arraydecay20, i16* getelementptr inbounds ([6 x i16]* @ezero, i64 0, i64 0)) #6
+  %cmp51 = icmp eq i32 %call50, 0
+  br i1 %cmp51, label %return, label %do.body55
+
+do.body55:                                        ; preds = %lor.lhs.false48
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %1, i8* %9, i64 12, i32 2, i1 false)
+  %add.ptr56 = getelementptr inbounds i8* %1, i64 12
+  call void @llvm.memset.p0i8.i64(i8* %add.ptr56, i8 0, i64 12, i32 1, i1 false)
+  br label %return
+
+return:                                           ; preds = %for.body.i75, %for.body, %for.body30, %for.body.i88, %eisinf.exit102, %eisinf.exit, %lor.lhs.false48, %for.end, %if.end, %lor.lhs.false4, %do.body55
+  %retval.0 = phi i32 [ 1, %do.body55 ], [ 0, %eisinf.exit ], [ 0, %lor.lhs.false4 ], [ 0, %if.end ], [ 0, %for.end ], [ 0, %eisinf.exit102 ], [ 0, %lor.lhs.false48 ], [ 0, %for.body.i88 ], [ 0, %for.body30 ], [ 0, %for.body ], [ 0, %for.body.i75 ]
+  ret i32 %retval.0
+}

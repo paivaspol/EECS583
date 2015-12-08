@@ -1,0 +1,45 @@
+define %struct.rtx_def* @biv_total_increment(%struct.iv_class* nocapture %bl) #0 {
+entry:
+  %0 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
+  %biv = getelementptr inbounds %struct.iv_class* %bl, i64 0, i32 2
+  %v.015 = load %struct.induction** %biv, align 8
+  %tobool16 = icmp eq %struct.induction* %v.015, null
+  br i1 %tobool16, label %return, label %for.body
+
+for.body:                                         ; preds = %entry, %if.then
+  %v.018 = phi %struct.induction* [ %v.0, %if.then ], [ %v.015, %entry ]
+  %result.017 = phi %struct.rtx_def* [ %call, %if.then ], [ %0, %entry ]
+  %always_computable = getelementptr inbounds %struct.induction* %v.018, i64 0, i32 13
+  %1 = bitcast [2 x i8]* %always_computable to i16*
+  %bf.load = load i16* %1, align 4
+  %bf.clear = and i16 %bf.load, 8
+  %tobool1 = icmp eq i16 %bf.clear, 0
+  br i1 %tobool1, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body
+  %mult_val = getelementptr inbounds %struct.induction* %v.018, i64 0, i32 8
+  %2 = load %struct.rtx_def** %mult_val, align 8, !tbaa !0
+  %3 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 65), align 8, !tbaa !0
+  %cmp = icmp eq %struct.rtx_def* %2, %3
+  br i1 %cmp, label %land.lhs.true2, label %return
+
+land.lhs.true2:                                   ; preds = %land.lhs.true
+  %bf.clear5 = and i16 %bf.load, 32
+  %tobool7 = icmp eq i16 %bf.clear5, 0
+  br i1 %tobool7, label %if.then, label %return
+
+if.then:                                          ; preds = %land.lhs.true2
+  %add_val = getelementptr inbounds %struct.induction* %v.018, i64 0, i32 9
+  %4 = load %struct.rtx_def** %add_val, align 8, !tbaa !0
+  %mode = getelementptr inbounds %struct.induction* %v.018, i64 0, i32 6
+  %5 = load i32* %mode, align 4, !tbaa !6
+  %call = tail call fastcc %struct.rtx_def* @fold_rtx_mult_add(%struct.rtx_def* %result.017, %struct.rtx_def* %2, %struct.rtx_def* %4, i32 %5) #8
+  %next_iv = getelementptr inbounds %struct.induction* %v.018, i64 0, i32 17
+  %v.0 = load %struct.induction** %next_iv, align 8
+  %tobool = icmp eq %struct.induction* %v.0, null
+  br i1 %tobool, label %return, label %for.body
+
+return:                                           ; preds = %if.then, %land.lhs.true, %for.body, %land.lhs.true2, %entry
+  %retval.0 = phi %struct.rtx_def* [ %0, %entry ], [ null, %land.lhs.true2 ], [ null, %for.body ], [ null, %land.lhs.true ], [ %call, %if.then ]
+  ret %struct.rtx_def* %retval.0
+}

@@ -1,0 +1,66 @@
+define i8* @output_fix_trunc(%struct.rtx_def* %insn, %struct.rtx_def** %operands) #1 {
+entry:
+  %call = tail call %struct.rtx_def* @find_regno_note(%struct.rtx_def* %insn, i32 1, i32 8) #9
+  %cmp = icmp ne %struct.rtx_def* %call, null
+  %0 = load %struct.rtx_def** %operands, align 8, !tbaa !4
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 16711680
+  %cmp1 = icmp eq i32 %bf.clear, 327680
+  %cmp1.not = xor i1 %cmp1, true
+  %brmerge = or i1 %cmp, %cmp1.not
+  br i1 %brmerge, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @output_asm_insn(i8* getelementptr inbounds ([8 x i8]* @.str162, i64 0, i64 0), %struct.rtx_def** %operands) #9
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def** %operands, i64 1
+  %2 = load %struct.rtx_def** %arrayidx4, align 8, !tbaa !4
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load5 = load i32* %3, align 8
+  %bf.clear6 = and i32 %bf.load5, 65535
+  %cmp7 = icmp eq i32 %bf.clear6, 61
+  br i1 %cmp7, label %land.lhs.true9, label %if.then14
+
+land.lhs.true9:                                   ; preds = %if.end
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx11 to i32*
+  %4 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp12 = icmp eq i32 %4, 8
+  br i1 %cmp12, label %if.end15, label %if.then14
+
+if.then14:                                        ; preds = %land.lhs.true9, %if.end
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 6563, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.output_fix_trunc, i64 0, i64 0)) #11
+  unreachable
+
+if.end15:                                         ; preds = %land.lhs.true9
+  %5 = load %struct.rtx_def** %operands, align 8, !tbaa !4
+  %6 = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load17 = load i32* %6, align 8
+  %bf.clear18 = and i32 %bf.load17, 65535
+  %cmp19 = icmp eq i32 %bf.clear18, 66
+  br i1 %cmp19, label %if.end22, label %if.then21
+
+if.then21:                                        ; preds = %if.end15
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 6566, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.output_fix_trunc, i64 0, i64 0)) #11
+  unreachable
+
+if.end22:                                         ; preds = %if.end15
+  tail call void @output_asm_insn(i8* getelementptr inbounds ([9 x i8]* @.str163, i64 0, i64 0), %struct.rtx_def** %operands) #9
+  %brmerge37 = or i1 %cmp, %cmp1
+  br i1 %brmerge37, label %if.then25, label %if.else
+
+if.then25:                                        ; preds = %if.end22
+  tail call void @output_asm_insn(i8* getelementptr inbounds ([12 x i8]* @.str164, i64 0, i64 0), %struct.rtx_def** %operands) #9
+  br label %if.end26
+
+if.else:                                          ; preds = %if.end22
+  tail call void @output_asm_insn(i8* getelementptr inbounds ([11 x i8]* @.str165, i64 0, i64 0), %struct.rtx_def** %operands) #9
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.else, %if.then25
+  tail call void @output_asm_insn(i8* getelementptr inbounds ([9 x i8]* @.str166, i64 0, i64 0), %struct.rtx_def** %operands) #9
+  ret i8* getelementptr inbounds ([1 x i8]* @.str, i64 0, i64 0)
+}

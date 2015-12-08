@@ -1,0 +1,41 @@
+define void @conflict_graph_merge_regs(%struct.conflict_graph_def* %graph, i32 %target, i32 %src) #0 {
+entry:
+  %cmp = icmp eq i32 %target, %src
+  br i1 %cmp, label %while.end, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %entry
+  %neighbor_heads = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 2
+  %0 = load %struct.conflict_graph_arc_def*** %neighbor_heads, align 8, !tbaa !3
+  %idxprom = sext i32 %src to i64
+  %arrayidx = getelementptr inbounds %struct.conflict_graph_arc_def** %0, i64 %idxprom
+  %arc.019 = load %struct.conflict_graph_arc_def** %arrayidx, align 8
+  %cmp120 = icmp eq %struct.conflict_graph_arc_def* %arc.019, null
+  br i1 %cmp120, label %while.end, label %while.body
+
+while.body:                                       ; preds = %while.cond.preheader, %if.end4
+  %arc.021 = phi %struct.conflict_graph_arc_def* [ %arc.0, %if.end4 ], [ %arc.019, %while.cond.preheader ]
+  %smaller = getelementptr inbounds %struct.conflict_graph_arc_def* %arc.021, i64 0, i32 2
+  %1 = load i32* %smaller, align 4, !tbaa !0
+  %cmp2 = icmp eq i32 %1, %src
+  %larger = getelementptr inbounds %struct.conflict_graph_arc_def* %arc.021, i64 0, i32 3
+  br i1 %cmp2, label %if.then3, label %if.end4
+
+if.then3:                                         ; preds = %while.body
+  %2 = load i32* %larger, align 4, !tbaa !0
+  br label %if.end4
+
+if.end4:                                          ; preds = %while.body, %if.then3
+  %other.0 = phi i32 [ %2, %if.then3 ], [ %1, %while.body ]
+  %call = tail call i32 @conflict_graph_add(%struct.conflict_graph_def* %graph, i32 %target, i32 %other.0) #8
+  %3 = load i32* %larger, align 4, !tbaa !0
+  %cmp6 = icmp sgt i32 %3, %src
+  %smaller_next = getelementptr inbounds %struct.conflict_graph_arc_def* %arc.021, i64 0, i32 0
+  %larger_next = getelementptr inbounds %struct.conflict_graph_arc_def* %arc.021, i64 0, i32 1
+  %arc.0.in.be = select i1 %cmp6, %struct.conflict_graph_arc_def** %smaller_next, %struct.conflict_graph_arc_def** %larger_next
+  %arc.0 = load %struct.conflict_graph_arc_def** %arc.0.in.be, align 8
+  %cmp1 = icmp eq %struct.conflict_graph_arc_def* %arc.0, null
+  br i1 %cmp1, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.cond.preheader, %if.end4, %entry
+  ret void
+}

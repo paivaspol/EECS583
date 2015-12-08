@@ -1,0 +1,187 @@
+define void @update_forcerec(%struct._IO_FILE* %log, %struct.t_forcerec* nocapture %fr, [3 x float]* nocapture %box) #0 {
+entry:
+  %eeltype = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 33
+  %0 = load i32* %eeltype, align 4, !tbaa !0
+  %epsilon_r = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 5
+  %1 = load float* %epsilon_r, align 4, !tbaa !3
+  %rcoulomb = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 23
+  %2 = load float* %rcoulomb, align 4, !tbaa !3
+  %temp = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 4
+  %3 = load float* %temp, align 4, !tbaa !3
+  %kappa = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 8
+  %epsfac = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 6
+  %k_rf = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 9
+  %c_rf = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 10
+  %cmp1.i = icmp eq i32 %0, 2
+  %eel.off.i = add i32 %0, -1
+  %4 = icmp ult i32 %eel.off.i, 2
+  br i1 %4, label %if.then.i, label %if.else72.i
+
+if.then.i:                                        ; preds = %entry
+  %zsquare = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 3
+  %5 = load float* %zsquare, align 4, !tbaa !3
+  %arrayidx1.i.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
+  %6 = load float* %arrayidx1.i.i, align 4, !tbaa !3
+  %arrayidx3.i.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
+  %7 = load float* %arrayidx3.i.i, align 4, !tbaa !3
+  %arrayidx5.i.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
+  %8 = load float* %arrayidx5.i.i, align 4, !tbaa !3
+  %mul.i.i = fmul float %7, %8
+  %arrayidx7.i.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
+  %9 = load float* %arrayidx7.i.i, align 4, !tbaa !3
+  %arrayidx9.i.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 2
+  %10 = load float* %arrayidx9.i.i, align 4, !tbaa !3
+  %mul10.i.i = fmul float %9, %10
+  %sub.i.i = fsub float %mul.i.i, %mul10.i.i
+  %mul11.i.i = fmul float %6, %sub.i.i
+  %arrayidx13.i.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
+  %11 = load float* %arrayidx13.i.i, align 4, !tbaa !3
+  %arrayidx15.i.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 1
+  %12 = load float* %arrayidx15.i.i, align 4, !tbaa !3
+  %mul18.i.i = fmul float %8, %12
+  %arrayidx22.i.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 2
+  %13 = load float* %arrayidx22.i.i, align 4, !tbaa !3
+  %mul23.i.i = fmul float %9, %13
+  %sub24.i.i = fsub float %mul18.i.i, %mul23.i.i
+  %mul25.i.i = fmul float %11, %sub24.i.i
+  %sub26.i.i = fsub float %mul11.i.i, %mul25.i.i
+  %arrayidx28.i.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
+  %14 = load float* %arrayidx28.i.i, align 4, !tbaa !3
+  %mul33.i.i = fmul float %10, %12
+  %mul38.i.i = fmul float %7, %13
+  %sub39.i.i = fsub float %mul33.i.i, %mul38.i.i
+  %mul40.i.i = fmul float %14, %sub39.i.i
+  %add.i.i = fadd float %mul40.i.i, %sub26.i.i
+  %div.i = fdiv float %5, %add.i.i
+  br i1 %cmp1.i, label %if.then3.i, label %if.then.if.end17_crit_edge.i
+
+if.then.if.end17_crit_edge.i:                     ; preds = %if.then.i
+  %conv18.pre.i = fpext float %1 to double
+  br label %if.end17.i
+
+if.then3.i:                                       ; preds = %if.then.i
+  %conv.i = fpext float %3 to double
+  %cmp4.i = fcmp ugt float %3, 0.000000e+00
+  br i1 %cmp4.i, label %if.end.i, label %if.then6.i
+
+if.then6.i:                                       ; preds = %if.then3.i
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([58 x i8]* @.str75, i64 0, i64 0), double %conv.i) #4
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.then6.i, %if.then3.i
+  %mul.i = fmul float %div.i, 2.000000e+00
+  %conv8.i = fpext float %mul.i to double
+  %conv9.i = fpext float %1 to double
+  %mul10.i = fmul double %conv9.i, 5.727650e-04
+  %mul11.i = fmul double %mul10.i, 0x3F810732CDE67DC4
+  %mul13.i = fmul double %mul11.i, %conv.i
+  %div14.i = fdiv double %conv8.i, %mul13.i
+  %call15.i = tail call double @sqrt(double %div14.i) #4
+  %conv16.i = fptrunc double %call15.i to float
+  br label %if.end17.i
+
+if.end17.i:                                       ; preds = %if.end.i, %if.then.if.end17_crit_edge.i
+  %conv18.pre-phi.i = phi double [ %conv18.pre.i, %if.then.if.end17_crit_edge.i ], [ %conv9.i, %if.end.i ]
+  %storemerge.i = phi float [ 0.000000e+00, %if.then.if.end17_crit_edge.i ], [ %conv16.i, %if.end.i ]
+  store float %storemerge.i, float* %kappa, align 4, !tbaa !3
+  %fabsf129.i = tail call float @fabsf(float %1) #5
+  %15 = fpext float %fabsf129.i to double
+  %cmp20.i = fcmp olt double %15, 1.200000e-38
+  br i1 %cmp20.i, label %if.then22.i, label %if.else27.i
+
+if.then22.i:                                      ; preds = %if.end17.i
+  %mul23.i = fmul float %2, 2.000000e+00
+  %mul24.i = fmul float %2, %mul23.i
+  %mul25.i = fmul float %2, %mul24.i
+  %div26.i = fdiv float 1.000000e+00, %mul25.i
+  store float %div26.i, float* %k_rf, align 4, !tbaa !3
+  br label %if.end47.i
+
+if.else27.i:                                      ; preds = %if.end17.i
+  %mul28.i = fmul float %2, %storemerge.i
+  %add.i = fadd float %mul28.i, 1.000000e+00
+  %mul.i131.i = fmul float %mul28.i, %mul28.i
+  %mul31.i = fmul float %1, %mul.i131.i
+  %sub.i = fadd float %1, -1.000000e+00
+  %mul32.i = fmul float %sub.i, %add.i
+  %add33.i = fadd float %mul32.i, %mul31.i
+  %mul34.i = fmul float %1, 2.000000e+00
+  %add35.i = fadd float %mul34.i, 1.000000e+00
+  %mul36.i = fmul float %add35.i, %add.i
+  %mul37.i = fmul float %mul31.i, 2.000000e+00
+  %add38.i = fadd float %mul36.i, %mul37.i
+  %div39.i = fdiv float %add33.i, %add38.i
+  %mul40.i = fmul float %2, %2
+  %mul41.i = fmul float %2, %mul40.i
+  %div42.i = fdiv float %div39.i, %mul41.i
+  store float %div42.i, float* %k_rf, align 4, !tbaa !3
+  %div43.i = fdiv float 1.000000e+00, %2
+  %mul44.i = fmul float %2, %div42.i
+  %mul45.i = fmul float %2, %mul44.i
+  %add46.i = fadd float %div43.i, %mul45.i
+  br label %if.end47.i
+
+if.end47.i:                                       ; preds = %if.else27.i, %if.then22.i
+  %16 = phi float [ %div42.i, %if.else27.i ], [ %div26.i, %if.then22.i ]
+  %storemerge130.i = phi float [ %add46.i, %if.else27.i ], [ 0.000000e+00, %if.then22.i ]
+  store float %storemerge130.i, float* %c_rf, align 4, !tbaa !3
+  store float 0x40615DEEE0000000, float* %epsfac, align 4, !tbaa !3
+  %conv48.i = fpext float %16 to double
+  %mul49.i = fmul double %conv48.i, 2.000000e+00
+  %call50.i = tail call double @pow(double %mul49.i, double 0xBFD5555555555555) #4
+  %conv51.i = fptrunc double %call50.i to float
+  %.b.i = load i1* @calc_rffac.bFirst, align 1
+  br i1 %.b.i, label %calc_rffac.exit, label %if.then52.i
+
+if.then52.i:                                      ; preds = %if.end47.i
+  br i1 %cmp1.i, label %if.then55.i, label %if.end56.i
+
+if.then55.i:                                      ; preds = %if.then52.i
+  tail call void @please_cite(%struct._IO_FILE* %log, i8* getelementptr inbounds ([10 x i8]* @.str76, i64 0, i64 0)) #4
+  br label %if.end56.i
+
+if.end56.i:                                       ; preds = %if.then55.i, %if.then52.i
+  %tobool57.i = icmp eq %struct._IO_FILE* %log, null
+  br i1 %tobool57.i, label %if.end70.i, label %if.then58.i
+
+if.then58.i:                                      ; preds = %if.end56.i
+  %idxprom.i = sext i32 %0 to i64
+  %arrayidx.i = getelementptr inbounds [11 x i8*]* @eel_names, i64 0, i64 %idxprom.i
+  %17 = load i8** %arrayidx.i, align 8, !tbaa !4
+  %conv60.i = fpext float %div.i to double
+  %conv61.i = fpext float %add.i.i to double
+  %18 = load float* %kappa, align 4, !tbaa !3
+  %conv62.i = fpext float %18 to double
+  %conv63.i = fpext float %2 to double
+  %19 = load float* %k_rf, align 4, !tbaa !3
+  %conv64.i = fpext float %19 to double
+  %20 = load float* %c_rf, align 4, !tbaa !3
+  %conv65.i = fpext float %20 to double
+  %21 = load float* %epsfac, align 4, !tbaa !3
+  %conv66.i = fpext float %21 to double
+  %call67.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([115 x i8]* @.str77, i64 0, i64 0), i8* %17, double %conv18.pre-phi.i, double %conv60.i, double %conv61.i, double %conv62.i, double %conv63.i, double %conv64.i, double %conv65.i, double %conv66.i) #4
+  %conv68.i = fpext float %conv51.i to double
+  %call69.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([57 x i8]* @.str78, i64 0, i64 0), double %conv68.i) #4
+  br label %if.end70.i
+
+if.end70.i:                                       ; preds = %if.then58.i, %if.end56.i
+  store i1 true, i1* @calc_rffac.bFirst, align 1
+  br label %calc_rffac.exit
+
+if.else72.i:                                      ; preds = %entry
+  store float 0.000000e+00, float* %kappa, align 4, !tbaa !3
+  store float 0.000000e+00, float* %k_rf, align 4, !tbaa !3
+  store float 0.000000e+00, float* %c_rf, align 4, !tbaa !3
+  %fabsf.i = tail call float @fabsf(float %1) #5
+  %22 = fpext float %fabsf.i to double
+  %cmp75.i = fcmp olt double %22, 1.200000e-38
+  %23 = fpext float %1 to double
+  %conv79.i = select i1 %cmp75.i, double 1.000000e+00, double %23
+  %div80.i = fdiv double 0x40615DEEE174A498, %conv79.i
+  %conv81.i = fptrunc double %div80.i to float
+  store float %conv81.i, float* %epsfac, align 4, !tbaa !3
+  br label %calc_rffac.exit
+
+calc_rffac.exit:                                  ; preds = %if.end47.i, %if.end70.i, %if.else72.i
+  ret void
+}

@@ -1,0 +1,128 @@
+define internal i32 @type_hash_eq(i8* nocapture %va, i8* nocapture %vb) #0 {
+entry:
+  %hash = bitcast i8* %va to i64*
+  %0 = load i64* %hash, align 8, !tbaa !3
+  %hash1 = bitcast i8* %vb to i64*
+  %1 = load i64* %hash1, align 8, !tbaa !3
+  %cmp = icmp eq i64 %0, %1
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %type = getelementptr inbounds i8* %va, i64 8
+  %2 = bitcast i8* %type to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %code = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 0, i32 2
+  %4 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %4, align 8
+  %type2 = getelementptr inbounds i8* %vb, i64 8
+  %5 = bitcast i8* %type2 to %union.tree_node**
+  %6 = load %union.tree_node** %5, align 8, !tbaa !0
+  %code4 = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 0, i32 2
+  %7 = bitcast [4 x i8]* %code4 to i32*
+  %bf.load5 = load i32* %7, align 8
+  %8 = xor i32 %bf.load5, %bf.load
+  %9 = and i32 %8, 255
+  %cmp7 = icmp eq i32 %9, 0
+  br i1 %cmp7, label %land.lhs.true8, label %if.end
+
+land.lhs.true8:                                   ; preds = %land.lhs.true
+  %type11 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 0, i32 1
+  %10 = load %union.tree_node** %type11, align 8, !tbaa !0
+  %type14 = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 0, i32 1
+  %11 = load %union.tree_node** %type14, align 8, !tbaa !0
+  %cmp15 = icmp eq %union.tree_node* %10, %11
+  br i1 %cmp15, label %land.lhs.true16, label %if.end
+
+land.lhs.true16:                                  ; preds = %land.lhs.true8
+  %attributes = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 5
+  %12 = bitcast [8 x i8]* %attributes to %union.tree_node**
+  %13 = load %union.tree_node** %12, align 8, !tbaa !0
+  %attributes21 = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 5
+  %14 = bitcast [8 x i8]* %attributes21 to %union.tree_node**
+  %15 = load %union.tree_node** %14, align 8, !tbaa !0
+  %call = tail call i32 @attribute_list_equal(%union.tree_node* %13, %union.tree_node* %15) #10
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %land.lhs.true22
+
+land.lhs.true22:                                  ; preds = %land.lhs.true16
+  %16 = load %union.tree_node** %2, align 8, !tbaa !0
+  %align = getelementptr inbounds %union.tree_node* %16, i64 0, i32 0, i32 7
+  %17 = bitcast %union.tree_node** %align to i32*
+  %18 = load i32* %17, align 4, !tbaa !4
+  %19 = load %union.tree_node** %5, align 8, !tbaa !0
+  %align27 = getelementptr inbounds %union.tree_node* %19, i64 0, i32 0, i32 7
+  %20 = bitcast %union.tree_node** %align27 to i32*
+  %21 = load i32* %20, align 4, !tbaa !4
+  %cmp28 = icmp eq i32 %18, %21
+  br i1 %cmp28, label %land.lhs.true29, label %if.end
+
+land.lhs.true29:                                  ; preds = %land.lhs.true22
+  %22 = getelementptr inbounds %union.tree_node* %16, i64 0, i32 0, i32 13
+  %23 = load %union.tree_node** %22, align 8, !tbaa !0
+  %24 = getelementptr inbounds %union.tree_node* %19, i64 0, i32 0, i32 13
+  %25 = load %union.tree_node** %24, align 8, !tbaa !0
+  %cmp35 = icmp eq %union.tree_node* %23, %25
+  br i1 %cmp35, label %land.lhs.true44, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true29
+  %call42 = tail call i32 @tree_int_cst_equal(%union.tree_node* %23, %union.tree_node* %25) #10
+  %tobool43 = icmp eq i32 %call42, 0
+  br i1 %tobool43, label %if.end, label %land.lhs.true44
+
+land.lhs.true44:                                  ; preds = %lor.lhs.false, %land.lhs.true29
+  %26 = getelementptr inbounds %union.tree_node* %16, i64 0, i32 0, i32 12
+  %27 = load %union.tree_node** %26, align 8, !tbaa !0
+  %28 = getelementptr inbounds %union.tree_node* %19, i64 0, i32 0, i32 12
+  %29 = load %union.tree_node** %28, align 8, !tbaa !0
+  %cmp50 = icmp eq %union.tree_node* %27, %29
+  br i1 %cmp50, label %land.lhs.true60, label %lor.lhs.false51
+
+lor.lhs.false51:                                  ; preds = %land.lhs.true44
+  %call58 = tail call i32 @tree_int_cst_equal(%union.tree_node* %27, %union.tree_node* %29) #10
+  %tobool59 = icmp eq i32 %call58, 0
+  br i1 %tobool59, label %if.end, label %land.lhs.true60
+
+land.lhs.true60:                                  ; preds = %lor.lhs.false51, %land.lhs.true44
+  %values = getelementptr inbounds %union.tree_node* %16, i64 0, i32 0, i32 1
+  %30 = load i8** %values, align 8
+  %31 = bitcast i8* %30 to %union.tree_node*
+  %values65 = getelementptr inbounds %union.tree_node* %19, i64 0, i32 0, i32 1
+  %32 = load i8** %values65, align 8
+  %33 = bitcast i8* %32 to %union.tree_node*
+  %cmp66 = icmp eq i8* %30, %32
+  br i1 %cmp66, label %return, label %lor.lhs.false67
+
+lor.lhs.false67:                                  ; preds = %land.lhs.true60
+  %tobool71 = icmp eq i8* %30, null
+  br i1 %tobool71, label %if.end, label %land.lhs.true72
+
+land.lhs.true72:                                  ; preds = %lor.lhs.false67
+  %code77 = getelementptr inbounds i8* %30, i64 16
+  %34 = bitcast i8* %code77 to i32*
+  %bf.load78 = load i32* %34, align 8
+  %bf.clear79 = and i32 %bf.load78, 255
+  %cmp80 = icmp ne i32 %bf.clear79, 2
+  %tobool85 = icmp eq i8* %32, null
+  %or.cond = or i1 %cmp80, %tobool85
+  br i1 %or.cond, label %if.end, label %land.lhs.true86
+
+land.lhs.true86:                                  ; preds = %land.lhs.true72
+  %code91 = getelementptr inbounds i8* %32, i64 16
+  %35 = bitcast i8* %code91 to i32*
+  %bf.load92 = load i32* %35, align 8
+  %bf.clear93 = and i32 %bf.load92, 255
+  %cmp94 = icmp eq i32 %bf.clear93, 2
+  br i1 %cmp94, label %land.lhs.true95, label %if.end
+
+land.lhs.true95:                                  ; preds = %land.lhs.true86
+  %call102 = tail call i32 @type_list_equal(%union.tree_node* %31, %union.tree_node* %33) #10
+  %tobool103 = icmp eq i32 %call102, 0
+  br i1 %tobool103, label %if.end, label %return
+
+if.end:                                           ; preds = %land.lhs.true72, %land.lhs.true95, %lor.lhs.false67, %lor.lhs.false51, %lor.lhs.false, %land.lhs.true16, %land.lhs.true86, %land.lhs.true22, %land.lhs.true8, %land.lhs.true, %entry
+  br label %return
+
+return:                                           ; preds = %land.lhs.true60, %land.lhs.true95, %if.end
+  %retval.0 = phi i32 [ 0, %if.end ], [ 1, %land.lhs.true95 ], [ 1, %land.lhs.true60 ]
+  ret i32 %retval.0
+}

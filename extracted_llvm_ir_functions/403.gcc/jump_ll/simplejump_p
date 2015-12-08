@@ -1,0 +1,43 @@
+define i32 @simplejump_p(%struct.rtx_def* nocapture %insn) #2 {
+entry:
+  %0 = bitcast %struct.rtx_def* %insn to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 33
+  br i1 %cmp, label %land.lhs.true, label %land.end
+
+land.lhs.true:                                    ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load1 = load i32* %2, align 8
+  %bf.clear2 = and i32 %bf.load1, 65535
+  %cmp3 = icmp eq i32 %bf.clear2, 47
+  br i1 %cmp3, label %land.lhs.true4, label %land.end
+
+land.lhs.true4:                                   ; preds = %land.lhs.true
+  %fld8 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1
+  %rtx10 = bitcast [1 x %union.rtunion_def]* %fld8 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx10, align 8, !tbaa !3
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load11 = load i32* %4, align 8
+  %bf.clear12 = and i32 %bf.load11, 65535
+  %cmp13 = icmp eq i32 %bf.clear12, 59
+  br i1 %cmp13, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %land.lhs.true4
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 1
+  %rtx19 = bitcast %union.rtunion_def* %arrayidx18 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx19, align 8, !tbaa !3
+  %6 = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load20 = load i32* %6, align 8
+  %bf.clear21 = and i32 %bf.load20, 65535
+  %cmp22 = icmp eq i32 %bf.clear21, 67
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %land.lhs.true4, %land.lhs.true, %entry
+  %7 = phi i1 [ false, %land.lhs.true4 ], [ false, %land.lhs.true ], [ false, %entry ], [ %cmp22, %land.rhs ]
+  %land.ext = zext i1 %7 to i32
+  ret i32 %land.ext
+}

@@ -1,0 +1,26 @@
+define void @debug_candidates(i32 %trg) #0 {
+entry:
+  %0 = load %struct._IO_FILE** @sched_dump, align 8, !tbaa !0
+  %1 = load i32* @current_blocks, align 4, !tbaa !3
+  %add = add nsw i32 %1, %trg
+  %idxprom = sext i32 %add to i64
+  %2 = load i32** @rgn_bb_table, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom
+  %3 = load i32* %arrayidx, align 4, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 %3, i32 %trg) #7
+  %i.06 = add nsw i32 %trg, 1
+  %4 = load i32* @current_nr_blocks, align 4, !tbaa !3
+  %cmp7 = icmp slt i32 %i.06, %4
+  br i1 %cmp7, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %i.08 = phi i32 [ %i.0, %for.body ], [ %i.06, %entry ]
+  tail call void @debug_candidate(i32 %i.08) #9
+  %i.0 = add nsw i32 %i.08, 1
+  %5 = load i32* @current_nr_blocks, align 4, !tbaa !3
+  %cmp = icmp slt i32 %i.0, %5
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

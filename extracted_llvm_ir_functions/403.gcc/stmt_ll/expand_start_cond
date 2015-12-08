@@ -1,0 +1,115 @@
+define void @expand_start_cond(%union.tree_node* %cond, i32 %exitflag) #0 {
+entry:
+  %0 = load i8** getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 4), align 8, !tbaa !0
+  %1 = load i8** getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint i8* %0 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp = icmp slt i64 %sub.ptr.sub, 120
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @_obstack_newchunk(%struct.obstack* @stmt_obstack, i32 120) #7
+  %.pre = load i8** getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i8* [ %.pre, %if.then ], [ %1, %entry ]
+  %add.ptr = getelementptr inbounds i8* %2, i64 120
+  store i8* %add.ptr, i8** getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %3 = load i8** getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 2), align 8, !tbaa !0
+  %cmp4 = icmp eq i8* %add.ptr, %3
+  br i1 %cmp4, label %if.then6, label %if.end7
+
+if.then6:                                         ; preds = %if.end
+  %bf.load = load i8* getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 10), align 8
+  %bf.set = or i8 %bf.load, 2
+  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 10), align 8
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end, %if.then6
+  %sub.ptr.lhs.cast9 = ptrtoint i8* %add.ptr to i64
+  %4 = load i32* getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 6), align 8, !tbaa !4
+  %conv11 = sext i32 %4 to i64
+  %add = add nsw i64 %conv11, %sub.ptr.lhs.cast9
+  %neg = xor i32 %4, -1
+  %conv13 = sext i32 %neg to i64
+  %and = and i64 %add, %conv13
+  %add.ptr14 = getelementptr inbounds i8* null, i64 %and
+  store i8* %add.ptr14, i8** getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %5 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 1), align 8, !tbaa !0
+  %sub.ptr.lhs.cast17 = ptrtoint i8* %add.ptr14 to i64
+  %sub.ptr.rhs.cast18 = ptrtoint %struct._obstack_chunk* %5 to i64
+  %sub.ptr.sub19 = sub i64 %sub.ptr.lhs.cast17, %sub.ptr.rhs.cast18
+  %6 = load i8** getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 4), align 8, !tbaa !0
+  %sub.ptr.lhs.cast22 = ptrtoint i8* %6 to i64
+  %sub.ptr.sub24 = sub i64 %sub.ptr.lhs.cast22, %sub.ptr.rhs.cast18
+  %cmp25 = icmp sgt i64 %sub.ptr.sub19, %sub.ptr.sub24
+  br i1 %cmp25, label %if.then27, label %if.end30
+
+if.then27:                                        ; preds = %if.end7
+  store i8* %6, i8** getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.then27, %if.end7
+  %7 = phi i8* [ %6, %if.then27 ], [ %add.ptr14, %if.end7 ]
+  store i8* %7, i8** getelementptr inbounds (%struct.obstack* @stmt_obstack, i64 0, i32 2), align 8, !tbaa !0
+  %8 = bitcast i8* %3 to %struct.nesting*
+  %9 = load %struct.function** @cfun, align 8, !tbaa !0
+  %stmt = getelementptr inbounds %struct.function* %9, i64 0, i32 1
+  %10 = load %struct.stmt_status** %stmt, align 8, !tbaa !0
+  %x_cond_stack = getelementptr inbounds %struct.stmt_status* %10, i64 0, i32 2
+  %11 = load %struct.nesting** %x_cond_stack, align 8, !tbaa !0
+  %next = getelementptr inbounds i8* %3, i64 8
+  %12 = bitcast i8* %next to %struct.nesting**
+  store %struct.nesting* %11, %struct.nesting** %12, align 8, !tbaa !0
+  %13 = load %struct.function** @cfun, align 8, !tbaa !0
+  %stmt33 = getelementptr inbounds %struct.function* %13, i64 0, i32 1
+  %14 = load %struct.stmt_status** %stmt33, align 8, !tbaa !0
+  %x_nesting_stack = getelementptr inbounds %struct.stmt_status* %14, i64 0, i32 5
+  %15 = load %struct.nesting** %x_nesting_stack, align 8, !tbaa !0
+  %all = bitcast i8* %3 to %struct.nesting**
+  store %struct.nesting* %15, %struct.nesting** %all, align 8, !tbaa !0
+  %16 = load %struct.function** @cfun, align 8, !tbaa !0
+  %stmt34 = getelementptr inbounds %struct.function* %16, i64 0, i32 1
+  %17 = load %struct.stmt_status** %stmt34, align 8, !tbaa !0
+  %x_nesting_depth = getelementptr inbounds %struct.stmt_status* %17, i64 0, i32 6
+  %18 = load i32* %x_nesting_depth, align 4, !tbaa !4
+  %inc = add nsw i32 %18, 1
+  store i32 %inc, i32* %x_nesting_depth, align 4, !tbaa !4
+  %depth = getelementptr inbounds i8* %3, i64 16
+  %19 = bitcast i8* %depth to i32*
+  store i32 %inc, i32* %19, align 4, !tbaa !4
+  %call = tail call %struct.rtx_def* @gen_label_rtx() #7
+  %data = getelementptr inbounds i8* %3, i64 32
+  %next_label = getelementptr inbounds i8* %3, i64 40
+  %20 = bitcast i8* %next_label to %struct.rtx_def**
+  store %struct.rtx_def* %call, %struct.rtx_def** %20, align 8, !tbaa !0
+  %tobool = icmp eq i32 %exitflag, 0
+  br i1 %tobool, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %if.end30
+  %call36 = tail call %struct.rtx_def* @gen_label_rtx() #7
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.end30, %cond.true
+  %cond37 = phi %struct.rtx_def* [ %call36, %cond.true ], [ null, %if.end30 ]
+  %exit_label = getelementptr inbounds i8* %3, i64 24
+  %21 = bitcast i8* %exit_label to %struct.rtx_def**
+  store %struct.rtx_def* %cond37, %struct.rtx_def** %21, align 8, !tbaa !0
+  %endif_label = bitcast i8* %data to %struct.rtx_def**
+  store %struct.rtx_def* %cond37, %struct.rtx_def** %endif_label, align 8, !tbaa !0
+  %22 = load %struct.function** @cfun, align 8, !tbaa !0
+  %stmt41 = getelementptr inbounds %struct.function* %22, i64 0, i32 1
+  %23 = load %struct.stmt_status** %stmt41, align 8, !tbaa !0
+  %x_cond_stack42 = getelementptr inbounds %struct.stmt_status* %23, i64 0, i32 2
+  store %struct.nesting* %8, %struct.nesting** %x_cond_stack42, align 8, !tbaa !0
+  %24 = load %struct.function** @cfun, align 8, !tbaa !0
+  %stmt43 = getelementptr inbounds %struct.function* %24, i64 0, i32 1
+  %25 = load %struct.stmt_status** %stmt43, align 8, !tbaa !0
+  %x_nesting_stack44 = getelementptr inbounds %struct.stmt_status* %25, i64 0, i32 5
+  store %struct.nesting* %8, %struct.nesting** %x_nesting_stack44, align 8, !tbaa !0
+  %26 = load %struct.rtx_def** %20, align 8, !tbaa !0
+  tail call void @do_jump(%union.tree_node* %cond, %struct.rtx_def* %26, %struct.rtx_def* null) #7
+  ret void
+}

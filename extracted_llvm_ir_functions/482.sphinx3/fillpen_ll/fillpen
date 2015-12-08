@@ -1,0 +1,14 @@
+define i32 @fillpen(%struct.fillpen_t* nocapture %f, i32 %w) #4 {
+entry:
+  %dict = getelementptr inbounds %struct.fillpen_t* %f, i64 0, i32 0
+  %0 = load %struct.dict_t** %dict, align 8, !tbaa !0
+  %filler_start = getelementptr inbounds %struct.dict_t* %0, i64 0, i32 8
+  %1 = load i32* %filler_start, align 4, !tbaa !4
+  %sub = sub nsw i32 %w, %1
+  %idxprom = sext i32 %sub to i64
+  %prob = getelementptr inbounds %struct.fillpen_t* %f, i64 0, i32 1
+  %2 = load i32** %prob, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom
+  %3 = load i32* %arrayidx, align 4, !tbaa !4
+  ret i32 %3
+}

@@ -1,0 +1,83 @@
+define i32 @mdef_phone_id(%struct.mdef_t* nocapture %m, i8 signext %ci, i8 signext %lc, i8 signext %rc, i32 %wpos) #4 {
+entry:
+  %idxprom = sext i8 %ci to i64
+  %idxprom1 = zext i32 %wpos to i64
+  %wpos_ci_lclist = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 15
+  %0 = load %struct.ph_lc_s**** %wpos_ci_lclist, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.ph_lc_s*** %0, i64 %idxprom1
+  %1 = load %struct.ph_lc_s*** %arrayidx, align 8, !tbaa !3
+  %arrayidx2 = getelementptr inbounds %struct.ph_lc_s** %1, i64 %idxprom
+  %2 = load %struct.ph_lc_s** %arrayidx2, align 8, !tbaa !3
+  %tobool7.i = icmp eq %struct.ph_lc_s* %2, null
+  %sil = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 14
+  %ciphone = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 7
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %if.end, %entry
+  %lc.tr = phi i8 [ %lc, %entry ], [ %lc., %if.end ]
+  %rc.tr = phi i8 [ %rc, %entry ], [ %rc., %if.end ]
+  br i1 %tobool7.i, label %if.then, label %land.rhs.i
+
+land.rhs.i:                                       ; preds = %tailrecurse, %for.inc.i
+  %lcptr.08.i = phi %struct.ph_lc_s* [ %4, %for.inc.i ], [ %2, %tailrecurse ]
+  %lc1.i = getelementptr inbounds %struct.ph_lc_s* %lcptr.08.i, i64 0, i32 0
+  %3 = load i8* %lc1.i, align 1, !tbaa !1
+  %cmp.i = icmp eq i8 %3, %lc.tr
+  br i1 %cmp.i, label %lor.lhs.false, label %for.inc.i
+
+for.inc.i:                                        ; preds = %land.rhs.i
+  %next.i = getelementptr inbounds %struct.ph_lc_s* %lcptr.08.i, i64 0, i32 2
+  %4 = load %struct.ph_lc_s** %next.i, align 8, !tbaa !3
+  %tobool.i = icmp eq %struct.ph_lc_s* %4, null
+  br i1 %tobool.i, label %if.then, label %land.rhs.i
+
+lor.lhs.false:                                    ; preds = %land.rhs.i
+  %rclist = getelementptr inbounds %struct.ph_lc_s* %lcptr.08.i, i64 0, i32 1
+  %5 = load %struct.ph_rc_s** %rclist, align 8, !tbaa !3
+  %tobool7.i61 = icmp eq %struct.ph_rc_s* %5, null
+  br i1 %tobool7.i61, label %if.then, label %land.rhs.i63
+
+land.rhs.i63:                                     ; preds = %lor.lhs.false, %for.inc.i66
+  %rcptr.08.i = phi %struct.ph_rc_s* [ %7, %for.inc.i66 ], [ %5, %lor.lhs.false ]
+  %rc1.i = getelementptr inbounds %struct.ph_rc_s* %rcptr.08.i, i64 0, i32 0
+  %6 = load i8* %rc1.i, align 1, !tbaa !1
+  %cmp.i62 = icmp eq i8 %6, %rc.tr
+  br i1 %cmp.i62, label %if.end43, label %for.inc.i66
+
+for.inc.i66:                                      ; preds = %land.rhs.i63
+  %next.i64 = getelementptr inbounds %struct.ph_rc_s* %rcptr.08.i, i64 0, i32 2
+  %7 = load %struct.ph_rc_s** %next.i64, align 8, !tbaa !3
+  %tobool.i65 = icmp eq %struct.ph_rc_s* %7, null
+  br i1 %tobool.i65, label %if.then, label %land.rhs.i63
+
+if.then:                                          ; preds = %for.inc.i66, %for.inc.i, %lor.lhs.false, %tailrecurse
+  %8 = load i8* %sil, align 1, !tbaa !1
+  %cmp8 = icmp slt i8 %8, 0
+  br i1 %cmp8, label %return, label %if.end
+
+if.end:                                           ; preds = %if.then
+  %idxprom12 = sext i8 %lc.tr to i64
+  %9 = load %struct.ciphone_t** %ciphone, align 8, !tbaa !3
+  %filler = getelementptr inbounds %struct.ciphone_t* %9, i64 %idxprom12, i32 1
+  %10 = load i32* %filler, align 4, !tbaa !0
+  %tobool = icmp eq i32 %10, 0
+  %lc. = select i1 %tobool, i8 %lc.tr, i8 %8
+  %idxprom19 = sext i8 %rc.tr to i64
+  %filler22 = getelementptr inbounds %struct.ciphone_t* %9, i64 %idxprom19, i32 1
+  %11 = load i32* %filler22, align 4, !tbaa !0
+  %tobool23 = icmp eq i32 %11, 0
+  %rc. = select i1 %tobool23, i8 %rc.tr, i8 %8
+  %cmp34 = icmp eq i8 %lc., %lc.tr
+  %cmp38 = icmp eq i8 %rc., %rc.tr
+  %or.cond = and i1 %cmp34, %cmp38
+  br i1 %or.cond, label %return, label %tailrecurse
+
+if.end43:                                         ; preds = %land.rhs.i63
+  %pid = getelementptr inbounds %struct.ph_rc_s* %rcptr.08.i, i64 0, i32 1
+  %12 = load i32* %pid, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then, %if.end43
+  %retval.0 = phi i32 [ %12, %if.end43 ], [ -1, %if.then ], [ -1, %if.end ]
+  ret i32 %retval.0
+}

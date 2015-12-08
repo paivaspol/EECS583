@@ -1,0 +1,11 @@
+define internal fastcc %union.tree_node** @get_block_vector(%union.tree_node* %block, i32* nocapture %n_blocks_p) #0 {
+entry:
+  %call = tail call fastcc i32 @all_blocks(%union.tree_node* %block, %union.tree_node** null) #9
+  store i32 %call, i32* %n_blocks_p, align 4, !tbaa !4
+  %conv = sext i32 %call to i64
+  %mul = shl nsw i64 %conv, 3
+  %call1 = tail call noalias i8* @xmalloc(i64 %mul) #10
+  %0 = bitcast i8* %call1 to %union.tree_node**
+  %call2 = tail call fastcc i32 @all_blocks(%union.tree_node* %block, %union.tree_node** %0) #9
+  ret %union.tree_node** %0
+}

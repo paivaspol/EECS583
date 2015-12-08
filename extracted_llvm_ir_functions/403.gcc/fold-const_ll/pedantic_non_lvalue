@@ -1,0 +1,14 @@
+define %union.tree_node* @pedantic_non_lvalue(%union.tree_node* %x) #0 {
+entry:
+  %0 = load i32* @pedantic_lvalues, align 4, !tbaa !4
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call %union.tree_node* @non_lvalue(%union.tree_node* %x) #7
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi %union.tree_node* [ %call, %if.then ], [ %x, %entry ]
+  ret %union.tree_node* %retval.0
+}

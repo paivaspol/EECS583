@@ -1,0 +1,32 @@
+define internal i32 @kill_autoinc_value(%struct.rtx_def** nocapture %px, i8* nocapture %data) #0 {
+entry:
+  %0 = load %struct.rtx_def** %px, align 8, !tbaa !0
+  %1 = bitcast i8* %data to %struct.value_data*
+  %2 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom9 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom9
+  %3 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %3, 97
+  br i1 %cmp, label %if.then, label %return
+
+if.then:                                          ; preds = %entry
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  tail call fastcc void @kill_value(%struct.rtx_def* %4, %struct.value_data* %1) #6
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx4 to i32*
+  %5 = load i32* %rtuint, align 4, !tbaa !3
+  %6 = load i32* @target_flags, align 4, !tbaa !3
+  %and = lshr i32 %6, 25
+  %7 = and i32 %and, 1
+  %8 = or i32 %7, 4
+  tail call fastcc void @set_value_regno(i32 %5, i32 %8, %struct.value_data* %1) #6
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ -1, %if.then ], [ 0, %entry ]
+  ret i32 %retval.0
+}

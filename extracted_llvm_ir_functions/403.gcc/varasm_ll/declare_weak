@@ -1,0 +1,40 @@
+define void @declare_weak(%union.tree_node* %decl) #0 {
+entry:
+  %public_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %public_flag to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 524288
+  %tobool = icmp eq i32 %bf.clear, 0
+  br i1 %tobool, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call void (%union.tree_node*, i8*, ...)* @error_with_decl(%union.tree_node* %decl, i8* getelementptr inbounds ([40 x i8]* @.str106, i64 0, i64 0)) #9
+  br label %if.end18
+
+if.else:                                          ; preds = %entry
+  %1 = and i32 %bf.load, 16639
+  %2 = icmp eq i32 %1, 16414
+  br i1 %2, label %if.then9, label %if.else10
+
+if.then9:                                         ; preds = %if.else
+  tail call void (%union.tree_node*, i8*, ...)* @error_with_decl(%union.tree_node* %decl, i8* getelementptr inbounds ([49 x i8]* @.str104, i64 0, i64 0)) #9
+  br label %if.end18
+
+if.else10:                                        ; preds = %if.else
+  %weak_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 5
+  %3 = bitcast [8 x i8]* %weak_flag to i64*
+  %bf.load12 = load i64* %3, align 8
+  %bf.cast = and i64 %bf.load12, 8388608
+  %tobool15 = icmp eq i64 %bf.cast, 0
+  br i1 %tobool15, label %if.then16, label %if.end18
+
+if.then16:                                        ; preds = %if.else10
+  %4 = load %union.tree_node** @weak_decls, align 8, !tbaa !3
+  %call = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %decl, %union.tree_node* %4) #9
+  store %union.tree_node* %call, %union.tree_node** @weak_decls, align 8, !tbaa !3
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.else10, %if.then9, %if.then16, %if.then
+  tail call fastcc void @mark_weak(%union.tree_node* %decl) #10
+  ret void
+}

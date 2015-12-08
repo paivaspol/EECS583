@@ -1,0 +1,74 @@
+define internal fastcc i32 @copy_cost(%struct.rtx_def* %x, i32 %mode, i32 %class, i32 %to_p) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 62
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call i32 @ix86_preferred_reload_class(%struct.rtx_def* %x, i32 %class) #5
+  %tobool = icmp eq i32 %to_p, 0
+  br i1 %tobool, label %if.then1, label %if.end16
+
+if.then1:                                         ; preds = %if.end
+  %call.off = add i32 %call, -11
+  %1 = icmp ult i32 %call.off, 2
+  %cmp5 = icmp eq i32 %call, 10
+  %or.cond38 = or i1 %1, %cmp5
+  br i1 %or.cond38, label %land.lhs.true, label %if.end16
+
+land.lhs.true:                                    ; preds = %if.then1
+  %2 = load i32* @target_flags, align 4, !tbaa !3
+  %and = and i32 %2, 33554432
+  %tobool6 = icmp eq i32 %and, 0
+  br i1 %tobool6, label %if.end8, label %if.end16
+
+if.end8:                                          ; preds = %land.lhs.true
+  %cmp7 = icmp eq i32 %mode, 2
+  %phitmp = select i1 %cmp7, i32 8, i32 0
+  br i1 %cmp7, label %if.then10, label %if.end16
+
+if.then10:                                        ; preds = %if.end8
+  %idxprom = sext i32 %call to i64
+  %idxprom1159 = zext i32 %phitmp to i64
+  %arrayidx14 = getelementptr inbounds [59 x [25 x [25 x i32]]]* @move_cost, i64 0, i64 2, i64 %idxprom1159, i64 %idxprom
+  %3 = load i32* %arrayidx14, align 4, !tbaa !3
+  %call15 = tail call fastcc i32 @copy_cost(%struct.rtx_def* %x, i32 2, i32 %phitmp, i32 2) #6
+  %add = add nsw i32 %call15, %3
+  ret i32 %add
+
+if.end16:                                         ; preds = %if.end8, %if.then1, %land.lhs.true, %if.end
+  %bf.load17 = load i32* %0, align 8
+  %bf.clear18 = and i32 %bf.load17, 65535
+  %cmp19 = icmp eq i32 %bf.clear18, 66
+  %cmp21 = icmp eq i32 %call, 0
+  %or.cond = or i1 %cmp19, %cmp21
+  br i1 %or.cond, label %if.then22, label %if.else
+
+if.then22:                                        ; preds = %if.end16
+  %call23 = tail call i32 @ix86_memory_move_cost(i32 %mode, i32 %call, i32 %to_p) #5
+  br label %return
+
+if.else:                                          ; preds = %if.end16
+  %cmp26 = icmp eq i32 %bf.clear18, 61
+  br i1 %cmp26, label %if.then27, label %return
+
+if.then27:                                        ; preds = %if.else
+  %idxprom28 = sext i32 %call to i64
+  %arrayidx29 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx29 to i32*
+  %4 = load i32* %rtuint, align 4, !tbaa !3
+  %idxprom30 = zext i32 %4 to i64
+  %arrayidx31 = getelementptr inbounds [53 x i32]* @regclass_map, i64 0, i64 %idxprom30
+  %5 = load i32* %arrayidx31, align 4, !tbaa !4
+  %idxprom32 = sext i32 %5 to i64
+  %idxprom33 = zext i32 %mode to i64
+  %arrayidx36 = getelementptr inbounds [59 x [25 x [25 x i32]]]* @move_cost, i64 0, i64 %idxprom33, i64 %idxprom32, i64 %idxprom28
+  %6 = load i32* %arrayidx36, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.else, %entry, %if.then27, %if.then22
+  %retval.0 = phi i32 [ %call23, %if.then22 ], [ %6, %if.then27 ], [ 0, %entry ], [ 4, %if.else ]
+  ret i32 %retval.0
+}

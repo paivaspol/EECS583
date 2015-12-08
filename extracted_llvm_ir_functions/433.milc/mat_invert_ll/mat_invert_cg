@@ -1,0 +1,13 @@
+define i32 @mat_invert_cg(i32 %src, i32 %dest, i32 %temp, double %mass) #0 {
+entry:
+  %finalrsq = alloca double, align 8
+  call void @clear_latvec(i32 %dest, i32 3) #6
+  %0 = load i32* @niter, align 4, !tbaa !0
+  %1 = load double* @rsqprop, align 8, !tbaa !3
+  %call = call i32 @ks_congrad(i32 %src, i32 %dest, double %mass, i32 %0, double %1, i32 3, double* %finalrsq) #6
+  call void @dslash(i32 %dest, i32 1232, i32 3) #6
+  %mul = fmul double %mass, -2.000000e+00
+  call void @scalar_mult_add_latvec(i32 1232, i32 %dest, double %mul, i32 1232, i32 3) #6
+  call void @scalar_mult_latvec(i32 1232, double -1.000000e+00, i32 %dest, i32 3) #6
+  ret i32 %call
+}

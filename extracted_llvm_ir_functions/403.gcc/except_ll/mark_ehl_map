@@ -1,0 +1,14 @@
+define internal void @mark_ehl_map(i8* nocapture %pp) #0 {
+entry:
+  %0 = bitcast i8* %pp to %struct.htab**
+  %1 = load %struct.htab** %0, align 8, !tbaa !3
+  %tobool = icmp eq %struct.htab* %1, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @htab_traverse(%struct.htab* %1, i32 (i8**, i8*)* @mark_ehl_map_entry, i8* null) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

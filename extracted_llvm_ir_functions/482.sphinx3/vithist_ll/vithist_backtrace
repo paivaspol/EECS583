@@ -1,0 +1,64 @@
+define %struct.gnode_s* @vithist_backtrace(%struct.vithist_t* nocapture %vh, i32 %id) #0 {
+entry:
+  %cmp28 = icmp sgt i32 %id, 0
+  br i1 %cmp28, label %while.body.lr.ph, label %while.end
+
+while.body.lr.ph:                                 ; preds = %entry
+  %entry1 = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 0
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %id.addr.030 = phi i32 [ %id, %while.body.lr.ph ], [ %14, %while.body ]
+  %hyp.029 = phi %struct.gnode_s* [ null, %while.body.lr.ph ], [ %call9, %while.body ]
+  %shr = ashr i32 %id.addr.030, 14
+  %and = and i32 %id.addr.030, 16383
+  %idxprom = sext i32 %shr to i64
+  %0 = load %struct.vithist_entry_t*** %entry1, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.vithist_entry_t** %0, i64 %idxprom
+  %1 = load %struct.vithist_entry_t** %arrayidx, align 8, !tbaa !0
+  %idx.ext27 = zext i32 %and to i64
+  %call = tail call i8* @__ckd_calloc__(i64 1, i64 28, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 784) #6
+  %wid = getelementptr inbounds %struct.vithist_entry_t* %1, i64 %idx.ext27, i32 0
+  %2 = load i32* %wid, align 4, !tbaa !3
+  %id2 = bitcast i8* %call to i32*
+  store i32 %2, i32* %id2, align 4, !tbaa !3
+  %sf = getelementptr inbounds %struct.vithist_entry_t* %1, i64 %idx.ext27, i32 1
+  %3 = load i16* %sf, align 2, !tbaa !4
+  %conv = sext i16 %3 to i32
+  %sf3 = getelementptr inbounds i8* %call, i64 8
+  %4 = bitcast i8* %sf3 to i32*
+  store i32 %conv, i32* %4, align 4, !tbaa !3
+  %ef = getelementptr inbounds %struct.vithist_entry_t* %1, i64 %idx.ext27, i32 2
+  %5 = load i16* %ef, align 2, !tbaa !4
+  %conv4 = sext i16 %5 to i32
+  %ef5 = getelementptr inbounds i8* %call, i64 12
+  %6 = bitcast i8* %ef5 to i32*
+  store i32 %conv4, i32* %6, align 4, !tbaa !3
+  %ascr = getelementptr inbounds %struct.vithist_entry_t* %1, i64 %idx.ext27, i32 3
+  %7 = load i32* %ascr, align 4, !tbaa !3
+  %ascr6 = getelementptr inbounds i8* %call, i64 16
+  %8 = bitcast i8* %ascr6 to i32*
+  store i32 %7, i32* %8, align 4, !tbaa !3
+  %lscr = getelementptr inbounds %struct.vithist_entry_t* %1, i64 %idx.ext27, i32 4
+  %9 = load i32* %lscr, align 4, !tbaa !3
+  %lscr7 = getelementptr inbounds i8* %call, i64 20
+  %10 = bitcast i8* %lscr7 to i32*
+  store i32 %9, i32* %10, align 4, !tbaa !3
+  %type = getelementptr inbounds %struct.vithist_entry_t* %1, i64 %idx.ext27, i32 7
+  %11 = load i32* %type, align 4, !tbaa !3
+  %type8 = getelementptr inbounds i8* %call, i64 24
+  %12 = bitcast i8* %type8 to i32*
+  store i32 %11, i32* %12, align 4, !tbaa !3
+  %vhid = getelementptr inbounds i8* %call, i64 4
+  %13 = bitcast i8* %vhid to i32*
+  store i32 %id.addr.030, i32* %13, align 4, !tbaa !3
+  %call9 = tail call %struct.gnode_s* @glist_add_ptr(%struct.gnode_s* %hyp.029, i8* %call) #6
+  %pred = getelementptr inbounds %struct.vithist_entry_t* %1, i64 %idx.ext27, i32 6
+  %14 = load i32* %pred, align 4, !tbaa !3
+  %cmp = icmp sgt i32 %14, 0
+  br i1 %cmp, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %entry
+  %hyp.0.lcssa = phi %struct.gnode_s* [ null, %entry ], [ %call9, %while.body ]
+  ret %struct.gnode_s* %hyp.0.lcssa
+}

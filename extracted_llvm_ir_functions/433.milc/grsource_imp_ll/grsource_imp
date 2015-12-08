@@ -1,0 +1,43 @@
+define void @grsource_imp(i32 %dest, double %mass, i32 %parity) #0 {
+entry:
+  %0 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp38 = icmp sgt i32 %0, 0
+  br i1 %cmp38, label %for.cond1.preheader.lr.ph, label %for.end12
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %1 = load %struct.site** @lattice, align 8, !tbaa !3
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.cond1.preheader.lr.ph, %for.inc10
+  %s.040 = phi %struct.site* [ %1, %for.cond1.preheader.lr.ph ], [ %incdec.ptr, %for.inc10 ]
+  %i.039 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %inc11, %for.inc10 ]
+  %site_prn = getelementptr inbounds %struct.site* %s.040, i64 0, i32 6
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %call = tail call double @gaussian_rand_no(%struct.double_prn* %site_prn) #4
+  %real = getelementptr inbounds %struct.site* %s.040, i64 0, i32 16, i32 0, i64 %indvars.iv, i32 0
+  store double %call, double* %real, align 8, !tbaa !4
+  %call5 = tail call double @gaussian_rand_no(%struct.double_prn* %site_prn) #4
+  %imag = getelementptr inbounds %struct.site* %s.040, i64 0, i32 16, i32 0, i64 %indvars.iv, i32 1
+  store double %call5, double* %imag, align 8, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc10, label %for.body3
+
+for.inc10:                                        ; preds = %for.body3
+  %inc11 = add nsw i32 %i.039, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %s.040, i64 1
+  %2 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp = icmp slt i32 %inc11, %2
+  br i1 %cmp, label %for.cond1.preheader, label %for.end12
+
+for.end12:                                        ; preds = %for.inc10, %entry
+  tail call void @dslash(i32 1280, i32 %dest, i32 %parity) #4
+  tail call void @scalar_mult_latvec(i32 %dest, double -1.000000e+00, i32 %dest, i32 %parity) #4
+  %mul = fmul double %mass, 2.000000e+00
+  tail call void @scalar_mult_add_latvec(i32 %dest, i32 1280, double %mul, i32 %dest, i32 %parity) #4
+  ret void
+}

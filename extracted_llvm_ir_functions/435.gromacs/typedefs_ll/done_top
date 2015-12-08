@@ -1,0 +1,20 @@
+define void @done_top(%struct.t_topology* %top) #0 {
+entry:
+  %atoms = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 2
+  tail call void @done_atom(%struct.t_atoms* %atoms) #4
+  %symtab = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 4
+  tail call void @done_symtab(%struct.t_symtab* %symtab) #3
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 %indvars.iv
+  tail call void @done_block(%struct.t_block* %arrayidx) #4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  ret void
+}

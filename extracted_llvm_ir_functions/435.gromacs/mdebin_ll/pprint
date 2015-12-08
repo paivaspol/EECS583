@@ -1,0 +1,45 @@
+define internal fastcc void @pprint(%struct._IO_FILE* %log, i8* %s) #0 {
+entry:
+  %tobool = icmp eq %struct._IO_FILE* %log, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i64 @strlen(i8* %s) #5
+  %conv = trunc i64 %call to i32
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([11 x i8]* @.str85, i64 0, i64 0), i64 10, i64 1, %struct._IO_FILE* %log)
+  %cmp1.i = icmp sgt i32 %conv, 0
+  br i1 %cmp1.i, label %for.body.i, label %npr.exit24.critedge
+
+for.body.i:                                       ; preds = %if.then, %for.body.i
+  %n.addr.02.i = phi i32 [ %dec.i, %for.body.i ], [ %conv, %if.then ]
+  %fputc.i = tail call i32 @fputc(i32 35, %struct._IO_FILE* %log) #1
+  %dec.i = add nsw i32 %n.addr.02.i, -1
+  %cmp.i = icmp sgt i32 %dec.i, 0
+  br i1 %cmp.i, label %for.body.i, label %for.body.i23.preheader
+
+for.body.i23.preheader:                           ; preds = %for.body.i
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str86, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %log)
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([19 x i8]* @.str87, i64 0, i64 0), i8* %s) #6
+  %2 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str88, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %log)
+  br label %for.body.i23
+
+for.body.i23:                                     ; preds = %for.body.i23.preheader, %for.body.i23
+  %n.addr.02.i19 = phi i32 [ %dec.i21, %for.body.i23 ], [ %conv, %for.body.i23.preheader ]
+  %fputc.i20 = tail call i32 @fputc(i32 35, %struct._IO_FILE* %log) #1
+  %dec.i21 = add nsw i32 %n.addr.02.i19, -1
+  %cmp.i22 = icmp sgt i32 %dec.i21, 0
+  br i1 %cmp.i22, label %for.body.i23, label %npr.exit24
+
+npr.exit24.critedge:                              ; preds = %if.then
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str86, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %log)
+  %call3.c = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([19 x i8]* @.str87, i64 0, i64 0), i8* %s) #6
+  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str88, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %log)
+  br label %npr.exit24
+
+npr.exit24:                                       ; preds = %for.body.i23, %npr.exit24.critedge
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str89, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %log)
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %npr.exit24
+  ret void
+}

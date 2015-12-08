@@ -1,0 +1,70 @@
+define i8* @backup_fn(i8* %file) #0 {
+entry:
+  %call = tail call i64 @strlen(i8* %file) #7
+  %sub = add i64 %call, 4294967295
+  %conv = trunc i64 %sub to i32
+  %cmp40 = icmp sgt i32 %conv, 0
+  br i1 %cmp40, label %land.rhs.lr.ph, label %if.else
+
+land.rhs.lr.ph:                                   ; preds = %entry
+  %sext = shl i64 %sub, 32
+  %0 = ashr exact i64 %sext, 32
+  br label %land.rhs
+
+for.cond:                                         ; preds = %land.rhs
+  %1 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp sgt i32 %1, 0
+  br i1 %cmp, label %land.rhs, label %if.else
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ %0, %land.rhs.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %arrayidx = getelementptr inbounds i8* %file, i64 %indvars.iv
+  %2 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp3 = icmp eq i8 %2, 47
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  br i1 %cmp3, label %if.then, label %for.cond
+
+if.then:                                          ; preds = %land.rhs
+  %call7 = tail call i8* @gmx_strdup(i8* %file) #6
+  %arrayidx9 = getelementptr inbounds i8* %call7, i64 %indvars.iv
+  store i8 0, i8* %arrayidx9, align 1, !tbaa !1
+  %add.ptr.sum = add i64 %indvars.iv, 1
+  %add.ptr10 = getelementptr inbounds i8* %file, i64 %add.ptr.sum
+  %call11 = tail call i8* @gmx_strdup(i8* %add.ptr10) #6
+  br label %do.body.preheader
+
+if.else:                                          ; preds = %for.cond, %entry
+  %call12 = tail call i8* @gmx_strdup(i8* getelementptr inbounds ([2 x i8]* @.str9, i64 0, i64 0)) #6
+  %call13 = tail call i8* @gmx_strdup(i8* %file) #6
+  br label %do.body.preheader
+
+do.body.preheader:                                ; preds = %if.else, %if.then
+  %directory.0.ph = phi i8* [ %call7, %if.then ], [ %call12, %if.else ]
+  %fn.0.ph = phi i8* [ %call11, %if.then ], [ %call13, %if.else ]
+  br label %do.body
+
+do.body:                                          ; preds = %do.body.preheader, %land.rhs17
+  %count.0 = phi i32 [ %inc, %land.rhs17 ], [ 1, %do.body.preheader ]
+  %call14 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([256 x i8]* @backup_fn.buf, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str10, i64 0, i64 0), i8* %directory.0.ph, i8* %fn.0.ph, i32 %count.0) #6
+  %inc = add nsw i32 %count.0, 1
+  %cmp15 = icmp slt i32 %inc, 128
+  br i1 %cmp15, label %land.rhs17, label %do.end
+
+land.rhs17:                                       ; preds = %do.body
+  %call18 = tail call i32 @fexist(i8* getelementptr inbounds ([256 x i8]* @backup_fn.buf, i64 0, i64 0)) #8
+  %tobool = icmp eq i32 %call18, 0
+  br i1 %tobool, label %do.end, label %do.body
+
+do.end:                                           ; preds = %land.rhs17, %do.body
+  %cmp20 = icmp eq i32 %inc, 128
+  br i1 %cmp20, label %if.then22, label %if.end23
+
+if.then22:                                        ; preds = %do.end
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([46 x i8]* @.str11, i64 0, i64 0), i32 128, i8* %fn.0.ph) #6
+  br label %if.end23
+
+if.end23:                                         ; preds = %if.then22, %do.end
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 266, i8* %directory.0.ph) #6
+  tail call void @save_free(i8* getelementptr inbounds ([3 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 267, i8* %fn.0.ph) #6
+  ret i8* getelementptr inbounds ([256 x i8]* @backup_fn.buf, i64 0, i64 0)
+}

@@ -1,0 +1,189 @@
+define internal fastcc void @calc_die_sizes(%struct.die_struct* nocapture %die) #1 {
+entry:
+  %0 = load i64* @next_die_offset, align 8, !tbaa !6
+  %die_offset = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 6
+  store i64 %0, i64* %die_offset, align 8, !tbaa !6
+  %die_abbrev.i = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 7
+  %1 = load i64* %die_abbrev.i, align 8, !tbaa !6
+  %call.i = tail call i32 @size_of_uleb128(i64 %1) #9
+  %conv.i = sext i32 %call.i to i64
+  %die_attr.i = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 2
+  %a.099.i = load %struct.dw_attr_struct** %die_attr.i, align 8
+  %cmp100.i = icmp eq %struct.dw_attr_struct* %a.099.i, null
+  br i1 %cmp100.i, label %size_of_die.exit, label %for.body.i
+
+for.body.i:                                       ; preds = %entry, %for.inc.i
+  %a.0102.i = phi %struct.dw_attr_struct* [ %a.0.i, %for.inc.i ], [ %a.099.i, %entry ]
+  %size.0101.i = phi i64 [ %size.1.i, %for.inc.i ], [ %conv.i, %entry ]
+  %val_class.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 0
+  %2 = load i32* %val_class.i.i, align 4, !tbaa !1
+  switch i32 %2, label %sw.default.i [
+    i32 0, label %sw.bb.i
+    i32 1, label %sw.bb5.i
+    i32 2, label %AT_loc.exit.i
+    i32 3, label %sw.bb14.i
+    i32 4, label %sw.bb16.i
+    i32 5, label %AT_int.exit.i
+    i32 6, label %AT_unsigned.exit.i
+    i32 7, label %sw.bb28.i
+    i32 8, label %sw.bb30.i
+    i32 9, label %sw.bb34.i
+    i32 10, label %sw.bb36.i
+    i32 11, label %sw.bb38.i
+    i32 12, label %sw.bb40.i
+    i32 13, label %sw.bb47.i
+    i32 14, label %sw.bb49.i
+  ]
+
+sw.bb.i:                                          ; preds = %for.body.i
+  %3 = load i32* @target_flags, align 4, !tbaa !0
+  %and.i = lshr i32 %3, 20
+  %4 = and i32 %and.i, 32
+  %5 = add i32 %4, 32
+  %div.i = sdiv i32 %5, 8
+  %conv3.i = sext i32 %div.i to i64
+  %add4.i = add i64 %conv3.i, %size.0101.i
+  br label %for.inc.i
+
+sw.bb5.i:                                         ; preds = %for.body.i
+  %add6.i = add i64 %size.0101.i, 4
+  br label %for.inc.i
+
+AT_loc.exit.i:                                    ; preds = %for.body.i
+  %v.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1
+  %val_loc.i.i = bitcast %union.anon.3* %v.i.i to %struct.dw_loc_descr_struct**
+  %6 = load %struct.dw_loc_descr_struct** %val_loc.i.i, align 8, !tbaa !4
+  %call9.i = tail call fastcc i64 @size_of_locs(%struct.dw_loc_descr_struct* %6) #9
+  %call10.i = tail call fastcc i32 @constant_size(i64 %call9.i) #9
+  %conv11.i = sext i32 %call10.i to i64
+  %add12.i = add i64 %call9.i, %size.0101.i
+  %add13.i = add i64 %add12.i, %conv11.i
+  br label %for.inc.i
+
+sw.bb14.i:                                        ; preds = %for.body.i
+  %add15.i = add i64 %size.0101.i, 4
+  br label %for.inc.i
+
+sw.bb16.i:                                        ; preds = %for.body.i
+  %add17.i = add i64 %size.0101.i, 4
+  br label %for.inc.i
+
+AT_int.exit.i:                                    ; preds = %for.body.i
+  %val_int.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1, i32 0, i32 0
+  %7 = load i64* %val_int.i.i, align 8, !tbaa !6
+  %call20.i = tail call i32 @size_of_sleb128(i64 %7) #9
+  %conv21.i = sext i32 %call20.i to i64
+  %add22.i = add i64 %conv21.i, %size.0101.i
+  br label %for.inc.i
+
+AT_unsigned.exit.i:                               ; preds = %for.body.i
+  %val_unsigned.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1, i32 0, i32 0
+  %8 = load i64* %val_unsigned.i.i, align 8, !tbaa !6
+  %call25.i = tail call fastcc i32 @constant_size(i64 %8) #9
+  %conv26.i = sext i32 %call25.i to i64
+  %add27.i = add i64 %conv26.i, %size.0101.i
+  br label %for.inc.i
+
+sw.bb28.i:                                        ; preds = %for.body.i
+  %add29.i = add i64 %size.0101.i, 17
+  br label %for.inc.i
+
+sw.bb30.i:                                        ; preds = %for.body.i
+  %length.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1, i32 0, i32 1
+  %9 = bitcast i64* %length.i to i32*
+  %10 = load i32* %9, align 4, !tbaa !0
+  %mul.i = shl i32 %10, 2
+  %add3187.i = or i32 %mul.i, 1
+  %conv32.i = zext i32 %add3187.i to i64
+  %add33.i = add i64 %conv32.i, %size.0101.i
+  br label %for.inc.i
+
+sw.bb34.i:                                        ; preds = %for.body.i
+  %add35.i = add i64 %size.0101.i, 1
+  br label %for.inc.i
+
+sw.bb36.i:                                        ; preds = %for.body.i
+  %add37.i = add i64 %size.0101.i, 4
+  br label %for.inc.i
+
+sw.bb38.i:                                        ; preds = %for.body.i
+  %add39.i = add i64 %size.0101.i, 4
+  br label %for.inc.i
+
+sw.bb40.i:                                        ; preds = %for.body.i
+  %11 = load i32* @target_flags, align 4, !tbaa !0
+  %and41.i = lshr i32 %11, 20
+  %12 = and i32 %and41.i, 32
+  %13 = add i32 %12, 32
+  %div44.i = sdiv i32 %13, 8
+  %conv45.i = sext i32 %div44.i to i64
+  %add46.i = add i64 %conv45.i, %size.0101.i
+  br label %for.inc.i
+
+sw.bb47.i:                                        ; preds = %for.body.i
+  %add48.i = add i64 %size.0101.i, 4
+  br label %for.inc.i
+
+sw.bb49.i:                                        ; preds = %for.body.i
+  %call50.i = tail call fastcc i32 @AT_string_form(%struct.dw_attr_struct* %a.0102.i) #9
+  %cmp51.i = icmp eq i32 %call50.i, 14
+  br i1 %cmp51.i, label %if.then.i, label %if.else.i
+
+if.then.i:                                        ; preds = %sw.bb49.i
+  %add53.i = add i64 %size.0101.i, 4
+  br label %for.inc.i
+
+if.else.i:                                        ; preds = %sw.bb49.i
+  %v55.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 2, i32 1
+  %val_str.i = bitcast %union.anon.3* %v55.i to %struct.indirect_string_node**
+  %14 = load %struct.indirect_string_node** %val_str.i, align 8, !tbaa !4
+  %len.i = getelementptr inbounds %struct.indirect_string_node* %14, i64 0, i32 0, i32 0
+  %15 = load i32* %len.i, align 4, !tbaa !0
+  %add56.i = add i32 %15, 1
+  %conv57.i = zext i32 %add56.i to i64
+  %add58.i = add i64 %conv57.i, %size.0101.i
+  br label %for.inc.i
+
+sw.default.i:                                     ; preds = %for.body.i
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 5914, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.size_of_die, i64 0, i64 0)) #12
+  unreachable
+
+for.inc.i:                                        ; preds = %if.else.i, %if.then.i, %sw.bb47.i, %sw.bb40.i, %sw.bb38.i, %sw.bb36.i, %sw.bb34.i, %sw.bb30.i, %sw.bb28.i, %AT_unsigned.exit.i, %AT_int.exit.i, %sw.bb16.i, %sw.bb14.i, %AT_loc.exit.i, %sw.bb5.i, %sw.bb.i
+  %size.1.i = phi i64 [ %add53.i, %if.then.i ], [ %add58.i, %if.else.i ], [ %add48.i, %sw.bb47.i ], [ %add46.i, %sw.bb40.i ], [ %add39.i, %sw.bb38.i ], [ %add37.i, %sw.bb36.i ], [ %add35.i, %sw.bb34.i ], [ %add33.i, %sw.bb30.i ], [ %add29.i, %sw.bb28.i ], [ %add27.i, %AT_unsigned.exit.i ], [ %add22.i, %AT_int.exit.i ], [ %add17.i, %sw.bb16.i ], [ %add15.i, %sw.bb14.i ], [ %add13.i, %AT_loc.exit.i ], [ %add6.i, %sw.bb5.i ], [ %add4.i, %sw.bb.i ]
+  %dw_attr_next.i = getelementptr inbounds %struct.dw_attr_struct* %a.0102.i, i64 0, i32 1
+  %a.0.i = load %struct.dw_attr_struct** %dw_attr_next.i, align 8
+  %cmp.i = icmp eq %struct.dw_attr_struct* %a.0.i, null
+  br i1 %cmp.i, label %size_of_die.exit, label %for.body.i
+
+size_of_die.exit:                                 ; preds = %for.inc.i, %entry
+  %size.0.lcssa.i = phi i64 [ %conv.i, %entry ], [ %size.1.i, %for.inc.i ]
+  %16 = load i64* @next_die_offset, align 8, !tbaa !6
+  %add = add i64 %16, %size.0.lcssa.i
+  store i64 %add, i64* @next_die_offset, align 8, !tbaa !6
+  %die_child = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 4
+  %c.09 = load %struct.die_struct** %die_child, align 8
+  %cmp10 = icmp eq %struct.die_struct* %c.09, null
+  br i1 %cmp10, label %if.end, label %for.body
+
+for.body:                                         ; preds = %size_of_die.exit, %for.body
+  %c.011 = phi %struct.die_struct* [ %c.0, %for.body ], [ %c.09, %size_of_die.exit ]
+  tail call fastcc void @calc_die_sizes(%struct.die_struct* %c.011) #10
+  %die_sib = getelementptr inbounds %struct.die_struct* %c.011, i64 0, i32 5
+  %c.0 = load %struct.die_struct** %die_sib, align 8
+  %cmp = icmp eq %struct.die_struct* %c.0, null
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %.pre = load %struct.die_struct** %die_child, align 8, !tbaa !4
+  %phitmp = icmp eq %struct.die_struct* %.pre, null
+  br i1 %phitmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %for.end
+  %17 = load i64* @next_die_offset, align 8, !tbaa !6
+  %add3 = add i64 %17, 1
+  store i64 %add3, i64* @next_die_offset, align 8, !tbaa !6
+  br label %if.end
+
+if.end:                                           ; preds = %size_of_die.exit, %for.end, %if.then
+  ret void
+}

@@ -1,0 +1,42 @@
+define %union.tree_node* @listify(%union.tree_node* %chain) #0 {
+entry:
+  %tobool9 = icmp eq %union.tree_node* %chain, null
+  br i1 %tobool9, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %if.end
+  %result.012 = phi %union.tree_node* [ %result.1, %if.end ], [ null, %entry ]
+  %out_tail.011 = phi %union.tree_node* [ %0, %if.end ], [ null, %entry ]
+  %in_tail.010 = phi %union.tree_node* [ %4, %if.end ], [ %chain, %entry ]
+  %call.i = tail call i8* @ggc_alloc(i64 40) #9
+  %0 = bitcast i8* %call.i to %union.tree_node*
+  tail call void @llvm.memset.p0i8.i64(i8* %call.i, i8 0, i64 24, i32 8, i1 false) #4
+  %code.i = getelementptr inbounds i8* %call.i, i64 16
+  %1 = bitcast i8* %code.i to i32*
+  store i32 2, i32* %1, align 8
+  %chain2.i = bitcast i8* %call.i to %union.tree_node**
+  store %union.tree_node* null, %union.tree_node** %chain2.i, align 8, !tbaa !0
+  %purpose3.i = getelementptr inbounds i8* %call.i, i64 24
+  %2 = bitcast i8* %purpose3.i to %union.tree_node**
+  store %union.tree_node* null, %union.tree_node** %2, align 8, !tbaa !0
+  %value5.i = getelementptr inbounds i8* %call.i, i64 32
+  %3 = bitcast i8* %value5.i to %union.tree_node**
+  store %union.tree_node* %in_tail.010, %union.tree_node** %3, align 8, !tbaa !0
+  %tobool1 = icmp eq %union.tree_node* %out_tail.011, null
+  br i1 %tobool1, label %if.end, label %if.then
+
+if.then:                                          ; preds = %while.body
+  %chain2 = getelementptr inbounds %union.tree_node* %out_tail.011, i64 0, i32 0, i32 0, i32 0
+  store %union.tree_node* %0, %union.tree_node** %chain2, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %while.body, %if.then
+  %result.1 = phi %union.tree_node* [ %result.012, %if.then ], [ %0, %while.body ]
+  %chain4 = getelementptr inbounds %union.tree_node* %in_tail.010, i64 0, i32 0, i32 0, i32 0
+  %4 = load %union.tree_node** %chain4, align 8, !tbaa !0
+  %tobool = icmp eq %union.tree_node* %4, null
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.end, %entry
+  %result.0.lcssa = phi %union.tree_node* [ null, %entry ], [ %result.1, %if.end ]
+  ret %union.tree_node* %result.0.lcssa
+}

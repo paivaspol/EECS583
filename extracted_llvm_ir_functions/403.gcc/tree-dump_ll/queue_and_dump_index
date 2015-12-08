@@ -1,0 +1,45 @@
+define void @queue_and_dump_index(%struct.dump_info* nocapture %di, i8* %field, %union.tree_node* %t, i32 %flags) #0 {
+entry:
+  %tobool = icmp eq %union.tree_node* %t, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %nodes = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 8
+  %0 = load %struct.splay_tree_s** %nodes, align 8, !tbaa !0
+  %1 = ptrtoint %union.tree_node* %t to i64
+  %call = tail call %struct.splay_tree_node_s* @splay_tree_lookup(%struct.splay_tree_s* %0, i64 %1) #7
+  %tobool1 = icmp eq %struct.splay_tree_node_s* %call, null
+  br i1 %tobool1, label %if.else, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %value = getelementptr inbounds %struct.splay_tree_node_s* %call, i64 0, i32 1
+  %2 = load i64* %value, align 8, !tbaa !3
+  %3 = inttoptr i64 %2 to %struct.dump_node_info*
+  %index3 = getelementptr inbounds %struct.dump_node_info* %3, i64 0, i32 0
+  %4 = load i32* %index3, align 4, !tbaa !4
+  br label %if.end5
+
+if.else:                                          ; preds = %if.end
+  %call4 = tail call fastcc i32 @queue(%struct.dump_info* %di, %union.tree_node* %t, i32 %flags) #8
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.else, %if.then2
+  %index.0 = phi i32 [ %4, %if.then2 ], [ %call4, %if.else ]
+  tail call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8
+  %stream = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 0
+  %5 = load %struct._IO_FILE** %stream, align 8, !tbaa !0
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([7 x i8]* @.str, i64 0, i64 0), i8* %field) #7
+  %column = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 4
+  %6 = load i32* %column, align 4, !tbaa !4
+  %add = add i32 %6, 6
+  store i32 %add, i32* %column, align 4, !tbaa !4
+  %7 = load %struct._IO_FILE** %stream, align 8, !tbaa !0
+  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([7 x i8]* @.str106, i64 0, i64 0), i32 %index.0) #7
+  %8 = load i32* %column, align 4, !tbaa !4
+  %add.i = add i32 %8, 8
+  store i32 %add.i, i32* %column, align 4, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %entry, %if.end5
+  ret void
+}

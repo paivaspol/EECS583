@@ -1,0 +1,50 @@
+define %struct.rtx_def* @get_condition(%struct.rtx_def* %jump, %struct.rtx_def** %earliest) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %jump to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 33
+  br i1 %cmp, label %lor.lhs.false, label %return
+
+lor.lhs.false:                                    ; preds = %entry
+  %call = tail call i32 @any_condjump_p(%struct.rtx_def* %jump) #8
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false
+  %call1 = tail call %struct.rtx_def* @pc_set(%struct.rtx_def* %jump) #8
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call1, i64 0, i32 1, i64 1
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %fld2 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1
+  %rtx4 = bitcast [1 x %union.rtunion_def]* %fld2 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx4, align 8, !tbaa !4
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 2
+  %rtx10 = bitcast %union.rtunion_def* %arrayidx9 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx10, align 8, !tbaa !4
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load11 = load i32* %4, align 8
+  %bf.clear12 = and i32 %bf.load11, 65535
+  %cmp13 = icmp eq i32 %bf.clear12, 67
+  br i1 %cmp13, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %if.end
+  %arrayidx21 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0
+  %rtx22 = bitcast %union.rtunion_def* %arrayidx21 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx22, align 8, !tbaa !4
+  %arrayidx24 = getelementptr inbounds %struct.rtx_def* %jump, i64 0, i32 1, i64 7
+  %rtx25 = bitcast %union.rtunion_def* %arrayidx24 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx25, align 8, !tbaa !4
+  %cmp26 = icmp eq %struct.rtx_def* %5, %6
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %if.end
+  %7 = phi i1 [ false, %if.end ], [ %cmp26, %land.rhs ]
+  %land.ext = zext i1 %7 to i32
+  %call27 = tail call %struct.rtx_def* @canonicalize_condition(%struct.rtx_def* %jump, %struct.rtx_def* %2, i32 %land.ext, %struct.rtx_def** %earliest, %struct.rtx_def* null) #10
+  br label %return
+
+return:                                           ; preds = %entry, %lor.lhs.false, %land.end
+  %retval.0 = phi %struct.rtx_def* [ %call27, %land.end ], [ null, %lor.lhs.false ], [ null, %entry ]
+  ret %struct.rtx_def* %retval.0
+}

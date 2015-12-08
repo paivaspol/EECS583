@@ -1,0 +1,64 @@
+define internal fastcc %struct.cpp_hashnode* @lex_macro_node(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %call = tail call %struct.cpp_token* @_cpp_lex_token(%struct.cpp_reader* %pfile) #8
+  %type = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2
+  %0 = bitcast i8* %type to i16*
+  %bf.load = load i16* %0, align 2
+  %1 = trunc i16 %bf.load to i8
+  switch i8 %1, label %if.else [
+    i8 56, label %if.end10
+    i8 67, label %if.then5
+  ]
+
+if.then5:                                         ; preds = %entry
+  %directive = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 11
+  %2 = load %struct.directive** %directive, align 8, !tbaa !3
+  %name = getelementptr inbounds %struct.directive* %2, i64 0, i32 1
+  %3 = load i8** %name, align 8, !tbaa !3
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([37 x i8]* @.str68, i64 0, i64 0), i8* %3) #8
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %and = and i16 %bf.load, 4096
+  %tobool = icmp eq i16 %and, 0
+  br i1 %tobool, label %if.else8, label %if.then6
+
+if.then6:                                         ; preds = %if.else
+  %val = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4
+  %node7 = bitcast %union.anon.0* %val to %struct.cpp_hashnode**
+  %4 = load %struct.cpp_hashnode** %node7, align 8, !tbaa !3
+  %str = getelementptr inbounds %struct.cpp_hashnode* %4, i64 0, i32 0, i32 1
+  %5 = load i8** %str, align 8, !tbaa !3
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([64 x i8]* @.str69, i64 0, i64 0), i8* %5) #8
+  br label %return
+
+if.else8:                                         ; preds = %if.else
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([32 x i8]* @.str70, i64 0, i64 0)) #8
+  br label %return
+
+if.end10:                                         ; preds = %entry
+  %val11 = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4
+  %node12 = bitcast %union.anon.0* %val11 to %struct.cpp_hashnode**
+  %6 = load %struct.cpp_hashnode** %node12, align 8, !tbaa !3
+  %flags13 = getelementptr inbounds %struct.cpp_hashnode* %6, i64 0, i32 5
+  %7 = load i8* %flags13, align 1, !tbaa !0
+  %and15 = and i8 %7, 2
+  %tobool16 = icmp eq i8 %and15, 0
+  br i1 %tobool16, label %if.end18, label %return
+
+if.end18:                                         ; preds = %if.end10
+  %n_defined = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 38, i32 0
+  %8 = load %struct.cpp_hashnode** %n_defined, align 8, !tbaa !3
+  %cmp19 = icmp eq %struct.cpp_hashnode* %6, %8
+  br i1 %cmp19, label %if.then21, label %return
+
+if.then21:                                        ; preds = %if.end18
+  %str23 = getelementptr inbounds %struct.cpp_hashnode* %6, i64 0, i32 0, i32 1
+  %9 = load i8** %str23, align 8, !tbaa !3
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([36 x i8]* @.str71, i64 0, i64 0), i8* %9) #8
+  br label %return
+
+return:                                           ; preds = %if.end18, %if.end10, %if.then5, %if.else8, %if.then6, %if.then21
+  %retval.0 = phi %struct.cpp_hashnode* [ null, %if.then21 ], [ null, %if.then6 ], [ null, %if.else8 ], [ null, %if.then5 ], [ null, %if.end10 ], [ %6, %if.end18 ]
+  ret %struct.cpp_hashnode* %retval.0
+}

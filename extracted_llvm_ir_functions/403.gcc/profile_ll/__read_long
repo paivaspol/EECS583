@@ -1,0 +1,39 @@
+define internal fastcc i32 @__read_long(i64* nocapture %dest, %struct._IO_FILE* nocapture %file) #0 {
+entry:
+  %c = alloca [10 x i8], align 1
+  %arraydecay = getelementptr inbounds [10 x i8]* %c, i64 0, i64 0
+  %call = call i64 @fread(i8* %arraydecay, i64 1, i64 8, %struct._IO_FILE* %file) #7
+  %cmp1 = icmp eq i64 %call, 8
+  br i1 %cmp1, label %for.body11.i, label %return
+
+for.body11.i:                                     ; preds = %entry, %for.body11.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body11.i ], [ 7, %entry ]
+  %value.04.i = phi i64 [ %add.i, %for.body11.i ], [ 0, %entry ]
+  %mul.i = shl nsw i64 %value.04.i, 8
+  %arrayidx13.i = getelementptr inbounds [10 x i8]* %c, i64 0, i64 %indvars.iv.i
+  %0 = load i8* %arrayidx13.i, align 1, !tbaa !1
+  %conv142.i = zext i8 %0 to i64
+  %1 = trunc i64 %indvars.iv.i to i32
+  %cmp17.i = icmp eq i32 %1, 7
+  %cond19.i = select i1 %cmp17.i, i64 127, i64 255
+  %and20.i = and i64 %conv142.i, %cond19.i
+  %add.i = or i64 %and20.i, %mul.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, -1
+  %cmp9.i = icmp sgt i32 %1, 0
+  br i1 %cmp9.i, label %for.body11.i, label %__fetch_long.exit
+
+__fetch_long.exit:                                ; preds = %for.body11.i
+  %arrayidx26.i = getelementptr inbounds [10 x i8]* %c, i64 0, i64 7
+  %2 = load i8* %arrayidx26.i, align 1, !tbaa !1
+  %tobool29.i = icmp slt i8 %2, 0
+  %cmp30.i = icmp sgt i64 %add.i, 0
+  %or.cond.i = and i1 %tobool29.i, %cmp30.i
+  %sub33.i = sub nsw i64 0, %add.i
+  %value.1.i = select i1 %or.cond.i, i64 %sub33.i, i64 %add.i
+  store i64 %value.1.i, i64* %dest, align 8, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %entry, %__fetch_long.exit
+  %retval.0 = phi i32 [ 0, %__fetch_long.exit ], [ 1, %entry ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,44 @@
+define i32 @reg_set_p(%struct.rtx_def* %reg, %struct.rtx_def* %insn) #1 {
+entry:
+  %0 = bitcast %struct.rtx_def* %insn to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom35 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom35
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %1, 105
+  %cmp4 = icmp eq i32 %bf.clear, 34
+  %or.cond = and i1 %cmp, %cmp4
+  br i1 %or.cond, label %land.lhs.true, label %if.end22
+
+land.lhs.true:                                    ; preds = %entry
+  %2 = bitcast %struct.rtx_def* %reg to i32*
+  %bf.load6 = load i32* %2, align 8
+  %bf.clear7 = and i32 %bf.load6, 65535
+  switch i32 %bf.clear7, label %lor.lhs.false18 [
+    i32 61, label %land.lhs.true10
+    i32 66, label %return
+  ]
+
+land.lhs.true10:                                  ; preds = %land.lhs.true
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx11 to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp12 = icmp ult i32 %3, 53
+  br i1 %cmp12, label %return, label %lor.lhs.false18
+
+lor.lhs.false18:                                  ; preds = %land.lhs.true, %land.lhs.true10
+  %call = tail call i32 @find_reg_fusage(%struct.rtx_def* %insn, i32 49, %struct.rtx_def* %reg) #4
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end22, label %return
+
+if.end22:                                         ; preds = %lor.lhs.false18, %entry
+  %call23 = tail call %struct.rtx_def* @set_of(%struct.rtx_def* %reg, %struct.rtx_def* %insn) #4
+  %cmp24 = icmp ne %struct.rtx_def* %call23, null
+  %conv25 = zext i1 %cmp24 to i32
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %land.lhs.true10, %lor.lhs.false18, %if.end22
+  %retval.0 = phi i32 [ %conv25, %if.end22 ], [ 1, %lor.lhs.false18 ], [ 1, %land.lhs.true10 ], [ 1, %land.lhs.true ]
+  ret i32 %retval.0
+}

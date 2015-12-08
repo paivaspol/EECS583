@@ -1,0 +1,72 @@
+define %struct.rtx_def* @gen_abssf2(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1) #0 {
+entry:
+  %operands = alloca [2 x %struct.rtx_def*], align 16
+  call void @start_sequence() #4
+  %arrayidx = getelementptr inbounds [2 x %struct.rtx_def*]* %operands, i64 0, i64 0
+  store %struct.rtx_def* %operand0, %struct.rtx_def** %arrayidx, align 16, !tbaa !0
+  %arrayidx1 = getelementptr inbounds [2 x %struct.rtx_def*]* %operands, i64 0, i64 1
+  store %struct.rtx_def* %operand1, %struct.rtx_def** %arrayidx1, align 8, !tbaa !0
+  %0 = load i32* @target_flags, align 4, !tbaa !3
+  %and = and i32 %0, 327680
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %if.end35, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = call i32 @memory_operand(%struct.rtx_def* %operand0, i32 0) #4
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.else, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then
+  %1 = load %struct.rtx_def** %arrayidx, align 16, !tbaa !0
+  %2 = load %struct.rtx_def** %arrayidx1, align 8, !tbaa !0
+  %call5 = call i32 @rtx_equal_p(%struct.rtx_def* %1, %struct.rtx_def* %2) #4
+  %tobool6 = icmp eq i32 %call5, 0
+  br i1 %tobool6, label %if.else, label %if.then7
+
+if.then7:                                         ; preds = %land.lhs.true
+  %3 = load %struct.rtx_def** %arrayidx, align 16, !tbaa !0
+  %4 = load %struct.rtx_def** %arrayidx1, align 8, !tbaa !0
+  %call10 = call %struct.rtx_def* @gen_abssf2_memory(%struct.rtx_def* %3, %struct.rtx_def* %4) #6
+  %call11 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call10) #4
+  br label %if.end33
+
+if.else:                                          ; preds = %land.lhs.true, %if.then
+  %call12 = call %struct.rtx_def* @gen_reg_rtx(i32 15) #4
+  %5 = load %struct.rtx_def** %arrayidx, align 16, !tbaa !0
+  %6 = load %struct.rtx_def** %arrayidx1, align 8, !tbaa !0
+  %call15 = call %struct.rtx_def* @force_reg(i32 15, %struct.rtx_def* %6) #4
+  store %struct.rtx_def* %call15, %struct.rtx_def** %arrayidx1, align 8, !tbaa !0
+  %7 = load %struct.rtx_def** %arrayidx, align 16, !tbaa !0
+  %call18 = call %struct.rtx_def* @force_reg(i32 15, %struct.rtx_def* %7) #4
+  store %struct.rtx_def* %call18, %struct.rtx_def** %arrayidx, align 16, !tbaa !0
+  %call20 = call i64 @trunc_int_for_mode(i64 2147483648, i32 4) #4
+  %call21 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %call20) #4
+  %call22 = call %struct.rtx_def* @gen_lowpart(i32 15, %struct.rtx_def* %call21) #4
+  %call23 = call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call12, %struct.rtx_def* %call22) #4
+  %8 = load %struct.rtx_def** %arrayidx, align 16, !tbaa !0
+  %9 = load %struct.rtx_def** %arrayidx1, align 8, !tbaa !0
+  %call26 = call %struct.rtx_def* @gen_abssf2_ifs(%struct.rtx_def* %8, %struct.rtx_def* %9, %struct.rtx_def* %call12) #6
+  %call27 = call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call26) #4
+  %10 = load %struct.rtx_def** %arrayidx, align 16, !tbaa !0
+  %cmp29 = icmp eq %struct.rtx_def* %5, %10
+  br i1 %cmp29, label %if.end33, label %if.then30
+
+if.then30:                                        ; preds = %if.else
+  %call32 = call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %5, %struct.rtx_def* %10) #4
+  br label %if.end33
+
+if.end33:                                         ; preds = %if.else, %if.then30, %if.then7
+  %call34 = call %struct.rtx_def* @gen_sequence() #4
+  call void @end_sequence() #4
+  br label %return
+
+if.end35:                                         ; preds = %entry
+  call void @ix86_expand_unary_operator(i32 129, i32 15, %struct.rtx_def** %arrayidx) #4
+  %call36 = call %struct.rtx_def* @gen_sequence() #4
+  call void @end_sequence() #4
+  br label %return
+
+return:                                           ; preds = %if.end35, %if.end33
+  %retval.0 = phi %struct.rtx_def* [ %call34, %if.end33 ], [ %call36, %if.end35 ]
+  ret %struct.rtx_def* %retval.0
+}

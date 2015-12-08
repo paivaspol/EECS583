@@ -1,0 +1,30 @@
+define i32 @redirect_jump_1(%struct.rtx_def* %jump, %struct.rtx_def* %nlabel) #0 {
+entry:
+  %call = tail call i32 @num_validated_changes() #7
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %jump, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 39
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtvec = bitcast %union.rtunion_def* %arrayidx5 to %struct.rtvec_def**
+  %2 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !3
+  %arrayidx6 = getelementptr inbounds %struct.rtvec_def* %2, i64 0, i32 1, i64 0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %loc.0 = phi %struct.rtx_def** [ %arrayidx6, %if.then ], [ %rtx, %entry ]
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %jump, i64 0, i32 1, i64 7
+  %rtx12 = bitcast %union.rtunion_def* %arrayidx11 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx12, align 8, !tbaa !3
+  tail call fastcc void @redirect_exp_1(%struct.rtx_def** %loc.0, %struct.rtx_def* %3, %struct.rtx_def* %nlabel, %struct.rtx_def* %jump) #8
+  %call13 = tail call i32 @num_validated_changes() #7
+  %cmp14 = icmp sgt i32 %call13, %call
+  %conv = zext i1 %cmp14 to i32
+  ret i32 %conv
+}

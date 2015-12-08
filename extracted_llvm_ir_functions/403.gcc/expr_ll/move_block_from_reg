@@ -1,0 +1,51 @@
+define void @move_block_from_reg(i32 %regno, %struct.rtx_def* %x, i32 %nregs, i32 %size) #0 {
+entry:
+  %cmp = icmp eq i32 %nregs, 0
+  br i1 %cmp, label %for.end, label %if.end
+
+if.end:                                           ; preds = %entry
+  %0 = load i32* @target_flags, align 4, !tbaa !3
+  %and = lshr i32 %0, 23
+  %1 = and i32 %and, 4
+  %2 = add i32 %1, 4
+  %cmp1 = icmp slt i32 %2, %size
+  br i1 %cmp1, label %for.cond.preheader, label %land.lhs.true
+
+for.cond.preheader:                               ; preds = %land.lhs.true, %if.end
+  %cmp2747 = icmp sgt i32 %nregs, 0
+  br i1 %cmp2747, label %for.body, label %for.end
+
+land.lhs.true:                                    ; preds = %if.end
+  %mul = shl nsw i32 %size, 3
+  %call = tail call i32 @mode_for_size(i32 %mul, i32 1, i32 0) #8
+  %cmp2 = icmp eq i32 %call, 51
+  br i1 %cmp2, label %for.cond.preheader, label %if.then3
+
+if.then3:                                         ; preds = %land.lhs.true
+  %call4 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %x, i32 %call, i64 0, i32 1, i32 1) #8
+  %call5 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %call, i32 %regno) #8
+  %call6 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call4, %struct.rtx_def* %call5) #10
+  br label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %if.end34
+  %i.048 = phi i32 [ %inc, %if.end34 ], [ 0, %for.cond.preheader ]
+  %call30 = tail call %struct.rtx_def* @operand_subword(%struct.rtx_def* %x, i32 %i.048, i32 1, i32 51) #8
+  %cmp31 = icmp eq %struct.rtx_def* %call30, null
+  br i1 %cmp31, label %if.then33, label %if.end34
+
+if.then33:                                        ; preds = %for.body
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 1928, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.move_block_from_reg, i64 0, i64 0)) #9
+  unreachable
+
+if.end34:                                         ; preds = %for.body
+  %3 = load i32* @word_mode, align 4, !tbaa !6
+  %add = add nsw i32 %i.048, %regno
+  %call35 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %3, i32 %add) #8
+  %call36 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call30, %struct.rtx_def* %call35) #10
+  %inc = add nsw i32 %i.048, 1
+  %cmp27 = icmp slt i32 %inc, %nregs
+  br i1 %cmp27, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.cond.preheader, %if.end34, %entry, %if.then3
+  ret void
+}

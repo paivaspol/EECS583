@@ -1,0 +1,52 @@
+define void @calc_elemnr(%struct._IO_FILE* %log, i32 %bDD, i32* nocapture %cg_index, %struct.t_grid* nocapture %grid, i32 %cg0, i32 %cg1, i32 %ncg) #0 {
+entry:
+  %CG0 = alloca [2 x i32], align 4
+  %CG1 = alloca [2 x i32], align 4
+  %cell_index1 = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 8
+  %0 = load i32** %cell_index1, align 8, !tbaa !4
+  %nra2 = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 10
+  %1 = load i32** %nra2, align 8, !tbaa !4
+  %ncells3 = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 4
+  %2 = load i32* %ncells3, align 4, !tbaa !3
+  %arraydecay = getelementptr inbounds [2 x i32]* %CG0, i64 0, i64 0
+  %arraydecay4 = getelementptr inbounds [2 x i32]* %CG1, i64 0, i64 0
+  call fastcc void @calc_bor(%struct._IO_FILE* %log, i32 %bDD, i32 %cg0, i32 %cg1, i32 %ncg, i32* %arraydecay, i32* %arraydecay4) #6
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc15, %entry
+  %indvars.iv29 = phi i64 [ 0, %entry ], [ %indvars.iv.next30, %for.inc15 ]
+  %arrayidx = getelementptr inbounds [2 x i32]* %CG0, i64 0, i64 %indvars.iv29
+  %3 = load i32* %arrayidx, align 4, !tbaa !3
+  %arrayidx7 = getelementptr inbounds [2 x i32]* %CG1, i64 0, i64 %indvars.iv29
+  %4 = load i32* %arrayidx7, align 4, !tbaa !3
+  %cmp826 = icmp slt i32 %3, %4
+  br i1 %cmp826, label %for.body9.lr.ph, label %for.inc15
+
+for.body9.lr.ph:                                  ; preds = %for.body
+  %5 = sext i32 %3 to i64
+  br label %for.body9
+
+for.body9:                                        ; preds = %for.body9.lr.ph, %for.body9
+  %indvars.iv = phi i64 [ %5, %for.body9.lr.ph ], [ %indvars.iv.next, %for.body9 ]
+  %arrayidx11 = getelementptr inbounds i32* %0, i64 %indvars.iv
+  %6 = load i32* %arrayidx11, align 4, !tbaa !3
+  call fastcc void @_range_check(i8* getelementptr inbounds ([3 x i8]* @.str11, i64 0, i64 0), i32 %6, i32 %2, i32 217) #6
+  %idxprom12 = sext i32 %6 to i64
+  %arrayidx13 = getelementptr inbounds i32* %1, i64 %idxprom12
+  %7 = load i32* %arrayidx13, align 4, !tbaa !3
+  %inc = add nsw i32 %7, 1
+  store i32 %inc, i32* %arrayidx13, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %8 = trunc i64 %indvars.iv.next to i32
+  %cmp8 = icmp slt i32 %8, %4
+  br i1 %cmp8, label %for.body9, label %for.inc15
+
+for.inc15:                                        ; preds = %for.body9, %for.body
+  %indvars.iv.next30 = add i64 %indvars.iv29, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next30 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 2
+  br i1 %exitcond, label %for.end17, label %for.body
+
+for.end17:                                        ; preds = %for.inc15
+  ret void
+}

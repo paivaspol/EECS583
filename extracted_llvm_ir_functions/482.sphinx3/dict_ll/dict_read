@@ -1,0 +1,167 @@
+define internal fastcc void @dict_read(%struct._IO_FILE* nocapture %fp, %struct.dict_t* nocapture %d) #0 {
+entry:
+  %id.i = alloca i32, align 4
+  %line = alloca [16384 x i8], align 16
+  %p = alloca [4096 x i8], align 16
+  %0 = getelementptr inbounds [16384 x i8]* %line, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 16384, i8* %0) #2
+  %1 = getelementptr inbounds [4096 x i8]* %p, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %1) #2
+  %call = call i8* @__ckd_calloc__(i64 4092, i64 8, i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 169) #6
+  %2 = bitcast i8* %call to i8**
+  %call15 = call i8* @fgets(i8* %0, i32 16384, %struct._IO_FILE* %fp) #6
+  %cmp6 = icmp eq i8* %call15, null
+  br i1 %cmp6, label %while.end, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %entry
+  %3 = bitcast i32* %id.i to i8*
+  %mdef.i = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 0
+  %pht.i = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 1
+  %n_ciphone.i = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 3
+  %ciphone_str.i = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 2
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
+  %lineno.07 = phi i32 [ 0, %while.body.lr.ph ], [ %inc, %while.cond.backedge ]
+  %inc = add nsw i32 %lineno.07, 1
+  %4 = load i8* %0, align 16, !tbaa !1
+  %cmp4 = icmp eq i8 %4, 35
+  br i1 %cmp4, label %while.cond.backedge, label %if.end
+
+if.end:                                           ; preds = %while.body
+  %call7 = call i32 @str2words(i8* %0, i8** %2, i32 4092) #6
+  %cmp8 = icmp slt i32 %call7, 0
+  br i1 %cmp8, label %if.then10, label %if.end12
+
+if.then10:                                        ; preds = %if.end
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 178, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #6
+  call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([46 x i8]* @.str23, i64 0, i64 0), i8* %0, i32 4092) #6
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.then10, %if.end
+  switch i32 %call7, label %for.cond.preheader [
+    i32 0, label %while.cond.backedge
+    i32 1, label %if.then19
+  ]
+
+for.cond.preheader:                               ; preds = %if.end12
+  %cmp223 = icmp sgt i32 %call7, 1
+  br i1 %cmp223, label %for.body, label %for.end
+
+if.then19:                                        ; preds = %if.end12
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 184, i8* getelementptr inbounds ([6 x i8]* @.str1, i64 0, i64 0)) #6
+  %5 = load i8** %2, align 8, !tbaa !0
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([48 x i8]* @.str24, i64 0, i64 0), i32 %inc, i8* %5) #6
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.then19, %while.body, %if.then42, %if.then49, %for.end, %if.end12
+  %call1 = call i8* @fgets(i8* %0, i32 16384, %struct._IO_FILE* %fp) #6
+  %cmp = icmp eq i8* %call1, null
+  br i1 %cmp, label %while.end, label %while.body
+
+for.cond:                                         ; preds = %dict_ciphone_id.exit
+  %6 = trunc i64 %indvars.iv.next to i32
+  %cmp22 = icmp slt i32 %6, %call7
+  br i1 %cmp22, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 1, %for.cond.preheader ]
+  %i.04 = phi i32 [ %inc39, %for.cond ], [ 1, %for.cond.preheader ]
+  %arrayidx24 = getelementptr inbounds i8** %2, i64 %indvars.iv
+  %7 = load i8** %arrayidx24, align 8, !tbaa !0
+  call void @llvm.lifetime.start(i64 4, i8* %3) #2
+  %8 = load %struct.mdef_t** %mdef.i, align 8, !tbaa !0
+  %tobool.i = icmp eq %struct.mdef_t* %8, null
+  br i1 %tobool.i, label %if.else.i, label %if.then.i
+
+if.then.i:                                        ; preds = %for.body
+  %call.i = call signext i8 @mdef_ciphone_id(%struct.mdef_t* %8, i8* %7) #6
+  br label %dict_ciphone_id.exit
+
+if.else.i:                                        ; preds = %for.body
+  %9 = load %struct.hash_table_t** %pht.i, align 8, !tbaa !0
+  %call2.i = call i32 @hash_lookup(%struct.hash_table_t* %9, i8* %7, i32* %id.i) #6
+  %cmp.i = icmp slt i32 %call2.i, 0
+  br i1 %cmp.i, label %if.then3.i, label %if.end15.i
+
+if.then3.i:                                       ; preds = %if.else.i
+  %10 = load i32* %n_ciphone.i, align 4, !tbaa !3
+  %inc.i = add nsw i32 %10, 1
+  store i32 %inc.i, i32* %n_ciphone.i, align 4, !tbaa !3
+  store i32 %10, i32* %id.i, align 4, !tbaa !3
+  %cmp4.i = icmp sgt i32 %10, 126
+  br i1 %cmp4.i, label %if.then5.i, label %if.end.i
+
+if.then5.i:                                       ; preds = %if.then3.i
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 81, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #6
+  call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([55 x i8]* @.str27, i64 0, i64 0)) #6
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.then5.i, %if.then3.i
+  %call6.i = call i8* @__ckd_salloc__(i8* %7, i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 82) #6
+  %11 = load i32* %id.i, align 4, !tbaa !3
+  %idxprom.i = sext i32 %11 to i64
+  %12 = load i8*** %ciphone_str.i, align 8, !tbaa !0
+  %arrayidx.i = getelementptr inbounds i8** %12, i64 %idxprom.i
+  store i8* %call6.i, i8** %arrayidx.i, align 8, !tbaa !0
+  %13 = load %struct.hash_table_t** %pht.i, align 8, !tbaa !0
+  %14 = load i8*** %ciphone_str.i, align 8, !tbaa !0
+  %arrayidx10.i = getelementptr inbounds i8** %14, i64 %idxprom.i
+  %15 = load i8** %arrayidx10.i, align 8, !tbaa !0
+  %call11.i = call i32 @hash_enter(%struct.hash_table_t* %13, i8* %15, i32 %11) #6
+  %16 = load i32* %id.i, align 4, !tbaa !3
+  %cmp12.i = icmp eq i32 %call11.i, %16
+  br i1 %cmp12.i, label %if.end15.i, label %if.then13.i
+
+if.then13.i:                                      ; preds = %if.end.i
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 85, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #6
+  call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([41 x i8]* @.str28, i64 0, i64 0), i8* %7) #6
+  br label %if.end15.i
+
+if.end15.i:                                       ; preds = %if.else.i, %if.then13.i, %if.end.i
+  %17 = load i32* %id.i, align 4, !tbaa !3
+  %conv.i = trunc i32 %17 to i8
+  br label %dict_ciphone_id.exit
+
+dict_ciphone_id.exit:                             ; preds = %if.then.i, %if.end15.i
+  %retval.0.i = phi i8 [ %call.i, %if.then.i ], [ %conv.i, %if.end15.i ]
+  call void @llvm.lifetime.end(i64 4, i8* %3) #2
+  %18 = add nsw i64 %indvars.iv, -1
+  %arrayidx27 = getelementptr inbounds [4096 x i8]* %p, i64 0, i64 %18
+  store i8 %retval.0.i, i8* %arrayidx27, align 1, !tbaa !1
+  %cmp32 = icmp slt i8 %retval.0.i, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc39 = add nsw i32 %i.04, 1
+  br i1 %cmp32, label %if.then34, label %for.cond
+
+if.then34:                                        ; preds = %dict_ciphone_id.exit
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 192, i8* getelementptr inbounds ([6 x i8]* @.str1, i64 0, i64 0)) #6
+  %19 = load i8** %arrayidx24, align 8, !tbaa !0
+  %20 = load i8** %2, align 8, !tbaa !0
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([43 x i8]* @.str25, i64 0, i64 0), i32 %inc, i8* %19, i8* %20) #6
+  br label %for.end
+
+for.end:                                          ; preds = %for.cond.preheader, %for.cond, %if.then34
+  %i.02 = phi i32 [ %i.04, %if.then34 ], [ 1, %for.cond.preheader ], [ %inc39, %for.cond ]
+  %cmp40 = icmp eq i32 %i.02, %call7
+  br i1 %cmp40, label %if.then42, label %while.cond.backedge
+
+if.then42:                                        ; preds = %for.end
+  %21 = load i8** %2, align 8, !tbaa !0
+  %sub45 = add nsw i32 %call7, -1
+  %call46 = call i32 @dict_add_word(%struct.dict_t* %d, i8* %21, i8* %1, i32 %sub45) #7
+  %cmp47 = icmp slt i32 %call46, 0
+  br i1 %cmp47, label %if.then49, label %while.cond.backedge
+
+if.then49:                                        ; preds = %if.then42
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 201, i8* getelementptr inbounds ([6 x i8]* @.str1, i64 0, i64 0)) #6
+  %22 = load i8** %2, align 8, !tbaa !0
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([58 x i8]* @.str26, i64 0, i64 0), i32 %inc, i8* %22) #6
+  br label %while.cond.backedge
+
+while.end:                                        ; preds = %while.cond.backedge, %entry
+  call void @ckd_free(i8* %call) #6
+  call void @llvm.lifetime.end(i64 4096, i8* %1) #2
+  call void @llvm.lifetime.end(i64 16384, i8* %0) #2
+  ret void
+}

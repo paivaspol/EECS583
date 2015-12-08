@@ -1,0 +1,40 @@
+define i64 @print_date_and_time(%struct._IO_FILE* %log, i32 %nodeid, i8* %title) #0 {
+entry:
+  %time_string = alloca [4096 x i8], align 16
+  %now = alloca i64, align 8
+  %0 = getelementptr inbounds [4096 x i8]* %time_string, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %0) #1
+  %call = call i64 @time(i64* null) #6
+  store i64 %call, i64* %now, align 8, !tbaa !4
+  %call1 = call i8* @ctime(i64* %now) #6
+  %1 = load i8* %call1, align 1, !tbaa !1
+  %cmp15 = icmp sgt i8 %1, 31
+  br i1 %cmp15, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx618 = phi i8* [ %arrayidx6, %for.body ], [ %0, %entry ]
+  %2 = phi i8 [ %3, %for.body ], [ %1, %entry ]
+  store i8 %2, i8* %arrayidx618, align 1, !tbaa !1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %arrayidx = getelementptr inbounds i8* %call1, i64 %indvars.iv.next
+  %3 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp sgt i8 %3, 31
+  %arrayidx6 = getelementptr inbounds [4096 x i8]* %time_string, i64 0, i64 %indvars.iv.next
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  %arrayidx6.lcssa = phi i8* [ %0, %entry ], [ %arrayidx6, %for.body ]
+  store i8 0, i8* %arrayidx6.lcssa, align 1, !tbaa !1
+  %tobool = icmp eq %struct._IO_FILE* %log, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %for.end
+  %call9 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([18 x i8]* @.str4, i64 0, i64 0), i8* %title, i32 %nodeid, i8* %0) #6
+  br label %if.end
+
+if.end:                                           ; preds = %for.end, %if.then
+  %4 = load i64* %now, align 8, !tbaa !4
+  call void @llvm.lifetime.end(i64 4096, i8* %0) #1
+  ret i64 %4
+}

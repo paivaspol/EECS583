@@ -1,0 +1,20 @@
+define i32 @cpp_defined(%struct.cpp_reader* nocapture %pfile, i8* %str, i32 %len) #0 {
+entry:
+  %hash_table = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 36
+  %0 = load %struct.ht** %hash_table, align 8, !tbaa !2
+  %call = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %0, i8* %str, i32 %len, i32 0) #3
+  %tobool = icmp eq %struct.ht_identifier* %call, null
+  br i1 %tobool, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %entry
+  %1 = bitcast %struct.ht_identifier* %call to %struct.cpp_hashnode*
+  %type = getelementptr inbounds %struct.cpp_hashnode* %1, i64 0, i32 4
+  %bf.load = load i8* %type, align 4
+  %cmp = icmp eq i8 %bf.load, 1
+  br label %land.end
+
+land.end:                                         ; preds = %entry, %land.rhs
+  %2 = phi i1 [ false, %entry ], [ %cmp, %land.rhs ]
+  %land.ext = zext i1 %2 to i32
+  ret i32 %land.ext
+}

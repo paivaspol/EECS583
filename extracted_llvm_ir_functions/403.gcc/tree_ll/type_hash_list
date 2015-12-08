@@ -1,0 +1,28 @@
+define i32 @type_hash_list(%union.tree_node* %list) #3 {
+entry:
+  %tobool6 = icmp eq %union.tree_node* %list, null
+  br i1 %tobool6, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %tail.08 = phi %union.tree_node* [ %3, %for.body ], [ %list, %entry ]
+  %hashcode.07 = phi i64 [ %add, %for.body ], [ 0, %entry ]
+  %value = getelementptr inbounds %union.tree_node* %tail.08, i64 0, i32 0, i32 2
+  %0 = bitcast i32* %value to %union.tree_node**
+  %1 = load %union.tree_node** %0, align 8, !tbaa !0
+  %2 = ptrtoint %union.tree_node* %1 to i64
+  %and = and i64 %2, 262143
+  %conv = and i64 %hashcode.07, 4294967295
+  %add = add i64 %and, %conv
+  %chain = getelementptr inbounds %union.tree_node* %tail.08, i64 0, i32 0, i32 0, i32 0
+  %3 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %tobool = icmp eq %union.tree_node* %3, null
+  br i1 %tobool, label %for.cond.for.end_crit_edge, label %for.body
+
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %conv2 = trunc i64 %add to i32
+  br label %for.end
+
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %entry
+  %hashcode.0.lcssa = phi i32 [ %conv2, %for.cond.for.end_crit_edge ], [ 0, %entry ]
+  ret i32 %hashcode.0.lcssa
+}

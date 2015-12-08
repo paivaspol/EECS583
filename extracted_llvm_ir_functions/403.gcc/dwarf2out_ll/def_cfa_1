@@ -1,0 +1,301 @@
+define internal fastcc void @def_cfa_1(i8* %label, %struct.cfa_loc* nocapture %loc_p) #1 {
+entry:
+  %head.i = alloca %struct.dw_loc_descr_struct*, align 8
+  %old_cfa = alloca %struct.cfa_loc, align 8
+  %0 = bitcast %struct.cfa_loc* %loc_p to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct.cfa_loc* @cfa to i8*), i8* %0, i64 32, i32 8, i1 false), !tbaa.struct !7
+  %loc.sroa.0.0.idx = getelementptr inbounds %struct.cfa_loc* %loc_p, i64 0, i32 0
+  %loc.sroa.0.0.copyload = load i64* %loc.sroa.0.0.idx, align 8
+  %loc.sroa.1.8.idx86 = getelementptr inbounds %struct.cfa_loc* %loc_p, i64 0, i32 1
+  %loc.sroa.1.8.copyload = load i64* %loc.sroa.1.8.idx86, align 8
+  %loc.sroa.2.16.idx92 = getelementptr inbounds %struct.cfa_loc* %loc_p, i64 0, i32 2
+  %loc.sroa.2.16.copyload = load i64* %loc.sroa.2.16.idx92, align 8
+  %loc.sroa.3.24.idx94 = getelementptr inbounds %struct.cfa_loc* %loc_p, i64 0, i32 3
+  %loc.sroa.3.24.copyload = load i32* %loc.sroa.3.24.idx94, align 8
+  %1 = load i64* getelementptr inbounds (%struct.cfa_loc* @cfa_store, i64 0, i32 0), align 8, !tbaa !6
+  %cmp = icmp eq i64 %1, %loc.sroa.0.0.copyload
+  %cmp1 = icmp eq i32 %loc.sroa.3.24.copyload, 0
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  store i64 %loc.sroa.1.8.copyload, i64* getelementptr inbounds (%struct.cfa_loc* @cfa_store, i64 0, i32 1), align 8, !tbaa !6
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %2, 33554432
+  %tobool = icmp eq i32 %and, 0
+  %svr4_dbx_register_map.dbx64_register_map = select i1 %tobool, [53 x i32]* @svr4_dbx_register_map, [53 x i32]* @dbx64_register_map
+  %cond.in = getelementptr inbounds [53 x i32]* %svr4_dbx_register_map.dbx64_register_map, i64 0, i64 %loc.sroa.0.0.copyload
+  %cond = load i32* %cond.in, align 4
+  %conv = sext i32 %cond to i64
+  call fastcc void @lookup_cfa(%struct.cfa_loc* %old_cfa) #10
+  %reg7 = getelementptr inbounds %struct.cfa_loc* %old_cfa, i64 0, i32 0
+  %3 = load i64* %reg7, align 8, !tbaa !6
+  %cmp8 = icmp eq i64 %conv, %3
+  br i1 %cmp8, label %land.lhs.true10, label %if.end28
+
+land.lhs.true10:                                  ; preds = %if.end
+  %offset12 = getelementptr inbounds %struct.cfa_loc* %old_cfa, i64 0, i32 1
+  %4 = load i64* %offset12, align 8, !tbaa !6
+  %cmp13 = icmp eq i64 %loc.sroa.1.8.copyload, %4
+  br i1 %cmp13, label %land.lhs.true15, label %if.end28
+
+land.lhs.true15:                                  ; preds = %land.lhs.true10
+  %indirect17 = getelementptr inbounds %struct.cfa_loc* %old_cfa, i64 0, i32 3
+  %5 = load i32* %indirect17, align 8, !tbaa !0
+  %cmp18 = icmp eq i32 %loc.sroa.3.24.copyload, %5
+  br i1 %cmp18, label %land.lhs.true20, label %if.end28
+
+land.lhs.true20:                                  ; preds = %land.lhs.true15
+  br i1 %cmp1, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true20
+  %base_offset24 = getelementptr inbounds %struct.cfa_loc* %old_cfa, i64 0, i32 2
+  %6 = load i64* %base_offset24, align 8, !tbaa !6
+  %cmp25 = icmp eq i64 %loc.sroa.2.16.copyload, %6
+  br i1 %cmp25, label %return, label %if.end28
+
+if.end28:                                         ; preds = %lor.lhs.false, %land.lhs.true15, %land.lhs.true10, %if.end
+  %call.i = call noalias i8* @xmalloc(i64 32) #9
+  %7 = bitcast i8* %call.i to %struct.dw_cfi_struct*
+  %dw_cfi_next.i = bitcast i8* %call.i to %struct.dw_cfi_struct**
+  store %struct.dw_cfi_struct* null, %struct.dw_cfi_struct** %dw_cfi_next.i, align 8, !tbaa !4
+  %dw_cfi_oprnd1.i = getelementptr inbounds i8* %call.i, i64 16
+  call void @llvm.memset.p0i8.i64(i8* %dw_cfi_oprnd1.i, i8 0, i64 16, i32 8, i1 false) #5
+  %or.cond107 = and i1 %cmp8, %cmp1
+  br i1 %or.cond107, label %if.then36, label %if.else
+
+if.then36:                                        ; preds = %if.end28
+  %dw_cfi_opc = getelementptr inbounds i8* %call.i, i64 8
+  %8 = bitcast i8* %dw_cfi_opc to i32*
+  store i32 14, i32* %8, align 4, !tbaa !8
+  %9 = bitcast i8* %dw_cfi_oprnd1.i to i64*
+  store i64 %loc.sroa.1.8.copyload, i64* %9, align 8, !tbaa !6
+  br label %if.end70
+
+if.else:                                          ; preds = %if.end28
+  %offset39 = getelementptr inbounds %struct.cfa_loc* %old_cfa, i64 0, i32 1
+  %10 = load i64* %offset39, align 8, !tbaa !6
+  %cmp40 = icmp ne i64 %loc.sroa.1.8.copyload, %10
+  %cmp44 = icmp eq i64 %3, -1
+  %or.cond111 = or i1 %cmp40, %cmp44
+  %dw_cfi_opc58 = getelementptr inbounds i8* %call.i, i64 8
+  %11 = bitcast i8* %dw_cfi_opc58 to i32*
+  br i1 %or.cond111, label %if.else53, label %land.lhs.true46
+
+land.lhs.true46:                                  ; preds = %if.else
+  br i1 %cmp1, label %if.then49, label %if.else64
+
+if.then49:                                        ; preds = %land.lhs.true46
+  store i32 13, i32* %11, align 4, !tbaa !8
+  %12 = bitcast i8* %dw_cfi_oprnd1.i to i64*
+  store i64 %conv, i64* %12, align 8, !tbaa !6
+  br label %if.end70
+
+if.else53:                                        ; preds = %if.else
+  br i1 %cmp1, label %if.then57, label %if.else64.thread
+
+if.else64.thread:                                 ; preds = %if.else53
+  store i32 15, i32* %11, align 4, !tbaa !8
+  %head.i.0.cast105 = bitcast %struct.dw_loc_descr_struct** %head.i to i8*
+  call void @llvm.lifetime.start(i64 8, i8* %head.i.0.cast105)
+  br label %if.end.i
+
+if.then57:                                        ; preds = %if.else53
+  store i32 12, i32* %11, align 4, !tbaa !8
+  %13 = bitcast i8* %dw_cfi_oprnd1.i to i64*
+  store i64 %conv, i64* %13, align 8, !tbaa !6
+  %dw_cfi_offset63 = getelementptr inbounds i8* %call.i, i64 24
+  %14 = bitcast i8* %dw_cfi_offset63 to i64*
+  store i64 %loc.sroa.1.8.copyload, i64* %14, align 8, !tbaa !6
+  br label %if.end70
+
+if.else64:                                        ; preds = %land.lhs.true46
+  store i32 15, i32* %11, align 4, !tbaa !8
+  %head.i.0.cast = bitcast %struct.dw_loc_descr_struct** %head.i to i8*
+  call void @llvm.lifetime.start(i64 8, i8* %head.i.0.cast)
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.else64, %if.else64.thread
+  %head.i.0.cast106 = phi i8* [ %head.i.0.cast105, %if.else64.thread ], [ %head.i.0.cast, %if.else64 ]
+  %tobool.i = icmp eq i64 %loc.sroa.2.16.copyload, 0
+  %cmp2.i = icmp ult i32 %cond, 32
+  br i1 %tobool.i, label %if.else10.i, label %if.then1.i
+
+if.then1.i:                                       ; preds = %if.end.i
+  br i1 %cmp2.i, label %if.then3.i, label %if.else.i
+
+if.then3.i:                                       ; preds = %if.then1.i
+  %add.i = add i32 %cond, 112
+  %call.i.i = call noalias i8* @xcalloc(i64 1, i64 72) #9
+  %15 = bitcast i8* %call.i.i to %struct.dw_loc_descr_struct*
+  %dw_loc_opc.i.i = getelementptr inbounds i8* %call.i.i, i64 8
+  %16 = bitcast i8* %dw_loc_opc.i.i to i32*
+  store i32 %add.i, i32* %16, align 4, !tbaa !9
+  %dw_loc_oprnd1.i.i = getelementptr inbounds i8* %call.i.i, i64 16
+  %val_class.i.i = bitcast i8* %dw_loc_oprnd1.i.i to i32*
+  store i32 6, i32* %val_class.i.i, align 4, !tbaa !1
+  %v.i.i = getelementptr inbounds i8* %call.i.i, i64 24
+  %val_unsigned.i.i = bitcast i8* %v.i.i to i64*
+  store i64 %loc.sroa.2.16.copyload, i64* %val_unsigned.i.i, align 8, !tbaa !6
+  %dw_loc_oprnd2.i.i = getelementptr inbounds i8* %call.i.i, i64 40
+  %val_class2.i.i = bitcast i8* %dw_loc_oprnd2.i.i to i32*
+  store i32 6, i32* %val_class2.i.i, align 4, !tbaa !1
+  %v4.i.i = getelementptr inbounds i8* %call.i.i, i64 48
+  %val_unsigned5.i.i = bitcast i8* %v4.i.i to i64*
+  store i64 0, i64* %val_unsigned5.i.i, align 8, !tbaa !6
+  store %struct.dw_loc_descr_struct* %15, %struct.dw_loc_descr_struct** %head.i, align 8
+  br label %if.end23.i
+
+if.else.i:                                        ; preds = %if.then1.i
+  %call.i39.i = call noalias i8* @xcalloc(i64 1, i64 72) #9
+  %17 = bitcast i8* %call.i39.i to %struct.dw_loc_descr_struct*
+  %dw_loc_opc.i40.i = getelementptr inbounds i8* %call.i39.i, i64 8
+  %18 = bitcast i8* %dw_loc_opc.i40.i to i32*
+  store i32 146, i32* %18, align 4, !tbaa !9
+  %dw_loc_oprnd1.i41.i = getelementptr inbounds i8* %call.i39.i, i64 16
+  %val_class.i42.i = bitcast i8* %dw_loc_oprnd1.i41.i to i32*
+  store i32 6, i32* %val_class.i42.i, align 4, !tbaa !1
+  %v.i43.i = getelementptr inbounds i8* %call.i39.i, i64 24
+  %val_unsigned.i44.i = bitcast i8* %v.i43.i to i64*
+  store i64 %conv, i64* %val_unsigned.i44.i, align 8, !tbaa !6
+  %dw_loc_oprnd2.i45.i = getelementptr inbounds i8* %call.i39.i, i64 40
+  %val_class2.i46.i = bitcast i8* %dw_loc_oprnd2.i45.i to i32*
+  store i32 6, i32* %val_class2.i46.i, align 4, !tbaa !1
+  %v4.i47.i = getelementptr inbounds i8* %call.i39.i, i64 48
+  %val_unsigned5.i48.i = bitcast i8* %v4.i47.i to i64*
+  store i64 %loc.sroa.2.16.copyload, i64* %val_unsigned5.i48.i, align 8, !tbaa !6
+  store %struct.dw_loc_descr_struct* %17, %struct.dw_loc_descr_struct** %head.i, align 8
+  br label %if.end23.i
+
+if.else10.i:                                      ; preds = %if.end.i
+  br i1 %cmp2.i, label %if.then14.i, label %if.else19.i
+
+if.then14.i:                                      ; preds = %if.else10.i
+  %add16.i = add i32 %cond, 80
+  %call.i49.i = call noalias i8* @xcalloc(i64 1, i64 72) #9
+  %19 = bitcast i8* %call.i49.i to %struct.dw_loc_descr_struct*
+  %dw_loc_opc.i50.i = getelementptr inbounds i8* %call.i49.i, i64 8
+  %20 = bitcast i8* %dw_loc_opc.i50.i to i32*
+  store i32 %add16.i, i32* %20, align 4, !tbaa !9
+  %dw_loc_oprnd1.i51.i = getelementptr inbounds i8* %call.i49.i, i64 16
+  %val_class.i52.i = bitcast i8* %dw_loc_oprnd1.i51.i to i32*
+  store i32 6, i32* %val_class.i52.i, align 4, !tbaa !1
+  %v.i53.i = getelementptr inbounds i8* %call.i49.i, i64 24
+  %val_unsigned.i54.i = bitcast i8* %v.i53.i to i64*
+  store i64 0, i64* %val_unsigned.i54.i, align 8, !tbaa !6
+  %dw_loc_oprnd2.i55.i = getelementptr inbounds i8* %call.i49.i, i64 40
+  %val_class2.i56.i = bitcast i8* %dw_loc_oprnd2.i55.i to i32*
+  store i32 6, i32* %val_class2.i56.i, align 4, !tbaa !1
+  %v4.i57.i = getelementptr inbounds i8* %call.i49.i, i64 48
+  %val_unsigned5.i58.i = bitcast i8* %v4.i57.i to i64*
+  store i64 0, i64* %val_unsigned5.i58.i, align 8, !tbaa !6
+  store %struct.dw_loc_descr_struct* %19, %struct.dw_loc_descr_struct** %head.i, align 8
+  br label %if.end23.i
+
+if.else19.i:                                      ; preds = %if.else10.i
+  %call.i59.i = call noalias i8* @xcalloc(i64 1, i64 72) #9
+  %21 = bitcast i8* %call.i59.i to %struct.dw_loc_descr_struct*
+  %dw_loc_opc.i60.i = getelementptr inbounds i8* %call.i59.i, i64 8
+  %22 = bitcast i8* %dw_loc_opc.i60.i to i32*
+  store i32 144, i32* %22, align 4, !tbaa !9
+  %dw_loc_oprnd1.i61.i = getelementptr inbounds i8* %call.i59.i, i64 16
+  %val_class.i62.i = bitcast i8* %dw_loc_oprnd1.i61.i to i32*
+  store i32 6, i32* %val_class.i62.i, align 4, !tbaa !1
+  %v.i63.i = getelementptr inbounds i8* %call.i59.i, i64 24
+  %val_unsigned.i64.i = bitcast i8* %v.i63.i to i64*
+  store i64 %conv, i64* %val_unsigned.i64.i, align 8, !tbaa !6
+  %dw_loc_oprnd2.i65.i = getelementptr inbounds i8* %call.i59.i, i64 40
+  %val_class2.i66.i = bitcast i8* %dw_loc_oprnd2.i65.i to i32*
+  store i32 6, i32* %val_class2.i66.i, align 4, !tbaa !1
+  %v4.i67.i = getelementptr inbounds i8* %call.i59.i, i64 48
+  %val_unsigned5.i68.i = bitcast i8* %v4.i67.i to i64*
+  store i64 0, i64* %val_unsigned5.i68.i, align 8, !tbaa !6
+  store %struct.dw_loc_descr_struct* %21, %struct.dw_loc_descr_struct** %head.i, align 8
+  br label %if.end23.i
+
+if.end23.i:                                       ; preds = %if.else19.i, %if.then14.i, %if.else.i, %if.then3.i
+  %head.0.load.i = phi %struct.dw_loc_descr_struct* [ %19, %if.then14.i ], [ %21, %if.else19.i ], [ %15, %if.then3.i ], [ %17, %if.else.i ]
+  %val_class.i = getelementptr inbounds %struct.dw_loc_descr_struct* %head.0.load.i, i64 0, i32 2, i32 0
+  store i32 5, i32* %val_class.i, align 4, !tbaa !1
+  %call.i69.i = call noalias i8* @xcalloc(i64 1, i64 72) #9
+  %dw_loc_opc.i70.i = getelementptr inbounds i8* %call.i69.i, i64 8
+  %23 = bitcast i8* %dw_loc_opc.i70.i to i32*
+  store i32 6, i32* %23, align 4, !tbaa !9
+  %dw_loc_oprnd1.i71.i = getelementptr inbounds i8* %call.i69.i, i64 16
+  %val_class.i72.i = bitcast i8* %dw_loc_oprnd1.i71.i to i32*
+  store i32 6, i32* %val_class.i72.i, align 4, !tbaa !1
+  %v.i73.i = getelementptr inbounds i8* %call.i69.i, i64 24
+  %val_unsigned.i74.i = bitcast i8* %v.i73.i to i64*
+  store i64 0, i64* %val_unsigned.i74.i, align 8, !tbaa !6
+  %dw_loc_oprnd2.i75.i = getelementptr inbounds i8* %call.i69.i, i64 40
+  %val_class2.i76.i = bitcast i8* %dw_loc_oprnd2.i75.i to i32*
+  store i32 6, i32* %val_class2.i76.i, align 4, !tbaa !1
+  %v4.i77.i = getelementptr inbounds i8* %call.i69.i, i64 48
+  %val_unsigned5.i78.i = bitcast i8* %v4.i77.i to i64*
+  store i64 0, i64* %val_unsigned5.i78.i, align 8, !tbaa !6
+  %cmp.i.i108 = icmp eq %struct.dw_loc_descr_struct* %head.0.load.i, null
+  br i1 %cmp.i.i108, label %add_loc_descr.exit.i, label %for.cond.i.for.cond.i_crit_edge.i
+
+for.cond.i.for.cond.i_crit_edge.i:                ; preds = %if.end23.i, %for.cond.i.for.cond.i_crit_edge.i
+  %head.0.load.i.pn = phi %struct.dw_loc_descr_struct* [ %.pre.i, %for.cond.i.for.cond.i_crit_edge.i ], [ %head.0.load.i, %if.end23.i ]
+  %dw_loc_next.i.i110 = getelementptr inbounds %struct.dw_loc_descr_struct* %head.0.load.i.pn, i64 0, i32 0
+  %.pre.i = load %struct.dw_loc_descr_struct** %dw_loc_next.i.i110, align 8, !tbaa !4
+  %cmp.i.i = icmp eq %struct.dw_loc_descr_struct* %.pre.i, null
+  br i1 %cmp.i.i, label %add_loc_descr.exit.i, label %for.cond.i.for.cond.i_crit_edge.i
+
+add_loc_descr.exit.i:                             ; preds = %for.cond.i.for.cond.i_crit_edge.i, %if.end23.i
+  %d.0.i.i.lcssa = phi %struct.dw_loc_descr_struct** [ %head.i, %if.end23.i ], [ %dw_loc_next.i.i110, %for.cond.i.for.cond.i_crit_edge.i ]
+  %24 = bitcast i8* %call.i69.i to %struct.dw_loc_descr_struct*
+  store %struct.dw_loc_descr_struct* %24, %struct.dw_loc_descr_struct** %d.0.i.i.lcssa, align 8, !tbaa !4
+  %cmp25.i = icmp eq i64 %loc.sroa.1.8.copyload, 0
+  br i1 %cmp25.i, label %build_cfa_loc.exit, label %if.then27.i
+
+if.then27.i:                                      ; preds = %add_loc_descr.exit.i
+  %call.i84.i = call noalias i8* @xcalloc(i64 1, i64 72) #9
+  %dw_loc_opc.i85.i = getelementptr inbounds i8* %call.i84.i, i64 8
+  %25 = bitcast i8* %dw_loc_opc.i85.i to i32*
+  store i32 35, i32* %25, align 4, !tbaa !9
+  %dw_loc_oprnd1.i86.i = getelementptr inbounds i8* %call.i84.i, i64 16
+  %val_class.i87.i = bitcast i8* %dw_loc_oprnd1.i86.i to i32*
+  store i32 6, i32* %val_class.i87.i, align 4, !tbaa !1
+  %v.i88.i = getelementptr inbounds i8* %call.i84.i, i64 24
+  %val_unsigned.i89.i = bitcast i8* %v.i88.i to i64*
+  store i64 %loc.sroa.1.8.copyload, i64* %val_unsigned.i89.i, align 8, !tbaa !6
+  %dw_loc_oprnd2.i90.i = getelementptr inbounds i8* %call.i84.i, i64 40
+  %val_class2.i91.i = bitcast i8* %dw_loc_oprnd2.i90.i to i32*
+  store i32 6, i32* %val_class2.i91.i, align 4, !tbaa !1
+  %v4.i92.i = getelementptr inbounds i8* %call.i84.i, i64 48
+  %val_unsigned5.i93.i = bitcast i8* %v4.i92.i to i64*
+  store i64 0, i64* %val_unsigned5.i93.i, align 8, !tbaa !6
+  br label %for.cond.i82.i
+
+for.cond.i82.i:                                   ; preds = %for.cond.i82.i, %if.then27.i
+  %d.0.i79.i = phi %struct.dw_loc_descr_struct** [ %head.i, %if.then27.i ], [ %dw_loc_next.i81.i, %for.cond.i82.i ]
+  %26 = load %struct.dw_loc_descr_struct** %d.0.i79.i, align 8, !tbaa !4
+  %cmp.i80.i = icmp eq %struct.dw_loc_descr_struct* %26, null
+  %dw_loc_next.i81.i = getelementptr inbounds %struct.dw_loc_descr_struct* %26, i64 0, i32 0
+  br i1 %cmp.i80.i, label %add_loc_descr.exit83.i, label %for.cond.i82.i
+
+add_loc_descr.exit83.i:                           ; preds = %for.cond.i82.i
+  %27 = bitcast i8* %call.i84.i to %struct.dw_loc_descr_struct*
+  store %struct.dw_loc_descr_struct* %27, %struct.dw_loc_descr_struct** %d.0.i79.i, align 8, !tbaa !4
+  br label %build_cfa_loc.exit
+
+build_cfa_loc.exit:                               ; preds = %add_loc_descr.exit.i, %add_loc_descr.exit83.i
+  %head.i.0.load = load %struct.dw_loc_descr_struct** %head.i, align 8
+  call void @llvm.lifetime.end(i64 8, i8* %head.i.0.cast106)
+  %28 = bitcast i8* %dw_cfi_oprnd1.i to i64*
+  %call66.c = ptrtoint %struct.dw_loc_descr_struct* %head.i.0.load to i64
+  store i64 %call66.c, i64* %28, align 8, !tbaa !4
+  br label %if.end70
+
+if.end70:                                         ; preds = %if.then49, %build_cfa_loc.exit, %if.then57, %if.then36
+  call fastcc void @add_fde_cfi(i8* %label, %struct.dw_cfi_struct* %7) #10
+  br label %return
+
+return:                                           ; preds = %land.lhs.true20, %lor.lhs.false, %if.end70
+  ret void
+}

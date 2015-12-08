@@ -1,0 +1,22 @@
+define float @phi_aver(i32 %natoms, float* nocapture %phi) #3 {
+entry:
+  %cmp4 = icmp sgt i32 %natoms, 0
+  br i1 %cmp4, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %phitot.05 = phi float [ %add, %for.body ], [ 0.000000e+00, %entry ]
+  %arrayidx = getelementptr inbounds float* %phi, i64 %indvars.iv
+  %0 = load float* %arrayidx, align 4, !tbaa !0
+  %add = fadd float %phitot.05, %0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %natoms
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %phitot.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %add, %for.body ]
+  %conv = sitofp i32 %natoms to float
+  %div = fdiv float %phitot.0.lcssa, %conv
+  ret float %div
+}

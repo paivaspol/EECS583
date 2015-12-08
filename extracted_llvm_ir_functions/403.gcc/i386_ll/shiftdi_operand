@@ -1,0 +1,19 @@
+define i32 @shiftdi_operand(%struct.rtx_def* %op, i32 %mode) #1 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @nonimmediate_operand(%struct.rtx_def* %op, i32 %mode) #9
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 @register_operand(%struct.rtx_def* %op, i32 %mode) #9
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi i32 [ %call, %if.then ], [ %call1, %if.else ]
+  ret i32 %retval.0
+}

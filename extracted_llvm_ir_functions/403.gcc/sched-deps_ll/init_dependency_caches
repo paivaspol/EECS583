@@ -1,0 +1,22 @@
+define void @init_dependency_caches(i32 %luid) #1 {
+entry:
+  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %div = sdiv i32 %luid, %0
+  %cmp = icmp sgt i32 %div, 500
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.simple_bitmap_def** @sbitmap_vector_alloc(i32 %luid, i32 %luid) #7
+  store %struct.simple_bitmap_def** %call, %struct.simple_bitmap_def*** @true_dependency_cache, align 8, !tbaa !0
+  tail call void @sbitmap_vector_zero(%struct.simple_bitmap_def** %call, i32 %luid) #7
+  %call1 = tail call %struct.simple_bitmap_def** @sbitmap_vector_alloc(i32 %luid, i32 %luid) #7
+  store %struct.simple_bitmap_def** %call1, %struct.simple_bitmap_def*** @anti_dependency_cache, align 8, !tbaa !0
+  tail call void @sbitmap_vector_zero(%struct.simple_bitmap_def** %call1, i32 %luid) #7
+  %call2 = tail call %struct.simple_bitmap_def** @sbitmap_vector_alloc(i32 %luid, i32 %luid) #7
+  store %struct.simple_bitmap_def** %call2, %struct.simple_bitmap_def*** @output_dependency_cache, align 8, !tbaa !0
+  tail call void @sbitmap_vector_zero(%struct.simple_bitmap_def** %call2, i32 %luid) #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  ret void
+}

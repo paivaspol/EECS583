@@ -1,0 +1,76 @@
+define internal fastcc i32 @actual_hazard(i32 %unit, %struct.rtx_def* %insn, i32 %clock, i32 %cost) #3 {
+entry:
+  %cmp = icmp sgt i32 %unit, -1
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @actual_hazard_this_instance(i32 %unit, i32 %unit, %struct.rtx_def* %insn, i32 %clock, i32 %cost) #11
+  %cmp1 = icmp sgt i32 %call, %cost
+  br i1 %cmp1, label %if.then2, label %if.end10
+
+if.then2:                                         ; preds = %if.then
+  %idxprom = sext i32 %unit to i64
+  %multiplicity = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom, i32 2
+  %0 = load i32* %multiplicity, align 4, !tbaa !0
+  br label %for.cond.outer
+
+for.cond.outer:                                   ; preds = %if.then6, %if.then2
+  %i.0.in.ph = phi i32 [ %0, %if.then2 ], [ %i.0, %if.then6 ]
+  %instance.0.ph = phi i32 [ %unit, %if.then2 ], [ %add, %if.then6 ]
+  %best_cost.0.ph = phi i32 [ %call, %if.then2 ], [ %call4, %if.then6 ]
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond.outer, %for.body
+  %i.0.in = phi i32 [ %i.0, %for.body ], [ %i.0.in.ph, %for.cond.outer ]
+  %instance.0 = phi i32 [ %add, %for.body ], [ %instance.0.ph, %for.cond.outer ]
+  %i.0 = add nsw i32 %i.0.in, -1
+  %cmp3 = icmp sgt i32 %i.0, 0
+  br i1 %cmp3, label %for.body, label %if.end10
+
+for.body:                                         ; preds = %for.cond
+  %add = add nsw i32 %instance.0, 26
+  %call4 = tail call i32 @actual_hazard_this_instance(i32 %unit, i32 %add, %struct.rtx_def* %insn, i32 %clock, i32 %cost) #11
+  %cmp5 = icmp slt i32 %call4, %best_cost.0.ph
+  br i1 %cmp5, label %if.then6, label %for.cond
+
+if.then6:                                         ; preds = %for.body
+  %cmp7 = icmp sgt i32 %call4, %cost
+  br i1 %cmp7, label %for.cond.outer, label %if.end10
+
+if.end10:                                         ; preds = %for.cond, %if.then6, %if.then
+  %best_cost.2 = phi i32 [ %call, %if.then ], [ %best_cost.0.ph, %for.cond ], [ %call4, %if.then6 ]
+  %cmp11 = icmp slt i32 %best_cost.2, %cost
+  %cond = select i1 %cmp11, i32 %cost, i32 %best_cost.2
+  br label %if.end20
+
+if.else:                                          ; preds = %entry
+  %tobool51 = icmp eq i32 %unit, -1
+  br i1 %tobool51, label %if.end20, label %for.body13.lr.ph
+
+for.body13.lr.ph:                                 ; preds = %if.else
+  %neg = xor i32 %unit, -1
+  br label %for.body13
+
+for.body13:                                       ; preds = %for.body13.lr.ph, %for.inc18
+  %unit.addr.054 = phi i32 [ %neg, %for.body13.lr.ph ], [ %shr, %for.inc18 ]
+  %i.153 = phi i32 [ 0, %for.body13.lr.ph ], [ %inc, %for.inc18 ]
+  %cost.addr.052 = phi i32 [ %cost, %for.body13.lr.ph ], [ %cost.addr.1, %for.inc18 ]
+  %and = and i32 %unit.addr.054, 1
+  %cmp14 = icmp eq i32 %and, 0
+  br i1 %cmp14, label %for.inc18, label %if.then15
+
+if.then15:                                        ; preds = %for.body13
+  %call16 = tail call fastcc i32 @actual_hazard(i32 %i.153, %struct.rtx_def* %insn, i32 %clock, i32 %cost.addr.052) #11
+  br label %for.inc18
+
+for.inc18:                                        ; preds = %for.body13, %if.then15
+  %cost.addr.1 = phi i32 [ %call16, %if.then15 ], [ %cost.addr.052, %for.body13 ]
+  %inc = add nsw i32 %i.153, 1
+  %shr = ashr i32 %unit.addr.054, 1
+  %tobool = icmp eq i32 %shr, 0
+  br i1 %tobool, label %if.end20, label %for.body13
+
+if.end20:                                         ; preds = %if.else, %for.inc18, %if.end10
+  %cost.addr.2 = phi i32 [ %cond, %if.end10 ], [ %cost, %if.else ], [ %cost.addr.1, %for.inc18 ]
+  ret i32 %cost.addr.2
+}

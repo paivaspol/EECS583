@@ -1,0 +1,20 @@
+define %union.tree_node* @c_cast_expr(%union.tree_node* %type, %union.tree_node* %expr) #0 {
+entry:
+  %0 = load i32* @warn_strict_prototypes, align 4, !tbaa !3
+  %code = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 25
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  store i32 0, i32* @warn_strict_prototypes, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %call = tail call %union.tree_node* @groktypename(%union.tree_node* %type) #8
+  store i32 %0, i32* @warn_strict_prototypes, align 4, !tbaa !3
+  %call1 = tail call %union.tree_node* @build_c_cast(%union.tree_node* %call, %union.tree_node* %expr) #7
+  ret %union.tree_node* %call1
+}

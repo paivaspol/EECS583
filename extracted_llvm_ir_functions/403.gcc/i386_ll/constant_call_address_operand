@@ -1,0 +1,43 @@
+define i32 @constant_call_address_operand(%struct.rtx_def* nocapture %op, i32 %mode) #2 {
+entry:
+  %0 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 58
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load1 = load i32* %2, align 8
+  %bf.clear2 = and i32 %bf.load1, 65535
+  %cmp3 = icmp eq i32 %bf.clear2, 75
+  br i1 %cmp3, label %land.lhs.true4, label %if.end
+
+land.lhs.true4:                                   ; preds = %land.lhs.true
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 1
+  %rtx10 = bitcast %union.rtunion_def* %arrayidx9 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx10, align 8, !tbaa !4
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load11 = load i32* %4, align 8
+  %bf.clear12 = and i32 %bf.load11, 65535
+  %cmp13 = icmp eq i32 %bf.clear12, 54
+  br i1 %cmp13, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true4
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtx19 = bitcast %union.rtunion_def* %arrayidx18 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx19, align 8, !tbaa !4
+  %.phi.trans.insert = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load20.pre = load i32* %.phi.trans.insert, align 8
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %land.lhs.true4, %land.lhs.true, %entry
+  %bf.load20 = phi i32 [ %bf.load20.pre, %if.then ], [ %bf.load, %land.lhs.true4 ], [ %bf.load, %land.lhs.true ], [ %bf.load, %entry ]
+  %bf.clear21 = and i32 %bf.load20, 65535
+  %cmp22 = icmp eq i32 %bf.clear21, 68
+  %conv = zext i1 %cmp22 to i32
+  ret i32 %conv
+}

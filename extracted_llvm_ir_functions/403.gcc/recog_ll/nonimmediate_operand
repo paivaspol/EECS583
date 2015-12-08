@@ -1,0 +1,28 @@
+define i32 @nonimmediate_operand(%struct.rtx_def* %op, i32 %mode) #0 {
+entry:
+  %call = tail call i32 @general_operand(%struct.rtx_def* %op, i32 %mode) #7
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %entry
+  %0 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %lor.rhs [
+    i32 67, label %land.end
+    i32 68, label %land.end
+    i32 54, label %land.end
+    i32 55, label %land.end
+    i32 58, label %land.end
+    i32 134, label %land.end
+    i32 56, label %land.end
+    i32 140, label %land.end
+  ]
+
+lor.rhs:                                          ; preds = %land.rhs
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %lor.rhs, %land.rhs, %land.rhs, %land.rhs, %land.rhs, %land.rhs, %land.rhs, %land.rhs, %entry
+  %1 = phi i32 [ 0, %entry ], [ 0, %land.rhs ], [ 1, %lor.rhs ], [ 0, %land.rhs ], [ 0, %land.rhs ], [ 0, %land.rhs ], [ 0, %land.rhs ], [ 0, %land.rhs ], [ 0, %land.rhs ], [ 0, %land.rhs ]
+  ret i32 %1
+}

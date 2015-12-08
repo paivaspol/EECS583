@@ -1,0 +1,48 @@
+define internal fastcc i8* @type_tag(%union.tree_node* nocapture %type) #0 {
+entry:
+  %0 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 11
+  %1 = load %union.tree_node** %0, align 8, !tbaa !4
+  %cmp = icmp eq %union.tree_node* %1, null
+  br i1 %cmp, label %cond.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %code = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %cond.end [
+    i32 1, label %if.end29
+    i32 33, label %land.lhs.true
+  ]
+
+land.lhs.true:                                    ; preds = %if.then
+  %ignored_flag = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 5
+  %3 = bitcast [8 x i8]* %ignored_flag to i64*
+  %bf.load18 = load i64* %3, align 8
+  %bf.cast = and i64 %bf.load18, 16384
+  %tobool = icmp eq i64 %bf.cast, 0
+  br i1 %tobool, label %if.end25, label %cond.end
+
+if.end25:                                         ; preds = %land.lhs.true
+  %name24 = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 8
+  %4 = load %union.tree_node** %name24, align 8, !tbaa !4
+  %cmp26 = icmp eq %union.tree_node* %4, null
+  br i1 %cmp26, label %cond.end, label %if.end29
+
+if.end29:                                         ; preds = %if.then, %if.end25
+  %t.043 = phi %union.tree_node* [ %4, %if.end25 ], [ %1, %if.then ]
+  %id = getelementptr inbounds %union.tree_node* %t.043, i64 0, i32 0, i32 1
+  %5 = getelementptr inbounds i8** %id, i64 1
+  %6 = load i8** %5, align 8, !tbaa !4
+  %cmp30 = icmp eq i8* %6, null
+  br i1 %cmp30, label %cond.end, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end29
+  %7 = load i8* %6, align 1, !tbaa !1
+  %cmp31 = icmp eq i8 %7, 0
+  %. = select i1 %cmp31, i8* null, i8* %6
+  ret i8* %.
+
+cond.end:                                         ; preds = %if.then, %land.lhs.true, %entry, %if.end25, %if.end29
+  ret i8* null
+}

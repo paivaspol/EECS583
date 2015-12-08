@@ -1,0 +1,45 @@
+define void @ereal_ldexp(%struct.realvaluetype* noalias nocapture sret %agg.result, %struct.realvaluetype* byval nocapture align 8 %x, i32 %n) #0 {
+entry:
+  %e = alloca [6 x i16], align 2
+  %r.sroa.0 = alloca [3 x i64], align 8
+  %0 = bitcast [6 x i16]* %e to i8*
+  %1 = bitcast %struct.realvaluetype* %x to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false)
+  %arraydecay = getelementptr inbounds [6 x i16]* %e, i64 0, i64 0
+  %arrayidx.i = getelementptr inbounds [6 x i16]* %e, i64 0, i64 5
+  %2 = load i16* %arrayidx.i, align 2, !tbaa !0
+  %and.i = and i16 %2, 32767
+  %cmp.i = icmp eq i16 %and.i, 32767
+  br i1 %cmp.i, label %for.body.i, label %if.end
+
+for.body.i:                                       ; preds = %entry, %for.inc.i
+  %i.012.i = phi i32 [ %inc.i, %for.inc.i ], [ 0, %entry ]
+  %x.addr.011.i = phi i16* [ %incdec.ptr.i, %for.inc.i ], [ %arraydecay, %entry ]
+  %3 = load i16* %x.addr.011.i, align 2, !tbaa !0
+  %cmp5.i = icmp eq i16 %3, 0
+  br i1 %cmp5.i, label %for.inc.i, label %if.then
+
+for.inc.i:                                        ; preds = %for.body.i
+  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1
+  %inc.i = add nsw i32 %i.012.i, 1
+  %cmp2.i = icmp slt i32 %inc.i, 5
+  br i1 %cmp2.i, label %for.body.i, label %if.end
+
+if.then:                                          ; preds = %for.body.i
+  %4 = bitcast %struct.realvaluetype* %agg.result to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %4, i8* %1, i64 24, i32 8, i1 false), !tbaa.struct !3
+  br label %return
+
+if.end:                                           ; preds = %for.inc.i, %entry
+  %r.sroa.01112 = bitcast [3 x i64]* %r.sroa.0 to i16*
+  call fastcc void @eldexp(i16* %arraydecay, i32 %n, i16* %r.sroa.01112) #6
+  %r.sroa.0.0.cast3 = bitcast [3 x i64]* %r.sroa.0 to i8*
+  %r.sroa.0.12.raw_idx = getelementptr inbounds i8* %r.sroa.0.0.cast3, i64 12
+  call void @llvm.memset.p0i8.i64(i8* %r.sroa.0.12.raw_idx, i8 0, i64 12, i32 4, i1 false)
+  %r.sroa.0.0.cast4 = bitcast %struct.realvaluetype* %agg.result to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %r.sroa.0.0.cast4, i8* %r.sroa.0.0.cast3, i64 24, i32 8, i1 false)
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then
+  ret void
+}

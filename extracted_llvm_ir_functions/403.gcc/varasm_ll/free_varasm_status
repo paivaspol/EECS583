@@ -1,0 +1,43 @@
+define void @free_varasm_status(%struct.function* nocapture %f) #0 {
+entry:
+  %varasm = getelementptr inbounds %struct.function* %f, i64 0, i32 4
+  %0 = load %struct.varasm_status** %varasm, align 8, !tbaa !3
+  %x_const_rtx_hash_table = getelementptr inbounds %struct.varasm_status* %0, i64 0, i32 0
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
+  %1 = load %struct.constant_descriptor*** %x_const_rtx_hash_table, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.constant_descriptor** %1, i64 %indvars.iv
+  %2 = load %struct.constant_descriptor** %arrayidx, align 8, !tbaa !3
+  %tobool12 = icmp eq %struct.constant_descriptor* %2, null
+  br i1 %tobool12, label %for.inc, label %while.body
+
+while.body:                                       ; preds = %for.body, %while.body
+  %cd.013 = phi %struct.constant_descriptor* [ %3, %while.body ], [ %2, %for.body ]
+  %next1 = getelementptr inbounds %struct.constant_descriptor* %cd.013, i64 0, i32 0
+  %3 = load %struct.constant_descriptor** %next1, align 8, !tbaa !3
+  %4 = bitcast %struct.constant_descriptor* %cd.013 to i8*
+  tail call void @free(i8* %4) #9
+  %tobool = icmp eq %struct.constant_descriptor* %3, null
+  br i1 %tobool, label %for.inc, label %while.body
+
+for.inc:                                          ; preds = %while.body, %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 61
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  %5 = load %struct.constant_descriptor*** %x_const_rtx_hash_table, align 8, !tbaa !3
+  %6 = bitcast %struct.constant_descriptor** %5 to i8*
+  tail call void @free(i8* %6) #9
+  %x_const_rtx_sym_hash_table = getelementptr inbounds %struct.varasm_status* %0, i64 0, i32 1
+  %7 = load %struct.pool_constant*** %x_const_rtx_sym_hash_table, align 8, !tbaa !3
+  %8 = bitcast %struct.pool_constant** %7 to i8*
+  tail call void @free(i8* %8) #9
+  %9 = bitcast %struct.varasm_status* %0 to i8*
+  tail call void @free(i8* %9) #9
+  store %struct.varasm_status* null, %struct.varasm_status** %varasm, align 8, !tbaa !3
+  ret void
+}

@@ -1,0 +1,161 @@
+define i32 @subvq_mgau_eval(%struct.mgau_model_t* nocapture %g, %struct.subvq_t* nocapture %vq, i32 %m, i32 %n, i32* %active) #0 {
+entry:
+  %call = tail call double @log_to_logs3_factor() #5
+  %vqdist1 = getelementptr inbounds %struct.subvq_t* %vq, i64 0, i32 7
+  %0 = load i32*** %vqdist1, align 8, !tbaa !3
+  %1 = load i32** %0, align 8, !tbaa !3
+  %idxprom = sext i32 %m to i64
+  %mgau2 = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 3
+  %2 = load %struct.mgau_t** %mgau2, align 8, !tbaa !3
+  %map5 = getelementptr inbounds %struct.subvq_t* %vq, i64 0, i32 5
+  %3 = load i32**** %map5, align 8, !tbaa !3
+  %arrayidx6 = getelementptr inbounds i32*** %3, i64 %idxprom
+  %4 = load i32*** %arrayidx6, align 8, !tbaa !3
+  %5 = load i32** %4, align 8, !tbaa !3
+  %tobool = icmp eq i32* %active, null
+  br i1 %tobool, label %for.cond.preheader, label %for.cond20
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp98 = icmp sgt i32 %n, 0
+  br i1 %cmp98, label %for.cond8.preheader.lr.ph, label %if.then59
+
+for.cond8.preheader.lr.ph:                        ; preds = %for.cond.preheader
+  %n_sv = getelementptr inbounds %struct.subvq_t* %vq, i64 0, i32 1
+  %mixw = getelementptr inbounds %struct.mgau_t* %2, i64 %idxprom, i32 4
+  br label %for.cond8.preheader
+
+for.cond8.preheader:                              ; preds = %for.end, %for.cond8.preheader.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.cond8.preheader.lr.ph ], [ %indvars.iv.next, %for.end ]
+  %map.0101 = phi i32* [ %5, %for.cond8.preheader.lr.ph ], [ %map.1.lcssa, %for.end ]
+  %score.0100 = phi i32 [ -939524096, %for.cond8.preheader.lr.ph ], [ %call16, %for.end ]
+  %6 = load i32* %n_sv, align 4, !tbaa !0
+  %cmp993 = icmp sgt i32 %6, 0
+  br i1 %cmp993, label %for.body10.lr.ph, label %for.end
+
+for.body10.lr.ph:                                 ; preds = %for.cond8.preheader
+  %7 = icmp sgt i32 %6, 1
+  %.op125 = add i32 %6, -1
+  %8 = zext i32 %.op125 to i64
+  br label %for.body10
+
+for.body10:                                       ; preds = %for.body10.lr.ph, %for.body10
+  %map.196 = phi i32* [ %map.0101, %for.body10.lr.ph ], [ %incdec.ptr, %for.body10 ]
+  %sv_id.095 = phi i32 [ 0, %for.body10.lr.ph ], [ %inc, %for.body10 ]
+  %v.094 = phi i32 [ 0, %for.body10.lr.ph ], [ %add, %for.body10 ]
+  %incdec.ptr = getelementptr inbounds i32* %map.196, i64 1
+  %9 = load i32* %map.196, align 4, !tbaa !0
+  %idxprom11 = sext i32 %9 to i64
+  %arrayidx12 = getelementptr inbounds i32* %1, i64 %idxprom11
+  %10 = load i32* %arrayidx12, align 4, !tbaa !0
+  %add = add nsw i32 %10, %v.094
+  %inc = add nsw i32 %sv_id.095, 1
+  %cmp9 = icmp slt i32 %inc, %6
+  br i1 %cmp9, label %for.body10, label %for.cond8.for.end_crit_edge
+
+for.cond8.for.end_crit_edge:                      ; preds = %for.body10
+  %.op126 = add i64 %8, 1
+  %scevgep.sum = select i1 %7, i64 %.op126, i64 1
+  %scevgep117 = getelementptr i32* %map.0101, i64 %scevgep.sum
+  br label %for.end
+
+for.end:                                          ; preds = %for.cond8.for.end_crit_edge, %for.cond8.preheader
+  %map.1.lcssa = phi i32* [ %scevgep117, %for.cond8.for.end_crit_edge ], [ %map.0101, %for.cond8.preheader ]
+  %v.0.lcssa = phi i32 [ %add, %for.cond8.for.end_crit_edge ], [ 0, %for.cond8.preheader ]
+  %11 = load i32** %mixw, align 8, !tbaa !3
+  %arrayidx14 = getelementptr inbounds i32* %11, i64 %indvars.iv
+  %12 = load i32* %arrayidx14, align 4, !tbaa !0
+  %add15 = add nsw i32 %12, %v.0.lcssa
+  %call16 = tail call i32 @logs3_add(i32 %score.0100, i32 %add15) #5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %if.end, label %for.cond8.preheader
+
+for.cond20:                                       ; preds = %entry, %for.cond20
+  %indvars.iv123 = phi i64 [ %indvars.iv.next124, %for.cond20 ], [ 0, %entry ]
+  %arrayidx22 = getelementptr inbounds i32* %active, i64 %indvars.iv123
+  %13 = load i32* %arrayidx22, align 4, !tbaa !0
+  %cmp23 = icmp sgt i32 %13, -1
+  %indvars.iv.next124 = add i64 %indvars.iv123, 1
+  br i1 %cmp23, label %for.cond20, label %for.cond30.preheader
+
+for.cond30.preheader:                             ; preds = %for.cond20
+  %14 = load i32* %active, align 4, !tbaa !0
+  %cmp33110 = icmp sgt i32 %14, -1
+  br i1 %cmp33110, label %for.body34.lr.ph, label %if.then59
+
+for.body34.lr.ph:                                 ; preds = %for.cond30.preheader
+  %n_sv37 = getelementptr inbounds %struct.subvq_t* %vq, i64 0, i32 1
+  %mixw51 = getelementptr inbounds %struct.mgau_t* %2, i64 %idxprom, i32 4
+  br label %for.body34
+
+for.body34:                                       ; preds = %for.body34.lr.ph, %for.end48
+  %indvars.iv121 = phi i64 [ 0, %for.body34.lr.ph ], [ %indvars.iv.next122, %for.end48 ]
+  %15 = phi i32 [ %14, %for.body34.lr.ph ], [ %25, %for.end48 ]
+  %map.2114 = phi i32* [ %5, %for.body34.lr.ph ], [ %map.3.lcssa, %for.end48 ]
+  %last_active.0113 = phi i32 [ 0, %for.body34.lr.ph ], [ %add49, %for.end48 ]
+  %score.1112 = phi i32 [ -939524096, %for.body34.lr.ph ], [ %call54, %for.end48 ]
+  %sub = sub i32 %15, %last_active.0113
+  %16 = load i32* %n_sv37, align 4, !tbaa !0
+  %mul = mul i32 %16, %sub
+  %idx.ext = sext i32 %mul to i64
+  %add.ptr = getelementptr inbounds i32* %map.2114, i64 %idx.ext
+  %cmp40103 = icmp sgt i32 %16, 0
+  br i1 %cmp40103, label %for.body41.lr.ph, label %for.end48
+
+for.body41.lr.ph:                                 ; preds = %for.body34
+  %17 = icmp sgt i32 %16, 1
+  %.op = add i32 %16, -1
+  %18 = zext i32 %.op to i64
+  %19 = select i1 %17, i64 %18, i64 0
+  %20 = add i64 %idx.ext, %19
+  br label %for.body41
+
+for.body41:                                       ; preds = %for.body41.lr.ph, %for.body41
+  %map.3106 = phi i32* [ %add.ptr, %for.body41.lr.ph ], [ %incdec.ptr42, %for.body41 ]
+  %sv_id.1105 = phi i32 [ 0, %for.body41.lr.ph ], [ %inc47, %for.body41 ]
+  %v.1104 = phi i32 [ 0, %for.body41.lr.ph ], [ %add45, %for.body41 ]
+  %incdec.ptr42 = getelementptr inbounds i32* %map.3106, i64 1
+  %21 = load i32* %map.3106, align 4, !tbaa !0
+  %idxprom43 = sext i32 %21 to i64
+  %arrayidx44 = getelementptr inbounds i32* %1, i64 %idxprom43
+  %22 = load i32* %arrayidx44, align 4, !tbaa !0
+  %add45 = add nsw i32 %22, %v.1104
+  %inc47 = add nsw i32 %sv_id.1105, 1
+  %cmp40 = icmp slt i32 %inc47, %16
+  br i1 %cmp40, label %for.body41, label %for.cond38.for.end48_crit_edge
+
+for.cond38.for.end48_crit_edge:                   ; preds = %for.body41
+  %scevgep118.sum = add i64 %20, 1
+  %scevgep120 = getelementptr i32* %map.2114, i64 %scevgep118.sum
+  br label %for.end48
+
+for.end48:                                        ; preds = %for.cond38.for.end48_crit_edge, %for.body34
+  %map.3.lcssa = phi i32* [ %scevgep120, %for.cond38.for.end48_crit_edge ], [ %add.ptr, %for.body34 ]
+  %v.1.lcssa = phi i32 [ %add45, %for.cond38.for.end48_crit_edge ], [ 0, %for.body34 ]
+  %add49 = add nsw i32 %15, 1
+  %23 = load i32** %mixw51, align 8, !tbaa !3
+  %arrayidx52 = getelementptr inbounds i32* %23, i64 %indvars.iv121
+  %24 = load i32* %arrayidx52, align 4, !tbaa !0
+  %add53 = add nsw i32 %24, %v.1.lcssa
+  %call54 = tail call i32 @logs3_add(i32 %score.1112, i32 %add53) #5
+  %indvars.iv.next122 = add i64 %indvars.iv121, 1
+  %arrayidx32 = getelementptr inbounds i32* %active, i64 %indvars.iv.next122
+  %25 = load i32* %arrayidx32, align 4, !tbaa !0
+  %cmp33 = icmp sgt i32 %25, -1
+  br i1 %cmp33, label %for.body34, label %if.end
+
+if.end:                                           ; preds = %for.end48, %for.end
+  %score.2 = phi i32 [ %call16, %for.end ], [ %call54, %for.end48 ]
+  %cmp58 = icmp eq i32 %score.2, -939524096
+  br i1 %cmp58, label %if.then59, label %if.end60
+
+if.then59:                                        ; preds = %for.cond30.preheader, %for.cond.preheader, %if.end
+  tail call void @_E__pr_info_header(i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i64 576, i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0)) #5
+  tail call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([36 x i8]* @.str36, i64 0, i64 0)) #5
+  br label %if.end60
+
+if.end60:                                         ; preds = %if.then59, %if.end
+  %score.2128 = phi i32 [ -939524096, %if.then59 ], [ %score.2, %if.end ]
+  ret i32 %score.2128
+}

@@ -1,0 +1,91 @@
+define float @lsq_y_ax_b(i32 %n, float* nocapture %x, float* nocapture %y, float* nocapture %a, float* nocapture %b) #0 {
+entry:
+  %cmp93 = icmp sgt i32 %n, 0
+  br i1 %cmp93, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv103 = phi i64 [ %indvars.iv.next104, %for.body ], [ 0, %entry ]
+  %sy.098 = phi double [ %add17, %for.body ], [ 0.000000e+00, %entry ]
+  %sx.097 = phi double [ %add13, %for.body ], [ 0.000000e+00, %entry ]
+  %xx.096 = phi double [ %add9, %for.body ], [ 0.000000e+00, %entry ]
+  %yx.095 = phi double [ %add, %for.body ], [ 0.000000e+00, %entry ]
+  %arrayidx = getelementptr inbounds float* %y, i64 %indvars.iv103
+  %0 = load float* %arrayidx, align 4, !tbaa !3
+  %arrayidx2 = getelementptr inbounds float* %x, i64 %indvars.iv103
+  %1 = load float* %arrayidx2, align 4, !tbaa !3
+  %mul = fmul float %0, %1
+  %conv = fpext float %mul to double
+  %add = fadd double %yx.095, %conv
+  %mul7 = fmul float %1, %1
+  %conv8 = fpext float %mul7 to double
+  %add9 = fadd double %xx.096, %conv8
+  %conv12 = fpext float %1 to double
+  %add13 = fadd double %sx.097, %conv12
+  %conv16 = fpext float %0 to double
+  %add17 = fadd double %sy.098, %conv16
+  %indvars.iv.next104 = add i64 %indvars.iv103, 1
+  %lftr.wideiv105 = trunc i64 %indvars.iv.next104 to i32
+  %exitcond106 = icmp eq i32 %lftr.wideiv105, %n
+  br i1 %exitcond106, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %sy.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add17, %for.body ]
+  %sx.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add13, %for.body ]
+  %xx.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add9, %for.body ]
+  %yx.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add, %for.body ]
+  %conv18 = sitofp i32 %n to double
+  %mul19 = fmul double %conv18, %yx.0.lcssa
+  %mul20 = fmul double %sx.0.lcssa, %sy.0.lcssa
+  %sub = fsub double %mul19, %mul20
+  %mul22 = fmul double %conv18, %xx.0.lcssa
+  %mul23 = fmul double %sx.0.lcssa, %sx.0.lcssa
+  %sub24 = fsub double %mul22, %mul23
+  %div = fdiv double %sub, %sub24
+  %conv25 = fptrunc double %div to float
+  store float %conv25, float* %a, align 4, !tbaa !3
+  %conv26 = fpext float %conv25 to double
+  %mul27 = fmul double %sx.0.lcssa, %conv26
+  %sub28 = fsub double %sy.0.lcssa, %mul27
+  %div30 = fdiv double %sub28, %conv18
+  %conv31 = fptrunc double %div30 to float
+  store float %conv31, float* %b, align 4, !tbaa !3
+  br i1 %cmp93, label %for.body35.lr.ph, label %return
+
+for.body35.lr.ph:                                 ; preds = %for.end
+  %2 = load float* %a, align 4, !tbaa !3
+  br label %for.body35
+
+for.body35:                                       ; preds = %for.body35, %for.body35.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body35.lr.ph ], [ %indvars.iv.next, %for.body35 ]
+  %chi2.092 = phi double [ 0.000000e+00, %for.body35.lr.ph ], [ %add44, %for.body35 ]
+  %arrayidx37 = getelementptr inbounds float* %y, i64 %indvars.iv
+  %3 = load float* %arrayidx37, align 4, !tbaa !3
+  %arrayidx39 = getelementptr inbounds float* %x, i64 %indvars.iv
+  %4 = load float* %arrayidx39, align 4, !tbaa !3
+  %mul40 = fmul float %2, %4
+  %add41 = fadd float %mul40, %conv31
+  %sub42 = fsub float %3, %add41
+  %mul.i = fmul float %sub42, %sub42
+  %conv43 = fpext float %mul.i to double
+  %add44 = fadd double %chi2.092, %conv43
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end47, label %for.body35
+
+for.end47:                                        ; preds = %for.body35
+  %cmp48 = icmp sgt i32 %n, 2
+  br i1 %cmp48, label %if.then, label %return
+
+if.then:                                          ; preds = %for.end47
+  %sub50 = add nsw i32 %n, -2
+  %conv51 = sitofp i32 %sub50 to double
+  %div52 = fdiv double %add44, %conv51
+  %call53 = tail call double @sqrt(double %div52) #6
+  %conv54 = fptrunc double %call53 to float
+  br label %return
+
+return:                                           ; preds = %for.end, %for.end47, %if.then
+  %retval.0 = phi float [ %conv54, %if.then ], [ 0.000000e+00, %for.end47 ], [ 0.000000e+00, %for.end ]
+  ret float %retval.0
+}

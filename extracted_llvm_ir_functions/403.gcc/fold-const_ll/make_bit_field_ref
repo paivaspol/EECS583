@@ -1,0 +1,19 @@
+define internal fastcc %union.tree_node* @make_bit_field_ref(%union.tree_node* %inner, %union.tree_node* %type, i32 %bitsize, i32 %bitpos, i32 %unsignedp) #0 {
+entry:
+  %conv = sext i32 %bitsize to i64
+  %0 = load %union.tree_node** getelementptr inbounds ([6 x %union.tree_node*]* @sizetype_tab, i64 0, i64 0), align 8, !tbaa !3
+  %call.i = tail call %union.tree_node* @size_int_type_wide(i64 %conv, %union.tree_node* %0) #9
+  %conv1 = sext i32 %bitpos to i64
+  %1 = load %union.tree_node** getelementptr inbounds ([6 x %union.tree_node*]* @sizetype_tab, i64 0, i64 3), align 8, !tbaa !3
+  %call.i5 = tail call %union.tree_node* @size_int_type_wide(i64 %conv1, %union.tree_node* %1) #9
+  %call3 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 40, %union.tree_node* %type, %union.tree_node* %inner, %union.tree_node* %call.i, %union.tree_node* %call.i5) #9
+  %unsigned_flag = getelementptr inbounds %union.tree_node* %call3, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %unsigned_flag to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.value = shl i32 %unsignedp, 13
+  %bf.shl = and i32 %bf.value, 8192
+  %bf.clear = and i32 %bf.load, -8193
+  %bf.set = or i32 %bf.clear, %bf.shl
+  store i32 %bf.set, i32* %2, align 8
+  ret %union.tree_node* %call3
+}

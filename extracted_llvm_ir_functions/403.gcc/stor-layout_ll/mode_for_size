@@ -1,0 +1,38 @@
+define i32 @mode_for_size(i32 %size, i32 %class, i32 %limit) #4 {
+entry:
+  %tobool = icmp eq i32 %limit, 0
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load i16* getelementptr inbounds ([59 x i16]* @mode_bitsize, i64 0, i64 5), align 2, !tbaa !4
+  %conv = zext i16 %0 to i32
+  %cmp = icmp ult i32 %conv, %size
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry, %land.lhs.true
+  %idxprom = sext i32 %class to i64
+  %arrayidx = getelementptr inbounds [9 x i32]* @class_narrowest_mode, i64 0, i64 %idxprom
+  %1 = load i32* %arrayidx, align 4, !tbaa !5
+  %cmp217 = icmp eq i32 %1, 0
+  br i1 %cmp217, label %return, label %for.body
+
+for.body:                                         ; preds = %if.end, %for.inc
+  %mode.018 = phi i32 [ %conv13, %for.inc ], [ %1, %if.end ]
+  %idxprom4 = sext i32 %mode.018 to i64
+  %arrayidx5 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom4
+  %2 = load i16* %arrayidx5, align 2, !tbaa !4
+  %conv6 = zext i16 %2 to i32
+  %cmp7 = icmp eq i32 %conv6, %size
+  br i1 %cmp7, label %return, label %for.inc
+
+for.inc:                                          ; preds = %for.body
+  %arrayidx12 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom4
+  %3 = load i8* %arrayidx12, align 1, !tbaa !1
+  %conv13 = zext i8 %3 to i32
+  %cmp2 = icmp eq i8 %3, 0
+  br i1 %cmp2, label %return, label %for.body
+
+return:                                           ; preds = %if.end, %for.body, %for.inc, %land.lhs.true
+  %retval.0 = phi i32 [ 51, %land.lhs.true ], [ 51, %if.end ], [ %mode.018, %for.body ], [ 51, %for.inc ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,12 @@
+define void @ht_destroy(%struct.ht* %table) #0 {
+entry:
+  %stack = getelementptr inbounds %struct.ht* %table, i64 0, i32 0
+  tail call void @obstack_free(%struct.obstack* %stack, i8* null) #6
+  %entries = getelementptr inbounds %struct.ht* %table, i64 0, i32 1
+  %0 = load %struct.ht_identifier*** %entries, align 8, !tbaa !3
+  %1 = bitcast %struct.ht_identifier** %0 to i8*
+  tail call void @free(i8* %1) #6
+  %2 = bitcast %struct.ht* %table to i8*
+  tail call void @free(i8* %2) #6
+  ret void
+}

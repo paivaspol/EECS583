@@ -1,0 +1,46 @@
+define void @ggc_mark_rtx_varray(%struct.varray_head_tag* %v) #0 {
+entry:
+  %tobool = icmp eq %struct.varray_head_tag* %v, null
+  br i1 %tobool, label %if.end6, label %if.then
+
+if.then:                                          ; preds = %entry
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %v, i64 0, i32 0
+  %0 = load i64* %num_elements, align 8, !tbaa !4
+  %sub = add i64 %0, 4294967295
+  %conv = trunc i64 %sub to i32
+  %cmp13 = icmp sgt i32 %conv, -1
+  br i1 %cmp13, label %do.body.lr.ph, label %if.end6
+
+do.body.lr.ph:                                    ; preds = %if.then
+  %data = getelementptr inbounds %struct.varray_head_tag* %v, i64 0, i32 4
+  %rtx = bitcast %union.varray_data_tag* %data to [1 x %struct.rtx_def*]*
+  %sext = shl i64 %sub, 32
+  %1 = ashr exact i64 %sext, 32
+  br label %do.body
+
+do.body:                                          ; preds = %do.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ %1, %do.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds [1 x %struct.rtx_def*]* %rtx, i64 0, i64 %indvars.iv
+  %2 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  %cmp2 = icmp eq %struct.rtx_def* %2, null
+  br i1 %cmp2, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %do.body
+  %3 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 0, i64 0
+  %call = tail call i32 @ggc_set_mark(i8* %3) #5
+  %tobool4 = icmp eq i32 %call, 0
+  br i1 %tobool4, label %if.then5, label %for.inc
+
+if.then5:                                         ; preds = %land.lhs.true
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %2) #6
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true, %do.body, %if.then5
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %4 = trunc i64 %indvars.iv to i32
+  %cmp = icmp sgt i32 %4, 0
+  br i1 %cmp, label %do.body, label %if.end6
+
+if.end6:                                          ; preds = %if.then, %for.inc, %entry
+  ret void
+}

@@ -1,0 +1,84 @@
+define zeroext i1 @expensive_function_p(i32 %threshold) #0 {
+entry:
+  %cmp = icmp sgt i32 %threshold, 10000
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i32 828, i8* getelementptr inbounds ([21 x i8]* @__FUNCTION__.expensive_function_p, i64 0, i64 0)) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %0 = load i32* getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0, i32 14), align 8, !tbaa !3
+  %cmp1 = icmp eq i32 %0, 0
+  br i1 %cmp1, label %return, label %if.end3
+
+if.end3:                                          ; preds = %if.end
+  %mul = mul nsw i32 %0, %threshold
+  %1 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %cmp436 = icmp sgt i32 %1, 0
+  br i1 %cmp436, label %for.body, label %return
+
+for.body:                                         ; preds = %for.inc18, %if.end3
+  %2 = phi i32 [ %1, %if.end3 ], [ %10, %for.inc18 ]
+  %indvars.iv = phi i64 [ 0, %if.end3 ], [ %indvars.iv.next, %for.inc18 ]
+  %sum.038 = phi i32 [ 0, %if.end3 ], [ %sum.1.lcssa, %for.inc18 ]
+  %3 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 4
+  %bb5 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb5, i64 0, i64 %indvars.iv
+  %4 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
+  %head = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 0
+  %insn.029 = load %struct.rtx_def** %head, align 8
+  %end = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 1
+  %5 = load %struct.rtx_def** %end, align 8, !tbaa !0
+  %arrayidx730 = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 2
+  %rtx31 = bitcast %union.rtunion_def* %arrayidx730 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx31, align 8, !tbaa !0
+  %cmp832 = icmp eq %struct.rtx_def* %insn.029, %6
+  br i1 %cmp832, label %for.inc18, label %for.body9.lr.ph
+
+for.body9.lr.ph:                                  ; preds = %for.body
+  %frequency = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 14
+  br label %for.body9
+
+for.body9:                                        ; preds = %for.body9.lr.ph, %for.inc
+  %insn.034 = phi %struct.rtx_def* [ %insn.029, %for.body9.lr.ph ], [ %insn.0, %for.inc ]
+  %sum.133 = phi i32 [ %sum.038, %for.body9.lr.ph ], [ %sum.2, %for.inc ]
+  %call = tail call i32 @active_insn_p(%struct.rtx_def* %insn.034) #5
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %for.inc, label %if.then10
+
+if.then10:                                        ; preds = %for.body9
+  %7 = load i32* %frequency, align 4, !tbaa !3
+  %add = add i32 %7, %sum.133
+  %cmp11 = icmp ugt i32 %add, %mul
+  br i1 %cmp11, label %return, label %for.inc
+
+for.inc:                                          ; preds = %for.body9, %if.then10
+  %sum.2 = phi i32 [ %add, %if.then10 ], [ %sum.133, %for.body9 ]
+  %arrayidx16 = getelementptr inbounds %struct.rtx_def* %insn.034, i64 0, i32 1, i64 2
+  %rtx17 = bitcast %union.rtunion_def* %arrayidx16 to %struct.rtx_def**
+  %insn.0 = load %struct.rtx_def** %rtx17, align 8
+  %8 = load %struct.rtx_def** %end, align 8, !tbaa !0
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %8, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx7 to %struct.rtx_def**
+  %9 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %cmp8 = icmp eq %struct.rtx_def* %insn.0, %9
+  br i1 %cmp8, label %for.cond6.for.inc18_crit_edge, label %for.body9
+
+for.cond6.for.inc18_crit_edge:                    ; preds = %for.inc
+  %.pre = load i32* @n_basic_blocks, align 4, !tbaa !3
+  br label %for.inc18
+
+for.inc18:                                        ; preds = %for.cond6.for.inc18_crit_edge, %for.body
+  %10 = phi i32 [ %.pre, %for.cond6.for.inc18_crit_edge ], [ %2, %for.body ]
+  %sum.1.lcssa = phi i32 [ %sum.2, %for.cond6.for.inc18_crit_edge ], [ %sum.038, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %11 = trunc i64 %indvars.iv.next to i32
+  %cmp4 = icmp slt i32 %11, %10
+  br i1 %cmp4, label %for.body, label %return
+
+return:                                           ; preds = %if.end3, %for.inc18, %if.then10, %if.end
+  %retval.0 = phi i1 [ true, %if.end ], [ true, %if.then10 ], [ false, %for.inc18 ], [ false, %if.end3 ]
+  ret i1 %retval.0
+}

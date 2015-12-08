@@ -1,0 +1,87 @@
+define internal fastcc i32* @ephi_forward(i32 %t, %struct.simple_bitmap_def* nocapture %visited, %struct.simple_bitmap_def** nocapture %succ, i32* %tstack) #0 {
+entry:
+  %rem = and i32 %t, 63
+  %sh_prom = zext i32 %rem to i64
+  %shl = shl i64 1, %sh_prom
+  %div = lshr i32 %t, 6
+  %idxprom = zext i32 %div to i64
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def* %visited, i64 0, i32 3, i64 %idxprom
+  %0 = load i64* %arrayidx, align 8, !tbaa !4
+  %or = or i64 %0, %shl
+  store i64 %or, i64* %arrayidx, align 8, !tbaa !4
+  %idxprom1 = sext i32 %t to i64
+  %arrayidx2 = getelementptr inbounds %struct.simple_bitmap_def** %succ, i64 %idxprom1
+  %1 = load %struct.simple_bitmap_def** %arrayidx2, align 8, !tbaa !0
+  %size = getelementptr inbounds %struct.simple_bitmap_def* %1, i64 0, i32 1
+  %2 = load i32* %size, align 4, !tbaa !3
+  %cmp59 = icmp eq i32 %2, 0
+  br i1 %cmp59, label %do.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc30
+  %indvars.iv62 = phi i64 [ %indvars.iv.next63, %for.inc30 ], [ 0, %entry ]
+  %tstack.addr.061 = phi i32* [ %tstack.addr.4, %for.inc30 ], [ %tstack, %entry ]
+  %arrayidx7 = getelementptr inbounds %struct.simple_bitmap_def* %1, i64 0, i32 3, i64 %indvars.iv62
+  %3 = load i64* %arrayidx7, align 8, !tbaa !4
+  %cmp8 = icmp eq i64 %3, 0
+  br i1 %cmp8, label %for.inc30, label %for.cond9.preheader
+
+for.cond9.preheader:                              ; preds = %for.body
+  %4 = trunc i64 %indvars.iv62 to i32
+  %mul = shl i32 %4, 6
+  br label %for.body11
+
+for.body11:                                       ; preds = %for.cond9.preheader, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.cond9.preheader ], [ %indvars.iv.next, %for.inc ]
+  %tstack.addr.158 = phi i32* [ %tstack.addr.061, %for.cond9.preheader ], [ %tstack.addr.3, %for.inc ]
+  %word_.057 = phi i64 [ %3, %for.cond9.preheader ], [ %word_.1, %for.inc ]
+  %shl13 = shl i64 1, %indvars.iv
+  %and = and i64 %shl13, %word_.057
+  %cmp14 = icmp eq i64 %and, 0
+  br i1 %cmp14, label %for.inc, label %if.then15
+
+if.then15:                                        ; preds = %for.body11
+  %neg = xor i64 %shl13, -1
+  %and16 = and i64 %word_.057, %neg
+  %5 = trunc i64 %indvars.iv to i32
+  %add = add i32 %5, %mul
+  %div17 = lshr i32 %add, 6
+  %idxprom18 = zext i32 %div17 to i64
+  %arrayidx20 = getelementptr inbounds %struct.simple_bitmap_def* %visited, i64 0, i32 3, i64 %idxprom18
+  %6 = load i64* %arrayidx20, align 8, !tbaa !4
+  %rem21 = and i32 %add, 63
+  %sh_prom22 = zext i32 %rem21 to i64
+  %7 = shl i64 1, %sh_prom22
+  %and2355 = and i64 %6, %7
+  %tobool = icmp eq i64 %and2355, 0
+  br i1 %tobool, label %if.then24, label %if.end
+
+if.then24:                                        ; preds = %if.then15
+  %call = tail call fastcc i32* @ephi_forward(i32 %add, %struct.simple_bitmap_def* %visited, %struct.simple_bitmap_def** %succ, i32* %tstack.addr.158) #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.then15, %if.then24
+  %tstack.addr.2 = phi i32* [ %tstack.addr.158, %if.then15 ], [ %call, %if.then24 ]
+  %cmp25 = icmp eq i64 %and16, 0
+  br i1 %cmp25, label %for.inc30, label %for.inc
+
+for.inc:                                          ; preds = %for.body11, %if.end
+  %word_.1 = phi i64 [ %and16, %if.end ], [ %word_.057, %for.body11 ]
+  %tstack.addr.3 = phi i32* [ %tstack.addr.2, %if.end ], [ %tstack.addr.158, %for.body11 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %8 = trunc i64 %indvars.iv.next to i32
+  %cmp10 = icmp ult i32 %8, 64
+  br i1 %cmp10, label %for.body11, label %for.inc30
+
+for.inc30:                                        ; preds = %if.end, %for.inc, %for.body
+  %tstack.addr.4 = phi i32* [ %tstack.addr.061, %for.body ], [ %tstack.addr.2, %if.end ], [ %tstack.addr.3, %for.inc ]
+  %indvars.iv.next63 = add i64 %indvars.iv62, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next63 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %2
+  br i1 %exitcond, label %do.end, label %for.body
+
+do.end:                                           ; preds = %for.inc30, %entry
+  %tstack.addr.0.lcssa = phi i32* [ %tstack, %entry ], [ %tstack.addr.4, %for.inc30 ]
+  %incdec.ptr = getelementptr inbounds i32* %tstack.addr.0.lcssa, i64 1
+  store i32 %t, i32* %tstack.addr.0.lcssa, align 4, !tbaa !3
+  ret i32* %incdec.ptr
+}

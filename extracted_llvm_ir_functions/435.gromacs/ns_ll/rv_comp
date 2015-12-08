@@ -1,0 +1,30 @@
+define internal i32 @rv_comp(i8* nocapture %a, i8* nocapture %b) #2 {
+entry:
+  %0 = bitcast i8* %a to i32*
+  %1 = load i32* %0, align 4, !tbaa !0
+  %2 = bitcast i8* %b to i32*
+  %3 = load i32* %2, align 4, !tbaa !0
+  %4 = load i32* @sdim, align 4, !tbaa !0
+  %idxprom = sext i32 %4 to i64
+  %idxprom1 = sext i32 %1 to i64
+  %5 = load [3 x float]** @sptr, align 8, !tbaa !3
+  %arrayidx2 = getelementptr inbounds [3 x float]* %5, i64 %idxprom1, i64 %idxprom
+  %6 = load float* %arrayidx2, align 4, !tbaa !4
+  %idxprom4 = sext i32 %3 to i64
+  %arrayidx6 = getelementptr inbounds [3 x float]* %5, i64 %idxprom4, i64 %idxprom
+  %7 = load float* %arrayidx6, align 4, !tbaa !4
+  %sub = fsub float %6, %7
+  %cmp = fcmp olt float %sub, 0.000000e+00
+  br i1 %cmp, label %return, label %if.else
+
+if.else:                                          ; preds = %entry
+  %fabsf = tail call float @fabsf(float %sub) #9
+  %8 = fpext float %fabsf to double
+  %not.cmp7 = fcmp uge double %8, 1.200000e-38
+  %. = zext i1 %not.cmp7 to i32
+  br label %return
+
+return:                                           ; preds = %if.else, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %., %if.else ]
+  ret i32 %retval.0
+}

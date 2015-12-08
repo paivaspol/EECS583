@@ -1,0 +1,18 @@
+define i32 @prologue_epilogue_contains(%struct.rtx_def* nocapture %insn) #4 {
+entry:
+  %0 = load %struct.varray_head_tag** @prologue, align 8, !tbaa !0
+  %call = tail call fastcc i32 @contains(%struct.rtx_def* %insn, %struct.varray_head_tag* %0) #9
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %1 = load %struct.varray_head_tag** @epilogue, align 8, !tbaa !0
+  %call1 = tail call fastcc i32 @contains(%struct.rtx_def* %insn, %struct.varray_head_tag* %1) #9
+  %not.tobool2 = icmp ne i32 %call1, 0
+  %. = zext i1 %not.tobool2 to i32
+  br label %return
+
+return:                                           ; preds = %if.end, %entry
+  %retval.0 = phi i32 [ 1, %entry ], [ %., %if.end ]
+  ret i32 %retval.0
+}

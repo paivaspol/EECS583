@@ -1,0 +1,33 @@
+define i32 @extended_count(%struct.rtx_def* %x, i32 %mode, i32 %unsignedp) #0 {
+entry:
+  %.b = load i1* @nonzero_sign_valid, align 1
+  br i1 %.b, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %tobool = icmp eq i32 %unsignedp, 0
+  br i1 %tobool, label %cond.false9, label %cond.true
+
+cond.true:                                        ; preds = %if.end
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom
+  %0 = load i16* %arrayidx, align 2, !tbaa !5
+  %cmp1 = icmp ult i16 %0, 65
+  br i1 %cmp1, label %cond.true3, label %return
+
+cond.true3:                                       ; preds = %cond.true
+  %conv = zext i16 %0 to i32
+  %sub = add nsw i32 %conv, -1
+  %call = tail call fastcc i64 @nonzero_bits(%struct.rtx_def* %x, i32 %mode) #7
+  %call7 = tail call i32 @floor_log2_wide(i64 %call) #6
+  %sub8 = sub i32 %sub, %call7
+  br label %return
+
+cond.false9:                                      ; preds = %if.end
+  %call10 = tail call fastcc i32 @num_sign_bit_copies(%struct.rtx_def* %x, i32 %mode) #7
+  %sub11 = add i32 %call10, -1
+  br label %return
+
+return:                                           ; preds = %cond.false9, %cond.true, %cond.true3, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ %sub11, %cond.false9 ], [ %sub8, %cond.true3 ], [ 0, %cond.true ]
+  ret i32 %retval.0
+}

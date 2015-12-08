@@ -1,0 +1,37 @@
+define float @old_phi(float %r, float %rc, float %r1) #3 {
+entry:
+  %cmp = fcmp ugt float %r, %r1
+  br i1 %cmp, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %div = fdiv float 1.000000e+00, %r
+  %0 = load float* @C, align 4, !tbaa !0
+  %sub = fsub float %div, %0
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %cmp1 = fcmp ult float %r, %rc
+  br i1 %cmp1, label %if.end3, label %return
+
+if.end3:                                          ; preds = %if.else
+  %sub4 = fsub float %r, %r1
+  %div5 = fdiv float 1.000000e+00, %r
+  %1 = load float* @A_3, align 4, !tbaa !0
+  %mul = fmul float %sub4, %1
+  %mul6 = fmul float %sub4, %mul
+  %mul7 = fmul float %sub4, %mul6
+  %sub8 = fsub float %div5, %mul7
+  %2 = load float* @B_4, align 4, !tbaa !0
+  %mul9 = fmul float %sub4, %2
+  %mul10 = fmul float %sub4, %mul9
+  %mul11 = fmul float %sub4, %mul10
+  %mul12 = fmul float %sub4, %mul11
+  %sub13 = fsub float %sub8, %mul12
+  %3 = load float* @C, align 4, !tbaa !0
+  %sub14 = fsub float %sub13, %3
+  br label %return
+
+return:                                           ; preds = %if.else, %if.end3, %if.then
+  %retval.0 = phi float [ %sub, %if.then ], [ %sub14, %if.end3 ], [ 0.000000e+00, %if.else ]
+  ret float %retval.0
+}

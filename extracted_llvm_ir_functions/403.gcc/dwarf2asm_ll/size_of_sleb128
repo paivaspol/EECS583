@@ -1,0 +1,32 @@
+define i32 @size_of_sleb128(i64 %value) #5 {
+entry:
+  br label %do.body
+
+do.body:                                          ; preds = %do.body.backedge, %entry
+  %size.0 = phi i32 [ 1, %entry ], [ %phitmp16, %do.body.backedge ]
+  %value.addr.0 = phi i64 [ %value, %entry ], [ %value.addr.0.be, %do.body.backedge ]
+  %value.addr.0.tr = trunc i64 %value.addr.0 to i32
+  %shr = ashr i64 %value.addr.0, 7
+  switch i64 %shr, label %do.body.backedge [
+    i64 0, label %land.lhs.true
+    i64 -1, label %land.rhs
+  ]
+
+land.lhs.true:                                    ; preds = %do.body
+  %and2 = and i32 %value.addr.0.tr, 64
+  %cmp3 = icmp eq i32 %and2, 0
+  br i1 %cmp3, label %do.end, label %do.body.backedge
+
+land.rhs:                                         ; preds = %do.body
+  %and7 = and i32 %value.addr.0.tr, 64
+  %phitmp = icmp eq i32 %and7, 0
+  br i1 %phitmp, label %do.body.backedge, label %do.end
+
+do.body.backedge:                                 ; preds = %land.rhs, %do.body, %land.lhs.true
+  %value.addr.0.be = phi i64 [ -1, %land.rhs ], [ %shr, %do.body ], [ 0, %land.lhs.true ]
+  %phitmp16 = add i32 %size.0, 1
+  br label %do.body
+
+do.end:                                           ; preds = %land.lhs.true, %land.rhs
+  ret i32 %size.0
+}

@@ -1,0 +1,10 @@
+define i32 @df_reg_global_p(%struct.df* nocapture %df, %struct.rtx_def* nocapture %reg) #4 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtuint, align 4, !tbaa !4
+  %call = tail call %struct.basic_block_def* @df_regno_bb(%struct.df* %df, i32 %0) #6
+  %cmp = icmp ne %struct.basic_block_def* %call, null
+  %conv = zext i1 %cmp to i32
+  ret i32 %conv
+}

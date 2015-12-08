@@ -1,0 +1,37 @@
+define internal void @sets_likely_spilled_1(%struct.rtx_def* nocapture %x, %struct.rtx_def* nocapture %pat, i8* nocapture %data) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %pat to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 47
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load1 = load i32* %1, align 8
+  %bf.clear2 = and i32 %bf.load1, 65535
+  %cmp3 = icmp eq i32 %bf.clear2, 61
+  br i1 %cmp3, label %land.lhs.true4, label %if.end
+
+land.lhs.true4:                                   ; preds = %land.lhs.true
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %2 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp5 = icmp ult i32 %2, 53
+  br i1 %cmp5, label %land.lhs.true6, label %if.end
+
+land.lhs.true6:                                   ; preds = %land.lhs.true4
+  %idxprom = zext i32 %2 to i64
+  %arrayidx10 = getelementptr inbounds [53 x i32]* @regclass_map, i64 0, i64 %idxprom
+  %3 = load i32* %arrayidx10, align 4, !tbaa !10
+  %.off = add i32 %3, -1
+  %switch = icmp ult i32 %.off, 7
+  br i1 %switch, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true6
+  store i8 1, i8* %data, align 1, !tbaa !6
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true6, %if.then, %land.lhs.true4, %land.lhs.true, %entry
+  ret void
+}

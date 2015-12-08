@@ -1,0 +1,62 @@
+define i32 @image_rect(i32* nocapture %xi, i32* nocapture %xj, i32* nocapture %box_size, float %rlong2, i32* nocapture %shift, float* nocapture %r2) #1 {
+entry:
+  br label %for.body
+
+for.cond:                                         ; preds = %if.end13
+  %0 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %0, 3
+  br i1 %cmp, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.cond ]
+  %rij2.041 = phi float [ 0.000000e+00, %entry ], [ %add15, %for.cond ]
+  %t.039 = phi i32 [ 0, %entry ], [ %t.1, %for.cond ]
+  %arrayidx = getelementptr inbounds i32* %xi, i64 %indvars.iv
+  %1 = load i32* %arrayidx, align 4, !tbaa !4
+  %arrayidx2 = getelementptr inbounds i32* %xj, i64 %indvars.iv
+  %2 = load i32* %arrayidx2, align 4, !tbaa !4
+  %sub = sub nsw i32 %1, %2
+  %mul = mul nsw i32 %t.039, 3
+  %arrayidx4 = getelementptr inbounds i32* %box_size, i64 %indvars.iv
+  %3 = load i32* %arrayidx4, align 4, !tbaa !4
+  %div = sdiv i32 %3, 2
+  %sub5 = sub nsw i32 0, %div
+  %cmp6 = icmp slt i32 %sub, %sub5
+  br i1 %cmp6, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.body
+  %add = add nsw i32 %mul, 2
+  %add7 = add nsw i32 %sub, %3
+  br label %if.end13
+
+if.else:                                          ; preds = %for.body
+  %cmp8 = icmp sgt i32 %sub, %div
+  br i1 %cmp8, label %if.then9, label %if.else11
+
+if.then9:                                         ; preds = %if.else
+  %sub10 = sub nsw i32 %sub, %3
+  br label %if.end13
+
+if.else11:                                        ; preds = %if.else
+  %add12 = add nsw i32 %mul, 1
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.then9, %if.else11, %if.then
+  %dx.0 = phi i32 [ %add7, %if.then ], [ %sub10, %if.then9 ], [ %sub, %if.else11 ]
+  %t.1 = phi i32 [ %add, %if.then ], [ %mul, %if.then9 ], [ %add12, %if.else11 ]
+  %conv = sitofp i32 %dx.0 to float
+  %mul14 = fmul float %conv, %conv
+  %add15 = fadd float %rij2.041, %mul14
+  %cmp16 = fcmp ult float %add15, %rlong2
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp16, label %for.cond, label %return
+
+for.end:                                          ; preds = %for.cond
+  store i32 %t.1, i32* %shift, align 4, !tbaa !4
+  store float %add15, float* %r2, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end13, %for.end
+  %retval.0 = phi i32 [ 1, %for.end ], [ 0, %if.end13 ]
+  ret i32 %retval.0
+}

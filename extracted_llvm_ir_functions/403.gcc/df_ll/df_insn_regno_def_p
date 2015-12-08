@@ -1,0 +1,49 @@
+define i32 @df_insn_regno_def_p(%struct.df* nocapture %df, %struct.basic_block_def* nocapture %bb, %struct.rtx_def* nocapture %insn, i32 %regno) #4 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !4
+  %idxprom = zext i32 %0 to i64
+  %insns = getelementptr inbounds %struct.df* %df, i64 0, i32 7
+  %1 = load %struct.insn_info** %insns, align 8, !tbaa !3
+  %defs = getelementptr inbounds %struct.insn_info* %1, i64 %idxprom, i32 0
+  %link.012 = load %struct.df_link** %defs, align 8
+  %tobool13 = icmp eq %struct.df_link* %link.012, null
+  br i1 %tobool13, label %return, label %for.body
+
+for.cond:                                         ; preds = %cond.end
+  %next = getelementptr inbounds %struct.df_link* %link.014, i64 0, i32 0
+  %link.0 = load %struct.df_link** %next, align 8
+  %tobool = icmp eq %struct.df_link* %link.0, null
+  br i1 %tobool, label %return, label %for.body
+
+for.body:                                         ; preds = %entry, %for.cond
+  %link.014 = phi %struct.df_link* [ %link.0, %for.cond ], [ %link.012, %entry ]
+  %ref = getelementptr inbounds %struct.df_link* %link.014, i64 0, i32 1
+  %2 = load %struct.ref** %ref, align 8, !tbaa !3
+  %reg = getelementptr inbounds %struct.ref* %2, i64 0, i32 0
+  %3 = load %struct.rtx_def** %reg, align 8, !tbaa !3
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load = load i32* %4, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 63
+  br i1 %cmp, label %cond.true, label %cond.end
+
+cond.true:                                        ; preds = %for.body
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %for.body, %cond.true
+  %cond = phi %struct.rtx_def* [ %5, %cond.true ], [ %3, %for.body ]
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %cond, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx7 to i32*
+  %6 = load i32* %rtuint, align 4, !tbaa !4
+  %cmp8 = icmp eq i32 %6, %regno
+  br i1 %cmp8, label %return, label %for.cond
+
+return:                                           ; preds = %for.cond, %cond.end, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %cond.end ], [ 0, %for.cond ]
+  ret i32 %retval.0
+}

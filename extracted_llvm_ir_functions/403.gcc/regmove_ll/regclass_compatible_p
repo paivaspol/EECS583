@@ -1,0 +1,46 @@
+define internal fastcc i32 @regclass_compatible_p(i32 %class0, i32 %class1) #0 {
+entry:
+  %cmp = icmp eq i32 %class0, %class1
+  br i1 %cmp, label %lor.end29, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %call = tail call i32 @reg_class_subset_p(i32 %class0, i32 %class1) #5
+  %tobool = icmp eq i32 %call, 0
+  %cmp1 = icmp eq i32 %class0, 1
+  %or.cond = or i1 %tobool, %cmp1
+  %cmp3 = icmp eq i32 %class0, 2
+  %or.cond30 = or i1 %or.cond, %cmp3
+  %cmp5 = icmp eq i32 %class0, 3
+  %or.cond31 = or i1 %or.cond30, %cmp5
+  %cmp7 = icmp eq i32 %class0, 4
+  %or.cond32 = or i1 %or.cond31, %cmp7
+  %cmp9 = icmp eq i32 %class0, 7
+  %or.cond33 = or i1 %or.cond32, %cmp9
+  %cmp11 = icmp eq i32 %class0, 5
+  %or.cond34 = or i1 %or.cond33, %cmp11
+  %cmp13 = icmp eq i32 %class0, 6
+  %or.cond35 = or i1 %or.cond34, %cmp13
+  br i1 %or.cond35, label %lor.rhs, label %lor.end29
+
+lor.rhs:                                          ; preds = %lor.lhs.false
+  %call14 = tail call i32 @reg_class_subset_p(i32 %class1, i32 %class0) #5
+  %tobool15 = icmp eq i32 %call14, 0
+  br i1 %tobool15, label %lor.end29, label %land.rhs
+
+land.rhs:                                         ; preds = %lor.rhs
+  %class1.off = add i32 %class1, -1
+  %0 = icmp ult i32 %class1.off, 4
+  %cmp24 = icmp eq i32 %class1, 7
+  %or.cond39 = or i1 %0, %cmp24
+  %cmp26 = icmp eq i32 %class1, 5
+  %or.cond40 = or i1 %or.cond39, %cmp26
+  %phitmp = icmp ne i32 %class1, 6
+  %not.or.cond40 = xor i1 %or.cond40, true
+  %.phitmp = and i1 %phitmp, %not.or.cond40
+  br label %lor.end29
+
+lor.end29:                                        ; preds = %lor.rhs, %land.rhs, %lor.lhs.false, %entry
+  %1 = phi i1 [ true, %entry ], [ true, %lor.lhs.false ], [ false, %lor.rhs ], [ %.phitmp, %land.rhs ]
+  %lor.ext = zext i1 %1 to i32
+  ret i32 %lor.ext
+}

@@ -1,0 +1,111 @@
+define i32 @check_times2(float %t, float %t0, float %tp, float %tpp) #2 {
+entry:
+  %sub = fsub float %t, %tp
+  %cmp = fcmp ogt float %sub, 0.000000e+00
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %sub1 = fsub float %tp, %tpp
+  %cmp2 = fcmp ogt float %sub1, 0.000000e+00
+  br i1 %cmp2, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true
+  %cmp5 = fcmp olt float %sub, %sub1
+  %sub.sub1 = select i1 %cmp5, float %sub, float %sub1
+  %conv = fpext float %sub.sub1 to double
+  %mul = fmul double %conv, 1.000000e-01
+  %conv8 = fptrunc double %mul to float
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %land.lhs.true, %if.then
+  %margin.0 = phi float [ %conv8, %if.then ], [ 0.000000e+00, %land.lhs.true ], [ 0.000000e+00, %entry ]
+  %0 = load float* @tbegin, align 4, !tbaa !3
+  %cmp10 = fcmp ult float %0, 0.000000e+00
+  %cmp13 = fcmp ugt float %0, %t
+  %or.cond = or i1 %cmp10, %cmp13
+  br i1 %or.cond, label %lor.lhs.false, label %land.lhs.true19
+
+lor.lhs.false:                                    ; preds = %if.end
+  %conv15 = fpext float %0 to double
+  %sub16 = fadd double %conv15, 1.000000e+00
+  %call = tail call double @fabs(double %sub16) #11
+  %cmp17 = fcmp olt double %call, 1.200000e-38
+  br i1 %cmp17, label %land.lhs.true19, label %lor.lhs.false.if.else43_crit_edge
+
+lor.lhs.false.if.else43_crit_edge:                ; preds = %lor.lhs.false
+  %.pre = load float* @tend, align 4, !tbaa !3
+  br label %if.else43
+
+land.lhs.true19:                                  ; preds = %if.end, %lor.lhs.false
+  %1 = load float* @tend, align 4, !tbaa !3
+  %cmp21 = fcmp ult float %1, 0.000000e+00
+  br i1 %cmp21, label %lor.lhs.false26, label %land.lhs.true23
+
+land.lhs.true23:                                  ; preds = %land.lhs.true19
+  %add = fadd float %margin.0, %1
+  %cmp24 = fcmp ult float %add, %t
+  br i1 %cmp24, label %lor.lhs.false26, label %if.then32
+
+lor.lhs.false26:                                  ; preds = %land.lhs.true23, %land.lhs.true19
+  %conv27 = fpext float %1 to double
+  %sub28 = fadd double %conv27, 1.000000e+00
+  %call29 = tail call double @fabs(double %sub28) #11
+  %cmp30 = fcmp olt double %call29, 1.200000e-38
+  br i1 %cmp30, label %if.then32, label %if.else43
+
+if.then32:                                        ; preds = %land.lhs.true23, %lor.lhs.false26
+  %2 = load float* @tdelta, align 4, !tbaa !3
+  %cmp33 = fcmp ogt float %2, 0.000000e+00
+  br i1 %cmp33, label %land.lhs.true35, label %if.else41
+
+land.lhs.true35:                                  ; preds = %if.then32
+  %sub36 = fsub float %t, %t0
+  %conv37 = fpext float %sub36 to double
+  %conv38 = fpext float %2 to double
+  %mul.i = fmul double %conv37, 0x3FF00000A10FAFA0
+  %div.i = fdiv double %mul.i, %conv38
+  %conv.i = fptosi double %div.i to i32
+  %conv1.i = sitofp i32 %conv.i to double
+  %mul2.i = fmul double %conv38, %conv1.i
+  %sub.i = fsub double %conv37, %mul2.i
+  %call.i = tail call double @fabs(double %sub.i) #11
+  %fabsf = tail call float @fabsf(float %sub36) #5
+  %3 = fpext float %fabsf to double
+  %mul4.i = fmul double %3, 6.000000e-07
+  %not.cmp.i = fcmp ugt double %call.i, %mul4.i
+  br i1 %not.cmp.i, label %if.end54, label %if.else41
+
+if.else41:                                        ; preds = %land.lhs.true35, %if.then32
+  br label %if.end54
+
+if.else43:                                        ; preds = %lor.lhs.false.if.else43_crit_edge, %lor.lhs.false26
+  %4 = phi float [ %.pre, %lor.lhs.false.if.else43_crit_edge ], [ %1, %lor.lhs.false26 ]
+  %conv44 = fpext float %4 to double
+  %sub45 = fadd double %conv44, 1.000000e+00
+  %call46 = tail call double @fabs(double %sub45) #11
+  %cmp47 = fcmp ule double %call46, 1.200000e-38
+  %cmp50 = fcmp ugt float %4, %t
+  %or.cond80 = or i1 %cmp47, %cmp50
+  %. = select i1 %or.cond80, i32 -1, i32 1
+  br label %if.end54
+
+if.end54:                                         ; preds = %land.lhs.true35, %if.else43, %if.else41
+  %5 = phi float [ %1, %if.else41 ], [ %1, %land.lhs.true35 ], [ %4, %if.else43 ]
+  %r.0 = phi i32 [ 0, %if.else41 ], [ -1, %land.lhs.true35 ], [ %., %if.else43 ]
+  %6 = load %struct._IO_FILE** @debug, align 8, !tbaa !0
+  %tobool55 = icmp eq %struct._IO_FILE* %6, null
+  br i1 %tobool55, label %if.end63, label %if.then56
+
+if.then56:                                        ; preds = %if.end54
+  %conv57 = fpext float %t to double
+  %conv58 = fpext float %t0 to double
+  %conv59 = fpext float %0 to double
+  %conv60 = fpext float %5 to double
+  %7 = load float* @tdelta, align 4, !tbaa !3
+  %conv61 = fpext float %7 to double
+  %call62 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([38 x i8]* @.str2, i64 0, i64 0), double %conv57, double %conv58, double %conv59, double %conv60, double %conv61, i32 %r.0) #10
+  br label %if.end63
+
+if.end63:                                         ; preds = %if.end54, %if.then56
+  ret i32 %r.0
+}

@@ -1,0 +1,156 @@
+define i32 @live_get_partialhyp(i32 %endutt) #0 {
+entry:
+  %0 = load %struct.kb_t** @kb, align 8, !tbaa !0
+  %kbcore = getelementptr inbounds %struct.kb_t* %0, i64 0, i32 0
+  %1 = load %struct.kbcore_t** %kbcore, align 8, !tbaa !0
+  %dict1 = getelementptr inbounds %struct.kbcore_t* %1, i64 0, i32 2
+  %2 = load %struct.dict_t** %dict1, align 8, !tbaa !0
+  %tobool = icmp eq i32 %endutt, 0
+  %vithist = getelementptr inbounds %struct.kb_t* %0, i64 0, i32 6
+  %3 = load %struct.vithist_t** %vithist, align 8, !tbaa !0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @vithist_utt_end(%struct.vithist_t* %3, %struct.kbcore_t* %1) #3
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %call5 = tail call i32 @vithist_partialutt_end(%struct.vithist_t* %3, %struct.kbcore_t* %1) #3
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %id.0 = phi i32 [ %call, %if.then ], [ %call5, %if.else ]
+  %cmp = icmp sgt i32 %id.0, 0
+  br i1 %cmp, label %if.then6, label %if.else62
+
+if.then6:                                         ; preds = %if.end
+  %4 = load %struct.kb_t** @kb, align 8, !tbaa !0
+  %vithist7 = getelementptr inbounds %struct.kb_t* %4, i64 0, i32 6
+  %5 = load %struct.vithist_t** %vithist7, align 8, !tbaa !0
+  %call8 = tail call %struct.gnode_s* @vithist_backtrace(%struct.vithist_t* %5, i32 %id.0) #3
+  %tobool9107 = icmp eq %struct.gnode_s* %call8, null
+  br i1 %tobool9107, label %if.then6.for.end_crit_edge, label %for.body.lr.ph
+
+if.then6.for.end_crit_edge:                       ; preds = %if.then6
+  %.pre110 = load %struct.partialhyp_t** @parthyp, align 8, !tbaa !0
+  br label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.then6
+  %word21 = getelementptr inbounds %struct.dict_t* %2, i64 0, i32 4
+  %.pre = load %struct.partialhyp_t** @parthyp, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end18
+  %6 = phi %struct.partialhyp_t* [ %.pre, %for.body.lr.ph ], [ %16, %if.end18 ]
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %if.end18 ]
+  %gn.0109 = phi %struct.gnode_s* [ %call8, %for.body.lr.ph ], [ %23, %if.end18 ]
+  %nwds.0108 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %if.end18 ]
+  %ptr = getelementptr inbounds %struct.gnode_s* %gn.0109, i64 0, i32 0, i32 0
+  %7 = load i8** %ptr, align 8, !tbaa !0
+  %word = getelementptr inbounds %struct.partialhyp_t* %6, i64 %indvars.iv, i32 2
+  %8 = load i8** %word, align 8, !tbaa !0
+  %cmp10 = icmp eq i8* %8, null
+  br i1 %cmp10, label %if.end18, label %if.then11
+
+if.then11:                                        ; preds = %for.body
+  tail call void @ckd_free(i8* %8) #3
+  %9 = load %struct.partialhyp_t** @parthyp, align 8, !tbaa !0
+  %word17 = getelementptr inbounds %struct.partialhyp_t* %9, i64 %indvars.iv, i32 2
+  store i8* null, i8** %word17, align 8, !tbaa !0
+  br label %if.end18
+
+if.end18:                                         ; preds = %for.body, %if.then11
+  %id19 = bitcast i8* %7 to i32*
+  %10 = load i32* %id19, align 4, !tbaa !3
+  %idxprom20 = sext i32 %10 to i64
+  %11 = load %struct.dictword_t** %word21, align 8, !tbaa !0
+  %word23 = getelementptr inbounds %struct.dictword_t* %11, i64 %idxprom20, i32 0
+  %12 = load i8** %word23, align 8, !tbaa !0
+  %call24 = tail call noalias i8* @strdup(i8* %12) #3
+  %13 = load %struct.partialhyp_t** @parthyp, align 8, !tbaa !0
+  %word27 = getelementptr inbounds %struct.partialhyp_t* %13, i64 %indvars.iv, i32 2
+  store i8* %call24, i8** %word27, align 8, !tbaa !0
+  %sf = getelementptr inbounds i8* %7, i64 8
+  %14 = bitcast i8* %sf to i32*
+  %15 = load i32* %14, align 4, !tbaa !3
+  %16 = load %struct.partialhyp_t** @parthyp, align 8, !tbaa !0
+  %sf30 = getelementptr inbounds %struct.partialhyp_t* %16, i64 %indvars.iv, i32 3
+  store i32 %15, i32* %sf30, align 4, !tbaa !3
+  %ef = getelementptr inbounds i8* %7, i64 12
+  %17 = bitcast i8* %ef to i32*
+  %18 = load i32* %17, align 4, !tbaa !3
+  %ef33 = getelementptr inbounds %struct.partialhyp_t* %16, i64 %indvars.iv, i32 4
+  store i32 %18, i32* %ef33, align 4, !tbaa !3
+  %ascr = getelementptr inbounds i8* %7, i64 16
+  %19 = bitcast i8* %ascr to i32*
+  %20 = load i32* %19, align 4, !tbaa !3
+  %ascr36 = getelementptr inbounds %struct.partialhyp_t* %16, i64 %indvars.iv, i32 0
+  store i32 %20, i32* %ascr36, align 4, !tbaa !3
+  %lscr = getelementptr inbounds i8* %7, i64 20
+  %21 = bitcast i8* %lscr to i32*
+  %22 = load i32* %21, align 4, !tbaa !3
+  %lscr39 = getelementptr inbounds %struct.partialhyp_t* %16, i64 %indvars.iv, i32 1
+  store i32 %22, i32* %lscr39, align 4, !tbaa !3
+  %next = getelementptr inbounds %struct.gnode_s* %gn.0109, i64 0, i32 1
+  %23 = load %struct.gnode_s** %next, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %nwds.0108, 1
+  %tobool9 = icmp eq %struct.gnode_s* %23, null
+  br i1 %tobool9, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.end18, %if.then6.for.end_crit_edge
+  %24 = phi %struct.partialhyp_t* [ %.pre110, %if.then6.for.end_crit_edge ], [ %16, %if.end18 ]
+  %nwds.0.lcssa = phi i32 [ 0, %if.then6.for.end_crit_edge ], [ %inc, %if.end18 ]
+  %idxprom40 = sext i32 %nwds.0.lcssa to i64
+  %word42 = getelementptr inbounds %struct.partialhyp_t* %24, i64 %idxprom40, i32 2
+  %25 = load i8** %word42, align 8, !tbaa !0
+  %cmp43 = icmp eq i8* %25, null
+  br i1 %cmp43, label %for.cond52.preheader, label %if.then44
+
+if.then44:                                        ; preds = %for.end
+  tail call void @ckd_free(i8* %25) #3
+  %26 = load %struct.partialhyp_t** @parthyp, align 8, !tbaa !0
+  %word50 = getelementptr inbounds %struct.partialhyp_t* %26, i64 %idxprom40, i32 2
+  store i8* null, i8** %word50, align 8, !tbaa !0
+  br label %for.cond52.preheader
+
+for.cond52.preheader:                             ; preds = %for.end, %if.then44
+  br i1 %tobool9107, label %for.end61, label %land.rhs
+
+land.rhs:                                         ; preds = %for.cond52.preheader, %for.body56
+  %gn.1106 = phi %struct.gnode_s* [ %29, %for.body56 ], [ %call8, %for.cond52.preheader ]
+  %next54 = getelementptr inbounds %struct.gnode_s* %gn.1106, i64 0, i32 1
+  %27 = load %struct.gnode_s** %next54, align 8, !tbaa !0
+  %tobool55 = icmp eq %struct.gnode_s* %27, null
+  br i1 %tobool55, label %for.end61, label %for.body56
+
+for.body56:                                       ; preds = %land.rhs
+  %ptr58 = getelementptr inbounds %struct.gnode_s* %gn.1106, i64 0, i32 0, i32 0
+  %28 = load i8** %ptr58, align 8, !tbaa !0
+  tail call void @ckd_free(i8* %28) #3
+  %29 = load %struct.gnode_s** %next54, align 8, !tbaa !0
+  %tobool53 = icmp eq %struct.gnode_s* %29, null
+  br i1 %tobool53, label %for.end61, label %land.rhs
+
+for.end61:                                        ; preds = %for.body56, %land.rhs, %for.cond52.preheader
+  tail call void @glist_free(%struct.gnode_s* %call8) #3
+  br label %if.end75
+
+if.else62:                                        ; preds = %if.end
+  %30 = load %struct.partialhyp_t** @parthyp, align 8, !tbaa !0
+  %word65 = getelementptr inbounds %struct.partialhyp_t* %30, i64 0, i32 2
+  %31 = load i8** %word65, align 8, !tbaa !0
+  %cmp66 = icmp eq i8* %31, null
+  br i1 %cmp66, label %if.end75, label %if.then67
+
+if.then67:                                        ; preds = %if.else62
+  tail call void @ckd_free(i8* %31) #3
+  %32 = load %struct.partialhyp_t** @parthyp, align 8, !tbaa !0
+  %word73 = getelementptr inbounds %struct.partialhyp_t* %32, i64 0, i32 2
+  store i8* null, i8** %word73, align 8, !tbaa !0
+  br label %if.end75
+
+if.end75:                                         ; preds = %if.else62, %if.then67, %for.end61
+  %nwds.1 = phi i32 [ %nwds.0.lcssa, %for.end61 ], [ 0, %if.then67 ], [ 0, %if.else62 ]
+  ret i32 %nwds.1
+}

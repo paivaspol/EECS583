@@ -1,0 +1,16 @@
+define i64 @new_alias_set() #0 {
+entry:
+  %0 = load i32* @flag_strict_aliasing, align 4, !tbaa !4
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = load i64* @new_alias_set.last_alias_set, align 8, !tbaa !3
+  %inc = add nsw i64 %1, 1
+  store i64 %inc, i64* @new_alias_set.last_alias_set, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i64 [ %inc, %if.then ], [ 0, %entry ]
+  ret i64 %retval.0
+}

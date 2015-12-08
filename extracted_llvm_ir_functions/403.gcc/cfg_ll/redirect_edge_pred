@@ -1,0 +1,25 @@
+define void @redirect_edge_pred(%struct.edge_def* %e, %struct.basic_block_def* %new_pred) #0 {
+entry:
+  %src = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 2
+  %0 = load %struct.basic_block_def** %src, align 8, !tbaa !0
+  %succ = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 5
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond, %entry
+  %pe.0 = phi %struct.edge_def** [ %succ, %entry ], [ %succ_next, %for.cond ]
+  %1 = load %struct.edge_def** %pe.0, align 8, !tbaa !0
+  %cmp = icmp eq %struct.edge_def* %1, %e
+  %succ_next = getelementptr inbounds %struct.edge_def* %1, i64 0, i32 1
+  br i1 %cmp, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.cond
+  %2 = load %struct.edge_def** %succ_next, align 8, !tbaa !0
+  store %struct.edge_def* %2, %struct.edge_def** %pe.0, align 8, !tbaa !0
+  %succ2 = getelementptr inbounds %struct.basic_block_def* %new_pred, i64 0, i32 5
+  %3 = load %struct.edge_def** %succ2, align 8, !tbaa !0
+  %succ_next3 = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 1
+  store %struct.edge_def* %3, %struct.edge_def** %succ_next3, align 8, !tbaa !0
+  store %struct.edge_def* %e, %struct.edge_def** %succ2, align 8, !tbaa !0
+  store %struct.basic_block_def* %new_pred, %struct.basic_block_def** %src, align 8, !tbaa !0
+  ret void
+}

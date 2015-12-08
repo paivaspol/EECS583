@@ -1,0 +1,57 @@
+define i8* @xvgr_tlabel() #2 {
+entry:
+  %0 = load i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 1), align 8, !tbaa !0
+  %tobool9.i = icmp eq i8* %0, null
+  br i1 %tobool9.i, label %nenum.exit15, label %land.rhs.lr.ph.i
+
+land.rhs.lr.ph.i:                                 ; preds = %entry
+  %1 = load i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 0), align 16, !tbaa !0
+  br label %land.rhs.i
+
+while.cond.i:                                     ; preds = %land.rhs.i
+  %arrayidx.i = getelementptr inbounds [10 x i8*]* @timestr, i64 0, i64 %indvars.iv.next.i
+  %2 = load i8** %arrayidx.i, align 8, !tbaa !0
+  %tobool.i = icmp eq i8* %2, null
+  br i1 %tobool.i, label %nenum.exit, label %land.rhs.i
+
+land.rhs.i:                                       ; preds = %while.cond.i, %land.rhs.lr.ph.i
+  %indvars.iv.i = phi i64 [ 1, %land.rhs.lr.ph.i ], [ %indvars.iv.next.i, %while.cond.i ]
+  %3 = phi i8* [ %0, %land.rhs.lr.ph.i ], [ %2, %while.cond.i ]
+  %i.010.i = phi i32 [ 1, %land.rhs.lr.ph.i ], [ %inc.i, %while.cond.i ]
+  %cmp.i = icmp eq i8* %1, %3
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %inc.i = add nsw i32 %i.010.i, 1
+  br i1 %cmp.i, label %nenum.exit, label %while.cond.i
+
+nenum.exit:                                       ; preds = %while.cond.i, %land.rhs.i
+  %i.0.lcssa.i = phi i32 [ %i.010.i, %land.rhs.i ], [ %inc.i, %while.cond.i ]
+  %tobool = icmp eq i32 %i.0.lcssa.i, 0
+  br i1 %tobool, label %cond.end, label %land.rhs.i13
+
+while.cond.i7:                                    ; preds = %land.rhs.i13
+  %arrayidx.i5 = getelementptr inbounds [10 x i8*]* @timestr, i64 0, i64 %indvars.iv.next.i11
+  %4 = load i8** %arrayidx.i5, align 8, !tbaa !0
+  %tobool.i6 = icmp eq i8* %4, null
+  br i1 %tobool.i6, label %nenum.exit15, label %land.rhs.i13
+
+land.rhs.i13:                                     ; preds = %nenum.exit, %while.cond.i7
+  %indvars.iv.i8 = phi i64 [ %indvars.iv.next.i11, %while.cond.i7 ], [ 1, %nenum.exit ]
+  %5 = phi i8* [ %4, %while.cond.i7 ], [ %0, %nenum.exit ]
+  %i.010.i9 = phi i32 [ %inc.i12, %while.cond.i7 ], [ 1, %nenum.exit ]
+  %cmp.i10 = icmp eq i8* %1, %5
+  %indvars.iv.next.i11 = add i64 %indvars.iv.i8, 1
+  %inc.i12 = add nsw i32 %i.010.i9, 1
+  br i1 %cmp.i10, label %nenum.exit15, label %while.cond.i7
+
+nenum.exit15:                                     ; preds = %while.cond.i7, %land.rhs.i13, %entry
+  %i.0.lcssa.i14 = phi i32 [ 1, %entry ], [ %inc.i12, %while.cond.i7 ], [ %i.010.i9, %land.rhs.i13 ]
+  %idxprom = sext i32 %i.0.lcssa.i14 to i64
+  %arrayidx = getelementptr inbounds [10 x i8*]* @xvgrtimestr, i64 0, i64 %idxprom
+  %6 = load i8** %arrayidx, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %nenum.exit, %nenum.exit15
+  %cond = phi i8* [ %6, %nenum.exit15 ], [ getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), %nenum.exit ]
+  %call2 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([20 x i8]* @xvgr_tlabel.label, i64 0, i64 0), i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0), i8* %cond) #10
+  ret i8* getelementptr inbounds ([20 x i8]* @xvgr_tlabel.label, i64 0, i64 0)
+}

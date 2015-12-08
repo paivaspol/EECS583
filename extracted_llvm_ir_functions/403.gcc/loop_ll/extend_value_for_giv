@@ -1,0 +1,40 @@
+define %struct.rtx_def* @extend_value_for_giv(%struct.induction* nocapture %v, %struct.rtx_def* %value) #0 {
+entry:
+  %ext_dependent = getelementptr inbounds %struct.induction* %v, i64 0, i32 16
+  %0 = load %struct.rtx_def** %ext_dependent, align 8, !tbaa !4
+  %tobool = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %value to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.end32 [
+    i32 67, label %land.lhs.true
+    i32 68, label %land.lhs.true
+    i32 54, label %land.lhs.true
+    i32 55, label %land.lhs.true
+    i32 58, label %land.lhs.true
+    i32 134, label %land.lhs.true
+    i32 56, label %land.lhs.true
+    i32 140, label %land.lhs.true
+  ]
+
+land.lhs.true:                                    ; preds = %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end, %if.end
+  %bf.clear29 = and i32 %bf.load, 16711680
+  %cmp30 = icmp eq i32 %bf.clear29, 0
+  br i1 %cmp30, label %return, label %if.end32
+
+if.end32:                                         ; preds = %if.end, %land.lhs.true
+  %2 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load33 = load i32* %2, align 8
+  %bf.clear34 = and i32 %bf.load33, 65535
+  %bf.lshr36 = lshr i32 %bf.load33, 16
+  %bf.clear37 = and i32 %bf.lshr36, 255
+  %call = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 %bf.clear34, i32 %bf.clear37, %struct.rtx_def* %value) #8
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %entry, %if.end32
+  %retval.0 = phi %struct.rtx_def* [ %call, %if.end32 ], [ %value, %entry ], [ %value, %land.lhs.true ]
+  ret %struct.rtx_def* %retval.0
+}

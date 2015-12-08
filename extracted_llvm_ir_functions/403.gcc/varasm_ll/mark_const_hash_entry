@@ -1,0 +1,33 @@
+define internal void @mark_const_hash_entry(i8* nocapture %ptr) #0 {
+entry:
+  %0 = bitcast i8* %ptr to %struct.constant_descriptor**
+  %desc.06 = load %struct.constant_descriptor** %0, align 8
+  %tobool7 = icmp eq %struct.constant_descriptor* %desc.06, null
+  br i1 %tobool7, label %while.end, label %do.body
+
+do.body:                                          ; preds = %entry, %do.end
+  %desc.08 = phi %struct.constant_descriptor* [ %desc.0, %do.end ], [ %desc.06, %entry ]
+  %rtl = getelementptr inbounds %struct.constant_descriptor* %desc.08, i64 0, i32 2
+  %1 = load %struct.rtx_def** %rtl, align 8, !tbaa !3
+  %cmp = icmp eq %struct.rtx_def* %1, null
+  br i1 %cmp, label %do.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %do.body
+  %2 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 0, i64 0
+  %call = tail call i32 @ggc_set_mark(i8* %2) #9
+  %tobool1 = icmp eq i32 %call, 0
+  br i1 %tobool1, label %if.then, label %do.end
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %1) #9
+  br label %do.end
+
+do.end:                                           ; preds = %land.lhs.true, %do.body, %if.then
+  %next = getelementptr inbounds %struct.constant_descriptor* %desc.08, i64 0, i32 0
+  %desc.0 = load %struct.constant_descriptor** %next, align 8
+  %tobool = icmp eq %struct.constant_descriptor* %desc.0, null
+  br i1 %tobool, label %while.end, label %do.body
+
+while.end:                                        ; preds = %do.end, %entry
+  ret void
+}

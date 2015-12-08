@@ -1,0 +1,18 @@
+define i32 @memory_address_p(i32 %mode, %struct.rtx_def* %addr) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %addr to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 70
+  br i1 %cmp, label %return, label %do.body
+
+do.body:                                          ; preds = %entry
+  %call = tail call i32 @legitimate_address_p(i32 %mode, %struct.rtx_def* %addr, i32 0) #6
+  %not.tobool = icmp ne i32 %call, 0
+  %. = zext i1 %not.tobool to i32
+  br label %return
+
+return:                                           ; preds = %do.body, %entry
+  %retval.0 = phi i32 [ 1, %entry ], [ %., %do.body ]
+  ret i32 %retval.0
+}

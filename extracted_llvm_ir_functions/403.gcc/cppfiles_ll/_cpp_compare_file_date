@@ -1,0 +1,37 @@
+define i32 @_cpp_compare_file_date(%struct.cpp_reader* %pfile, %struct.cpp_token* nocapture %header) #0 {
+entry:
+  %call = tail call fastcc %struct.include_file* @find_include_file(%struct.cpp_reader* %pfile, %struct.cpp_token* %header, i32 0) #7
+  %magicptr = ptrtoint %struct.include_file* %call to i64
+  switch i64 %magicptr, label %if.end [
+    i64 -1, label %return
+    i64 0, label %return
+  ]
+
+if.end:                                           ; preds = %entry
+  %fd = getelementptr inbounds %struct.include_file* %call, i64 0, i32 5
+  %0 = load i32* %fd, align 4, !tbaa !3
+  %cmp2 = icmp sgt i32 %0, 0
+  br i1 %cmp2, label %if.then3, label %if.end7
+
+if.then3:                                         ; preds = %if.end
+  %call5 = tail call i32 @close(i32 %0) #6
+  store i32 -1, i32* %fd, align 4, !tbaa !3
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.then3, %if.end
+  %tv_sec = getelementptr inbounds %struct.include_file* %call, i64 0, i32 4, i32 12, i32 0
+  %1 = load i64* %tv_sec, align 8, !tbaa !4
+  %buffer = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
+  %2 = load %struct.cpp_buffer** %buffer, align 8, !tbaa !0
+  %inc8 = getelementptr inbounds %struct.cpp_buffer* %2, i64 0, i32 6
+  %3 = load %struct.include_file** %inc8, align 8, !tbaa !0
+  %tv_sec11 = getelementptr inbounds %struct.include_file* %3, i64 0, i32 4, i32 12, i32 0
+  %4 = load i64* %tv_sec11, align 8, !tbaa !4
+  %cmp12 = icmp sgt i64 %1, %4
+  %conv = zext i1 %cmp12 to i32
+  br label %return
+
+return:                                           ; preds = %entry, %entry, %if.end7
+  %retval.0 = phi i32 [ %conv, %if.end7 ], [ -1, %entry ], [ -1, %entry ]
+  ret i32 %retval.0
+}

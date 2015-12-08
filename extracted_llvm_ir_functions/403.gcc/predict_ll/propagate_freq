@@ -1,0 +1,293 @@
+define internal fastcc void @propagate_freq(%struct.basic_block_def* %head) #0 {
+entry:
+  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %cmp216 = icmp sgt i32 %0, 0
+  br i1 %cmp216, label %for.body, label %for.end40
+
+for.body:                                         ; preds = %for.inc38, %entry
+  %1 = phi i32 [ %0, %entry ], [ %17, %for.inc38 ]
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc38 ]
+  %2 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4
+  %bb2 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb2, i64 0, i64 %indvars.iv
+  %3 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
+  %aux = getelementptr inbounds %struct.basic_block_def* %3, i64 0, i32 10
+  %4 = load i8** %aux, align 8, !tbaa !0
+  %5 = getelementptr inbounds i8* %4, i64 16
+  %bf.load = load i8* %5, align 8
+  %bf.shl.mask = and i8 %bf.load, 1
+  %tobool = icmp eq i8 %bf.shl.mask, 0
+  br i1 %tobool, label %for.inc38, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %pred = getelementptr inbounds %struct.basic_block_def* %3, i64 0, i32 4
+  %e.0210 = load %struct.edge_def** %pred, align 8
+  %tobool4211 = icmp eq %struct.edge_def* %e.0210, null
+  br i1 %tobool4211, label %for.end, label %for.body5.lr.ph
+
+for.body5.lr.ph:                                  ; preds = %if.then
+  %index34 = getelementptr inbounds %struct.basic_block_def* %3, i64 0, i32 11
+  br label %for.body5
+
+for.body5:                                        ; preds = %for.body5.lr.ph, %for.inc
+  %e.0213 = phi %struct.edge_def* [ %e.0210, %for.body5.lr.ph ], [ %e.0, %for.inc ]
+  %count.0212 = phi i32 [ 0, %for.body5.lr.ph ], [ %count.1, %for.inc ]
+  %src = getelementptr inbounds %struct.edge_def* %e.0213, i64 0, i32 2
+  %6 = load %struct.basic_block_def** %src, align 8, !tbaa !0
+  %aux6 = getelementptr inbounds %struct.basic_block_def* %6, i64 0, i32 10
+  %7 = load i8** %aux6, align 8, !tbaa !0
+  %8 = getelementptr inbounds i8* %7, i64 16
+  %bf.load8 = load i8* %8, align 8
+  %bf.shl9.mask = and i8 %bf.load8, 1
+  %tobool12 = icmp eq i8 %bf.shl9.mask, 0
+  br i1 %tobool12, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body5
+  %flags = getelementptr inbounds %struct.edge_def* %e.0213, i64 0, i32 6
+  %9 = load i32* %flags, align 4, !tbaa !3
+  %and = and i32 %9, 32
+  %tobool13 = icmp eq i32 %and, 0
+  br i1 %tobool13, label %if.then14, label %if.else
+
+if.then14:                                        ; preds = %land.lhs.true
+  %inc = add nsw i32 %count.0212, 1
+  br label %for.inc
+
+if.else:                                          ; preds = %land.lhs.true
+  %tobool22 = icmp ne i8 %bf.shl9.mask, 0
+  %10 = load %struct._IO_FILE** @rtl_dump_file, align 8, !tbaa !0
+  %tobool24 = icmp ne %struct._IO_FILE* %10, null
+  %or.cond = and i1 %tobool22, %tobool24
+  br i1 %or.cond, label %land.lhs.true25, label %for.inc
+
+land.lhs.true25:                                  ; preds = %if.else
+  %aux26 = getelementptr inbounds %struct.edge_def* %e.0213, i64 0, i32 5
+  %11 = load i8** %aux26, align 8, !tbaa !0
+  %12 = getelementptr inbounds i8* %11, i64 8
+  %bf.load27 = load i8* %12, align 8
+  %bf.shl28.mask = and i8 %bf.load27, 1
+  %tobool31 = icmp eq i8 %bf.shl28.mask, 0
+  br i1 %tobool31, label %if.then32, label %for.inc
+
+if.then32:                                        ; preds = %land.lhs.true25
+  %index = getelementptr inbounds %struct.basic_block_def* %6, i64 0, i32 11
+  %13 = load i32* %index, align 4, !tbaa !3
+  %14 = load i32* %index34, align 4, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %10, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i32 %13, i32 %14) #5
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body5, %land.lhs.true25, %if.then14, %if.then32, %if.else
+  %count.1 = phi i32 [ %count.0212, %land.lhs.true25 ], [ %count.0212, %if.then32 ], [ %count.0212, %if.else ], [ %inc, %if.then14 ], [ %count.0212, %for.body5 ]
+  %pred_next = getelementptr inbounds %struct.edge_def* %e.0213, i64 0, i32 0
+  %e.0 = load %struct.edge_def** %pred_next, align 8
+  %tobool4 = icmp eq %struct.edge_def* %e.0, null
+  br i1 %tobool4, label %for.cond3.for.end_crit_edge, label %for.body5
+
+for.cond3.for.end_crit_edge:                      ; preds = %for.inc
+  %.pre220 = load i8** %aux, align 8, !tbaa !0
+  br label %for.end
+
+for.end:                                          ; preds = %for.cond3.for.end_crit_edge, %if.then
+  %15 = phi i8* [ %.pre220, %for.cond3.for.end_crit_edge ], [ %4, %if.then ]
+  %count.0.lcssa = phi i32 [ %count.1, %for.cond3.for.end_crit_edge ], [ 0, %if.then ]
+  %npredecessors = getelementptr inbounds i8* %15, i64 20
+  %16 = bitcast i8* %npredecessors to i32*
+  store i32 %count.0.lcssa, i32* %16, align 4, !tbaa !3
+  %.pre219 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  br label %for.inc38
+
+for.inc38:                                        ; preds = %for.body, %for.end
+  %17 = phi i32 [ %1, %for.body ], [ %.pre219, %for.end ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %18 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %18, %17
+  br i1 %cmp, label %for.body, label %for.end40
+
+for.end40:                                        ; preds = %for.inc38, %entry
+  %aux41 = getelementptr inbounds %struct.basic_block_def* %head, i64 0, i32 10
+  %19 = load i8** %aux41, align 8, !tbaa !0
+  %frequency = bitcast i8* %19 to double*
+  store volatile double 1.000000e+00, double* %frequency, align 8, !tbaa !6
+  %tobool43207 = icmp eq %struct.basic_block_def* %head, null
+  br i1 %tobool43207, label %for.end142, label %for.body44
+
+for.cond42.loopexit:                              ; preds = %if.end85, %for.inc138, %for.cond107.loopexit
+  %nextbb.0.lcssa = phi %struct.basic_block_def* [ %22, %for.cond107.loopexit ], [ %nextbb.2, %for.inc138 ], [ %22, %if.end85 ]
+  %last.1.lcssa = phi %struct.basic_block_def* [ %last.0208, %for.cond107.loopexit ], [ %last.2, %for.inc138 ], [ %last.0208, %if.end85 ]
+  %tobool43 = icmp eq %struct.basic_block_def* %nextbb.0.lcssa, null
+  br i1 %tobool43, label %for.end142, label %for.body44
+
+for.body44:                                       ; preds = %for.end40, %for.cond42.loopexit
+  %bb.0209 = phi %struct.basic_block_def* [ %nextbb.0.lcssa, %for.cond42.loopexit ], [ %head, %for.end40 ]
+  %last.0208 = phi %struct.basic_block_def* [ %last.1.lcssa, %for.cond42.loopexit ], [ %head, %for.end40 ]
+  %aux46 = getelementptr inbounds %struct.basic_block_def* %bb.0209, i64 0, i32 10
+  %20 = load i8** %aux46, align 8, !tbaa !0
+  %next = getelementptr inbounds i8* %20, i64 8
+  %21 = bitcast i8* %next to %struct.basic_block_def**
+  %22 = load %struct.basic_block_def** %21, align 8, !tbaa !0
+  store %struct.basic_block_def* null, %struct.basic_block_def** %21, align 8, !tbaa !0
+  %cmp49 = icmp eq %struct.basic_block_def* %bb.0209, %head
+  br i1 %cmp49, label %if.end85, label %if.then50
+
+if.then50:                                        ; preds = %for.body44
+  %pred51 = getelementptr inbounds %struct.basic_block_def* %bb.0209, i64 0, i32 4
+  %e.1191 = load %struct.edge_def** %pred51, align 8
+  %tobool53192 = icmp eq %struct.edge_def* %e.1191, null
+  br i1 %tobool53192, label %for.end77, label %for.body54
+
+for.body54:                                       ; preds = %if.then50, %for.inc75
+  %e.1195 = phi %struct.edge_def* [ %e.1, %for.inc75 ], [ %e.1191, %if.then50 ]
+  %frequency45.0194 = phi double [ %frequency45.1, %for.inc75 ], [ 0.000000e+00, %if.then50 ]
+  %cyclic_probability.0193 = phi double [ %cyclic_probability.1, %for.inc75 ], [ 0.000000e+00, %if.then50 ]
+  %aux55 = getelementptr inbounds %struct.edge_def* %e.1195, i64 0, i32 5
+  %23 = load i8** %aux55, align 8, !tbaa !0
+  %24 = getelementptr inbounds i8* %23, i64 8
+  %bf.load57 = load i8* %24, align 8
+  %bf.shl58.mask = and i8 %bf.load57, 1
+  %tobool61 = icmp eq i8 %bf.shl58.mask, 0
+  br i1 %tobool61, label %if.else64, label %if.then62
+
+if.then62:                                        ; preds = %for.body54
+  %back_edge_prob = bitcast i8* %23 to double*
+  %25 = load volatile double* %back_edge_prob, align 8, !tbaa !6
+  %add = fadd double %cyclic_probability.0193, %25
+  br label %for.inc75
+
+if.else64:                                        ; preds = %for.body54
+  %flags65 = getelementptr inbounds %struct.edge_def* %e.1195, i64 0, i32 6
+  %26 = load i32* %flags65, align 4, !tbaa !3
+  %and66 = and i32 %26, 32
+  %tobool67 = icmp eq i32 %and66, 0
+  br i1 %tobool67, label %if.then68, label %for.inc75
+
+if.then68:                                        ; preds = %if.else64
+  %probability = getelementptr inbounds %struct.edge_def* %e.1195, i64 0, i32 7
+  %27 = load i32* %probability, align 4, !tbaa !3
+  %conv = sitofp i32 %27 to double
+  %src69 = getelementptr inbounds %struct.edge_def* %e.1195, i64 0, i32 2
+  %28 = load %struct.basic_block_def** %src69, align 8, !tbaa !0
+  %aux70 = getelementptr inbounds %struct.basic_block_def* %28, i64 0, i32 10
+  %29 = load i8** %aux70, align 8, !tbaa !0
+  %frequency71 = bitcast i8* %29 to double*
+  %30 = load volatile double* %frequency71, align 8, !tbaa !6
+  %mul = fmul double %conv, %30
+  %div = fdiv double %mul, 1.000000e+04
+  %add72 = fadd double %frequency45.0194, %div
+  br label %for.inc75
+
+for.inc75:                                        ; preds = %if.else64, %if.then62, %if.then68
+  %cyclic_probability.1 = phi double [ %add, %if.then62 ], [ %cyclic_probability.0193, %if.else64 ], [ %cyclic_probability.0193, %if.then68 ]
+  %frequency45.1 = phi double [ %frequency45.0194, %if.then62 ], [ %frequency45.0194, %if.else64 ], [ %add72, %if.then68 ]
+  %pred_next76 = getelementptr inbounds %struct.edge_def* %e.1195, i64 0, i32 0
+  %e.1 = load %struct.edge_def** %pred_next76, align 8
+  %tobool53 = icmp eq %struct.edge_def* %e.1, null
+  br i1 %tobool53, label %for.end77, label %for.body54
+
+for.end77:                                        ; preds = %for.inc75, %if.then50
+  %frequency45.0.lcssa = phi double [ 0.000000e+00, %if.then50 ], [ %frequency45.1, %for.inc75 ]
+  %cyclic_probability.0.lcssa = phi double [ 0.000000e+00, %if.then50 ], [ %cyclic_probability.1, %for.inc75 ]
+  %cmp78 = fcmp ogt double %cyclic_probability.0.lcssa, 9.999000e-01
+  %cyclic_probability.2 = select i1 %cmp78, double 9.999000e-01, double %cyclic_probability.0.lcssa
+  %sub = fsub double 1.000000e+00, %cyclic_probability.2
+  %div82 = fdiv double %frequency45.0.lcssa, %sub
+  %31 = load i8** %aux46, align 8, !tbaa !0
+  %frequency84 = bitcast i8* %31 to double*
+  store volatile double %div82, double* %frequency84, align 8, !tbaa !6
+  br label %if.end85
+
+if.end85:                                         ; preds = %for.body44, %for.end77
+  %32 = load i8** %aux46, align 8, !tbaa !0
+  %33 = getelementptr inbounds i8* %32, i64 16
+  %bf.load88 = load i8* %33, align 8
+  %bf.clear = and i8 %bf.load88, -2
+  store i8 %bf.clear, i8* %33, align 8
+  %succ = getelementptr inbounds %struct.basic_block_def* %bb.0209, i64 0, i32 5
+  %e.2197 = load %struct.edge_def** %succ, align 8
+  %tobool90198 = icmp eq %struct.edge_def* %e.2197, null
+  br i1 %tobool90198, label %for.cond42.loopexit, label %for.body91
+
+for.body91:                                       ; preds = %if.end85, %for.inc104
+  %e.2199 = phi %struct.edge_def* [ %e.2, %for.inc104 ], [ %e.2197, %if.end85 ]
+  %dest = getelementptr inbounds %struct.edge_def* %e.2199, i64 0, i32 3
+  %34 = load %struct.basic_block_def** %dest, align 8, !tbaa !0
+  %cmp92 = icmp eq %struct.basic_block_def* %34, %head
+  br i1 %cmp92, label %if.then94, label %for.inc104
+
+if.then94:                                        ; preds = %for.body91
+  %probability95 = getelementptr inbounds %struct.edge_def* %e.2199, i64 0, i32 7
+  %35 = load i32* %probability95, align 4, !tbaa !3
+  %conv96 = sitofp i32 %35 to double
+  %36 = load i8** %aux46, align 8, !tbaa !0
+  %frequency98 = bitcast i8* %36 to double*
+  %37 = load volatile double* %frequency98, align 8, !tbaa !6
+  %mul99 = fmul double %conv96, %37
+  %div100 = fdiv double %mul99, 1.000000e+04
+  %aux101 = getelementptr inbounds %struct.edge_def* %e.2199, i64 0, i32 5
+  %38 = load i8** %aux101, align 8, !tbaa !0
+  %back_edge_prob102 = bitcast i8* %38 to double*
+  store volatile double %div100, double* %back_edge_prob102, align 8, !tbaa !6
+  br label %for.inc104
+
+for.inc104:                                       ; preds = %for.body91, %if.then94
+  %succ_next = getelementptr inbounds %struct.edge_def* %e.2199, i64 0, i32 1
+  %e.2 = load %struct.edge_def** %succ_next, align 8
+  %tobool90 = icmp eq %struct.edge_def* %e.2, null
+  br i1 %tobool90, label %for.cond107.loopexit, label %for.body91
+
+for.cond107.loopexit:                             ; preds = %for.inc104
+  %e.3200.pre = load %struct.edge_def** %succ, align 8
+  %tobool108201 = icmp eq %struct.edge_def* %e.3200.pre, null
+  br i1 %tobool108201, label %for.cond42.loopexit, label %for.body109
+
+for.body109:                                      ; preds = %for.cond107.loopexit, %for.inc138
+  %e.3204 = phi %struct.edge_def* [ %e.3, %for.inc138 ], [ %e.3200.pre, %for.cond107.loopexit ]
+  %nextbb.0203 = phi %struct.basic_block_def* [ %nextbb.2, %for.inc138 ], [ %22, %for.cond107.loopexit ]
+  %last.1202 = phi %struct.basic_block_def* [ %last.2, %for.inc138 ], [ %last.0208, %for.cond107.loopexit ]
+  %flags110 = getelementptr inbounds %struct.edge_def* %e.3204, i64 0, i32 6
+  %39 = load i32* %flags110, align 4, !tbaa !3
+  %and111 = and i32 %39, 32
+  %tobool112 = icmp eq i32 %and111, 0
+  br i1 %tobool112, label %land.lhs.true113, label %for.inc138
+
+land.lhs.true113:                                 ; preds = %for.body109
+  %dest114 = getelementptr inbounds %struct.edge_def* %e.3204, i64 0, i32 3
+  %40 = load %struct.basic_block_def** %dest114, align 8, !tbaa !0
+  %aux115 = getelementptr inbounds %struct.basic_block_def* %40, i64 0, i32 10
+  %41 = load i8** %aux115, align 8, !tbaa !0
+  %npredecessors116 = getelementptr inbounds i8* %41, i64 20
+  %42 = bitcast i8* %npredecessors116 to i32*
+  %43 = load i32* %42, align 4, !tbaa !3
+  %tobool117 = icmp eq i32 %43, 0
+  br i1 %tobool117, label %for.inc138, label %if.then118
+
+if.then118:                                       ; preds = %land.lhs.true113
+  %dec = add nsw i32 %43, -1
+  store i32 %dec, i32* %42, align 4, !tbaa !3
+  %tobool125 = icmp eq i32 %dec, 0
+  br i1 %tobool125, label %if.then126, label %for.inc138
+
+if.then126:                                       ; preds = %if.then118
+  %tobool127 = icmp eq %struct.basic_block_def* %nextbb.0203, null
+  br i1 %tobool127, label %for.inc138, label %if.else130
+
+if.else130:                                       ; preds = %if.then126
+  %aux132 = getelementptr inbounds %struct.basic_block_def* %last.1202, i64 0, i32 10
+  %44 = load i8** %aux132, align 8, !tbaa !0
+  %next133 = getelementptr inbounds i8* %44, i64 8
+  %45 = bitcast i8* %next133 to %struct.basic_block_def**
+  store %struct.basic_block_def* %40, %struct.basic_block_def** %45, align 8, !tbaa !0
+  %.pre = load %struct.basic_block_def** %dest114, align 8, !tbaa !0
+  br label %for.inc138
+
+for.inc138:                                       ; preds = %if.else130, %if.then126, %if.then118, %land.lhs.true113, %for.body109
+  %last.2 = phi %struct.basic_block_def* [ %last.1202, %for.body109 ], [ %last.1202, %if.then118 ], [ %last.1202, %land.lhs.true113 ], [ %.pre, %if.else130 ], [ %40, %if.then126 ]
+  %nextbb.2 = phi %struct.basic_block_def* [ %nextbb.0203, %for.body109 ], [ %nextbb.0203, %if.then118 ], [ %nextbb.0203, %land.lhs.true113 ], [ %nextbb.0203, %if.else130 ], [ %40, %if.then126 ]
+  %succ_next139 = getelementptr inbounds %struct.edge_def* %e.3204, i64 0, i32 1
+  %e.3 = load %struct.edge_def** %succ_next139, align 8
+  %tobool108 = icmp eq %struct.edge_def* %e.3, null
+  br i1 %tobool108, label %for.cond42.loopexit, label %for.body109
+
+for.end142:                                       ; preds = %for.cond42.loopexit, %for.end40
+  ret void
+}

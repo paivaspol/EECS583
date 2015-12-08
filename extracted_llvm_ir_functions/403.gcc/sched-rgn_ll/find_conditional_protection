@@ -1,0 +1,118 @@
+define internal fastcc i32 @find_conditional_protection(%struct.rtx_def* nocapture %insn, i32 %load_insn_bb) #5 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !3
+  %idxprom = sext i32 %0 to i64
+  %1 = load %struct.haifa_insn_data** @h_i_d, align 8, !tbaa !0
+  %depend = getelementptr inbounds %struct.haifa_insn_data* %1, i64 %idxprom, i32 0
+  %link.0121 = load %struct.rtx_def** %depend, align 8
+  %tobool122 = icmp eq %struct.rtx_def* %link.0121, null
+  br i1 %tobool122, label %return, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %2 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %3 = load i32** @containing_rgn, align 8, !tbaa !0
+  %4 = load i32* @current_blocks, align 4, !tbaa !3
+  %add11 = add nsw i32 %4, %load_insn_bb
+  %idxprom12 = sext i32 %add11 to i64
+  %5 = load i32** @rgn_bb_table, align 8, !tbaa !0
+  %arrayidx13 = getelementptr inbounds i32* %5, i64 %idxprom12
+  %6 = load i32* %arrayidx13, align 4, !tbaa !3
+  %idxprom14 = sext i32 %6 to i64
+  %arrayidx15 = getelementptr inbounds i32* %3, i64 %idxprom14
+  %7 = load i32* %arrayidx15, align 4, !tbaa !3
+  %8 = load i32** @block_to_bb, align 8, !tbaa !0
+  %9 = load i32** @in_edges, align 8, !tbaa !0
+  %10 = load i32** @edge_to_bit, align 8, !tbaa !0
+  %idxprom60 = sext i32 %load_insn_bb to i64
+  %11 = load %struct.simple_bitmap_def*** @ancestor_edges, align 8, !tbaa !0
+  %arrayidx61 = getelementptr inbounds %struct.simple_bitmap_def** %11, i64 %idxprom60
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %link.0123 = phi %struct.rtx_def* [ %link.0121, %for.body.lr.ph ], [ %link.0, %for.inc ]
+  %fld2 = getelementptr inbounds %struct.rtx_def* %link.0123, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld2 to %struct.rtx_def**
+  %12 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %12, i64 0, i32 1, i64 0
+  %rtint6 = bitcast %union.rtunion_def* %arrayidx5 to i32*
+  %13 = load i32* %rtint6, align 4, !tbaa !3
+  %idxprom7 = sext i32 %13 to i64
+  %arrayidx8 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom7
+  %14 = load %struct.basic_block_def** %arrayidx8, align 8, !tbaa !0
+  %index = getelementptr inbounds %struct.basic_block_def* %14, i64 0, i32 11
+  %15 = load i32* %index, align 4, !tbaa !3
+  %idxprom9 = sext i32 %15 to i64
+  %arrayidx10 = getelementptr inbounds i32* %3, i64 %idxprom9
+  %16 = load i32* %arrayidx10, align 4, !tbaa !3
+  %cmp = icmp eq i32 %16, %7
+  br i1 %cmp, label %land.lhs.true, label %for.inc
+
+land.lhs.true:                                    ; preds = %for.body
+  %arrayidx26 = getelementptr inbounds i32* %8, i64 %idxprom9
+  %17 = load i32* %arrayidx26, align 4, !tbaa !3
+  %cmp27 = icmp eq i32 %17, %load_insn_bb
+  %tobool39 = icmp eq i32 %17, 0
+  %or.cond = or i1 %cmp27, %tobool39
+  br i1 %or.cond, label %land.lhs.true82, label %lor.lhs.false40
+
+lor.lhs.false40:                                  ; preds = %land.lhs.true
+  %add52 = add nsw i32 %17, %4
+  %idxprom53 = sext i32 %add52 to i64
+  %arrayidx54 = getelementptr inbounds i32* %5, i64 %idxprom53
+  %18 = load i32* %arrayidx54, align 4, !tbaa !3
+  %idxprom55 = sext i32 %18 to i64
+  %arrayidx56 = getelementptr inbounds i32* %9, i64 %idxprom55
+  %19 = load i32* %arrayidx56, align 4, !tbaa !3
+  %idxprom57 = sext i32 %19 to i64
+  %arrayidx58 = getelementptr inbounds i32* %10, i64 %idxprom57
+  %20 = load i32* %arrayidx58, align 4, !tbaa !3
+  %div = lshr i32 %20, 6
+  %idxprom59 = zext i32 %div to i64
+  %21 = load %struct.simple_bitmap_def** %arrayidx61, align 8, !tbaa !0
+  %arrayidx62 = getelementptr inbounds %struct.simple_bitmap_def* %21, i64 0, i32 3, i64 %idxprom59
+  %22 = load i64* %arrayidx62, align 8, !tbaa !4
+  %rem = and i32 %20, 63
+  %sh_prom = zext i32 %rem to i64
+  %23 = shl i64 1, %sh_prom
+  %and120 = and i64 %22, %23
+  %tobool81 = icmp eq i64 %and120, 0
+  %brmerge = or i1 %tobool81, %cmp27
+  br i1 %brmerge, label %for.inc, label %land.lhs.true95
+
+land.lhs.true82:                                  ; preds = %land.lhs.true
+  br i1 %cmp27, label %for.inc, label %land.lhs.true95
+
+land.lhs.true95:                                  ; preds = %lor.lhs.false40, %land.lhs.true82
+  %24 = bitcast %struct.rtx_def* %link.0123 to i32*
+  %bf.load = load i32* %24, align 8
+  %bf.clear = and i32 %bf.load, 16711680
+  %cmp96 = icmp eq i32 %bf.clear, 0
+  br i1 %cmp96, label %land.lhs.true97, label %for.inc
+
+land.lhs.true97:                                  ; preds = %land.lhs.true95
+  %25 = bitcast %struct.rtx_def* %12 to i32*
+  %bf.load98 = load i32* %25, align 8
+  %bf.clear99 = and i32 %bf.load98, 65535
+  %cmp100 = icmp eq i32 %bf.clear99, 33
+  br i1 %cmp100, label %return, label %lor.lhs.false101
+
+lor.lhs.false101:                                 ; preds = %land.lhs.true97
+  %call = tail call fastcc i32 @find_conditional_protection(%struct.rtx_def* %12, i32 %load_insn_bb) #9
+  %tobool102 = icmp eq i32 %call, 0
+  br i1 %tobool102, label %for.inc, label %return
+
+for.inc:                                          ; preds = %lor.lhs.false40, %lor.lhs.false101, %land.lhs.true82, %for.body, %land.lhs.true95
+  %arrayidx104 = getelementptr inbounds %struct.rtx_def* %link.0123, i64 0, i32 1, i64 1
+  %rtx105 = bitcast %union.rtunion_def* %arrayidx104 to %struct.rtx_def**
+  %link.0 = load %struct.rtx_def** %rtx105, align 8
+  %tobool = icmp eq %struct.rtx_def* %link.0, null
+  br i1 %tobool, label %return, label %for.body
+
+return:                                           ; preds = %for.inc, %land.lhs.true97, %lor.lhs.false101, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %lor.lhs.false101 ], [ 1, %land.lhs.true97 ], [ 0, %for.inc ]
+  ret i32 %retval.0
+}

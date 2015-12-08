@@ -1,0 +1,14 @@
+define void @type_hash_add(i32 %hashcode, %union.tree_node* %type) #0 {
+entry:
+  %call = tail call i8* @ggc_alloc(i64 16) #9
+  %conv = zext i32 %hashcode to i64
+  %hash = bitcast i8* %call to i64*
+  store i64 %conv, i64* %hash, align 8, !tbaa !3
+  %type1 = getelementptr inbounds i8* %call, i64 8
+  %0 = bitcast i8* %type1 to %union.tree_node**
+  store %union.tree_node* %type, %union.tree_node** %0, align 8, !tbaa !0
+  %1 = load %struct.htab** @type_hash_table, align 8, !tbaa !0
+  %call2 = tail call i8** @htab_find_slot_with_hash(%struct.htab* %1, i8* %call, i32 %hashcode, i32 1) #9
+  store i8* %call, i8** %call2, align 8, !tbaa !0
+  ret void
+}

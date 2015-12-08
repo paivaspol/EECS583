@@ -1,0 +1,51 @@
+define internal i8* @output_212(%struct.rtx_def** nocapture %operands, %struct.rtx_def* %insn) #1 {
+entry:
+  %call = tail call i32 @get_attr_type(%struct.rtx_def* %insn) #6
+  %cond = icmp eq i32 %call, 10
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %operands, i64 2
+  %0 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  br i1 %cond, label %sw.bb, label %sw.default
+
+sw.bb:                                            ; preds = %entry
+  %1 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 65), align 8, !tbaa !0
+  %cmp = icmp eq %struct.rtx_def* %0, %1
+  br i1 %cmp, label %return, label %if.else
+
+if.else:                                          ; preds = %sw.bb
+  %2 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 63), align 8, !tbaa !0
+  %cmp2 = icmp eq %struct.rtx_def* %0, %2
+  br i1 %cmp2, label %return, label %if.else4
+
+if.else4:                                         ; preds = %if.else
+  tail call void @fancy_abort(i8* getelementptr inbounds ([55 x i8]* @.str1644, i64 0, i64 0), i32 2148, i8* getelementptr inbounds ([11 x i8]* @__FUNCTION__.output_212, i64 0, i64 0)) #7
+  unreachable
+
+sw.default:                                       ; preds = %entry
+  %3 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp6 = icmp eq i32 %bf.clear, 54
+  br i1 %cmp6, label %land.lhs.true, label %return
+
+land.lhs.true:                                    ; preds = %sw.default
+  %rtwint = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0, i32 0
+  %4 = load i64* %rtwint, align 8, !tbaa !5
+  %cmp9 = icmp eq i64 %4, 128
+  br i1 %cmp9, label %if.then21, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true
+  %cmp14 = icmp sgt i64 %4, -1
+  %cmp20 = icmp eq i64 %4, -128
+  %or.cond = or i1 %cmp14, %cmp20
+  br i1 %or.cond, label %return, label %if.then21
+
+if.then21:                                        ; preds = %lor.lhs.false, %land.lhs.true
+  %sub = sub nsw i64 0, %4
+  %call26 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %sub) #6
+  store %struct.rtx_def* %call26, %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %sw.default, %lor.lhs.false, %if.else, %sw.bb, %if.then21
+  %retval.0 = phi i8* [ getelementptr inbounds ([25 x i8]* @.str305, i64 0, i64 0), %if.then21 ], [ getelementptr inbounds ([11 x i8]* @.str1766, i64 0, i64 0), %sw.bb ], [ getelementptr inbounds ([11 x i8]* @.str1767, i64 0, i64 0), %if.else ], [ getelementptr inbounds ([25 x i8]* @.str1774, i64 0, i64 0), %lor.lhs.false ], [ getelementptr inbounds ([25 x i8]* @.str1774, i64 0, i64 0), %sw.default ]
+  ret i8* %retval.0
+}

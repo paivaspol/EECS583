@@ -1,0 +1,47 @@
+define i8* @par_fn(i8* nocapture %base, i32 %ftp, %struct.t_commrec* nocapture %cr) #0 {
+entry:
+  %call = tail call i8* @strcpy(i8* getelementptr inbounds ([256 x i8]* @par_fn.buf, i64 0, i64 0), i8* %base) #5
+  %call1 = tail call i64 @strlen(i8* %base) #6
+  %sub = add i64 %call1, -4
+  %arrayidx = getelementptr inbounds [256 x i8]* @par_fn.buf, i64 0, i64 %sub
+  store i8 0, i8* %arrayidx, align 1, !tbaa !0
+  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
+  %0 = load i32* %nnodes, align 4, !tbaa !2
+  %cmp = icmp sgt i32 %0, 1
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %nthreads = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5
+  %1 = load i32* %nthreads, align 4, !tbaa !2
+  %cmp2 = icmp sgt i32 %1, 1
+  br i1 %cmp2, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %call3 = tail call i64 @strlen(i8* getelementptr inbounds ([256 x i8]* @par_fn.buf, i64 0, i64 0)) #6
+  %add.ptr = getelementptr inbounds [256 x i8]* @par_fn.buf, i64 0, i64 %call3
+  %nodeid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  %2 = load i32* %nodeid, align 4, !tbaa !2
+  %call4 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %add.ptr, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i32 %2) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %lor.lhs.false
+  %strlen = tail call i64 @strlen(i8* getelementptr inbounds ([256 x i8]* @par_fn.buf, i64 0, i64 0))
+  %endptr = getelementptr [256 x i8]* @par_fn.buf, i64 0, i64 %strlen
+  %3 = bitcast i8* %endptr to i16*
+  store i16 46, i16* %3, align 1
+  %cmp6 = icmp eq i32 %ftp, 24
+  br i1 %cmp6, label %cond.end11, label %cond.false
+
+cond.false:                                       ; preds = %if.end
+  %cmp7 = icmp eq i32 %ftp, 8
+  br i1 %cmp7, label %cond.end11, label %cond.false9
+
+cond.false9:                                      ; preds = %cond.false
+  %call10 = tail call i8* @ftp2ext(i32 %ftp) #5
+  br label %cond.end11
+
+cond.end11:                                       ; preds = %cond.false9, %cond.false, %if.end
+  %cond12 = phi i8* [ getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), %if.end ], [ %call10, %cond.false9 ], [ getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), %cond.false ]
+  %call13 = tail call i8* @strcat(i8* getelementptr inbounds ([256 x i8]* @par_fn.buf, i64 0, i64 0), i8* %cond12) #5
+  ret i8* getelementptr inbounds ([256 x i8]* @par_fn.buf, i64 0, i64 0)
+}

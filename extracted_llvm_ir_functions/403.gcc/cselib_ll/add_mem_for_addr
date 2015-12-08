@@ -1,0 +1,49 @@
+define internal fastcc void @add_mem_for_addr(%struct.cselib_val_struct* %addr_elt, %struct.cselib_val_struct* %mem_elt, %struct.rtx_def* %x) #1 {
+entry:
+  %locs = getelementptr inbounds %struct.cselib_val_struct* %mem_elt, i64 0, i32 2
+  %l.019 = load %struct.elt_loc_list** %locs, align 8
+  %tobool20 = icmp eq %struct.elt_loc_list* %l.019, null
+  br i1 %tobool20, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %l.021 = phi %struct.elt_loc_list* [ %l.0, %for.inc ], [ %l.019, %entry ]
+  %loc = getelementptr inbounds %struct.elt_loc_list* %l.021, i64 0, i32 1
+  %0 = load %struct.rtx_def** %loc, align 8, !tbaa !0
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  br i1 %cmp, label %land.lhs.true, label %for.inc
+
+land.lhs.true:                                    ; preds = %for.body
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %arrayidx3 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rt_cselib = bitcast %union.rtunion_def* %arrayidx3 to %struct.cselib_val_struct**
+  %3 = load %struct.cselib_val_struct** %rt_cselib, align 8, !tbaa !0
+  %cmp4 = icmp eq %struct.cselib_val_struct* %3, %addr_elt
+  br i1 %cmp4, label %return, label %for.inc
+
+for.inc:                                          ; preds = %for.body, %land.lhs.true
+  %next = getelementptr inbounds %struct.elt_loc_list* %l.021, i64 0, i32 0
+  %l.0 = load %struct.elt_loc_list** %next, align 8
+  %tobool = icmp eq %struct.elt_loc_list* %l.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  %addr_list = getelementptr inbounds %struct.cselib_val_struct* %addr_elt, i64 0, i32 3
+  %4 = load %struct.elt_list** %addr_list, align 8, !tbaa !0
+  %call = tail call fastcc %struct.elt_list* @new_elt_list(%struct.elt_list* %4, %struct.cselib_val_struct* %mem_elt) #7
+  store %struct.elt_list* %call, %struct.elt_list** %addr_list, align 8, !tbaa !0
+  %5 = load %struct.elt_loc_list** %locs, align 8, !tbaa !0
+  %val_rtx = getelementptr inbounds %struct.cselib_val_struct* %addr_elt, i64 0, i32 1, i32 0
+  %6 = load %struct.rtx_def** %val_rtx, align 8, !tbaa !0
+  %call7 = tail call %struct.rtx_def* @replace_equiv_address_nv(%struct.rtx_def* %x, %struct.rtx_def* %6) #10
+  %call8 = tail call fastcc %struct.elt_loc_list* @new_elt_loc_list(%struct.elt_loc_list* %5, %struct.rtx_def* %call7) #7
+  store %struct.elt_loc_list* %call8, %struct.elt_loc_list** %locs, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %for.end
+  ret void
+}

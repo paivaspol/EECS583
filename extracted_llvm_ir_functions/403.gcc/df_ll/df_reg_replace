@@ -1,0 +1,17 @@
+define i32 @df_reg_replace(%struct.df* nocapture %df, %struct.bitmap_head_def* %blocks, %struct.rtx_def* %oldreg, %struct.rtx_def* %newreg) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %oldreg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtuint, align 4, !tbaa !4
+  %idxprom = zext i32 %0 to i64
+  %regs = getelementptr inbounds %struct.df* %df, i64 0, i32 5
+  %1 = load %struct.reg_info** %regs, align 8, !tbaa !3
+  %defs = getelementptr inbounds %struct.reg_info* %1, i64 %idxprom, i32 0
+  %2 = load %struct.df_link** %defs, align 8, !tbaa !3
+  tail call void @df_refs_reg_replace(%struct.df* %df, %struct.bitmap_head_def* %blocks, %struct.df_link* %2, %struct.rtx_def* %oldreg, %struct.rtx_def* %newreg) #6
+  %3 = load %struct.reg_info** %regs, align 8, !tbaa !3
+  %uses = getelementptr inbounds %struct.reg_info* %3, i64 %idxprom, i32 1
+  %4 = load %struct.df_link** %uses, align 8, !tbaa !3
+  tail call void @df_refs_reg_replace(%struct.df* %df, %struct.bitmap_head_def* %blocks, %struct.df_link* %4, %struct.rtx_def* %oldreg, %struct.rtx_def* %newreg) #6
+  ret i32 1
+}

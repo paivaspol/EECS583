@@ -1,0 +1,21 @@
+define void @ps_font(%struct._IO_FILE* nocapture %ps, i32 %font, float %size) #0 {
+entry:
+  %0 = icmp ugt i32 %font, 12
+  br i1 %0, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %2 = load i8** getelementptr inbounds ([12 x i8*]* @fontnm, i64 0, i64 0), align 16, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([28 x i8]* @.str41, i64 0, i64 0), i32 %font, i8* %2) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %font.addr.0 = phi i32 [ 0, %if.then ], [ %font, %entry ]
+  %idxprom = sext i32 %font.addr.0 to i64
+  %arrayidx = getelementptr inbounds [12 x i8*]* @fontnm, i64 0, i64 %idxprom
+  %3 = load i8** %arrayidx, align 8, !tbaa !3
+  %call2 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %ps, i8* getelementptr inbounds ([14 x i8]* @.str42, i64 0, i64 0), i8* %3) #4
+  %conv = fpext float %size to double
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %ps, i8* getelementptr inbounds ([22 x i8]* @.str43, i64 0, i64 0), double %conv) #4
+  ret void
+}

@@ -1,0 +1,49 @@
+define internal fastcc void @expand_value_return(%struct.rtx_def* %val) #0 {
+entry:
+  %call = tail call %struct.rtx_def* @get_last_insn() #7
+  %0 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %result = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 11
+  %1 = load %union.tree_node** %result, align 8, !tbaa !0
+  %rtl = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 17
+  %2 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %2, null
+  br i1 %tobool, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %entry
+  tail call void @make_decl_rtl(%union.tree_node* %1, i8* null) #7
+  %3 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %result9 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 11
+  %4 = load %union.tree_node** %result9, align 8, !tbaa !0
+  %rtl11 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 17
+  %5 = load %struct.rtx_def** %rtl11, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %6 = phi %union.tree_node* [ %4, %cond.false ], [ %1, %entry ]
+  %cond = phi %struct.rtx_def* [ %5, %cond.false ], [ %2, %entry ]
+  %cmp = icmp eq %struct.rtx_def* %cond, %val
+  br i1 %cmp, label %if.end19, label %if.then
+
+if.then:                                          ; preds = %cond.end
+  %7 = bitcast %struct.rtx_def* %cond to i32*
+  %bf.load = load i32* %7, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp15 = icmp eq i32 %bf.clear, 39
+  br i1 %cmp15, label %if.then16, label %if.else
+
+if.then16:                                        ; preds = %if.then
+  %type14 = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 0, i32 1
+  %8 = load %union.tree_node** %type14, align 8, !tbaa !0
+  %call17 = tail call i64 @int_size_in_bytes(%union.tree_node* %8) #7
+  %conv = trunc i64 %call17 to i32
+  tail call void @emit_group_load(%struct.rtx_def* %cond, %struct.rtx_def* %val, i32 %conv) #7
+  br label %if.end19
+
+if.else:                                          ; preds = %if.then
+  %call18 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %cond, %struct.rtx_def* %val) #7
+  br label %if.end19
+
+if.end19:                                         ; preds = %cond.end, %if.then16, %if.else
+  tail call fastcc void @expand_null_return_1(%struct.rtx_def* %call) #9
+  ret void
+}

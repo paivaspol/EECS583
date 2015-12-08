@@ -1,0 +1,27 @@
+define internal i32 @mark_reg_in_phi(%struct.rtx_def** nocapture %ptr, i8* %data) #0 {
+entry:
+  %0 = load %struct.rtx_def** %ptr, align 8, !tbaa !0
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.default [
+    i32 61, label %sw.bb
+    i32 54, label %sw.bb1
+    i32 152, label %sw.bb1
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %2 = bitcast i8* %data to %struct.bitmap_head_def*
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !3
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %2, i32 %3) #6
+  br label %sw.bb1
+
+sw.bb1:                                           ; preds = %entry, %entry, %sw.bb
+  ret i32 0
+
+sw.default:                                       ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([47 x i8]* @.str1, i64 0, i64 0), i32 1924, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.mark_reg_in_phi, i64 0, i64 0)) #8
+  unreachable
+}

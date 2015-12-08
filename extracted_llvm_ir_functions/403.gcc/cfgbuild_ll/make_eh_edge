@@ -1,0 +1,32 @@
+define internal fastcc void @make_eh_edge(%struct.simple_bitmap_def** %edge_cache, %struct.basic_block_def* %src, %struct.rtx_def* %insn) #0 {
+entry:
+  %handlers = alloca %struct.rtx_def*, align 8
+  %0 = bitcast %struct.rtx_def* %insn to i32*
+  %bf.load = load i32* %0, align 8
+  %call = call %struct.rtx_def* @reachable_handlers(%struct.rtx_def* %insn) #4
+  store %struct.rtx_def* %call, %struct.rtx_def** %handlers, align 8, !tbaa !0
+  %tobool7 = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool7, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 34
+  %or = select i1 %cmp, i32 14, i32 10
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %i.08 = phi %struct.rtx_def* [ %call, %for.body.lr.ph ], [ %2, %for.body ]
+  %fld = getelementptr inbounds %struct.rtx_def* %i.08, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  call fastcc void @make_label_edge(%struct.simple_bitmap_def** %edge_cache, %struct.basic_block_def* %src, %struct.rtx_def* %1, i32 %or) #6
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %i.08, i64 0, i32 1, i64 1
+  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx3, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %2, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  call void @free_INSN_LIST_list(%struct.rtx_def** %handlers) #4
+  ret void
+}

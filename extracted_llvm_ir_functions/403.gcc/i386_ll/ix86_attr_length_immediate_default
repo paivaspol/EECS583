@@ -1,0 +1,85 @@
+define i32 @ix86_attr_length_immediate_default(%struct.rtx_def* %insn, i32 %shortform) #1 {
+entry:
+  tail call void @extract_insn_cached(%struct.rtx_def* %insn) #9
+  %0 = load i8* getelementptr inbounds (%struct.recog_data* @recog_data, i64 0, i32 7), align 4, !tbaa !1
+  %conv = sext i8 %0 to i32
+  %tobool53 = icmp ne i32 %shortform, 0
+  br label %for.cond.outer
+
+for.cond.outer:                                   ; preds = %cond.true91, %sw.bb160, %sw.bb162, %sw.bb164, %if.else, %entry
+  %len.0.ph = phi i32 [ 0, %entry ], [ 4, %sw.bb164 ], [ 4, %sw.bb162 ], [ 2, %sw.bb160 ], [ 1, %cond.true91 ], [ 1, %if.else ]
+  %i.0.in.ph = phi i32 [ %conv, %entry ], [ %i.0, %sw.bb164 ], [ %i.0, %sw.bb162 ], [ %i.0, %sw.bb160 ], [ %i.0, %cond.true91 ], [ %i.0, %if.else ]
+  %1 = sext i32 %i.0.in.ph to i64
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond.outer, %for.body
+  %indvars.iv = phi i64 [ %1, %for.cond.outer ], [ %indvars.iv.next, %for.body ]
+  %i.0.in = phi i32 [ %i.0.in.ph, %for.cond.outer ], [ %i.0, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %i.0 = add nsw i32 %i.0.in, -1
+  %2 = trunc i64 %indvars.iv to i32
+  %cmp = icmp sgt i32 %2, 0
+  br i1 %cmp, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond
+  %arrayidx = getelementptr inbounds %struct.recog_data* @recog_data, i64 0, i32 0, i64 %indvars.iv.next
+  %3 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !4
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load = load i32* %4, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %for.cond [
+    i32 67, label %if.then
+    i32 68, label %if.then
+    i32 54, label %if.then
+    i32 55, label %if.then
+    i32 58, label %if.then
+    i32 134, label %if.then
+    i32 56, label %if.then
+    i32 140, label %if.then
+  ]
+
+if.then:                                          ; preds = %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body, %for.body
+  %tobool = icmp eq i32 %len.0.ph, 0
+  br i1 %tobool, label %if.end, label %if.then52
+
+if.then52:                                        ; preds = %if.then
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 9933, i8* getelementptr inbounds ([35 x i8]* @__FUNCTION__.ix86_attr_length_immediate_default, i64 0, i64 0)) #11
+  unreachable
+
+if.end:                                           ; preds = %if.then
+  %cmp58 = icmp eq i32 %bf.clear, 54
+  %or.cond = and i1 %tobool53, %cmp58
+  br i1 %or.cond, label %cond.true91, label %if.else
+
+cond.true91:                                      ; preds = %if.end
+  %rtwint96 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0, i32 0
+  %5 = load i64* %rtwint96, align 8, !tbaa !14
+  %.off = add i64 %5, 128
+  %6 = icmp ult i64 %.off, 256
+  br i1 %6, label %for.cond.outer, label %if.else
+
+if.else:                                          ; preds = %if.end, %cond.true91
+  %call = tail call i32 @get_attr_mode(%struct.rtx_def* %insn) #9
+  switch i32 %call, label %sw.default [
+    i32 2, label %for.cond.outer
+    i32 3, label %sw.bb160
+    i32 4, label %sw.bb162
+    i32 5, label %sw.bb164
+  ]
+
+sw.bb160:                                         ; preds = %if.else
+  br label %for.cond.outer
+
+sw.bb162:                                         ; preds = %if.else
+  br label %for.cond.outer
+
+sw.bb164:                                         ; preds = %if.else
+  br label %for.cond.outer
+
+sw.default:                                       ; preds = %if.else
+  tail call void @_fatal_insn(i8* getelementptr inbounds ([18 x i8]* @.str196, i64 0, i64 0), %struct.rtx_def* %insn, i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 9956, i8* getelementptr inbounds ([35 x i8]* @__FUNCTION__.ix86_attr_length_immediate_default, i64 0, i64 0)) #11
+  unreachable
+
+for.end:                                          ; preds = %for.cond
+  ret i32 %len.0.ph
+}

@@ -1,0 +1,80 @@
+define void @phaseset() #0 {
+entry:
+  %0 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cmp65 = icmp sgt i32 %0, 0
+  br i1 %cmp65, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = load %struct.site** @lattice, align 8, !tbaa !3
+  %2 = load i32* @nt, align 4, !tbaa !0
+  %sub40 = add nsw i32 %2, -1
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %i.067 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %sit.066 = phi %struct.site* [ %1, %for.body.lr.ph ], [ %incdec.ptr, %for.inc ]
+  %arrayidx = getelementptr inbounds %struct.site* %sit.066, i64 0, i32 10, i64 3
+  store double 1.000000e+00, double* %arrayidx, align 8, !tbaa !4
+  %t = getelementptr inbounds %struct.site* %sit.066, i64 0, i32 3
+  %3 = load i16* %t, align 2, !tbaa !5
+  %conv = sext i16 %3 to i32
+  %rem = srem i32 %conv, 2
+  %cmp1 = icmp eq i32 %rem, 1
+  %arrayidx4 = getelementptr inbounds %struct.site* %sit.066, i64 0, i32 10, i64 0
+  %. = select i1 %cmp1, double -1.000000e+00, double 1.000000e+00
+  store double %., double* %arrayidx4, align 8, !tbaa !4
+  %x = getelementptr inbounds %struct.site* %sit.066, i64 0, i32 0
+  %4 = load i16* %x, align 2, !tbaa !5
+  %conv7 = sext i16 %4 to i32
+  %rem8 = srem i32 %conv7, 2
+  %cmp9 = icmp eq i32 %rem8, 1
+  br i1 %cmp9, label %if.then11, label %if.else16
+
+if.then11:                                        ; preds = %for.body
+  %sub = fsub double -0.000000e+00, %.
+  %arrayidx15 = getelementptr inbounds %struct.site* %sit.066, i64 0, i32 10, i64 1
+  store double %sub, double* %arrayidx15, align 8, !tbaa !4
+  br label %if.end21
+
+if.else16:                                        ; preds = %for.body
+  %arrayidx20 = getelementptr inbounds %struct.site* %sit.066, i64 0, i32 10, i64 1
+  store double %., double* %arrayidx20, align 8, !tbaa !4
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.else16, %if.then11
+  %5 = phi double [ %., %if.else16 ], [ %sub, %if.then11 ]
+  %y = getelementptr inbounds %struct.site* %sit.066, i64 0, i32 1
+  %6 = load i16* %y, align 2, !tbaa !5
+  %conv22 = sext i16 %6 to i32
+  %rem23 = srem i32 %conv22, 2
+  %cmp24 = icmp eq i32 %rem23, 1
+  br i1 %cmp24, label %if.then26, label %if.else32
+
+if.then26:                                        ; preds = %if.end21
+  %sub29 = fsub double -0.000000e+00, %5
+  %arrayidx31 = getelementptr inbounds %struct.site* %sit.066, i64 0, i32 10, i64 2
+  store double %sub29, double* %arrayidx31, align 8, !tbaa !4
+  br label %if.end37
+
+if.else32:                                        ; preds = %if.end21
+  %arrayidx36 = getelementptr inbounds %struct.site* %sit.066, i64 0, i32 10, i64 2
+  store double %5, double* %arrayidx36, align 8, !tbaa !4
+  br label %if.end37
+
+if.end37:                                         ; preds = %if.else32, %if.then26
+  %cmp41 = icmp eq i32 %conv, %sub40
+  br i1 %cmp41, label %if.then43, label %for.inc
+
+if.then43:                                        ; preds = %if.end37
+  store double -1.000000e+00, double* %arrayidx, align 8, !tbaa !4
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.end37, %if.then43
+  %inc = add nsw i32 %i.067, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %sit.066, i64 1
+  %cmp = icmp slt i32 %inc, %0
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

@@ -1,0 +1,119 @@
+define i32 @write_gauge_info_item(%struct._IO_FILE* nocapture %fpout, i8* %keyword, i8* %fmt, i8* %src, i32 %count, i32 %stride) #0 {
+entry:
+  %0 = load i8** getelementptr inbounds ([0 x i8*]* @gauge_info_keyword, i64 0, i64 0), align 8, !tbaa !3
+  %strlenfirst98 = load i8* %0, align 1
+  %cmp99 = icmp eq i8 %strlenfirst98, 0
+  br i1 %cmp99, label %if.then, label %land.rhs
+
+for.cond:                                         ; preds = %land.rhs
+  %arrayidx = getelementptr inbounds [0 x i8*]* @gauge_info_keyword, i64 0, i64 %indvars.iv.next
+  %1 = load i8** %arrayidx, align 8, !tbaa !3
+  %strlenfirst = load i8* %1, align 1
+  %cmp = icmp eq i8 %strlenfirst, 0
+  br i1 %cmp, label %if.then, label %land.rhs
+
+land.rhs:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
+  %2 = phi i8* [ %1, %for.cond ], [ %0, %entry ]
+  %call3 = tail call i32 @strcmp(i8* %2, i8* %keyword) #7
+  %cmp4 = icmp eq i32 %call3, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp4, label %if.end, label %for.cond
+
+if.then:                                          ; preds = %entry, %for.cond
+  %call9 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([57 x i8]* @.str14, i64 0, i64 0), i8* %keyword) #9
+  br label %if.end
+
+if.end:                                           ; preds = %land.rhs, %if.then
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fpout, i8* getelementptr inbounds ([5 x i8]* @.str15, i64 0, i64 0), i8* %keyword) #9
+  %cmp11 = icmp sgt i32 %count, 1
+  br i1 %cmp11, label %if.then12, label %if.end14
+
+if.then12:                                        ; preds = %if.end
+  %call13 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fpout, i8* getelementptr inbounds ([5 x i8]* @.str16, i64 0, i64 0), i32 %count) #9
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.then12, %if.end
+  %cmp15 = icmp eq i32 %count, 0
+  %. = select i1 %cmp15, i32 1, i32 %count
+  %cmp1995 = icmp sgt i32 %., 0
+  br i1 %cmp1995, label %for.body20.lr.ph, label %for.end54
+
+for.body20.lr.ph:                                 ; preds = %if.end14
+  %idx.ext = sext i32 %stride to i64
+  br label %for.body20
+
+for.body20:                                       ; preds = %for.body20.lr.ph, %for.inc52
+  %data.097 = phi i8* [ %src, %for.body20.lr.ph ], [ %add.ptr, %for.inc52 ]
+  %k.096 = phi i32 [ 0, %for.body20.lr.ph ], [ %inc53, %for.inc52 ]
+  %fputc94 = tail call i32 @fputc(i32 32, %struct._IO_FILE* %fpout)
+  %strchr = tail call i8* @strchr(i8* %fmt, i32 115)
+  %cmp23 = icmp eq i8* %strchr, null
+  br i1 %cmp23, label %if.else, label %if.then24
+
+if.then24:                                        ; preds = %for.body20
+  %call25 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fpout, i8* %fmt, i8* %data.097) #9
+  br label %for.inc52
+
+if.else:                                          ; preds = %for.body20
+  %strchr88 = tail call i8* @strchr(i8* %fmt, i32 100)
+  %cmp27 = icmp eq i8* %strchr88, null
+  br i1 %cmp27, label %if.else30, label %if.then28
+
+if.then28:                                        ; preds = %if.else
+  %3 = bitcast i8* %data.097 to i32*
+  %4 = load i32* %3, align 4, !tbaa !0
+  %call29 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fpout, i8* %fmt, i32 %4) #9
+  br label %for.inc52
+
+if.else30:                                        ; preds = %if.else
+  %strchr89 = tail call i8* @strchr(i8* %fmt, i32 101)
+  %cmp32 = icmp eq i8* %strchr89, null
+  br i1 %cmp32, label %if.else35, label %if.then33
+
+if.then33:                                        ; preds = %if.else30
+  %5 = bitcast i8* %data.097 to double*
+  %6 = load double* %5, align 8, !tbaa !4
+  %call34 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fpout, i8* %fmt, double %6) #9
+  br label %for.inc52
+
+if.else35:                                        ; preds = %if.else30
+  %strchr90 = tail call i8* @strchr(i8* %fmt, i32 102)
+  %cmp37 = icmp eq i8* %strchr90, null
+  br i1 %cmp37, label %if.else40, label %if.then38
+
+if.then38:                                        ; preds = %if.else35
+  %7 = bitcast i8* %data.097 to double*
+  %8 = load double* %7, align 8, !tbaa !4
+  %call39 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fpout, i8* %fmt, double %8) #9
+  br label %for.inc52
+
+if.else40:                                        ; preds = %if.else35
+  %strchr91 = tail call i8* @strchr(i8* %fmt, i32 103)
+  %cmp42 = icmp eq i8* %strchr91, null
+  br i1 %cmp42, label %if.else45, label %if.then43
+
+if.then43:                                        ; preds = %if.else40
+  %9 = bitcast i8* %data.097 to double*
+  %10 = load double* %9, align 8, !tbaa !4
+  %call44 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fpout, i8* %fmt, double %10) #9
+  br label %for.inc52
+
+if.else45:                                        ; preds = %if.else40
+  %call46 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([50 x i8]* @.str23, i64 0, i64 0), i8* %fmt) #9
+  br label %return
+
+for.inc52:                                        ; preds = %if.then24, %if.then33, %if.then43, %if.then38, %if.then28
+  %inc53 = add nsw i32 %k.096, 1
+  %add.ptr = getelementptr inbounds i8* %data.097, i64 %idx.ext
+  %cmp19 = icmp slt i32 %inc53, %.
+  br i1 %cmp19, label %for.body20, label %for.end54
+
+for.end54:                                        ; preds = %for.inc52, %if.end14
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %fpout)
+  br label %return
+
+return:                                           ; preds = %for.end54, %if.else45
+  %retval.0 = phi i32 [ 1, %if.else45 ], [ 0, %for.end54 ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,13 @@
+define internal void @feat_s3_cep(%struct.feat_s* nocapture %fcb, float** nocapture %mfc, float** nocapture %feat) #0 {
+entry:
+  %0 = load float** %feat, align 8, !tbaa !0
+  %1 = bitcast float* %0 to i8*
+  %2 = load float** %mfc, align 8, !tbaa !0
+  %3 = bitcast float* %2 to i8*
+  %cepsize_used = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 2
+  %4 = load i32* %cepsize_used, align 4, !tbaa !3
+  %conv = sext i32 %4 to i64
+  %mul = shl nsw i64 %conv, 2
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %1, i8* %3, i64 %mul, i32 4, i1 false)
+  ret void
+}

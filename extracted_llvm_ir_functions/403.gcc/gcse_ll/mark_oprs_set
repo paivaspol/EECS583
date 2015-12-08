@@ -1,0 +1,91 @@
+define internal fastcc void @mark_oprs_set(%struct.rtx_def* %insn) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.end41 [
+    i32 47, label %if.then
+    i32 39, label %for.cond.preheader
+    i32 49, label %if.then32
+    i32 50, label %if.then37
+  ]
+
+for.cond.preheader:                               ; preds = %entry
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtvec = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtvec_def**
+  %2 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem62 = getelementptr inbounds %struct.rtvec_def* %2, i64 0, i32 0
+  %3 = load i32* %num_elem62, align 4, !tbaa !3
+  %cmp763 = icmp sgt i32 %3, 0
+  br i1 %cmp763, label %for.body.lr.ph, label %if.end41
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %4 = bitcast %struct.rtx_def* %insn to i32*
+  br label %for.body
+
+if.then:                                          ; preds = %entry
+  tail call fastcc void @mark_set(%struct.rtx_def* %0, %struct.rtx_def* %insn) #7
+  br label %if.end41
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %5 = phi %struct.rtvec_def* [ %2, %for.body.lr.ph ], [ %8, %for.inc ]
+  %arrayidx11 = getelementptr inbounds %struct.rtvec_def* %5, i64 0, i32 1, i64 %indvars.iv
+  %6 = load %struct.rtx_def** %arrayidx11, align 8, !tbaa !0
+  %7 = bitcast %struct.rtx_def* %6 to i32*
+  %bf.load12 = load i32* %7, align 8
+  %bf.clear13 = and i32 %bf.load12, 65535
+  switch i32 %bf.clear13, label %for.inc [
+    i32 47, label %if.then15
+    i32 49, label %if.then20
+    i32 50, label %if.then25
+  ]
+
+if.then15:                                        ; preds = %for.body
+  tail call fastcc void @mark_set(%struct.rtx_def* %6, %struct.rtx_def* %insn) #7
+  br label %for.inc
+
+if.then20:                                        ; preds = %for.body
+  tail call fastcc void @mark_clobber(%struct.rtx_def* %6, %struct.rtx_def* %insn) #7
+  br label %for.inc
+
+if.then25:                                        ; preds = %for.body
+  %bf.load.i = load i32* %4, align 8
+  %bf.clear.i = and i32 %bf.load.i, 67108864
+  %tobool.i = icmp eq i32 %bf.clear.i, 0
+  br i1 %tobool.i, label %if.then.i, label %for.inc
+
+if.then.i:                                        ; preds = %if.then25
+  tail call fastcc void @record_last_mem_set_info(%struct.rtx_def* %insn) #6
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then.i, %if.then25, %for.body, %if.then15, %if.then20
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %8 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %8, i64 0, i32 0
+  %9 = load i32* %num_elem, align 4, !tbaa !3
+  %10 = trunc i64 %indvars.iv.next to i32
+  %cmp7 = icmp slt i32 %10, %9
+  br i1 %cmp7, label %for.body, label %if.end41
+
+if.then32:                                        ; preds = %entry
+  tail call fastcc void @mark_clobber(%struct.rtx_def* %0, %struct.rtx_def* %insn) #7
+  br label %if.end41
+
+if.then37:                                        ; preds = %entry
+  %11 = bitcast %struct.rtx_def* %insn to i32*
+  %bf.load.i57 = load i32* %11, align 8
+  %bf.clear.i58 = and i32 %bf.load.i57, 67108864
+  %tobool.i59 = icmp eq i32 %bf.clear.i58, 0
+  br i1 %tobool.i59, label %if.then.i60, label %if.end41
+
+if.then.i60:                                      ; preds = %if.then37
+  tail call fastcc void @record_last_mem_set_info(%struct.rtx_def* %insn) #6
+  br label %if.end41
+
+if.end41:                                         ; preds = %for.cond.preheader, %for.inc, %if.then.i60, %if.then37, %entry, %if.then32, %if.then
+  ret void
+}

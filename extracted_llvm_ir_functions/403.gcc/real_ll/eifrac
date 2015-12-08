@@ -1,0 +1,132 @@
+define internal fastcc void @eifrac(i16* nocapture %x, i64* nocapture %i, i16* nocapture %frac) #0 {
+entry:
+  %xi = alloca [9 x i16], align 16
+  %arraydecay = getelementptr inbounds [9 x i16]* %xi, i64 0, i64 0
+  call fastcc void @emovi(i16* %x, i16* %arraydecay) #6
+  %arrayidx = getelementptr inbounds [9 x i16]* %xi, i64 0, i64 1
+  %0 = load i16* %arrayidx, align 2, !tbaa !0
+  %conv = zext i16 %0 to i32
+  %sub = add nsw i32 %conv, -16382
+  %cmp = icmp slt i32 %sub, 1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  store i64 0, i64* %i, align 8, !tbaa !4
+  call fastcc void @emovo(i16* %arraydecay, i16* %frac) #6
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %cmp3 = icmp sgt i32 %sub, 63
+  br i1 %cmp3, label %if.then5, label %if.else13
+
+if.then5:                                         ; preds = %if.end
+  %1 = load i16* %arraydecay, align 16, !tbaa !0
+  %tobool = icmp eq i16 %1, 0
+  %. = select i1 %tobool, i64 9223372036854775807, i64 -9223372036854775808
+  store i64 %., i64* %i, align 8, !tbaa !4
+  %call = call fastcc i32 @eshift(i16* %arraydecay, i32 %sub) #6
+  %2 = load i32* @extra_warnings, align 4, !tbaa !5
+  %tobool10 = icmp eq i32 %2, 0
+  br i1 %tobool10, label %if.end46, label %if.then11
+
+if.then11:                                        ; preds = %if.then5
+  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([34 x i8]* @.str34, i64 0, i64 0)) #7
+  br label %if.end46
+
+if.else13:                                        ; preds = %if.end
+  %cmp14 = icmp sgt i32 %sub, 16
+  br i1 %cmp14, label %if.then16, label %if.else35
+
+if.then16:                                        ; preds = %if.else13
+  %shr84 = and i32 %sub, -16
+  %sub17 = sub nsw i32 %sub, %shr84
+  %call19 = call fastcc i32 @eshift(i16* %arraydecay, i32 %sub17) #6
+  %arrayidx20 = getelementptr inbounds [9 x i16]* %xi, i64 0, i64 2
+  %3 = load i16* %arrayidx20, align 4, !tbaa !0
+  %conv21 = zext i16 %3 to i64
+  %scevgep.i = getelementptr [9 x i16]* %xi, i64 0, i64 8
+  %add.ptr1.i = getelementptr inbounds [9 x i16]* %xi, i64 0, i64 3
+  br label %do.body
+
+do.body:                                          ; preds = %eshup6.exit, %if.then16
+  %k.0 = phi i32 [ %shr84, %if.then16 ], [ %sub27, %eshup6.exit ]
+  %ll.0 = phi i64 [ %conv21, %if.then16 ], [ %or, %eshup6.exit ]
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.body.i, %do.body
+  %p.09.i = phi i16* [ %arrayidx20, %do.body ], [ %incdec.ptr2.i, %for.body.i ]
+  %i.08.i = phi i32 [ 2, %do.body ], [ %inc.i, %for.body.i ]
+  %x.addr.07.i = phi i16* [ %add.ptr1.i, %do.body ], [ %incdec.ptr.i, %for.body.i ]
+  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.07.i, i64 1
+  %4 = load i16* %x.addr.07.i, align 2, !tbaa !0
+  %incdec.ptr2.i = getelementptr inbounds i16* %p.09.i, i64 1
+  store i16 %4, i16* %p.09.i, align 2, !tbaa !0
+  %inc.i = add nsw i32 %i.08.i, 1
+  %exitcond.i = icmp eq i32 %inc.i, 8
+  br i1 %exitcond.i, label %eshup6.exit, label %for.body.i
+
+eshup6.exit:                                      ; preds = %for.body.i
+  store i16 0, i16* %scevgep.i, align 16, !tbaa !0
+  %shl24 = shl i64 %ll.0, 16
+  %5 = load i16* %arrayidx20, align 4, !tbaa !0
+  %conv26 = zext i16 %5 to i64
+  %or = or i64 %conv26, %shl24
+  %sub27 = add nsw i32 %k.0, -16
+  %cmp28 = icmp sgt i32 %sub27, 0
+  br i1 %cmp28, label %do.body, label %do.end
+
+do.end:                                           ; preds = %eshup6.exit
+  store i64 %or, i64* %i, align 8, !tbaa !4
+  %6 = load i16* %arraydecay, align 16, !tbaa !0
+  %tobool31 = icmp eq i16 %6, 0
+  br i1 %tobool31, label %if.end46, label %if.then32
+
+if.then32:                                        ; preds = %do.end
+  %sub33 = sub nsw i64 0, %or
+  store i64 %sub33, i64* %i, align 8, !tbaa !4
+  br label %if.end46
+
+if.else35:                                        ; preds = %if.else13
+  %call37 = call fastcc i32 @eshift(i16* %arraydecay, i32 %sub) #6
+  %arrayidx38 = getelementptr inbounds [9 x i16]* %xi, i64 0, i64 2
+  %7 = load i16* %arrayidx38, align 4, !tbaa !0
+  %conv39 = zext i16 %7 to i64
+  store i64 %conv39, i64* %i, align 8, !tbaa !4
+  %8 = load i16* %arraydecay, align 16, !tbaa !0
+  %tobool41 = icmp eq i16 %8, 0
+  br i1 %tobool41, label %if.end46, label %if.then42
+
+if.then42:                                        ; preds = %if.else35
+  %sub43 = sub nsw i64 0, %conv39
+  store i64 %sub43, i64* %i, align 8, !tbaa !4
+  br label %if.end46
+
+if.end46:                                         ; preds = %if.then5, %do.end, %if.else35, %if.then32, %if.then42, %if.then11
+  store i16 0, i16* %arraydecay, align 16, !tbaa !0
+  store i16 16382, i16* %arrayidx, align 2, !tbaa !0
+  %arrayidx49 = getelementptr inbounds [9 x i16]* %xi, i64 0, i64 2
+  store i16 0, i16* %arrayidx49, align 4, !tbaa !0
+  %call51 = call fastcc i32 @enormlz(i16* %arraydecay) #6
+  %cmp52 = icmp sgt i32 %call51, 80
+  br i1 %cmp52, label %if.then54, label %if.else56
+
+if.then54:                                        ; preds = %if.end46
+  %xi4.i = bitcast [9 x i16]* %xi to i8*
+  call void @llvm.memset.p0i8.i64(i8* %xi4.i, i8 0, i64 18, i32 16, i1 false) #1
+  br label %if.end63
+
+if.else56:                                        ; preds = %if.end46
+  %9 = load i16* %arrayidx, align 2, !tbaa !0
+  %conv60 = zext i16 %9 to i32
+  %sub61 = sub nsw i32 %conv60, %call51
+  %conv62 = trunc i32 %sub61 to i16
+  store i16 %conv62, i16* %arrayidx, align 2, !tbaa !0
+  br label %if.end63
+
+if.end63:                                         ; preds = %if.else56, %if.then54
+  call fastcc void @emovo(i16* %arraydecay, i16* %frac) #6
+  br label %return
+
+return:                                           ; preds = %if.end63, %if.then
+  ret void
+}

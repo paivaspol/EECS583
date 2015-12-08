@@ -1,0 +1,98 @@
+define internal fastcc %struct.rtx_def* @assign_stack_local_1(i32 %mode, i64 %size, i32 %align, %struct.function* %function) #0 {
+entry:
+  switch i32 %align, label %if.else12 [
+    i32 0, label %if.then
+    i32 -1, label %if.then9
+  ]
+
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq i32 %mode, 51
+  br i1 %cmp1, label %if.end, label %if.else
+
+if.else:                                          ; preds = %if.then
+  %call = tail call i32 @get_mode_alignment(i32 %mode) #10
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.else
+  %alignment.0 = phi i32 [ %call, %if.else ], [ 128, %if.then ]
+  %call3 = tail call %union.tree_node* @type_for_mode(i32 %mode, i32 0) #10
+  %tobool = icmp eq %union.tree_node* %call3, null
+  br i1 %tobool, label %if.end6, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %call5 = tail call i32 @ix86_local_alignment(%union.tree_node* %call3, i32 %alignment.0) #10
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end, %if.then4
+  %alignment.1 = phi i32 [ %call5, %if.then4 ], [ %alignment.0, %if.end ]
+  %div = sdiv i32 %alignment.1, 8
+  br label %if.end15
+
+if.then9:                                         ; preds = %entry
+  %sub = add nsw i64 %size, 15
+  %and = and i64 %sub, -16
+  br label %if.end15
+
+if.else12:                                        ; preds = %entry
+  %div13 = sdiv i32 %align, 8
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then9, %if.else12, %if.end6
+  %alignment.2 = phi i32 [ %div, %if.end6 ], [ 16, %if.then9 ], [ %div13, %if.else12 ]
+  %size.addr.0 = phi i64 [ %size, %if.end6 ], [ %and, %if.then9 ], [ %size, %if.else12 ]
+  %x_frame_offset = getelementptr inbounds %struct.function* %function, i64 0, i32 32
+  %0 = load i64* %x_frame_offset, align 8, !tbaa !5
+  %sub16 = sub nsw i64 %0, %size.addr.0
+  store i64 %sub16, i64* %x_frame_offset, align 8, !tbaa !5
+  %mul = shl nsw i32 %alignment.2, 3
+  %1 = load i32* @ix86_preferred_stack_boundary, align 4, !tbaa !4
+  %cmp17 = icmp sgt i32 %mul, %1
+  br i1 %cmp17, label %if.then19, label %if.end21
+
+if.then19:                                        ; preds = %if.end15
+  %div20 = sdiv i32 %1, 8
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then19, %if.end15
+  %alignment.3 = phi i32 [ %div20, %if.then19 ], [ %alignment.2, %if.end15 ]
+  %stack_alignment_needed = getelementptr inbounds %struct.function* %function, i64 0, i32 52
+  %2 = load i32* %stack_alignment_needed, align 4, !tbaa !4
+  %mul22 = shl nsw i32 %alignment.3, 3
+  %cmp23 = icmp slt i32 %2, %mul22
+  br i1 %cmp23, label %if.then25, label %cond.end
+
+if.then25:                                        ; preds = %if.end21
+  store i32 %mul22, i32* %stack_alignment_needed, align 4, !tbaa !4
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.end21, %if.then25
+  %neg36 = sub i32 0, %alignment.3
+  %conv37 = sext i32 %neg36 to i64
+  %and38 = and i64 %sub16, %conv37
+  store i64 %and38, i64* %x_frame_offset, align 8, !tbaa !5
+  %3 = load %struct.function** @cfun, align 8, !tbaa !0
+  %cmp42 = icmp eq %struct.function* %3, %function
+  %4 = load i32* @virtuals_instantiated, align 4, !tbaa !4
+  %tobool44 = icmp ne i32 %4, 0
+  %or.cond = and i1 %cmp42, %tobool44
+  br i1 %or.cond, label %if.then45, label %if.else51
+
+if.then45:                                        ; preds = %cond.end
+  %5 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 3), align 8, !tbaa !0
+  %call50 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %5, i64 %and38) #10
+  br label %if.end56
+
+if.else51:                                        ; preds = %cond.end
+  %6 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 7), align 8, !tbaa !0
+  %call55 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %6, i64 %and38) #10
+  br label %if.end56
+
+if.end56:                                         ; preds = %if.else51, %if.then45
+  %addr.0 = phi %struct.rtx_def* [ %call50, %if.then45 ], [ %call55, %if.else51 ]
+  %call57 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %mode, %struct.rtx_def* %addr.0) #10
+  %x_stack_slot_list = getelementptr inbounds %struct.function* %function, i64 0, i32 26
+  %7 = load %struct.rtx_def** %x_stack_slot_list, align 8, !tbaa !0
+  %call58 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 3, i32 0, %struct.rtx_def* %call57, %struct.rtx_def* %7) #10
+  store %struct.rtx_def* %call58, %struct.rtx_def** %x_stack_slot_list, align 8, !tbaa !0
+  ret %struct.rtx_def* %call57
+}

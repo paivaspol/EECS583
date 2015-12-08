@@ -1,0 +1,15 @@
+define void @_cpp_init_tokenrun(%struct.tokenrun* nocapture %run, i32 %count) #1 {
+entry:
+  %conv = zext i32 %count to i64
+  %mul = mul i64 %conv, 24
+  %call = tail call noalias i8* @xmalloc(i64 %mul) #9
+  %0 = bitcast i8* %call to %struct.cpp_token*
+  %base = getelementptr inbounds %struct.tokenrun* %run, i64 0, i32 2
+  store %struct.cpp_token* %0, %struct.cpp_token** %base, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds %struct.cpp_token* %0, i64 %conv
+  %limit = getelementptr inbounds %struct.tokenrun* %run, i64 0, i32 3
+  store %struct.cpp_token* %add.ptr, %struct.cpp_token** %limit, align 8, !tbaa !0
+  %next = getelementptr inbounds %struct.tokenrun* %run, i64 0, i32 0
+  store %struct.tokenrun* null, %struct.tokenrun** %next, align 8, !tbaa !0
+  ret void
+}

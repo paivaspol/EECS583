@@ -1,0 +1,27 @@
+define %struct.rtx_def* @copy_to_reg(%struct.rtx_def* %x) #1 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %call = tail call %struct.rtx_def* @gen_reg_rtx(i32 %bf.clear) #4
+  %call1 = tail call i32 @general_operand(%struct.rtx_def* %x, i32 0) #4
+  %tobool = icmp eq i32 %call1, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call2 = tail call %struct.rtx_def* @force_operand(%struct.rtx_def* %x, %struct.rtx_def* %call) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %x.addr.0 = phi %struct.rtx_def* [ %x, %entry ], [ %call2, %if.then ]
+  %cmp = icmp eq %struct.rtx_def* %x.addr.0, %call
+  br i1 %cmp, label %if.end5, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  %call4 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call, %struct.rtx_def* %x.addr.0) #4
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.end, %if.then3
+  ret %struct.rtx_def* %call
+}

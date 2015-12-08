@@ -1,0 +1,566 @@
+define void @write_man(%struct._IO_FILE* %out, i8* nocapture %mantp, i8* %program, i32 %nldesc, i8** nocapture %desc, i32 %nfile, %struct.t_filenm* %fnm, i32 %npargs, %struct.t_pargs* %pa, i32 %nbug, i8** nocapture %bugs, i32 %bHidden) #0 {
+entry:
+  %link.i = alloca [10 x i8], align 1
+  %tobool = icmp ne i32 %bHidden, 0
+  br i1 %tobool, label %if.end9, label %if.else
+
+if.else:                                          ; preds = %entry
+  %call = call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str67, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str63, i64 0, i64 0), i32 633, i32 %npargs, i32 32) #6
+  %0 = bitcast i8* %call to %struct.t_pargs*
+  %cmp172 = icmp sgt i32 %npargs, 0
+  br i1 %cmp172, label %for.body, label %if.end9
+
+for.body:                                         ; preds = %if.else, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %if.else ]
+  %npar.0174 = phi i32 [ %npar.1, %for.inc ], [ 0, %if.else ]
+  %arrayidx = getelementptr inbounds %struct.t_pargs* %pa, i64 %indvars.iv
+  %call1 = call i32 @is_hidden(%struct.t_pargs* %arrayidx) #6
+  %tobool2 = icmp eq i32 %call1, 0
+  br i1 %tobool2, label %if.then3, label %for.inc
+
+if.then3:                                         ; preds = %for.body
+  %idxprom4 = sext i32 %npar.0174 to i64
+  %arrayidx5 = getelementptr inbounds %struct.t_pargs* %0, i64 %idxprom4
+  %1 = bitcast %struct.t_pargs* %arrayidx5 to i8*
+  %2 = bitcast %struct.t_pargs* %arrayidx to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %1, i8* %2, i64 32, i32 8, i1 false), !tbaa.struct !4
+  %inc = add nsw i32 %npar.0174, 1
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then3
+  %npar.1 = phi i32 [ %npar.0174, %for.body ], [ %inc, %if.then3 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv201 = trunc i64 %indvars.iv.next to i32
+  %exitcond202 = icmp eq i32 %lftr.wideiv201, %npargs
+  br i1 %exitcond202, label %if.end9, label %for.body
+
+if.end9:                                          ; preds = %if.else, %for.inc, %entry
+  %npar.2 = phi i32 [ %npargs, %entry ], [ 0, %if.else ], [ %npar.1, %for.inc ]
+  %par.0 = phi %struct.t_pargs* [ %pa, %entry ], [ %0, %if.else ], [ %0, %for.inc ]
+  %call10 = call i8* @strrchr(i8* %program, i32 47) #7
+  %cmp11 = icmp eq i8* %call10, null
+  %add.ptr = getelementptr inbounds i8* %call10, i64 1
+  %pr.0 = select i1 %cmp11, i8* %program, i8* %add.ptr
+  %call15 = call i32 @strcmp(i8* %mantp, i8* getelementptr inbounds ([4 x i8]* @.str68, i64 0, i64 0)) #7
+  %cmp16 = icmp eq i32 %call15, 0
+  br i1 %cmp16, label %if.then17, label %if.end18
+
+if.then17:                                        ; preds = %if.end9
+  %call.i.i = call fastcc i8* @repall(i8* %pr.0, i32 21, %struct.t_sandr* getelementptr inbounds ([21 x %struct.t_sandr]* @sandrTeX, i64 0, i64 0)) #6
+  %call1.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([27 x i8]* @.str170, i64 0, i64 0), i8* %call.i.i) #6
+  %cmp.i = icmp sgt i32 %nldesc, 0
+  br i1 %cmp.i, label %for.body.i, label %if.end.i
+
+for.body.i:                                       ; preds = %if.then17, %for.body.i
+  %indvars.iv172.i = phi i64 [ %indvars.iv.next173.i, %for.body.i ], [ 0, %if.then17 ]
+  %arrayidx.i = getelementptr inbounds i8** %desc, i64 %indvars.iv172.i
+  %3 = load i8** %arrayidx.i, align 8, !tbaa !0
+  %call.i146.i = call fastcc i8* @repall(i8* %3, i32 21, %struct.t_sandr* getelementptr inbounds ([21 x %struct.t_sandr]* @sandrTeX, i64 0, i64 0)) #6
+  %call4.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str66, i64 0, i64 0), i8* %call.i146.i) #6
+  %indvars.iv.next173.i = add i64 %indvars.iv172.i, 1
+  %lftr.wideiv199 = trunc i64 %indvars.iv.next173.i to i32
+  %exitcond200 = icmp eq i32 %lftr.wideiv199, %nldesc
+  br i1 %exitcond200, label %if.end.i, label %for.body.i
+
+if.end.i:                                         ; preds = %for.body.i, %if.then17
+  %cmp5.i = icmp sgt i32 %nfile, 0
+  br i1 %cmp5.i, label %for.body12.lr.ph.i, label %if.end32.i
+
+for.body12.lr.ph.i:                               ; preds = %if.end.i
+  %4 = call i64 @fwrite(i8* getelementptr inbounds ([30 x i8]* @.str171, i64 0, i64 0), i64 29, i64 1, %struct._IO_FILE* %out) #4
+  %5 = call i64 @fwrite(i8* getelementptr inbounds ([40 x i8]* @.str172, i64 0, i64 0), i64 39, i64 1, %struct._IO_FILE* %out) #4
+  %6 = call i64 @fwrite(i8* getelementptr inbounds ([86 x i8]* @.str173, i64 0, i64 0), i64 85, i64 1, %struct._IO_FILE* %out) #4
+  br label %for.body12.i
+
+for.body12.i:                                     ; preds = %for.body12.i, %for.body12.lr.ph.i
+  %indvars.iv168.i = phi i64 [ 0, %for.body12.lr.ph.i ], [ %indvars.iv.next169.i, %for.body12.i ]
+  %opt.i = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv168.i, i32 1
+  %7 = load i8** %opt.i, align 8, !tbaa !0
+  %call.i147.i = call fastcc i8* @repall(i8* %7, i32 21, %struct.t_sandr* getelementptr inbounds ([21 x %struct.t_sandr]* @sandrTeX, i64 0, i64 0)) #6
+  %fn.i = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv168.i, i32 2
+  %8 = load i8** %fn.i, align 8, !tbaa !0
+  %call.i148.i = call fastcc i8* @repall(i8* %8, i32 21, %struct.t_sandr* getelementptr inbounds ([21 x %struct.t_sandr]* @sandrTeX, i64 0, i64 0)) #6
+  %flag.i = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv168.i, i32 3
+  %9 = load i64* %flag.i, align 8, !tbaa !5
+  %call21.i = call i8* @fileopt(i64 %9) #6
+  %call.i149.i = call fastcc i8* @repall(i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0), i32 21, %struct.t_sandr* getelementptr inbounds ([21 x %struct.t_sandr]* @sandrTeX, i64 0, i64 0)) #6
+  %ftp.i = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv168.i, i32 0
+  %10 = load i32* %ftp.i, align 4, !tbaa !3
+  %call25.i = call i8* @ftp2desc(i32 %10) #6
+  %call.i150.i = call fastcc i8* @repall(i8* %call25.i, i32 21, %struct.t_sandr* getelementptr inbounds ([21 x %struct.t_sandr]* @sandrTeX, i64 0, i64 0)) #6
+  %call27.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([69 x i8]* @.str174, i64 0, i64 0), i8* %call.i147.i, i8* %call.i148.i, i8* %call.i149.i, i8* %call.i150.i) #6
+  %indvars.iv.next169.i = add i64 %indvars.iv168.i, 1
+  %lftr.wideiv197 = trunc i64 %indvars.iv.next169.i to i32
+  %exitcond198 = icmp eq i32 %lftr.wideiv197, %nfile
+  br i1 %exitcond198, label %for.end30.i, label %for.body12.i
+
+for.end30.i:                                      ; preds = %for.body12.i
+  %11 = call i64 @fwrite(i8* getelementptr inbounds ([28 x i8]* @.str175, i64 0, i64 0), i64 27, i64 1, %struct._IO_FILE* %out) #4
+  br label %if.end32.i
+
+if.end32.i:                                       ; preds = %for.end30.i, %if.end.i
+  %cmp33.i = icmp sgt i32 %npar.2, 0
+  br i1 %cmp33.i, label %for.body40.lr.ph.i, label %if.end87.i
+
+for.body40.lr.ph.i:                               ; preds = %if.end32.i
+  %12 = call i64 @fwrite(i8* getelementptr inbounds ([30 x i8]* @.str171, i64 0, i64 0), i64 29, i64 1, %struct._IO_FILE* %out) #4
+  %13 = call i64 @fwrite(i8* getelementptr inbounds ([48 x i8]* @.str176, i64 0, i64 0), i64 47, i64 1, %struct._IO_FILE* %out) #4
+  %14 = call i64 @fwrite(i8* getelementptr inbounds ([66 x i8]* @.str177, i64 0, i64 0), i64 65, i64 1, %struct._IO_FILE* %out) #4
+  br label %for.body40.i
+
+for.body40.i:                                     ; preds = %for.inc83.i, %for.body40.lr.ph.i
+  %indvars.iv164.i = phi i64 [ 0, %for.body40.lr.ph.i ], [ %indvars.iv.next165.i, %for.inc83.i ]
+  %arrayidx42.i = getelementptr inbounds %struct.t_pargs* %par.0, i64 %indvars.iv164.i
+  %call43.i = call i8* @pa_val(%struct.t_pargs* %arrayidx42.i) #6
+  %call.i151.i = call fastcc i8* @repall(i8* %call43.i, i32 21, %struct.t_sandr* getelementptr inbounds ([21 x %struct.t_sandr]* @sandrTeX, i64 0, i64 0)) #6
+  %call45.i = call i64 @strlen(i8* %call.i151.i) #7
+  %cmp46.i = icmp ult i64 %call45.i, 9
+  %option.i = getelementptr inbounds %struct.t_pargs* %arrayidx42.i, i64 0, i32 0
+  %15 = load i8** %option.i, align 8, !tbaa !0
+  %call.i152.i = call fastcc i8* @repall(i8* %15, i32 21, %struct.t_sandr* getelementptr inbounds ([21 x %struct.t_sandr]* @sandrTeX, i64 0, i64 0)) #6
+  %type.i = getelementptr inbounds %struct.t_pargs* %par.0, i64 %indvars.iv164.i, i32 2
+  %16 = load i32* %type.i, align 4, !tbaa !3
+  %idxprom53.i = sext i32 %16 to i64
+  %arrayidx54.i = getelementptr inbounds [7 x i8*]* @argtp, i64 0, i64 %idxprom53.i
+  %17 = load i8** %arrayidx54.i, align 8, !tbaa !0
+  %call57.i = call i8* @pa_val(%struct.t_pargs* %arrayidx42.i) #6
+  %call.i153.i = call fastcc i8* @repall(i8* %call57.i, i32 21, %struct.t_sandr* getelementptr inbounds ([21 x %struct.t_sandr]* @sandrTeX, i64 0, i64 0)) #6
+  %desc61.i = getelementptr inbounds %struct.t_pargs* %par.0, i64 %indvars.iv164.i, i32 4
+  %18 = load i8** %desc61.i, align 8, !tbaa !0
+  %call.i154.i = call fastcc i8* @repall(i8* %18, i32 21, %struct.t_sandr* getelementptr inbounds ([21 x %struct.t_sandr]* @sandrTeX, i64 0, i64 0)) #6
+  br i1 %cmp46.i, label %if.then47.i, label %if.else.i
+
+if.then47.i:                                      ; preds = %for.body40.i
+  %call63.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([71 x i8]* @.str178, i64 0, i64 0), i8* %call.i152.i, i8* %17, i8* %call.i153.i, i8* %call.i154.i) #6
+  br label %for.inc83.i
+
+if.else.i:                                        ; preds = %for.body40.i
+  %call81.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([85 x i8]* @.str179, i64 0, i64 0), i8* %call.i152.i, i8* %17, i8* %call.i153.i, i8* %call.i154.i) #6
+  br label %for.inc83.i
+
+for.inc83.i:                                      ; preds = %if.else.i, %if.then47.i
+  %indvars.iv.next165.i = add i64 %indvars.iv164.i, 1
+  %lftr.wideiv195 = trunc i64 %indvars.iv.next165.i to i32
+  %exitcond196 = icmp eq i32 %lftr.wideiv195, %npar.2
+  br i1 %exitcond196, label %for.end85.i, label %for.body40.i
+
+for.end85.i:                                      ; preds = %for.inc83.i
+  %19 = call i64 @fwrite(i8* getelementptr inbounds ([28 x i8]* @.str175, i64 0, i64 0), i64 27, i64 1, %struct._IO_FILE* %out) #4
+  br label %if.end87.i
+
+if.end87.i:                                       ; preds = %for.end85.i, %if.end32.i
+  %cmp88.i = icmp sgt i32 %nbug, 0
+  br i1 %cmp88.i, label %for.body94.lr.ph.i, label %if.end18
+
+for.body94.lr.ph.i:                               ; preds = %if.end87.i
+  %fputc.i = call i32 @fputc(i32 10, %struct._IO_FILE* %out) #4
+  %20 = call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str180, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %out) #4
+  br label %for.body94.i
+
+for.body94.i:                                     ; preds = %for.body94.i, %for.body94.lr.ph.i
+  %indvars.iv.i = phi i64 [ 0, %for.body94.lr.ph.i ], [ %indvars.iv.next.i, %for.body94.i ]
+  %arrayidx96.i = getelementptr inbounds i8** %bugs, i64 %indvars.iv.i
+  %21 = load i8** %arrayidx96.i, align 8, !tbaa !0
+  %call.i155.i = call fastcc i8* @repall(i8* %21, i32 21, %struct.t_sandr* getelementptr inbounds ([21 x %struct.t_sandr]* @sandrTeX, i64 0, i64 0)) #6
+  %call98.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([10 x i8]* @.str181, i64 0, i64 0), i8* %call.i155.i) #6
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv193 = trunc i64 %indvars.iv.next.i to i32
+  %exitcond194 = icmp eq i32 %lftr.wideiv193, %nbug
+  br i1 %exitcond194, label %for.end101.i, label %for.body94.i
+
+for.end101.i:                                     ; preds = %for.body94.i
+  %22 = call i64 @fwrite(i8* getelementptr inbounds ([15 x i8]* @.str182, i64 0, i64 0), i64 14, i64 1, %struct._IO_FILE* %out) #4
+  br label %if.end18
+
+if.end18:                                         ; preds = %for.end101.i, %if.end87.i, %if.end9
+  %call19 = call i32 @strcmp(i8* %mantp, i8* getelementptr inbounds ([6 x i8]* @.str69, i64 0, i64 0)) #7
+  %cmp20 = icmp eq i32 %call19, 0
+  br i1 %cmp20, label %if.then21, label %if.end22
+
+if.then21:                                        ; preds = %if.end18
+  call fastcc void @mydate() #6
+  %call1.i125 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([15 x i8]* @.str156, i64 0, i64 0), i8* %pr.0, i8* getelementptr inbounds ([128 x i8]* @mydate.tbuf, i64 0, i64 0)) #6
+  %23 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str157, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %out) #4
+  %call3.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str66, i64 0, i64 0), i8* %pr.0) #6
+  %call4.i126 = call i8* @GromacsVersion() #6
+  %call5.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([7 x i8]* @.str158, i64 0, i64 0), i8* %call4.i126) #6
+  %24 = call i64 @fwrite(i8* getelementptr inbounds ([14 x i8]* @.str159, i64 0, i64 0), i64 13, i64 1, %struct._IO_FILE* %out) #4
+  %call7.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([10 x i8]* @.str160, i64 0, i64 0), i8* %pr.0) #6
+  %cmp.i127 = icmp sgt i32 %nfile, 0
+  br i1 %cmp.i127, label %for.body.i130, label %if.end.i131
+
+for.body.i130:                                    ; preds = %if.then21, %for.body.i130
+  %indvars.iv237.i = phi i64 [ %indvars.iv.next238.i, %for.body.i130 ], [ 0, %if.then21 ]
+  %opt.i128 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv237.i, i32 1
+  %25 = load i8** %opt.i128, align 8, !tbaa !0
+  %fn.i129 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv237.i, i32 2
+  %26 = load i8** %fn.i129, align 8, !tbaa !0
+  %call11.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([17 x i8]* @.str161, i64 0, i64 0), i8* %25, i8* %26) #6
+  %indvars.iv.next238.i = add i64 %indvars.iv237.i, 1
+  %lftr.wideiv191 = trunc i64 %indvars.iv.next238.i to i32
+  %exitcond192 = icmp eq i32 %lftr.wideiv191, %nfile
+  br i1 %exitcond192, label %if.end.i131, label %for.body.i130
+
+if.end.i131:                                      ; preds = %for.body.i130, %if.then21
+  %cmp12.i = icmp sgt i32 %npar.2, 0
+  br i1 %cmp12.i, label %for.body16.i, label %if.end37.i
+
+for.body16.i:                                     ; preds = %if.end.i131, %for.inc34.i
+  %indvars.iv233.i = phi i64 [ %indvars.iv.next234.i, %for.inc34.i ], [ 0, %if.end.i131 ]
+  %type.i132 = getelementptr inbounds %struct.t_pargs* %par.0, i64 %indvars.iv233.i, i32 2
+  %27 = load i32* %type.i132, align 4, !tbaa !3
+  %cmp19.i = icmp eq i32 %27, 4
+  %option.i133 = getelementptr inbounds %struct.t_pargs* %par.0, i64 %indvars.iv233.i, i32 0
+  %28 = load i8** %option.i133, align 8, !tbaa !0
+  br i1 %cmp19.i, label %if.then20.i, label %if.else.i134
+
+if.then20.i:                                      ; preds = %for.body16.i
+  %add.ptr.i = getelementptr inbounds i8* %28, i64 1
+  %call23.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([18 x i8]* @.str162, i64 0, i64 0), i8* %add.ptr.i) #6
+  br label %for.inc34.i
+
+if.else.i134:                                     ; preds = %for.body16.i
+  %idxprom30.i = sext i32 %27 to i64
+  %arrayidx31.i = getelementptr inbounds [7 x i8*]* @argtp, i64 0, i64 %idxprom30.i
+  %29 = load i8** %arrayidx31.i, align 8, !tbaa !0
+  %call32.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([17 x i8]* @.str161, i64 0, i64 0), i8* %28, i8* %29) #6
+  br label %for.inc34.i
+
+for.inc34.i:                                      ; preds = %if.else.i134, %if.then20.i
+  %indvars.iv.next234.i = add i64 %indvars.iv233.i, 1
+  %lftr.wideiv189 = trunc i64 %indvars.iv.next234.i to i32
+  %exitcond190 = icmp eq i32 %lftr.wideiv189, %npar.2
+  br i1 %exitcond190, label %if.end37.i, label %for.body16.i
+
+if.end37.i:                                       ; preds = %for.inc34.i, %if.end.i131
+  %cmp38.i = icmp sgt i32 %nldesc, 0
+  br i1 %cmp38.i, label %for.body43.lr.ph.i, label %if.end51.i
+
+for.body43.lr.ph.i:                               ; preds = %if.end37.i
+  %30 = call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str163, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %out) #4
+  br label %for.body43.i
+
+for.body43.i:                                     ; preds = %for.body43.i, %for.body43.lr.ph.i
+  %indvars.iv229.i = phi i64 [ 0, %for.body43.lr.ph.i ], [ %indvars.iv.next230.i, %for.body43.i ]
+  %arrayidx45.i = getelementptr inbounds i8** %desc, i64 %indvars.iv229.i
+  %31 = load i8** %arrayidx45.i, align 8, !tbaa !0
+  %call.i.i135 = call fastcc i8* @repall(i8* %31, i32 13, %struct.t_sandr* getelementptr inbounds ([13 x %struct.t_sandr]* @sandrNROFF, i64 0, i64 0)) #6
+  %call47.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str66, i64 0, i64 0), i8* %call.i.i135) #6
+  %indvars.iv.next230.i = add i64 %indvars.iv229.i, 1
+  %lftr.wideiv187 = trunc i64 %indvars.iv.next230.i to i32
+  %exitcond188 = icmp eq i32 %lftr.wideiv187, %nldesc
+  br i1 %exitcond188, label %if.end51.i, label %for.body43.i
+
+if.end51.i:                                       ; preds = %for.body43.i, %if.end37.i
+  br i1 %cmp.i127, label %for.body57.lr.ph.i, label %if.end75.i
+
+for.body57.lr.ph.i:                               ; preds = %if.end51.i
+  %32 = call i64 @fwrite(i8* getelementptr inbounds ([11 x i8]* @.str164, i64 0, i64 0), i64 10, i64 1, %struct._IO_FILE* %out) #4
+  br label %for.body57.i
+
+for.body57.i:                                     ; preds = %for.body57.i, %for.body57.lr.ph.i
+  %indvars.iv225.i = phi i64 [ 0, %for.body57.lr.ph.i ], [ %indvars.iv.next226.i, %for.body57.i ]
+  %opt60.i = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv225.i, i32 1
+  %33 = load i8** %opt60.i, align 8, !tbaa !0
+  %fn63.i = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv225.i, i32 2
+  %34 = load i8** %fn63.i, align 8, !tbaa !0
+  %flag.i136 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv225.i, i32 3
+  %35 = load i64* %flag.i136, align 8, !tbaa !5
+  %call66.i = call i8* @fileopt(i64 %35) #6
+  %ftp.i137 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv225.i, i32 0
+  %36 = load i32* %ftp.i137, align 4, !tbaa !3
+  %call69.i = call i8* @ftp2desc(i32 %36) #6
+  %call.i203.i = call fastcc i8* @repall(i8* %call69.i, i32 13, %struct.t_sandr* getelementptr inbounds ([13 x %struct.t_sandr]* @sandrNROFF, i64 0, i64 0)) #6
+  %call71.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([29 x i8]* @.str165, i64 0, i64 0), i8* %33, i8* %34, i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0), i8* %call.i203.i) #6
+  %indvars.iv.next226.i = add i64 %indvars.iv225.i, 1
+  %lftr.wideiv185 = trunc i64 %indvars.iv.next226.i to i32
+  %exitcond186 = icmp eq i32 %lftr.wideiv185, %nfile
+  br i1 %exitcond186, label %if.end75.i, label %for.body57.i
+
+if.end75.i:                                       ; preds = %for.body57.i, %if.end51.i
+  %37 = call i64 @fwrite(i8* getelementptr inbounds ([19 x i8]* @.str166, i64 0, i64 0), i64 18, i64 1, %struct._IO_FILE* %out) #4
+  br i1 %cmp12.i, label %for.body81.i, label %if.end122.i
+
+for.body81.i:                                     ; preds = %if.end75.i, %for.inc119.i
+  %indvars.iv221.i = phi i64 [ %indvars.iv.next222.i, %for.inc119.i ], [ 0, %if.end75.i ]
+  %arrayidx83.i = getelementptr inbounds %struct.t_pargs* %par.0, i64 %indvars.iv221.i
+  %type84.i = getelementptr inbounds %struct.t_pargs* %par.0, i64 %indvars.iv221.i, i32 2
+  %38 = load i32* %type84.i, align 4, !tbaa !3
+  %cmp85.i = icmp eq i32 %38, 4
+  %option89.i = getelementptr inbounds %struct.t_pargs* %arrayidx83.i, i64 0, i32 0
+  %39 = load i8** %option89.i, align 8, !tbaa !0
+  br i1 %cmp85.i, label %if.then86.i, label %if.else100.i
+
+if.then86.i:                                      ; preds = %for.body81.i
+  %add.ptr90.i = getelementptr inbounds i8* %39, i64 1
+  %call.i204.i = call fastcc i8* @repall(i8* %add.ptr90.i, i32 13, %struct.t_sandr* getelementptr inbounds ([13 x %struct.t_sandr]* @sandrNROFF, i64 0, i64 0)) #6
+  %call94.i = call i8* @pa_val(%struct.t_pargs* %arrayidx83.i) #6
+  %desc97.i = getelementptr inbounds %struct.t_pargs* %par.0, i64 %indvars.iv221.i, i32 4
+  %40 = load i8** %desc97.i, align 8, !tbaa !0
+  %call.i205.i = call fastcc i8* @repall(i8* %40, i32 13, %struct.t_sandr* getelementptr inbounds ([13 x %struct.t_sandr]* @sandrNROFF, i64 0, i64 0)) #6
+  %call99.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([26 x i8]* @.str167, i64 0, i64 0), i8* %call.i204.i, i8* %call94.i, i8* %call.i205.i) #6
+  br label %for.inc119.i
+
+if.else100.i:                                     ; preds = %for.body81.i
+  %call.i206.i = call fastcc i8* @repall(i8* %39, i32 13, %struct.t_sandr* getelementptr inbounds ([13 x %struct.t_sandr]* @sandrNROFF, i64 0, i64 0)) #6
+  %41 = load i32* %type84.i, align 4, !tbaa !3
+  %idxprom108.i = sext i32 %41 to i64
+  %arrayidx109.i = getelementptr inbounds [7 x i8*]* @argtp, i64 0, i64 %idxprom108.i
+  %42 = load i8** %arrayidx109.i, align 8, !tbaa !0
+  %call112.i = call i8* @pa_val(%struct.t_pargs* %arrayidx83.i) #6
+  %desc115.i = getelementptr inbounds %struct.t_pargs* %par.0, i64 %indvars.iv221.i, i32 4
+  %43 = load i8** %desc115.i, align 8, !tbaa !0
+  %call.i207.i = call fastcc i8* @repall(i8* %43, i32 13, %struct.t_sandr* getelementptr inbounds ([13 x %struct.t_sandr]* @sandrNROFF, i64 0, i64 0)) #6
+  %call117.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([29 x i8]* @.str168, i64 0, i64 0), i8* %call.i206.i, i8* %42, i8* %call112.i, i8* %call.i207.i) #6
+  br label %for.inc119.i
+
+for.inc119.i:                                     ; preds = %if.else100.i, %if.then86.i
+  %indvars.iv.next222.i = add i64 %indvars.iv221.i, 1
+  %lftr.wideiv183 = trunc i64 %indvars.iv.next222.i to i32
+  %exitcond184 = icmp eq i32 %lftr.wideiv183, %npar.2
+  br i1 %exitcond184, label %if.end122.i, label %for.body81.i
+
+if.end122.i:                                      ; preds = %for.inc119.i, %if.end75.i
+  %cmp123.i = icmp sgt i32 %nbug, 0
+  br i1 %cmp123.i, label %for.body127.i, label %if.end22
+
+for.body127.i:                                    ; preds = %if.end122.i, %for.body127.i
+  %indvars.iv.i138 = phi i64 [ %indvars.iv.next.i139, %for.body127.i ], [ 0, %if.end122.i ]
+  %arrayidx129.i = getelementptr inbounds i8** %bugs, i64 %indvars.iv.i138
+  %44 = load i8** %arrayidx129.i, align 8, !tbaa !0
+  %call.i208.i = call fastcc i8* @repall(i8* %44, i32 13, %struct.t_sandr* getelementptr inbounds ([13 x %struct.t_sandr]* @sandrNROFF, i64 0, i64 0)) #6
+  %call131.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([8 x i8]* @.str169, i64 0, i64 0), i8* %call.i208.i) #6
+  %indvars.iv.next.i139 = add i64 %indvars.iv.i138, 1
+  %lftr.wideiv181 = trunc i64 %indvars.iv.next.i139 to i32
+  %exitcond182 = icmp eq i32 %lftr.wideiv181, %nbug
+  br i1 %exitcond182, label %if.end22, label %for.body127.i
+
+if.end22:                                         ; preds = %for.body127.i, %if.end122.i, %if.end18
+  %call23 = call i32 @strcmp(i8* %mantp, i8* getelementptr inbounds ([6 x i8]* @.str70, i64 0, i64 0)) #7
+  %cmp24 = icmp eq i32 %call23, 0
+  br i1 %cmp24, label %if.then25, label %if.end26
+
+if.then25:                                        ; preds = %if.end22
+  call fastcc void @write_ttyman(%struct._IO_FILE* %out, i8* %pr.0, i32 %nldesc, i8** %desc, i32 %nfile, %struct.t_filenm* %fnm, i32 %npar.2, %struct.t_pargs* %par.0, i32 %nbug, i8** %bugs, i32 1) #5
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.then25, %if.end22
+  %call27 = call i32 @strcmp(i8* %mantp, i8* getelementptr inbounds ([5 x i8]* @.str71, i64 0, i64 0)) #7
+  %cmp28 = icmp eq i32 %call27, 0
+  br i1 %cmp28, label %if.then29, label %if.end30
+
+if.then29:                                        ; preds = %if.end26
+  call fastcc void @write_ttyman(%struct._IO_FILE* %out, i8* %pr.0, i32 %nldesc, i8** %desc, i32 %nfile, %struct.t_filenm* %fnm, i32 %npar.2, %struct.t_pargs* %par.0, i32 %nbug, i8** %bugs, i32 0) #5
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.then29, %if.end26
+  %call31 = call i32 @strcmp(i8* %mantp, i8* getelementptr inbounds ([5 x i8]* @.str72, i64 0, i64 0)) #7
+  %cmp32 = icmp eq i32 %call31, 0
+  br i1 %cmp32, label %if.then33, label %if.end34
+
+if.then33:                                        ; preds = %if.end30
+  %45 = getelementptr inbounds [10 x i8]* %link.i, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 10, i8* %45) #4
+  %call.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([33 x i8]* @.str94, i64 0, i64 0), i8* %pr.0) #6
+  %46 = call i64 @fwrite(i8* getelementptr inbounds ([56 x i8]* @.str95, i64 0, i64 0), i64 55, i64 1, %struct._IO_FILE* %out) #4
+  %47 = call i64 @fwrite(i8* getelementptr inbounds ([88 x i8]* @.str96, i64 0, i64 0), i64 87, i64 1, %struct._IO_FILE* %out) #4
+  %call3.i142 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([51 x i8]* @.str97, i64 0, i64 0)) #6
+  %48 = call i64 @fwrite(i8* getelementptr inbounds ([43 x i8]* @.str98, i64 0, i64 0), i64 42, i64 1, %struct._IO_FILE* %out) #4
+  %49 = call i64 @fwrite(i8* getelementptr inbounds ([113 x i8]* @.str99, i64 0, i64 0), i64 112, i64 1, %struct._IO_FILE* %out) #4
+  %call6.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([52 x i8]* @.str100, i64 0, i64 0), i8* %pr.0) #6
+  %50 = call i64 @fwrite(i8* getelementptr inbounds ([77 x i8]* @.str101, i64 0, i64 0), i64 76, i64 1, %struct._IO_FILE* %out) #4
+  %call8.i = call i8* @GromacsVersion() #6
+  %call9.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([77 x i8]* @.str102, i64 0, i64 0), i8* %call8.i) #6
+  call fastcc void @mydate() #6
+  %call11.i143 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([31 x i8]* @.str103, i64 0, i64 0), i8* getelementptr inbounds ([128 x i8]* @mydate.tbuf, i64 0, i64 0)) #6
+  %cmp.i144 = icmp sgt i32 %nldesc, 0
+  br i1 %cmp.i144, label %for.body.lr.ph.i, label %if.end.i147
+
+for.body.lr.ph.i:                                 ; preds = %if.then33
+  %51 = call i64 @fwrite(i8* getelementptr inbounds ([26 x i8]* @.str104, i64 0, i64 0), i64 25, i64 1, %struct._IO_FILE* %out) #4
+  br label %for.body.i146
+
+for.body.i146:                                    ; preds = %for.body.i146, %for.body.lr.ph.i
+  %indvars.iv186.i = phi i64 [ 0, %for.body.lr.ph.i ], [ %indvars.iv.next187.i, %for.body.i146 ]
+  %arrayidx.i145 = getelementptr inbounds i8** %desc, i64 %indvars.iv186.i
+  %52 = load i8** %arrayidx.i145, align 8, !tbaa !0
+  %call14.i = call i8* @check_html(i8* %52, i8* %pr.0) #6
+  %call15.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str66, i64 0, i64 0), i8* %call14.i) #6
+  %indvars.iv.next187.i = add i64 %indvars.iv186.i, 1
+  %lftr.wideiv179 = trunc i64 %indvars.iv.next187.i to i32
+  %exitcond180 = icmp eq i32 %lftr.wideiv179, %nldesc
+  br i1 %exitcond180, label %if.end.i147, label %for.body.i146
+
+if.end.i147:                                      ; preds = %for.body.i146, %if.then33
+  %cmp16.i = icmp sgt i32 %nfile, 0
+  br i1 %cmp16.i, label %for.body23.lr.ph.i, label %if.end53.i
+
+for.body23.lr.ph.i:                               ; preds = %if.end.i147
+  %53 = call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str105, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %out) #4
+  %54 = call i64 @fwrite(i8* getelementptr inbounds ([16 x i8]* @.str106, i64 0, i64 0), i64 15, i64 1, %struct._IO_FILE* %out) #4
+  %55 = call i64 @fwrite(i8* getelementptr inbounds ([121 x i8]* @.str107, i64 0, i64 0), i64 120, i64 1, %struct._IO_FILE* %out) #4
+  br label %for.body23.i
+
+for.body23.i:                                     ; preds = %if.end34.i, %for.body23.lr.ph.i
+  %indvars.iv182.i = phi i64 [ 0, %for.body23.lr.ph.i ], [ %indvars.iv.next183.i, %if.end34.i ]
+  %ftp.i148 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv182.i, i32 0
+  %56 = load i32* %ftp.i148, align 4, !tbaa !3
+  %call26.i = call i8* @ftp2ext(i32 %56) #6
+  %call27.i149 = call i8* @strcpy(i8* %45, i8* %call26.i) #6
+  %call29.i = call i32 @strcmp(i8* %45, i8* getelementptr inbounds ([4 x i8]* @.str108, i64 0, i64 0)) #7
+  %cmp30.i = icmp eq i32 %call29.i, 0
+  br i1 %cmp30.i, label %if.then31.i, label %if.end34.i
+
+if.then31.i:                                      ; preds = %for.body23.i
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %45, i8* getelementptr inbounds ([6 x i8]* @.str109, i64 0, i64 0), i64 6, i32 1, i1 false) #4
+  br label %if.end34.i
+
+if.end34.i:                                       ; preds = %if.then31.i, %for.body23.i
+  %opt.i150 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv182.i, i32 1
+  %57 = load i8** %opt.i150, align 8, !tbaa !0
+  %fn.i151 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv182.i, i32 2
+  %58 = load i8** %fn.i151, align 8, !tbaa !0
+  %flag.i152 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv182.i, i32 3
+  %59 = load i64* %flag.i152, align 8, !tbaa !5
+  %call42.i = call i8* @fileopt(i64 %59) #6
+  %60 = load i32* %ftp.i148, align 4, !tbaa !3
+  %call46.i = call i8* @ftp2desc(i32 %60) #6
+  %call47.i153 = call i8* @check_html(i8* %call46.i, i8* %pr.0) #6
+  %call48.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([136 x i8]* @.str110, i64 0, i64 0), i8* %57, i8* %45, i8* %58, i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0), i8* %call47.i153) #6
+  %indvars.iv.next183.i = add i64 %indvars.iv182.i, 1
+  %lftr.wideiv177 = trunc i64 %indvars.iv.next183.i to i32
+  %exitcond178 = icmp eq i32 %lftr.wideiv177, %nfile
+  br i1 %exitcond178, label %for.end51.i, label %for.body23.i
+
+for.end51.i:                                      ; preds = %if.end34.i
+  %61 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str111, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %out) #4
+  br label %if.end53.i
+
+if.end53.i:                                       ; preds = %for.end51.i, %if.end.i147
+  %cmp54.i = icmp sgt i32 %npar.2, 0
+  br i1 %cmp54.i, label %for.body61.lr.ph.i, label %if.end84.i
+
+for.body61.lr.ph.i:                               ; preds = %if.end53.i
+  %62 = call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str105, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %out) #4
+  %63 = call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str112, i64 0, i64 0), i64 23, i64 1, %struct._IO_FILE* %out) #4
+  %64 = call i64 @fwrite(i8* getelementptr inbounds ([120 x i8]* @.str113, i64 0, i64 0), i64 119, i64 1, %struct._IO_FILE* %out) #4
+  br label %for.body61.i
+
+for.body61.i:                                     ; preds = %for.body61.i, %for.body61.lr.ph.i
+  %indvars.iv178.i = phi i64 [ 0, %for.body61.lr.ph.i ], [ %indvars.iv.next179.i, %for.body61.i ]
+  %arrayidx63.i = getelementptr inbounds %struct.t_pargs* %par.0, i64 %indvars.iv178.i
+  %type.i154 = getelementptr inbounds %struct.t_pargs* %par.0, i64 %indvars.iv178.i, i32 2
+  %65 = load i32* %type.i154, align 4, !tbaa !3
+  %cmp64.i = icmp eq i32 %65, 4
+  %cond.i = select i1 %cmp64.i, i8* getelementptr inbounds ([6 x i8]* @.str115, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str116, i64 0, i64 0)
+  %option.i155 = getelementptr inbounds %struct.t_pargs* %arrayidx63.i, i64 0, i32 0
+  %66 = load i8** %option.i155, align 8, !tbaa !0
+  %add.ptr.i156 = getelementptr inbounds i8* %66, i64 1
+  %idxprom70.i = sext i32 %65 to i64
+  %arrayidx71.i = getelementptr inbounds [7 x i8*]* @argtp, i64 0, i64 %idxprom70.i
+  %67 = load i8** %arrayidx71.i, align 8, !tbaa !0
+  %call74.i = call i8* @pa_val(%struct.t_pargs* %arrayidx63.i) #6
+  %desc77.i = getelementptr inbounds %struct.t_pargs* %par.0, i64 %indvars.iv178.i, i32 4
+  %68 = load i8** %desc77.i, align 8, !tbaa !0
+  %call78.i = call i8* @check_html(i8* %68, i8* %pr.0) #6
+  %call79.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([126 x i8]* @.str114, i64 0, i64 0), i8* %cond.i, i8* %add.ptr.i156, i8* %67, i8* %call74.i, i8* %call78.i) #6
+  %indvars.iv.next179.i = add i64 %indvars.iv178.i, 1
+  %lftr.wideiv175 = trunc i64 %indvars.iv.next179.i to i32
+  %exitcond176 = icmp eq i32 %lftr.wideiv175, %npar.2
+  br i1 %exitcond176, label %for.end82.i, label %for.body61.i
+
+for.end82.i:                                      ; preds = %for.body61.i
+  %69 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str111, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %out) #4
+  br label %if.end84.i
+
+if.end84.i:                                       ; preds = %for.end82.i, %if.end53.i
+  %cmp85.i157 = icmp sgt i32 %nbug, 0
+  br i1 %cmp85.i157, label %for.body91.lr.ph.i, label %write_htmlman.exit
+
+for.body91.lr.ph.i:                               ; preds = %if.end84.i
+  %70 = call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str105, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %out) #4
+  %71 = call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str117, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %out) #4
+  br label %for.body91.i
+
+for.body91.i:                                     ; preds = %for.body91.i, %for.body91.lr.ph.i
+  %indvars.iv.i158 = phi i64 [ 0, %for.body91.lr.ph.i ], [ %indvars.iv.next.i160, %for.body91.i ]
+  %arrayidx93.i = getelementptr inbounds i8** %bugs, i64 %indvars.iv.i158
+  %72 = load i8** %arrayidx93.i, align 8, !tbaa !0
+  %call94.i159 = call i8* @check_html(i8* %72, i8* %pr.0) #6
+  %call95.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([8 x i8]* @.str118, i64 0, i64 0), i8* %call94.i159) #6
+  %indvars.iv.next.i160 = add i64 %indvars.iv.i158, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i160 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nbug
+  br i1 %exitcond, label %for.end98.i, label %for.body91.i
+
+for.end98.i:                                      ; preds = %for.body91.i
+  %73 = call i64 @fwrite(i8* getelementptr inbounds ([7 x i8]* @.str119, i64 0, i64 0), i64 6, i64 1, %struct._IO_FILE* %out) #4
+  br label %write_htmlman.exit
+
+write_htmlman.exit:                               ; preds = %if.end84.i, %for.end98.i
+  %74 = call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str105, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %out) #4
+  %75 = call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str120, i64 0, i64 0), i64 23, i64 1, %struct._IO_FILE* %out) #4
+  %76 = call i64 @fwrite(i8* getelementptr inbounds ([88 x i8]* @.str121, i64 0, i64 0), i64 87, i64 1, %struct._IO_FILE* %out) #4
+  %77 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str122, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %out) #4
+  %78 = call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str123, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %out) #4
+  call void @llvm.lifetime.end(i64 10, i8* %45) #4
+  br label %if.end34
+
+if.end34:                                         ; preds = %write_htmlman.exit, %if.end30
+  %call35 = call i32 @strcmp(i8* %mantp, i8* getelementptr inbounds ([15 x i8]* @.str73, i64 0, i64 0)) #7
+  %cmp36 = icmp eq i32 %call35, 0
+  br i1 %cmp36, label %if.then37, label %if.end38
+
+if.then37:                                        ; preds = %if.end34
+  %79 = call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str92, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %out) #4
+  call fastcc void @pr_opts(%struct._IO_FILE* %out, i32 %nfile, %struct.t_filenm* %fnm, i32 %npar.2, %struct.t_pargs* %par.0, i32 2) #6
+  call void @pr_enums(%struct._IO_FILE* %out, i32 %npar.2, %struct.t_pargs* %par.0, i32 2) #6
+  call void @pr_fopts(%struct._IO_FILE* %out, i32 %nfile, %struct.t_filenm* %fnm, i32 2) #6
+  %call1.i163 = call i8* @ShortProgram() #6
+  %call2.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([7 x i8]* @.str93, i64 0, i64 0), i8* %call1.i163) #6
+  br label %if.end38
+
+if.end38:                                         ; preds = %if.then37, %if.end34
+  %call39 = call i32 @strcmp(i8* %mantp, i8* getelementptr inbounds ([16 x i8]* @.str74, i64 0, i64 0)) #7
+  %cmp40 = icmp eq i32 %call39, 0
+  br i1 %cmp40, label %if.then41, label %if.end42
+
+if.then41:                                        ; preds = %if.end38
+  %80 = call i64 @fwrite(i8* getelementptr inbounds ([18 x i8]* @.str87, i64 0, i64 0), i64 17, i64 1, %struct._IO_FILE* %out) #4
+  %call1.i164 = call i8* @ShortProgram() #6
+  %call2.i165 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([25 x i8]* @.str88, i64 0, i64 0), i8* %call1.i164) #6
+  %81 = call i64 @fwrite(i8* getelementptr inbounds ([72 x i8]* @.str89, i64 0, i64 0), i64 71, i64 1, %struct._IO_FILE* %out) #4
+  call fastcc void @pr_opts(%struct._IO_FILE* %out, i32 %nfile, %struct.t_filenm* %fnm, i32 %npar.2, %struct.t_pargs* %par.0, i32 1) #6
+  %82 = call i64 @fwrite(i8* getelementptr inbounds ([14 x i8]* @.str90, i64 0, i64 0), i64 13, i64 1, %struct._IO_FILE* %out) #4
+  call void @pr_enums(%struct._IO_FILE* %out, i32 %npar.2, %struct.t_pargs* %par.0, i32 1) #6
+  call void @pr_fopts(%struct._IO_FILE* %out, i32 %nfile, %struct.t_filenm* %fnm, i32 1) #6
+  %call5.i166 = call i8* @ShortProgram() #6
+  %call6.i167 = call i8* @ShortProgram() #6
+  %call7.i168 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([36 x i8]* @.str91, i64 0, i64 0), i8* %call5.i166, i8* %call6.i167) #6
+  br label %if.end42
+
+if.end42:                                         ; preds = %if.then41, %if.end38
+  %call43 = call i32 @strcmp(i8* %mantp, i8* getelementptr inbounds ([15 x i8]* @.str75, i64 0, i64 0)) #7
+  %cmp44 = icmp eq i32 %call43, 0
+  br i1 %cmp44, label %if.then45, label %if.end46
+
+if.then45:                                        ; preds = %if.end42
+  %call.i169 = call i8* @ShortProgram() #6
+  %call1.i170 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([12 x i8]* @.str76, i64 0, i64 0), i8* %call.i169) #6
+  call void @pr_enums(%struct._IO_FILE* %out, i32 %npar.2, %struct.t_pargs* %par.0, i32 0) #6
+  call void @pr_fopts(%struct._IO_FILE* %out, i32 %nfile, %struct.t_filenm* %fnm, i32 0) #6
+  call fastcc void @pr_opts(%struct._IO_FILE* %out, i32 %nfile, %struct.t_filenm* %fnm, i32 %npar.2, %struct.t_pargs* %par.0, i32 0) #6
+  %fputc.i171 = call i32 @fputc(i32 10, %struct._IO_FILE* %out) #4
+  br label %if.end46
+
+if.end46:                                         ; preds = %if.then45, %if.end42
+  br i1 %tobool, label %if.end49, label %if.then48
+
+if.then48:                                        ; preds = %if.end46
+  %83 = bitcast %struct.t_pargs* %par.0 to i8*
+  call void @save_free(i8* getelementptr inbounds ([4 x i8]* @.str67, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str63, i64 0, i64 0), i32 664, i8* %83) #6
+  br label %if.end49
+
+if.end49:                                         ; preds = %if.then48, %if.end46
+  ret void
+}

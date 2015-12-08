@@ -1,0 +1,26 @@
+define internal void @do_define(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %call = tail call fastcc %struct.cpp_hashnode* @lex_macro_node(%struct.cpp_reader* %pfile) #9
+  %tobool = icmp eq %struct.cpp_hashnode* %call, null
+  br i1 %tobool, label %if.end9, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @_cpp_create_definition(%struct.cpp_reader* %pfile, %struct.cpp_hashnode* %call) #8
+  %tobool2 = icmp eq i32 %call1, 0
+  br i1 %tobool2, label %if.end9, label %if.then3
+
+if.then3:                                         ; preds = %if.then
+  %define = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 35, i32 3
+  %0 = load void (%struct.cpp_reader*, i32, %struct.cpp_hashnode*)** %define, align 8, !tbaa !3
+  %tobool4 = icmp eq void (%struct.cpp_reader*, i32, %struct.cpp_hashnode*)* %0, null
+  br i1 %tobool4, label %if.end9, label %if.then5
+
+if.then5:                                         ; preds = %if.then3
+  %directive_line = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 5
+  %1 = load i32* %directive_line, align 4, !tbaa !2
+  tail call void %0(%struct.cpp_reader* %pfile, i32 %1, %struct.cpp_hashnode* %call) #8
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.then3, %if.then, %entry, %if.then5
+  ret void
+}

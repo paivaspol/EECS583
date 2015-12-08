@@ -1,0 +1,176 @@
+define %union.tree_node* @c_expand_expr_stmt(%union.tree_node* %expr) #0 {
+entry:
+  %before_sp.i = alloca %struct.tlist*, align 8
+  %after_sp.i = alloca %struct.tlist*, align 8
+  %type = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 0, i32 1
+  %0 = load %union.tree_node** %type, align 8, !tbaa !3
+  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 18
+  br i1 %cmp, label %land.lhs.true, label %lor.lhs.false3
+
+land.lhs.true:                                    ; preds = %entry
+  %2 = load i32* @flag_isoc99, align 4, !tbaa !0
+  %tobool = icmp eq i32 %2, 0
+  br i1 %tobool, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %land.lhs.true
+  %call = call i32 @lvalue_p(%union.tree_node* %expr) #8
+  %tobool2 = icmp eq i32 %call, 0
+  br i1 %tobool2, label %lor.lhs.false.lor.lhs.false3_crit_edge, label %if.then
+
+lor.lhs.false.lor.lhs.false3_crit_edge:           ; preds = %lor.lhs.false
+  %.pre56 = load %union.tree_node** %type, align 8, !tbaa !3
+  %code7.phi.trans.insert = getelementptr inbounds %union.tree_node* %.pre56, i64 0, i32 0, i32 0, i32 2
+  %.phi.trans.insert = bitcast [4 x i8]* %code7.phi.trans.insert to i32*
+  %bf.load8.pre = load i32* %.phi.trans.insert, align 8
+  br label %lor.lhs.false3
+
+lor.lhs.false3:                                   ; preds = %lor.lhs.false.lor.lhs.false3_crit_edge, %entry
+  %bf.load8 = phi i32 [ %bf.load8.pre, %lor.lhs.false.lor.lhs.false3_crit_edge ], [ %bf.load, %entry ]
+  %bf.clear9 = and i32 %bf.load8, 255
+  %cmp10 = icmp eq i32 %bf.clear9, 23
+  br i1 %cmp10, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false, %land.lhs.true, %lor.lhs.false3
+  %call11 = call %union.tree_node* @default_conversion(%union.tree_node* %expr) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %lor.lhs.false3
+  %expr.addr.0 = phi %union.tree_node* [ %call11, %if.then ], [ %expr, %lor.lhs.false3 ]
+  %3 = load i32* @warn_sequence_point, align 4, !tbaa !0
+  %tobool12 = icmp eq i32 %3, 0
+  br i1 %tobool12, label %if.end14, label %if.then13
+
+if.then13:                                        ; preds = %if.end
+  %4 = bitcast %struct.tlist** %before_sp.i to i8*
+  call void @llvm.lifetime.start(i64 8, i8* %4) #2
+  %5 = bitcast %struct.tlist** %after_sp.i to i8*
+  call void @llvm.lifetime.start(i64 8, i8* %5) #2
+  store %struct.tlist* null, %struct.tlist** %before_sp.i, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** %after_sp.i, align 8, !tbaa !3
+  store %struct.tlist* null, %struct.tlist** @warned_ids, align 8, !tbaa !3
+  store %struct.tlist_cache* null, %struct.tlist_cache** @save_expr_cache, align 8, !tbaa !3
+  %6 = load i8** @tlist_firstobj, align 8, !tbaa !3
+  %cmp.i = icmp eq i8* %6, null
+  br i1 %cmp.i, label %if.then.i, label %if.end35.i
+
+if.then.i:                                        ; preds = %if.then13
+  call void @gcc_obstack_init(%struct.obstack* @tlist_obstack) #8
+  %7 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 4), align 8, !tbaa !3
+  %8 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %sub.ptr.lhs.cast.i = ptrtoint i8* %7 to i64
+  %sub.ptr.rhs.cast.i = ptrtoint i8* %8 to i64
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i
+  %cmp1.i = icmp slt i64 %sub.ptr.sub.i, 0
+  br i1 %cmp1.i, label %if.then3.i, label %if.end.i
+
+if.then3.i:                                       ; preds = %if.then.i
+  call void @_obstack_newchunk(%struct.obstack* @tlist_obstack, i32 0) #8
+  %.pre.i = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.then3.i, %if.then.i
+  %9 = phi i8* [ %.pre.i, %if.then3.i ], [ %8, %if.then.i ]
+  %10 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 2), align 8, !tbaa !3
+  %cmp6.i = icmp eq i8* %9, %10
+  br i1 %cmp6.i, label %if.then8.i, label %if.end9.i
+
+if.then8.i:                                       ; preds = %if.end.i
+  %bf.load.i = load i8* getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 10), align 8
+  %bf.set.i = or i8 %bf.load.i, 2
+  store i8 %bf.set.i, i8* getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 10), align 8
+  br label %if.end9.i
+
+if.end9.i:                                        ; preds = %if.end.i, %if.then8.i
+  %sub.ptr.lhs.cast11.i = ptrtoint i8* %9 to i64
+  %11 = load i32* getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 6), align 8, !tbaa !0
+  %conv13.i = sext i32 %11 to i64
+  %add.i = add nsw i64 %conv13.i, %sub.ptr.lhs.cast11.i
+  %neg.i = xor i32 %11, -1
+  %conv15.i = sext i32 %neg.i to i64
+  %and.i = and i64 %add.i, %conv15.i
+  %add.ptr16.i = getelementptr inbounds i8* null, i64 %and.i
+  store i8* %add.ptr16.i, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %12 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 1), align 8, !tbaa !3
+  %sub.ptr.lhs.cast19.i = ptrtoint i8* %add.ptr16.i to i64
+  %sub.ptr.rhs.cast20.i = ptrtoint %struct._obstack_chunk* %12 to i64
+  %sub.ptr.sub21.i = sub i64 %sub.ptr.lhs.cast19.i, %sub.ptr.rhs.cast20.i
+  %13 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 4), align 8, !tbaa !3
+  %sub.ptr.lhs.cast24.i = ptrtoint i8* %13 to i64
+  %sub.ptr.sub26.i = sub i64 %sub.ptr.lhs.cast24.i, %sub.ptr.rhs.cast20.i
+  %cmp27.i = icmp sgt i64 %sub.ptr.sub21.i, %sub.ptr.sub26.i
+  br i1 %cmp27.i, label %if.then29.i, label %if.end32.i
+
+if.then29.i:                                      ; preds = %if.end9.i
+  store i8* %13, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
+  br label %if.end32.i
+
+if.end32.i:                                       ; preds = %if.then29.i, %if.end9.i
+  %14 = phi i8* [ %13, %if.then29.i ], [ %add.ptr16.i, %if.end9.i ]
+  store i8* %14, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 2), align 8, !tbaa !3
+  store i8* %10, i8** @tlist_firstobj, align 8, !tbaa !3
+  br label %if.end35.i
+
+if.end35.i:                                       ; preds = %if.end32.i, %if.then13
+  call fastcc void @verify_tree(%union.tree_node* %expr.addr.0, %struct.tlist** %before_sp.i, %struct.tlist** %after_sp.i, %union.tree_node* null) #8
+  %15 = load %struct.tlist** %after_sp.i, align 8, !tbaa !3
+  call fastcc void @warn_for_collisions(%struct.tlist* %15) #8
+  %16 = load i8** @tlist_firstobj, align 8, !tbaa !3
+  %17 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 1), align 8, !tbaa !3
+  %18 = bitcast %struct._obstack_chunk* %17 to i8*
+  %cmp38.i = icmp ugt i8* %16, %18
+  %19 = load i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 4), align 8, !tbaa !3
+  %cmp41.i = icmp ult i8* %16, %19
+  %or.cond.i = and i1 %cmp38.i, %cmp41.i
+  br i1 %or.cond.i, label %if.then43.i, label %if.else.i
+
+if.then43.i:                                      ; preds = %if.end35.i
+  store i8* %16, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 2), align 8, !tbaa !3
+  store i8* %16, i8** getelementptr inbounds (%struct.obstack* @tlist_obstack, i64 0, i32 3), align 8, !tbaa !3
+  br label %if.end14
+
+if.else.i:                                        ; preds = %if.end35.i
+  call void @obstack_free(%struct.obstack* @tlist_obstack, i8* %16) #8
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.end, %if.else.i, %if.then43.i
+  %type16 = getelementptr inbounds %union.tree_node* %expr.addr.0, i64 0, i32 0, i32 0, i32 1
+  %20 = load %union.tree_node** %type16, align 8, !tbaa !3
+  %21 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 8, !tbaa !3
+  %cmp17 = icmp eq %union.tree_node* %20, %21
+  br i1 %cmp17, label %if.end40, label %land.lhs.true18
+
+land.lhs.true18:                                  ; preds = %if.end14
+  %size = getelementptr inbounds %union.tree_node* %20, i64 0, i32 0, i32 2
+  %22 = bitcast i32* %size to %union.tree_node**
+  %23 = load %union.tree_node** %22, align 8, !tbaa !3
+  %cmp22 = icmp eq %union.tree_node* %23, null
+  br i1 %cmp22, label %lor.lhs.false23, label %if.end40
+
+lor.lhs.false23:                                  ; preds = %land.lhs.true18
+  %code27 = getelementptr inbounds %union.tree_node* %20, i64 0, i32 0, i32 0, i32 2
+  %24 = bitcast [4 x i8]* %code27 to i32*
+  %bf.load28 = load i32* %24, align 8
+  %bf.clear29 = and i32 %bf.load28, 255
+  switch i32 %bf.clear29, label %if.then39 [
+    i32 5, label %if.end40
+    i32 18, label %if.end40
+  ]
+
+if.then39:                                        ; preds = %lor.lhs.false23
+  call void (i8*, ...)* @error(i8* getelementptr inbounds ([41 x i8]* @.str13, i64 0, i64 0)) #8
+  %.pre = load %union.tree_node** %type16, align 8, !tbaa !3
+  br label %if.end40
+
+if.end40:                                         ; preds = %lor.lhs.false23, %lor.lhs.false23, %land.lhs.true18, %if.end14, %if.then39
+  %25 = phi %union.tree_node* [ %20, %lor.lhs.false23 ], [ %20, %lor.lhs.false23 ], [ %20, %land.lhs.true18 ], [ %20, %if.end14 ], [ %.pre, %if.then39 ]
+  %call43 = call %struct.stmt_tree_s* @current_stmt_tree() #8
+  %x_last_expr_type = getelementptr inbounds %struct.stmt_tree_s* %call43, i64 0, i32 1
+  store %union.tree_node* %25, %union.tree_node** %x_last_expr_type, align 8, !tbaa !3
+  %call44 = call %union.tree_node* (i32, ...)* @build_stmt(i32 152, %union.tree_node* %expr.addr.0) #8
+  %call45 = call %union.tree_node* @add_stmt(%union.tree_node* %call44) #8
+  ret %union.tree_node* %call45
+}

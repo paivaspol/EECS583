@@ -1,0 +1,62 @@
+define void @insn_print_units(%struct.rtx_def* %insn) #0 {
+entry:
+  %call = tail call i32 @insn_unit(%struct.rtx_def* %insn) #5
+  %cmp = icmp eq i32 %call, -1
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @sched_dump, align 8, !tbaa !0
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %0)
+  br label %if.end19
+
+if.else:                                          ; preds = %entry
+  %cmp2 = icmp sgt i32 %call, -1
+  %2 = load %struct._IO_FILE** @sched_dump, align 8, !tbaa !0
+  br i1 %cmp2, label %if.then3, label %for.body.lr.ph
+
+if.then3:                                         ; preds = %if.else
+  %idxprom = sext i32 %call to i64
+  %name = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom, i32 0
+  %3 = load i8** %name, align 8, !tbaa !0
+  %fputs28 = tail call i32 @fputs(i8* %3, %struct._IO_FILE* %2)
+  br label %if.end19
+
+for.body.lr.ph:                                   ; preds = %if.else
+  %fputc = tail call i32 @fputc(i32 91, %struct._IO_FILE* %2)
+  %neg = xor i32 %call, -1
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %unit.037 = phi i32 [ %neg, %for.body.lr.ph ], [ %shr, %for.inc ]
+  %and = and i32 %unit.037, 1
+  %tobool7 = icmp eq i32 %and, 0
+  br i1 %tobool7, label %for.inc, label %if.then8
+
+if.then8:                                         ; preds = %for.body
+  %4 = load %struct._IO_FILE** @sched_dump, align 8, !tbaa !0
+  %name11 = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %indvars.iv, i32 0
+  %5 = load i8** %name11, align 8, !tbaa !0
+  %fputs = tail call i32 @fputs(i8* %5, %struct._IO_FILE* %4)
+  %cmp13 = icmp eq i32 %unit.037, 1
+  br i1 %cmp13, label %for.end, label %if.then14
+
+if.then14:                                        ; preds = %if.then8
+  %6 = load %struct._IO_FILE** @sched_dump, align 8, !tbaa !0
+  %fputc31 = tail call i32 @fputc(i32 32, %struct._IO_FILE* %6)
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then14
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %shr = ashr i32 %unit.037, 1
+  %tobool = icmp eq i32 %shr, 0
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.then8, %for.inc
+  %7 = load %struct._IO_FILE** @sched_dump, align 8, !tbaa !0
+  %fputc34 = tail call i32 @fputc(i32 93, %struct._IO_FILE* %7)
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.then3, %for.end, %if.then
+  ret void
+}

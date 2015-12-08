@@ -1,0 +1,25 @@
+define void @init_deps(%struct.deps* %deps) #1 {
+entry:
+  %0 = load i32* @reload_completed, align 4, !tbaa !3
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %call = tail call i32 @max_reg_num() #7
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi i32 [ %call, %cond.false ], [ 53, %entry ]
+  %max_reg1 = getelementptr inbounds %struct.deps* %deps, i64 0, i32 10
+  store i32 %cond, i32* %max_reg1, align 4, !tbaa !3
+  %conv = sext i32 %cond to i64
+  %call2 = tail call noalias i8* @xcalloc(i64 %conv, i64 32) #7
+  %1 = bitcast i8* %call2 to %struct.deps_reg*
+  %reg_last = getelementptr inbounds %struct.deps* %deps, i64 0, i32 11
+  store %struct.deps_reg* %1, %struct.deps_reg** %reg_last, align 8, !tbaa !0
+  %reg_last_in_use = getelementptr inbounds %struct.deps* %deps, i64 0, i32 12
+  %call3 = tail call %struct.bitmap_head_def* @bitmap_initialize(%struct.bitmap_head_def* %reg_last_in_use) #7
+  %2 = bitcast %struct.deps* %deps to i8*
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 65, i32 8, i1 false)
+  ret void
+}

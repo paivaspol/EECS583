@@ -1,0 +1,14 @@
+define void @logs_free() #0 {
+entry:
+  %0 = load i16** @add_tbl, align 8, !tbaa !3
+  %tobool = icmp eq i16* %0, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = bitcast i16* %0 to i8*
+  tail call void @ckd_free(i8* %1) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

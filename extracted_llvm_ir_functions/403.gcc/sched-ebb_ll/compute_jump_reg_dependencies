@@ -1,0 +1,41 @@
+define internal void @compute_jump_reg_dependencies(%struct.rtx_def* nocapture %insn, %struct.bitmap_head_def* %set) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !0
+  %idxprom = sext i32 %0 to i64
+  %1 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx1 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom
+  %2 = load %struct.basic_block_def** %arrayidx1, align 8, !tbaa !3
+  %succ = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 5
+  %e.06 = load %struct.edge_def** %succ, align 8
+  %tobool7 = icmp eq %struct.edge_def* %e.06, null
+  br i1 %tobool7, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %e.08 = phi %struct.edge_def* [ %e.0, %for.inc ], [ %e.06, %entry ]
+  %flags = getelementptr inbounds %struct.edge_def* %e.08, i64 0, i32 6
+  %3 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %3, 1
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body
+  %dest = getelementptr inbounds %struct.edge_def* %e.08, i64 0, i32 3
+  %4 = load %struct.basic_block_def** %dest, align 8, !tbaa !3
+  %global_live_at_start = getelementptr inbounds %struct.basic_block_def* %4, i64 0, i32 8
+  %5 = load %struct.bitmap_head_def** %global_live_at_start, align 8, !tbaa !3
+  %call = tail call i32 @bitmap_operation(%struct.bitmap_head_def* %set, %struct.bitmap_head_def* %set, %struct.bitmap_head_def* %5, i32 2) #7
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %succ_next = getelementptr inbounds %struct.edge_def* %e.08, i64 0, i32 1
+  %e.0 = load %struct.edge_def** %succ_next, align 8
+  %tobool = icmp eq %struct.edge_def* %e.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

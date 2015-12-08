@@ -1,0 +1,277 @@
+define internal fastcc i32 @apply_args_size() #0 {
+entry:
+  %0 = load i32* @apply_args_size.size, align 4, !tbaa !0
+  %cmp = icmp slt i32 %0, 0
+  br i1 %cmp, label %if.then, label %if.end173
+
+if.then:                                          ; preds = %entry
+  %1 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %1, 25
+  %2 = and i32 %and, 1
+  %3 = or i32 %2, 4
+  %idxprom228 = zext i32 %3 to i64
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom228
+  %4 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = zext i8 %4 to i32
+  store i32 %conv, i32* @apply_args_size.size, align 4, !tbaa !0
+  %5 = load %struct.rtx_def** @struct_value_rtx, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct.rtx_def* %5, null
+  br i1 %tobool1, label %for.cond.preheader, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %add = shl nuw nsw i32 %conv, 1
+  store i32 %add, i32* @apply_args_size.size, align 4, !tbaa !0
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then, %if.then2
+  %6 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !tbaa !5
+  %cmp13243 = icmp eq i32 %6, 0
+  %7 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 2), align 4, !tbaa !5
+  %cmp89247 = icmp eq i32 %7, 0
+  %8 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 8), align 4, !tbaa !5
+  %cmp109251 = icmp eq i32 %8, 0
+  %9 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 7), align 4, !tbaa !5
+  %cmp129255 = icmp eq i32 %9, 0
+  br label %for.body
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc171
+  %indvars.iv = phi i64 [ 0, %for.cond.preheader ], [ %indvars.iv.next, %for.inc171 ]
+  %10 = trunc i64 %indvars.iv to i32
+  %call = tail call zeroext i1 @ix86_function_arg_regno_p(i32 %10) #7
+  br i1 %call, label %if.then11, label %if.else
+
+if.then11:                                        ; preds = %for.body
+  br i1 %cmp13243, label %if.then87, label %for.body15.lr.ph
+
+for.body15.lr.ph:                                 ; preds = %if.then11
+  %regno.0.off = add i32 %10, -8
+  %11 = icmp ult i32 %regno.0.off, 8
+  %regno.0.off229 = add i32 %10, -21
+  %12 = icmp ult i32 %regno.0.off229, 8
+  %or.cond = or i1 %11, %12
+  %regno.0.off230 = add i32 %10, -45
+  %13 = icmp ult i32 %regno.0.off230, 8
+  %or.cond235 = or i1 %or.cond, %13
+  %regno.0.off231 = add i32 %10, -29
+  %14 = icmp ult i32 %regno.0.off231, 8
+  %or.cond237 = or i1 %or.cond235, %14
+  br label %for.body15
+
+for.body15:                                       ; preds = %for.body15.lr.ph, %for.inc
+  %best_mode.0246 = phi i32 [ 0, %for.body15.lr.ph ], [ %best_mode.1, %for.inc ]
+  %mode.0244 = phi i32 [ %6, %for.body15.lr.ph ], [ %conv84, %for.inc ]
+  %call16 = tail call i32 @ix86_hard_regno_mode_ok(i32 %10, i32 %mode.0244) #7
+  %tobool17 = icmp eq i32 %call16, 0
+  br i1 %tobool17, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body15
+  br i1 %or.cond237, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %land.lhs.true
+  %idxprom40 = sext i32 %mode.0244 to i64
+  %arrayidx41 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom40
+  %15 = load i32* %arrayidx41, align 4, !tbaa !6
+  %cmp42 = icmp eq i32 %15, 5
+  br i1 %cmp42, label %cond.end76, label %lor.rhs
+
+lor.rhs:                                          ; preds = %cond.true
+  %cmp46 = icmp eq i32 %15, 6
+  %phitmp = select i1 %cmp46, i32 2, i32 1
+  br label %cond.end76
+
+cond.false:                                       ; preds = %land.lhs.true
+  switch i32 %mode.0244, label %cond.false62 [
+    i32 18, label %cond.true51
+    i32 24, label %cond.true58
+  ]
+
+cond.true51:                                      ; preds = %cond.false
+  %16 = load i32* @target_flags, align 4, !tbaa !0
+  %and52 = lshr i32 %16, 25
+  %17 = and i32 %and52, 1
+  %18 = xor i32 %17, 3
+  br label %cond.end76
+
+cond.true58:                                      ; preds = %cond.false
+  %19 = load i32* @target_flags, align 4, !tbaa !0
+  %and59 = lshr i32 %19, 24
+  %20 = and i32 %and59, 2
+  %21 = xor i32 %20, 6
+  br label %cond.end76
+
+cond.false62:                                     ; preds = %cond.false
+  %idxprom63 = sext i32 %mode.0244 to i64
+  %arrayidx64 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom63
+  %22 = load i8* %arrayidx64, align 1, !tbaa !1
+  %conv65 = zext i8 %22 to i32
+  %23 = load i32* @target_flags, align 4, !tbaa !0
+  %and66 = lshr i32 %23, 23
+  %24 = and i32 %and66, 4
+  %25 = add i32 %24, 4
+  %add69 = add i32 %conv65, -1
+  %sub = add i32 %add69, %25
+  %div = sdiv i32 %sub, %25
+  br label %cond.end76
+
+cond.end76:                                       ; preds = %cond.true, %lor.rhs, %cond.true51, %cond.false62, %cond.true58
+  %cond77 = phi i32 [ %18, %cond.true51 ], [ %21, %cond.true58 ], [ %div, %cond.false62 ], [ 2, %cond.true ], [ %phitmp, %lor.rhs ]
+  %cmp78 = icmp eq i32 %cond77, 1
+  %mode.0.best_mode.0 = select i1 %cmp78, i32 %mode.0244, i32 %best_mode.0246
+  br label %for.inc
+
+for.inc:                                          ; preds = %cond.end76, %for.body15
+  %best_mode.1 = phi i32 [ %best_mode.0246, %for.body15 ], [ %mode.0.best_mode.0, %cond.end76 ]
+  %idxprom82 = sext i32 %mode.0244 to i64
+  %arrayidx83 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom82
+  %26 = load i8* %arrayidx83, align 1, !tbaa !1
+  %conv84 = zext i8 %26 to i32
+  %cmp13 = icmp eq i8 %26, 0
+  br i1 %cmp13, label %for.end, label %for.body15
+
+for.end:                                          ; preds = %for.inc
+  %cmp85 = icmp eq i32 %best_mode.1, 0
+  br i1 %cmp85, label %if.then87, label %if.end148
+
+if.then87:                                        ; preds = %if.then11, %for.end
+  br i1 %cmp89247, label %if.then107, label %for.body91
+
+for.body91:                                       ; preds = %if.then87, %for.inc99
+  %best_mode.2249 = phi i32 [ %best_mode.3, %for.inc99 ], [ 0, %if.then87 ]
+  %mode.1248 = phi i32 [ %conv102, %for.inc99 ], [ %7, %if.then87 ]
+  %call92 = tail call i32 @ix86_hard_regno_mode_ok(i32 %10, i32 %mode.1248) #7
+  %tobool93 = icmp eq i32 %call92, 0
+  br i1 %tobool93, label %for.inc99, label %land.lhs.true94
+
+land.lhs.true94:                                  ; preds = %for.body91
+  %call95 = tail call i32 @have_insn_for(i32 47, i32 %mode.1248) #7
+  %tobool96 = icmp eq i32 %call95, 0
+  %best_mode.2.mode.1 = select i1 %tobool96, i32 %best_mode.2249, i32 %mode.1248
+  br label %for.inc99
+
+for.inc99:                                        ; preds = %land.lhs.true94, %for.body91
+  %best_mode.3 = phi i32 [ %best_mode.2249, %for.body91 ], [ %best_mode.2.mode.1, %land.lhs.true94 ]
+  %idxprom100 = sext i32 %mode.1248 to i64
+  %arrayidx101 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom100
+  %27 = load i8* %arrayidx101, align 1, !tbaa !1
+  %conv102 = zext i8 %27 to i32
+  %cmp89 = icmp eq i8 %27, 0
+  br i1 %cmp89, label %if.end104, label %for.body91
+
+if.end104:                                        ; preds = %for.inc99
+  %cmp105 = icmp eq i32 %best_mode.3, 0
+  br i1 %cmp105, label %if.then107, label %if.end148
+
+if.then107:                                       ; preds = %if.then87, %if.end104
+  br i1 %cmp109251, label %if.then127, label %for.body111
+
+for.body111:                                      ; preds = %if.then107, %for.inc119
+  %best_mode.5253 = phi i32 [ %best_mode.6, %for.inc119 ], [ 0, %if.then107 ]
+  %mode.2252 = phi i32 [ %conv122, %for.inc119 ], [ %8, %if.then107 ]
+  %call112 = tail call i32 @ix86_hard_regno_mode_ok(i32 %10, i32 %mode.2252) #7
+  %tobool113 = icmp eq i32 %call112, 0
+  br i1 %tobool113, label %for.inc119, label %land.lhs.true114
+
+land.lhs.true114:                                 ; preds = %for.body111
+  %call115 = tail call i32 @have_insn_for(i32 47, i32 %mode.2252) #7
+  %tobool116 = icmp eq i32 %call115, 0
+  %best_mode.5.mode.2 = select i1 %tobool116, i32 %best_mode.5253, i32 %mode.2252
+  br label %for.inc119
+
+for.inc119:                                       ; preds = %land.lhs.true114, %for.body111
+  %best_mode.6 = phi i32 [ %best_mode.5253, %for.body111 ], [ %best_mode.5.mode.2, %land.lhs.true114 ]
+  %idxprom120 = sext i32 %mode.2252 to i64
+  %arrayidx121 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom120
+  %28 = load i8* %arrayidx121, align 1, !tbaa !1
+  %conv122 = zext i8 %28 to i32
+  %cmp109 = icmp eq i8 %28, 0
+  br i1 %cmp109, label %if.end124, label %for.body111
+
+if.end124:                                        ; preds = %for.inc119
+  %cmp125 = icmp eq i32 %best_mode.6, 0
+  br i1 %cmp125, label %if.then127, label %if.end148
+
+if.then127:                                       ; preds = %if.then107, %if.end124
+  br i1 %cmp129255, label %if.then147, label %for.body131
+
+for.body131:                                      ; preds = %if.then127, %for.inc139
+  %best_mode.8257 = phi i32 [ %best_mode.9, %for.inc139 ], [ 0, %if.then127 ]
+  %mode.3256 = phi i32 [ %conv142, %for.inc139 ], [ %9, %if.then127 ]
+  %call132 = tail call i32 @ix86_hard_regno_mode_ok(i32 %10, i32 %mode.3256) #7
+  %tobool133 = icmp eq i32 %call132, 0
+  br i1 %tobool133, label %for.inc139, label %land.lhs.true134
+
+land.lhs.true134:                                 ; preds = %for.body131
+  %call135 = tail call i32 @have_insn_for(i32 47, i32 %mode.3256) #7
+  %tobool136 = icmp eq i32 %call135, 0
+  %best_mode.8.mode.3 = select i1 %tobool136, i32 %best_mode.8257, i32 %mode.3256
+  br label %for.inc139
+
+for.inc139:                                       ; preds = %land.lhs.true134, %for.body131
+  %best_mode.9 = phi i32 [ %best_mode.8257, %for.body131 ], [ %best_mode.8.mode.3, %land.lhs.true134 ]
+  %idxprom140 = sext i32 %mode.3256 to i64
+  %arrayidx141 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom140
+  %29 = load i8* %arrayidx141, align 1, !tbaa !1
+  %conv142 = zext i8 %29 to i32
+  %cmp129 = icmp eq i8 %29, 0
+  br i1 %cmp129, label %if.end144, label %for.body131
+
+if.end144:                                        ; preds = %for.inc139
+  %cmp145 = icmp eq i32 %best_mode.9, 0
+  br i1 %cmp145, label %if.then147, label %if.end148
+
+if.then147:                                       ; preds = %if.then127, %if.end144
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str100, i64 0, i64 0), i32 944, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.apply_args_size, i64 0, i64 0)) #8
+  unreachable
+
+if.end148:                                        ; preds = %for.end, %if.end104, %if.end124, %if.end144
+  %best_mode.10241 = phi i32 [ %best_mode.9, %if.end144 ], [ %best_mode.6, %if.end124 ], [ %best_mode.3, %if.end104 ], [ %best_mode.1, %for.end ]
+  %call149 = tail call i32 @get_mode_alignment(i32 %best_mode.10241) #7
+  %div150 = lshr i32 %call149, 3
+  %30 = load i32* @apply_args_size.size, align 4, !tbaa !0
+  %rem = srem i32 %30, %div150
+  %cmp151 = icmp eq i32 %rem, 0
+  br i1 %cmp151, label %if.end157, label %if.then153
+
+if.then153:                                       ; preds = %if.end148
+  %add154 = add i32 %div150, -1
+  %sub155 = add i32 %add154, %30
+  %div156 = srem i32 %sub155, %div150
+  %mul = sub i32 %sub155, %div156
+  store i32 %mul, i32* @apply_args_size.size, align 4, !tbaa !0
+  br label %if.end157
+
+if.end157:                                        ; preds = %if.end148, %if.then153
+  %31 = phi i32 [ %30, %if.end148 ], [ %mul, %if.then153 ]
+  %arrayidx159 = getelementptr inbounds [53 x i32]* @apply_args_reg_offset, i64 0, i64 %indvars.iv
+  store i32 %31, i32* %arrayidx159, align 4, !tbaa !0
+  %idxprom160 = sext i32 %best_mode.10241 to i64
+  %arrayidx161 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom160
+  %32 = load i8* %arrayidx161, align 1, !tbaa !1
+  %conv162 = zext i8 %32 to i32
+  %add163 = add nsw i32 %31, %conv162
+  store i32 %add163, i32* @apply_args_size.size, align 4, !tbaa !0
+  %arrayidx165 = getelementptr inbounds [53 x i32]* @apply_args_mode, i64 0, i64 %indvars.iv
+  store i32 %best_mode.10241, i32* %arrayidx165, align 4, !tbaa !5
+  br label %for.inc171
+
+if.else:                                          ; preds = %for.body
+  %arrayidx167 = getelementptr inbounds [53 x i32]* @apply_args_mode, i64 0, i64 %indvars.iv
+  store i32 0, i32* %arrayidx167, align 4, !tbaa !5
+  %arrayidx169 = getelementptr inbounds [53 x i32]* @apply_args_reg_offset, i64 0, i64 %indvars.iv
+  store i32 0, i32* %arrayidx169, align 4, !tbaa !0
+  br label %for.inc171
+
+for.inc171:                                       ; preds = %if.end157, %if.else
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %33 = trunc i64 %indvars.iv.next to i32
+  %cmp9 = icmp ult i32 %33, 53
+  br i1 %cmp9, label %for.body, label %if.end173.loopexit
+
+if.end173.loopexit:                               ; preds = %for.inc171
+  %.pre = load i32* @apply_args_size.size, align 4, !tbaa !0
+  br label %if.end173
+
+if.end173:                                        ; preds = %if.end173.loopexit, %entry
+  %34 = phi i32 [ %.pre, %if.end173.loopexit ], [ %0, %entry ]
+  ret i32 %34
+}

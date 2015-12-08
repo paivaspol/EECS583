@@ -1,0 +1,19 @@
+define i32 @check_deviation(double %deviation) #0 {
+entry:
+  %0 = load double* @max_deviation, align 8, !tbaa !0
+  %cmp = fcmp olt double %0, %deviation
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  store double %deviation, double* @max_deviation, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %mul = fmul double %deviation, %deviation
+  %1 = load double* @av_deviation, align 8, !tbaa !0
+  %add = fadd double %mul, %1
+  store double %add, double* @av_deviation, align 8, !tbaa !0
+  %cmp1 = fcmp ogt double %deviation, 1.000000e-04
+  %. = zext i1 %cmp1 to i32
+  ret i32 %.
+}

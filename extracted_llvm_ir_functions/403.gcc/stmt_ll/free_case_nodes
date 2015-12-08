@@ -1,0 +1,19 @@
+define internal fastcc void @free_case_nodes(%struct.case_node* %cn) #0 {
+entry:
+  %tobool = icmp eq %struct.case_node* %cn, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %left = getelementptr inbounds %struct.case_node* %cn, i64 0, i32 0
+  %0 = load %struct.case_node** %left, align 8, !tbaa !0
+  tail call fastcc void @free_case_nodes(%struct.case_node* %0) #9
+  %right = getelementptr inbounds %struct.case_node* %cn, i64 0, i32 1
+  %1 = load %struct.case_node** %right, align 8, !tbaa !0
+  tail call fastcc void @free_case_nodes(%struct.case_node* %1) #9
+  %2 = bitcast %struct.case_node* %cn to i8*
+  tail call void @free(i8* %2) #7
+  ret void
+
+if.end:                                           ; preds = %entry
+  ret void
+}

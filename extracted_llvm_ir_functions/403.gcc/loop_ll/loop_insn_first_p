@@ -1,0 +1,90 @@
+define i32 @loop_insn_first_p(%struct.rtx_def* %insn, %struct.rtx_def* %reference) #0 {
+entry:
+  %0 = load i32* @max_uid_for_loop, align 4, !tbaa !3
+  br label %for.cond.outer
+
+for.cond.outer:                                   ; preds = %if.then56, %entry
+  %p.0.ph = phi %struct.rtx_def* [ %insn, %entry ], [ %p.1, %if.then56 ]
+  %q.0.ph = phi %struct.rtx_def* [ %reference, %entry ], [ %10, %if.then56 ]
+  %cmp = icmp eq %struct.rtx_def* %q.0.ph, %insn
+  %tobool3 = icmp eq %struct.rtx_def* %q.0.ph, null
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %q.0.ph, i64 0, i32 1, i64 0
+  %rtint9 = bitcast %union.rtunion_def* %arrayidx8 to i32*
+  %fld51 = getelementptr inbounds %struct.rtx_def* %q.0.ph, i64 0, i32 1
+  %rtint53 = bitcast [1 x %union.rtunion_def]* %fld51 to i32*
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond.outer, %if.end50
+  %p.0 = phi %struct.rtx_def* [ %p.1, %if.end50 ], [ %p.0.ph, %for.cond.outer ]
+  %tobool = icmp eq %struct.rtx_def* %p.0, null
+  %or.cond = or i1 %cmp, %tobool
+  br i1 %or.cond, label %return, label %if.end
+
+if.end:                                           ; preds = %for.cond
+  %cmp1 = icmp eq %struct.rtx_def* %p.0, %reference
+  %or.cond77 = or i1 %cmp1, %tobool3
+  br i1 %or.cond77, label %return, label %if.end5
+
+if.end5:                                          ; preds = %if.end
+  %fld = getelementptr inbounds %struct.rtx_def* %p.0, i64 0, i32 1
+  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*
+  %1 = load i32* %rtint, align 4, !tbaa !3
+  %cmp6 = icmp slt i32 %1, %0
+  br i1 %cmp6, label %land.lhs.true, label %if.then47
+
+land.lhs.true:                                    ; preds = %if.end5
+  %2 = load i32* %rtint9, align 4, !tbaa !3
+  %cmp10 = icmp slt i32 %2, %0
+  br i1 %cmp10, label %land.lhs.true11, label %lor.lhs.false42
+
+land.lhs.true11:                                  ; preds = %land.lhs.true
+  %3 = bitcast %struct.rtx_def* %p.0 to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp12 = icmp eq i32 %bf.clear, 37
+  br i1 %cmp12, label %if.end36, label %cond.true26
+
+cond.true26:                                      ; preds = %land.lhs.true11
+  %4 = load i32** @uid_luid, align 8, !tbaa !4
+  %idxprom = sext i32 %1 to i64
+  %arrayidx21 = getelementptr inbounds i32* %4, i64 %idxprom
+  %5 = load i32* %arrayidx21, align 4, !tbaa !3
+  %idxprom30 = sext i32 %2 to i64
+  %arrayidx31 = getelementptr inbounds i32* %4, i64 %idxprom30
+  %6 = load i32* %arrayidx31, align 4, !tbaa !3
+  %cmp35 = icmp sle i32 %5, %6
+  %conv = zext i1 %cmp35 to i32
+  br label %return
+
+if.end36:                                         ; preds = %land.lhs.true11
+  br i1 %cmp6, label %lor.lhs.false42, label %if.then47
+
+lor.lhs.false42:                                  ; preds = %land.lhs.true, %if.end36
+  %7 = bitcast %struct.rtx_def* %p.0 to i32*
+  %bf.load43 = load i32* %7, align 8
+  %bf.clear44 = and i32 %bf.load43, 65535
+  %cmp45 = icmp eq i32 %bf.clear44, 37
+  br i1 %cmp45, label %if.then47, label %if.end50
+
+if.then47:                                        ; preds = %if.end5, %if.end36, %lor.lhs.false42
+  %arrayidx49 = getelementptr inbounds %struct.rtx_def* %p.0, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx49 to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  br label %if.end50
+
+if.end50:                                         ; preds = %lor.lhs.false42, %if.then47
+  %p.1 = phi %struct.rtx_def* [ %8, %if.then47 ], [ %p.0, %lor.lhs.false42 ]
+  %9 = load i32* %rtint53, align 4, !tbaa !3
+  %cmp54 = icmp slt i32 %9, %0
+  br i1 %cmp54, label %for.cond, label %if.then56
+
+if.then56:                                        ; preds = %if.end50
+  %arrayidx58 = getelementptr inbounds %struct.rtx_def* %q.0.ph, i64 0, i32 1, i64 2
+  %rtx59 = bitcast %union.rtunion_def* %arrayidx58 to %struct.rtx_def**
+  %10 = load %struct.rtx_def** %rtx59, align 8, !tbaa !4
+  br label %for.cond.outer
+
+return:                                           ; preds = %if.end, %for.cond, %cond.true26
+  %retval.0 = phi i32 [ %conv, %cond.true26 ], [ 1, %if.end ], [ 0, %for.cond ]
+  ret i32 %retval.0
+}

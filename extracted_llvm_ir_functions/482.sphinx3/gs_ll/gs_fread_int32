@@ -1,0 +1,19 @@
+define i32 @gs_fread_int32(%struct.gs_s* nocapture %gs) #0 {
+entry:
+  %val = alloca i32, align 4
+  %0 = bitcast i32* %val to i8*
+  %fp = getelementptr inbounds %struct.gs_s* %gs, i64 0, i32 8
+  %1 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
+  %call = call i64 @fread(i8* %0, i64 4, i64 1, %struct._IO_FILE* %1) #5
+  %cmp = icmp eq i64 %call, 1
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 63, i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0)) #5
+  call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([14 x i8]* @.str2, i64 0, i64 0)) #5
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %2 = load i32* %val, align 4, !tbaa !3
+  ret i32 %2
+}

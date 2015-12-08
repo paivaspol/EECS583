@@ -1,0 +1,79 @@
+define internal i8* @output_222(%struct.rtx_def** nocapture %operands, %struct.rtx_def* %insn) #1 {
+entry:
+  %0 = load i32* @which_alternative, align 4, !tbaa !3
+  %cmp = icmp eq i32 %0, 2
+  %call = tail call i32 @get_attr_type(%struct.rtx_def* %insn) #6
+  %cond57 = icmp eq i32 %call, 10
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %operands, i64 2
+  %1 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  br i1 %cond57, label %sw.bb, label %sw.default
+
+sw.bb:                                            ; preds = %entry
+  %2 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 65), align 8, !tbaa !0
+  %cmp1 = icmp eq %struct.rtx_def* %1, %2
+  br i1 %cmp1, label %if.then, label %if.else
+
+if.then:                                          ; preds = %sw.bb
+  %cond = select i1 %cmp, i8* getelementptr inbounds ([11 x i8]* @.str1766, i64 0, i64 0), i8* getelementptr inbounds ([10 x i8]* @.str1764, i64 0, i64 0)
+  br label %return
+
+if.else:                                          ; preds = %sw.bb
+  %3 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 63), align 8, !tbaa !0
+  %cmp4 = icmp eq %struct.rtx_def* %1, %3
+  br i1 %cmp4, label %if.then13, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.else
+  %4 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load = load i32* %4, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp7 = icmp eq i32 %bf.clear, 54
+  br i1 %cmp7, label %land.lhs.true, label %if.end16
+
+land.lhs.true:                                    ; preds = %lor.lhs.false
+  %rtwint = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0, i32 0
+  %5 = load i64* %rtwint, align 8, !tbaa !5
+  %cmp11 = icmp eq i64 %5, 255
+  br i1 %cmp11, label %if.then13, label %if.end16
+
+if.then13:                                        ; preds = %land.lhs.true, %if.else
+  %cond15 = select i1 %cmp, i8* getelementptr inbounds ([11 x i8]* @.str1767, i64 0, i64 0), i8* getelementptr inbounds ([10 x i8]* @.str1765, i64 0, i64 0)
+  br label %return
+
+if.end16:                                         ; preds = %lor.lhs.false, %land.lhs.true
+  tail call void @fancy_abort(i8* getelementptr inbounds ([55 x i8]* @.str1644, i64 0, i64 0), i32 2511, i8* getelementptr inbounds ([11 x i8]* @__FUNCTION__.output_222, i64 0, i64 0)) #7
+  unreachable
+
+sw.default:                                       ; preds = %entry
+  %6 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load18 = load i32* %6, align 8
+  %bf.clear19 = and i32 %bf.load18, 65535
+  %cmp20 = icmp eq i32 %bf.clear19, 54
+  br i1 %cmp20, label %land.lhs.true22, label %if.end53
+
+land.lhs.true22:                                  ; preds = %sw.default
+  %rtwint26 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0, i32 0
+  %7 = load i64* %rtwint26, align 8, !tbaa !5
+  %cmp27 = icmp eq i64 %7, 128
+  br i1 %cmp27, label %if.then43, label %lor.lhs.false29
+
+lor.lhs.false29:                                  ; preds = %land.lhs.true22
+  %cmp34 = icmp sgt i64 %7, -1
+  %cmp41 = icmp eq i64 %7, -128
+  %or.cond = or i1 %cmp34, %cmp41
+  br i1 %or.cond, label %if.end53, label %if.then43
+
+if.then43:                                        ; preds = %lor.lhs.false29, %land.lhs.true22
+  %sub = sub nsw i64 0, %7
+  %call48 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %sub) #6
+  store %struct.rtx_def* %call48, %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  %. = select i1 %cmp, i8* getelementptr inbounds ([25 x i8]* @.str305, i64 0, i64 0), i8* getelementptr inbounds ([23 x i8]* @.str315, i64 0, i64 0)
+  br label %return
+
+if.end53:                                         ; preds = %lor.lhs.false29, %sw.default
+  %.69 = select i1 %cmp, i8* getelementptr inbounds ([27 x i8]* @.str1768, i64 0, i64 0), i8* getelementptr inbounds ([23 x i8]* @.str248, i64 0, i64 0)
+  br label %return
+
+return:                                           ; preds = %if.end53, %if.then43, %if.then13, %if.then
+  %retval.0 = phi i8* [ %cond, %if.then ], [ %cond15, %if.then13 ], [ %., %if.then43 ], [ %.69, %if.end53 ]
+  ret i8* %retval.0
+}

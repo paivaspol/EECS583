@@ -1,0 +1,97 @@
+define void @never_reached_warning(%struct.rtx_def* %avoided_insn, %struct.rtx_def* %finish) #0 {
+entry:
+  %0 = load i32* @warn_notreached, align 4, !tbaa !0
+  %tobool = icmp eq i32 %0, 0
+  %cmp64 = icmp eq %struct.rtx_def* %avoided_insn, null
+  %or.cond79 = or i1 %tobool, %cmp64
+  br i1 %or.cond79, label %if.end49, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %cmp1 = icmp eq %struct.rtx_def* %finish, null
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end33
+  %reached_end.069 = phi i32 [ 0, %for.body.lr.ph ], [ %.reached_end.0, %if.end33 ]
+  %contains_insn.068 = phi i32 [ 0, %for.body.lr.ph ], [ %contains_insn.1, %if.end33 ]
+  %two_avoided_lines.067 = phi i32 [ 0, %for.body.lr.ph ], [ %two_avoided_lines.1, %if.end33 ]
+  %a_line_note.066 = phi %struct.rtx_def* [ null, %for.body.lr.ph ], [ %a_line_note.1, %if.end33 ]
+  %insn.065 = phi %struct.rtx_def* [ %avoided_insn, %for.body.lr.ph ], [ %5, %if.end33 ]
+  %1 = bitcast %struct.rtx_def* %insn.065 to i32*
+  %bf.load = load i32* %1, align 8
+  br i1 %cmp1, label %land.lhs.true, label %if.end4
+
+land.lhs.true:                                    ; preds = %for.body
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp2 = icmp eq i32 %bf.clear, 36
+  br i1 %cmp2, label %for.end, label %if.end4
+
+if.end4:                                          ; preds = %for.body, %land.lhs.true
+  %bf.clear6 = and i32 %bf.load, 65535
+  %cmp7 = icmp eq i32 %bf.clear6, 37
+  br i1 %cmp7, label %land.lhs.true8, label %if.else21
+
+land.lhs.true8:                                   ; preds = %if.end4
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.065, i64 0, i32 1, i64 4
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %2 = load i32* %rtint, align 4, !tbaa !0
+  %cmp9 = icmp sgt i32 %2, -1
+  br i1 %cmp9, label %if.then10, label %if.else21
+
+if.then10:                                        ; preds = %land.lhs.true8
+  %cmp11 = icmp eq %struct.rtx_def* %a_line_note.066, null
+  br i1 %cmp11, label %if.end33, label %if.else
+
+if.else:                                          ; preds = %if.then10
+  %arrayidx14 = getelementptr inbounds %struct.rtx_def* %a_line_note.066, i64 0, i32 1, i64 4
+  %rtint15 = bitcast %union.rtunion_def* %arrayidx14 to i32*
+  %3 = load i32* %rtint15, align 4, !tbaa !0
+  %cmp19 = icmp ne i32 %3, %2
+  %conv = zext i1 %cmp19 to i32
+  %or = or i32 %conv, %two_avoided_lines.067
+  br label %if.end33
+
+if.else21:                                        ; preds = %land.lhs.true8, %if.end4
+  %idxprom63 = zext i32 %bf.clear6 to i64
+  %arrayidx24 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom63
+  %4 = load i8* %arrayidx24, align 1, !tbaa !1
+  %cmp26 = icmp eq i8 %4, 105
+  br i1 %cmp26, label %if.then28, label %if.end33
+
+if.then28:                                        ; preds = %if.else21
+  %tobool29 = icmp eq i32 %reached_end.069, 0
+  br i1 %tobool29, label %if.end33, label %for.end
+
+if.end33:                                         ; preds = %if.then28, %if.then10, %if.else21, %if.else
+  %a_line_note.1 = phi %struct.rtx_def* [ %a_line_note.066, %if.else ], [ %a_line_note.066, %if.else21 ], [ %insn.065, %if.then10 ], [ %a_line_note.066, %if.then28 ]
+  %two_avoided_lines.1 = phi i32 [ %or, %if.else ], [ %two_avoided_lines.067, %if.else21 ], [ %two_avoided_lines.067, %if.then10 ], [ %two_avoided_lines.067, %if.then28 ]
+  %contains_insn.1 = phi i32 [ %contains_insn.068, %if.else ], [ %contains_insn.068, %if.else21 ], [ %contains_insn.068, %if.then10 ], [ 1, %if.then28 ]
+  %cmp34 = icmp eq %struct.rtx_def* %insn.065, %finish
+  %.reached_end.0 = select i1 %cmp34, i32 1, i32 %reached_end.069
+  %arrayidx39 = getelementptr inbounds %struct.rtx_def* %insn.065, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx39 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %cmp = icmp eq %struct.rtx_def* %5, null
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.end33, %if.then28, %land.lhs.true
+  %contains_insn.0.lcssa = phi i32 [ %contains_insn.068, %land.lhs.true ], [ %contains_insn.068, %if.then28 ], [ %contains_insn.1, %if.end33 ]
+  %two_avoided_lines.0.lcssa = phi i32 [ %two_avoided_lines.067, %land.lhs.true ], [ %two_avoided_lines.067, %if.then28 ], [ %two_avoided_lines.1, %if.end33 ]
+  %a_line_note.0.lcssa = phi %struct.rtx_def* [ %a_line_note.066, %land.lhs.true ], [ %a_line_note.066, %if.then28 ], [ %a_line_note.1, %if.end33 ]
+  %tobool40 = icmp eq i32 %two_avoided_lines.0.lcssa, 0
+  %tobool42 = icmp eq i32 %contains_insn.0.lcssa, 0
+  %or.cond = or i1 %tobool40, %tobool42
+  br i1 %or.cond, label %if.end49, label %if.then43
+
+if.then43:                                        ; preds = %for.end
+  %arrayidx45 = getelementptr inbounds %struct.rtx_def* %a_line_note.0.lcssa, i64 0, i32 1, i64 3
+  %rtstr = bitcast %union.rtunion_def* %arrayidx45 to i8**
+  %6 = load i8** %rtstr, align 8, !tbaa !3
+  %arrayidx47 = getelementptr inbounds %struct.rtx_def* %a_line_note.0.lcssa, i64 0, i32 1, i64 4
+  %rtint48 = bitcast %union.rtunion_def* %arrayidx47 to i32*
+  %7 = load i32* %rtint48, align 4, !tbaa !0
+  tail call void (i8*, i32, i8*, ...)* @warning_with_file_and_line(i8* %6, i32 %7, i8* getelementptr inbounds ([23 x i8]* @.str1, i64 0, i64 0)) #7
+  br label %if.end49
+
+if.end49:                                         ; preds = %for.end, %entry, %if.then43
+  ret void
+}

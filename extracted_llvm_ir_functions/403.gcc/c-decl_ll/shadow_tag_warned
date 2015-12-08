@@ -1,0 +1,132 @@
+define void @shadow_tag_warned(%union.tree_node* %declspecs, i32 %warned) #0 {
+entry:
+  %specs = alloca %union.tree_node*, align 8
+  %attrs = alloca %union.tree_node*, align 8
+  store %union.tree_node* null, %union.tree_node** @pending_invalid_xref, align 8, !tbaa !0
+  call void @split_specs_attrs(%union.tree_node* %declspecs, %union.tree_node** %specs, %union.tree_node** %attrs) #8
+  %link.056 = load %union.tree_node** %specs, align 8
+  %tobool57 = icmp eq %union.tree_node* %link.056, null
+  br i1 %tobool57, label %if.end27, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %link.062 = phi %union.tree_node* [ %link.0, %for.inc ], [ %link.056, %entry ]
+  %warned.addr.059 = phi i32 [ %warned.addr.1, %for.inc ], [ %warned, %entry ]
+  %found_tag.058 = phi i32 [ %found_tag.1, %for.inc ], [ 0, %entry ]
+  %value1 = getelementptr inbounds %union.tree_node* %link.062, i64 0, i32 0, i32 2
+  %0 = bitcast i32* %value1 to %union.tree_node**
+  %1 = load %union.tree_node** %0, align 8, !tbaa !0
+  %code2 = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %code2 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %3 = and i32 %bf.load, 254
+  %4 = icmp eq i32 %3, 20
+  %cmp5 = icmp eq i32 %bf.clear, 10
+  %or.cond34 = or i1 %4, %cmp5
+  br i1 %or.cond34, label %if.then, label %if.else17
+
+if.then:                                          ; preds = %for.body
+  %level.015.i = load %struct.binding_level** @current_binding_level, align 8
+  %tobool16.i = icmp eq %struct.binding_level* %level.015.i, null
+  br i1 %tobool16.i, label %lookup_tag_reverse.exit.thread, label %for.body.i
+
+for.body.i:                                       ; preds = %if.then, %for.inc5.i
+  %level.017.i = phi %struct.binding_level* [ %level.0.i, %for.inc5.i ], [ %level.015.i, %if.then ]
+  %tags.i = getelementptr inbounds %struct.binding_level* %level.017.i, i64 0, i32 1
+  %tail.012.i = load %union.tree_node** %tags.i, align 8
+  %tobool213.i = icmp eq %union.tree_node* %tail.012.i, null
+  br i1 %tobool213.i, label %for.inc5.i, label %for.body3.i
+
+for.cond1.i:                                      ; preds = %for.body3.i
+  %chain.i = getelementptr inbounds %union.tree_node* %tail.014.i, i64 0, i32 0, i32 0, i32 0
+  %tail.0.i = load %union.tree_node** %chain.i, align 8
+  %tobool2.i = icmp eq %union.tree_node* %tail.0.i, null
+  br i1 %tobool2.i, label %for.inc5.i, label %for.body3.i
+
+for.body3.i:                                      ; preds = %for.body.i, %for.cond1.i
+  %tail.014.i = phi %union.tree_node* [ %tail.0.i, %for.cond1.i ], [ %tail.012.i, %for.body.i ]
+  %value.i = getelementptr inbounds %union.tree_node* %tail.014.i, i64 0, i32 0, i32 2
+  %5 = bitcast i32* %value.i to %union.tree_node**
+  %6 = load %union.tree_node** %5, align 8, !tbaa !0
+  %cmp.i = icmp eq %union.tree_node* %6, %1
+  br i1 %cmp.i, label %lookup_tag_reverse.exit, label %for.cond1.i
+
+for.inc5.i:                                       ; preds = %for.cond1.i, %for.body.i
+  %level_chain.i = getelementptr inbounds %struct.binding_level* %level.017.i, i64 0, i32 5
+  %level.0.i = load %struct.binding_level** %level_chain.i, align 8
+  %tobool.i = icmp eq %struct.binding_level* %level.0.i, null
+  br i1 %tobool.i, label %lookup_tag_reverse.exit.thread, label %for.body.i
+
+lookup_tag_reverse.exit.thread:                   ; preds = %for.inc5.i, %if.then
+  %inc52 = add nsw i32 %found_tag.058, 1
+  br label %if.then7
+
+lookup_tag_reverse.exit:                          ; preds = %for.body3.i
+  %purpose.i = getelementptr inbounds %union.tree_node* %tail.014.i, i64 0, i32 0, i32 1
+  %7 = load i8** %purpose.i, align 8
+  %8 = bitcast i8* %7 to %union.tree_node*
+  %inc = add nsw i32 %found_tag.058, 1
+  %cmp6 = icmp eq i8* %7, null
+  br i1 %cmp6, label %if.then7, label %if.else
+
+if.then7:                                         ; preds = %lookup_tag_reverse.exit.thread, %lookup_tag_reverse.exit
+  %inc54 = phi i32 [ %inc52, %lookup_tag_reverse.exit.thread ], [ %inc, %lookup_tag_reverse.exit ]
+  %cmp8 = icmp eq i32 %warned.addr.059, 1
+  %or.cond = or i1 %cmp8, %cmp5
+  br i1 %or.cond, label %for.inc, label %if.then10
+
+if.then10:                                        ; preds = %if.then7
+  call void (i8*, ...)* @pedwarn(i8* getelementptr inbounds ([47 x i8]* @.str161, i64 0, i64 0)) #8
+  br label %for.inc
+
+if.else:                                          ; preds = %lookup_tag_reverse.exit
+  %call11 = call fastcc %union.tree_node* @lookup_tag(i32 %bf.clear, %union.tree_node* %8, %struct.binding_level* %level.015.i, i32 1) #10
+  %cmp12 = icmp eq %union.tree_node* %call11, null
+  br i1 %cmp12, label %if.then13, label %for.inc
+
+if.then13:                                        ; preds = %if.else
+  %call14 = call %union.tree_node* @make_node(i32 %bf.clear) #8
+  call void @pushtag(%union.tree_node* %8, %union.tree_node* %call14) #10
+  br label %for.inc
+
+if.else17:                                        ; preds = %for.body
+  %9 = load i32* @in_system_header, align 4, !tbaa !3
+  %10 = or i32 %9, %warned.addr.059
+  %11 = icmp eq i32 %10, 0
+  br i1 %11, label %if.then21, label %for.inc
+
+if.then21:                                        ; preds = %if.else17
+  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([50 x i8]* @.str162, i64 0, i64 0)) #8
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then7, %if.else17, %if.else, %if.then13, %if.then10, %if.then21
+  %found_tag.1 = phi i32 [ %inc54, %if.then10 ], [ %inc54, %if.then7 ], [ %inc, %if.then13 ], [ %inc, %if.else ], [ %found_tag.058, %if.else17 ], [ %found_tag.058, %if.then21 ]
+  %warned.addr.1 = phi i32 [ 1, %if.then10 ], [ %warned.addr.059, %if.then7 ], [ %warned.addr.059, %if.then13 ], [ %warned.addr.059, %if.else ], [ %warned.addr.059, %if.else17 ], [ 2, %if.then21 ]
+  %chain = getelementptr inbounds %union.tree_node* %link.062, i64 0, i32 0, i32 0, i32 0
+  %link.0 = load %union.tree_node** %chain, align 8
+  %tobool = icmp eq %union.tree_node* %link.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  %cmp25 = icmp sgt i32 %found_tag.1, 1
+  br i1 %cmp25, label %if.then26, label %if.end27
+
+if.then26:                                        ; preds = %for.end
+  call void (i8*, ...)* @error(i8* getelementptr inbounds ([45 x i8]* @.str163, i64 0, i64 0)) #8
+  br label %if.end27
+
+if.end27:                                         ; preds = %entry, %if.then26, %for.end
+  %found_tag.0.lcssa67 = phi i32 [ %found_tag.1, %if.then26 ], [ %found_tag.1, %for.end ], [ 0, %entry ]
+  %warned.addr.0.lcssa66 = phi i32 [ %warned.addr.1, %if.then26 ], [ %warned.addr.1, %for.end ], [ %warned, %entry ]
+  %cmp28 = icmp ne i32 %warned.addr.0.lcssa66, 1
+  %cmp30 = icmp eq i32 %found_tag.0.lcssa67, 0
+  %or.cond51 = and i1 %cmp28, %cmp30
+  br i1 %or.cond51, label %if.then31, label %if.end33
+
+if.then31:                                        ; preds = %if.end27
+  call void (i8*, ...)* @pedwarn(i8* getelementptr inbounds ([18 x i8]* @.str164, i64 0, i64 0)) #8
+  br label %if.end33
+
+if.end33:                                         ; preds = %if.end27, %if.then31
+  ret void
+}

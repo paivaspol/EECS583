@@ -1,0 +1,78 @@
+define i8* @htab_find_with_hash(%struct.htab* nocapture %htab, i8* %element, i32 %hash) #1 {
+entry:
+  %searches = getelementptr inbounds %struct.htab* %htab, i64 0, i32 7
+  %0 = load i32* %searches, align 4, !tbaa !4
+  %inc = add i32 %0, 1
+  store i32 %inc, i32* %searches, align 4, !tbaa !4
+  %size2 = getelementptr inbounds %struct.htab* %htab, i64 0, i32 4
+  %1 = load i64* %size2, align 8, !tbaa !3
+  %conv = zext i32 %hash to i64
+  %rem = urem i64 %conv, %1
+  %conv3 = trunc i64 %rem to i32
+  %entries = getelementptr inbounds %struct.htab* %htab, i64 0, i32 3
+  %2 = load i8*** %entries, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8** %2, i64 %rem
+  %3 = load i8** %arrayidx, align 8, !tbaa !0
+  %magicptr = ptrtoint i8* %3 to i64
+  switch i64 %magicptr, label %land.lhs.true [
+    i64 0, label %return
+    i64 1, label %entry.if.end_crit_edge
+  ]
+
+entry.if.end_crit_edge:                           ; preds = %entry
+  %eq_f29.pre = getelementptr inbounds %struct.htab* %htab, i64 0, i32 1
+  br label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %eq_f = getelementptr inbounds %struct.htab* %htab, i64 0, i32 1
+  %4 = load i32 (i8*, i8*)** %eq_f, align 8, !tbaa !0
+  %call = tail call i32 %4(i8* %3, i8* %element) #8
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry.if.end_crit_edge, %land.lhs.true
+  %eq_f29.pre-phi = phi i32 (i8*, i8*)** [ %eq_f29.pre, %entry.if.end_crit_edge ], [ %eq_f, %land.lhs.true ]
+  %sub = add i64 %1, -2
+  %rem8 = urem i64 %conv, %sub
+  %add = add i64 %rem8, 1
+  %conv9 = trunc i64 %add to i32
+  %collisions = getelementptr inbounds %struct.htab* %htab, i64 0, i32 8
+  br label %for.cond
+
+for.cond:                                         ; preds = %if.end19, %land.lhs.true28, %if.end
+  %index.0 = phi i32 [ %conv3, %if.end ], [ %index.1, %land.lhs.true28 ], [ %index.1, %if.end19 ]
+  %5 = load i32* %collisions, align 4, !tbaa !4
+  %inc10 = add i32 %5, 1
+  store i32 %inc10, i32* %collisions, align 4, !tbaa !4
+  %add11 = add i32 %index.0, %conv9
+  %conv12 = zext i32 %add11 to i64
+  %cmp13 = icmp ult i64 %conv12, %1
+  br i1 %cmp13, label %if.end19, label %if.then15
+
+if.then15:                                        ; preds = %for.cond
+  %sub17 = sub i64 %conv12, %1
+  %conv18 = trunc i64 %sub17 to i32
+  br label %if.end19
+
+if.end19:                                         ; preds = %for.cond, %if.then15
+  %index.1 = phi i32 [ %conv18, %if.then15 ], [ %add11, %for.cond ]
+  %idxprom20 = zext i32 %index.1 to i64
+  %6 = load i8*** %entries, align 8, !tbaa !0
+  %arrayidx22 = getelementptr inbounds i8** %6, i64 %idxprom20
+  %7 = load i8** %arrayidx22, align 8, !tbaa !0
+  %magicptr56 = ptrtoint i8* %7 to i64
+  switch i64 %magicptr56, label %land.lhs.true28 [
+    i64 0, label %return
+    i64 1, label %for.cond
+  ]
+
+land.lhs.true28:                                  ; preds = %if.end19
+  %8 = load i32 (i8*, i8*)** %eq_f29.pre-phi, align 8, !tbaa !0
+  %call30 = tail call i32 %8(i8* %7, i8* %element) #8
+  %tobool31 = icmp eq i32 %call30, 0
+  br i1 %tobool31, label %for.cond, label %return
+
+return:                                           ; preds = %land.lhs.true28, %if.end19, %land.lhs.true, %entry
+  %retval.0 = phi i8* [ %3, %entry ], [ %3, %land.lhs.true ], [ %7, %if.end19 ], [ %7, %land.lhs.true28 ]
+  ret i8* %retval.0
+}

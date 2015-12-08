@@ -1,0 +1,193 @@
+define internal fastcc void @mark_reload_reg_in_use(i32 %regno, i32 %opnum, i32 %type, i32 %mode) #0 {
+entry:
+  %regno.off = add i32 %regno, -8
+  %0 = icmp ult i32 %regno.off, 8
+  %regno.off132 = add i32 %regno, -21
+  %1 = icmp ult i32 %regno.off132, 8
+  %or.cond = or i1 %0, %1
+  %regno.off133 = add i32 %regno, -45
+  %2 = icmp ult i32 %regno.off133, 8
+  %or.cond137 = or i1 %or.cond, %2
+  %regno.off134 = add i32 %regno, -29
+  %3 = icmp ult i32 %regno.off134, 8
+  %or.cond139 = or i1 %or.cond137, %3
+  br i1 %or.cond139, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %entry
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom
+  %4 = load i32* %arrayidx, align 4, !tbaa !6
+  %cmp13 = icmp eq i32 %4, 5
+  br i1 %cmp13, label %cond.end38, label %lor.rhs
+
+lor.rhs:                                          ; preds = %cond.true
+  %cmp16 = icmp eq i32 %4, 6
+  %phitmp = select i1 %cmp16, i32 2, i32 1
+  br label %cond.end38
+
+cond.false:                                       ; preds = %entry
+  switch i32 %mode, label %cond.false26 [
+    i32 18, label %cond.true18
+    i32 24, label %cond.true22
+  ]
+
+cond.true18:                                      ; preds = %cond.false
+  %5 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %5, 25
+  %6 = and i32 %and, 1
+  %7 = xor i32 %6, 3
+  br label %cond.end38
+
+cond.true22:                                      ; preds = %cond.false
+  %8 = load i32* @target_flags, align 4, !tbaa !0
+  %and23 = lshr i32 %8, 24
+  %9 = and i32 %and23, 2
+  %10 = xor i32 %9, 6
+  br label %cond.end38
+
+cond.false26:                                     ; preds = %cond.false
+  %idxprom27 = sext i32 %mode to i64
+  %arrayidx28 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom27
+  %11 = load i8* %arrayidx28, align 1, !tbaa !1
+  %conv = zext i8 %11 to i32
+  %12 = load i32* @target_flags, align 4, !tbaa !0
+  %and29 = lshr i32 %12, 23
+  %13 = and i32 %and29, 4
+  %14 = add i32 %13, 4
+  %add = add i32 %conv, -1
+  %sub = add i32 %add, %14
+  %div = sdiv i32 %sub, %14
+  br label %cond.end38
+
+cond.end38:                                       ; preds = %cond.true, %lor.rhs, %cond.true18, %cond.false26, %cond.true22
+  %cond39 = phi i32 [ %7, %cond.true18 ], [ %10, %cond.true22 ], [ %div, %cond.false26 ], [ 2, %cond.true ], [ %phitmp, %lor.rhs ]
+  %add40 = add i32 %cond39, %regno
+  %cmp41140 = icmp ugt i32 %add40, %regno
+  br i1 %cmp41140, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %cond.end38
+  %idxprom46 = sext i32 %opnum to i64
+  %arrayidx47 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_input_addr, i64 0, i64 %idxprom46
+  %arrayidx53 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_inpaddr_addr, i64 0, i64 %idxprom46
+  %arrayidx59 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output_addr, i64 0, i64 %idxprom46
+  %arrayidx65 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_outaddr_addr, i64 0, i64 %idxprom46
+  %arrayidx83 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_input, i64 0, i64 %idxprom46
+  %arrayidx89 = getelementptr inbounds [30 x i64]* @reload_reg_used_in_output, i64 0, i64 %idxprom46
+  %reload_reg_used_at_all.promoted = load i64* @reload_reg_used_at_all, align 8, !tbaa !4
+  %15 = zext i32 %regno to i64
+  br label %for.body
+
+for.body:                                         ; preds = %sw.epilog, %for.body.lr.ph
+  %indvars.iv = phi i64 [ %15, %for.body.lr.ph ], [ %indvars.iv.next, %sw.epilog ]
+  %or97142 = phi i64 [ %reload_reg_used_at_all.promoted, %for.body.lr.ph ], [ %or97, %sw.epilog ]
+  %i.0141 = phi i32 [ %regno, %for.body.lr.ph ], [ %inc, %sw.epilog ]
+  switch i32 %type, label %for.body.sw.epilog_crit_edge [
+    i32 9, label %sw.bb
+    i32 3, label %sw.bb43
+    i32 4, label %sw.bb49
+    i32 5, label %sw.bb55
+    i32 6, label %sw.bb61
+    i32 7, label %sw.bb67
+    i32 8, label %sw.bb71
+    i32 10, label %sw.bb75
+    i32 0, label %sw.bb79
+    i32 1, label %sw.bb85
+    i32 2, label %sw.bb91
+  ]
+
+for.body.sw.epilog_crit_edge:                     ; preds = %for.body
+  %shl96.pre = shl i64 1, %indvars.iv
+  br label %sw.epilog
+
+sw.bb:                                            ; preds = %for.body
+  %shl = shl i64 1, %indvars.iv
+  %16 = load i64* @reload_reg_used, align 8, !tbaa !4
+  %or = or i64 %16, %shl
+  store i64 %or, i64* @reload_reg_used, align 8, !tbaa !4
+  br label %sw.epilog
+
+sw.bb43:                                          ; preds = %for.body
+  %shl45 = shl i64 1, %indvars.iv
+  %17 = load i64* %arrayidx47, align 8, !tbaa !4
+  %or48 = or i64 %17, %shl45
+  store i64 %or48, i64* %arrayidx47, align 8, !tbaa !4
+  br label %sw.epilog
+
+sw.bb49:                                          ; preds = %for.body
+  %shl51 = shl i64 1, %indvars.iv
+  %18 = load i64* %arrayidx53, align 8, !tbaa !4
+  %or54 = or i64 %18, %shl51
+  store i64 %or54, i64* %arrayidx53, align 8, !tbaa !4
+  br label %sw.epilog
+
+sw.bb55:                                          ; preds = %for.body
+  %shl57 = shl i64 1, %indvars.iv
+  %19 = load i64* %arrayidx59, align 8, !tbaa !4
+  %or60 = or i64 %19, %shl57
+  store i64 %or60, i64* %arrayidx59, align 8, !tbaa !4
+  br label %sw.epilog
+
+sw.bb61:                                          ; preds = %for.body
+  %shl63 = shl i64 1, %indvars.iv
+  %20 = load i64* %arrayidx65, align 8, !tbaa !4
+  %or66 = or i64 %20, %shl63
+  store i64 %or66, i64* %arrayidx65, align 8, !tbaa !4
+  br label %sw.epilog
+
+sw.bb67:                                          ; preds = %for.body
+  %shl69 = shl i64 1, %indvars.iv
+  %21 = load i64* @reload_reg_used_in_op_addr, align 8, !tbaa !4
+  %or70 = or i64 %21, %shl69
+  store i64 %or70, i64* @reload_reg_used_in_op_addr, align 8, !tbaa !4
+  br label %sw.epilog
+
+sw.bb71:                                          ; preds = %for.body
+  %shl73 = shl i64 1, %indvars.iv
+  %22 = load i64* @reload_reg_used_in_op_addr_reload, align 8, !tbaa !4
+  %or74 = or i64 %22, %shl73
+  store i64 %or74, i64* @reload_reg_used_in_op_addr_reload, align 8, !tbaa !4
+  br label %sw.epilog
+
+sw.bb75:                                          ; preds = %for.body
+  %shl77 = shl i64 1, %indvars.iv
+  %23 = load i64* @reload_reg_used_in_other_addr, align 8, !tbaa !4
+  %or78 = or i64 %23, %shl77
+  store i64 %or78, i64* @reload_reg_used_in_other_addr, align 8, !tbaa !4
+  br label %sw.epilog
+
+sw.bb79:                                          ; preds = %for.body
+  %shl81 = shl i64 1, %indvars.iv
+  %24 = load i64* %arrayidx83, align 8, !tbaa !4
+  %or84 = or i64 %24, %shl81
+  store i64 %or84, i64* %arrayidx83, align 8, !tbaa !4
+  br label %sw.epilog
+
+sw.bb85:                                          ; preds = %for.body
+  %shl87 = shl i64 1, %indvars.iv
+  %25 = load i64* %arrayidx89, align 8, !tbaa !4
+  %or90 = or i64 %25, %shl87
+  store i64 %or90, i64* %arrayidx89, align 8, !tbaa !4
+  br label %sw.epilog
+
+sw.bb91:                                          ; preds = %for.body
+  %shl93 = shl i64 1, %indvars.iv
+  %26 = load i64* @reload_reg_used_in_insn, align 8, !tbaa !4
+  %or94 = or i64 %26, %shl93
+  store i64 %or94, i64* @reload_reg_used_in_insn, align 8, !tbaa !4
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %for.body.sw.epilog_crit_edge, %sw.bb91, %sw.bb85, %sw.bb79, %sw.bb75, %sw.bb71, %sw.bb67, %sw.bb61, %sw.bb55, %sw.bb49, %sw.bb43, %sw.bb
+  %shl96.pre-phi = phi i64 [ %shl96.pre, %for.body.sw.epilog_crit_edge ], [ %shl93, %sw.bb91 ], [ %shl87, %sw.bb85 ], [ %shl81, %sw.bb79 ], [ %shl77, %sw.bb75 ], [ %shl73, %sw.bb71 ], [ %shl69, %sw.bb67 ], [ %shl63, %sw.bb61 ], [ %shl57, %sw.bb55 ], [ %shl51, %sw.bb49 ], [ %shl45, %sw.bb43 ], [ %shl, %sw.bb ]
+  %or97 = or i64 %or97142, %shl96.pre-phi
+  %inc = add i32 %i.0141, 1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %exitcond = icmp eq i32 %inc, %add40
+  br i1 %exitcond, label %for.cond.for.end_crit_edge, label %for.body
+
+for.cond.for.end_crit_edge:                       ; preds = %sw.epilog
+  store i64 %or97, i64* @reload_reg_used_at_all, align 8, !tbaa !4
+  br label %for.end
+
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %cond.end38
+  ret void
+}

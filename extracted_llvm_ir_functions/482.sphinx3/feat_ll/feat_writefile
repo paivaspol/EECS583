@@ -1,0 +1,75 @@
+define i32 @feat_writefile(%struct.feat_s* nocapture %fcb, i8* %file, float*** nocapture %feat, i32 %nfr) #0 {
+entry:
+  %nfr.addr = alloca i32, align 4
+  store i32 %nfr, i32* %nfr.addr, align 4, !tbaa !3
+  call void @_E__pr_info_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 231, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #7
+  call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([28 x i8]* @.str19, i64 0, i64 0), i8* %file) #7
+  %call = call %struct._IO_FILE* @fopen(i8* %file, i8* getelementptr inbounds ([3 x i8]* @.str20, i64 0, i64 0)) #7
+  %cmp = icmp eq %struct._IO_FILE* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 235, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([21 x i8]* @.str21, i64 0, i64 0), i8* %file) #7
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call1 = call i32 @bio_writehdr_version(%struct._IO_FILE* %call, i8* getelementptr inbounds ([4 x i8]* @.str9, i64 0, i64 0)) #7
+  %0 = bitcast i32* %nfr.addr to i8*
+  %call2 = call i64 @fwrite(i8* %0, i64 4, i64 1, %struct._IO_FILE* %call) #7
+  %n_stream = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 3
+  %1 = bitcast i32* %n_stream to i8*
+  %call3 = call i64 @fwrite(i8* %1, i64 4, i64 1, %struct._IO_FILE* %call) #7
+  %2 = load i32* %n_stream, align 4, !tbaa !3
+  %cmp539 = icmp sgt i32 %2, 0
+  br i1 %cmp539, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %stream_len = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 4
+  %.pre = load i32** %stream_len, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %3 = phi i32* [ %.pre, %for.body.lr.ph ], [ %5, %for.body ]
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %k.041 = phi i32 [ 0, %for.body.lr.ph ], [ %add, %for.body ]
+  %arrayidx = getelementptr inbounds i32* %3, i64 %indvars.iv
+  %4 = bitcast i32* %arrayidx to i8*
+  %call6 = call i64 @fwrite(i8* %4, i64 4, i64 1, %struct._IO_FILE* %call) #7
+  %5 = load i32** %stream_len, align 8, !tbaa !0
+  %arrayidx9 = getelementptr inbounds i32* %5, i64 %indvars.iv
+  %6 = load i32* %arrayidx9, align 4, !tbaa !3
+  %add = add nsw i32 %6, %k.041
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %7 = load i32* %n_stream, align 4, !tbaa !3
+  %8 = trunc i64 %indvars.iv.next to i32
+  %cmp5 = icmp slt i32 %8, %7
+  br i1 %cmp5, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %if.end
+  %k.0.lcssa = phi i32 [ 0, %if.end ], [ %add, %for.body ]
+  %9 = load float*** %feat, align 8, !tbaa !0
+  %10 = load float** %9, align 8, !tbaa !0
+  %11 = bitcast float* %10 to i8*
+  %12 = load i32* %nfr.addr, align 4, !tbaa !3
+  %mul = mul nsw i32 %12, %k.0.lcssa
+  %conv = sext i32 %mul to i64
+  %call12 = call i64 @fwrite(i8* %11, i64 4, i64 %conv, %struct._IO_FILE* %call) #7
+  %conv13 = trunc i64 %call12 to i32
+  %cmp15 = icmp eq i32 %conv13, %mul
+  br i1 %cmp15, label %if.end19, label %if.then17
+
+if.then17:                                        ; preds = %for.end
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 252, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([39 x i8]* @.str22, i64 0, i64 0), i8* %file, i32 %12, i32 %k.0.lcssa) #7
+  %call18 = call i32 @fclose(%struct._IO_FILE* %call) #7
+  br label %return
+
+if.end19:                                         ; preds = %for.end
+  %call20 = call i32 @fclose(%struct._IO_FILE* %call) #7
+  br label %return
+
+return:                                           ; preds = %if.end19, %if.then17, %if.then
+  %retval.0 = phi i32 [ -1, %if.then ], [ -1, %if.then17 ], [ 0, %if.end19 ]
+  ret i32 %retval.0
+}

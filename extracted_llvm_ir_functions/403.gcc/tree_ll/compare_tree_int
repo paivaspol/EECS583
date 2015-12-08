@@ -1,0 +1,47 @@
+define i32 @compare_tree_int(%union.tree_node* nocapture %t, i64 %u) #3 {
+entry:
+  %int_cst1.i = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
+  %low.i = bitcast i32* %int_cst1.i to i64*
+  %0 = load i64* %low.i, align 8, !tbaa !3
+  %cmp.i = icmp eq i64 %0, 0
+  br i1 %cmp.i, label %land.lhs.true.i, label %if.else.i
+
+land.lhs.true.i:                                  ; preds = %entry
+  %high.i = getelementptr inbounds i32* %int_cst1.i, i64 2
+  %1 = bitcast i32* %high.i to i64*
+  %2 = load i64* %1, align 8, !tbaa !3
+  %cmp4.i = icmp eq i64 %2, 0
+  br i1 %cmp4.i, label %if.else4, label %if.else.i
+
+if.else.i:                                        ; preds = %land.lhs.true.i, %entry
+  %type.i = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 1
+  %3 = load %union.tree_node** %type.i, align 8, !tbaa !0
+  %unsigned_flag.i = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 0, i32 2
+  %4 = bitcast [4 x i8]* %unsigned_flag.i to i32*
+  %bf.load.i = load i32* %4, align 8
+  %bf.clear.i = and i32 %bf.load.i, 8192
+  %tobool.i = icmp eq i32 %bf.clear.i, 0
+  %high10.i = getelementptr inbounds i32* %int_cst1.i, i64 2
+  %5 = bitcast i32* %high10.i to i64*
+  %6 = load i64* %5, align 8, !tbaa !3
+  %cmp11.i = icmp slt i64 %6, 0
+  %or.cond = and i1 %tobool.i, %cmp11.i
+  br i1 %or.cond, label %return, label %if.else
+
+if.else:                                          ; preds = %if.else.i
+  %cmp2 = icmp eq i64 %6, 0
+  br i1 %cmp2, label %if.else4, label %return
+
+if.else4:                                         ; preds = %land.lhs.true.i, %if.else
+  %cmp7 = icmp eq i64 %0, %u
+  br i1 %cmp7, label %return, label %if.else9
+
+if.else9:                                         ; preds = %if.else4
+  %cmp13 = icmp ult i64 %0, %u
+  %. = select i1 %cmp13, i32 -1, i32 1
+  br label %return
+
+return:                                           ; preds = %if.else.i, %if.else9, %if.else4, %if.else
+  %retval.0 = phi i32 [ 1, %if.else ], [ 0, %if.else4 ], [ %., %if.else9 ], [ -1, %if.else.i ]
+  ret i32 %retval.0
+}

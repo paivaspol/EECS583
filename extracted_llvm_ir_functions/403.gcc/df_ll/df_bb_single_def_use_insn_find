@@ -1,0 +1,40 @@
+define %struct.rtx_def* @df_bb_single_def_use_insn_find(%struct.df* nocapture %df, %struct.basic_block_def* nocapture %bb, %struct.rtx_def* nocapture %insn, %struct.rtx_def* nocapture %reg) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtuint, align 4, !tbaa !4
+  %call = tail call fastcc %struct.ref* @df_bb_insn_regno_first_def_find(%struct.df* %df, %struct.rtx_def* %insn, i32 %0) #6
+  %tobool = icmp eq %struct.ref* %call, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0), i32 3215, i8* getelementptr inbounds ([31 x i8]* @__FUNCTION__.df_bb_single_def_use_insn_find, i64 0, i64 0)) #7
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %chain = getelementptr inbounds %struct.ref* %call, i64 0, i32 3
+  %1 = load %struct.df_link** %chain, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct.df_link* %1, null
+  br i1 %tobool1, label %return, label %if.end3
+
+if.end3:                                          ; preds = %if.end
+  %ref = getelementptr inbounds %struct.df_link* %1, i64 0, i32 1
+  %2 = load %struct.ref** %ref, align 8, !tbaa !3
+  %tobool4 = icmp eq %struct.ref* %2, null
+  br i1 %tobool4, label %return, label %if.end6
+
+if.end6:                                          ; preds = %if.end3
+  %next = getelementptr inbounds %struct.df_link* %1, i64 0, i32 0
+  %3 = load %struct.df_link** %next, align 8, !tbaa !3
+  %tobool7 = icmp eq %struct.df_link* %3, null
+  br i1 %tobool7, label %if.end9, label %return
+
+if.end9:                                          ; preds = %if.end6
+  %insn10 = getelementptr inbounds %struct.ref* %2, i64 0, i32 1
+  %4 = load %struct.rtx_def** %insn10, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.end6, %if.end3, %if.end, %if.end9
+  %retval.0 = phi %struct.rtx_def* [ %4, %if.end9 ], [ null, %if.end ], [ null, %if.end3 ], [ null, %if.end6 ]
+  ret %struct.rtx_def* %retval.0
+}

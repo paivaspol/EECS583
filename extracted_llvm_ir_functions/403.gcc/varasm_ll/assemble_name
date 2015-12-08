@@ -1,0 +1,35 @@
+define void @assemble_name(%struct._IO_FILE* %file, i8* %name) #0 {
+entry:
+  %0 = load i8* %name, align 1, !tbaa !1
+  %cmp = icmp eq i8 %0, 42
+  %idx.ext = zext i1 %cmp to i64
+  %add.ptr = getelementptr inbounds i8* %name, i64 %idx.ext
+  %call = tail call %union.tree_node* @maybe_get_identifier(i8* %add.ptr) #9
+  %tobool = icmp eq %union.tree_node* %call, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %static_flag = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %static_flag to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.set = or i32 %bf.load, 262144
+  store i32 %bf.set, i32* %1, align 8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %2 = load i8* %name, align 1, !tbaa !1
+  %cmp4 = icmp eq i8 %2, 42
+  br i1 %cmp4, label %if.then6, label %if.else
+
+if.then6:                                         ; preds = %if.end
+  %arrayidx7 = getelementptr inbounds i8* %name, i64 1
+  %call8 = tail call i32 @fputs(i8* %arrayidx7, %struct._IO_FILE* %file) #9
+  br label %if.end9
+
+if.else:                                          ; preds = %if.end
+  tail call void (%struct._IO_FILE*, i8*, ...)* @asm_fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([5 x i8]* @.str95, i64 0, i64 0), i8* %name) #9
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.else, %if.then6
+  ret void
+}

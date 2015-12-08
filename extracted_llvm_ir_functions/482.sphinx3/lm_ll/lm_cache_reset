@@ -1,0 +1,197 @@
+define void @lm_cache_reset(%struct.lm_s* nocapture %lm) #2 {
+entry:
+  %.b = load i1* @LM_IN_MEMORY, align 1
+  br i1 %.b, label %if.end80, label %if.end
+
+if.end:                                           ; preds = %entry
+  %n_bg = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 1
+  %0 = load i32* %n_bg, align 4, !tbaa !3
+  %cmp = icmp sgt i32 %0, 0
+  br i1 %cmp, label %land.lhs.true, label %if.end33
+
+land.lhs.true:                                    ; preds = %if.end
+  %bg = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 10
+  %1 = load %struct.bg_t** %bg, align 8, !tbaa !0
+  %tobool1 = icmp eq %struct.bg_t* %1, null
+  br i1 %tobool1, label %for.cond.preheader, label %if.end33
+
+for.cond.preheader:                               ; preds = %land.lhs.true
+  %n_ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 0
+  %2 = load i32* %n_ug, align 4, !tbaa !3
+  %cmp3141 = icmp sgt i32 %2, 0
+  br i1 %cmp3141, label %for.body.lr.ph, label %if.end33
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %membg = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 12
+  %ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 9
+  %n_bg_inmem = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 29
+  %.pre = load %struct.membg_t** %membg, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end27
+  %3 = phi %struct.membg_t* [ %.pre, %for.body.lr.ph ], [ %13, %if.end27 ]
+  %indvars.iv149 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next150, %if.end27 ]
+  %n_bgfree.0142 = phi i32 [ 0, %for.body.lr.ph ], [ %n_bgfree.1, %if.end27 ]
+  %bg4 = getelementptr inbounds %struct.membg_t* %3, i64 %indvars.iv149, i32 0
+  %4 = load %struct.bg_t** %bg4, align 8, !tbaa !0
+  %tobool5 = icmp eq %struct.bg_t* %4, null
+  br i1 %tobool5, label %if.end27, label %land.lhs.true6
+
+land.lhs.true6:                                   ; preds = %for.body
+  %used = getelementptr inbounds %struct.membg_t* %3, i64 %indvars.iv149, i32 1
+  %5 = load i32* %used, align 4, !tbaa !3
+  %tobool10 = icmp eq i32 %5, 0
+  br i1 %tobool10, label %if.then11, label %if.end27
+
+if.then11:                                        ; preds = %land.lhs.true6
+  %6 = add nsw i64 %indvars.iv149, 1
+  %7 = load %struct.ug_t** %ug, align 8, !tbaa !0
+  %firstbg = getelementptr inbounds %struct.ug_t* %7, i64 %6, i32 3
+  %8 = load i32* %firstbg, align 4, !tbaa !3
+  %firstbg17 = getelementptr inbounds %struct.ug_t* %7, i64 %indvars.iv149, i32 3
+  %9 = load i32* %firstbg17, align 4, !tbaa !3
+  %10 = load i32* %n_bg_inmem, align 4, !tbaa !3
+  %sub125 = sub i32 %9, %8
+  %sub18 = add i32 %sub125, %10
+  store i32 %sub18, i32* %n_bg_inmem, align 4, !tbaa !3
+  %11 = bitcast %struct.bg_t* %4 to i8*
+  tail call void @free(i8* %11) #8
+  %12 = load %struct.membg_t** %membg, align 8, !tbaa !0
+  %bg26 = getelementptr inbounds %struct.membg_t* %12, i64 %indvars.iv149, i32 0
+  store %struct.bg_t* null, %struct.bg_t** %bg26, align 8, !tbaa !0
+  %inc = add nsw i32 %n_bgfree.0142, 1
+  %.pre152 = load %struct.membg_t** %membg, align 8, !tbaa !0
+  br label %if.end27
+
+if.end27:                                         ; preds = %land.lhs.true6, %for.body, %if.then11
+  %13 = phi %struct.membg_t* [ %3, %land.lhs.true6 ], [ %.pre152, %if.then11 ], [ %3, %for.body ]
+  %n_bgfree.1 = phi i32 [ %n_bgfree.0142, %land.lhs.true6 ], [ %inc, %if.then11 ], [ %n_bgfree.0142, %for.body ]
+  %used31 = getelementptr inbounds %struct.membg_t* %13, i64 %indvars.iv149, i32 1
+  store i32 0, i32* %used31, align 4, !tbaa !3
+  %indvars.iv.next150 = add i64 %indvars.iv149, 1
+  %14 = load i32* %n_ug, align 4, !tbaa !3
+  %15 = trunc i64 %indvars.iv.next150 to i32
+  %cmp3 = icmp slt i32 %15, %14
+  br i1 %cmp3, label %for.body, label %if.end33
+
+if.end33:                                         ; preds = %for.cond.preheader, %if.end27, %land.lhs.true, %if.end
+  %n_bgfree.2 = phi i32 [ 0, %land.lhs.true ], [ 0, %if.end ], [ 0, %for.cond.preheader ], [ %n_bgfree.1, %if.end27 ]
+  %n_tg = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 2
+  %16 = load i32* %n_tg, align 4, !tbaa !3
+  %cmp34 = icmp sgt i32 %16, 0
+  br i1 %cmp34, label %for.cond36.preheader, label %if.end74
+
+for.cond36.preheader:                             ; preds = %if.end33
+  %n_ug37 = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 0
+  %17 = load i32* %n_ug37, align 4, !tbaa !3
+  %cmp38137 = icmp sgt i32 %17, 0
+  br i1 %cmp38137, label %for.body39.lr.ph, label %if.end74
+
+for.body39.lr.ph:                                 ; preds = %for.cond36.preheader
+  %tginfo41 = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 13
+  %tg = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 11
+  %n_tg_inmem = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 33
+  br label %for.body39
+
+for.body39:                                       ; preds = %for.inc71, %for.body39.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body39.lr.ph ], [ %indvars.iv.next, %for.inc71 ]
+  %n_tgfree.0138 = phi i32 [ 0, %for.body39.lr.ph ], [ %n_tgfree.1.ph132, %for.inc71 ]
+  %18 = load %struct.tginfo_s*** %tginfo41, align 8, !tbaa !0
+  %arrayidx42 = getelementptr inbounds %struct.tginfo_s** %18, i64 %indvars.iv
+  %19 = load %struct.tginfo_s** %arrayidx42, align 8, !tbaa !0
+  %tobool44128133 = icmp eq %struct.tginfo_s* %19, null
+  br i1 %tobool44128133, label %for.inc71, label %for.body45.lr.ph
+
+for.body45.lr.ph:                                 ; preds = %for.body39, %for.cond43.outer.backedge
+  %prev_tginfo.0.ph136 = phi %struct.tginfo_s* [ %prev_tginfo.0.ph.be, %for.cond43.outer.backedge ], [ null, %for.body39 ]
+  %tginfo.0.ph135 = phi %struct.tginfo_s* [ %20, %for.cond43.outer.backedge ], [ %19, %for.body39 ]
+  %n_tgfree.1.ph134 = phi i32 [ %n_tgfree.2, %for.cond43.outer.backedge ], [ %n_tgfree.0138, %for.body39 ]
+  br label %for.body45
+
+for.body45:                                       ; preds = %for.body45.lr.ph, %if.else66
+  %prev_tginfo.0130 = phi %struct.tginfo_s* [ %prev_tginfo.0.ph136, %for.body45.lr.ph ], [ %tginfo.0129, %if.else66 ]
+  %tginfo.0129 = phi %struct.tginfo_s* [ %tginfo.0.ph135, %for.body45.lr.ph ], [ %20, %if.else66 ]
+  %next = getelementptr inbounds %struct.tginfo_s* %tginfo.0129, i64 0, i32 5
+  %20 = load %struct.tginfo_s** %next, align 8, !tbaa !0
+  %used46 = getelementptr inbounds %struct.tginfo_s* %tginfo.0129, i64 0, i32 4
+  %21 = load i32* %used46, align 4, !tbaa !3
+  %tobool47 = icmp eq i32 %21, 0
+  br i1 %tobool47, label %if.then48, label %if.else66
+
+if.then48:                                        ; preds = %for.body45
+  %22 = load %struct.tg_t** %tg, align 8, !tbaa !0
+  %tobool49 = icmp eq %struct.tg_t* %22, null
+  br i1 %tobool49, label %land.lhs.true50, label %if.end58
+
+land.lhs.true50:                                  ; preds = %if.then48
+  %tg51 = getelementptr inbounds %struct.tginfo_s* %tginfo.0129, i64 0, i32 2
+  %23 = load %struct.tg_t** %tg51, align 8, !tbaa !0
+  %tobool52 = icmp eq %struct.tg_t* %23, null
+  br i1 %tobool52, label %if.end58, label %if.then53
+
+if.then53:                                        ; preds = %land.lhs.true50
+  %n_tg54 = getelementptr inbounds %struct.tginfo_s* %tginfo.0129, i64 0, i32 1
+  %24 = load i32* %n_tg54, align 4, !tbaa !3
+  %25 = load i32* %n_tg_inmem, align 4, !tbaa !3
+  %sub55 = sub nsw i32 %25, %24
+  store i32 %sub55, i32* %n_tg_inmem, align 4, !tbaa !3
+  %26 = bitcast %struct.tg_t* %23 to i8*
+  tail call void @free(i8* %26) #8
+  %inc57 = add nsw i32 %n_tgfree.1.ph134, 1
+  br label %if.end58
+
+if.end58:                                         ; preds = %land.lhs.true50, %if.then48, %if.then53
+  %n_tgfree.2 = phi i32 [ %n_tgfree.1.ph134, %if.then48 ], [ %inc57, %if.then53 ], [ %n_tgfree.1.ph134, %land.lhs.true50 ]
+  %27 = bitcast %struct.tginfo_s* %tginfo.0129 to i8*
+  tail call void @free(i8* %27) #8
+  %tobool59 = icmp eq %struct.tginfo_s* %prev_tginfo.0130, null
+  br i1 %tobool59, label %if.else, label %if.then60
+
+if.then60:                                        ; preds = %if.end58
+  %next61 = getelementptr inbounds %struct.tginfo_s* %prev_tginfo.0130, i64 0, i32 5
+  store %struct.tginfo_s* %20, %struct.tginfo_s** %next61, align 8, !tbaa !0
+  br label %for.cond43.outer.backedge
+
+for.cond43.outer.backedge:                        ; preds = %if.then60, %if.else
+  %prev_tginfo.0.ph.be = phi %struct.tginfo_s* [ %prev_tginfo.0130, %if.then60 ], [ null, %if.else ]
+  %tobool44128 = icmp eq %struct.tginfo_s* %20, null
+  br i1 %tobool44128, label %for.inc71, label %for.body45.lr.ph
+
+if.else:                                          ; preds = %if.end58
+  %28 = load %struct.tginfo_s*** %tginfo41, align 8, !tbaa !0
+  %arrayidx64 = getelementptr inbounds %struct.tginfo_s** %28, i64 %indvars.iv
+  store %struct.tginfo_s* %20, %struct.tginfo_s** %arrayidx64, align 8, !tbaa !0
+  br label %for.cond43.outer.backedge
+
+if.else66:                                        ; preds = %for.body45
+  store i32 0, i32* %used46, align 4, !tbaa !3
+  %tobool44 = icmp eq %struct.tginfo_s* %20, null
+  br i1 %tobool44, label %for.inc71, label %for.body45
+
+for.inc71:                                        ; preds = %for.body39, %for.cond43.outer.backedge, %if.else66
+  %n_tgfree.1.ph132 = phi i32 [ %n_tgfree.1.ph134, %if.else66 ], [ %n_tgfree.0138, %for.body39 ], [ %n_tgfree.2, %for.cond43.outer.backedge ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %29 = load i32* %n_ug37, align 4, !tbaa !3
+  %30 = trunc i64 %indvars.iv.next to i32
+  %cmp38 = icmp slt i32 %30, %29
+  br i1 %cmp38, label %for.body39, label %if.end74
+
+if.end74:                                         ; preds = %for.cond36.preheader, %for.inc71, %if.end33
+  %n_tgfree.4 = phi i32 [ 0, %if.end33 ], [ 0, %for.cond36.preheader ], [ %n_tgfree.1.ph132, %for.inc71 ]
+  %cmp75 = icmp sgt i32 %n_tgfree.4, 0
+  %cmp76 = icmp sgt i32 %n_bgfree.2, 0
+  %or.cond = or i1 %cmp75, %cmp76
+  br i1 %or.cond, label %if.then77, label %if.end80
+
+if.then77:                                        ; preds = %if.end74
+  tail call void @_E__pr_info_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 815, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #8
+  %n_tg_inmem78 = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 33
+  %31 = load i32* %n_tg_inmem78, align 4, !tbaa !3
+  %n_bg_inmem79 = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 29
+  %32 = load i32* %n_bg_inmem79, align 4, !tbaa !3
+  tail call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([48 x i8]* @.str21, i64 0, i64 0), i32 %n_tgfree.4, i32 %31, i32 %n_bgfree.2, i32 %32) #8
+  br label %if.end80
+
+if.end80:                                         ; preds = %if.end74, %entry, %if.then77
+  ret void
+}

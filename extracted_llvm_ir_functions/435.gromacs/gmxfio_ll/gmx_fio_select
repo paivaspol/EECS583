@@ -1,0 +1,87 @@
+define void @gmx_fio_select(i32 %fio) #1 {
+entry:
+  tail call fastcc void @_gmx_fio_check(i32 %fio, i32 757) #9
+  %idxprom = sext i32 %fio to i64
+  %0 = load %struct.t_fileio** @FIO, align 8, !tbaa !3
+  %iFTP = getelementptr inbounds %struct.t_fileio* %0, i64 %idxprom, i32 0
+  %1 = load i32* %iFTP, align 4, !tbaa !0
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.body.i, %entry
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %entry ]
+  %bResult.06.i = phi i32 [ %.bResult.0.i, %for.body.i ], [ 0, %entry ]
+  %arrayidx.i = getelementptr inbounds [4 x i32]* @ftpXDR, i64 0, i64 %indvars.iv.i
+  %2 = load i32* %arrayidx.i, align 4, !tbaa !0
+  %cmp1.i = icmp eq i32 %2, %1
+  %.bResult.0.i = select i1 %cmp1.i, i32 1, i32 %bResult.06.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv47 = trunc i64 %indvars.iv.next.i to i32
+  %exitcond48 = icmp eq i32 %lftr.wideiv47, 4
+  br i1 %exitcond48, label %in_ftpset.exit, label %for.body.i
+
+in_ftpset.exit:                                   ; preds = %for.body.i
+  %tobool = icmp eq i32 %.bResult.0.i, 0
+  br i1 %tobool, label %for.body.i43, label %if.then
+
+if.then:                                          ; preds = %in_ftpset.exit
+  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_xdr, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !3
+  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_xdr, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !3
+  br label %if.end18
+
+for.body.i43:                                     ; preds = %in_ftpset.exit, %for.body.i43
+  %indvars.iv.i35 = phi i64 [ %indvars.iv.next.i40, %for.body.i43 ], [ 0, %in_ftpset.exit ]
+  %bResult.06.i36 = phi i32 [ %.bResult.0.i39, %for.body.i43 ], [ 0, %in_ftpset.exit ]
+  %arrayidx.i37 = getelementptr inbounds [3 x i32]* @ftpASC, i64 0, i64 %indvars.iv.i35
+  %3 = load i32* %arrayidx.i37, align 4, !tbaa !0
+  %cmp1.i38 = icmp eq i32 %3, %1
+  %.bResult.0.i39 = select i1 %cmp1.i38, i32 1, i32 %bResult.06.i36
+  %indvars.iv.next.i40 = add i64 %indvars.iv.i35, 1
+  %lftr.wideiv45 = trunc i64 %indvars.iv.next.i40 to i32
+  %exitcond46 = icmp eq i32 %lftr.wideiv45, 3
+  br i1 %exitcond46, label %in_ftpset.exit44, label %for.body.i43
+
+in_ftpset.exit44:                                 ; preds = %for.body.i43
+  %tobool5 = icmp eq i32 %.bResult.0.i39, 0
+  br i1 %tobool5, label %for.body.i33, label %if.then6
+
+if.then6:                                         ; preds = %in_ftpset.exit44
+  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_ascread, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !3
+  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_ascwrite, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !3
+  br label %if.end18
+
+for.body.i33:                                     ; preds = %in_ftpset.exit44, %for.body.i33
+  %indvars.iv.i25 = phi i64 [ %indvars.iv.next.i30, %for.body.i33 ], [ 0, %in_ftpset.exit44 ]
+  %bResult.06.i26 = phi i32 [ %.bResult.0.i29, %for.body.i33 ], [ 0, %in_ftpset.exit44 ]
+  %arrayidx.i27 = getelementptr inbounds [4 x i32]* @ftpBIN, i64 0, i64 %indvars.iv.i25
+  %4 = load i32* %arrayidx.i27, align 4, !tbaa !0
+  %cmp1.i28 = icmp eq i32 %4, %1
+  %.bResult.0.i29 = select i1 %cmp1.i28, i32 1, i32 %bResult.06.i26
+  %indvars.iv.next.i30 = add i64 %indvars.iv.i25, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i30 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %in_ftpset.exit34, label %for.body.i33
+
+in_ftpset.exit34:                                 ; preds = %for.body.i33
+  %tobool12 = icmp eq i32 %.bResult.0.i29, 0
+  br i1 %tobool12, label %if.else14, label %if.then13
+
+if.then13:                                        ; preds = %in_ftpset.exit34
+  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_binread, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !3
+  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_binwrite, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !3
+  br label %if.end18
+
+if.else14:                                        ; preds = %in_ftpset.exit34
+  %5 = load %struct.t_fileio** @curfio, align 8, !tbaa !3
+  %iFTP15 = getelementptr inbounds %struct.t_fileio* %5, i64 0, i32 0
+  %6 = load i32* %iFTP15, align 4, !tbaa !0
+  %call16 = tail call i8* @ftp2ext(i32 %6) #7
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([46 x i8]* @.str29, i64 0, i64 0), i8* %call16) #7
+  %.pre = load %struct.t_fileio** @FIO, align 8, !tbaa !3
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.then6, %if.else14, %if.then13, %if.then
+  %7 = phi %struct.t_fileio* [ %0, %if.then6 ], [ %.pre, %if.else14 ], [ %0, %if.then13 ], [ %0, %if.then ]
+  %arrayidx20 = getelementptr inbounds %struct.t_fileio* %7, i64 %idxprom
+  store %struct.t_fileio* %arrayidx20, %struct.t_fileio** @curfio, align 8, !tbaa !3
+  ret void
+}

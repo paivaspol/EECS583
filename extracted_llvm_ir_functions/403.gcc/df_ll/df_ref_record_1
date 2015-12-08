@@ -1,0 +1,164 @@
+define internal fastcc void @df_ref_record_1(%struct.df* nocapture %df, %struct.rtx_def* %reg, %struct.rtx_def** %loc, %struct.rtx_def* %insn, i32 %ref_type, i32 %ref_flags) #0 {
+entry:
+  %0 = load i8** getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 4), align 8, !tbaa !3
+  %1 = load i8** getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %sub.ptr.lhs.cast.i = ptrtoint i8* %0 to i64
+  %sub.ptr.rhs.cast.i = ptrtoint i8* %1 to i64
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i
+  %cmp.i = icmp slt i64 %sub.ptr.sub.i, 48
+  br i1 %cmp.i, label %if.then.i, label %if.end.i
+
+if.then.i:                                        ; preds = %entry
+  tail call void @_obstack_newchunk(%struct.obstack* @df_ref_obstack, i32 48) #8
+  %.pre.i = load i8** getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 3), align 8, !tbaa !3
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.then.i, %entry
+  %2 = phi i8* [ %.pre.i, %if.then.i ], [ %1, %entry ]
+  %add.ptr.i = getelementptr inbounds i8* %2, i64 48
+  store i8* %add.ptr.i, i8** getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %3 = load i8** getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 2), align 8, !tbaa !3
+  %cmp4.i = icmp eq i8* %add.ptr.i, %3
+  br i1 %cmp4.i, label %if.then6.i, label %if.end7.i
+
+if.then6.i:                                       ; preds = %if.end.i
+  %bf.load.i = load i8* getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 10), align 8
+  %bf.set.i = or i8 %bf.load.i, 2
+  store i8 %bf.set.i, i8* getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 10), align 8
+  br label %if.end7.i
+
+if.end7.i:                                        ; preds = %if.end.i, %if.then6.i
+  %sub.ptr.lhs.cast9.i = ptrtoint i8* %add.ptr.i to i64
+  %4 = load i32* getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 6), align 8, !tbaa !4
+  %conv11.i = sext i32 %4 to i64
+  %add.i = add nsw i64 %conv11.i, %sub.ptr.lhs.cast9.i
+  %neg.i = xor i32 %4, -1
+  %conv13.i = sext i32 %neg.i to i64
+  %and.i = and i64 %add.i, %conv13.i
+  %add.ptr14.i = getelementptr inbounds i8* null, i64 %and.i
+  store i8* %add.ptr14.i, i8** getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 3), align 8, !tbaa !3
+  %5 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 1), align 8, !tbaa !3
+  %sub.ptr.lhs.cast17.i = ptrtoint i8* %add.ptr14.i to i64
+  %sub.ptr.rhs.cast18.i = ptrtoint %struct._obstack_chunk* %5 to i64
+  %sub.ptr.sub19.i = sub i64 %sub.ptr.lhs.cast17.i, %sub.ptr.rhs.cast18.i
+  %6 = load i8** getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 4), align 8, !tbaa !3
+  %sub.ptr.lhs.cast22.i = ptrtoint i8* %6 to i64
+  %sub.ptr.sub24.i = sub i64 %sub.ptr.lhs.cast22.i, %sub.ptr.rhs.cast18.i
+  %cmp25.i = icmp sgt i64 %sub.ptr.sub19.i, %sub.ptr.sub24.i
+  br i1 %cmp25.i, label %if.then27.i, label %if.end30.i
+
+if.then27.i:                                      ; preds = %if.end7.i
+  store i8* %6, i8** getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 3), align 8, !tbaa !3
+  br label %if.end30.i
+
+if.end30.i:                                       ; preds = %if.then27.i, %if.end7.i
+  %7 = phi i8* [ %6, %if.then27.i ], [ %add.ptr14.i, %if.end7.i ]
+  store i8* %7, i8** getelementptr inbounds (%struct.obstack* @df_ref_obstack, i64 0, i32 2), align 8, !tbaa !3
+  %8 = bitcast i8* %3 to %struct.ref*
+  %reg33.i = bitcast i8* %3 to %struct.rtx_def**
+  store %struct.rtx_def* %reg, %struct.rtx_def** %reg33.i, align 8, !tbaa !3
+  %loc34.i = getelementptr inbounds i8* %3, i64 16
+  %9 = bitcast i8* %loc34.i to %struct.rtx_def***
+  store %struct.rtx_def** %loc, %struct.rtx_def*** %9, align 8, !tbaa !3
+  %insn35.i = getelementptr inbounds i8* %3, i64 8
+  %10 = bitcast i8* %insn35.i to %struct.rtx_def**
+  store %struct.rtx_def* %insn, %struct.rtx_def** %10, align 8, !tbaa !3
+  %chain.i = getelementptr inbounds i8* %3, i64 24
+  %11 = bitcast i8* %chain.i to %struct.df_link**
+  store %struct.df_link* null, %struct.df_link** %11, align 8, !tbaa !3
+  %type.i = getelementptr inbounds i8* %3, i64 32
+  %12 = bitcast i8* %type.i to i32*
+  store i32 %ref_type, i32* %12, align 4, !tbaa !0
+  %flags.i = getelementptr inbounds i8* %3, i64 40
+  %13 = bitcast i8* %flags.i to i32*
+  store i32 %ref_flags, i32* %13, align 4, !tbaa !6
+  %cmp36.i = icmp eq i32 %ref_type, 0
+  br i1 %cmp36.i, label %if.then38.i, label %if.else.i
+
+if.then38.i:                                      ; preds = %if.end30.i
+  %def_id.i = getelementptr inbounds %struct.df* %df, i64 0, i32 9
+  %14 = load i32* %def_id.i, align 4, !tbaa !4
+  %def_size.i = getelementptr inbounds %struct.df* %df, i64 0, i32 10
+  %15 = load i32* %def_size.i, align 4, !tbaa !4
+  %cmp39.i = icmp ult i32 %14, %15
+  br i1 %cmp39.i, label %if.then38.if.end48_crit_edge.i, label %if.then41.i
+
+if.then38.if.end48_crit_edge.i:                   ; preds = %if.then38.i
+  %defs51.phi.trans.insert.i = getelementptr inbounds %struct.df* %df, i64 0, i32 2
+  %.pre3.i = load %struct.ref*** %defs51.phi.trans.insert.i, align 8, !tbaa !3
+  br label %if.end48.i
+
+if.then41.i:                                      ; preds = %if.then38.i
+  %div.i = lshr i32 %15, 2
+  %add44.i = add i32 %div.i, %15
+  store i32 %add44.i, i32* %def_size.i, align 4, !tbaa !4
+  %defs.i = getelementptr inbounds %struct.df* %df, i64 0, i32 2
+  %16 = load %struct.ref*** %defs.i, align 8, !tbaa !3
+  %17 = bitcast %struct.ref** %16 to i8*
+  %conv46.i = zext i32 %add44.i to i64
+  %mul.i = shl nuw nsw i64 %conv46.i, 3
+  %call.i = tail call i8* @xrealloc(i8* %17, i64 %mul.i) #8
+  %18 = bitcast i8* %call.i to %struct.ref**
+  store %struct.ref** %18, %struct.ref*** %defs.i, align 8, !tbaa !3
+  %.pre1.i = load i32* %def_id.i, align 4, !tbaa !4
+  br label %if.end48.i
+
+if.end48.i:                                       ; preds = %if.then41.i, %if.then38.if.end48_crit_edge.i
+  %19 = phi %struct.ref** [ %.pre3.i, %if.then38.if.end48_crit_edge.i ], [ %18, %if.then41.i ]
+  %20 = phi i32 [ %14, %if.then38.if.end48_crit_edge.i ], [ %.pre1.i, %if.then41.i ]
+  %id.i = getelementptr inbounds i8* %3, i64 36
+  %21 = bitcast i8* %id.i to i32*
+  store i32 %20, i32* %21, align 4, !tbaa !4
+  %22 = load i32* %def_id.i, align 4, !tbaa !4
+  %inc.i = add i32 %22, 1
+  store i32 %inc.i, i32* %def_id.i, align 4, !tbaa !4
+  %idxprom.i = zext i32 %22 to i64
+  %arrayidx52.i = getelementptr inbounds %struct.ref** %19, i64 %idxprom.i
+  store %struct.ref* %8, %struct.ref** %arrayidx52.i, align 8, !tbaa !3
+  br label %df_ref_create.exit
+
+if.else.i:                                        ; preds = %if.end30.i
+  %use_id.i = getelementptr inbounds %struct.df* %df, i64 0, i32 12
+  %23 = load i32* %use_id.i, align 4, !tbaa !4
+  %use_size.i = getelementptr inbounds %struct.df* %df, i64 0, i32 13
+  %24 = load i32* %use_size.i, align 4, !tbaa !4
+  %cmp53.i = icmp ult i32 %23, %24
+  br i1 %cmp53.i, label %if.else.if.end65_crit_edge.i, label %if.then55.i
+
+if.else.if.end65_crit_edge.i:                     ; preds = %if.else.i
+  %uses71.phi.trans.insert.i = getelementptr inbounds %struct.df* %df, i64 0, i32 3
+  %.pre4.i = load %struct.ref*** %uses71.phi.trans.insert.i, align 8, !tbaa !3
+  br label %if.end65.i
+
+if.then55.i:                                      ; preds = %if.else.i
+  %div57.i = lshr i32 %24, 2
+  %add59.i = add i32 %div57.i, %24
+  store i32 %add59.i, i32* %use_size.i, align 4, !tbaa !4
+  %uses.i = getelementptr inbounds %struct.df* %df, i64 0, i32 3
+  %25 = load %struct.ref*** %uses.i, align 8, !tbaa !3
+  %26 = bitcast %struct.ref** %25 to i8*
+  %conv61.i = zext i32 %add59.i to i64
+  %mul62.i = shl nuw nsw i64 %conv61.i, 3
+  %call63.i = tail call i8* @xrealloc(i8* %26, i64 %mul62.i) #8
+  %27 = bitcast i8* %call63.i to %struct.ref**
+  store %struct.ref** %27, %struct.ref*** %uses.i, align 8, !tbaa !3
+  %.pre2.i = load i32* %use_id.i, align 4, !tbaa !4
+  br label %if.end65.i
+
+if.end65.i:                                       ; preds = %if.then55.i, %if.else.if.end65_crit_edge.i
+  %28 = phi %struct.ref** [ %.pre4.i, %if.else.if.end65_crit_edge.i ], [ %27, %if.then55.i ]
+  %29 = phi i32 [ %23, %if.else.if.end65_crit_edge.i ], [ %.pre2.i, %if.then55.i ]
+  %id67.i = getelementptr inbounds i8* %3, i64 36
+  %30 = bitcast i8* %id67.i to i32*
+  store i32 %29, i32* %30, align 4, !tbaa !4
+  %31 = load i32* %use_id.i, align 4, !tbaa !4
+  %inc69.i = add i32 %31, 1
+  store i32 %inc69.i, i32* %use_id.i, align 4, !tbaa !4
+  %idxprom70.i = zext i32 %31 to i64
+  %arrayidx72.i = getelementptr inbounds %struct.ref** %28, i64 %idxprom70.i
+  store %struct.ref* %8, %struct.ref** %arrayidx72.i, align 8, !tbaa !3
+  br label %df_ref_create.exit
+
+df_ref_create.exit:                               ; preds = %if.end48.i, %if.end65.i
+  ret void
+}

@@ -1,0 +1,92 @@
+define float @xray_cross_section(i32 %eColl, %struct.t_cross_atom* nocapture %ca) #0 {
+entry:
+  switch i32 %eColl, label %sw.default [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb23
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %z.i = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 0
+  %0 = load i32* %z.i, align 4, !tbaa !0
+  %cmp.i = icmp slt i32 %0, 3
+  br i1 %cmp.i, label %if.then.i, label %if.else.i
+
+if.then.i:                                        ; preds = %sw.bb
+  %n.i = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 1
+  %1 = load i32* %n.i, align 4, !tbaa !0
+  %sub.i = sub nsw i32 %0, %1
+  br label %number_K.exit
+
+if.else.i:                                        ; preds = %sw.bb
+  %k.i = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 2
+  %2 = load i32* %k.i, align 4, !tbaa !0
+  %sub2.i = sub nsw i32 2, %2
+  br label %number_K.exit
+
+number_K.exit:                                    ; preds = %if.then.i, %if.else.i
+  %retval.0.i = phi i32 [ %sub.i, %if.then.i ], [ %sub2.i, %if.else.i ]
+  switch i32 %0, label %if.else7 [
+    i32 1, label %if.then
+    i32 2, label %if.then4
+  ]
+
+if.then:                                          ; preds = %number_K.exit
+  %sigPh = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 4
+  %3 = load float* %sigPh, align 4, !tbaa !4
+  br label %sw.epilog
+
+if.then4:                                         ; preds = %number_K.exit
+  %sigPh5 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 4
+  %4 = load float* %sigPh5, align 4, !tbaa !4
+  %conv6 = fmul float %4, 5.000000e-01
+  br label %sw.epilog
+
+if.else7:                                         ; preds = %number_K.exit
+  %k.i44 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 2
+  %5 = load i32* %k.i44, align 4, !tbaa !0
+  %n.i47 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 1
+  %6 = load i32* %n.i47, align 4, !tbaa !0
+  %sub.i45 = add i32 %0, -2
+  %add.i = add i32 %sub.i45, %5
+  %sub1.i = sub i32 %add.i, %6
+  %conv8 = sitofp i32 %retval.0.i to double
+  %mul9 = fmul double %conv8, 5.000000e-01
+  %fj = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 3
+  %7 = load float* %fj, align 4, !tbaa !4
+  %conv10 = fpext float %7 to double
+  %mul11 = fmul double %mul9, %conv10
+  %div = sdiv i32 %sub1.i, %sub.i45
+  %conv13 = sitofp i32 %div to float
+  %sub15 = fsub float 1.000000e+00, %7
+  %mul16 = fmul float %sub15, %conv13
+  %conv17 = fpext float %mul16 to double
+  %add = fadd double %mul11, %conv17
+  %sigPh18 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 4
+  %8 = load float* %sigPh18, align 4, !tbaa !4
+  %conv19 = fpext float %8 to double
+  %mul20 = fmul double %conv19, %add
+  %conv21 = fptrunc double %mul20 to float
+  br label %sw.epilog
+
+sw.bb23:                                          ; preds = %entry
+  %z24 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 0
+  %9 = load i32* %z24, align 4, !tbaa !0
+  %n = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 1
+  %10 = load i32* %n, align 4, !tbaa !0
+  %sub25 = sub nsw i32 %9, %10
+  %conv26 = sitofp i32 %sub25 to float
+  %sigIn = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 5
+  %11 = load float* %sigIn, align 4, !tbaa !4
+  %mul27 = fmul float %11, %conv26
+  %conv29 = sitofp i32 %9 to float
+  %div30 = fdiv float %mul27, %conv29
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %entry
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([27 x i8]* @.str10, i64 0, i64 0), i32 %eColl) #7
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %if.then, %if.else7, %if.then4, %sw.default, %sw.bb23
+  %c.0 = phi float [ 0.000000e+00, %sw.default ], [ %div30, %sw.bb23 ], [ %3, %if.then ], [ %conv6, %if.then4 ], [ %conv21, %if.else7 ]
+  ret float %c.0
+}

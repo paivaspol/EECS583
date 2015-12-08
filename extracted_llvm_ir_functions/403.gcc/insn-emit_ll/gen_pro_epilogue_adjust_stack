@@ -1,0 +1,34 @@
+define %struct.rtx_def* @gen_pro_epilogue_adjust_stack(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1, %struct.rtx_def* %operand2) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %0 = load i32* @target_flags, align 4, !tbaa !3
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.rtx_def* @gen_pro_epilogue_adjust_stack_rex64(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1, %struct.rtx_def* %operand2) #6
+  %call6 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call) #4
+  %call7 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call11 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 75, i32 4, %struct.rtx_def* %operand1, %struct.rtx_def* %operand2) #4
+  %call12 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %operand0, %struct.rtx_def* %call11) #4
+  %call13 = tail call %struct.rtx_def* @gen_rtx_REG(i32 52, i32 17) #4
+  %call14 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 49, i32 0, %struct.rtx_def* %call13) #4
+  %call15 = tail call %struct.rtx_def* @gen_rtx_fmt_0(i32 62, i32 0) #4
+  %call16 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 51, %struct.rtx_def* %call15) #4
+  %call17 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 49, i32 0, %struct.rtx_def* %call16) #4
+  %call18 = tail call %struct.rtvec_def* (i32, ...)* @gen_rtvec(i32 3, %struct.rtx_def* %call12, %struct.rtx_def* %call14, %struct.rtx_def* %call17) #4
+  %call19 = tail call %struct.rtx_def* @gen_rtx_fmt_E(i32 39, i32 0, %struct.rtvec_def* %call18) #4
+  %call20 = tail call %struct.rtx_def* @emit(%struct.rtx_def* %call19) #4
+  %call21 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then
+  %retval.0 = phi %struct.rtx_def* [ %call7, %if.then ], [ %call21, %if.end ]
+  ret %struct.rtx_def* %retval.0
+}

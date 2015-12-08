@@ -1,0 +1,22 @@
+define float @do_opt_pppm(%struct._IO_FILE* nocapture %log, i32 %bVerbose, %struct.t_inputrec* nocapture %ir, i32 %natoms, [3 x float]* nocapture %x, [3 x float]* nocapture %f, float* nocapture %charge, float* %box, float* nocapture %phi, %struct.t_commrec* %cr, %struct.t_nrnb* nocapture %nrnb, float* nocapture %beta, %struct.t_fftgrid* %grid, i32 %bOld) #0 {
+entry:
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([26 x i8]* @.str8, i64 0, i64 0), i64 25, i64 1, %struct._IO_FILE* %log)
+  %nkx = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 17
+  %1 = load i32* %nkx, align 4, !tbaa !3
+  %nky = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 18
+  %2 = load i32* %nky, align 4, !tbaa !3
+  %nkz = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 19
+  %3 = load i32* %nkz, align 4, !tbaa !3
+  %call1 = tail call float*** @mk_rgrid(i32 %1, i32 %2, i32 %3) #4
+  %rcoulomb_switch = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 37
+  %4 = load float* %rcoulomb_switch, align 4, !tbaa !0
+  %rcoulomb = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 38
+  %5 = load float* %rcoulomb, align 4, !tbaa !0
+  tail call void @mk_ghat(%struct._IO_FILE* null, i32 %1, i32 %2, i32 %3, float*** %call1, float* %box, float %4, float %5, i32 1, i32 %bOld) #4
+  tail call void @clear_fftgrid(%struct.t_fftgrid* %grid) #4
+  tail call void @spread_q(%struct._IO_FILE* %log, i32 undef, i32 0, i32 %natoms, [3 x float]* %x, float* %charge, float* %box, %struct.t_fftgrid* %grid, %struct.t_nrnb* %nrnb) #5
+  tail call void @solve_pppm(%struct._IO_FILE* undef, %struct.t_commrec* %cr, %struct.t_fftgrid* %grid, float*** %call1, float* undef, i32 %bVerbose, %struct.t_nrnb* %nrnb) #5
+  %call2 = tail call fastcc float @gather_f(%struct._IO_FILE* %log, i32 0, i32 %natoms, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_fftgrid* %grid, float* %beta, %struct.t_nrnb* %nrnb) #5
+  tail call void @free_rgrid(float*** %call1, i32 %1, i32 %2) #4
+  ret float %call2
+}

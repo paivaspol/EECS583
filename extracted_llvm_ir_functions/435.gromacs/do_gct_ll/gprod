@@ -1,0 +1,106 @@
+define void @gprod(%struct.t_commrec* nocapture %cr, i32 %n, float* nocapture %f) #0 {
+entry:
+  %0 = load i32* @gprod.nbuf, align 4, !tbaa !3
+  %cmp = icmp slt i32 %0, %n
+  br i1 %cmp, label %if.then, label %for.cond.preheader
+
+if.then:                                          ; preds = %entry
+  store i32 %n, i32* @gprod.nbuf, align 4, !tbaa !3
+  %1 = load float** getelementptr inbounds ([2 x float*]* @gprod.buf, i64 0, i64 0), align 16, !tbaa !0
+  %2 = bitcast float* %1 to i8*
+  %mul = shl i32 %n, 2
+  %call = tail call i8* @save_realloc(i8* getelementptr inbounds ([9 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 292, i8* %2, i32 %mul) #6
+  %3 = bitcast i8* %call to float*
+  store float* %3, float** getelementptr inbounds ([2 x float*]* @gprod.buf, i64 0, i64 0), align 16, !tbaa !0
+  %4 = load float** getelementptr inbounds ([2 x float*]* @gprod.buf, i64 0, i64 1), align 8, !tbaa !0
+  %5 = bitcast float* %4 to i8*
+  %6 = load i32* @gprod.nbuf, align 4, !tbaa !3
+  %mul7 = shl i32 %6, 2
+  %call9 = tail call i8* @save_realloc(i8* getelementptr inbounds ([10 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 293, i8* %5, i32 %mul7) #6
+  %7 = bitcast i8* %call9 to float*
+  store float* %7, float** getelementptr inbounds ([2 x float*]* @gprod.buf, i64 0, i64 1), align 8, !tbaa !0
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then, %entry
+  %cmp1390 = icmp sgt i32 %n, 0
+  br i1 %cmp1390, label %for.body.lr.ph, label %for.cond21.preheader
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %8 = load float** getelementptr inbounds ([2 x float*]* @gprod.buf, i64 0, i64 0), align 16, !tbaa !0
+  br label %for.body
+
+for.cond21.preheader:                             ; preds = %for.body, %for.cond.preheader
+  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
+  %9 = load i32* %nnodes, align 4, !tbaa !3
+  %sub2286 = add nsw i32 %9, -1
+  %cmp2387 = icmp sgt i32 %sub2286, 0
+  br i1 %cmp2387, label %for.body25.lr.ph, label %for.end57
+
+for.body25.lr.ph:                                 ; preds = %for.cond21.preheader
+  %left = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
+  %mul29 = shl i32 %n, 2
+  %right = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
+  br label %for.body25
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv92 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next93, %for.body ]
+  %arrayidx16 = getelementptr inbounds float* %f, i64 %indvars.iv92
+  %10 = load float* %arrayidx16, align 4, !tbaa !4
+  %arrayidx20 = getelementptr inbounds float* %8, i64 %indvars.iv92
+  store float %10, float* %arrayidx20, align 4, !tbaa !4
+  %indvars.iv.next93 = add i64 %indvars.iv92, 1
+  %lftr.wideiv94 = trunc i64 %indvars.iv.next93 to i32
+  %exitcond95 = icmp eq i32 %lftr.wideiv94, %n
+  br i1 %exitcond95, label %for.cond21.preheader, label %for.body
+
+for.body25:                                       ; preds = %for.end53.for.body25_crit_edge, %for.body25.lr.ph
+  %cur.089 = phi i32 [ 0, %for.body25.lr.ph ], [ %sub31, %for.end53.for.body25_crit_edge ]
+  %i.088 = phi i32 [ 1, %for.body25.lr.ph ], [ %phitmp, %for.end53.for.body25_crit_edge ]
+  %11 = load i32* %left, align 4, !tbaa !3
+  %idxprom26 = sext i32 %cur.089 to i64
+  %arrayidx27 = getelementptr inbounds [2 x float*]* @gprod.buf, i64 0, i64 %idxprom26
+  %12 = load float** %arrayidx27, align 8, !tbaa !0
+  %13 = bitcast float* %12 to i8*
+  tail call void @gmx_tx(i32 %11, i8* %13, i32 %mul29) #6
+  %14 = load i32* %right, align 4, !tbaa !3
+  %sub31 = sub nsw i32 1, %cur.089
+  %idxprom32 = sext i32 %sub31 to i64
+  %arrayidx33 = getelementptr inbounds [2 x float*]* @gprod.buf, i64 0, i64 %idxprom32
+  %15 = load float** %arrayidx33, align 8, !tbaa !0
+  %16 = bitcast float* %15 to i8*
+  tail call void @gmx_rx(i32 %14, i8* %16, i32 %mul29) #6
+  %17 = load i32* %left, align 4, !tbaa !3
+  %18 = load i32* %right, align 4, !tbaa !3
+  tail call void @gmx_wait(i32 %17, i32 %18) #6
+  br i1 %cmp1390, label %for.body42.lr.ph, label %for.end53
+
+for.body42.lr.ph:                                 ; preds = %for.body25
+  %19 = load float** %arrayidx33, align 8, !tbaa !0
+  br label %for.body42
+
+for.body42:                                       ; preds = %for.body42, %for.body42.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body42.lr.ph ], [ %indvars.iv.next, %for.body42 ]
+  %arrayidx47 = getelementptr inbounds float* %19, i64 %indvars.iv
+  %20 = load float* %arrayidx47, align 4, !tbaa !4
+  %arrayidx49 = getelementptr inbounds float* %f, i64 %indvars.iv
+  %21 = load float* %arrayidx49, align 4, !tbaa !4
+  %mul50 = fmul float %20, %21
+  store float %mul50, float* %arrayidx49, align 4, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end53, label %for.body42
+
+for.end53:                                        ; preds = %for.body42, %for.body25
+  %22 = load i32* %nnodes, align 4, !tbaa !3
+  %sub22 = add nsw i32 %22, -1
+  %cmp23 = icmp slt i32 %i.088, %sub22
+  br i1 %cmp23, label %for.end53.for.body25_crit_edge, label %for.end57
+
+for.end53.for.body25_crit_edge:                   ; preds = %for.end53
+  %phitmp = add i32 %i.088, 1
+  br label %for.body25
+
+for.end57:                                        ; preds = %for.end53, %for.cond21.preheader
+  ret void
+}

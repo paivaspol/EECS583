@@ -1,0 +1,28 @@
+define void @do_pbc_first(%struct._IO_FILE* %log, %struct.t_parm* %parm, float* %box_size, %struct.t_forcerec* nocapture %fr, %struct.t_graph* %graph, [3 x float]* %x) #0 {
+entry:
+  %tobool = icmp eq %struct._IO_FILE* %log, null
+  br i1 %tobool, label %if.end14.critedge, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([25 x i8]* @.str16, i64 0, i64 0), i64 24, i64 1, %struct._IO_FILE* %log)
+  %arraydecay = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 1, i64 0
+  %shift_vec = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 48
+  %1 = load [3 x float]** %shift_vec, align 8, !tbaa !5
+  tail call void @calc_shifts([3 x float]* %arraydecay, float* %box_size, [3 x float]* %1) #6
+  tail call void @mk_mshift(%struct._IO_FILE* %log, %struct.t_graph* %graph, [3 x float]* %arraydecay, [3 x float]* %x) #6
+  tail call void @shift_self(%struct.t_graph* %graph, [3 x float]* %arraydecay, [3 x float]* %x) #6
+  %2 = tail call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str18, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %log)
+  br label %if.end14
+
+if.end14.critedge:                                ; preds = %entry
+  %arraydecay.c = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 1, i64 0
+  %shift_vec.c = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 48
+  %3 = load [3 x float]** %shift_vec.c, align 8, !tbaa !5
+  tail call void @calc_shifts([3 x float]* %arraydecay.c, float* %box_size, [3 x float]* %3) #6
+  tail call void @mk_mshift(%struct._IO_FILE* null, %struct.t_graph* %graph, [3 x float]* %arraydecay.c, [3 x float]* %x) #6
+  tail call void @shift_self(%struct.t_graph* %graph, [3 x float]* %arraydecay.c, [3 x float]* %x) #6
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.end14.critedge, %if.then
+  ret void
+}

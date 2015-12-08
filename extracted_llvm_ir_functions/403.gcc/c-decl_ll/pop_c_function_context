@@ -1,0 +1,89 @@
+define void @pop_c_function_context(%struct.function* nocapture %f) #0 {
+entry:
+  %language = getelementptr inbounds %struct.function* %f, i64 0, i32 54
+  %0 = load %struct.language_function** %language, align 8, !tbaa !0
+  %1 = bitcast %struct.language_function* %0 to %struct.c_language_function*
+  %link.033 = load %union.tree_node** @shadowed_labels, align 8
+  %tobool34 = icmp eq %union.tree_node* %link.033, null
+  br i1 %tobool34, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %link.035 = phi %union.tree_node* [ %link.0, %for.inc ], [ %link.033, %entry ]
+  %value = getelementptr inbounds %union.tree_node* %link.035, i64 0, i32 0, i32 2
+  %2 = bitcast i32* %value to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %name = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 8
+  %4 = load %union.tree_node** %name, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %4, null
+  br i1 %cmp, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %5 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 8
+  store %union.tree_node* %3, %union.tree_node** %5, align 8, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %chain = getelementptr inbounds %union.tree_node* %link.035, i64 0, i32 0, i32 0, i32 0
+  %link.0 = load %union.tree_node** %chain, align 8
+  %tobool = icmp eq %union.tree_node* %link.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  %6 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %f8 = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 19, i32 0
+  %7 = load %struct.function** %f8, align 8, !tbaa !0
+  %cmp9 = icmp eq %struct.function* %7, null
+  br i1 %cmp9, label %land.lhs.true, label %if.end15
+
+land.lhs.true:                                    ; preds = %for.end
+  %saved_tree = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 20
+  %8 = load %union.tree_node** %saved_tree, align 8, !tbaa !0
+  %cmp11 = icmp eq %union.tree_node* %8, null
+  br i1 %cmp11, label %if.then12, label %if.end15
+
+if.then12:                                        ; preds = %land.lhs.true
+  %9 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 8, !tbaa !0
+  %initial = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 12
+  store %union.tree_node* %9, %union.tree_node** %initial, align 8, !tbaa !0
+  %10 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %arguments = getelementptr inbounds %union.tree_node* %10, i64 0, i32 0, i32 10
+  store %union.tree_node* null, %union.tree_node** %arguments, align 8, !tbaa !0
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then12, %land.lhs.true, %for.end
+  %11 = bitcast %struct.language_function* %0 to i8*
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct.stmt_tree_s* @c_stmt_tree to i8*), i8* %11, i64 32, i32 8, i1 false), !tbaa.struct !8
+  %x_scope_stmt_stack = getelementptr inbounds %struct.language_function* %0, i64 0, i32 1
+  %12 = load %union.tree_node** %x_scope_stmt_stack, align 8, !tbaa !0
+  store %union.tree_node* %12, %union.tree_node** @c_scope_stmt_stack, align 8, !tbaa !0
+  %13 = getelementptr inbounds %struct.language_function* %0, i64 1, i32 0, i32 0
+  %14 = load %union.tree_node** %13, align 8, !tbaa !0
+  store %union.tree_node* %14, %union.tree_node** @named_labels, align 8, !tbaa !0
+  %15 = getelementptr inbounds %struct.language_function* %0, i64 1, i32 0, i32 1
+  %16 = load %union.tree_node** %15, align 8, !tbaa !0
+  store %union.tree_node* %16, %union.tree_node** @shadowed_labels, align 8, !tbaa !0
+  %returns_value = getelementptr inbounds %struct.language_function* %0, i64 1, i32 0, i32 2
+  %17 = bitcast i8** %returns_value to i32*
+  %18 = load i32* %17, align 4, !tbaa !3
+  store i32 %18, i32* @current_function_returns_value, align 4, !tbaa !3
+  %returns_null = getelementptr inbounds %struct.c_language_function* %1, i64 0, i32 4
+  %19 = load i32* %returns_null, align 4, !tbaa !3
+  store i32 %19, i32* @current_function_returns_null, align 4, !tbaa !3
+  %20 = getelementptr inbounds %struct.language_function* %0, i64 1, i32 0, i32 3
+  %21 = load i32* %20, align 4, !tbaa !3
+  store i32 %21, i32* @current_function_returns_abnormally, align 4, !tbaa !3
+  %warn_about_return_type = getelementptr inbounds %struct.c_language_function* %1, i64 0, i32 6
+  %22 = load i32* %warn_about_return_type, align 4, !tbaa !3
+  store i32 %22, i32* @warn_about_return_type, align 4, !tbaa !3
+  %extern_inline = getelementptr inbounds %struct.language_function* %0, i64 1, i32 1
+  %23 = bitcast %union.tree_node** %extern_inline to i32*
+  %24 = load i32* %23, align 4, !tbaa !3
+  store i32 %24, i32* @current_extern_inline, align 4, !tbaa !3
+  %binding_level = getelementptr inbounds %struct.language_function* %0, i64 2
+  %25 = bitcast %struct.language_function* %binding_level to %struct.binding_level**
+  %26 = load %struct.binding_level** %25, align 8, !tbaa !0
+  store %struct.binding_level* %26, %struct.binding_level** @current_binding_level, align 8, !tbaa !0
+  tail call void @free(i8* %11) #8
+  store %struct.language_function* null, %struct.language_function** %language, align 8, !tbaa !0
+  ret void
+}

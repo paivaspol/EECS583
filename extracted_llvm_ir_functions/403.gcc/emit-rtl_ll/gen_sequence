@@ -1,0 +1,78 @@
+define %struct.rtx_def* @gen_sequence() #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit = getelementptr inbounds %struct.function* %0, i64 0, i32 3
+  %1 = load %struct.emit_status** %emit, align 8, !tbaa !4
+  %x_first_insn = getelementptr inbounds %struct.emit_status* %1, i64 0, i32 2
+  %tem.047 = load %struct.rtx_def** %x_first_insn, align 8
+  %tobool48 = icmp eq %struct.rtx_def* %tem.047, null
+  br i1 %tobool48, label %if.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %tem.050 = phi %struct.rtx_def* [ %tem.0, %for.body ], [ %tem.047, %entry ]
+  %len.049 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %inc = add nsw i32 %len.049, 1
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %tem.050, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %tem.0 = load %struct.rtx_def** %rtx, align 8
+  %tobool = icmp eq %struct.rtx_def* %tem.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %cmp = icmp eq i32 %len.049, 0
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %for.end
+  %2 = bitcast %struct.rtx_def* %tem.047 to i32*
+  %bf.load = load i32* %2, align 8
+  %3 = and i32 %bf.load, -2147418113
+  %4 = icmp eq i32 %3, 32
+  br i1 %4, label %land.lhs.true9, label %if.end
+
+land.lhs.true9:                                   ; preds = %land.lhs.true
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %tem.047, i64 0, i32 1, i64 6
+  %rtx14 = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx14, align 8, !tbaa !4
+  %cmp15 = icmp eq %struct.rtx_def* %5, null
+  br i1 %cmp15, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true9
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %tem.047, i64 0, i32 1, i64 3
+  %rtx20 = bitcast %union.rtunion_def* %arrayidx19 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx20, align 8, !tbaa !4
+  br label %return
+
+if.end:                                           ; preds = %entry, %land.lhs.true, %land.lhs.true9, %for.end
+  %len.0.lcssa52 = phi i32 [ 1, %land.lhs.true ], [ 1, %land.lhs.true9 ], [ %inc, %for.end ], [ 0, %entry ]
+  %call = tail call %struct.rtvec_def* @rtvec_alloc(i32 %len.0.lcssa52) #8
+  %call21 = tail call %struct.rtx_def* @gen_rtx_fmt_E(i32 24, i32 0, %struct.rtvec_def* %call) #8
+  %7 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit22 = getelementptr inbounds %struct.function* %7, i64 0, i32 3
+  %8 = load %struct.emit_status** %emit22, align 8, !tbaa !4
+  %x_first_insn23 = getelementptr inbounds %struct.emit_status* %8, i64 0, i32 2
+  %tem.143 = load %struct.rtx_def** %x_first_insn23, align 8
+  %tobool2544 = icmp eq %struct.rtx_def* %tem.143, null
+  br i1 %tobool2544, label %return, label %for.body26.lr.ph
+
+for.body26.lr.ph:                                 ; preds = %if.end
+  %arrayidx28 = getelementptr inbounds %struct.rtx_def* %call21, i64 0, i32 1, i64 0
+  %rtvec = bitcast %union.rtunion_def* %arrayidx28 to %struct.rtvec_def**
+  br label %for.body26
+
+for.body26:                                       ; preds = %for.body26.lr.ph, %for.body26
+  %indvars.iv = phi i64 [ 0, %for.body26.lr.ph ], [ %indvars.iv.next, %for.body26 ]
+  %tem.146 = phi %struct.rtx_def* [ %tem.143, %for.body26.lr.ph ], [ %tem.1, %for.body26 ]
+  %9 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  %arrayidx29 = getelementptr inbounds %struct.rtvec_def* %9, i64 0, i32 1, i64 %indvars.iv
+  store %struct.rtx_def* %tem.146, %struct.rtx_def** %arrayidx29, align 8, !tbaa !4
+  %arrayidx32 = getelementptr inbounds %struct.rtx_def* %tem.146, i64 0, i32 1, i64 2
+  %rtx33 = bitcast %union.rtunion_def* %arrayidx32 to %struct.rtx_def**
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %tem.1 = load %struct.rtx_def** %rtx33, align 8
+  %tobool25 = icmp eq %struct.rtx_def* %tem.1, null
+  br i1 %tobool25, label %return, label %for.body26
+
+return:                                           ; preds = %if.end, %for.body26, %if.then
+  %retval.0 = phi %struct.rtx_def* [ %6, %if.then ], [ %call21, %for.body26 ], [ %call21, %if.end ]
+  ret %struct.rtx_def* %retval.0
+}

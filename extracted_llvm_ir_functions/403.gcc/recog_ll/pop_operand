@@ -1,0 +1,41 @@
+define i32 @pop_operand(%struct.rtx_def* nocapture %op, i32 %mode) #2 {
+entry:
+  %0 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp eq i32 %mode, 0
+  br i1 %cmp1, label %if.end6, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear3 = and i32 %bf.lshr, 255
+  %cmp4 = icmp eq i32 %bf.clear3, %mode
+  br i1 %cmp4, label %if.end6, label %return
+
+if.end6:                                          ; preds = %land.lhs.true, %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load7 = load i32* %2, align 8
+  %bf.clear8 = and i32 %bf.load7, 65535
+  %cmp9 = icmp eq i32 %bf.clear8, 99
+  br i1 %cmp9, label %if.end11, label %return
+
+if.end11:                                         ; preds = %if.end6
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtx14 = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx14, align 8, !tbaa !3
+  %4 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !tbaa !3
+  %cmp15 = icmp eq %struct.rtx_def* %3, %4
+  %conv = zext i1 %cmp15 to i32
+  br label %return
+
+return:                                           ; preds = %if.end6, %land.lhs.true, %entry, %if.end11
+  %retval.0 = phi i32 [ %conv, %if.end11 ], [ 0, %entry ], [ 0, %land.lhs.true ], [ 0, %if.end6 ]
+  ret i32 %retval.0
+}

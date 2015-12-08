@@ -1,0 +1,21 @@
+define internal fastcc void @_check_nitem(i32 %eio, i32 %nitem, i32 %line) #1 {
+entry:
+  %cmp = icmp eq i32 %nitem, 1
+  br i1 %cmp, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  switch i32 %eio, label %if.then [
+    i32 5, label %if.end
+    i32 2, label %if.end
+  ]
+
+if.then:                                          ; preds = %land.lhs.true
+  %idxprom = sext i32 %eio to i64
+  %arrayidx = getelementptr inbounds [8 x i8*]* @eioNames, i64 0, i64 %idxprom
+  %0 = load i8** %arrayidx, align 8, !tbaa !3
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([67 x i8]* @.str45, i64 0, i64 0), i32 %nitem, i8* getelementptr inbounds ([7 x i8]* @.str35, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str38, i64 0, i64 0), i8* %0, i8* getelementptr inbounds ([54 x i8]* @.str15, i64 0, i64 0), i32 %line) #7
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %land.lhs.true, %entry, %if.then
+  ret void
+}

@@ -1,0 +1,33 @@
+define internal void @note_inherently_necessary_set(%struct.rtx_def* nocapture %dest, %struct.rtx_def* nocapture %set, i8* nocapture %data) #0 {
+entry:
+  %0 = bitcast i8* %data to i32*
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.body, %entry
+  %dest.addr.0 = phi %struct.rtx_def* [ %dest, %entry ], [ %2, %while.body ]
+  %1 = bitcast %struct.rtx_def* %dest.addr.0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.end [
+    i32 63, label %while.body
+    i32 64, label %while.body
+    i32 133, label %while.body
+    i32 132, label %while.body
+    i32 66, label %if.then
+    i32 42, label %if.then
+    i32 43, label %if.then
+  ]
+
+while.body:                                       ; preds = %while.cond, %while.cond, %while.cond, %while.cond
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest.addr.0, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  br label %while.cond
+
+if.then:                                          ; preds = %while.cond, %while.cond, %while.cond
+  store i32 1, i32* %0, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %while.cond, %if.then
+  ret void
+}

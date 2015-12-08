@@ -1,0 +1,37 @@
+define i32* @compact_unitcell_edges() #1 {
+entry:
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc11, %entry
+  %indvars.iv48 = phi i64 [ 0, %entry ], [ %indvars.iv.next49, %for.inc11 ]
+  %i.040 = phi i32 [ 0, %entry ], [ %inc12, %for.inc11 ]
+  %mul = shl nsw i32 %i.040, 2
+  br label %for.body3
+
+for.cond14.preheader:                             ; preds = %for.inc11
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (i32* getelementptr inbounds ([72 x i32]* @compact_unitcell_edges.edge, i64 0, i64 48) to i8*), i8* bitcast ([24 x i32]* @compact_unitcell_edges.hexcon to i8*), i64 96, i32 16, i1 false)
+  ret i32* getelementptr inbounds ([72 x i32]* @compact_unitcell_edges.edge, i64 0, i64 0)
+
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ %indvars.iv48, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %j.038 = phi i32 [ 0, %for.cond1.preheader ], [ %add5, %for.body3 ]
+  %add = add nsw i32 %j.038, %mul
+  %0 = or i64 %indvars.iv, 1
+  %arrayidx = getelementptr inbounds [72 x i32]* @compact_unitcell_edges.edge, i64 0, i64 %indvars.iv
+  store i32 %add, i32* %arrayidx, align 8, !tbaa !4
+  %add5 = add nsw i32 %j.038, 1
+  %1 = icmp eq i32 %add5, 4
+  %tmp = select i1 %1, i32 0, i32 %add5
+  %add6 = add nsw i32 %tmp, %mul
+  %indvars.iv.next = add i64 %indvars.iv, 2
+  %arrayidx9 = getelementptr inbounds [72 x i32]* @compact_unitcell_edges.edge, i64 0, i64 %0
+  store i32 %add6, i32* %arrayidx9, align 4, !tbaa !4
+  %exitcond = icmp eq i32 %add5, 4
+  br i1 %exitcond, label %for.inc11, label %for.body3
+
+for.inc11:                                        ; preds = %for.body3
+  %indvars.iv.next49 = add i64 %indvars.iv48, 8
+  %inc12 = add nsw i32 %i.040, 1
+  %exitcond50 = icmp eq i32 %inc12, 6
+  br i1 %exitcond50, label %for.cond14.preheader, label %for.cond1.preheader
+}

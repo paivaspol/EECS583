@@ -1,0 +1,83 @@
+define internal fastcc %struct.search_path* @remove_dup_dirs(%struct.cpp_reader* %pfile, %struct.search_path* %head) #0 {
+entry:
+  %tobool44 = icmp eq %struct.search_path* %head, null
+  br i1 %tobool44, label %for.end22, label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %entry, %for.end
+  %cur.046 = phi %struct.search_path* [ %10, %for.end ], [ %head, %entry ]
+  %prev.045 = phi %struct.search_path* [ %cur.1, %for.end ], [ null, %entry ]
+  %cmp42 = icmp eq %struct.search_path* %cur.046, %head
+  br i1 %cmp42, label %for.end, label %for.body2.lr.ph
+
+for.body2.lr.ph:                                  ; preds = %for.cond1.preheader
+  %ino = getelementptr inbounds %struct.search_path* %cur.046, i64 0, i32 3
+  %0 = load i64* %ino, align 8, !tbaa !5
+  %dev = getelementptr inbounds %struct.search_path* %cur.046, i64 0, i32 4
+  br label %for.body2
+
+for.body2:                                        ; preds = %for.body2.lr.ph, %for.inc
+  %other.043 = phi %struct.search_path* [ %head, %for.body2.lr.ph ], [ %9, %for.inc ]
+  %ino3 = getelementptr inbounds %struct.search_path* %other.043, i64 0, i32 3
+  %1 = load i64* %ino3, align 8, !tbaa !5
+  %cmp4 = icmp eq i64 %0, %1
+  br i1 %cmp4, label %land.lhs.true, label %for.inc
+
+land.lhs.true:                                    ; preds = %for.body2
+  %2 = load i64* %dev, align 8, !tbaa !5
+  %dev5 = getelementptr inbounds %struct.search_path* %other.043, i64 0, i32 4
+  %3 = load i64* %dev5, align 8, !tbaa !5
+  %cmp6 = icmp eq i64 %2, %3
+  br i1 %cmp6, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %land.lhs.true
+  %sysp = getelementptr inbounds %struct.search_path* %cur.046, i64 0, i32 5
+  %4 = load i32* %sysp, align 4, !tbaa !2
+  %tobool7 = icmp eq i32 %4, 0
+  br i1 %tobool7, label %if.end17, label %land.lhs.true8
+
+land.lhs.true8:                                   ; preds = %if.then
+  %sysp9 = getelementptr inbounds %struct.search_path* %other.043, i64 0, i32 5
+  %5 = load i32* %sysp9, align 4, !tbaa !2
+  %tobool10 = icmp eq i32 %5, 0
+  br i1 %tobool10, label %if.then11, label %if.end17
+
+if.then11:                                        ; preds = %land.lhs.true8
+  %name = getelementptr inbounds %struct.search_path* %cur.046, i64 0, i32 1
+  %6 = load i8** %name, align 8, !tbaa !3
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([48 x i8]* @.str166, i64 0, i64 0), i8* %6) #6
+  %7 = load i8** %name, align 8, !tbaa !3
+  %name13 = getelementptr inbounds %struct.search_path* %other.043, i64 0, i32 1
+  %8 = load i8** %name13, align 8, !tbaa !3
+  %call = tail call i32 @strcmp(i8* %7, i8* %8) #8
+  %tobool14 = icmp eq i32 %call, 0
+  br i1 %tobool14, label %if.else, label %if.then15
+
+if.then15:                                        ; preds = %if.then11
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([49 x i8]* @.str167, i64 0, i64 0), i8* %8) #6
+  br label %if.end17
+
+if.else:                                          ; preds = %if.then11
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([61 x i8]* @.str168, i64 0, i64 0)) #6
+  br label %if.end17
+
+if.end17:                                         ; preds = %land.lhs.true8, %if.then, %if.then15, %if.else
+  %call18 = tail call fastcc %struct.search_path* @remove_dup_dir(%struct.cpp_reader* %pfile, %struct.search_path* %prev.045) #7
+  br label %for.end
+
+for.inc:                                          ; preds = %for.body2, %land.lhs.true
+  %next = getelementptr inbounds %struct.search_path* %other.043, i64 0, i32 0
+  %9 = load %struct.search_path** %next, align 8, !tbaa !3
+  %cmp = icmp eq %struct.search_path* %9, %cur.046
+  br i1 %cmp, label %for.end, label %for.body2
+
+for.end:                                          ; preds = %for.cond1.preheader, %for.inc, %if.end17
+  %cur.1 = phi %struct.search_path* [ %call18, %if.end17 ], [ %cur.046, %for.inc ], [ %cur.046, %for.cond1.preheader ]
+  %next21 = getelementptr inbounds %struct.search_path* %cur.1, i64 0, i32 0
+  %10 = load %struct.search_path** %next21, align 8, !tbaa !3
+  %tobool = icmp eq %struct.search_path* %10, null
+  br i1 %tobool, label %for.end22, label %for.cond1.preheader
+
+for.end22:                                        ; preds = %for.end, %entry
+  %prev.0.lcssa = phi %struct.search_path* [ null, %entry ], [ %cur.1, %for.end ]
+  ret %struct.search_path* %prev.0.lcssa
+}

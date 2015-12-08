@@ -1,0 +1,283 @@
+define internal fastcc zeroext i1 @stack_include_file(%struct.cpp_reader* %pfile, %struct.include_file* %inc) #0 {
+entry:
+  %cmacro = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 1
+  %0 = load %struct.cpp_hashnode** %cmacro, align 8, !tbaa !0
+  %magicptr = ptrtoint %struct.cpp_hashnode* %0 to i64
+  switch i64 %magicptr, label %lor.lhs.false [
+    i64 0, label %if.end
+    i64 -1, label %return
+  ]
+
+lor.lhs.false:                                    ; preds = %entry
+  %type = getelementptr inbounds %struct.cpp_hashnode* %0, i64 0, i32 4
+  %bf.load = load i8* %type, align 4
+  %cmp3 = icmp eq i8 %bf.load, 1
+  br i1 %cmp3, label %return, label %if.end
+
+if.end:                                           ; preds = %entry, %lor.lhs.false
+  %map = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 3
+  %1 = load %struct.line_map** %map, align 8, !tbaa !0
+  %tobool4 = icmp eq %struct.line_map* %1, null
+  br i1 %tobool4, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %if.end
+  %sysp6 = getelementptr inbounds %struct.line_map* %1, i64 0, i32 5
+  %2 = load i8* %sysp6, align 1, !tbaa !1
+  %conv = zext i8 %2 to i32
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.end, %cond.true
+  %cond = phi i32 [ %conv, %cond.true ], [ 0, %if.end ]
+  %foundhere = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 2
+  %3 = load %struct.search_path** %foundhere, align 8, !tbaa !0
+  %tobool7 = icmp eq %struct.search_path* %3, null
+  br i1 %tobool7, label %cond.end12, label %cond.true8
+
+cond.true8:                                       ; preds = %cond.end
+  %sysp10 = getelementptr inbounds %struct.search_path* %3, i64 0, i32 5
+  %4 = load i32* %sysp10, align 4, !tbaa !3
+  br label %cond.end12
+
+cond.end12:                                       ; preds = %cond.end, %cond.true8
+  %cond13 = phi i32 [ %4, %cond.true8 ], [ 0, %cond.end ]
+  %cmp14 = icmp sgt i32 %cond, %cond13
+  br i1 %cmp14, label %cond.true16, label %cond.false26
+
+cond.true16:                                      ; preds = %cond.end12
+  br i1 %tobool4, label %cond.end35, label %cond.true19
+
+cond.true19:                                      ; preds = %cond.true16
+  %sysp21 = getelementptr inbounds %struct.line_map* %1, i64 0, i32 5
+  %5 = load i8* %sysp21, align 1, !tbaa !1
+  %conv22 = zext i8 %5 to i32
+  br label %cond.end35
+
+cond.false26:                                     ; preds = %cond.end12
+  br i1 %tobool7, label %cond.end35, label %cond.true29
+
+cond.true29:                                      ; preds = %cond.false26
+  %sysp31 = getelementptr inbounds %struct.search_path* %3, i64 0, i32 5
+  %6 = load i32* %sysp31, align 4, !tbaa !3
+  br label %cond.end35
+
+cond.end35:                                       ; preds = %cond.true16, %cond.false26, %cond.true29, %cond.true19
+  %cond36 = phi i32 [ %conv22, %cond.true19 ], [ 0, %cond.true16 ], [ %6, %cond.true29 ], [ 0, %cond.false26 ]
+  %print_deps = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 21
+  %7 = load i8* %print_deps, align 1, !tbaa !1
+  %conv37 = zext i8 %7 to i32
+  %cmp38 = icmp sgt i32 %conv37, %cond36
+  br i1 %cmp38, label %land.lhs.true40, label %if.end43
+
+land.lhs.true40:                                  ; preds = %cond.end35
+  %include_count = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 7
+  %8 = load i16* %include_count, align 2, !tbaa !5
+  %tobool41 = icmp eq i16 %8, 0
+  br i1 %tobool41, label %if.then42, label %if.end43
+
+if.then42:                                        ; preds = %land.lhs.true40
+  %deps = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 31
+  %9 = load %struct.deps** %deps, align 8, !tbaa !0
+  %name = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 0
+  %10 = load i8** %name, align 8, !tbaa !0
+  tail call void @deps_add_dep(%struct.deps* %9, i8* %10) #6
+  br label %if.end43
+
+if.end43:                                         ; preds = %land.lhs.true40, %if.then42, %cond.end35
+  %buffer = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 3
+  %11 = load i8** %buffer, align 8, !tbaa !0
+  %tobool44 = icmp eq i8* %11, null
+  br i1 %tobool44, label %if.then45, label %if.end59
+
+if.then45:                                        ; preds = %if.end43
+  %st_mode.i = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 4, i32 3
+  %12 = load i32* %st_mode.i, align 4, !tbaa !3
+  %and.i = and i32 %12, 61440
+  switch i32 %and.i, label %if.else26.i [
+    i32 32768, label %if.then.i
+    i32 24576, label %if.then24.i
+  ]
+
+if.then.i:                                        ; preds = %if.then45
+  %st_size.i = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 4, i32 8
+  %13 = load i64* %st_size.i, align 8, !tbaa !4
+  %mapped.i = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 9
+  store i8 0, i8* %mapped.i, align 1, !tbaa !1
+  %add.i = add nsw i64 %13, 1
+  %call.i = tail call noalias i8* @xmalloc(i64 %add.i) #6
+  %cmp6111.i = icmp sgt i64 %13, 0
+  br i1 %cmp6111.i, label %while.body.lr.ph.i, label %while.end.i
+
+while.body.lr.ph.i:                               ; preds = %if.then.i
+  %fd.i = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 5
+  br label %while.body.i
+
+while.cond.i:                                     ; preds = %if.end10.i
+  %cmp6.i = icmp slt i64 %add19.i, %13
+  br i1 %cmp6.i, label %while.body.i, label %while.end.i
+
+while.body.i:                                     ; preds = %while.cond.i, %while.body.lr.ph.i
+  %offset.0112.i = phi i64 [ 0, %while.body.lr.ph.i ], [ %add19.i, %while.cond.i ]
+  %14 = load i32* %fd.i, align 4, !tbaa !3
+  %add.ptr.i = getelementptr inbounds i8* %call.i, i64 %offset.0112.i
+  %sub.i = sub nsw i64 %13, %offset.0112.i
+  %call7.i = tail call i64 @read(i32 %14, i8* %add.ptr.i, i64 %sub.i) #6
+  %cmp8.i = icmp slt i64 %call7.i, 0
+  br i1 %cmp8.i, label %perror_fail.i, label %if.end10.i
+
+if.end10.i:                                       ; preds = %while.body.i
+  %cmp11.i = icmp eq i64 %call7.i, 0
+  %add19.i = add nsw i64 %call7.i, %offset.0112.i
+  br i1 %cmp11.i, label %if.then12.i, label %while.cond.i
+
+if.then12.i:                                      ; preds = %if.end10.i
+  %name13.i = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 0
+  %15 = load i8** %name13.i, align 8, !tbaa !0
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([28 x i8]* @.str6, i64 0, i64 0), i8* %15) #6
+  %add14.i = add nsw i64 %offset.0112.i, 1
+  %call15.i = tail call i8* @xrealloc(i8* %call.i, i64 %add14.i) #6
+  store i64 %offset.0112.i, i64* %st_size.i, align 8, !tbaa !4
+  br label %while.end.i
+
+while.end.i:                                      ; preds = %while.cond.i, %if.then12.i, %if.then.i
+  %size.0.i = phi i64 [ %offset.0112.i, %if.then12.i ], [ %13, %if.then.i ], [ %13, %while.cond.i ]
+  %buf.0.i = phi i8* [ %call15.i, %if.then12.i ], [ %call.i, %if.then.i ], [ %call.i, %while.cond.i ]
+  %arrayidx.i = getelementptr inbounds i8* %buf.0.i, i64 %size.0.i
+  store i8 0, i8* %arrayidx.i, align 1, !tbaa !1
+  br label %if.end48
+
+if.then24.i:                                      ; preds = %if.then45
+  %name25.i = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 0
+  %16 = load i8** %name25.i, align 8, !tbaa !0
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([21 x i8]* @.str7, i64 0, i64 0), i8* %16) #6
+  br label %if.then47
+
+if.else26.i:                                      ; preds = %if.then45
+  %call28.i = tail call noalias i8* @xmalloc(i64 8193) #6
+  %fd30.i = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 5
+  br label %while.cond29.outer.i
+
+while.cond29.outer.i:                             ; preds = %if.then38.i, %if.else26.i
+  %size.1.ph.i = phi i64 [ 8192, %if.else26.i ], [ %mul.i, %if.then38.i ]
+  %offset.1.ph.i = phi i64 [ 0, %if.else26.i ], [ %size.1.ph.i, %if.then38.i ]
+  %buf.1.ph.i = phi i8* [ %call28.i, %if.else26.i ], [ %call40.i, %if.then38.i ]
+  br label %while.cond29.i
+
+while.cond29.i:                                   ; preds = %while.body35.i, %while.cond29.outer.i
+  %offset.1.i = phi i64 [ %add36.i, %while.body35.i ], [ %offset.1.ph.i, %while.cond29.outer.i ]
+  %17 = load i32* %fd30.i, align 4, !tbaa !3
+  %add.ptr31.i = getelementptr inbounds i8* %buf.1.ph.i, i64 %offset.1.i
+  %sub32.i = sub nsw i64 %size.1.ph.i, %offset.1.i
+  %call33.i = tail call i64 @read(i32 %17, i8* %add.ptr31.i, i64 %sub32.i) #6
+  %cmp34.i = icmp sgt i64 %call33.i, 0
+  br i1 %cmp34.i, label %while.body35.i, label %while.end42.i
+
+while.body35.i:                                   ; preds = %while.cond29.i
+  %add36.i = add nsw i64 %call33.i, %offset.1.i
+  %cmp37.i = icmp eq i64 %add36.i, %size.1.ph.i
+  br i1 %cmp37.i, label %if.then38.i, label %while.cond29.i
+
+if.then38.i:                                      ; preds = %while.body35.i
+  %mul.i = shl nsw i64 %size.1.ph.i, 1
+  %add39106.i = or i64 %mul.i, 1
+  %call40.i = tail call i8* @xrealloc(i8* %buf.1.ph.i, i64 %add39106.i) #6
+  br label %while.cond29.outer.i
+
+while.end42.i:                                    ; preds = %while.cond29.i
+  %cmp43.i = icmp slt i64 %call33.i, 0
+  br i1 %cmp43.i, label %perror_fail.i, label %if.end45.i
+
+if.end45.i:                                       ; preds = %while.end42.i
+  %add46.i = add nsw i64 %offset.1.i, 1
+  %cmp47.i = icmp slt i64 %add46.i, %size.1.ph.i
+  br i1 %cmp47.i, label %if.then48.i, label %if.end51.i
+
+if.then48.i:                                      ; preds = %if.end45.i
+  %call50.i = tail call i8* @xrealloc(i8* %buf.1.ph.i, i64 %add46.i) #6
+  br label %if.end51.i
+
+if.end51.i:                                       ; preds = %if.then48.i, %if.end45.i
+  %buf.2.i = phi i8* [ %call50.i, %if.then48.i ], [ %buf.1.ph.i, %if.end45.i ]
+  %arrayidx52.i = getelementptr inbounds i8* %buf.2.i, i64 %offset.1.i
+  store i8 0, i8* %arrayidx52.i, align 1, !tbaa !1
+  %st_size54.i = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 4, i32 8
+  store i64 %offset.1.i, i64* %st_size54.i, align 8, !tbaa !4
+  br label %if.end48
+
+perror_fail.i:                                    ; preds = %while.body.i, %while.end42.i
+  %name57.i = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 0
+  %18 = load i8** %name57.i, align 8, !tbaa !0
+  tail call void @cpp_error_from_errno(%struct.cpp_reader* %pfile, i8* %18) #6
+  br label %if.then47
+
+if.then47:                                        ; preds = %perror_fail.i, %if.then24.i
+  store %struct.cpp_hashnode* inttoptr (i64 -1 to %struct.cpp_hashnode*), %struct.cpp_hashnode** %cmacro, align 8, !tbaa !0
+  br label %return
+
+if.end48:                                         ; preds = %if.end51.i, %while.end.i
+  %buf.3.i = phi i8* [ %buf.0.i, %while.end.i ], [ %buf.2.i, %if.end51.i ]
+  store i8* %buf.3.i, i8** %buffer, align 8, !tbaa !0
+  %19 = load i32* %st_mode.i, align 4, !tbaa !3
+  %and = and i32 %19, 61440
+  %cmp49 = icmp eq i32 %and, 32768
+  br i1 %cmp49, label %land.lhs.true51, label %if.end56
+
+land.lhs.true51:                                  ; preds = %if.end48
+  %st_size = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 4, i32 8
+  %20 = load i64* %st_size, align 8, !tbaa !4
+  %cmp53 = icmp eq i64 %20, 0
+  br i1 %cmp53, label %if.then55, label %if.end56
+
+if.then55:                                        ; preds = %land.lhs.true51
+  store %struct.cpp_hashnode* inttoptr (i64 -1 to %struct.cpp_hashnode*), %struct.cpp_hashnode** %cmacro, align 8, !tbaa !0
+  br label %if.end56
+
+if.end56:                                         ; preds = %if.then55, %land.lhs.true51, %if.end48
+  %fd = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 5
+  %21 = load i32* %fd, align 4, !tbaa !3
+  %call57 = tail call i32 @close(i32 %21) #6
+  store i32 -1, i32* %fd, align 4, !tbaa !3
+  br label %if.end59
+
+if.end59:                                         ; preds = %if.end43, %if.end56
+  %buffer60 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
+  %22 = load %struct.cpp_buffer** %buffer60, align 8, !tbaa !0
+  %tobool61 = icmp eq %struct.cpp_buffer* %22, null
+  br i1 %tobool61, label %if.end65, label %if.then62
+
+if.then62:                                        ; preds = %if.end59
+  %include_count63 = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 7
+  %23 = load i16* %include_count63, align 2, !tbaa !5
+  %inc64 = add i16 %23, 1
+  store i16 %inc64, i16* %include_count63, align 2, !tbaa !5
+  br label %if.end65
+
+if.end65:                                         ; preds = %if.end59, %if.then62
+  %24 = load i8** %buffer, align 8, !tbaa !0
+  %st_size68 = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 4, i32 8
+  %25 = load i64* %st_size68, align 8, !tbaa !4
+  %preprocessed = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 43
+  %26 = load i8* %preprocessed, align 1, !tbaa !1
+  %conv70 = zext i8 %26 to i32
+  %call71 = tail call %struct.cpp_buffer* @cpp_push_buffer(%struct.cpp_reader* %pfile, i8* %24, i64 %25, i32 %conv70, i32 0) #6
+  %inc72 = getelementptr inbounds %struct.cpp_buffer* %call71, i64 0, i32 6
+  store %struct.include_file* %inc, %struct.include_file** %inc72, align 8, !tbaa !0
+  %refcnt = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 8
+  %27 = load i16* %refcnt, align 2, !tbaa !5
+  %inc74 = add i16 %27, 1
+  store i16 %inc74, i16* %refcnt, align 2, !tbaa !5
+  %mi_valid = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 14
+  store i8 1, i8* %mi_valid, align 1, !tbaa !6
+  %mi_cmacro = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 12
+  store %struct.cpp_hashnode* null, %struct.cpp_hashnode** %mi_cmacro, align 8, !tbaa !0
+  %name75 = getelementptr inbounds %struct.include_file* %inc, i64 0, i32 0
+  %28 = load i8** %name75, align 8, !tbaa !0
+  %29 = load i8* %28, align 1, !tbaa !1
+  %cmp77 = icmp eq i8 %29, 0
+  %. = select i1 %cmp77, i8* getelementptr inbounds ([8 x i8]* @.str4, i64 0, i64 0), i8* %28
+  tail call void @_cpp_do_file_change(%struct.cpp_reader* %pfile, i32 0, i8* %., i32 1, i32 %cond36) #6
+  br label %return
+
+return:                                           ; preds = %lor.lhs.false, %entry, %if.end65, %if.then47
+  %retval.0 = phi i1 [ true, %if.end65 ], [ false, %if.then47 ], [ false, %entry ], [ false, %lor.lhs.false ]
+  ret i1 %retval.0
+}

@@ -1,0 +1,107 @@
+define internal fastcc %struct.rtx_def* @expand_builtin_fputs(%union.tree_node* %arglist, i32 %ignore, i32 %unlocked) #0 {
+entry:
+  %tobool = icmp ne i32 %unlocked, 0
+  %0 = load %union.tree_node** getelementptr inbounds ([95 x %union.tree_node*]* @built_in_decls, i64 0, i64 72), align 16, !tbaa !3
+  %1 = load %union.tree_node** getelementptr inbounds ([95 x %union.tree_node*]* @built_in_decls, i64 0, i64 65), align 8, !tbaa !3
+  %cond = select i1 %tobool, %union.tree_node* %0, %union.tree_node* %1
+  %2 = load %union.tree_node** getelementptr inbounds ([95 x %union.tree_node*]* @built_in_decls, i64 0, i64 74), align 16, !tbaa !3
+  %3 = load %union.tree_node** getelementptr inbounds ([95 x %union.tree_node*]* @built_in_decls, i64 0, i64 67), align 8, !tbaa !3
+  %cond5 = select i1 %tobool, %union.tree_node* %2, %union.tree_node* %3
+  %tobool6 = icmp ne i32 %ignore, 0
+  %tobool6.not = xor i1 %tobool6, true
+  %tobool7 = icmp eq %union.tree_node* %cond, null
+  %or.cond = or i1 %tobool7, %tobool6.not
+  %tobool9 = icmp eq %union.tree_node* %cond5, null
+  %or.cond73 = or i1 %or.cond, %tobool9
+  br i1 %or.cond73, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call i32 (%union.tree_node*, ...)* @validate_arglist(%union.tree_node* %arglist, i32 13, i32 13, i32 5) #9
+  %tobool10 = icmp eq i32 %call, 0
+  br i1 %tobool10, label %return, label %if.end12
+
+if.end12:                                         ; preds = %if.end
+  %value = getelementptr inbounds %union.tree_node* %arglist, i64 0, i32 0, i32 2
+  %4 = bitcast i32* %value to %union.tree_node**
+  %5 = load %union.tree_node** %4, align 8, !tbaa !3
+  %call13 = tail call fastcc %union.tree_node* @c_strlen(%union.tree_node* %5) #9
+  %tobool14 = icmp eq %union.tree_node* %call13, null
+  br i1 %tobool14, label %return, label %lor.lhs.false15
+
+lor.lhs.false15:                                  ; preds = %if.end12
+  %code = getelementptr inbounds %union.tree_node* %call13, i64 0, i32 0, i32 0, i32 2
+  %6 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %6, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 25
+  br i1 %cmp, label %if.end17, label %return
+
+if.end17:                                         ; preds = %lor.lhs.false15
+  %call18 = tail call i32 @compare_tree_int(%union.tree_node* %call13, i64 1) #7
+  switch i32 %call18, label %sw.default [
+    i32 -1, label %sw.bb
+    i32 0, label %sw.bb23
+    i32 1, label %sw.bb37
+  ]
+
+sw.bb:                                            ; preds = %if.end17
+  %chain = getelementptr inbounds %union.tree_node* %arglist, i64 0, i32 0, i32 0, i32 0
+  %7 = load %union.tree_node** %chain, align 8, !tbaa !3
+  %value21 = getelementptr inbounds %union.tree_node* %7, i64 0, i32 0, i32 2
+  %8 = bitcast i32* %value21 to %union.tree_node**
+  %9 = load %union.tree_node** %8, align 8, !tbaa !3
+  %10 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !3
+  %call22 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %9, %struct.rtx_def* %10, i32 0, i32 0) #7
+  %11 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !3
+  br label %return
+
+sw.bb23:                                          ; preds = %if.end17
+  %12 = load %union.tree_node** %4, align 8, !tbaa !3
+  %call26 = tail call fastcc i8* @c_getstr(%union.tree_node* %12) #9
+  %cmp27 = icmp eq i8* %call26, null
+  br i1 %cmp27, label %sw.bb37, label %if.then28
+
+if.then28:                                        ; preds = %sw.bb23
+  %chain30 = getelementptr inbounds %union.tree_node* %arglist, i64 0, i32 0, i32 0, i32 0
+  %13 = load %union.tree_node** %chain30, align 8, !tbaa !3
+  %value32 = getelementptr inbounds %union.tree_node* %13, i64 0, i32 0, i32 2
+  %14 = bitcast i32* %value32 to %union.tree_node**
+  %15 = load %union.tree_node** %14, align 8, !tbaa !3
+  %call33 = tail call %union.tree_node* @build_tree_list(%union.tree_node* null, %union.tree_node* %15) #7
+  %16 = load i8* %call26, align 1, !tbaa !1
+  %conv = sext i8 %16 to i64
+  %call34 = tail call %union.tree_node* @build_int_2_wide(i64 %conv, i64 0) #7
+  %call35 = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %call34, %union.tree_node* %call33) #7
+  br label %sw.epilog
+
+sw.bb37:                                          ; preds = %sw.bb23, %if.end17
+  %17 = load %union.tree_node** %4, align 8, !tbaa !3
+  %chain41 = getelementptr inbounds %union.tree_node* %arglist, i64 0, i32 0, i32 0, i32 0
+  %18 = load %union.tree_node** %chain41, align 8, !tbaa !3
+  %value43 = getelementptr inbounds %union.tree_node* %18, i64 0, i32 0, i32 2
+  %19 = bitcast i32* %value43 to %union.tree_node**
+  %20 = load %union.tree_node** %19, align 8, !tbaa !3
+  %call44 = tail call %union.tree_node* @build_tree_list(%union.tree_node* null, %union.tree_node* %20) #7
+  %call45 = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %call13, %union.tree_node* %call44) #7
+  %21 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 16), align 8, !tbaa !3
+  %call46 = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %21, %union.tree_node* %call45) #7
+  %call47 = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %17, %union.tree_node* %call46) #7
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %if.end17
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str100, i64 0, i64 0), i32 3400, i8* getelementptr inbounds ([21 x i8]* @__FUNCTION__.expand_builtin_fputs, i64 0, i64 0)) #8
+  unreachable
+
+sw.epilog:                                        ; preds = %sw.bb37, %if.then28
+  %fn.0 = phi %union.tree_node* [ %cond5, %sw.bb37 ], [ %cond, %if.then28 ]
+  %arglist.addr.0 = phi %union.tree_node* [ %call47, %sw.bb37 ], [ %call35, %if.then28 ]
+  %call48 = tail call fastcc %union.tree_node* @build_function_call_expr(%union.tree_node* %fn.0, %union.tree_node* %arglist.addr.0) #9
+  %22 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !3
+  %cond53 = select i1 %tobool6, %struct.rtx_def* %22, %struct.rtx_def* null
+  %call54 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %call48, %struct.rtx_def* %cond53, i32 0, i32 0) #7
+  br label %return
+
+return:                                           ; preds = %if.end12, %lor.lhs.false15, %if.end, %entry, %sw.epilog, %sw.bb
+  %retval.0 = phi %struct.rtx_def* [ %call54, %sw.epilog ], [ %11, %sw.bb ], [ null, %entry ], [ null, %if.end ], [ null, %lor.lhs.false15 ], [ null, %if.end12 ]
+  ret %struct.rtx_def* %retval.0
+}

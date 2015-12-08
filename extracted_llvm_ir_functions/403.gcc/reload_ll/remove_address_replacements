@@ -1,0 +1,93 @@
+define i32 @remove_address_replacements(%struct.rtx_def* %in_rtx) #0 {
+entry:
+  %reload_flags = alloca [180 x i8], align 16
+  %0 = getelementptr inbounds [180 x i8]* %reload_flags, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 180, i8* %0) #2
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 180, i32 16, i1 false)
+  %1 = load i32* @n_replacements, align 4, !tbaa !3
+  %cmp53 = icmp sgt i32 %1, 0
+  br i1 %cmp53, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv57 = phi i64 [ %indvars.iv.next58, %for.inc ], [ 0, %entry ]
+  %j.054 = phi i32 [ %j.1, %for.inc ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds [150 x %struct.replacement]* @replacements, i64 0, i64 %indvars.iv57
+  %where = getelementptr inbounds %struct.replacement* %arrayidx, i64 0, i32 0
+  %2 = load %struct.rtx_def*** %where, align 8, !tbaa !5
+  %call = call i32 @loc_mentioned_in_p(%struct.rtx_def** %2, %struct.rtx_def* %in_rtx) #6
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %what = getelementptr inbounds [150 x %struct.replacement]* @replacements, i64 0, i64 %indvars.iv57, i32 2
+  %3 = load i32* %what, align 8, !tbaa !3
+  %idxprom3 = sext i32 %3 to i64
+  %arrayidx4 = getelementptr inbounds [180 x i8]* %reload_flags, i64 0, i64 %idxprom3
+  %4 = load i8* %arrayidx4, align 1, !tbaa !1
+  %or = or i8 %4, 1
+  store i8 %or, i8* %arrayidx4, align 1, !tbaa !1
+  br label %for.inc
+
+if.else:                                          ; preds = %for.body
+  %inc = add nsw i32 %j.054, 1
+  %idxprom6 = sext i32 %j.054 to i64
+  %arrayidx7 = getelementptr inbounds [150 x %struct.replacement]* @replacements, i64 0, i64 %idxprom6
+  %5 = bitcast %struct.replacement* %arrayidx7 to i8*
+  %6 = bitcast %struct.replacement* %arrayidx to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* %6, i64 24, i32 8, i1 false), !tbaa.struct !11
+  %what12 = getelementptr inbounds [150 x %struct.replacement]* @replacements, i64 0, i64 %indvars.iv57, i32 2
+  %7 = load i32* %what12, align 8, !tbaa !3
+  %idxprom13 = sext i32 %7 to i64
+  %arrayidx14 = getelementptr inbounds [180 x i8]* %reload_flags, i64 0, i64 %idxprom13
+  %8 = load i8* %arrayidx14, align 1, !tbaa !1
+  %or16 = or i8 %8, 2
+  store i8 %or16, i8* %arrayidx14, align 1, !tbaa !1
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then, %if.else
+  %j.1 = phi i32 [ %j.054, %if.then ], [ %inc, %if.else ]
+  %indvars.iv.next58 = add i64 %indvars.iv57, 1
+  %9 = load i32* @n_replacements, align 4, !tbaa !3
+  %10 = trunc i64 %indvars.iv.next58 to i32
+  %cmp = icmp slt i32 %10, %9
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  %j.0.lcssa = phi i32 [ 0, %entry ], [ %j.1, %for.inc ]
+  store i32 %j.0.lcssa, i32* @n_replacements, align 4, !tbaa !3
+  %11 = load i32* @n_reloads, align 4, !tbaa !3
+  br label %for.cond19.outer
+
+for.cond19.outer:                                 ; preds = %if.then28, %for.end
+  %something_changed.0.ph = phi i32 [ 0, %for.end ], [ 1, %if.then28 ]
+  %i.1.in.ph = phi i32 [ %11, %for.end ], [ %i.1, %if.then28 ]
+  %12 = sext i32 %i.1.in.ph to i64
+  br label %for.cond19
+
+for.cond19:                                       ; preds = %for.cond19.outer, %for.body22
+  %indvars.iv = phi i64 [ %12, %for.cond19.outer ], [ %indvars.iv.next, %for.body22 ]
+  %i.1.in = phi i32 [ %i.1.in.ph, %for.cond19.outer ], [ %i.1, %for.body22 ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %i.1 = add nsw i32 %i.1.in, -1
+  %13 = trunc i64 %indvars.iv to i32
+  %cmp20 = icmp sgt i32 %13, 0
+  br i1 %cmp20, label %for.body22, label %for.end37
+
+for.body22:                                       ; preds = %for.cond19
+  %arrayidx24 = getelementptr inbounds [180 x i8]* %reload_flags, i64 0, i64 %indvars.iv.next
+  %14 = load i8* %arrayidx24, align 1, !tbaa !1
+  %cmp26 = icmp eq i8 %14, 1
+  br i1 %cmp26, label %if.then28, label %for.cond19
+
+if.then28:                                        ; preds = %for.body22
+  call void @deallocate_reload_reg(i32 %i.1) #6
+  %in = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %indvars.iv.next, i32 0
+  %15 = load %struct.rtx_def** %in, align 8, !tbaa !5
+  %call31 = call i32 @remove_address_replacements(%struct.rtx_def* %15) #7
+  store %struct.rtx_def* null, %struct.rtx_def** %in, align 8, !tbaa !5
+  br label %for.cond19.outer
+
+for.end37:                                        ; preds = %for.cond19
+  call void @llvm.lifetime.end(i64 180, i8* %0) #2
+  ret i32 %something_changed.0.ph
+}

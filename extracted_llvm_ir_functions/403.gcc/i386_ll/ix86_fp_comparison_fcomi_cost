@@ -1,0 +1,38 @@
+define internal fastcc i32 @ix86_fp_comparison_fcomi_cost(i32 %code) #1 {
+entry:
+  %bypass_code = alloca i32, align 4
+  %first_code = alloca i32, align 4
+  %second_code = alloca i32, align 4
+  %0 = load i32* @ix86_arch, align 4, !tbaa !0
+  %shl = shl i32 1, %0
+  %and = and i32 %shl, 104
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %lor.lhs.false, label %if.end
+
+lor.lhs.false:                                    ; preds = %entry
+  %1 = load i32* @target_flags, align 4, !tbaa !0
+  %and1 = and i32 %1, 327680
+  %cmp = icmp eq i32 %and1, 0
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false, %entry
+  call fastcc void @ix86_fp_comparison_codes(i32 %code, i32* %bypass_code, i32* %first_code, i32* %second_code) #10
+  %2 = load i32* %bypass_code, align 4, !tbaa !8
+  %cmp2 = icmp eq i32 %2, 1
+  br i1 %cmp2, label %lor.rhs, label %lor.end
+
+lor.rhs:                                          ; preds = %if.end
+  %3 = load i32* %second_code, align 4, !tbaa !8
+  %cmp3 = icmp ne i32 %3, 1
+  br label %lor.end
+
+lor.end:                                          ; preds = %if.end, %lor.rhs
+  %4 = phi i1 [ true, %if.end ], [ %cmp3, %lor.rhs ]
+  %lor.ext = zext i1 %4 to i32
+  %add4 = or i32 %lor.ext, 2
+  br label %return
+
+return:                                           ; preds = %lor.lhs.false, %lor.end
+  %retval.0 = phi i32 [ %add4, %lor.end ], [ 1024, %lor.lhs.false ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,81 @@
+define internal fastcc %struct.elt_loc_list* @new_elt_loc_list(%struct.elt_loc_list* %next, %struct.rtx_def* %loc) #1 {
+entry:
+  %0 = load %struct.elt_loc_list** @empty_elt_loc_lists, align 8, !tbaa !0
+  %tobool = icmp eq %struct.elt_loc_list* %0, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %next1 = getelementptr inbounds %struct.elt_loc_list* %0, i64 0, i32 0
+  %1 = load %struct.elt_loc_list** %next1, align 8, !tbaa !0
+  store %struct.elt_loc_list* %1, %struct.elt_loc_list** @empty_elt_loc_lists, align 8, !tbaa !0
+  br label %if.end35
+
+if.else:                                          ; preds = %entry
+  %2 = load i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 4), align 8, !tbaa !0
+  %3 = load i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint i8* %2 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %3 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp = icmp slt i64 %sub.ptr.sub, 24
+  br i1 %cmp, label %if.then3, label %if.end
+
+if.then3:                                         ; preds = %if.else
+  tail call void @_obstack_newchunk(%struct.obstack* @cselib_obstack, i32 24) #10
+  %.pre = load i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then3, %if.else
+  %4 = phi i8* [ %.pre, %if.then3 ], [ %3, %if.else ]
+  %add.ptr = getelementptr inbounds i8* %4, i64 24
+  store i8* %add.ptr, i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %5 = load i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 2), align 8, !tbaa !0
+  %cmp6 = icmp eq i8* %add.ptr, %5
+  br i1 %cmp6, label %if.then8, label %if.end9
+
+if.then8:                                         ; preds = %if.end
+  %bf.load = load i8* getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 10), align 8
+  %bf.set = or i8 %bf.load, 2
+  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 10), align 8
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end, %if.then8
+  %sub.ptr.lhs.cast11 = ptrtoint i8* %add.ptr to i64
+  %6 = load i32* getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 6), align 8, !tbaa !3
+  %conv13 = sext i32 %6 to i64
+  %add = add nsw i64 %conv13, %sub.ptr.lhs.cast11
+  %neg = xor i32 %6, -1
+  %conv15 = sext i32 %neg to i64
+  %and = and i64 %add, %conv15
+  %add.ptr16 = getelementptr inbounds i8* null, i64 %and
+  store i8* %add.ptr16, i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %7 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 1), align 8, !tbaa !0
+  %sub.ptr.lhs.cast19 = ptrtoint i8* %add.ptr16 to i64
+  %sub.ptr.rhs.cast20 = ptrtoint %struct._obstack_chunk* %7 to i64
+  %sub.ptr.sub21 = sub i64 %sub.ptr.lhs.cast19, %sub.ptr.rhs.cast20
+  %8 = load i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 4), align 8, !tbaa !0
+  %sub.ptr.lhs.cast24 = ptrtoint i8* %8 to i64
+  %sub.ptr.sub26 = sub i64 %sub.ptr.lhs.cast24, %sub.ptr.rhs.cast20
+  %cmp27 = icmp sgt i64 %sub.ptr.sub21, %sub.ptr.sub26
+  br i1 %cmp27, label %if.then29, label %if.end32
+
+if.then29:                                        ; preds = %if.end9
+  store i8* %8, i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end32
+
+if.end32:                                         ; preds = %if.then29, %if.end9
+  %9 = phi i8* [ %8, %if.then29 ], [ %add.ptr16, %if.end9 ]
+  store i8* %9, i8** getelementptr inbounds (%struct.obstack* @cselib_obstack, i64 0, i32 2), align 8, !tbaa !0
+  %10 = bitcast i8* %5 to %struct.elt_loc_list*
+  br label %if.end35
+
+if.end35:                                         ; preds = %if.end32, %if.then
+  %el.0 = phi %struct.elt_loc_list* [ %0, %if.then ], [ %10, %if.end32 ]
+  %next36 = getelementptr inbounds %struct.elt_loc_list* %el.0, i64 0, i32 0
+  store %struct.elt_loc_list* %next, %struct.elt_loc_list** %next36, align 8, !tbaa !0
+  %loc37 = getelementptr inbounds %struct.elt_loc_list* %el.0, i64 0, i32 1
+  store %struct.rtx_def* %loc, %struct.rtx_def** %loc37, align 8, !tbaa !0
+  %11 = load %struct.rtx_def** @cselib_current_insn, align 8, !tbaa !0
+  %setting_insn = getelementptr inbounds %struct.elt_loc_list* %el.0, i64 0, i32 2
+  store %struct.rtx_def* %11, %struct.rtx_def** %setting_insn, align 8, !tbaa !0
+  ret %struct.elt_loc_list* %el.0
+}

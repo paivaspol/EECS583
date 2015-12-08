@@ -1,0 +1,91 @@
+define void @parmlist_tags_warning() #0 {
+entry:
+  %0 = load %struct.binding_level** @current_binding_level, align 8, !tbaa !0
+  %tags = getelementptr inbounds %struct.binding_level* %0, i64 0, i32 1
+  %elt.052 = load %union.tree_node** %tags, align 8
+  %tobool53 = icmp eq %union.tree_node* %elt.052, null
+  br i1 %tobool53, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %elt.054 = phi %union.tree_node* [ %elt.0, %for.inc ], [ %elt.052, %entry ]
+  %value = getelementptr inbounds %union.tree_node* %elt.054, i64 0, i32 0, i32 2
+  %1 = bitcast i32* %value to %union.tree_node**
+  %2 = load %union.tree_node** %1, align 8, !tbaa !0
+  %code1 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %code1 to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 21
+  %purpose = getelementptr inbounds %union.tree_node* %elt.054, i64 0, i32 0, i32 1
+  %4 = load i8** %purpose, align 8
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %for.body
+  %cmp3 = icmp ne i8* %4, null
+  %5 = load i32* @pedantic, align 4, !tbaa !3
+  %tobool5 = icmp ne i32 %5, 0
+  %or.cond = or i1 %cmp3, %tobool5
+  br i1 %or.cond, label %if.end, label %for.inc
+
+if.end:                                           ; preds = %for.body, %land.lhs.true
+  %cmp8 = icmp eq i8* %4, null
+  %cmp10 = icmp eq i32 %bf.clear, 20
+  br i1 %cmp8, label %if.else29, label %if.then9
+
+if.then9:                                         ; preds = %if.end
+  %str = getelementptr inbounds i8* %4, i64 32
+  %6 = bitcast i8* %str to i8**
+  %7 = load i8** %6, align 8, !tbaa !0
+  br i1 %cmp10, label %if.then11, label %if.else
+
+if.then11:                                        ; preds = %if.then9
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([43 x i8]* @.str190, i64 0, i64 0), i8* %7) #8
+  br label %if.end38
+
+if.else:                                          ; preds = %if.then9
+  br i1 %cmp, label %if.then15, label %if.else21
+
+if.then15:                                        ; preds = %if.else
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([42 x i8]* @.str191, i64 0, i64 0), i8* %7) #8
+  br label %if.end38
+
+if.else21:                                        ; preds = %if.else
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([41 x i8]* @.str192, i64 0, i64 0), i8* %7) #8
+  br label %if.end38
+
+if.else29:                                        ; preds = %if.end
+  br i1 %cmp10, label %if.then31, label %if.else32
+
+if.then31:                                        ; preds = %if.else29
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([48 x i8]* @.str193, i64 0, i64 0)) #8
+  br label %if.end38
+
+if.else32:                                        ; preds = %if.else29
+  br i1 %cmp, label %if.then34, label %if.else35
+
+if.then34:                                        ; preds = %if.else32
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([47 x i8]* @.str194, i64 0, i64 0)) #8
+  br label %if.end38
+
+if.else35:                                        ; preds = %if.else32
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([46 x i8]* @.str195, i64 0, i64 0)) #8
+  br label %if.end38
+
+if.end38:                                         ; preds = %if.then31, %if.else35, %if.then34, %if.then11, %if.else21, %if.then15
+  %.b = load i1* @parmlist_tags_warning.already, align 1
+  br i1 %.b, label %for.inc, label %if.then40
+
+if.then40:                                        ; preds = %if.end38
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([86 x i8]* @.str196, i64 0, i64 0)) #8
+  store i1 true, i1* @parmlist_tags_warning.already, align 1
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.end38, %if.then40, %land.lhs.true
+  %chain = getelementptr inbounds %union.tree_node* %elt.054, i64 0, i32 0, i32 0, i32 0
+  %elt.0 = load %union.tree_node** %chain, align 8
+  %tobool = icmp eq %union.tree_node* %elt.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

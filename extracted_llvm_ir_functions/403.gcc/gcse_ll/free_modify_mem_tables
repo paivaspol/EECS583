@@ -1,0 +1,13 @@
+define internal fastcc void @free_modify_mem_tables() #0 {
+entry:
+  tail call fastcc void @clear_modify_mem_tables() #7
+  %0 = load %struct.rtx_def*** @modify_mem_list, align 8, !tbaa !0
+  %1 = bitcast %struct.rtx_def** %0 to i8*
+  tail call void @free(i8* %1) #6
+  %2 = load %struct.rtx_def*** @canon_modify_mem_list, align 8, !tbaa !0
+  %3 = bitcast %struct.rtx_def** %2 to i8*
+  tail call void @free(i8* %3) #6
+  store %struct.rtx_def** null, %struct.rtx_def*** @modify_mem_list, align 8, !tbaa !0
+  store %struct.rtx_def** null, %struct.rtx_def*** @canon_modify_mem_list, align 8, !tbaa !0
+  ret void
+}

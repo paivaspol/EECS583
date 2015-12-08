@@ -1,0 +1,27 @@
+define internal fastcc void @warn_for_collisions(%struct.tlist* %list) #0 {
+entry:
+  %tobool8 = icmp eq %struct.tlist* %list, null
+  br i1 %tobool8, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %tmp.09 = phi %struct.tlist* [ %2, %for.inc ], [ %list, %entry ]
+  %writer = getelementptr inbounds %struct.tlist* %tmp.09, i64 0, i32 2
+  %0 = load %union.tree_node** %writer, align 8, !tbaa !3
+  %tobool1 = icmp eq %union.tree_node* %0, null
+  br i1 %tobool1, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %expr = getelementptr inbounds %struct.tlist* %tmp.09, i64 0, i32 1
+  %1 = load %union.tree_node** %expr, align 8, !tbaa !3
+  tail call fastcc void @warn_for_collisions_1(%union.tree_node* %1, %union.tree_node* %0, %struct.tlist* %list, i32 0) #9
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %next = getelementptr inbounds %struct.tlist* %tmp.09, i64 0, i32 0
+  %2 = load %struct.tlist** %next, align 8, !tbaa !3
+  %tobool = icmp eq %struct.tlist* %2, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

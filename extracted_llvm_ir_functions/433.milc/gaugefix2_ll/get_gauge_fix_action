@@ -1,0 +1,91 @@
+define double @get_gauge_fix_action(i32 %gauge_dir, i32 %parity) #0 {
+entry:
+  %gauge_fix_action = alloca double, align 8
+  store double 0.000000e+00, double* %gauge_fix_action, align 8, !tbaa !4
+  %cmp = icmp eq i32 %parity, 1
+  %0 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %cond = select i1 %cmp, i32 %0, i32 0
+  %cmp1 = icmp eq i32 %parity, 2
+  %1 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cond558 = select i1 %cmp1, i32 %0, i32 %1
+  %cmp659 = icmp slt i32 %cond, %cond558
+  br i1 %cmp659, label %for.cond7.preheader.lr.ph, label %for.body26
+
+for.cond7.preheader.lr.ph:                        ; preds = %entry
+  %2 = load %struct.site** @lattice, align 8, !tbaa !3
+  %idxprom = sext i32 %cond to i64
+  %arrayidx = getelementptr inbounds %struct.site* %2, i64 %idxprom
+  br label %for.cond7.preheader
+
+for.cond7.preheader:                              ; preds = %for.cond7.preheader.lr.ph, %for.inc21
+  %indvars.iv63 = phi i64 [ %idxprom, %for.cond7.preheader.lr.ph ], [ %indvars.iv.next64, %for.inc21 ]
+  %s.060 = phi %struct.site* [ %arrayidx, %for.cond7.preheader.lr.ph ], [ %incdec.ptr, %for.inc21 ]
+  br label %for.body9
+
+for.body9:                                        ; preds = %for.inc, %for.cond7.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond7.preheader ], [ %indvars.iv.next, %for.inc ]
+  %3 = trunc i64 %indvars.iv to i32
+  %cmp10 = icmp eq i32 %3, %gauge_dir
+  br i1 %cmp10, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body9
+  %arrayidx12 = getelementptr inbounds %struct.site* %s.060, i64 0, i32 8, i64 %indvars.iv
+  %arrayidx15 = getelementptr inbounds [16 x i8**]* @gen_pt, i64 0, i64 %indvars.iv
+  %4 = load i8*** %arrayidx15, align 8, !tbaa !3
+  %arrayidx16 = getelementptr inbounds i8** %4, i64 %indvars.iv63
+  %5 = load i8** %arrayidx16, align 8, !tbaa !3
+  %6 = bitcast i8* %5 to %struct.su3_matrix*
+  %call = call { double, double } @trace_su3(%struct.su3_matrix* %arrayidx12) #5
+  %7 = extractvalue { double, double } %call, 0
+  %8 = load double* %gauge_fix_action, align 8, !tbaa !4
+  %add = fadd double %8, %7
+  store double %add, double* %gauge_fix_action, align 8, !tbaa !4
+  %call17 = call { double, double } @trace_su3(%struct.su3_matrix* %6) #5
+  %9 = extractvalue { double, double } %call17, 0
+  %10 = load double* %gauge_fix_action, align 8, !tbaa !4
+  %add20 = fadd double %10, %9
+  store double %add20, double* %gauge_fix_action, align 8, !tbaa !4
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body9, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond62 = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond62, label %for.inc21, label %for.body9
+
+for.inc21:                                        ; preds = %for.inc
+  %indvars.iv.next64 = add i64 %indvars.iv63, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %s.060, i64 1
+  %11 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %12 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cond5 = select i1 %cmp1, i32 %11, i32 %12
+  %13 = trunc i64 %indvars.iv.next64 to i32
+  %cmp6 = icmp slt i32 %13, %cond5
+  br i1 %cmp6, label %for.cond7.preheader, label %for.body26
+
+for.body26:                                       ; preds = %entry, %for.inc21, %for.body26
+  %dir.156 = phi i32 [ %inc32, %for.body26 ], [ 0, %for.inc21 ], [ 0, %entry ]
+  %ndir.055 = phi i32 [ %ndir.0.inc29, %for.body26 ], [ 0, %for.inc21 ], [ 0, %entry ]
+  %not.cmp27 = icmp ne i32 %dir.156, %gauge_dir
+  %inc29 = zext i1 %not.cmp27 to i32
+  %ndir.0.inc29 = add nsw i32 %inc29, %ndir.055
+  %inc32 = add nsw i32 %dir.156, 1
+  %exitcond = icmp eq i32 %inc32, 4
+  br i1 %exitcond, label %for.end33, label %for.body26
+
+for.end33:                                        ; preds = %for.body26
+  call void @g_doublesum(double* %gauge_fix_action) #5
+  %14 = load double* %gauge_fix_action, align 8, !tbaa !4
+  %mul = mul nsw i32 %ndir.0.inc29, 6
+  %15 = load i32* @nx, align 4, !tbaa !0
+  %mul34 = mul nsw i32 %mul, %15
+  %16 = load i32* @ny, align 4, !tbaa !0
+  %mul35 = mul nsw i32 %mul34, %16
+  %17 = load i32* @nz, align 4, !tbaa !0
+  %mul36 = mul nsw i32 %mul35, %17
+  %18 = load i32* @nt, align 4, !tbaa !0
+  %mul37 = mul nsw i32 %mul36, %18
+  %conv = sitofp i32 %mul37 to double
+  %div = fdiv double %14, %conv
+  ret double %div
+}

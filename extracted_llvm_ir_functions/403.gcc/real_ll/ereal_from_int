@@ -1,0 +1,99 @@
+define void @ereal_from_int(%struct.realvaluetype* nocapture %d, i64 %i, i64 %j, i32 %mode) #0 {
+entry:
+  %df = alloca [6 x i16], align 2
+  %dg = alloca [6 x i16], align 2
+  %low = alloca i64, align 8
+  %high = alloca i64, align 8
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom
+  %0 = load i32* %arrayidx, align 4, !tbaa !6
+  %cmp = icmp eq i32 %0, 2
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str2, i64 0, i64 0), i32 869, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.ereal_from_int, i64 0, i64 0)) #8
+  unreachable
+
+if.end:                                           ; preds = %entry
+  store i64 %i, i64* %low, align 8, !tbaa !4
+  store i64 %j, i64* %high, align 8, !tbaa !4
+  %cmp1 = icmp slt i64 %j, 0
+  br i1 %cmp1, label %if.then2, label %if.end5
+
+if.then2:                                         ; preds = %if.end
+  %neg = xor i64 %j, -1
+  store i64 %neg, i64* %high, align 8, !tbaa !4
+  %tobool = icmp eq i64 %i, 0
+  br i1 %tobool, label %if.else, label %if.then3
+
+if.then3:                                         ; preds = %if.then2
+  %sub = sub nsw i64 0, %i
+  store i64 %sub, i64* %low, align 8, !tbaa !4
+  br label %if.end5
+
+if.else:                                          ; preds = %if.then2
+  %add = sub i64 0, %j
+  store i64 %add, i64* %high, align 8, !tbaa !4
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.then3, %if.else, %if.end
+  %sign.0 = phi i1 [ true, %if.then3 ], [ true, %if.else ], [ false, %if.end ]
+  %arraydecay = getelementptr inbounds [6 x i16]* %df, i64 0, i64 0
+  call fastcc void @eldexp(i16* getelementptr inbounds ([6 x i16]* @eone, i64 0, i64 0), i32 64, i16* %arraydecay) #6
+  %arraydecay6 = getelementptr inbounds [6 x i16]* %dg, i64 0, i64 0
+  call fastcc void @ultoe(i64* %high, i16* %arraydecay6) #6
+  call fastcc void @emul(i16* %arraydecay6, i16* %arraydecay, i16* %arraydecay6) #6
+  call fastcc void @ultoe(i64* %low, i16* %arraydecay) #6
+  call fastcc void @eadd(i16* %arraydecay, i16* %arraydecay6, i16* %arraydecay6) #6
+  br i1 %sign.0, label %if.then15, label %if.end17
+
+if.then15:                                        ; preds = %if.end5
+  %arrayidx.i = getelementptr inbounds [6 x i16]* %dg, i64 0, i64 5
+  %1 = load i16* %arrayidx.i, align 2, !tbaa !0
+  %xor.i = xor i16 %1, -32768
+  store i16 %xor.i, i16* %arrayidx.i, align 2, !tbaa !0
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.then15, %if.end5
+  %arrayidx19 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom
+  %2 = load i16* %arrayidx19, align 2, !tbaa !0
+  %conv = zext i16 %2 to i32
+  switch i32 %conv, label %sw.default [
+    i32 32, label %sw.bb
+    i32 64, label %sw.bb24
+    i32 96, label %sw.bb29
+    i32 128, label %sw.bb34
+  ]
+
+sw.bb:                                            ; preds = %if.end17
+  call fastcc void @etoe24(i16* %arraydecay6, i16* %arraydecay) #6
+  call fastcc void @e24toe(i16* %arraydecay, i16* %arraydecay6) #6
+  br label %do.body
+
+sw.bb24:                                          ; preds = %if.end17
+  call fastcc void @etoe53(i16* %arraydecay6, i16* %arraydecay) #6
+  call fastcc void @e53toe(i16* %arraydecay, i16* %arraydecay6) #6
+  br label %do.body
+
+sw.bb29:                                          ; preds = %if.end17
+  call fastcc void @etoe64(i16* %arraydecay6, i16* %arraydecay) #6
+  call fastcc void @e64toe(i16* %arraydecay, i16* %arraydecay6) #6
+  br label %do.body
+
+sw.bb34:                                          ; preds = %if.end17
+  call fastcc void @etoe64(i16* %arraydecay6, i16* %arraydecay) #6
+  call fastcc void @e64toe(i16* %arraydecay, i16* %arraydecay6) #6
+  br label %do.body
+
+sw.default:                                       ; preds = %if.end17
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str2, i64 0, i64 0), i32 921, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.ereal_from_int, i64 0, i64 0)) #8
+  unreachable
+
+do.body:                                          ; preds = %sw.bb, %sw.bb24, %sw.bb29, %sw.bb34
+  %3 = bitcast %struct.realvaluetype* %d to i8*
+  %4 = bitcast [6 x i16]* %dg to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %3, i8* %4, i64 12, i32 2, i1 false)
+  %add.ptr = getelementptr inbounds i8* %3, i64 12
+  call void @llvm.memset.p0i8.i64(i8* %add.ptr, i8 0, i64 12, i32 1, i1 false)
+  ret void
+}

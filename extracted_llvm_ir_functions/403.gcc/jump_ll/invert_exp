@@ -1,0 +1,15 @@
+define internal fastcc i32 @invert_exp(%struct.rtx_def* %insn) #0 {
+entry:
+  tail call fastcc void @invert_exp_1(%struct.rtx_def* %insn) #8
+  %call = tail call i32 @num_validated_changes() #7
+  %cmp = icmp eq i32 %call, 0
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call1 = tail call i32 @apply_change_group() #7
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ %call1, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0
+}

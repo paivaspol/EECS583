@@ -1,0 +1,30 @@
+define i32 @subreg_lowpart_p(%struct.rtx_def* nocapture %x) #5 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 63
+  br i1 %cmp, label %if.else, label %return
+
+if.else:                                          ; preds = %entry
+  %fld = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load1 = load i32* %2, align 8
+  %bf.clear2 = and i32 %bf.load1, 16711680
+  %cmp3 = icmp eq i32 %bf.clear2, 0
+  br i1 %cmp3, label %return, label %if.end5
+
+if.end5:                                          ; preds = %if.else
+  %arrayidx16 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
+  %rtuint = bitcast %union.rtunion_def* %arrayidx16 to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp17 = icmp eq i32 %3, 0
+  %conv = zext i1 %cmp17 to i32
+  br label %return
+
+return:                                           ; preds = %if.else, %entry, %if.end5
+  %retval.0 = phi i32 [ %conv, %if.end5 ], [ 1, %entry ], [ 0, %if.else ]
+  ret i32 %retval.0
+}

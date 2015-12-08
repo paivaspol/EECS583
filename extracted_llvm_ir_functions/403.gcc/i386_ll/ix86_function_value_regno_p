@@ -1,0 +1,52 @@
+define zeroext i1 @ix86_function_value_regno_p(i32 %regno) #2 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  switch i32 %regno, label %lor.rhs [
+    i32 0, label %return
+    i32 8, label %land.lhs.true
+  ]
+
+land.lhs.true:                                    ; preds = %if.then
+  %and2 = and i32 %0, 32
+  %not.tobool3 = icmp ne i32 %and2, 0
+  ret i1 %not.tobool3
+
+lor.rhs:                                          ; preds = %if.then
+  %cmp4 = icmp eq i32 %regno, 21
+  br i1 %cmp4, label %land.rhs, label %return
+
+land.rhs:                                         ; preds = %lor.rhs
+  %and5 = and i32 %0, 327680
+  %cmp6 = icmp ne i32 %and5, 0
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %1 = and i32 %regno, -9
+  %2 = icmp eq i32 %1, 0
+  br i1 %2, label %return, label %lor.lhs.false10
+
+lor.lhs.false10:                                  ; preds = %if.end
+  switch i32 %regno, label %return [
+    i32 21, label %land.lhs.true12
+    i32 8, label %land.rhs17
+  ]
+
+land.lhs.true12:                                  ; preds = %lor.lhs.false10
+  %and13 = and i32 %0, 327680
+  %cmp14.not = icmp ne i32 %and13, 0
+  br label %return
+
+land.rhs17:                                       ; preds = %lor.lhs.false10
+  %and18 = and i32 %0, 32
+  %tobool19 = icmp ne i32 %and18, 0
+  br label %return
+
+return:                                           ; preds = %land.lhs.true12, %if.end, %land.rhs17, %lor.lhs.false10, %land.rhs, %lor.rhs, %if.then
+  %retval.0 = phi i1 [ true, %if.then ], [ false, %lor.rhs ], [ %cmp6, %land.rhs ], [ %cmp14.not, %land.lhs.true12 ], [ true, %if.end ], [ %tobool19, %land.rhs17 ], [ false, %lor.lhs.false10 ]
+  ret i1 %retval.0
+}

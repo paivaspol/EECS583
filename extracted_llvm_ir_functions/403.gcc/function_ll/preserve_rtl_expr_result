@@ -1,0 +1,51 @@
+define void @preserve_rtl_expr_result(%struct.rtx_def* %x) #0 {
+entry:
+  %cmp = icmp eq %struct.rtx_def* %x, null
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp1 = icmp eq i32 %bf.clear, 66
+  br i1 %cmp1, label %lor.lhs.false2, label %return
+
+lor.lhs.false2:                                   ; preds = %lor.lhs.false
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load3 = load i32* %2, align 8
+  %bf.clear4 = and i32 %bf.load3, 65535
+  switch i32 %bf.clear4, label %if.end [
+    i32 67, label %return
+    i32 68, label %return
+    i32 54, label %return
+    i32 55, label %return
+    i32 58, label %return
+    i32 134, label %return
+    i32 56, label %return
+    i32 140, label %return
+  ]
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %call = tail call fastcc %struct.temp_slot* @find_temp_slot_from_address(%struct.rtx_def* %1) #9
+  %cmp58 = icmp eq %struct.temp_slot* %call, null
+  br i1 %cmp58, label %return, label %if.then59
+
+if.then59:                                        ; preds = %if.end
+  %level = getelementptr inbounds %struct.temp_slot* %call, i64 0, i32 9
+  %3 = load i32* %level, align 4, !tbaa !4
+  %4 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_temp_slot_level = getelementptr inbounds %struct.function* %4, i64 0, i32 40
+  %5 = load i32* %x_temp_slot_level, align 4, !tbaa !4
+  %cmp60 = icmp slt i32 %3, %5
+  %. = select i1 %cmp60, i32 %3, i32 %5
+  store i32 %., i32* %level, align 4, !tbaa !4
+  %rtl_expr = getelementptr inbounds %struct.temp_slot* %call, i64 0, i32 6
+  store %union.tree_node* null, %union.tree_node** %rtl_expr, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %lor.lhs.false2, %lor.lhs.false2, %lor.lhs.false2, %lor.lhs.false2, %lor.lhs.false2, %lor.lhs.false2, %lor.lhs.false2, %lor.lhs.false2, %if.end, %lor.lhs.false, %if.then59, %entry
+  ret void
+}

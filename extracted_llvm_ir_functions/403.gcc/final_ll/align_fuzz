@@ -1,0 +1,79 @@
+define internal fastcc i32 @align_fuzz(%struct.rtx_def* nocapture %start, %struct.rtx_def* nocapture %end, i32 %known_align_log) #6 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %start, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !4
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %end, i64 0, i32 1, i64 0
+  %rtint3 = bitcast %union.rtunion_def* %arrayidx2 to i32*
+  %1 = load i32* %rtint3, align 4, !tbaa !4
+  %idxprom = sext i32 %1 to i64
+  %2 = load i32** @uid_shuid, align 8, !tbaa !0
+  %arrayidx4 = getelementptr inbounds i32* %2, i64 %idxprom
+  %3 = load i32* %arrayidx4, align 4, !tbaa !4
+  %idxprom5 = sext i32 %0 to i64
+  %4 = load %struct.rtx_def*** @uid_align, align 8, !tbaa !0
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def** %4, i64 %idxprom5
+  %align_label.02 = load %struct.rtx_def** %arrayidx6, align 8
+  %tobool3 = icmp eq %struct.rtx_def* %align_label.02, null
+  br i1 %tobool3, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %shl = shl i32 1, %known_align_log
+  %5 = load %struct.varray_head_tag** @insn_addresses_, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %5, i64 0, i32 4
+  %i = bitcast %union.varray_data_tag* %data to [1 x i32]*
+  %6 = load i32** @insn_lengths, align 8, !tbaa !0
+  %7 = load i32* @min_labelno, align 4, !tbaa !4
+  %8 = load %struct.label_alignment** @label_align, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %align_label.06 = phi %struct.rtx_def* [ %align_label.02, %for.body.lr.ph ], [ %align_label.0, %for.inc ]
+  %fuzz.05 = phi i32 [ 0, %for.body.lr.ph ], [ %fuzz.1, %for.inc ]
+  %known_align.04 = phi i32 [ %shl, %for.body.lr.ph ], [ %known_align.1, %for.inc ]
+  %fld7 = getelementptr inbounds %struct.rtx_def* %align_label.06, i64 0, i32 1
+  %rtint9 = bitcast [1 x %union.rtunion_def]* %fld7 to i32*
+  %9 = load i32* %rtint9, align 4, !tbaa !4
+  %idxprom10 = sext i32 %9 to i64
+  %arrayidx11 = getelementptr inbounds [1 x i32]* %i, i64 0, i64 %idxprom10
+  %10 = load i32* %arrayidx11, align 4, !tbaa !4
+  %arrayidx13 = getelementptr inbounds i32* %6, i64 %idxprom10
+  %11 = load i32* %arrayidx13, align 4, !tbaa !4
+  %arrayidx15 = getelementptr inbounds i32* %2, i64 %idxprom10
+  %12 = load i32* %arrayidx15, align 4, !tbaa !4
+  %cmp = icmp sgt i32 %12, %3
+  br i1 %cmp, label %for.end, label %if.end
+
+if.end:                                           ; preds = %for.body
+  %arrayidx17 = getelementptr inbounds %struct.rtx_def* %align_label.06, i64 0, i32 1, i64 5
+  %rtint18 = bitcast %union.rtunion_def* %arrayidx17 to i32*
+  %13 = load i32* %rtint18, align 4, !tbaa !4
+  %sub19 = sub nsw i32 %13, %7
+  %idxprom20 = sext i32 %sub19 to i64
+  %alignment = getelementptr inbounds %struct.label_alignment* %8, i64 %idxprom20, i32 0
+  %14 = load i16* %alignment, align 2, !tbaa !5
+  %conv = sext i16 %14 to i32
+  %shl22 = shl i32 1, %conv
+  %cmp23 = icmp slt i32 %shl22, %known_align.04
+  br i1 %cmp23, label %for.inc, label %if.end26
+
+if.end26:                                         ; preds = %if.end
+  %sub1 = sub i32 %11, %10
+  %xor = xor i32 %sub1, -1
+  %sub28 = sub nsw i32 %shl22, %known_align.04
+  %and = and i32 %sub28, %xor
+  %add = add i32 %and, %fuzz.05
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.end, %if.end26
+  %known_align.1 = phi i32 [ %known_align.04, %if.end ], [ %shl22, %if.end26 ]
+  %fuzz.1 = phi i32 [ %fuzz.05, %if.end ], [ %add, %if.end26 ]
+  %arrayidx30 = getelementptr inbounds %struct.rtx_def** %4, i64 %idxprom10
+  %align_label.0 = load %struct.rtx_def** %arrayidx30, align 8
+  %tobool = icmp eq %struct.rtx_def* %align_label.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %for.body, %entry
+  %fuzz.0.lcssa = phi i32 [ 0, %entry ], [ %fuzz.05, %for.body ], [ %fuzz.1, %for.inc ]
+  ret i32 %fuzz.0.lcssa
+}

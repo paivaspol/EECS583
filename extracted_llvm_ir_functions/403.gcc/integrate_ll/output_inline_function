@@ -1,0 +1,49 @@
+define void @output_inline_function(%union.tree_node* %fndecl) #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %1 = load i32* @write_symbols, align 4, !tbaa !4
+  %2 = load %struct.gcc_debug_hooks** @debug_hooks, align 8, !tbaa !0
+  %f1 = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 19, i32 0
+  %3 = load %struct.function** %f1, align 8, !tbaa !0
+  store %struct.function* %3, %struct.function** @cfun, align 8, !tbaa !0
+  store %union.tree_node* %fndecl, %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  tail call void @clear_emit_caches() #7
+  %inl_max_label_num = getelementptr inbounds %struct.function* %3, i64 0, i32 49
+  %4 = load i32* %inl_max_label_num, align 4, !tbaa !3
+  tail call void @set_new_last_label_num(i32 %4) #7
+  %defer_output = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 5
+  %5 = bitcast [8 x i8]* %defer_output to i64*
+  %bf.load = load i64* %5, align 8
+  %bf.clear = and i64 %bf.load, -262145
+  store i64 %bf.clear, i64* %5, align 8
+  %no_debugging_symbols = getelementptr inbounds %struct.function* %3, i64 0, i32 45
+  %6 = load i32* %no_debugging_symbols, align 4, !tbaa !3
+  %tobool = icmp eq i32 %6, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  store i32 0, i32* @write_symbols, align 4, !tbaa !4
+  store %struct.gcc_debug_hooks* @do_nothing_debug_hooks, %struct.gcc_debug_hooks** @debug_hooks, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  tail call void @rest_of_compilation(%union.tree_node* %fndecl) #7
+  %bf.load4 = load i64* %5, align 8
+  %bf.clear5 = and i64 %bf.load4, -2049
+  store i64 %bf.clear5, i64* %5, align 8
+  store %struct.function* %0, %struct.function** @cfun, align 8, !tbaa !0
+  %tobool6 = icmp eq %struct.function* %0, null
+  br i1 %tobool6, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %if.end
+  %decl7 = getelementptr inbounds %struct.function* %0, i64 0, i32 6
+  %7 = load %union.tree_node** %decl7, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.end, %cond.true
+  %cond = phi %union.tree_node* [ %7, %cond.true ], [ null, %if.end ]
+  store %union.tree_node* %cond, %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  store i32 %1, i32* @write_symbols, align 4, !tbaa !4
+  store %struct.gcc_debug_hooks* %2, %struct.gcc_debug_hooks** @debug_hooks, align 8, !tbaa !0
+  ret void
+}

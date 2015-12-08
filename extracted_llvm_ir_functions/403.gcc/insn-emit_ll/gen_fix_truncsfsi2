@@ -1,0 +1,48 @@
+define %struct.rtx_def* @gen_fix_truncsfsi2(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %0 = load i32* @target_flags, align 4, !tbaa !3
+  %and = and i32 %0, 327680
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %if.end14, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %operand0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp3 = icmp eq i32 %bf.clear, 61
+  br i1 %cmp3, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %if.then
+  %call = tail call %struct.rtx_def* @gen_reg_rtx(i32 4) #4
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then, %cond.false
+  %cond = phi %struct.rtx_def* [ %call, %cond.false ], [ %operand0, %if.then ]
+  %call.i = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 126, i32 4, %struct.rtx_def* %operand1) #4
+  %call1.i = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %cond, %struct.rtx_def* %call.i) #4
+  %call7 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call1.i) #4
+  %cmp9 = icmp eq %struct.rtx_def* %cond, %operand0
+  br i1 %cmp9, label %if.end, label %if.then10
+
+if.then10:                                        ; preds = %cond.end
+  %call12 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %operand0, %struct.rtx_def* %cond) #4
+  br label %if.end
+
+if.end:                                           ; preds = %cond.end, %if.then10
+  %call13 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  br label %return
+
+if.end14:                                         ; preds = %entry
+  %call17 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 126, i32 4, %struct.rtx_def* %operand1) #4
+  %call18 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %operand0, %struct.rtx_def* %call17) #4
+  %call19 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call18) #4
+  %call20 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  br label %return
+
+return:                                           ; preds = %if.end14, %if.end
+  %retval.0 = phi %struct.rtx_def* [ %call13, %if.end ], [ %call20, %if.end14 ]
+  ret %struct.rtx_def* %retval.0
+}

@@ -1,0 +1,154 @@
+define i32 @force_fit_type(%union.tree_node* nocapture %t, i32 %overflow) #0 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cond = icmp eq i32 %bf.clear, 25
+  br i1 %cond, label %if.end7, label %return
+
+if.end7:                                          ; preds = %entry
+  %int_cst8 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
+  %low9 = bitcast i32* %int_cst8 to i64*
+  %1 = load i64* %low9, align 8, !tbaa !0
+  %high12 = getelementptr inbounds i32* %int_cst8, i64 2
+  %2 = bitcast i32* %high12 to i64*
+  %3 = load i64* %2, align 8, !tbaa !0
+  %type = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 1
+  %4 = load %union.tree_node** %type, align 8, !tbaa !3
+  %code15 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 2
+  %5 = bitcast [4 x i8]* %code15 to i32*
+  %bf.load16 = load i32* %5, align 8
+  %bf.clear17 = and i32 %bf.load16, 255
+  switch i32 %bf.clear17, label %if.else27 [
+    i32 13, label %if.then26
+    i32 15, label %if.then26
+  ]
+
+if.then26:                                        ; preds = %if.end7, %if.end7
+  %6 = load i32* @target_flags, align 4, !tbaa !4
+  %and = lshr i32 %6, 20
+  %7 = and i32 %and, 32
+  %8 = add i32 %7, 32
+  br label %if.end33
+
+if.else27:                                        ; preds = %if.end7
+  %type30 = bitcast %union.tree_node* %4 to %struct.tree_type*
+  %precision = getelementptr inbounds %struct.tree_type* %type30, i64 0, i32 6
+  %9 = bitcast [4 x i8]* %precision to i32*
+  %bf.load31 = load i32* %9, align 4
+  %bf.clear32 = and i32 %bf.load31, 511
+  br label %if.end33
+
+if.end33:                                         ; preds = %if.else27, %if.then26
+  %prec.0 = phi i32 [ %8, %if.then26 ], [ %bf.clear32, %if.else27 ]
+  %cmp34 = icmp eq i32 %prec.0, 128
+  br i1 %cmp34, label %if.end58, label %if.else36
+
+if.else36:                                        ; preds = %if.end33
+  %cmp37 = icmp ugt i32 %prec.0, 64
+  br i1 %cmp37, label %if.then38, label %if.else43
+
+if.then38:                                        ; preds = %if.else36
+  %sub = add i32 %prec.0, -64
+  %sh_prom = zext i32 %sub to i64
+  %shl = shl i64 -1, %sh_prom
+  %neg = xor i64 %shl, -1
+  %and42 = and i64 %3, %neg
+  store i64 %and42, i64* %2, align 8, !tbaa !0
+  br label %if.end58
+
+if.else43:                                        ; preds = %if.else36
+  store i64 0, i64* %2, align 8, !tbaa !0
+  %cmp47 = icmp ult i32 %prec.0, 64
+  br i1 %cmp47, label %if.then48, label %if.end58
+
+if.then48:                                        ; preds = %if.else43
+  %sh_prom49 = zext i32 %prec.0 to i64
+  %shl50 = shl i64 -1, %sh_prom49
+  %neg51 = xor i64 %shl50, -1
+  %and55 = and i64 %1, %neg51
+  store i64 %and55, i64* %low9, align 8, !tbaa !0
+  br label %if.end58
+
+if.end58:                                         ; preds = %if.else43, %if.then38, %if.then48, %if.end33
+  %10 = phi i64 [ %and42, %if.then38 ], [ 0, %if.then48 ], [ %3, %if.end33 ], [ 0, %if.else43 ]
+  %11 = phi i64 [ %1, %if.then38 ], [ %and55, %if.then48 ], [ %1, %if.end33 ], [ %1, %if.else43 ]
+  %bf.load62 = load i32* %5, align 8
+  %bf.clear63 = and i32 %bf.load62, 8192
+  %tobool64 = icmp eq i32 %bf.clear63, 0
+  br i1 %tobool64, label %if.end81, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end58
+  %bf.clear70 = and i32 %bf.load62, 255
+  %cmp71 = icmp eq i32 %bf.clear70, 6
+  br i1 %cmp71, label %land.lhs.true72, label %return
+
+land.lhs.true72:                                  ; preds = %land.lhs.true
+  %type75 = bitcast %union.tree_node* %4 to %struct.tree_type*
+  %no_force_blk_flag = getelementptr inbounds %struct.tree_type* %type75, i64 0, i32 6
+  %12 = bitcast [4 x i8]* %no_force_blk_flag to i32*
+  %bf.load76 = load i32* %12, align 4
+  %bf.clear78 = and i32 %bf.load76, 131072
+  %tobool79 = icmp eq i32 %bf.clear78, 0
+  br i1 %tobool79, label %return, label %if.end81
+
+if.end81:                                         ; preds = %land.lhs.true72, %if.end58
+  br i1 %cmp34, label %if.end125, label %land.lhs.true83
+
+land.lhs.true83:                                  ; preds = %if.end81
+  %cmp84 = icmp ugt i32 %prec.0, 64
+  br i1 %cmp84, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %land.lhs.true83
+  %sub89 = add i32 %prec.0, -65
+  %sh_prom90 = zext i32 %sub89 to i64
+  %shl91 = shl i64 1, %sh_prom90
+  %and92 = and i64 %10, %shl91
+  %cmp93 = icmp eq i64 %and92, 0
+  br i1 %cmp93, label %if.end125, label %if.then104
+
+cond.false:                                       ; preds = %land.lhs.true83
+  %sub97 = add i32 %prec.0, -1
+  %sh_prom98 = zext i32 %sub97 to i64
+  %shl99 = shl i64 1, %sh_prom98
+  %and100 = and i64 %11, %shl99
+  %cmp101 = icmp eq i64 %and100, 0
+  br i1 %cmp101, label %if.end125, label %if.else111
+
+if.then104:                                       ; preds = %cond.true
+  %sub105 = add i32 %prec.0, -64
+  %sh_prom106 = zext i32 %sub105 to i64
+  %shl107 = shl i64 -1, %sh_prom106
+  %or = or i64 %10, %shl107
+  store i64 %or, i64* %2, align 8, !tbaa !0
+  br label %if.end125
+
+if.else111:                                       ; preds = %cond.false
+  store i64 -1, i64* %2, align 8, !tbaa !0
+  %cmp115 = icmp ult i32 %prec.0, 64
+  br i1 %cmp115, label %if.then116, label %if.end125
+
+if.then116:                                       ; preds = %if.else111
+  %sh_prom117 = zext i32 %prec.0 to i64
+  %shl118 = shl i64 -1, %sh_prom117
+  %or122 = or i64 %11, %shl118
+  store i64 %or122, i64* %low9, align 8, !tbaa !0
+  br label %if.end125
+
+if.end125:                                        ; preds = %cond.true, %cond.false, %if.end81, %if.then104, %if.then116, %if.else111
+  %13 = phi i64 [ %10, %cond.true ], [ %10, %cond.false ], [ %10, %if.end81 ], [ %or, %if.then104 ], [ -1, %if.then116 ], [ -1, %if.else111 ]
+  %14 = phi i64 [ %11, %cond.true ], [ %11, %cond.false ], [ %11, %if.end81 ], [ %11, %if.then104 ], [ %or122, %if.then116 ], [ %11, %if.else111 ]
+  %conv = sext i32 %overflow to i64
+  %xor = xor i64 %14, %1
+  %or129 = or i64 %xor, %conv
+  %xor133 = xor i64 %13, %3
+  %or134 = or i64 %or129, %xor133
+  %cmp135 = icmp ne i64 %or134, 0
+  %conv136 = zext i1 %cmp135 to i32
+  br label %return
+
+return:                                           ; preds = %entry, %land.lhs.true, %land.lhs.true72, %if.end125
+  %retval.0 = phi i32 [ %conv136, %if.end125 ], [ %overflow, %entry ], [ %overflow, %land.lhs.true72 ], [ %overflow, %land.lhs.true ]
+  ret i32 %retval.0
+}

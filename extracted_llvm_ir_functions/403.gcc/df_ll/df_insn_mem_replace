@@ -1,0 +1,29 @@
+define i32 @df_insn_mem_replace(%struct.df* nocapture %df, %struct.basic_block_def* nocapture %bb, %struct.rtx_def* %insn, %struct.rtx_def* %mem, %struct.rtx_def* %reg) #0 {
+entry:
+  %insn.addr = alloca %struct.rtx_def*, align 8
+  %args = alloca %struct.replace_args, align 8
+  store %struct.rtx_def* %insn, %struct.rtx_def** %insn.addr, align 8, !tbaa !3
+  %insn1 = getelementptr inbounds %struct.replace_args* %args, i64 0, i32 2
+  store %struct.rtx_def* %insn, %struct.rtx_def** %insn1, align 8, !tbaa !3
+  %match = getelementptr inbounds %struct.replace_args* %args, i64 0, i32 0
+  store %struct.rtx_def* %mem, %struct.rtx_def** %match, align 8, !tbaa !3
+  %replacement = getelementptr inbounds %struct.replace_args* %args, i64 0, i32 1
+  store %struct.rtx_def* %reg, %struct.rtx_def** %replacement, align 8, !tbaa !3
+  %modified = getelementptr inbounds %struct.replace_args* %args, i64 0, i32 3
+  store i32 0, i32* %modified, align 8, !tbaa !4
+  %0 = bitcast %struct.replace_args* %args to i8*
+  %call = call i32 @for_each_rtx(%struct.rtx_def** %insn.addr, i32 (%struct.rtx_def**, i8*)* @df_rtx_mem_replace, i8* %0) #8
+  %1 = load i32* %modified, align 8, !tbaa !4
+  %tobool = icmp eq i32 %1, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %2 = load %struct.rtx_def** %insn.addr, align 8, !tbaa !3
+  call void @df_insn_modify(%struct.df* %df, %struct.basic_block_def* %bb, %struct.rtx_def* %2) #6
+  %.pre = load i32* %modified, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %3 = phi i32 [ 0, %entry ], [ %.pre, %if.then ]
+  ret i32 %3
+}

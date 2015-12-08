@@ -1,0 +1,56 @@
+define i32 @host_integerp(%union.tree_node* nocapture %t, i32 %pos) #3 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %1 = and i32 %bf.load, 524543
+  %2 = icmp eq i32 %1, 25
+  br i1 %2, label %land.rhs, label %land.end34
+
+land.rhs:                                         ; preds = %entry
+  %int_cst4 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
+  %high = getelementptr inbounds i32* %int_cst4, i64 2
+  %3 = bitcast i32* %high to i64*
+  %4 = load i64* %3, align 8, !tbaa !3
+  %cmp5 = icmp eq i64 %4, 0
+  br i1 %cmp5, label %land.lhs.true6, label %lor.lhs.false
+
+land.lhs.true6:                                   ; preds = %land.rhs
+  %low = bitcast i32* %int_cst4 to i64*
+  %5 = load i64* %low, align 8, !tbaa !3
+  %cmp9 = icmp sgt i64 %5, -1
+  br i1 %cmp9, label %land.end34, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true6, %land.rhs
+  %tobool10 = icmp eq i32 %pos, 0
+  br i1 %tobool10, label %land.lhs.true11, label %land.rhs29
+
+land.lhs.true11:                                  ; preds = %lor.lhs.false
+  %cmp15 = icmp eq i64 %4, -1
+  br i1 %cmp15, label %land.lhs.true16, label %land.end34
+
+land.lhs.true16:                                  ; preds = %land.lhs.true11
+  %low19 = bitcast i32* %int_cst4 to i64*
+  %6 = load i64* %low19, align 8, !tbaa !3
+  %cmp20 = icmp slt i64 %6, 0
+  br i1 %cmp20, label %land.lhs.true21, label %land.end34
+
+land.lhs.true21:                                  ; preds = %land.lhs.true16
+  %type = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 1
+  %7 = load %union.tree_node** %type, align 8, !tbaa !0
+  %unsigned_flag = getelementptr inbounds %union.tree_node* %7, i64 0, i32 0, i32 0, i32 2
+  %8 = bitcast [4 x i8]* %unsigned_flag to i32*
+  %bf.load24 = load i32* %8, align 8
+  %bf.clear26 = and i32 %bf.load24, 8192
+  %tobool27 = icmp eq i32 %bf.clear26, 0
+  br label %land.end34
+
+land.rhs29:                                       ; preds = %lor.lhs.false
+  %cmp33 = icmp eq i64 %4, 0
+  br label %land.end34
+
+land.end34:                                       ; preds = %land.lhs.true16, %land.lhs.true21, %land.lhs.true11, %land.lhs.true6, %land.rhs29, %entry
+  %9 = phi i1 [ false, %entry ], [ %tobool27, %land.lhs.true21 ], [ true, %land.lhs.true6 ], [ %cmp33, %land.rhs29 ], [ false, %land.lhs.true11 ], [ false, %land.lhs.true16 ]
+  %land.ext = zext i1 %9 to i32
+  ret i32 %land.ext
+}

@@ -1,0 +1,19 @@
+define i32 @sread_data(%struct._IO_FILE* nocapture %fp, i8* nocapture %src, i64 %size, i8* %myname, i8* %descrip) #0 {
+entry:
+  %call = tail call i64 @fread(i8* %src, i64 %size, i64 1, %struct._IO_FILE* %fp) #9
+  %cmp = icmp eq i64 %call, 1
+  br i1 %cmp, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = load i32* @this_node, align 4, !tbaa !0
+  %call1 = tail call i32* @__errno_location() #10
+  %1 = load i32* %call1, align 4, !tbaa !0
+  %call2 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([30 x i8]* @.str9, i64 0, i64 0), i8* %myname, i32 %0, i8* %descrip, i32 %1) #9
+  %2 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call3 = tail call i32 @fflush(%struct._IO_FILE* %2) #9
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ 1, %if.then ], [ 0, %entry ]
+  ret i32 %retval.0
+}

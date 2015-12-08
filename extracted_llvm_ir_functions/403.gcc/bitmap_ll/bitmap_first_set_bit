@@ -1,0 +1,75 @@
+define i32 @bitmap_first_set_bit(%struct.bitmap_head_def* nocapture %a) #2 {
+entry:
+  %first = getelementptr inbounds %struct.bitmap_head_def* %a, i64 0, i32 0
+  %0 = load %struct.bitmap_element_def** %first, align 8, !tbaa !0
+  %cmp = icmp eq %struct.bitmap_element_def* %0, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.bitmap_element_def* %0, i64 0, i32 3, i64 0
+  %1 = load i64* %arrayidx, align 8, !tbaa !4
+  %cmp1 = icmp eq i64 %1, 0
+  br i1 %cmp1, label %if.then2, label %if.end5
+
+if.then2:                                         ; preds = %if.end
+  %arrayidx4 = getelementptr inbounds %struct.bitmap_element_def* %0, i64 0, i32 3, i64 1
+  %2 = load i64* %arrayidx4, align 8, !tbaa !4
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.then2, %if.end
+  %word.0 = phi i64 [ %2, %if.then2 ], [ %1, %if.end ]
+  %word_num.0 = phi i32 [ 64, %if.then2 ], [ 0, %if.end ]
+  %sub = sub i64 0, %word.0
+  %and = and i64 %word.0, %sub
+  %and6 = and i64 %and, 4294967295
+  %cmp7 = icmp eq i64 %and6, 0
+  %shr = lshr i64 %and, 32
+  %shr.and = select i1 %cmp7, i64 %shr, i64 %and
+  %. = select i1 %cmp7, i32 32, i32 0
+  %and10 = and i64 %shr.and, 65535
+  %cmp11 = icmp eq i64 %and10, 0
+  br i1 %cmp11, label %if.then12, label %if.end15
+
+if.then12:                                        ; preds = %if.end5
+  %shr13 = lshr i64 %shr.and, 16
+  %add1459 = or i32 %., 16
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then12, %if.end5
+  %word.2 = phi i64 [ %shr13, %if.then12 ], [ %shr.and, %if.end5 ]
+  %bit_num.1 = phi i32 [ %add1459, %if.then12 ], [ %., %if.end5 ]
+  %and16 = and i64 %word.2, 255
+  %cmp17 = icmp eq i64 %and16, 0
+  br i1 %cmp17, label %if.then18, label %if.end21
+
+if.then18:                                        ; preds = %if.end15
+  %shr19 = lshr i64 %word.2, 8
+  %add20 = add i32 %bit_num.1, 8
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then18, %if.end15
+  %word.3 = phi i64 [ %shr19, %if.then18 ], [ %word.2, %if.end15 ]
+  %bit_num.2 = phi i32 [ %add20, %if.then18 ], [ %bit_num.1, %if.end15 ]
+  %and22 = and i64 %word.3, 240
+  %tobool = icmp eq i64 %and22, 0
+  %add24 = add i32 %bit_num.2, 4
+  %bit_num.2.add24 = select i1 %tobool, i32 %bit_num.2, i32 %add24
+  %and26 = and i64 %word.3, 204
+  %tobool27 = icmp eq i64 %and26, 0
+  %add29 = add i32 %bit_num.2.add24, 2
+  %bit_num.4 = select i1 %tobool27, i32 %bit_num.2.add24, i32 %add29
+  %and31 = and i64 %word.3, 170
+  %not.tobool32 = icmp ne i64 %and31, 0
+  %add34 = zext i1 %not.tobool32 to i32
+  %indx = getelementptr inbounds %struct.bitmap_element_def* %0, i64 0, i32 2
+  %3 = load i32* %indx, align 4, !tbaa !3
+  %mul = shl i32 %3, 7
+  %add37 = or i32 %mul, %word_num.0
+  %bit_num.4.add34 = or i32 %add37, %add34
+  %add38 = add i32 %bit_num.4.add34, %bit_num.4
+  br label %return
+
+return:                                           ; preds = %entry, %if.end21
+  %retval.0 = phi i32 [ %add38, %if.end21 ], [ -1, %entry ]
+  ret i32 %retval.0
+}

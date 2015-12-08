@@ -1,0 +1,46 @@
+define internal fastcc i32 @node_has_low_bound(%struct.case_node* nocapture %node, %union.tree_node* nocapture %index_type) #0 {
+entry:
+  %low = getelementptr inbounds %struct.case_node* %node, i64 0, i32 3
+  %0 = load %union.tree_node** %low, align 8, !tbaa !0
+  %1 = getelementptr inbounds %union.tree_node* %index_type, i64 0, i32 0, i32 12
+  %2 = load %union.tree_node** %1, align 8, !tbaa !0
+  %call = tail call i32 @tree_int_cst_equal(%union.tree_node* %0, %union.tree_node* %2) #7
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %left = getelementptr inbounds %struct.case_node* %node, i64 0, i32 0
+  %3 = load %struct.case_node** %left, align 8, !tbaa !0
+  %tobool1 = icmp eq %struct.case_node* %3, null
+  br i1 %tobool1, label %if.end3, label %return
+
+if.end3:                                          ; preds = %if.end
+  %4 = load %union.tree_node** %low, align 8, !tbaa !0
+  %type5 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 1
+  %5 = load %union.tree_node** %type5, align 8, !tbaa !0
+  %6 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 12), align 8, !tbaa !0
+  %call7 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 60, %union.tree_node* %5, %union.tree_node* %4, %union.tree_node* %6) #7
+  %call8 = tail call %union.tree_node* @fold(%union.tree_node* %call7) #7
+  %7 = load %union.tree_node** %low, align 8, !tbaa !0
+  %call10 = tail call i32 @tree_int_cst_lt(%union.tree_node* %call8, %union.tree_node* %7) #7
+  %tobool11 = icmp eq i32 %call10, 0
+  br i1 %tobool11, label %return, label %for.cond
+
+for.cond:                                         ; preds = %if.end3, %for.body
+  %node.pn = phi %struct.case_node* [ %pnode.0, %for.body ], [ %node, %if.end3 ]
+  %pnode.0.in = getelementptr inbounds %struct.case_node* %node.pn, i64 0, i32 2
+  %pnode.0 = load %struct.case_node** %pnode.0.in, align 8
+  %tobool14 = icmp eq %struct.case_node* %pnode.0, null
+  br i1 %tobool14, label %return, label %for.body
+
+for.body:                                         ; preds = %for.cond
+  %high = getelementptr inbounds %struct.case_node* %pnode.0, i64 0, i32 4
+  %8 = load %union.tree_node** %high, align 8, !tbaa !0
+  %call15 = tail call i32 @tree_int_cst_equal(%union.tree_node* %call8, %union.tree_node* %8) #7
+  %tobool16 = icmp eq i32 %call15, 0
+  br i1 %tobool16, label %for.cond, label %return
+
+return:                                           ; preds = %for.cond, %for.body, %if.end3, %if.end, %entry
+  %retval.0 = phi i32 [ 1, %entry ], [ 0, %if.end ], [ 0, %if.end3 ], [ 0, %for.cond ], [ 1, %for.body ]
+  ret i32 %retval.0
+}

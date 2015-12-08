@@ -1,0 +1,42 @@
+define %union.tree_node* @decl_constant_value(%union.tree_node* %decl) #3 {
+entry:
+  %0 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %0, null
+  br i1 %cmp, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %volatile_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %volatile_flag to i32*
+  %bf.load = load i32* %1, align 8
+  %2 = and i32 %bf.load, 6144
+  %3 = icmp eq i32 %2, 4096
+  br i1 %3, label %land.lhs.true7, label %if.end
+
+land.lhs.true7:                                   ; preds = %land.lhs.true
+  %initial = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 12
+  %4 = load %union.tree_node** %initial, align 8, !tbaa !0
+  %cmp9 = icmp eq %union.tree_node* %4, null
+  br i1 %cmp9, label %if.end, label %land.lhs.true10
+
+land.lhs.true10:                                  ; preds = %land.lhs.true7
+  %code = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 2
+  %5 = bitcast [4 x i8]* %code to i32*
+  %bf.load14 = load i32* %5, align 8
+  %bf.clear23 = and i32 %bf.load14, 512
+  %tobool24 = icmp eq i32 %bf.clear23, 0
+  br i1 %tobool24, label %if.end, label %switch.early.test
+
+switch.early.test:                                ; preds = %land.lhs.true10
+  %bf.clear15 = and i32 %bf.load14, 255
+  switch i32 %bf.clear15, label %return [
+    i32 46, label %if.end
+    i32 0, label %if.end
+  ]
+
+if.end:                                           ; preds = %land.lhs.true, %switch.early.test, %switch.early.test, %land.lhs.true10, %land.lhs.true7, %entry
+  br label %return
+
+return:                                           ; preds = %switch.early.test, %if.end
+  %retval.0 = phi %union.tree_node* [ %decl, %if.end ], [ %4, %switch.early.test ]
+  ret %union.tree_node* %retval.0
+}

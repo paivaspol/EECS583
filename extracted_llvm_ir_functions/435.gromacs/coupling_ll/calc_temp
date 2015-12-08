@@ -1,0 +1,18 @@
+define float @calc_temp(float %ekin, float %nrdf) #2 {
+entry:
+  %cmp = fcmp ogt float %nrdf, 0.000000e+00
+  br i1 %cmp, label %if.then, label %return
+
+if.then:                                          ; preds = %entry
+  %conv = fpext float %ekin to double
+  %mul = fmul double %conv, 2.000000e+00
+  %conv1 = fpext float %nrdf to double
+  %mul2 = fmul double %conv1, 0x3F810732CDE67DC4
+  %div = fdiv double %mul, %mul2
+  %conv3 = fptrunc double %div to float
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi float [ %conv3, %if.then ], [ 0.000000e+00, %entry ]
+  ret float %retval.0
+}

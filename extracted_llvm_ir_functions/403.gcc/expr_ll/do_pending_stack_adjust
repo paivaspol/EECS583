@@ -1,0 +1,34 @@
+define void @do_pending_stack_adjust() #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %expr = getelementptr inbounds %struct.function* %0, i64 0, i32 2
+  %1 = load %struct.expr_status** %expr, align 8, !tbaa !0
+  %x_inhibit_defer_pop = getelementptr inbounds %struct.expr_status* %1, i64 0, i32 1
+  %2 = load i32* %x_inhibit_defer_pop, align 4, !tbaa !3
+  %cmp = icmp eq i32 %2, 0
+  br i1 %cmp, label %if.then, label %if.end8
+
+if.then:                                          ; preds = %entry
+  %x_pending_stack_adjust = getelementptr inbounds %struct.expr_status* %1, i64 0, i32 0
+  %3 = load i32* %x_pending_stack_adjust, align 4, !tbaa !3
+  %cmp2 = icmp eq i32 %3, 0
+  br i1 %cmp2, label %if.end, label %if.then3
+
+if.then3:                                         ; preds = %if.then
+  %conv = sext i32 %3 to i64
+  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv) #8
+  tail call void @adjust_stack(%struct.rtx_def* %call) #8
+  %.pre = load %struct.function** @cfun, align 8, !tbaa !0
+  %expr6.phi.trans.insert = getelementptr inbounds %struct.function* %.pre, i64 0, i32 2
+  %.pre9 = load %struct.expr_status** %expr6.phi.trans.insert, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then3
+  %4 = phi %struct.expr_status* [ %1, %if.then ], [ %.pre9, %if.then3 ]
+  %x_pending_stack_adjust7 = getelementptr inbounds %struct.expr_status* %4, i64 0, i32 0
+  store i32 0, i32* %x_pending_stack_adjust7, align 4, !tbaa !3
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.end, %entry
+  ret void
+}

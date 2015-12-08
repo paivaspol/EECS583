@@ -1,0 +1,92 @@
+define %struct.cpp_reader* @cpp_create_reader(i32 %lang) #0 {
+entry:
+  %.b.i = load i1* @init_library.initialized, align 1
+  br i1 %.b.i, label %init_library.exit, label %if.then.i
+
+if.then.i:                                        ; preds = %entry
+  store i1 true, i1* @init_library.initialized, align 1
+  br label %init_library.exit
+
+init_library.exit:                                ; preds = %entry, %if.then.i
+  %call = tail call noalias i8* @xcalloc(i64 1, i64 832) #6
+  %0 = bitcast i8* %call to %struct.cpp_reader*
+  tail call fastcc void @set_lang(%struct.cpp_reader* %0, i32 %lang) #7
+  %1 = getelementptr inbounds i8* %call, i64 760
+  store i8 1, i8* %1, align 1, !tbaa !0
+  %2 = getelementptr inbounds i8* %call, i64 745
+  store i8 1, i8* %2, align 1, !tbaa !0
+  %3 = getelementptr inbounds i8* %call, i64 776
+  store i8 1, i8* %3, align 1, !tbaa !0
+  %tabstop = getelementptr inbounds i8* %call, i64 664
+  %4 = bitcast i8* %tabstop to i32*
+  store i32 8, i32* %4, align 4, !tbaa !2
+  %5 = getelementptr inbounds i8* %call, i64 777
+  store i8 1, i8* %5, align 1, !tbaa !0
+  %6 = getelementptr inbounds i8* %call, i64 741
+  store i8 1, i8* %6, align 1, !tbaa !0
+  %call6 = tail call noalias i8* @xcalloc(i64 1, i64 112) #6
+  %7 = bitcast i8* %call6 to %struct.cpp_pending*
+  %pending = getelementptr inbounds i8* %call, i64 672
+  %8 = bitcast i8* %pending to %struct.cpp_pending**
+  store %struct.cpp_pending* %7, %struct.cpp_pending** %8, align 8, !tbaa !3
+  %call8 = tail call %struct.deps* @deps_init() #6
+  %deps = getelementptr inbounds i8* %call, i64 392
+  %9 = bitcast i8* %deps to %struct.deps**
+  store %struct.deps* %call8, %struct.deps** %9, align 8, !tbaa !3
+  %line_maps = getelementptr inbounds i8* %call, i64 24
+  %10 = bitcast i8* %line_maps to %struct.line_maps*
+  tail call void @init_line_maps(%struct.line_maps* %10) #6
+  %line = getelementptr inbounds i8* %call, i64 64
+  %11 = bitcast i8* %line to i32*
+  store i32 1, i32* %11, align 4, !tbaa !2
+  %12 = load i8* %2, align 1, !tbaa !0
+  %lnot = icmp eq i8 %12, 0
+  %conv = zext i1 %lnot to i8
+  %13 = getelementptr inbounds i8* %call, i64 11
+  store i8 %conv, i8* %13, align 1, !tbaa !0
+  %14 = getelementptr inbounds i8* %call, i64 302
+  store i8 67, i8* %14, align 2
+  %15 = getelementptr inbounds i8* %call, i64 350
+  store i8 66, i8* %15, align 2
+  %val = getelementptr inbounds i8* %call, i64 352
+  %source = bitcast i8* %val to %struct.cpp_token**
+  store %struct.cpp_token* null, %struct.cpp_token** %source, align 8, !tbaa !3
+  %16 = getelementptr inbounds i8* %call, i64 374
+  store i8 67, i8* %16, align 2
+  %17 = getelementptr inbounds i8* %call, i64 375
+  store i8 0, i8* %17, align 1, !tbaa !0
+  %base_run = getelementptr inbounds i8* %call, i64 200
+  %18 = bitcast i8* %base_run to %struct.tokenrun*
+  tail call void @_cpp_init_tokenrun(%struct.tokenrun* %18, i32 250) #6
+  %cur_run = getelementptr inbounds i8* %call, i64 232
+  %19 = bitcast i8* %cur_run to %struct.tokenrun**
+  store %struct.tokenrun* %18, %struct.tokenrun** %19, align 8, !tbaa !3
+  %base = getelementptr inbounds i8* %call, i64 216
+  %20 = bitcast i8* %base to %struct.cpp_token**
+  %21 = load %struct.cpp_token** %20, align 8, !tbaa !3
+  %cur_token = getelementptr inbounds i8* %call, i64 192
+  %22 = bitcast i8* %cur_token to %struct.cpp_token**
+  store %struct.cpp_token* %21, %struct.cpp_token** %22, align 8, !tbaa !3
+  %base_context = getelementptr inbounds i8* %call, i64 96
+  %23 = bitcast i8* %base_context to %struct.cpp_context*
+  %context = getelementptr inbounds i8* %call, i64 152
+  %24 = bitcast i8* %context to %struct.cpp_context**
+  store %struct.cpp_context* %23, %struct.cpp_context** %24, align 8, !tbaa !3
+  %macro = getelementptr inbounds i8* %call, i64 136
+  %25 = bitcast i8* %macro to %struct.cpp_hashnode**
+  store %struct.cpp_hashnode* null, %struct.cpp_hashnode** %25, align 8, !tbaa !3
+  call void @llvm.memset.p0i8.i64(i8* %base_context, i8 0, i64 16, i32 8, i1 false)
+  %call20 = tail call %struct._cpp_buff* @_cpp_get_buff(%struct.cpp_reader* %0, i64 0) #6
+  %a_buff = getelementptr inbounds i8* %call, i64 72
+  %26 = bitcast i8* %a_buff to %struct._cpp_buff**
+  store %struct._cpp_buff* %call20, %struct._cpp_buff** %26, align 8, !tbaa !3
+  %call21 = tail call %struct._cpp_buff* @_cpp_get_buff(%struct.cpp_reader* %0, i64 0) #6
+  %u_buff = getelementptr inbounds i8* %call, i64 80
+  %27 = bitcast i8* %u_buff to %struct._cpp_buff**
+  store %struct._cpp_buff* %call21, %struct._cpp_buff** %27, align 8, !tbaa !3
+  %buffer_ob = getelementptr inbounds i8* %call, i64 488
+  %28 = bitcast i8* %buffer_ob to %struct.obstack*
+  tail call void @gcc_obstack_init(%struct.obstack* %28) #6
+  tail call void @_cpp_init_includes(%struct.cpp_reader* %0) #6
+  ret %struct.cpp_reader* %0
+}

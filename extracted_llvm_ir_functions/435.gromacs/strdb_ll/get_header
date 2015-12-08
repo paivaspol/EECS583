@@ -1,0 +1,32 @@
+define i32 @get_header(i8* %line, i8* %header) #0 {
+entry:
+  %temp = alloca [4096 x i8], align 16
+  %0 = getelementptr inbounds [4096 x i8]* %temp, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %0) #4
+  %call = call i8* @strcpy(i8* %0, i8* %line) #5
+  %call2 = call i8* @strchr(i8* %0, i32 91) #6
+  %cmp = icmp eq i8* %call2, null
+  br i1 %cmp, label %cleanup, label %if.end
+
+if.end:                                           ; preds = %entry
+  store i8 32, i8* %call2, align 1, !tbaa !1
+  %call4 = call i8* @strchr(i8* %0, i32 93) #6
+  %cmp5 = icmp eq i8* %call4, null
+  br i1 %cmp5, label %if.then6, label %if.end7
+
+if.then6:                                         ; preds = %if.end
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([40 x i8]* @.str4, i64 0, i64 0), i8* %line) #5
+  br label %cleanup
+
+if.end7:                                          ; preds = %if.end
+  store i8 0, i8* %call4, align 1, !tbaa !1
+  %call10 = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %0, i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* %header) #5
+  %cmp11 = icmp eq i32 %call10, 1
+  %. = zext i1 %cmp11 to i32
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.end7, %entry, %if.then6
+  %retval.0 = phi i32 [ 0, %if.then6 ], [ 0, %entry ], [ %., %if.end7 ]
+  call void @llvm.lifetime.end(i64 4096, i8* %0) #4
+  ret i32 %retval.0
+}

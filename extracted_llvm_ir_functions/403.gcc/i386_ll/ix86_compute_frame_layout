@@ -1,0 +1,231 @@
+define internal fastcc void @ix86_compute_frame_layout(%struct.ix86_frame* nocapture %frame) #1 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !4
+  %stack_alignment_needed1 = getelementptr inbounds %struct.function* %0, i64 0, i32 52
+  %1 = load i32* %stack_alignment_needed1, align 4, !tbaa !0
+  %preferred_stack_boundary = getelementptr inbounds %struct.function* %0, i64 0, i32 53
+  %2 = load i32* %preferred_stack_boundary, align 4, !tbaa !0
+  %call = tail call i64 @get_frame_size() #9
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.body.i, %entry
+  %regno.05.i = phi i32 [ 52, %entry ], [ %dec.i, %for.body.i ]
+  %nregs.04.i = phi i32 [ 0, %entry ], [ %nregs.0.inc.i, %for.body.i ]
+  %call.i = tail call fastcc i32 @ix86_save_reg(i32 %regno.05.i, i32 1) #9
+  %not.tobool.i = icmp ne i32 %call.i, 0
+  %inc.i = zext i1 %not.tobool.i to i32
+  %nregs.0.inc.i = add nsw i32 %inc.i, %nregs.04.i
+  %dec.i = add nsw i32 %regno.05.i, -1
+  %cmp.i = icmp sgt i32 %regno.05.i, 0
+  br i1 %cmp.i, label %for.body.i, label %ix86_nsaved_regs.exit
+
+ix86_nsaved_regs.exit:                            ; preds = %for.body.i
+  %div = sdiv i32 %1, 8
+  %div2 = sdiv i32 %2, 8
+  %nregs = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 0
+  store i32 %nregs.0.inc.i, i32* %nregs, align 4, !tbaa !0
+  %3 = load i32* @frame_pointer_needed, align 4, !tbaa !0
+  %4 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %4, 23
+  %5 = and i32 %and, 4
+  %6 = add i32 %5, 4
+  %not.tobool = icmp ne i32 %3, 0
+  %mul = zext i1 %not.tobool to i32
+  %.mul = shl nsw i32 %6, %mul
+  %conv = sext i32 %.mul to i64
+  %hard_frame_pointer_offset = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 9
+  store i64 %conv, i64* %hard_frame_pointer_offset, align 8, !tbaa !14
+  %tobool9 = icmp eq i64 %call, 0
+  br i1 %tobool9, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %ix86_nsaved_regs.exit
+  %.off = add i32 %1, 7
+  %7 = icmp ugt i32 %.off, 14
+  br i1 %7, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 4048, i8* getelementptr inbounds ([26 x i8]* @__FUNCTION__.ix86_compute_frame_layout, i64 0, i64 0)) #11
+  unreachable
+
+if.end:                                           ; preds = %ix86_nsaved_regs.exit, %land.lhs.true
+  %and11 = lshr i32 %4, 20
+  %8 = and i32 %and11, 32
+  %9 = add i32 %8, 32
+  %div14 = sdiv i32 %9, 8
+  %cmp = icmp slt i32 %div2, %div14
+  br i1 %cmp, label %if.then16, label %if.end17
+
+if.then16:                                        ; preds = %if.end
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 4050, i8* getelementptr inbounds ([26 x i8]* @__FUNCTION__.ix86_compute_frame_layout, i64 0, i64 0)) #11
+  unreachable
+
+if.end17:                                         ; preds = %if.end
+  %10 = load i32* @ix86_preferred_stack_boundary, align 4, !tbaa !0
+  %div18 = sdiv i32 %10, 8
+  %cmp19 = icmp sgt i32 %div2, %div18
+  br i1 %cmp19, label %if.then21, label %if.end22
+
+if.then21:                                        ; preds = %if.end17
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 4052, i8* getelementptr inbounds ([26 x i8]* @__FUNCTION__.ix86_compute_frame_layout, i64 0, i64 0)) #11
+  unreachable
+
+if.end22:                                         ; preds = %if.end17
+  %cmp24 = icmp sgt i32 %div, %div18
+  br i1 %cmp24, label %if.then26, label %if.end27
+
+if.then26:                                        ; preds = %if.end22
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 4054, i8* getelementptr inbounds ([26 x i8]* @__FUNCTION__.ix86_compute_frame_layout, i64 0, i64 0)) #11
+  unreachable
+
+if.end27:                                         ; preds = %if.end22
+  %cmp32 = icmp slt i32 %div, %div14
+  %div14.div = select i1 %cmp32, i32 %div14, i32 %div
+  %and41 = and i32 %4, 33554432
+  %11 = lshr exact i32 %and41, 23
+  %12 = add i32 %11, 4
+  %mul44 = mul nsw i32 %nregs.0.inc.i, %12
+  %add = add nsw i32 %mul44, %.mul
+  %13 = load %struct.function** @cfun, align 8, !tbaa !4
+  %machine = getelementptr inbounds %struct.function* %13, i64 0, i32 51
+  %14 = load %struct.machine_function** %machine, align 8, !tbaa !4
+  %save_varrargs_registers = getelementptr inbounds %struct.machine_function* %14, i64 0, i32 1
+  %15 = load i32* %save_varrargs_registers, align 4, !tbaa !0
+  %tobool45 = icmp eq i32 %15, 0
+  br i1 %tobool45, label %if.else, label %if.then46
+
+if.then46:                                        ; preds = %if.end27
+  %tobool42 = icmp ne i32 %and41, 0
+  %cond49 = select i1 %tobool42, i32 6, i32 3
+  %mul53 = mul nsw i32 %cond49, %12
+  %16 = lshr exact i32 %and41, 18
+  %add58 = add nsw i32 %mul53, %16
+  %add59 = add nsw i32 %add, %add58
+  %va_arg_size = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 2
+  store i32 %add58, i32* %va_arg_size, align 4, !tbaa !0
+  %phitmp200 = sext i32 %add58 to i64
+  br label %if.end73
+
+if.else:                                          ; preds = %if.end27
+  %va_arg_size72 = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 2
+  store i32 0, i32* %va_arg_size72, align 4, !tbaa !0
+  br label %if.end73
+
+if.end73:                                         ; preds = %if.else, %if.then46
+  %17 = phi i64 [ %phitmp200, %if.then46 ], [ 0, %if.else ]
+  %offset.0 = phi i32 [ %add59, %if.then46 ], [ %add, %if.else ]
+  %add74 = add i32 %div14.div, -1
+  %sub = add i32 %add74, %offset.0
+  %sub75 = sub nsw i32 0, %div14.div
+  %and76 = and i32 %sub, %sub75
+  %sub77 = sub nsw i32 %and76, %offset.0
+  %padding1 = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 1
+  store i32 %sub77, i32* %padding1, align 4, !tbaa !0
+  %conv80 = sext i32 %and76 to i64
+  %frame_pointer_offset = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 8
+  store i64 %conv80, i64* %frame_pointer_offset, align 8, !tbaa !14
+  %add82 = add nsw i64 %conv80, %call
+  %conv83 = trunc i64 %add82 to i32
+  %18 = load i32* @target_flags, align 4, !tbaa !0
+  %and84 = and i32 %18, 4096
+  %tobool85 = icmp eq i32 %and84, 0
+  %19 = load i32* @current_function_is_leaf, align 4, !tbaa !0
+  %tobool87 = icmp ne i32 %19, 0
+  %or.cond = or i1 %tobool85, %tobool87
+  br i1 %or.cond, label %if.else91, label %if.then88
+
+if.then88:                                        ; preds = %if.end73
+  %outgoing_args_size = getelementptr inbounds %struct.function* %13, i64 0, i32 11
+  %20 = load i32* %outgoing_args_size, align 4, !tbaa !0
+  %add89 = add nsw i32 %20, %conv83
+  %outgoing_arguments_size = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 5
+  store i32 %20, i32* %outgoing_arguments_size, align 4, !tbaa !0
+  %phitmp = sext i32 %20 to i64
+  br label %if.end93
+
+if.else91:                                        ; preds = %if.end73
+  %outgoing_arguments_size92 = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 5
+  store i32 0, i32* %outgoing_arguments_size92, align 4, !tbaa !0
+  br label %if.end93
+
+if.end93:                                         ; preds = %if.else91, %if.then88
+  %21 = phi i64 [ 0, %if.else91 ], [ %phitmp, %if.then88 ]
+  %offset.1 = phi i32 [ %conv83, %if.else91 ], [ %add89, %if.then88 ]
+  %22 = load i32* @current_function_is_leaf, align 4, !tbaa !0
+  %tobool94 = icmp eq i32 %22, 0
+  br i1 %tobool94, label %if.then96, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end93
+  %calls_alloca = getelementptr inbounds %struct.function* %13, i64 0, i32 56
+  %23 = bitcast [4 x i8]* %calls_alloca to i32*
+  %bf.load = load i32* %23, align 8
+  %bf.clear = and i32 %bf.load, 64
+  %tobool95 = icmp eq i32 %bf.clear, 0
+  br i1 %tobool95, label %if.else102, label %if.then96
+
+if.then96:                                        ; preds = %lor.lhs.false, %if.end93
+  %add97 = add i32 %div2, -1
+  %sub98 = add i32 %add97, %offset.1
+  %sub99 = sub nsw i32 0, %div2
+  %and100 = and i32 %sub98, %sub99
+  %sub101 = sub nsw i32 %and100, %offset.1
+  %padding2 = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 4
+  store i32 %sub101, i32* %padding2, align 4, !tbaa !0
+  br label %if.end104
+
+if.else102:                                       ; preds = %lor.lhs.false
+  %padding2103 = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 4
+  store i32 0, i32* %padding2103, align 4, !tbaa !0
+  br label %if.end104
+
+if.end104:                                        ; preds = %if.else102, %if.then96
+  %24 = phi i32 [ 0, %if.else102 ], [ %sub101, %if.then96 ]
+  %add106 = add nsw i32 %24, %offset.1
+  %conv107 = sext i32 %add106 to i64
+  %stack_pointer_offset = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 10
+  store i64 %conv107, i64* %stack_pointer_offset, align 8, !tbaa !14
+  %conv109 = sext i32 %sub77 to i64
+  %add110 = add nsw i64 %conv109, %call
+  %conv112 = sext i32 %24 to i64
+  %add113 = add nsw i64 %add110, %conv112
+  %add116 = add nsw i64 %add113, %21
+  %add119 = add nsw i64 %add116, %17
+  %to_allocate = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 7
+  store i64 %add119, i64* %to_allocate, align 8, !tbaa !14
+  %25 = load i32* @target_flags, align 4, !tbaa !0
+  %and120 = and i32 %25, 33554432
+  %tobool121 = icmp eq i32 %and120, 0
+  br i1 %tobool121, label %if.else138, label %land.lhs.true122
+
+land.lhs.true122:                                 ; preds = %if.end104
+  %and123 = and i32 %25, 67108864
+  %tobool124 = icmp eq i32 %and123, 0
+  %26 = load i32* @current_function_sp_is_unchanging, align 4, !tbaa !0
+  %tobool126 = icmp ne i32 %26, 0
+  %or.cond149 = and i1 %tobool124, %tobool126
+  %27 = load i32* @current_function_is_leaf, align 4, !tbaa !0
+  %tobool128 = icmp ne i32 %27, 0
+  %or.cond150 = and i1 %or.cond149, %tobool128
+  br i1 %or.cond150, label %if.then129, label %if.else138
+
+if.then129:                                       ; preds = %land.lhs.true122
+  %conv131 = trunc i64 %add119 to i32
+  %red_zone_size = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 6
+  %cmp133 = icmp sgt i32 %conv131, 120
+  %.conv131 = select i1 %cmp133, i32 120, i32 %conv131
+  store i32 %.conv131, i32* %red_zone_size, align 4, !tbaa !0
+  %phitmp201 = sext i32 %.conv131 to i64
+  br label %if.end140
+
+if.else138:                                       ; preds = %if.end104, %land.lhs.true122
+  %red_zone_size139 = getelementptr inbounds %struct.ix86_frame* %frame, i64 0, i32 6
+  store i32 0, i32* %red_zone_size139, align 4, !tbaa !0
+  br label %if.end140
+
+if.end140:                                        ; preds = %if.then129, %if.else138
+  %28 = phi i64 [ %phitmp201, %if.then129 ], [ 0, %if.else138 ]
+  %sub144 = sub nsw i64 %add119, %28
+  store i64 %sub144, i64* %to_allocate, align 8, !tbaa !14
+  %sub148 = sub nsw i64 %conv107, %28
+  store i64 %sub148, i64* %stack_pointer_offset, align 8, !tbaa !14
+  ret void
+}

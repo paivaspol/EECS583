@@ -1,0 +1,26 @@
+define internal i8* @output_518(%struct.rtx_def** nocapture %operands, %struct.rtx_def* nocapture %insn) #1 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %operands, i64 2
+  %0 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 67
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  store %struct.rtx_def* %2, %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %3 = load i32* @x86_deep_branch, align 4, !tbaa !3
+  %4 = load i32* @ix86_cpu, align 4, !tbaa !4
+  %shl = shl i32 1, %4
+  %and = and i32 %shl, %3
+  %tobool = icmp eq i32 %and, 0
+  %. = select i1 %tobool, i8* getelementptr inbounds ([40 x i8]* @.str1672, i64 0, i64 0), i8* getelementptr inbounds ([23 x i8]* @.str1671, i64 0, i64 0)
+  ret i8* %.
+}

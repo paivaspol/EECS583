@@ -1,0 +1,14 @@
+define i32 @constrain_operands_cached(i32 %strict) #0 {
+entry:
+  %0 = load i32* @which_alternative, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, -1
+  br i1 %cmp, label %if.then, label %return
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @constrain_operands(i32 %strict) #7
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ %call, %if.then ], [ 1, %entry ]
+  ret i32 %retval.0
+}

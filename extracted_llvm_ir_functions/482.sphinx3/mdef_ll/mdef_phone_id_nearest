@@ -1,0 +1,82 @@
+define i32 @mdef_phone_id_nearest(%struct.mdef_t* nocapture %m, i8 signext %b, i8 signext %l, i8 signext %r, i32 %pos) #4 {
+entry:
+  %0 = or i8 %r, %l
+  %1 = icmp slt i8 %0, 0
+  br i1 %1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %conv5 = sext i8 %b to i32
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call = tail call i32 @mdef_phone_id(%struct.mdef_t* %m, i8 signext %b, i8 signext %l, i8 signext %r, i32 %pos) #8
+  %cmp6 = icmp sgt i32 %call, -1
+  br i1 %cmp6, label %return, label %for.body
+
+for.body:                                         ; preds = %if.end, %for.inc
+  %tmppos.0140 = phi i32 [ %inc, %for.inc ], [ 0, %if.end ]
+  %cmp12 = icmp eq i32 %tmppos.0140, %pos
+  br i1 %cmp12, label %for.inc, label %if.then14
+
+if.then14:                                        ; preds = %for.body
+  %call15 = tail call i32 @mdef_phone_id(%struct.mdef_t* %m, i8 signext %b, i8 signext %l, i8 signext %r, i32 %tmppos.0140) #8
+  %cmp16 = icmp sgt i32 %call15, -1
+  br i1 %cmp16, label %return, label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then14
+  %inc = add i32 %tmppos.0140, 1
+  %cmp10 = icmp ult i32 %inc, 4
+  br i1 %cmp10, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc
+  %sil = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 14
+  %2 = load i8* %sil, align 1, !tbaa !1
+  %cmp22 = icmp sgt i8 %2, -1
+  br i1 %cmp22, label %if.then24, label %if.end76
+
+if.then24:                                        ; preds = %for.end
+  %idxprom = sext i8 %l to i64
+  %ciphone = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 7
+  %3 = load %struct.ciphone_t** %ciphone, align 8, !tbaa !3
+  %filler = getelementptr inbounds %struct.ciphone_t* %3, i64 %idxprom, i32 1
+  %4 = load i32* %filler, align 4, !tbaa !0
+  %tobool = icmp eq i32 %4, 0
+  %l. = select i1 %tobool, i8 %l, i8 %2
+  %idxprom31 = sext i8 %r to i64
+  %filler34 = getelementptr inbounds %struct.ciphone_t* %3, i64 %idxprom31, i32 1
+  %5 = load i32* %filler34, align 4, !tbaa !0
+  %tobool35 = icmp eq i32 %5, 0
+  %r. = select i1 %tobool35, i8 %r, i8 %2
+  %cmp46 = icmp eq i8 %l., %l
+  %cmp51 = icmp eq i8 %r., %r
+  %or.cond137 = and i1 %cmp46, %cmp51
+  br i1 %or.cond137, label %if.end76, label %if.then53
+
+if.then53:                                        ; preds = %if.then24
+  %call54 = tail call i32 @mdef_phone_id(%struct.mdef_t* %m, i8 signext %b, i8 signext %l., i8 signext %r., i32 %pos) #8
+  %cmp55 = icmp sgt i32 %call54, -1
+  br i1 %cmp55, label %return, label %for.body62
+
+for.body62:                                       ; preds = %if.then53, %for.inc72
+  %tmppos.1138 = phi i32 [ %inc73, %for.inc72 ], [ 0, %if.then53 ]
+  %cmp63 = icmp eq i32 %tmppos.1138, %pos
+  br i1 %cmp63, label %for.inc72, label %if.then65
+
+if.then65:                                        ; preds = %for.body62
+  %call66 = tail call i32 @mdef_phone_id(%struct.mdef_t* %m, i8 signext %b, i8 signext %l., i8 signext %r., i32 %tmppos.1138) #8
+  %cmp67 = icmp sgt i32 %call66, -1
+  br i1 %cmp67, label %return, label %for.inc72
+
+for.inc72:                                        ; preds = %for.body62, %if.then65
+  %inc73 = add i32 %tmppos.1138, 1
+  %cmp60 = icmp ult i32 %inc73, 4
+  br i1 %cmp60, label %for.body62, label %if.end76
+
+if.end76:                                         ; preds = %for.inc72, %if.then24, %for.end
+  %conv87 = sext i8 %b to i32
+  br label %return
+
+return:                                           ; preds = %if.then14, %if.then65, %if.then53, %if.end, %if.end76, %if.then
+  %retval.0 = phi i32 [ %conv5, %if.then ], [ %conv87, %if.end76 ], [ %call, %if.end ], [ %call54, %if.then53 ], [ %call66, %if.then65 ], [ %call15, %if.then14 ]
+  ret i32 %retval.0
+}

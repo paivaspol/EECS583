@@ -1,0 +1,27 @@
+define internal i32 @returnjump_p_1(%struct.rtx_def** nocapture %loc, i8* nocapture %data) #2 {
+entry:
+  %0 = load %struct.rtx_def** %loc, align 8, !tbaa !3
+  %tobool = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool, label %land.end8, label %land.rhs
+
+land.rhs:                                         ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 51
+  br i1 %cmp, label %land.end8, label %lor.rhs
+
+lor.rhs:                                          ; preds = %land.rhs
+  %cmp3 = icmp eq i32 %bf.clear, 47
+  br i1 %cmp3, label %land.rhs4, label %land.end8
+
+land.rhs4:                                        ; preds = %lor.rhs
+  %bf.clear6 = and i32 %bf.load, 16777216
+  %tobool7 = icmp ne i32 %bf.clear6, 0
+  br label %land.end8
+
+land.end8:                                        ; preds = %entry, %land.rhs, %land.rhs4, %lor.rhs
+  %2 = phi i1 [ false, %entry ], [ true, %land.rhs ], [ false, %lor.rhs ], [ %tobool7, %land.rhs4 ]
+  %land.ext = zext i1 %2 to i32
+  ret i32 %land.ext
+}

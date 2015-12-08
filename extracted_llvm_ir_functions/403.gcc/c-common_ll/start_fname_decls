@@ -1,0 +1,45 @@
+define void @start_fname_decls() #0 {
+for.body.lr.ph:
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %0 = phi %union.tree_node** [ getelementptr inbounds ([32 x %union.tree_node*]* @c_global_trees, i64 0, i64 29), %for.body.lr.ph ], [ %3, %for.inc ]
+  %decl25 = phi %union.tree_node*** [ getelementptr inbounds ([4 x %struct.fname_var_t]* @fname_vars, i64 0, i64 0, i32 0), %for.body.lr.ph ], [ %decl, %for.inc ]
+  %idxprom24 = phi i64 [ 0, %for.body.lr.ph ], [ %idxprom, %for.inc ]
+  %ix.023 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %saved.022 = phi %union.tree_node* [ null, %for.body.lr.ph ], [ %saved.1, %for.inc ]
+  %1 = load %union.tree_node** %0, align 8, !tbaa !3
+  %tobool5 = icmp eq %union.tree_node* %1, null
+  br i1 %tobool5, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %call = tail call %union.tree_node* @build_int_2_wide(i64 %idxprom24, i64 0) #8
+  %call6 = tail call %union.tree_node* @tree_cons(%union.tree_node* %1, %union.tree_node* %call, %union.tree_node* %saved.022) #8
+  %2 = load %union.tree_node*** %decl25, align 16, !tbaa !3
+  store %union.tree_node* null, %union.tree_node** %2, align 8, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %saved.1 = phi %union.tree_node* [ %call6, %if.then ], [ %saved.022, %for.body ]
+  %inc = add i32 %ix.023, 1
+  %idxprom = zext i32 %inc to i64
+  %decl = getelementptr inbounds [4 x %struct.fname_var_t]* @fname_vars, i64 0, i64 %idxprom, i32 0
+  %3 = load %union.tree_node*** %decl, align 16, !tbaa !3
+  %tobool = icmp eq %union.tree_node** %3, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  %tobool10 = icmp ne %union.tree_node* %saved.1, null
+  %4 = load %union.tree_node** getelementptr inbounds ([32 x %union.tree_node*]* @c_global_trees, i64 0, i64 30), align 16, !tbaa !3
+  %tobool11 = icmp ne %union.tree_node* %4, null
+  %or.cond = or i1 %tobool10, %tobool11
+  br i1 %or.cond, label %if.then12, label %if.end14
+
+if.then12:                                        ; preds = %for.end
+  %call13 = tail call %union.tree_node* @tree_cons(%union.tree_node* %saved.1, %union.tree_node* null, %union.tree_node* %4) #8
+  store %union.tree_node* %call13, %union.tree_node** getelementptr inbounds ([32 x %union.tree_node*]* @c_global_trees, i64 0, i64 30), align 16, !tbaa !3
+  br label %if.end14
+
+if.end14:                                         ; preds = %for.end, %if.then12
+  ret void
+}

@@ -1,0 +1,49 @@
+define internal fastcc i32 @combine_reversed_comparison_code(%struct.rtx_def* %exp) #0 {
+entry:
+  %call = tail call i32 @reversed_comparison_code(%struct.rtx_def* %exp, %struct.rtx_def* null) #6
+  %cmp = icmp eq i32 %call, 0
+  br i1 %cmp, label %lor.lhs.false, label %return
+
+lor.lhs.false:                                    ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %exp, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %idxprom29 = zext i32 %bf.clear to i64
+  %arrayidx1 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom29
+  %2 = load i32* %arrayidx1, align 4, !tbaa !7
+  %cmp2 = icmp eq i32 %2, 4
+  br i1 %cmp2, label %if.end, label %return
+
+if.end:                                           ; preds = %lor.lhs.false
+  %call6 = tail call fastcc %struct.rtx_def* @get_last_value(%struct.rtx_def* %0) #7
+  %tobool = icmp eq %struct.rtx_def* %call6, null
+  br i1 %tobool, label %return, label %lor.lhs.false7
+
+lor.lhs.false7:                                   ; preds = %if.end
+  %3 = bitcast %struct.rtx_def* %call6 to i32*
+  %bf.load8 = load i32* %3, align 8
+  %bf.clear9 = and i32 %bf.load8, 65535
+  %cmp10 = icmp eq i32 %bf.clear9, 74
+  br i1 %cmp10, label %if.end12, label %return
+
+if.end12:                                         ; preds = %lor.lhs.false7
+  %4 = bitcast %struct.rtx_def* %exp to i32*
+  %bf.load13 = load i32* %4, align 8
+  %bf.clear14 = and i32 %bf.load13, 65535
+  %fld15 = getelementptr inbounds %struct.rtx_def* %call6, i64 0, i32 1
+  %rtx17 = bitcast [1 x %union.rtunion_def]* %fld15 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx17, align 8, !tbaa !3
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %call6, i64 0, i32 1, i64 1
+  %rtx20 = bitcast %union.rtunion_def* %arrayidx19 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx20, align 8, !tbaa !3
+  %call21 = tail call i32 @reversed_comparison_code_parts(i32 %bf.clear14, %struct.rtx_def* %5, %struct.rtx_def* %6, %struct.rtx_def* null) #6
+  br label %return
+
+return:                                           ; preds = %if.end, %lor.lhs.false7, %entry, %lor.lhs.false, %if.end12
+  %retval.0 = phi i32 [ %call21, %if.end12 ], [ 0, %lor.lhs.false ], [ %call, %entry ], [ 0, %lor.lhs.false7 ], [ 0, %if.end ]
+  ret i32 %retval.0
+}

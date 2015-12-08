@@ -1,0 +1,56 @@
+define i8* @sscan(i32 %argc, i8** nocapture %argv, i32* nocapture %i) #2 {
+entry:
+  %0 = load i32* %i, align 4, !tbaa !4
+  %add = add nsw i32 %0, 1
+  %cmp = icmp slt i32 %add, %argc
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %add to i64
+  %arrayidx = getelementptr inbounds i8** %argv, i64 %idxprom
+  %1 = load i8** %arrayidx, align 8, !tbaa !0
+  %2 = load i8* %1, align 1, !tbaa !1
+  %cmp3 = icmp eq i8 %2, 45
+  br i1 %cmp3, label %land.lhs.true, label %if.end21
+
+land.lhs.true:                                    ; preds = %if.then
+  %add5 = add nsw i32 %0, 2
+  %cmp6 = icmp slt i32 %add5, %argc
+  br i1 %cmp6, label %land.lhs.true8, label %if.end21
+
+land.lhs.true8:                                   ; preds = %land.lhs.true
+  %idxprom10 = sext i32 %add5 to i64
+  %arrayidx11 = getelementptr inbounds i8** %argv, i64 %idxprom10
+  %3 = load i8** %arrayidx11, align 8, !tbaa !0
+  %4 = load i8* %3, align 1, !tbaa !1
+  %cmp14 = icmp eq i8 %4, 45
+  br i1 %cmp14, label %if.end21, label %if.then16
+
+if.then16:                                        ; preds = %land.lhs.true8
+  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %idxprom17 = sext i32 %0 to i64
+  %arrayidx18 = getelementptr inbounds i8** %argv, i64 %idxprom17
+  %6 = load i8** %arrayidx18, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str11, i64 0, i64 0), i8* %6) #10
+  br label %if.end21
+
+if.else:                                          ; preds = %entry
+  %idxprom19 = sext i32 %0 to i64
+  %arrayidx20 = getelementptr inbounds i8** %argv, i64 %idxprom19
+  %7 = load i8** %arrayidx20, align 8, !tbaa !0
+  %cmp.i = icmp eq i8* %7, null
+  br i1 %cmp.i, label %if.end21, label %if.then.i
+
+if.then.i:                                        ; preds = %if.else
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str85, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0), i8* %7) #10
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then.i, %if.else, %land.lhs.true8, %if.then, %land.lhs.true, %if.then16
+  %8 = load i32* %i, align 4, !tbaa !4
+  %inc = add nsw i32 %8, 1
+  store i32 %inc, i32* %i, align 4, !tbaa !4
+  %idxprom22 = sext i32 %inc to i64
+  %arrayidx23 = getelementptr inbounds i8** %argv, i64 %idxprom22
+  %9 = load i8** %arrayidx23, align 8, !tbaa !0
+  ret i8* %9
+}

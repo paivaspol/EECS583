@@ -1,0 +1,31 @@
+define i32 @min_precision(%union.tree_node* %value, i32 %unsignedp) #0 {
+entry:
+  %call = tail call i32 @tree_int_cst_sgn(%union.tree_node* %value) #8
+  %cmp = icmp slt i32 %call, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %type = getelementptr inbounds %union.tree_node* %value, i64 0, i32 0, i32 0, i32 1
+  %0 = load %union.tree_node** %type, align 8, !tbaa !3
+  %call1 = tail call %union.tree_node* @build1(i32 90, %union.tree_node* %0, %union.tree_node* %value) #8
+  %call2 = tail call %union.tree_node* @fold(%union.tree_node* %call1) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %value.addr.0 = phi %union.tree_node* [ %call2, %if.then ], [ %value, %entry ]
+  %call3 = tail call i32 @integer_zerop(%union.tree_node* %value.addr.0) #8
+  %tobool = icmp eq i32 %call3, 0
+  br i1 %tobool, label %if.else, label %if.end6
+
+if.else:                                          ; preds = %if.end
+  %call5 = tail call i32 @tree_floor_log2(%union.tree_node* %value.addr.0) #8
+  %phitmp = add i32 %call5, 1
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end, %if.else
+  %log.0 = phi i32 [ %phitmp, %if.else ], [ 1, %if.end ]
+  %lnot = icmp eq i32 %unsignedp, 0
+  %lnot.ext = zext i1 %lnot to i32
+  %add8 = add nsw i32 %log.0, %lnot.ext
+  ret i32 %add8
+}

@@ -1,0 +1,58 @@
+define internal fastcc void @compute_insns_for_mem(%struct.rtx_def* %insns, %struct.rtx_def* %last_insn, %struct.hash_table* %ht) #0 {
+entry:
+  %insn = alloca %struct.rtx_def*, align 8
+  %ifmwi = alloca %struct.insns_for_mem_walk_info, align 8
+  %ht1 = getelementptr inbounds %struct.insns_for_mem_walk_info* %ifmwi, i64 0, i32 0
+  store %struct.hash_table* %ht, %struct.hash_table** %ht1, align 8, !tbaa !0
+  %pass = getelementptr inbounds %struct.insns_for_mem_walk_info* %ifmwi, i64 0, i32 2
+  store i32 0, i32* %pass, align 8, !tbaa !4
+  %cmp415 = icmp eq %struct.rtx_def* %insns, %last_insn
+  %insn8 = getelementptr inbounds %struct.insns_for_mem_walk_info* %ifmwi, i64 0, i32 1
+  %0 = bitcast %struct.insns_for_mem_walk_info* %ifmwi to i8*
+  br label %for.cond3.preheader
+
+for.cond3.preheader:                              ; preds = %entry, %for.inc10
+  %1 = phi i32 [ 0, %entry ], [ %inc, %for.inc10 ]
+  store %struct.rtx_def* %insns, %struct.rtx_def** %insn, align 8, !tbaa !0
+  br i1 %cmp415, label %for.inc10, label %for.body5
+
+for.body5:                                        ; preds = %for.cond3.preheader, %for.inc
+  %storemerge16 = phi %struct.rtx_def* [ %5, %for.inc ], [ %insns, %for.cond3.preheader ]
+  %2 = bitcast %struct.rtx_def* %storemerge16 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom14 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom14
+  %3 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp6 = icmp eq i8 %3, 105
+  br i1 %cmp6, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body5
+  store %struct.rtx_def* %storemerge16, %struct.rtx_def** %insn8, align 8, !tbaa !0
+  %call = call i32 @for_each_rtx(%struct.rtx_def** %insn, i32 (%struct.rtx_def**, i8*)* @insns_for_mem_walk, i8* %0) #10
+  %.pre = load %struct.rtx_def** %insn, align 8, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body5, %if.then
+  %4 = phi %struct.rtx_def* [ %storemerge16, %for.body5 ], [ %.pre, %if.then ]
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx9 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  store %struct.rtx_def* %5, %struct.rtx_def** %insn, align 8, !tbaa !0
+  %cmp4 = icmp eq %struct.rtx_def* %5, %last_insn
+  br i1 %cmp4, label %for.cond3.for.inc10_crit_edge, label %for.body5
+
+for.cond3.for.inc10_crit_edge:                    ; preds = %for.inc
+  %.pre17 = load i32* %pass, align 8, !tbaa !4
+  br label %for.inc10
+
+for.inc10:                                        ; preds = %for.cond3.preheader, %for.cond3.for.inc10_crit_edge
+  %6 = phi i32 [ %.pre17, %for.cond3.for.inc10_crit_edge ], [ %1, %for.cond3.preheader ]
+  %inc = add nsw i32 %6, 1
+  store i32 %inc, i32* %pass, align 8, !tbaa !4
+  %cmp = icmp slt i32 %inc, 2
+  br i1 %cmp, label %for.cond3.preheader, label %for.end12
+
+for.end12:                                        ; preds = %for.inc10
+  ret void
+}

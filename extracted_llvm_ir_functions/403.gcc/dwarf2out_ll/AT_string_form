@@ -1,0 +1,59 @@
+define internal fastcc i32 @AT_string_form(%struct.dw_attr_struct* %a) #1 {
+entry:
+  %label = alloca [32 x i8], align 16
+  %tobool = icmp eq %struct.dw_attr_struct* %a, null
+  br i1 %tobool, label %if.end15, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %val_class.i = getelementptr inbounds %struct.dw_attr_struct* %a, i64 0, i32 2, i32 0
+  %0 = load i32* %val_class.i, align 4, !tbaa !1
+  %cmp = icmp eq i32 %0, 14
+  br i1 %cmp, label %if.then, label %if.end15
+
+if.then:                                          ; preds = %land.lhs.true
+  %v = getelementptr inbounds %struct.dw_attr_struct* %a, i64 0, i32 2, i32 1
+  %val_str = bitcast %union.anon.3* %v to %struct.indirect_string_node**
+  %1 = load %struct.indirect_string_node** %val_str, align 8, !tbaa !4
+  %form = getelementptr inbounds %struct.indirect_string_node* %1, i64 0, i32 2
+  %2 = load i32* %form, align 4, !tbaa !0
+  %tobool1 = icmp eq i32 %2, 0
+  br i1 %tobool1, label %if.end, label %return
+
+if.end:                                           ; preds = %if.then
+  %len4 = getelementptr inbounds %struct.indirect_string_node* %1, i64 0, i32 0, i32 0
+  %3 = load i32* %len4, align 4, !tbaa !0
+  %add = add i32 %3, 1
+  %cmp5 = icmp ult i32 %add, 5
+  br i1 %cmp5, label %if.then7, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end
+  %refcount = getelementptr inbounds %struct.indirect_string_node* %1, i64 0, i32 1
+  %4 = load i32* %refcount, align 4, !tbaa !0
+  %cmp6 = icmp eq i32 %4, 0
+  br i1 %cmp6, label %if.then7, label %do.body
+
+if.then7:                                         ; preds = %lor.lhs.false, %if.end
+  store i32 8, i32* %form, align 4, !tbaa !0
+  br label %return
+
+do.body:                                          ; preds = %lor.lhs.false
+  %arraydecay = getelementptr inbounds [32 x i8]* %label, i64 0, i64 0
+  %5 = load i32* @const_labelno, align 4, !tbaa !0
+  %call10 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str60, i64 0, i64 0), i32 %5) #9
+  %6 = load i32* @const_labelno, align 4, !tbaa !0
+  %inc = add nsw i32 %6, 1
+  store i32 %inc, i32* @const_labelno, align 4, !tbaa !0
+  %call12 = call noalias i8* @xstrdup(i8* %arraydecay) #9
+  %label13 = getelementptr inbounds %struct.indirect_string_node* %1, i64 0, i32 3
+  store i8* %call12, i8** %label13, align 8, !tbaa !4
+  store i32 14, i32* %form, align 4, !tbaa !0
+  br label %return
+
+if.end15:                                         ; preds = %entry, %land.lhs.true
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4560, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.AT_string_form, i64 0, i64 0)) #12
+  unreachable
+
+return:                                           ; preds = %if.then, %do.body, %if.then7
+  %retval.0 = phi i32 [ 8, %if.then7 ], [ 14, %do.body ], [ %2, %if.then ]
+  ret i32 %retval.0
+}

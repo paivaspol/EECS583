@@ -1,0 +1,33 @@
+define void @mdef_free_recursive_lc(%struct.ph_lc_s* %lc) #0 {
+entry:
+  %cmp = icmp eq %struct.ph_lc_s* %lc, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %rclist = getelementptr inbounds %struct.ph_lc_s* %lc, i64 0, i32 1
+  %0 = load %struct.ph_rc_s** %rclist, align 8, !tbaa !3
+  %tobool = icmp eq %struct.ph_rc_s* %0, null
+  br i1 %tobool, label %if.end3, label %if.then1
+
+if.then1:                                         ; preds = %if.end
+  tail call void @mdef_free_recursive_rc(%struct.ph_rc_s* %0) #8
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %if.then1
+  %next = getelementptr inbounds %struct.ph_lc_s* %lc, i64 0, i32 2
+  %1 = load %struct.ph_lc_s** %next, align 8, !tbaa !3
+  %tobool4 = icmp eq %struct.ph_lc_s* %1, null
+  br i1 %tobool4, label %if.end7, label %if.then5
+
+if.then5:                                         ; preds = %if.end3
+  tail call void @mdef_free_recursive_lc(%struct.ph_lc_s* %1) #8
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end3, %if.then5
+  %2 = getelementptr inbounds %struct.ph_lc_s* %lc, i64 0, i32 0
+  tail call void @ckd_free(i8* %2) #7
+  br label %return
+
+return:                                           ; preds = %entry, %if.end7
+  ret void
+}

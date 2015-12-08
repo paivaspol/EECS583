@@ -1,0 +1,48 @@
+define internal i32 @size_htab_eq(i8* nocapture %x, i8* nocapture %y) #4 {
+entry:
+  %high = getelementptr inbounds i8* %x, i64 40
+  %0 = bitcast i8* %high to i64*
+  %1 = load i64* %0, align 8, !tbaa !0
+  %high4 = getelementptr inbounds i8* %y, i64 40
+  %2 = bitcast i8* %high4 to i64*
+  %3 = load i64* %2, align 8, !tbaa !0
+  %cmp = icmp eq i64 %1, %3
+  br i1 %cmp, label %land.lhs.true, label %land.end
+
+land.lhs.true:                                    ; preds = %entry
+  %int_cst3 = getelementptr inbounds i8* %y, i64 32
+  %int_cst1 = getelementptr inbounds i8* %x, i64 32
+  %low = bitcast i8* %int_cst1 to i64*
+  %4 = load i64* %low, align 8, !tbaa !0
+  %low9 = bitcast i8* %int_cst3 to i64*
+  %5 = load i64* %low9, align 8, !tbaa !0
+  %cmp10 = icmp eq i64 %4, %5
+  br i1 %cmp10, label %land.lhs.true11, label %land.end
+
+land.lhs.true11:                                  ; preds = %land.lhs.true
+  %type = getelementptr inbounds i8* %x, i64 8
+  %6 = bitcast i8* %type to %union.tree_node**
+  %7 = load %union.tree_node** %6, align 8, !tbaa !3
+  %type13 = getelementptr inbounds i8* %y, i64 8
+  %8 = bitcast i8* %type13 to %union.tree_node**
+  %9 = load %union.tree_node** %8, align 8, !tbaa !3
+  %cmp14 = icmp eq %union.tree_node* %7, %9
+  br i1 %cmp14, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %land.lhs.true11
+  %public_flag = getelementptr inbounds i8* %x, i64 16
+  %10 = bitcast i8* %public_flag to i32*
+  %bf.load = load i32* %10, align 8
+  %public_flag17 = getelementptr inbounds i8* %y, i64 16
+  %11 = bitcast i8* %public_flag17 to i32*
+  %bf.load18 = load i32* %11, align 8
+  %bf.lshr28 = xor i32 %bf.load18, %bf.load
+  %12 = and i32 %bf.lshr28, 524288
+  %cmp21 = icmp eq i32 %12, 0
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %land.lhs.true11, %land.lhs.true, %entry
+  %13 = phi i1 [ false, %land.lhs.true11 ], [ false, %land.lhs.true ], [ false, %entry ], [ %cmp21, %land.rhs ]
+  %land.ext = zext i1 %13 to i32
+  ret i32 %land.ext
+}

@@ -1,0 +1,31 @@
+define %struct.rtx_def* @stabilize(%struct.rtx_def* %x) #1 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  br i1 %cmp, label %lor.lhs.false, label %return
+
+lor.lhs.false:                                    ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %call = tail call i32 @rtx_unstable_p(%struct.rtx_def* %1) #4
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false
+  %2 = load i32* @target_flags, align 4, !tbaa !5
+  %and = lshr i32 %2, 25
+  %3 = and i32 %and, 1
+  %4 = or i32 %3, 4
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %call5 = tail call %struct.rtx_def* @copy_all_regs(%struct.rtx_def* %5) #5
+  %call6 = tail call %struct.rtx_def* @force_reg(i32 %4, %struct.rtx_def* %call5) #5
+  %call7 = tail call %struct.rtx_def* @replace_equiv_address(%struct.rtx_def* %x, %struct.rtx_def* %call6) #4
+  br label %return
+
+return:                                           ; preds = %entry, %lor.lhs.false, %if.end
+  %retval.0 = phi %struct.rtx_def* [ %call7, %if.end ], [ %x, %lor.lhs.false ], [ %x, %entry ]
+  ret %struct.rtx_def* %retval.0
+}

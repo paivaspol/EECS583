@@ -1,0 +1,55 @@
+define internal fastcc %struct.format_flag_spec* @get_flag_spec(%struct.format_flag_spec* %spec, i32 %flag, i8* %predicates) #0 {
+entry:
+  %flag_char44 = getelementptr inbounds %struct.format_flag_spec* %spec, i64 0, i32 0
+  %0 = load i32* %flag_char44, align 4, !tbaa !0
+  %cmp45 = icmp eq i32 %0, 0
+  br i1 %cmp45, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %cmp5 = icmp eq i8* %predicates, null
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %1 = phi i32 [ %0, %for.body.lr.ph ], [ %3, %for.inc ]
+  %arrayidx48 = phi %struct.format_flag_spec* [ %spec, %for.body.lr.ph ], [ %arrayidx, %for.inc ]
+  %cmp4 = icmp eq i32 %1, %flag
+  br i1 %cmp4, label %if.end, label %for.inc
+
+if.end:                                           ; preds = %for.body
+  %predicate = getelementptr inbounds %struct.format_flag_spec* %spec, i64 %indvars.iv, i32 1
+  %2 = load i32* %predicate, align 4, !tbaa !0
+  %cmp21 = icmp eq i32 %2, 0
+  br i1 %cmp5, label %if.else, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  br i1 %cmp21, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then6
+  %call = tail call i8* @strchr(i8* %predicates, i32 %2) #10
+  %cmp13 = icmp eq i8* %call, null
+  br i1 %cmp13, label %for.inc, label %return
+
+if.else:                                          ; preds = %if.end
+  br i1 %cmp21, label %return, label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true, %if.then6, %for.body, %if.else
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %arrayidx = getelementptr inbounds %struct.format_flag_spec* %spec, i64 %indvars.iv.next
+  %flag_char = getelementptr inbounds %struct.format_flag_spec* %arrayidx, i64 0, i32 0
+  %3 = load i32* %flag_char, align 4, !tbaa !0
+  %cmp = icmp eq i32 %3, 0
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  %cmp27 = icmp eq i8* %predicates, null
+  br i1 %cmp27, label %if.then28, label %return
+
+if.then28:                                        ; preds = %for.end
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str16, i64 0, i64 0), i32 1276, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.get_flag_spec, i64 0, i64 0)) #9
+  unreachable
+
+return:                                           ; preds = %if.else, %land.lhs.true, %for.end
+  %retval.0 = phi %struct.format_flag_spec* [ null, %for.end ], [ %arrayidx48, %land.lhs.true ], [ %arrayidx48, %if.else ]
+  ret %struct.format_flag_spec* %retval.0
+}

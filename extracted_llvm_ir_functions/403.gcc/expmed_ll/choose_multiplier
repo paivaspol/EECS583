@@ -1,0 +1,173 @@
+define internal fastcc i64 @choose_multiplier(i64 %d, i32 %n, i32 %precision, i64* nocapture %multiplier_ptr, i32* nocapture %post_shift_ptr, i32* nocapture %lgup_ptr) #0 {
+entry:
+  %mhigh_hi = alloca i64, align 8
+  %mlow_hi = alloca i64, align 8
+  %mhigh_lo = alloca i64, align 8
+  %mlow_lo = alloca i64, align 8
+  %dummy1 = alloca i64, align 8
+  %dummy2 = alloca i64, align 8
+  %sub.i = add i64 %d, -1
+  %call.i = call i32 @floor_log2_wide(i64 %sub.i) #4
+  %add.i = add nsw i32 %call.i, 1
+  %cmp = icmp slt i32 %call.i, %n
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 2622, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.choose_multiplier, i64 0, i64 0)) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %add = add nsw i32 %add.i, %n
+  %sub = sub nsw i32 %add, %precision
+  %cmp2 = icmp eq i32 %add, 128
+  br i1 %cmp2, label %if.then3, label %if.end4
+
+if.then3:                                         ; preds = %if.end
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 2631, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.choose_multiplier, i64 0, i64 0)) #5
+  unreachable
+
+if.end4:                                          ; preds = %if.end
+  %cmp5 = icmp sgt i32 %add, 63
+  br i1 %cmp5, label %if.then6, label %if.else
+
+if.then6:                                         ; preds = %if.end4
+  %sub7 = add nsw i32 %add, -64
+  %sh_prom = zext i32 %sub7 to i64
+  %shl = shl i64 1, %sh_prom
+  br label %if.end10
+
+if.else:                                          ; preds = %if.end4
+  %sh_prom8 = zext i32 %add to i64
+  %shl9 = shl i64 1, %sh_prom8
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.else, %if.then6
+  %nh.0 = phi i64 [ %shl, %if.then6 ], [ 0, %if.else ]
+  %nl.0 = phi i64 [ 0, %if.then6 ], [ %shl9, %if.else ]
+  %call11 = call i32 @div_and_round_double(i32 62, i32 1, i64 %nl.0, i64 %nh.0, i64 %d, i64 0, i64* %mlow_lo, i64* %mlow_hi, i64* %dummy1, i64* %dummy2) #4
+  %cmp12 = icmp sgt i32 %sub, 63
+  br i1 %cmp12, label %if.then13, label %if.else17
+
+if.then13:                                        ; preds = %if.end10
+  %sub14 = add nsw i32 %sub, -64
+  %sh_prom15 = zext i32 %sub14 to i64
+  %shl16 = shl i64 1, %sh_prom15
+  %or = or i64 %nh.0, %shl16
+  br label %if.end21
+
+if.else17:                                        ; preds = %if.end10
+  %sh_prom18 = zext i32 %sub to i64
+  %shl19 = shl i64 1, %sh_prom18
+  %or20 = or i64 %nl.0, %shl19
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.else17, %if.then13
+  %nh.1 = phi i64 [ %or, %if.then13 ], [ %nh.0, %if.else17 ]
+  %nl.1 = phi i64 [ %nl.0, %if.then13 ], [ %or20, %if.else17 ]
+  %call22 = call i32 @div_and_round_double(i32 62, i32 1, i64 %nl.1, i64 %nh.1, i64 %d, i64 0, i64* %mhigh_lo, i64* %mhigh_hi, i64* %dummy1, i64* %dummy2) #4
+  %0 = load i64* %mhigh_hi, align 8, !tbaa !8
+  %tobool = icmp eq i64 %0, 0
+  br i1 %tobool, label %lor.lhs.false, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end21
+  %sub23 = sub i64 %nh.1, %d
+  %cmp24 = icmp ult i64 %sub23, %d
+  br i1 %cmp24, label %if.end26, label %if.then25
+
+if.then25:                                        ; preds = %land.lhs.true
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 2657, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.choose_multiplier, i64 0, i64 0)) #5
+  unreachable
+
+if.end26:                                         ; preds = %land.lhs.true
+  %cmp27 = icmp sgt i64 %0, 1
+  br i1 %cmp27, label %if.then29, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end21, %if.end26
+  %1 = phi i64 [ %0, %if.end26 ], [ 0, %if.end21 ]
+  %2 = load i64* %mlow_hi, align 8, !tbaa !8
+  %cmp28 = icmp sgt i64 %2, 1
+  br i1 %cmp28, label %if.then29, label %if.end30
+
+if.then29:                                        ; preds = %lor.lhs.false, %if.end26
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 2659, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.choose_multiplier, i64 0, i64 0)) #5
+  unreachable
+
+if.end30:                                         ; preds = %lor.lhs.false
+  %cmp31 = icmp slt i64 %2, %1
+  br i1 %cmp31, label %for.cond.preheader, label %lor.lhs.false32
+
+for.cond.preheader:                               ; preds = %land.lhs.true34, %if.end30
+  %cmp3883 = icmp sgt i32 %call.i, -1
+  br i1 %cmp3883, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %.pre = load i64* %mlow_lo, align 8, !tbaa !8
+  %.pre86 = load i64* %mhigh_lo, align 8, !tbaa !8
+  %phitmp = shl i64 %2, 63
+  br label %for.body
+
+lor.lhs.false32:                                  ; preds = %if.end30
+  %cmp33 = icmp eq i64 %2, %1
+  br i1 %cmp33, label %land.lhs.true34, label %if.then36
+
+land.lhs.true34:                                  ; preds = %lor.lhs.false32
+  %3 = load i64* %mlow_lo, align 8, !tbaa !8
+  %4 = load i64* %mhigh_lo, align 8, !tbaa !8
+  %cmp35 = icmp ult i64 %3, %4
+  br i1 %cmp35, label %for.cond.preheader, label %if.then36
+
+if.then36:                                        ; preds = %land.lhs.true34, %lor.lhs.false32
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 2662, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.choose_multiplier, i64 0, i64 0)) #5
+  unreachable
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end46
+  %5 = phi i64 [ %.pre86, %for.body.lr.ph ], [ %or43, %if.end46 ]
+  %6 = phi i64 [ %1, %for.body.lr.ph ], [ 0, %if.end46 ]
+  %7 = phi i64 [ %.pre, %for.body.lr.ph ], [ %or40, %if.end46 ]
+  %8 = phi i64 [ %phitmp, %for.body.lr.ph ], [ 0, %if.end46 ]
+  %post_shift.084 = phi i32 [ %add.i, %for.body.lr.ph ], [ %dec, %if.end46 ]
+  %shr = lshr i64 %7, 1
+  %or40 = or i64 %shr, %8
+  %shl41 = shl i64 %6, 63
+  %shr42 = lshr i64 %5, 1
+  %or43 = or i64 %shr42, %shl41
+  %cmp44 = icmp ult i64 %or40, %or43
+  br i1 %cmp44, label %if.end46, label %for.end
+
+if.end46:                                         ; preds = %for.body
+  store i64 0, i64* %mlow_hi, align 8, !tbaa !8
+  store i64 %or40, i64* %mlow_lo, align 8, !tbaa !8
+  store i64 0, i64* %mhigh_hi, align 8, !tbaa !8
+  store i64 %or43, i64* %mhigh_lo, align 8, !tbaa !8
+  %dec = add nsw i32 %post_shift.084, -1
+  %cmp38 = icmp sgt i32 %dec, 0
+  br i1 %cmp38, label %for.body, label %for.end
+
+for.end:                                          ; preds = %if.end46, %for.body, %for.cond.preheader
+  %9 = phi i64 [ %1, %for.cond.preheader ], [ %6, %for.body ], [ 0, %if.end46 ]
+  %post_shift.0.lcssa = phi i32 [ %add.i, %for.cond.preheader ], [ %post_shift.084, %for.body ], [ %dec, %if.end46 ]
+  store i32 %post_shift.0.lcssa, i32* %post_shift_ptr, align 4, !tbaa !4
+  store i32 %add.i, i32* %lgup_ptr, align 4, !tbaa !4
+  %cmp47 = icmp slt i32 %n, 64
+  br i1 %cmp47, label %if.then48, label %if.else54
+
+if.then48:                                        ; preds = %for.end
+  %sh_prom49 = zext i32 %n to i64
+  %shl50 = shl i64 1, %sh_prom49
+  %sub51 = add i64 %shl50, -1
+  %10 = load i64* %mhigh_lo, align 8, !tbaa !8
+  %and = and i64 %10, %sub51
+  store i64 %and, i64* %multiplier_ptr, align 8, !tbaa !8
+  %cmp52 = icmp uge i64 %10, %sub51
+  %conv53 = zext i1 %cmp52 to i64
+  br label %return
+
+if.else54:                                        ; preds = %for.end
+  %11 = load i64* %mhigh_lo, align 8, !tbaa !8
+  store i64 %11, i64* %multiplier_ptr, align 8, !tbaa !8
+  br label %return
+
+return:                                           ; preds = %if.else54, %if.then48
+  %retval.0 = phi i64 [ %conv53, %if.then48 ], [ %9, %if.else54 ]
+  ret i64 %retval.0
+}

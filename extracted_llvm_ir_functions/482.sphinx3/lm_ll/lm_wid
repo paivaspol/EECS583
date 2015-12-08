@@ -1,0 +1,36 @@
+define zeroext i16 @lm_wid(%struct.lm_s* nocapture %lm, i8* nocapture %word) #0 {
+entry:
+  %n_ug = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 0
+  %0 = load i32* %n_ug, align 4, !tbaa !3
+  %cmp6 = icmp sgt i32 %0, 0
+  br i1 %cmp6, label %for.body.lr.ph, label %return
+
+for.body.lr.ph:                                   ; preds = %entry
+  %wordstr = getelementptr inbounds %struct.lm_s* %lm, i64 0, i32 4
+  %1 = load i8*** %wordstr, align 8, !tbaa !0
+  br label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %inc = add nsw i32 %i.07, 1
+  %2 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %2, %0
+  br i1 %cmp, label %for.body, label %return
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %i.07 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.cond ]
+  %arrayidx = getelementptr inbounds i8** %1, i64 %indvars.iv
+  %3 = load i8** %arrayidx, align 8, !tbaa !0
+  %call = tail call i32 @strcmp(i8* %3, i8* %word) #7
+  %cmp1 = icmp eq i32 %call, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp1, label %if.then, label %for.cond
+
+if.then:                                          ; preds = %for.body
+  %conv = trunc i32 %i.07 to i16
+  br label %return
+
+return:                                           ; preds = %entry, %for.cond, %if.then
+  %retval.0 = phi i16 [ %conv, %if.then ], [ -1, %for.cond ], [ -1, %entry ]
+  ret i16 %retval.0
+}

@@ -1,0 +1,31 @@
+define void @done_grid(%struct.t_grid* nocapture %grid) #0 {
+entry:
+  %cell_index = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 8
+  %0 = bitcast %struct.t_grid* %grid to i8*
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 32, i32 4, i1 false)
+  %1 = load i32** %cell_index, align 8, !tbaa !4
+  %2 = bitcast i32* %1 to i8*
+  tail call void @save_free(i8* getelementptr inbounds ([17 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 97, i8* %2) #5
+  %a = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 11
+  %3 = load i32** %a, align 8, !tbaa !4
+  %4 = bitcast i32* %3 to i8*
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 98, i8* %4) #5
+  %index = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 9
+  %5 = load i32** %index, align 8, !tbaa !4
+  %6 = bitcast i32* %5 to i8*
+  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 99, i8* %6) #5
+  %nra = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 10
+  %7 = load i32** %nra, align 8, !tbaa !4
+  %8 = bitcast i32* %7 to i8*
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 100, i8* %8) #5
+  %9 = load %struct._IO_FILE** @debug, align 8, !tbaa !4
+  %tobool = icmp eq %struct._IO_FILE* %9, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %10 = tail call i64 @fwrite(i8* getelementptr inbounds ([44 x i8]* @.str7, i64 0, i64 0), i64 43, i64 1, %struct._IO_FILE* %9)
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

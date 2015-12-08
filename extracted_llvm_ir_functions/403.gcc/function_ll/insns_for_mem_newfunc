@@ -1,0 +1,17 @@
+define internal %struct.hash_entry* @insns_for_mem_newfunc(%struct.hash_entry* %he, %struct.hash_table* %ht, i8* nocapture %k) #0 {
+entry:
+  %tobool = icmp eq %struct.hash_entry* %he, null
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %call = tail call i8* @hash_allocate(%struct.hash_table* %ht, i32 32) #10
+  %insns = getelementptr inbounds i8* %call, i64 24
+  %0 = bitcast i8* %insns to %struct.rtx_def**
+  store %struct.rtx_def* null, %struct.rtx_def** %0, align 8, !tbaa !0
+  %he1 = bitcast i8* %call to %struct.hash_entry*
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi %struct.hash_entry* [ %he1, %if.end ], [ %he, %entry ]
+  ret %struct.hash_entry* %retval.0
+}

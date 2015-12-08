@@ -1,0 +1,55 @@
+define internal i32 @discard_useless_locs(i8** nocapture %x, i8* nocapture %info) #1 {
+entry:
+  %0 = load i8** %x, align 8, !tbaa !0
+  %locs = getelementptr inbounds i8* %0, i64 16
+  %1 = bitcast i8* %locs to %struct.elt_loc_list**
+  %2 = load %struct.elt_loc_list** %1, align 8, !tbaa !0
+  %cmp = icmp eq %struct.elt_loc_list* %2, null
+  br i1 %cmp, label %if.end8, label %while.body.lr.ph
+
+while.cond.outer.loopexit:                        ; preds = %while.body
+  %tobool13 = icmp eq %struct.elt_loc_list* %6, null
+  br i1 %tobool13, label %while.end, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %entry, %while.cond.outer.loopexit
+  %3 = phi %struct.elt_loc_list* [ %6, %while.cond.outer.loopexit ], [ %2, %entry ]
+  %p.0.ph15 = phi %struct.elt_loc_list** [ %next, %while.cond.outer.loopexit ], [ %1, %entry ]
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.then
+  %4 = phi %struct.elt_loc_list* [ %3, %while.body.lr.ph ], [ %8, %if.then ]
+  %loc = getelementptr inbounds %struct.elt_loc_list* %4, i64 0, i32 1
+  %5 = load %struct.rtx_def** %loc, align 8, !tbaa !0
+  %call = tail call i32 @references_value_p(%struct.rtx_def* %5, i32 1) #7
+  %tobool2 = icmp eq i32 %call, 0
+  %next = getelementptr inbounds %struct.elt_loc_list* %4, i64 0, i32 0
+  %6 = load %struct.elt_loc_list** %next, align 8, !tbaa !0
+  br i1 %tobool2, label %while.cond.outer.loopexit, label %if.then
+
+if.then:                                          ; preds = %while.body
+  store %struct.elt_loc_list* %6, %struct.elt_loc_list** %p.0.ph15, align 8, !tbaa !0
+  %7 = load %struct.elt_loc_list** @empty_elt_loc_lists, align 8, !tbaa !0
+  store %struct.elt_loc_list* %7, %struct.elt_loc_list** %next, align 8, !tbaa !0
+  store %struct.elt_loc_list* %4, %struct.elt_loc_list** @empty_elt_loc_lists, align 8, !tbaa !0
+  %8 = load %struct.elt_loc_list** %p.0.ph15, align 8, !tbaa !0
+  %tobool = icmp eq %struct.elt_loc_list* %8, null
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.cond.outer.loopexit, %if.then
+  br i1 %cmp, label %if.end8, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %while.end
+  %9 = load %struct.elt_loc_list** %1, align 8, !tbaa !0
+  %cmp5 = icmp eq %struct.elt_loc_list* %9, null
+  br i1 %cmp5, label %if.then7, label %if.end8
+
+if.then7:                                         ; preds = %land.lhs.true
+  %10 = load i32* @n_useless_values, align 4, !tbaa !3
+  %inc = add nsw i32 %10, 1
+  store i32 %inc, i32* @n_useless_values, align 4, !tbaa !3
+  store i1 true, i1* @values_became_useless, align 1
+  br label %if.end8
+
+if.end8:                                          ; preds = %entry, %while.end, %if.then7, %land.lhs.true
+  ret i32 1
+}

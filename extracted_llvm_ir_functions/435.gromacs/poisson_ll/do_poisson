@@ -1,0 +1,103 @@
+define float @do_poisson(%struct._IO_FILE* %log, i32 %bVerbose, %struct.t_inputrec* nocapture %ir, i32 %natoms, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_commrec* nocapture %cr, %struct.t_nrnb* %nrnb, i32* nocapture %nit, i32 %bOld) #0 {
+entry:
+  %.b53 = load i1* @do_poisson.bFirst, align 1
+  br i1 %.b53, label %entry.if.end18_crit_edge, label %if.then
+
+entry.if.end18_crit_edge:                         ; preds = %entry
+  %.pre57 = load %struct.t_PSgrid** @do_poisson.rho, align 8, !tbaa !3
+  br label %if.end18
+
+if.then:                                          ; preds = %entry
+  %userint1 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 72
+  %0 = load i32* %userint1, align 4, !tbaa !0
+  store i32 %0, i32* @do_poisson.maxnit, align 4, !tbaa !0
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([55 x i8]* @.str9, i64 0, i64 0), i64 54, i64 1, %struct._IO_FILE* %log)
+  %nkx = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 17
+  %2 = load i32* %nkx, align 4, !tbaa !0
+  %nky = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 18
+  %3 = load i32* %nky, align 4, !tbaa !0
+  %nkz = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 19
+  %4 = load i32* %nkz, align 4, !tbaa !0
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([27 x i8]* @.str10, i64 0, i64 0), i32 %2, i32 %3, i32 %4) #4
+  %5 = load i32* %nkx, align 4, !tbaa !0
+  %cmp = icmp slt i32 %5, 4
+  br i1 %cmp, label %if.then8, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.then
+  %6 = load i32* %nky, align 4, !tbaa !0
+  %cmp4 = icmp slt i32 %6, 4
+  br i1 %cmp4, label %if.then8, label %lor.lhs.false5
+
+lor.lhs.false5:                                   ; preds = %lor.lhs.false
+  %7 = load i32* %nkz, align 4, !tbaa !0
+  %cmp7 = icmp slt i32 %7, 4
+  br i1 %cmp7, label %if.then8, label %if.end
+
+if.then8:                                         ; preds = %lor.lhs.false5, %lor.lhs.false, %if.then
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([49 x i8]* @.str11, i64 0, i64 0)) #4
+  %.pre = load i32* %nkx, align 4, !tbaa !0
+  %.pre55 = load i32* %nky, align 4, !tbaa !0
+  %.pre56 = load i32* %nkz, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then8, %lor.lhs.false5
+  %8 = phi i32 [ %.pre56, %if.then8 ], [ %7, %lor.lhs.false5 ]
+  %9 = phi i32 [ %.pre55, %if.then8 ], [ %6, %lor.lhs.false5 ]
+  %10 = phi i32 [ %.pre, %if.then8 ], [ %5, %lor.lhs.false5 ]
+  %call12 = tail call %struct.t_PSgrid* @mk_PSgrid(i32 %10, i32 %9, i32 %8) #6
+  store %struct.t_PSgrid* %call12, %struct.t_PSgrid** @do_poisson.pot, align 8, !tbaa !3
+  %11 = load i32* %nkx, align 4, !tbaa !0
+  %12 = load i32* %nky, align 4, !tbaa !0
+  %13 = load i32* %nkz, align 4, !tbaa !0
+  %call16 = tail call %struct.t_PSgrid* @mk_PSgrid(i32 %11, i32 %12, i32 %13) #6
+  store %struct.t_PSgrid* %call16, %struct.t_PSgrid** @do_poisson.rho, align 8, !tbaa !3
+  %rcoulomb_switch = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 37
+  %14 = load float* %rcoulomb_switch, align 4, !tbaa !4
+  store float %14, float* @do_poisson.r1, align 4, !tbaa !4
+  %rcoulomb = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 38
+  %15 = load float* %rcoulomb, align 4, !tbaa !4
+  store float %15, float* @do_poisson.rc, align 4, !tbaa !4
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %if.end
+  %indvars.iv = phi i64 [ 0, %if.end ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds [3 x float]* @do_poisson.beta, i64 0, i64 %indvars.iv
+  store float 0x3FFD9999A0000000, float* %arrayidx, align 4, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %if.end18, label %for.body
+
+if.end18:                                         ; preds = %for.body, %entry.if.end18_crit_edge
+  %16 = phi %struct.t_PSgrid* [ %.pre57, %entry.if.end18_crit_edge ], [ %call16, %for.body ]
+  tail call void @clear_PSgrid(%struct.t_PSgrid* %16) #6
+  %17 = load float* @do_poisson.rc, align 4, !tbaa !4
+  %18 = load %struct.t_PSgrid** @do_poisson.rho, align 8, !tbaa !3
+  %19 = load float* @do_poisson.r1, align 4, !tbaa !4
+  tail call void @spread_q_poisson(%struct._IO_FILE* %log, i32 %bVerbose, i32 1, i32 %natoms, [3 x float]* %x, float* %charge, float* %box, float %17, %struct.t_PSgrid* %18, %struct.t_nrnb* %nrnb, i32 %bOld, float %19) #4
+  %20 = load %struct._IO_FILE** @debug, align 8, !tbaa !3
+  %21 = load %struct.t_PSgrid** @do_poisson.rho, align 8, !tbaa !3
+  tail call void @symmetrize_PSgrid(%struct._IO_FILE* %20, %struct.t_PSgrid* %21, float 0.000000e+00) #6
+  %.b = load i1* @do_poisson.bFirst, align 1
+  br i1 %.b, label %if.end21, label %if.then20
+
+if.then20:                                        ; preds = %if.end18
+  %22 = load %struct.t_PSgrid** @do_poisson.pot, align 8, !tbaa !3
+  %23 = load %struct.t_PSgrid** @do_poisson.rho, align 8, !tbaa !3
+  tail call void @copy_PSgrid(%struct.t_PSgrid* %22, %struct.t_PSgrid* %23) #6
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.end18, %if.then20
+  %24 = load %struct.t_PSgrid** @do_poisson.pot, align 8, !tbaa !3
+  %25 = load %struct.t_PSgrid** @do_poisson.rho, align 8, !tbaa !3
+  %26 = load i32* @do_poisson.maxnit, align 4, !tbaa !0
+  %call22 = tail call i32 @solve_poisson(%struct._IO_FILE* %log, %struct.t_PSgrid* %24, %struct.t_PSgrid* %25, i32 %bVerbose, %struct.t_nrnb* %nrnb, i32 %26, float 0x3F847AE140000000, float* %box) #4
+  store i32 %call22, i32* %nit, align 4, !tbaa !0
+  %27 = load %struct._IO_FILE** @debug, align 8, !tbaa !3
+  %28 = load %struct.t_PSgrid** @do_poisson.pot, align 8, !tbaa !3
+  tail call void @symmetrize_PSgrid(%struct._IO_FILE* %27, %struct.t_PSgrid* %28, float 0.000000e+00) #6
+  %29 = load %struct.t_PSgrid** @do_poisson.pot, align 8, !tbaa !3
+  %call23 = tail call float @ps_gather_f(%struct._IO_FILE* %log, i32 %bVerbose, i32 %natoms, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_PSgrid* %29, float* getelementptr inbounds ([3 x float]* @do_poisson.beta, i64 0, i64 0), %struct.t_nrnb* %nrnb) #4
+  store i1 true, i1* @do_poisson.bFirst, align 1
+  ret float %call23
+}

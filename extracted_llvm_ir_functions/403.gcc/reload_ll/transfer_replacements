@@ -1,0 +1,26 @@
+define void @transfer_replacements(i32 %to, i32 %from) #0 {
+entry:
+  %0 = load i32* @n_replacements, align 4, !tbaa !3
+  %cmp8 = icmp sgt i32 %0, 0
+  br i1 %cmp8, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
+  %what = getelementptr inbounds [150 x %struct.replacement]* @replacements, i64 0, i64 %indvars.iv, i32 2
+  %1 = load i32* %what, align 8, !tbaa !3
+  %cmp1 = icmp eq i32 %1, %from
+  br i1 %cmp1, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body
+  store i32 %to, i32* %what, align 8, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %2 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %2, %0
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

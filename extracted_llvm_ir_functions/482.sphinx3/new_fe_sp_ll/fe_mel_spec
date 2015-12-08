@@ -1,0 +1,71 @@
+define void @fe_mel_spec(%struct.fe_t* nocapture %FE, double* nocapture %spec, double* nocapture %mfspec) #0 {
+entry:
+  %SAMPLING_RATE = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 0
+  %0 = load float* %SAMPLING_RATE, align 4, !tbaa !4
+  %FFT_SIZE = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 5
+  %1 = load i32* %FFT_SIZE, align 4, !tbaa !0
+  %conv = sitofp i32 %1 to float
+  %div = fdiv float %0, %conv
+  %MEL_FB = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 11
+  %2 = load %struct.melfb_t** %MEL_FB, align 8, !tbaa !3
+  %num_filters49 = getelementptr inbounds %struct.melfb_t* %2, i64 0, i32 2
+  %3 = load i32* %num_filters49, align 4, !tbaa !0
+  %cmp50 = icmp sgt i32 %3, 0
+  br i1 %cmp50, label %for.body.lr.ph, label %for.end29
+
+for.body.lr.ph:                                   ; preds = %entry
+  %width45 = getelementptr inbounds %struct.melfb_t* %2, i64 0, i32 9
+  %4 = load i32** %width45, align 8, !tbaa !3
+  %left_apex.phi.trans.insert = getelementptr inbounds %struct.melfb_t* %2, i64 0, i32 8
+  %.pre = load float** %left_apex.phi.trans.insert, align 8, !tbaa !3
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc27
+  %indvars.iv53 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next54, %for.inc27 ]
+  %arrayidx = getelementptr inbounds float* %.pre, i64 %indvars.iv53
+  %5 = load float* %arrayidx, align 4, !tbaa !4
+  %arrayidx7 = getelementptr inbounds double* %mfspec, i64 %indvars.iv53
+  store double 0.000000e+00, double* %arrayidx7, align 8, !tbaa !6
+  %arrayidx1146 = getelementptr inbounds i32* %4, i64 %indvars.iv53
+  %6 = load i32* %arrayidx1146, align 4, !tbaa !0
+  %cmp1247 = icmp sgt i32 %6, 0
+  br i1 %cmp1247, label %for.body14.lr.ph, label %for.inc27
+
+for.body14.lr.ph:                                 ; preds = %for.body
+  %div3 = fdiv float %5, %div
+  %conv4 = fpext float %div3 to double
+  %add = fadd double %conv4, 5.000000e-01
+  %conv5 = fptosi double %add to i32
+  %7 = sext i32 %conv5 to i64
+  %filter_coeffs.phi.trans.insert = getelementptr inbounds %struct.melfb_t* %2, i64 0, i32 6
+  %.pre56 = load float*** %filter_coeffs.phi.trans.insert, align 8, !tbaa !3
+  %arrayidx18.phi.trans.insert = getelementptr inbounds float** %.pre56, i64 %indvars.iv53
+  %.pre57 = load float** %arrayidx18.phi.trans.insert, align 8, !tbaa !3
+  br label %for.body14
+
+for.body14:                                       ; preds = %for.body14.lr.ph, %for.body14
+  %8 = phi double [ 0.000000e+00, %for.body14.lr.ph ], [ %add26, %for.body14 ]
+  %indvars.iv = phi i64 [ 0, %for.body14.lr.ph ], [ %indvars.iv.next, %for.body14 ]
+  %arrayidx19 = getelementptr inbounds float* %.pre57, i64 %indvars.iv
+  %9 = load float* %arrayidx19, align 4, !tbaa !4
+  %conv20 = fpext float %9 to double
+  %10 = add nsw i64 %indvars.iv, %7
+  %arrayidx23 = getelementptr inbounds double* %spec, i64 %10
+  %11 = load double* %arrayidx23, align 8, !tbaa !6
+  %mul = fmul double %conv20, %11
+  %add26 = fadd double %8, %mul
+  store double %add26, double* %arrayidx7, align 8, !tbaa !6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %12 = trunc i64 %indvars.iv.next to i32
+  %cmp12 = icmp slt i32 %12, %6
+  br i1 %cmp12, label %for.body14, label %for.inc27
+
+for.inc27:                                        ; preds = %for.body14, %for.body
+  %indvars.iv.next54 = add i64 %indvars.iv53, 1
+  %13 = trunc i64 %indvars.iv.next54 to i32
+  %cmp = icmp slt i32 %13, %3
+  br i1 %cmp, label %for.body, label %for.end29
+
+for.end29:                                        ; preds = %for.inc27, %entry
+  ret void
+}

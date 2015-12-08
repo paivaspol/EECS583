@@ -1,0 +1,48 @@
+define internal fastcc i32 @coalesce_if_unconflicting(%struct.partition_def* %p, %struct.conflict_graph_def* %conflicts, i32 %reg1, i32 %reg2) #0 {
+entry:
+  %cmp = icmp sgt i32 %reg1, 52
+  %reg1.off = add i32 %reg1, -16
+  %switch = icmp ult i32 %reg1.off, 2
+  %or.cond = or i1 %cmp, %switch
+  br i1 %or.cond, label %lor.lhs.false4, label %return
+
+lor.lhs.false4:                                   ; preds = %entry
+  %cmp5 = icmp sgt i32 %reg2, 52
+  %reg2.off = add i32 %reg2, -16
+  %switch54 = icmp ult i32 %reg2.off, 2
+  %or.cond55 = or i1 %cmp5, %switch54
+  br i1 %or.cond55, label %if.end, label %return
+
+if.end:                                           ; preds = %lor.lhs.false4
+  %idxprom = sext i32 %reg1 to i64
+  %class_element = getelementptr inbounds %struct.partition_def* %p, i64 0, i32 1, i64 %idxprom, i32 0
+  %0 = load i32* %class_element, align 4, !tbaa !3
+  %idxprom10 = sext i32 %reg2 to i64
+  %class_element13 = getelementptr inbounds %struct.partition_def* %p, i64 0, i32 1, i64 %idxprom10, i32 0
+  %1 = load i32* %class_element13, align 4, !tbaa !3
+  %cmp14 = icmp eq i32 %0, %1
+  br i1 %cmp14, label %return, label %if.end16
+
+if.end16:                                         ; preds = %if.end
+  %call = tail call fastcc i32 @conflicting_hard_regs_p(i32 %0, i32 %1) #7
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %lor.lhs.false17, label %return
+
+lor.lhs.false17:                                  ; preds = %if.end16
+  %call18 = tail call i32 @conflict_graph_conflict_p(%struct.conflict_graph_def* %conflicts, i32 %0, i32 %1) #6
+  %tobool19 = icmp eq i32 %call18, 0
+  br i1 %tobool19, label %if.end21, label %return
+
+if.end21:                                         ; preds = %lor.lhs.false17
+  %call22 = tail call i32 @partition_union(%struct.partition_def* %p, i32 %0, i32 %1) #6
+  %idxprom23 = sext i32 %0 to i64
+  %class_element26 = getelementptr inbounds %struct.partition_def* %p, i64 0, i32 1, i64 %idxprom23, i32 0
+  %2 = load i32* %class_element26, align 4, !tbaa !3
+  tail call void @conflict_graph_merge_regs(%struct.conflict_graph_def* %conflicts, i32 %2, i32 %0) #6
+  tail call void @conflict_graph_merge_regs(%struct.conflict_graph_def* %conflicts, i32 %2, i32 %1) #6
+  br label %return
+
+return:                                           ; preds = %lor.lhs.false4, %entry, %if.end16, %lor.lhs.false17, %if.end, %if.end21
+  %retval.0 = phi i32 [ 1, %if.end21 ], [ 0, %if.end ], [ 0, %lor.lhs.false17 ], [ 0, %if.end16 ], [ 0, %entry ], [ 0, %lor.lhs.false4 ]
+  ret i32 %retval.0
+}

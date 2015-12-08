@@ -1,0 +1,32 @@
+define internal fastcc void @skip_rest_of_line(%struct.cpp_reader* %pfile) #0 {
+entry:
+  %context = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 10
+  %0 = load %struct.cpp_context** %context, align 8, !tbaa !3
+  %base_context = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 9
+  %cmp12 = icmp eq %struct.cpp_context* %0, %base_context
+  br i1 %cmp12, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  tail call void @_cpp_pop_context(%struct.cpp_reader* %pfile) #8
+  %1 = load %struct.cpp_context** %context, align 8, !tbaa !3
+  %cmp = icmp eq %struct.cpp_context* %1, %base_context
+  br i1 %cmp, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  %cur_token = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 15
+  %2 = load %struct.cpp_token** %cur_token, align 8, !tbaa !3
+  %type = getelementptr inbounds %struct.cpp_token* %2, i64 -1, i32 2
+  %bf.load = load i8* %type, align 2
+  %cmp1 = icmp eq i8 %bf.load, 67
+  br i1 %cmp1, label %if.end, label %while.cond2
+
+while.cond2:                                      ; preds = %while.end, %while.cond2
+  %call = tail call %struct.cpp_token* @_cpp_lex_token(%struct.cpp_reader* %pfile) #8
+  %type3 = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2
+  %bf.load4 = load i8* %type3, align 2
+  %cmp6 = icmp eq i8 %bf.load4, 67
+  br i1 %cmp6, label %if.end, label %while.cond2
+
+if.end:                                           ; preds = %while.cond2, %while.end
+  ret void
+}

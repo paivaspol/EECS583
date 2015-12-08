@@ -1,0 +1,71 @@
+define %struct.basic_block_def* @df_regno_bb(%struct.df* nocapture %df, i32 %regno) #4 {
+entry:
+  %idxprom = zext i32 %regno to i64
+  %regs = getelementptr inbounds %struct.df* %df, i64 0, i32 5
+  %0 = load %struct.reg_info** %regs, align 8, !tbaa !3
+  %defs1 = getelementptr inbounds %struct.reg_info* %0, i64 %idxprom, i32 0
+  %1 = load %struct.df_link** %defs1, align 8, !tbaa !3
+  %uses5 = getelementptr inbounds %struct.reg_info* %0, i64 %idxprom, i32 1
+  %2 = load %struct.df_link** %uses5, align 8, !tbaa !3
+  %tobool = icmp eq %struct.df_link* %1, null
+  br i1 %tobool, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %ref = getelementptr inbounds %struct.df_link* %1, i64 0, i32 1
+  %3 = load %struct.ref** %ref, align 8, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi %struct.ref* [ %3, %cond.true ], [ null, %entry ]
+  %tobool6 = icmp eq %struct.df_link* %2, null
+  br i1 %tobool6, label %cond.end10, label %cond.true7
+
+cond.true7:                                       ; preds = %cond.end
+  %ref8 = getelementptr inbounds %struct.df_link* %2, i64 0, i32 1
+  %4 = load %struct.ref** %ref8, align 8, !tbaa !3
+  br label %cond.end10
+
+cond.end10:                                       ; preds = %cond.end, %cond.true7
+  %cond11 = phi %struct.ref* [ %4, %cond.true7 ], [ null, %cond.end ]
+  %tobool12 = icmp eq %struct.ref* %cond, null
+  br i1 %tobool12, label %cond.end18, label %cond.true13
+
+cond.true13:                                      ; preds = %cond.end10
+  %insn = getelementptr inbounds %struct.ref* %cond, i64 0, i32 1
+  %5 = load %struct.rtx_def** %insn, align 8, !tbaa !3
+  %arrayidx14 = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx14 to i32*
+  %6 = load i32* %rtint, align 4, !tbaa !4
+  %idxprom15 = sext i32 %6 to i64
+  %7 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx16 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom15
+  %8 = load %struct.basic_block_def** %arrayidx16, align 8, !tbaa !3
+  br label %cond.end18
+
+cond.end18:                                       ; preds = %cond.end10, %cond.true13
+  %cond19 = phi %struct.basic_block_def* [ %8, %cond.true13 ], [ null, %cond.end10 ]
+  %tobool20 = icmp eq %struct.ref* %cond11, null
+  br i1 %tobool20, label %cond.end31, label %cond.true21
+
+cond.true21:                                      ; preds = %cond.end18
+  %insn22 = getelementptr inbounds %struct.ref* %cond11, i64 0, i32 1
+  %9 = load %struct.rtx_def** %insn22, align 8, !tbaa !3
+  %arrayidx24 = getelementptr inbounds %struct.rtx_def* %9, i64 0, i32 1, i64 0
+  %rtint25 = bitcast %union.rtunion_def* %arrayidx24 to i32*
+  %10 = load i32* %rtint25, align 4, !tbaa !4
+  %idxprom26 = sext i32 %10 to i64
+  %11 = load %struct.varray_head_tag** @basic_block_for_insn, align 8, !tbaa !3
+  %data27 = getelementptr inbounds %struct.varray_head_tag* %11, i64 0, i32 4
+  %bb28 = bitcast %union.varray_data_tag* %data27 to [1 x %struct.basic_block_def*]*
+  %arrayidx29 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb28, i64 0, i64 %idxprom26
+  %12 = load %struct.basic_block_def** %arrayidx29, align 8, !tbaa !3
+  br label %cond.end31
+
+cond.end31:                                       ; preds = %cond.end18, %cond.true21
+  %cond32 = phi %struct.basic_block_def* [ %12, %cond.true21 ], [ null, %cond.end18 ]
+  %cmp = icmp eq %struct.basic_block_def* %cond19, %cond32
+  %cond36 = select i1 %cmp, %struct.basic_block_def* %cond19, %struct.basic_block_def* null
+  ret %struct.basic_block_def* %cond36
+}

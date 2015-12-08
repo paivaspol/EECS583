@@ -1,0 +1,65 @@
+define i32 @insn_current_reference_address(%struct.rtx_def* nocapture %branch) #6 {
+entry:
+  %0 = load %struct.varray_head_tag** @insn_addresses_, align 8, !tbaa !0
+  %cmp = icmp eq %struct.varray_head_tag* %0, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %branch, i64 0, i32 1, i64 1
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 2
+  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx3, align 8, !tbaa !0
+  %3 = bitcast %struct.rtx_def* %branch to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp6 = icmp eq i32 %bf.clear, 33
+  br i1 %cmp6, label %if.end8, label %if.then7
+
+if.then7:                                         ; preds = %if.end
+  %4 = load i32* @insn_current_address, align 4, !tbaa !4
+  br label %return
+
+if.end8:                                          ; preds = %if.end
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx5 to i32*
+  %5 = load i32* %rtint, align 4, !tbaa !4
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %branch, i64 0, i32 1, i64 7
+  %rtx11 = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx11, align 8, !tbaa !0
+  %idxprom = sext i32 %5 to i64
+  %7 = load i32** @uid_shuid, align 8, !tbaa !0
+  %arrayidx15 = getelementptr inbounds i32* %7, i64 %idxprom
+  %8 = load i32* %arrayidx15, align 4, !tbaa !4
+  %arrayidx17 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 0
+  %rtint18 = bitcast %union.rtunion_def* %arrayidx17 to i32*
+  %9 = load i32* %rtint18, align 4, !tbaa !4
+  %idxprom19 = sext i32 %9 to i64
+  %arrayidx20 = getelementptr inbounds i32* %7, i64 %idxprom19
+  %10 = load i32* %arrayidx20, align 4, !tbaa !4
+  %cmp21 = icmp slt i32 %8, %10
+  br i1 %cmp21, label %if.then22, label %if.else
+
+if.then22:                                        ; preds = %if.end8
+  %11 = load i32* @insn_last_address, align 4, !tbaa !4
+  %12 = load i32** @insn_lengths, align 8, !tbaa !0
+  %arrayidx24 = getelementptr inbounds i32* %12, i64 %idxprom
+  %13 = load i32* %arrayidx24, align 4, !tbaa !4
+  %add = add nsw i32 %13, %11
+  %14 = load i32* @length_unit_log, align 4, !tbaa !4
+  %call = tail call fastcc i32 @align_fuzz(%struct.rtx_def* %2, %struct.rtx_def* %6, i32 %14) #10
+  %sub = sub i32 %add, %call
+  br label %return
+
+if.else:                                          ; preds = %if.end8
+  %15 = load i32* @insn_current_address, align 4, !tbaa !4
+  %16 = load i32* @length_unit_log, align 4, !tbaa !4
+  %call25 = tail call fastcc i32 @align_fuzz(%struct.rtx_def* %6, %struct.rtx_def* %2, i32 %16) #10
+  %add26 = add nsw i32 %call25, %15
+  br label %return
+
+return:                                           ; preds = %entry, %if.else, %if.then22, %if.then7
+  %retval.0 = phi i32 [ %4, %if.then7 ], [ %sub, %if.then22 ], [ %add26, %if.else ], [ 0, %entry ]
+  ret i32 %retval.0
+}

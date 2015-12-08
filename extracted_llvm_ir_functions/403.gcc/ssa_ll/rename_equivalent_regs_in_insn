@@ -1,0 +1,86 @@
+define internal i32 @rename_equivalent_regs_in_insn(%struct.rtx_def** nocapture %ptr, i8* nocapture %data) #0 {
+entry:
+  %0 = load %struct.rtx_def** %ptr, align 8, !tbaa !0
+  %cmp = icmp eq %struct.rtx_def* %0, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.default [
+    i32 61, label %sw.bb
+    i32 152, label %return
+  ]
+
+sw.bb:                                            ; preds = %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %2 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp1 = icmp ugt i32 %2, 52
+  %.off = add i32 %2, -16
+  %switch = icmp ult i32 %.off, 2
+  %or.cond = or i1 %cmp1, %switch
+  br i1 %or.cond, label %if.then11, label %return
+
+if.then11:                                        ; preds = %sw.bb
+  %idxprom = zext i32 %2 to i64
+  %elements = getelementptr inbounds i8* %data, i64 8
+  %3 = bitcast i8* %elements to [1 x %struct.partition_elem]*
+  %class_element = getelementptr inbounds [1 x %struct.partition_elem]* %3, i64 0, i64 %idxprom, i32 0
+  %4 = load i32* %class_element, align 4, !tbaa !3
+  %call = tail call fastcc %struct.rtx_def* @ssa_rename_from_lookup(i32 %4) #7
+  %cmp16 = icmp eq %struct.rtx_def* %call, null
+  br i1 %cmp16, label %if.else, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then11
+  %arrayidx18 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0
+  %rtuint19 = bitcast %union.rtunion_def* %arrayidx18 to i32*
+  %5 = load i32* %rtuint19, align 4, !tbaa !3
+  %cmp20 = icmp ult i32 %5, 53
+  br i1 %cmp20, label %if.then21, label %if.else
+
+if.then21:                                        ; preds = %land.lhs.true
+  %cmp25 = icmp eq i32 %5, %2
+  br i1 %cmp25, label %return, label %if.then26
+
+if.then26:                                        ; preds = %if.then21
+  store %struct.rtx_def* %call, %struct.rtx_def** %ptr, align 8, !tbaa !0
+  br label %return
+
+if.else:                                          ; preds = %if.then11, %land.lhs.true
+  %cmp28 = icmp eq i32 %2, %4
+  br i1 %cmp28, label %return, label %if.then29
+
+if.then29:                                        ; preds = %if.else
+  %idxprom30 = zext i32 %4 to i64
+  %6 = load %struct.function** @cfun, align 8, !tbaa !0
+  %emit = getelementptr inbounds %struct.function* %6, i64 0, i32 3
+  %7 = load %struct.emit_status** %emit, align 8, !tbaa !0
+  %x_regno_reg_rtx = getelementptr inbounds %struct.emit_status* %7, i64 0, i32 12
+  %8 = load %struct.rtx_def*** %x_regno_reg_rtx, align 8, !tbaa !0
+  %arrayidx31 = getelementptr inbounds %struct.rtx_def** %8, i64 %idxprom30
+  %9 = load %struct.rtx_def** %arrayidx31, align 8, !tbaa !0
+  %bf.load32 = load i32* %1, align 8
+  %10 = bitcast %struct.rtx_def* %9 to i32*
+  %bf.load34 = load i32* %10, align 8
+  %bf.lshr60 = xor i32 %bf.load34, %bf.load32
+  %11 = and i32 %bf.lshr60, 16711680
+  %cmp37 = icmp eq i32 %11, 0
+  br i1 %cmp37, label %if.end39, label %if.then38
+
+if.then38:                                        ; preds = %if.then29
+  tail call void @fancy_abort(i8* getelementptr inbounds ([47 x i8]* @.str1, i64 0, i64 0), i32 2008, i8* getelementptr inbounds ([31 x i8]* @__FUNCTION__.rename_equivalent_regs_in_insn, i64 0, i64 0)) #8
+  unreachable
+
+if.end39:                                         ; preds = %if.then29
+  store %struct.rtx_def* %9, %struct.rtx_def** %ptr, align 8, !tbaa !0
+  br label %return
+
+sw.default:                                       ; preds = %if.end
+  br label %return
+
+return:                                           ; preds = %sw.bb, %if.end, %if.end39, %if.then26, %if.else, %if.then21, %entry, %sw.default
+  %retval.0 = phi i32 [ 0, %sw.default ], [ 0, %entry ], [ -1, %if.then21 ], [ -1, %if.else ], [ -1, %if.then26 ], [ -1, %if.end39 ], [ -1, %if.end ], [ -1, %sw.bb ]
+  ret i32 %retval.0
+}

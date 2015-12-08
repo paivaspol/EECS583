@@ -1,0 +1,21 @@
+define %struct.rtx_def* @loop_insn_sink(%struct.loop* nocapture %loop, %struct.rtx_def* %pattern) #0 {
+entry:
+  %sink = getelementptr inbounds %struct.loop* %loop, i64 0, i32 30
+  %0 = load %struct.rtx_def** %sink, align 8, !tbaa !4
+  %tobool4.i = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool4.i, label %if.then.lr.ph.i, label %loop_insn_emit_before.exit
+
+if.then.lr.ph.i:                                  ; preds = %entry
+  %start.i.i = getelementptr inbounds %struct.loop* %loop, i64 0, i32 26
+  %1 = load %struct.rtx_def** %start.i.i, align 8, !tbaa !4
+  %tobool.i = icmp eq %struct.rtx_def* %1, null
+  br i1 %tobool.i, label %if.then.i, label %loop_insn_emit_before.exit
+
+if.then.i:                                        ; preds = %if.then.i, %if.then.lr.ph.i
+  br label %if.then.i
+
+loop_insn_emit_before.exit:                       ; preds = %if.then.lr.ph.i, %entry
+  %where_insn.tr.lcssa.i = phi %struct.rtx_def* [ %0, %entry ], [ %1, %if.then.lr.ph.i ]
+  %call1.i = tail call %struct.rtx_def* @emit_insn_before(%struct.rtx_def* %pattern, %struct.rtx_def* %where_insn.tr.lcssa.i) #8
+  ret %struct.rtx_def* %call1.i
+}

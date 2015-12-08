@@ -1,0 +1,36 @@
+define i32 @expand_exit_something() #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %stmt = getelementptr inbounds %struct.function* %0, i64 0, i32 1
+  %1 = load %struct.stmt_status** %stmt, align 8, !tbaa !0
+  %x_last_expr_type = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 8
+  store %union.tree_node* null, %union.tree_node** %x_last_expr_type, align 8, !tbaa !0
+  %2 = load %struct.function** @cfun, align 8, !tbaa !0
+  %stmt1 = getelementptr inbounds %struct.function* %2, i64 0, i32 1
+  %3 = load %struct.stmt_status** %stmt1, align 8, !tbaa !0
+  %x_nesting_stack = getelementptr inbounds %struct.stmt_status* %3, i64 0, i32 5
+  %n.05 = load %struct.nesting** %x_nesting_stack, align 8
+  %tobool6 = icmp eq %struct.nesting* %n.05, null
+  br i1 %tobool6, label %return, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %all = getelementptr inbounds %struct.nesting* %n.07, i64 0, i32 0
+  %n.0 = load %struct.nesting** %all, align 8
+  %tobool = icmp eq %struct.nesting* %n.0, null
+  br i1 %tobool, label %return, label %for.body
+
+for.body:                                         ; preds = %entry, %for.cond
+  %n.07 = phi %struct.nesting* [ %n.0, %for.cond ], [ %n.05, %entry ]
+  %exit_label = getelementptr inbounds %struct.nesting* %n.07, i64 0, i32 3
+  %4 = load %struct.rtx_def** %exit_label, align 8, !tbaa !0
+  %cmp = icmp eq %struct.rtx_def* %4, null
+  br i1 %cmp, label %for.cond, label %if.then
+
+if.then:                                          ; preds = %for.body
+  tail call fastcc void @expand_goto_internal(%union.tree_node* null, %struct.rtx_def* %4, %struct.rtx_def* null) #9
+  br label %return
+
+return:                                           ; preds = %entry, %for.cond, %if.then
+  %retval.0 = phi i32 [ 1, %if.then ], [ 0, %for.cond ], [ 0, %entry ]
+  ret i32 %retval.0
+}

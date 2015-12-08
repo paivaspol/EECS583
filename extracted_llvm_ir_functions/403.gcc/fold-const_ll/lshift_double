@@ -1,0 +1,97 @@
+define void @lshift_double(i64 %l1, i64 %h1, i64 %count, i32 %prec, i64* nocapture %lv, i64* nocapture %hv, i32 %arith) #0 {
+entry:
+  %cmp = icmp slt i64 %count, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %sub = sub nsw i64 0, %count
+  tail call void @rshift_double(i64 %l1, i64 %h1, i64 %sub, i32 %prec, i64* %lv, i64* %hv, i32 %arith) #7
+  br label %if.end44
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp sgt i64 %count, 127
+  br i1 %cmp1, label %if.then2, label %if.else
+
+if.then2:                                         ; preds = %if.end
+  store i64 0, i64* %hv, align 8, !tbaa !0
+  store i64 0, i64* %lv, align 8, !tbaa !0
+  br label %if.end13
+
+if.else:                                          ; preds = %if.end
+  %cmp3 = icmp sgt i64 %count, 63
+  br i1 %cmp3, label %if.then4, label %if.else6
+
+if.then4:                                         ; preds = %if.else
+  %sub5 = add nsw i64 %count, -64
+  %shl = shl i64 %l1, %sub5
+  store i64 %shl, i64* %hv, align 8, !tbaa !0
+  store i64 0, i64* %lv, align 8, !tbaa !0
+  br label %if.end13
+
+if.else6:                                         ; preds = %if.else
+  %shl7 = shl i64 %h1, %count
+  %sub9 = sub i64 63, %count
+  %shr = lshr i64 %l1, %sub9
+  %shr10 = lshr i64 %shr, 1
+  %or = or i64 %shr10, %shl7
+  store i64 %or, i64* %hv, align 8, !tbaa !0
+  %shl11 = shl i64 %l1, %count
+  store i64 %shl11, i64* %lv, align 8, !tbaa !0
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.then4, %if.else6, %if.then2
+  %0 = phi i64 [ 0, %if.then4 ], [ %shl11, %if.else6 ], [ 0, %if.then2 ]
+  %cmp14 = icmp ugt i32 %prec, 64
+  br i1 %cmp14, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %if.end13
+  %1 = load i64* %hv, align 8, !tbaa !0
+  %sub16 = add i32 %prec, -65
+  %sh_prom = zext i32 %sub16 to i64
+  %shr17 = ashr i64 %1, %sh_prom
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.end13
+  %sub18 = add i32 %prec, -1
+  %sh_prom19 = zext i32 %sub18 to i64
+  %shr20 = lshr i64 %0, %sh_prom19
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i64 [ %shr17, %cond.true ], [ %shr20, %cond.false ]
+  %and = and i64 %cond, 1
+  %sub21 = sub i64 0, %and
+  %cmp22 = icmp ugt i32 %prec, 127
+  br i1 %cmp22, label %if.end44, label %if.else24
+
+if.else24:                                        ; preds = %cond.end
+  %cmp25 = icmp ugt i32 %prec, 63
+  br i1 %cmp25, label %if.then26, label %if.else35
+
+if.then26:                                        ; preds = %if.else24
+  %sub27 = add i32 %prec, -64
+  %sh_prom28 = zext i32 %sub27 to i64
+  %shl29 = shl i64 -1, %sh_prom28
+  %neg = xor i64 %shl29, -1
+  %2 = load i64* %hv, align 8, !tbaa !0
+  %and30 = and i64 %2, %neg
+  %shl33 = shl i64 %sub21, %sh_prom28
+  %or34 = or i64 %and30, %shl33
+  store i64 %or34, i64* %hv, align 8, !tbaa !0
+  br label %if.end44
+
+if.else35:                                        ; preds = %if.else24
+  store i64 %sub21, i64* %hv, align 8, !tbaa !0
+  %sh_prom36 = zext i32 %prec to i64
+  %shl37 = shl i64 -1, %sh_prom36
+  %neg38 = xor i64 %shl37, -1
+  %3 = load i64* %lv, align 8, !tbaa !0
+  %and39 = and i64 %3, %neg38
+  %shl41 = shl i64 %sub21, %sh_prom36
+  %or42 = or i64 %and39, %shl41
+  store i64 %or42, i64* %lv, align 8, !tbaa !0
+  br label %if.end44
+
+if.end44:                                         ; preds = %if.then26, %if.else35, %cond.end, %if.then
+  ret void
+}

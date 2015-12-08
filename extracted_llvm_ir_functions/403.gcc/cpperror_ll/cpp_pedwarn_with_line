@@ -1,0 +1,21 @@
+define void @cpp_pedwarn_with_line(%struct.cpp_reader* %pfile, i32 %line, i32 %column, i8* nocapture %msgid, ...) #0 {
+entry:
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %call = call i32 @_cpp_begin_message(%struct.cpp_reader* %pfile, i32 2, i32 %line, i32 %column) #5
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %do.body
+
+do.body:                                          ; preds = %entry
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call3 = call i32 @vfprintf(%struct._IO_FILE* %0, i8* %msgid, %struct.__va_list_tag* %arraydecay) #6
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call4 = call i32 @_IO_putc(i32 10, %struct._IO_FILE* %1) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %do.body
+  call void @llvm.va_end(i8* %arraydecay1)
+  ret void
+}

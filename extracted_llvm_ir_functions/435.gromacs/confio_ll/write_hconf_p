@@ -1,0 +1,27 @@
+define void @write_hconf_p(%struct._IO_FILE* nocapture %out, i8* %title, %struct.t_atoms* nocapture %atoms, i32 %pr, [3 x float]* nocapture %x, [3 x float]* %v, [3 x float]* nocapture %box) #0 {
+entry:
+  %nr = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 0
+  %0 = load i32* %nr, align 4, !tbaa !3
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str43, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 712, i32 %0, i32 4) #5
+  %1 = bitcast i8* %call to i32*
+  %2 = load i32* %nr, align 4, !tbaa !3
+  %cmp11 = icmp sgt i32 %2, 0
+  br i1 %cmp11, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv
+  %3 = trunc i64 %indvars.iv to i32
+  store i32 %3, i32* %arrayidx, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %4 = load i32* %nr, align 4, !tbaa !3
+  %5 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %5, %4
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  %.lcssa = phi i32 [ %2, %entry ], [ %4, %for.body ]
+  tail call void @write_hconf_indexed_p(%struct._IO_FILE* %out, i8* %title, %struct.t_atoms* %atoms, i32 %.lcssa, i32* %1, i32 %pr, [3 x float]* %x, [3 x float]* %v, [3 x float]* %box) #8
+  tail call void @save_free(i8* getelementptr inbounds ([3 x i8]* @.str43, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 716, i8* %call) #5
+  ret void
+}

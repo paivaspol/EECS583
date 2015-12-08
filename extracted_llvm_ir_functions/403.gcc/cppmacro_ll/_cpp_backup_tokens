@@ -1,0 +1,89 @@
+define void @_cpp_backup_tokens(%struct.cpp_reader* nocapture %pfile, i32 %count) #0 {
+entry:
+  %context = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 10
+  %0 = load %struct.cpp_context** %context, align 8, !tbaa !3
+  %prev = getelementptr inbounds %struct.cpp_context* %0, i64 0, i32 1
+  %1 = load %struct.cpp_context** %prev, align 8, !tbaa !3
+  %cmp = icmp eq %struct.cpp_context* %1, null
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %lookaheads = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 18
+  %2 = load i32* %lookaheads, align 4, !tbaa !7
+  %add = add i32 %2, %count
+  store i32 %add, i32* %lookaheads, align 4, !tbaa !7
+  %tobool39 = icmp eq i32 %count, 0
+  br i1 %tobool39, label %if.end25, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %if.then
+  %cur_token = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 15
+  %cur_run = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 17
+  %.pre = load %struct.cpp_token** %cur_token, align 8, !tbaa !3
+  %.pre41 = load %struct.tokenrun** %cur_run, align 8, !tbaa !3
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
+  %3 = phi %struct.tokenrun* [ %.pre41, %while.body.lr.ph ], [ %8, %while.cond.backedge ]
+  %4 = phi %struct.cpp_token* [ %.pre, %while.body.lr.ph ], [ %9, %while.cond.backedge ]
+  %dec40.in = phi i32 [ %count, %while.body.lr.ph ], [ %dec40, %while.cond.backedge ]
+  %dec40 = add i32 %dec40.in, -1
+  %incdec.ptr = getelementptr inbounds %struct.cpp_token* %4, i64 -1
+  store %struct.cpp_token* %incdec.ptr, %struct.cpp_token** %cur_token, align 8, !tbaa !3
+  %base = getelementptr inbounds %struct.tokenrun* %3, i64 0, i32 2
+  %5 = load %struct.cpp_token** %base, align 8, !tbaa !3
+  %cmp2 = icmp eq %struct.cpp_token* %incdec.ptr, %5
+  br i1 %cmp2, label %land.lhs.true, label %while.cond.backedge
+
+land.lhs.true:                                    ; preds = %while.body
+  %prev4 = getelementptr inbounds %struct.tokenrun* %3, i64 0, i32 1
+  %6 = load %struct.tokenrun** %prev4, align 8, !tbaa !3
+  %cmp5 = icmp eq %struct.tokenrun* %6, null
+  br i1 %cmp5, label %while.cond.backedge, label %if.then6
+
+if.then6:                                         ; preds = %land.lhs.true
+  store %struct.tokenrun* %6, %struct.tokenrun** %cur_run, align 8, !tbaa !3
+  %limit = getelementptr inbounds %struct.tokenrun* %6, i64 0, i32 3
+  %7 = load %struct.cpp_token** %limit, align 8, !tbaa !3
+  store %struct.cpp_token* %7, %struct.cpp_token** %cur_token, align 8, !tbaa !3
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.then6, %while.body, %land.lhs.true
+  %8 = phi %struct.tokenrun* [ %6, %if.then6 ], [ %3, %while.body ], [ %3, %land.lhs.true ]
+  %9 = phi %struct.cpp_token* [ %7, %if.then6 ], [ %incdec.ptr, %while.body ], [ %incdec.ptr, %land.lhs.true ]
+  %tobool = icmp eq i32 %dec40, 0
+  br i1 %tobool, label %if.end25, label %while.body
+
+if.else:                                          ; preds = %entry
+  %cmp12 = icmp eq i32 %count, 1
+  br i1 %cmp12, label %if.end14, label %if.then13
+
+if.then13:                                        ; preds = %if.else
+  tail call void @abort() #8
+  unreachable
+
+if.end14:                                         ; preds = %if.else
+  %direct_p = getelementptr inbounds %struct.cpp_context* %0, i64 0, i32 6
+  %10 = load i8* %direct_p, align 1, !tbaa !4, !range !5
+  %tobool16 = icmp eq i8 %10, 0
+  %first = getelementptr inbounds %struct.cpp_context* %0, i64 0, i32 2
+  br i1 %tobool16, label %if.else20, label %if.then17
+
+if.then17:                                        ; preds = %if.end14
+  %token = getelementptr inbounds %union.utoken* %first, i64 0, i32 0
+  %11 = load %struct.cpp_token** %token, align 8, !tbaa !3
+  %incdec.ptr19 = getelementptr inbounds %struct.cpp_token* %11, i64 -1
+  store %struct.cpp_token* %incdec.ptr19, %struct.cpp_token** %token, align 8, !tbaa !3
+  br label %if.end25
+
+if.else20:                                        ; preds = %if.end14
+  %ptoken = bitcast %union.utoken* %first to %struct.cpp_token***
+  %12 = load %struct.cpp_token*** %ptoken, align 8, !tbaa !3
+  %incdec.ptr23 = getelementptr inbounds %struct.cpp_token** %12, i64 -1
+  %13 = getelementptr inbounds %union.utoken* %first, i64 0, i32 0
+  %incdec.ptr23.c = bitcast %struct.cpp_token** %incdec.ptr23 to %struct.cpp_token*
+  store %struct.cpp_token* %incdec.ptr23.c, %struct.cpp_token** %13, align 8, !tbaa !3
+  br label %if.end25
+
+if.end25:                                         ; preds = %if.then, %while.cond.backedge, %if.then17, %if.else20
+  ret void
+}

@@ -1,0 +1,42 @@
+define internal fastcc i32 @valid_initial_value_p(%struct.rtx_def* %x, %struct.rtx_def* %insn, %struct.rtx_def* %loop_start) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.then33 [
+    i32 67, label %return
+    i32 68, label %return
+    i32 54, label %return
+    i32 55, label %return
+    i32 58, label %return
+    i32 134, label %return
+    i32 56, label %return
+    i32 140, label %return
+    i32 61, label %lor.lhs.false31
+  ]
+
+lor.lhs.false31:                                  ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !3
+  %2 = load i32* @max_reg_before_loop, align 4, !tbaa !3
+  %cmp32 = icmp ult i32 %1, %2
+  br i1 %cmp32, label %if.end34, label %if.then33
+
+if.then33:                                        ; preds = %entry, %lor.lhs.false31
+  br label %return
+
+if.end34:                                         ; preds = %lor.lhs.false31
+  %cmp38 = icmp ult i32 %1, 53
+  br i1 %cmp38, label %return, label %if.end40
+
+if.end40:                                         ; preds = %if.end34
+  %call = tail call i32 @reg_set_between_p(%struct.rtx_def* %x, %struct.rtx_def* %insn, %struct.rtx_def* %loop_start) #8
+  %tobool = icmp eq i32 %call, 0
+  %. = zext i1 %tobool to i32
+  br label %return
+
+return:                                           ; preds = %if.end40, %if.end34, %entry, %entry, %entry, %entry, %entry, %entry, %entry, %entry, %if.then33
+  %retval.0 = phi i32 [ 0, %if.then33 ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 1, %entry ], [ 0, %if.end34 ], [ %., %if.end40 ]
+  ret i32 %retval.0
+}

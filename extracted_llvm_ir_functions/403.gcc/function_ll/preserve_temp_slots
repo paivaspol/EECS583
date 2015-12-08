@@ -1,0 +1,222 @@
+define void @preserve_temp_slots(%struct.rtx_def* %x) #0 {
+entry:
+  %cmp = icmp eq %struct.rtx_def* %x, null
+  br i1 %cmp, label %if.then, label %if.end9
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_temp_slots = getelementptr inbounds %struct.function* %0, i64 0, i32 39
+  %p.0221 = load %struct.temp_slot** %x_temp_slots, align 8
+  %tobool222 = icmp eq %struct.temp_slot* %p.0221, null
+  br i1 %tobool222, label %for.end172, label %for.body
+
+for.body:                                         ; preds = %if.then, %for.inc
+  %p.0223 = phi %struct.temp_slot* [ %p.0, %for.inc ], [ %p.0221, %if.then ]
+  %in_use = getelementptr inbounds %struct.temp_slot* %p.0223, i64 0, i32 7
+  %1 = load i8* %in_use, align 1, !tbaa !1
+  %tobool1 = icmp eq i8 %1, 0
+  br i1 %tobool1, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body
+  %level = getelementptr inbounds %struct.temp_slot* %p.0223, i64 0, i32 9
+  %2 = load i32* %level, align 4, !tbaa !4
+  %x_temp_slot_level = getelementptr inbounds %struct.function* %0, i64 0, i32 40
+  %3 = load i32* %x_temp_slot_level, align 4, !tbaa !4
+  %cmp2 = icmp eq i32 %2, %3
+  br i1 %cmp2, label %land.lhs.true4, label %for.inc
+
+land.lhs.true4:                                   ; preds = %land.lhs.true
+  %addr_taken = getelementptr inbounds %struct.temp_slot* %p.0223, i64 0, i32 8
+  %4 = load i8* %addr_taken, align 1, !tbaa !1
+  %tobool6 = icmp eq i8 %4, 0
+  br i1 %tobool6, label %for.inc, label %if.then7
+
+if.then7:                                         ; preds = %land.lhs.true4
+  %dec = add nsw i32 %2, -1
+  store i32 %dec, i32* %level, align 4, !tbaa !4
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true4, %for.body, %land.lhs.true, %if.then7
+  %next = getelementptr inbounds %struct.temp_slot* %p.0223, i64 0, i32 0
+  %p.0 = load %struct.temp_slot** %next, align 8
+  %tobool = icmp eq %struct.temp_slot* %p.0, null
+  br i1 %tobool, label %for.end172, label %for.body
+
+if.end9:                                          ; preds = %entry
+  %5 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %5, align 8
+  %6 = and i32 %bf.load, -2147418113
+  %7 = icmp eq i32 %6, -2147483587
+  br i1 %7, label %if.end16, label %land.lhs.true19
+
+if.end16:                                         ; preds = %if.end9
+  %call = tail call fastcc %struct.temp_slot* @find_temp_slot_from_address(%struct.rtx_def* %x) #9
+  %cmp17 = icmp eq %struct.temp_slot* %call, null
+  br i1 %cmp17, label %land.lhs.true19, label %if.then119
+
+land.lhs.true19:                                  ; preds = %if.end9, %if.end16
+  %bf.clear21 = and i32 %bf.load, 65535
+  %cmp22 = icmp eq i32 %bf.clear21, 66
+  br i1 %cmp22, label %lor.lhs.false, label %if.then84
+
+lor.lhs.false:                                    ; preds = %land.lhs.true19
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %8 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %9 = bitcast %struct.rtx_def* %8 to i32*
+  %bf.load24 = load i32* %9, align 8
+  %bf.clear25 = and i32 %bf.load24, 65535
+  switch i32 %bf.clear25, label %if.then111 [
+    i32 67, label %if.then84
+    i32 68, label %if.then84
+    i32 54, label %if.then84
+    i32 55, label %if.then84
+    i32 58, label %if.then84
+    i32 134, label %if.then84
+    i32 56, label %if.then84
+    i32 140, label %if.then84
+  ]
+
+if.then84:                                        ; preds = %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %land.lhs.true19
+  %10 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_temp_slots85 = getelementptr inbounds %struct.function* %10, i64 0, i32 39
+  %p.2232 = load %struct.temp_slot** %x_temp_slots85, align 8
+  %tobool87233 = icmp eq %struct.temp_slot* %p.2232, null
+  br i1 %tobool87233, label %for.end172, label %for.body88
+
+for.body88:                                       ; preds = %if.then84, %for.inc105
+  %p.2234 = phi %struct.temp_slot* [ %p.2, %for.inc105 ], [ %p.2232, %if.then84 ]
+  %in_use89 = getelementptr inbounds %struct.temp_slot* %p.2234, i64 0, i32 7
+  %11 = load i8* %in_use89, align 1, !tbaa !1
+  %tobool91 = icmp eq i8 %11, 0
+  br i1 %tobool91, label %for.inc105, label %land.lhs.true92
+
+land.lhs.true92:                                  ; preds = %for.body88
+  %level93 = getelementptr inbounds %struct.temp_slot* %p.2234, i64 0, i32 9
+  %12 = load i32* %level93, align 4, !tbaa !4
+  %x_temp_slot_level94 = getelementptr inbounds %struct.function* %10, i64 0, i32 40
+  %13 = load i32* %x_temp_slot_level94, align 4, !tbaa !4
+  %cmp95 = icmp eq i32 %12, %13
+  br i1 %cmp95, label %land.lhs.true97, label %for.inc105
+
+land.lhs.true97:                                  ; preds = %land.lhs.true92
+  %addr_taken98 = getelementptr inbounds %struct.temp_slot* %p.2234, i64 0, i32 8
+  %14 = load i8* %addr_taken98, align 1, !tbaa !1
+  %tobool100 = icmp eq i8 %14, 0
+  br i1 %tobool100, label %for.inc105, label %if.then101
+
+if.then101:                                       ; preds = %land.lhs.true97
+  %dec103 = add nsw i32 %12, -1
+  store i32 %dec103, i32* %level93, align 4, !tbaa !4
+  br label %for.inc105
+
+for.inc105:                                       ; preds = %land.lhs.true97, %for.body88, %land.lhs.true92, %if.then101
+  %next106 = getelementptr inbounds %struct.temp_slot* %p.2234, i64 0, i32 0
+  %p.2 = load %struct.temp_slot** %next106, align 8
+  %tobool87 = icmp eq %struct.temp_slot* %p.2, null
+  br i1 %tobool87, label %for.end172, label %for.body88
+
+if.then111:                                       ; preds = %lor.lhs.false
+  %call115 = tail call fastcc %struct.temp_slot* @find_temp_slot_from_address(%struct.rtx_def* %8) #9
+  %cmp117 = icmp eq %struct.temp_slot* %call115, null
+  br i1 %cmp117, label %if.end151, label %if.then119
+
+if.then119:                                       ; preds = %if.end16, %if.then111
+  %p.3220 = phi %struct.temp_slot* [ %call115, %if.then111 ], [ %call, %if.end16 ]
+  %level120 = getelementptr inbounds %struct.temp_slot* %p.3220, i64 0, i32 9
+  %15 = load i32* %level120, align 4, !tbaa !4
+  %16 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_temp_slot_level121 = getelementptr inbounds %struct.function* %16, i64 0, i32 40
+  %17 = load i32* %x_temp_slot_level121, align 4, !tbaa !4
+  %cmp122 = icmp eq i32 %15, %17
+  br i1 %cmp122, label %if.then124, label %for.end172
+
+if.then124:                                       ; preds = %if.then119
+  %x_temp_slots125 = getelementptr inbounds %struct.function* %16, i64 0, i32 39
+  %q.0228 = load %struct.temp_slot** %x_temp_slots125, align 8
+  %tobool127229 = icmp eq %struct.temp_slot* %q.0228, null
+  br i1 %tobool127229, label %for.end146, label %for.body128
+
+for.body128:                                      ; preds = %if.then124, %for.inc144
+  %q.0230 = phi %struct.temp_slot* [ %q.0, %for.inc144 ], [ %q.0228, %if.then124 ]
+  %cmp129 = icmp eq %struct.temp_slot* %q.0230, %p.3220
+  br i1 %cmp129, label %for.inc144, label %land.lhs.true131
+
+land.lhs.true131:                                 ; preds = %for.body128
+  %addr_taken132 = getelementptr inbounds %struct.temp_slot* %q.0230, i64 0, i32 8
+  %18 = load i8* %addr_taken132, align 1, !tbaa !1
+  %tobool134 = icmp eq i8 %18, 0
+  br i1 %tobool134, label %for.inc144, label %land.lhs.true135
+
+land.lhs.true135:                                 ; preds = %land.lhs.true131
+  %level136 = getelementptr inbounds %struct.temp_slot* %q.0230, i64 0, i32 9
+  %19 = load i32* %level136, align 4, !tbaa !4
+  %20 = load i32* %level120, align 4, !tbaa !4
+  %cmp138 = icmp eq i32 %19, %20
+  br i1 %cmp138, label %if.then140, label %for.inc144
+
+if.then140:                                       ; preds = %land.lhs.true135
+  %dec142 = add nsw i32 %19, -1
+  store i32 %dec142, i32* %level136, align 4, !tbaa !4
+  br label %for.inc144
+
+for.inc144:                                       ; preds = %land.lhs.true131, %for.body128, %land.lhs.true135, %if.then140
+  %next145 = getelementptr inbounds %struct.temp_slot* %q.0230, i64 0, i32 0
+  %q.0 = load %struct.temp_slot** %next145, align 8
+  %tobool127 = icmp eq %struct.temp_slot* %q.0, null
+  br i1 %tobool127, label %for.cond126.for.end146_crit_edge, label %for.body128
+
+for.cond126.for.end146_crit_edge:                 ; preds = %for.inc144
+  %.pre = load i32* %level120, align 4, !tbaa !4
+  br label %for.end146
+
+for.end146:                                       ; preds = %for.cond126.for.end146_crit_edge, %if.then124
+  %21 = phi i32 [ %.pre, %for.cond126.for.end146_crit_edge ], [ %15, %if.then124 ]
+  %dec148 = add nsw i32 %21, -1
+  store i32 %dec148, i32* %level120, align 4, !tbaa !4
+  %addr_taken149 = getelementptr inbounds %struct.temp_slot* %p.3220, i64 0, i32 8
+  store i8 0, i8* %addr_taken149, align 1, !tbaa !1
+  br label %for.end172
+
+if.end151:                                        ; preds = %if.then111
+  %22 = load %struct.function** @cfun, align 8, !tbaa !0
+  %x_temp_slots152 = getelementptr inbounds %struct.function* %22, i64 0, i32 39
+  %p.4225 = load %struct.temp_slot** %x_temp_slots152, align 8
+  %tobool154226 = icmp eq %struct.temp_slot* %p.4225, null
+  br i1 %tobool154226, label %for.end172, label %for.body155
+
+for.body155:                                      ; preds = %if.end151, %for.inc170
+  %p.4227 = phi %struct.temp_slot* [ %p.4, %for.inc170 ], [ %p.4225, %if.end151 ]
+  %in_use156 = getelementptr inbounds %struct.temp_slot* %p.4227, i64 0, i32 7
+  %23 = load i8* %in_use156, align 1, !tbaa !1
+  %tobool158 = icmp eq i8 %23, 0
+  br i1 %tobool158, label %for.inc170, label %land.lhs.true159
+
+land.lhs.true159:                                 ; preds = %for.body155
+  %level160 = getelementptr inbounds %struct.temp_slot* %p.4227, i64 0, i32 9
+  %24 = load i32* %level160, align 4, !tbaa !4
+  %x_temp_slot_level161 = getelementptr inbounds %struct.function* %22, i64 0, i32 40
+  %25 = load i32* %x_temp_slot_level161, align 4, !tbaa !4
+  %cmp162 = icmp eq i32 %24, %25
+  br i1 %cmp162, label %land.lhs.true164, label %for.inc170
+
+land.lhs.true164:                                 ; preds = %land.lhs.true159
+  %keep = getelementptr inbounds %struct.temp_slot* %p.4227, i64 0, i32 10
+  %26 = load i32* %keep, align 4, !tbaa !4
+  %tobool165 = icmp eq i32 %26, 0
+  br i1 %tobool165, label %if.then166, label %for.inc170
+
+if.then166:                                       ; preds = %land.lhs.true164
+  %dec168 = add nsw i32 %24, -1
+  store i32 %dec168, i32* %level160, align 4, !tbaa !4
+  br label %for.inc170
+
+for.inc170:                                       ; preds = %land.lhs.true164, %for.body155, %land.lhs.true159, %if.then166
+  %next171 = getelementptr inbounds %struct.temp_slot* %p.4227, i64 0, i32 0
+  %p.4 = load %struct.temp_slot** %next171, align 8
+  %tobool154 = icmp eq %struct.temp_slot* %p.4, null
+  br i1 %tobool154, label %for.end172, label %for.body155
+
+for.end172:                                       ; preds = %if.then84, %for.inc105, %if.end151, %for.inc170, %if.then, %for.inc, %if.then119, %for.end146
+  ret void
+}

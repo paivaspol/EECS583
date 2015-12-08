@@ -1,0 +1,46 @@
+define internal fastcc i8* @c_getstr(%union.tree_node* %src) #0 {
+entry:
+  %offset_node = alloca %union.tree_node*, align 8
+  %call = call %union.tree_node* @string_constant(%union.tree_node* %src, %union.tree_node** %offset_node) #7
+  %cmp = icmp eq %union.tree_node* %call, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %0 = load %union.tree_node** %offset_node, align 8, !tbaa !3
+  %cmp1 = icmp eq %union.tree_node* %0, null
+  br i1 %cmp1, label %if.then2, label %if.else
+
+if.then2:                                         ; preds = %if.end
+  %pointer = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 4
+  %1 = load %union.tree_node** %pointer, align 8
+  %2 = bitcast %union.tree_node* %1 to i8*
+  br label %return
+
+if.else:                                          ; preds = %if.end
+  %call3 = call i32 @host_integerp(%union.tree_node* %0, i32 1) #7
+  %tobool = icmp eq i32 %call3, 0
+  br i1 %tobool, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.else
+  %3 = load %union.tree_node** %offset_node, align 8, !tbaa !3
+  %4 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 2
+  %5 = load i32* %4, align 4, !tbaa !0
+  %sub = add nsw i32 %5, -1
+  %conv = sext i32 %sub to i64
+  %call5 = call i32 @compare_tree_int(%union.tree_node* %3, i64 %conv) #7
+  %cmp6 = icmp sgt i32 %call5, 0
+  br i1 %cmp6, label %return, label %if.end10
+
+if.end10:                                         ; preds = %lor.lhs.false
+  %pointer12 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 4
+  %6 = load %union.tree_node** %pointer12, align 8
+  %7 = bitcast %union.tree_node* %6 to i8*
+  %8 = load %union.tree_node** %offset_node, align 8, !tbaa !3
+  %call13 = call i64 @tree_low_cst(%union.tree_node* %8, i32 1) #7
+  %add.ptr = getelementptr inbounds i8* %7, i64 %call13
+  br label %return
+
+return:                                           ; preds = %lor.lhs.false, %if.else, %entry, %if.end10, %if.then2
+  %retval.0 = phi i8* [ %2, %if.then2 ], [ %add.ptr, %if.end10 ], [ null, %entry ], [ null, %if.else ], [ null, %lor.lhs.false ]
+  ret i8* %retval.0
+}

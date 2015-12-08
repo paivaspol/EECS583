@@ -1,0 +1,49 @@
+define void @ready_add(%struct.ready_list* nocapture %ready, %struct.rtx_def* %insn) #0 {
+entry:
+  %first = getelementptr inbounds %struct.ready_list* %ready, i64 0, i32 2
+  %0 = load i32* %first, align 4, !tbaa !0
+  %n_ready = getelementptr inbounds %struct.ready_list* %ready, i64 0, i32 3
+  %1 = load i32* %n_ready, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, %1
+  %vec = getelementptr inbounds %struct.ready_list* %ready, i64 0, i32 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %2 = load %struct.rtx_def*** %vec, align 8, !tbaa !3
+  %veclen = getelementptr inbounds %struct.ready_list* %ready, i64 0, i32 1
+  %idx.ext2 = sext i32 %0 to i64
+  %cmp.i = icmp eq i32 %0, 0
+  br i1 %cmp.i, label %if.then.i, label %ready_lastpos.exit
+
+if.then.i:                                        ; preds = %if.then
+  tail call void @fancy_abort(i8* getelementptr inbounds ([55 x i8]* @.str2, i64 0, i64 0), i32 898, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.ready_lastpos, i64 0, i64 0)) #10
+  unreachable
+
+ready_lastpos.exit:                               ; preds = %if.then
+  %3 = load i32* %veclen, align 4, !tbaa !0
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr.sum = sub i64 %idx.ext, %idx.ext2
+  %add.ptr3 = getelementptr inbounds %struct.rtx_def** %2, i64 %add.ptr.sum
+  %4 = bitcast %struct.rtx_def** %add.ptr3 to i8*
+  %add.ptr4.i = getelementptr inbounds %struct.rtx_def** %2, i64 1
+  %5 = bitcast %struct.rtx_def** %add.ptr4.i to i8*
+  %mul = shl nsw i64 %idx.ext2, 3
+  tail call void @llvm.memmove.p0i8.p0i8.i64(i8* %4, i8* %5, i64 %mul, i32 8, i1 false)
+  %6 = load i32* %veclen, align 4, !tbaa !0
+  %sub = add nsw i32 %6, -1
+  store i32 %sub, i32* %first, align 4, !tbaa !0
+  %.pre = load i32* %n_ready, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %ready_lastpos.exit
+  %7 = phi i32 [ %.pre, %ready_lastpos.exit ], [ %1, %entry ]
+  %8 = phi i32 [ %sub, %ready_lastpos.exit ], [ %0, %entry ]
+  %sub9 = sub nsw i32 %8, %7
+  %idxprom = sext i32 %sub9 to i64
+  %9 = load %struct.rtx_def*** %vec, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %9, i64 %idxprom
+  store %struct.rtx_def* %insn, %struct.rtx_def** %arrayidx, align 8, !tbaa !3
+  %inc = add nsw i32 %7, 1
+  store i32 %inc, i32* %n_ready, align 4, !tbaa !0
+  ret void
+}

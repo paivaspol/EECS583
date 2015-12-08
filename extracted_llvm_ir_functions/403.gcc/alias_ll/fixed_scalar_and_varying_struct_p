@@ -1,0 +1,58 @@
+define internal fastcc %struct.rtx_def* @fixed_scalar_and_varying_struct_p(%struct.rtx_def* %mem1, %struct.rtx_def* %mem2, %struct.rtx_def* %mem1_addr, %struct.rtx_def* %mem2_addr, i32 (%struct.rtx_def*, i32)* nocapture %varies_p) #0 {
+entry:
+  %0 = load i32* @flag_strict_aliasing, align 4, !tbaa !4
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %mem1 to i32*
+  %bf.load = load i32* %1, align 8
+  %tobool1 = icmp slt i32 %bf.load, 0
+  br i1 %tobool1, label %land.lhs.true, label %if.end11
+
+land.lhs.true:                                    ; preds = %if.end
+  %2 = bitcast %struct.rtx_def* %mem2 to i32*
+  %bf.load2 = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load2, 268435456
+  %tobool4 = icmp eq i32 %bf.clear, 0
+  br i1 %tobool4, label %if.end11, label %land.lhs.true5
+
+land.lhs.true5:                                   ; preds = %land.lhs.true
+  %call = tail call i32 %varies_p(%struct.rtx_def* %mem1_addr, i32 1) #7
+  %tobool6 = icmp eq i32 %call, 0
+  br i1 %tobool6, label %land.lhs.true7, label %if.end11
+
+land.lhs.true7:                                   ; preds = %land.lhs.true5
+  %call8 = tail call i32 %varies_p(%struct.rtx_def* %mem2_addr, i32 1) #7
+  %tobool9 = icmp eq i32 %call8, 0
+  br i1 %tobool9, label %if.end11, label %return
+
+if.end11:                                         ; preds = %land.lhs.true7, %land.lhs.true5, %land.lhs.true, %if.end
+  %bf.load12 = load i32* %1, align 8
+  %bf.clear14 = and i32 %bf.load12, 268435456
+  %tobool15 = icmp eq i32 %bf.clear14, 0
+  br i1 %tobool15, label %if.end27, label %land.lhs.true16
+
+land.lhs.true16:                                  ; preds = %if.end11
+  %3 = bitcast %struct.rtx_def* %mem2 to i32*
+  %bf.load17 = load i32* %3, align 8
+  %tobool19 = icmp slt i32 %bf.load17, 0
+  br i1 %tobool19, label %land.lhs.true20, label %if.end27
+
+land.lhs.true20:                                  ; preds = %land.lhs.true16
+  %call21 = tail call i32 %varies_p(%struct.rtx_def* %mem1_addr, i32 1) #7
+  %tobool22 = icmp eq i32 %call21, 0
+  br i1 %tobool22, label %if.end27, label %land.lhs.true23
+
+land.lhs.true23:                                  ; preds = %land.lhs.true20
+  %call24 = tail call i32 %varies_p(%struct.rtx_def* %mem2_addr, i32 1) #7
+  %tobool25 = icmp eq i32 %call24, 0
+  br i1 %tobool25, label %return, label %if.end27
+
+if.end27:                                         ; preds = %land.lhs.true23, %land.lhs.true20, %if.end11, %land.lhs.true16
+  br label %return
+
+return:                                           ; preds = %land.lhs.true23, %land.lhs.true7, %entry, %if.end27
+  %retval.0 = phi %struct.rtx_def* [ null, %if.end27 ], [ null, %entry ], [ %mem1, %land.lhs.true7 ], [ %mem2, %land.lhs.true23 ]
+  ret %struct.rtx_def* %retval.0
+}

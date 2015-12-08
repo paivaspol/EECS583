@@ -1,0 +1,47 @@
+define internal fastcc void @set_offsets_for_label(%struct.rtx_def* nocapture %insn) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 5
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !0
+  store i32 0, i32* @num_not_at_initial_offset, align 4, !tbaa !0
+  %1 = load %struct.elim_table** @reg_eliminate, align 8, !tbaa !3
+  %idxprom2 = sext i32 %0 to i64
+  %2 = load [4 x i32]** @offsets_at, align 8, !tbaa !3
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
+  %ep.017 = phi %struct.elim_table* [ %1, %entry ], [ %incdec.ptr, %for.inc ]
+  %arrayidx4 = getelementptr inbounds [4 x i32]* %2, i64 %idxprom2, i64 %indvars.iv
+  %3 = load i32* %arrayidx4, align 4, !tbaa !0
+  %previous_offset = getelementptr inbounds %struct.elim_table* %ep.017, i64 0, i32 6
+  store i32 %3, i32* %previous_offset, align 4, !tbaa !0
+  %offset = getelementptr inbounds %struct.elim_table* %ep.017, i64 0, i32 5
+  store i32 %3, i32* %offset, align 4, !tbaa !0
+  %can_eliminate = getelementptr inbounds %struct.elim_table* %ep.017, i64 0, i32 3
+  %4 = load i32* %can_eliminate, align 4, !tbaa !0
+  %tobool = icmp eq i32 %4, 0
+  br i1 %tobool, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body
+  %initial_offset = getelementptr inbounds %struct.elim_table* %ep.017, i64 0, i32 2
+  %5 = load i32* %initial_offset, align 4, !tbaa !0
+  %cmp6 = icmp eq i32 %3, %5
+  br i1 %cmp6, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %6 = load i32* @num_not_at_initial_offset, align 4, !tbaa !0
+  %inc = add nsw i32 %6, 1
+  store i32 %inc, i32* @num_not_at_initial_offset, align 4, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true, %for.body, %if.then
+  %incdec.ptr = getelementptr inbounds %struct.elim_table* %ep.017, i64 1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  ret void
+}

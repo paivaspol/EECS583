@@ -1,0 +1,66 @@
+define float** @feat_vector_alloc(%struct.feat_s* nocapture %fcb) #0 {
+entry:
+  %n_stream.i = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 3
+  %0 = load i32* %n_stream.i, align 4, !tbaa !3
+  %cmp5.i = icmp sgt i32 %0, 0
+  br i1 %cmp5.i, label %for.body.lr.ph.i, label %if.then
+
+for.body.lr.ph.i:                                 ; preds = %entry
+  %stream_len.i = getelementptr inbounds %struct.feat_s* %fcb, i64 0, i32 4
+  %1 = load i32** %stream_len.i, align 8, !tbaa !0
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.body.i, %for.body.lr.ph.i
+  %indvars.iv.i = phi i64 [ 0, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %for.body.i ]
+  %k.07.i = phi i32 [ 0, %for.body.lr.ph.i ], [ %add.i, %for.body.i ]
+  %arrayidx.i = getelementptr inbounds i32* %1, i64 %indvars.iv.i
+  %2 = load i32* %arrayidx.i, align 4, !tbaa !3
+  %add.i = add nsw i32 %2, %k.07.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %0
+  br i1 %exitcond, label %feat_stream_len_sum.exit, label %for.body.i
+
+feat_stream_len_sum.exit:                         ; preds = %for.body.i
+  %cmp = icmp slt i32 %add.i, 1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry, %feat_stream_len_sum.exit
+  %k.0.lcssa.i19 = phi i32 [ %add.i, %feat_stream_len_sum.exit ], [ 0, %entry ]
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 386, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  tail call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([34 x i8]* @.str31, i64 0, i64 0), i32 %k.0.lcssa.i19) #7
+  br label %return
+
+if.end:                                           ; preds = %feat_stream_len_sum.exit
+  %conv = sext i32 %0 to i64
+  %call1 = tail call i8* @__ckd_calloc__(i64 %conv, i64 8, i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 391) #7
+  %3 = bitcast i8* %call1 to float**
+  %conv2 = sext i32 %add.i to i64
+  %call3 = tail call i8* @__ckd_calloc__(i64 %conv2, i64 4, i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 392) #7
+  %4 = load i32* %n_stream.i, align 4, !tbaa !3
+  %cmp520 = icmp sgt i32 %4, 0
+  br i1 %cmp520, label %for.body.lr.ph, label %return
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %5 = bitcast i8* %call3 to float*
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %data.022 = phi float* [ %5, %for.body.lr.ph ], [ %add.ptr, %for.body ]
+  %arrayidx = getelementptr inbounds float** %3, i64 %indvars.iv
+  store float* %data.022, float** %arrayidx, align 8, !tbaa !0
+  %6 = load i32** %stream_len.i, align 8, !tbaa !0
+  %arrayidx8 = getelementptr inbounds i32* %6, i64 %indvars.iv
+  %7 = load i32* %arrayidx8, align 4, !tbaa !3
+  %idx.ext = sext i32 %7 to i64
+  %add.ptr = getelementptr inbounds float* %data.022, i64 %idx.ext
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %8 = trunc i64 %indvars.iv.next to i32
+  %cmp5 = icmp slt i32 %8, %4
+  br i1 %cmp5, label %for.body, label %return
+
+return:                                           ; preds = %if.end, %for.body, %if.then
+  %retval.0 = phi float** [ null, %if.then ], [ %3, %for.body ], [ %3, %if.end ]
+  ret float** %retval.0
+}

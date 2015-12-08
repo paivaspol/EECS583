@@ -1,0 +1,23 @@
+define void @ggc_add_tree_hash_table_root(%struct.hash_table** %base, i32 %nelt) #0 {
+entry:
+  %0 = bitcast %struct.hash_table** %base to i8*
+  %call.i = tail call noalias i8* @xmalloc(i64 32) #5
+  %1 = bitcast i8* %call.i to %struct.ggc_root*
+  %2 = load %struct.ggc_root** @roots, align 8, !tbaa !0
+  %next.i = bitcast i8* %call.i to %struct.ggc_root**
+  store %struct.ggc_root* %2, %struct.ggc_root** %next.i, align 8, !tbaa !0
+  %base1.i = getelementptr inbounds i8* %call.i, i64 8
+  %3 = bitcast i8* %base1.i to i8**
+  store i8* %0, i8** %3, align 8, !tbaa !0
+  %nelt2.i = getelementptr inbounds i8* %call.i, i64 16
+  %4 = bitcast i8* %nelt2.i to i32*
+  store i32 %nelt, i32* %4, align 4, !tbaa !3
+  %size3.i = getelementptr inbounds i8* %call.i, i64 20
+  %5 = bitcast i8* %size3.i to i32*
+  store i32 8, i32* %5, align 4, !tbaa !3
+  %cb4.i = getelementptr inbounds i8* %call.i, i64 24
+  %6 = bitcast i8* %cb4.i to void (i8*)**
+  store void (i8*)* @ggc_mark_tree_hash_table_ptr, void (i8*)** %6, align 8, !tbaa !0
+  store %struct.ggc_root* %1, %struct.ggc_root** @roots, align 8, !tbaa !0
+  ret void
+}

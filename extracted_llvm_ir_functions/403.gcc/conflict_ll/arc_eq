@@ -1,0 +1,26 @@
+define internal i32 @arc_eq(i8* nocapture %arcp1, i8* nocapture %arcp2) #2 {
+entry:
+  %smaller = getelementptr inbounds i8* %arcp1, i64 16
+  %0 = bitcast i8* %smaller to i32*
+  %1 = load i32* %0, align 4, !tbaa !0
+  %smaller1 = getelementptr inbounds i8* %arcp2, i64 16
+  %2 = bitcast i8* %smaller1 to i32*
+  %3 = load i32* %2, align 4, !tbaa !0
+  %cmp = icmp eq i32 %1, %3
+  br i1 %cmp, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %entry
+  %larger = getelementptr inbounds i8* %arcp1, i64 20
+  %4 = bitcast i8* %larger to i32*
+  %5 = load i32* %4, align 4, !tbaa !0
+  %larger2 = getelementptr inbounds i8* %arcp2, i64 20
+  %6 = bitcast i8* %larger2 to i32*
+  %7 = load i32* %6, align 4, !tbaa !0
+  %cmp3 = icmp eq i32 %5, %7
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %entry
+  %8 = phi i1 [ false, %entry ], [ %cmp3, %land.rhs ]
+  %land.ext = zext i1 %8 to i32
+  ret i32 %land.ext
+}

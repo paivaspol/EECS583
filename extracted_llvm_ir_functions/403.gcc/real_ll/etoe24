@@ -1,0 +1,70 @@
+define internal fastcc void @etoe24(i16* nocapture %x, i16* nocapture %e) #0 {
+entry:
+  %xi = alloca [9 x i16], align 16
+  %arrayidx.i = getelementptr inbounds i16* %x, i64 5
+  %0 = load i16* %arrayidx.i, align 2, !tbaa !0
+  %and.i = and i16 %0, 32767
+  %cmp.i = icmp eq i16 %and.i, 32767
+  br i1 %cmp.i, label %for.body.i, label %if.end
+
+for.body.i:                                       ; preds = %entry, %for.inc.i
+  %i.012.i = phi i32 [ %inc.i, %for.inc.i ], [ 0, %entry ]
+  %x.addr.011.i = phi i16* [ %incdec.ptr.i, %for.inc.i ], [ %x, %entry ]
+  %1 = load i16* %x.addr.011.i, align 2, !tbaa !0
+  %cmp5.i = icmp eq i16 %1, 0
+  br i1 %cmp5.i, label %for.inc.i, label %if.then
+
+for.inc.i:                                        ; preds = %for.body.i
+  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1
+  %inc.i = add nsw i32 %i.012.i, 1
+  %cmp2.i = icmp slt i32 %inc.i, 5
+  br i1 %cmp2.i, label %for.body.i, label %if.end
+
+if.then:                                          ; preds = %for.body.i
+  %.lobit.i = lshr i16 %0, 15
+  %2 = zext i16 %.lobit.i to i32
+  call fastcc void @make_nan(i16* %e, i32 %2, i32 15) #6
+  br label %return
+
+if.end:                                           ; preds = %for.inc.i, %entry
+  %arraydecay = getelementptr inbounds [9 x i16]* %xi, i64 0, i64 0
+  call fastcc void @emovi(i16* %x, i16* %arraydecay) #6
+  %arrayidx = getelementptr inbounds [9 x i16]* %xi, i64 0, i64 1
+  %3 = load i16* %arrayidx, align 2, !tbaa !0
+  %4 = load i16* %arrayidx.i, align 2, !tbaa !0
+  %and.i18 = and i16 %4, 32767
+  %cmp.i19 = icmp eq i16 %and.i18, 32767
+  br i1 %cmp.i19, label %for.body.i23, label %if.end5
+
+for.body.i23:                                     ; preds = %if.end, %for.inc.i27
+  %i.012.i20 = phi i32 [ %inc.i25, %for.inc.i27 ], [ 0, %if.end ]
+  %x.addr.011.i21 = phi i16* [ %incdec.ptr.i24, %for.inc.i27 ], [ %x, %if.end ]
+  %5 = load i16* %x.addr.011.i21, align 2, !tbaa !0
+  %cmp5.i22 = icmp eq i16 %5, 0
+  br i1 %cmp5.i22, label %for.inc.i27, label %if.end5
+
+for.inc.i27:                                      ; preds = %for.body.i23
+  %incdec.ptr.i24 = getelementptr inbounds i16* %x.addr.011.i21, i64 1
+  %inc.i25 = add nsw i32 %i.012.i20, 1
+  %cmp2.i26 = icmp slt i32 %inc.i25, 5
+  br i1 %cmp2.i26, label %for.body.i23, label %eisinf.exit
+
+eisinf.exit:                                      ; preds = %for.inc.i27
+  br i1 %cmp.i19, label %nonorm, label %if.end5
+
+if.end5:                                          ; preds = %if.end, %for.body.i23, %eisinf.exit
+  %conv = zext i16 %3 to i32
+  %sub = add nsw i32 %conv, -16256
+  %6 = load i32* @rndprc, align 4, !tbaa !5
+  store i32 24, i32* @rndprc, align 4, !tbaa !5
+  call fastcc void @emdnorm(i16* %arraydecay, i32 0, i32 0, i32 %sub, i32 64) #6
+  store i32 %6, i32* @rndprc, align 4, !tbaa !5
+  br label %nonorm
+
+nonorm:                                           ; preds = %eisinf.exit, %if.end5
+  call fastcc void @toe24(i16* %arraydecay, i16* %e) #6
+  br label %return
+
+return:                                           ; preds = %nonorm, %if.then
+  ret void
+}

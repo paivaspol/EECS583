@@ -1,0 +1,37 @@
+define i32 @standard_80387_constant_p(%struct.rtx_def* %x) #2 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 55
+  br i1 %cmp, label %lor.lhs.false, label %return
+
+lor.lhs.false:                                    ; preds = %entry
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear2 = and i32 %bf.lshr, 255
+  %idxprom41 = zext i32 %bf.clear2 to i64
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom41
+  %1 = load i32* %arrayidx, align 4, !tbaa !9
+  switch i32 %1, label %return [
+    i32 2, label %if.end
+    i32 6, label %if.end
+    i32 8, label %if.end
+  ]
+
+if.end:                                           ; preds = %lor.lhs.false, %lor.lhs.false, %lor.lhs.false
+  %arrayidx22 = getelementptr inbounds [3 x [59 x %struct.rtx_def*]]* @const_tiny_rtx, i64 0, i64 0, i64 %idxprom41
+  %2 = load %struct.rtx_def** %arrayidx22, align 8, !tbaa !4
+  %cmp23 = icmp eq %struct.rtx_def* %2, %x
+  br i1 %cmp23, label %return, label %if.end25
+
+if.end25:                                         ; preds = %if.end
+  %arrayidx30 = getelementptr inbounds [3 x [59 x %struct.rtx_def*]]* @const_tiny_rtx, i64 0, i64 1, i64 %idxprom41
+  %3 = load %struct.rtx_def** %arrayidx30, align 8, !tbaa !4
+  %cmp31 = icmp eq %struct.rtx_def* %3, %x
+  %. = select i1 %cmp31, i32 2, i32 0
+  br label %return
+
+return:                                           ; preds = %if.end25, %if.end, %entry, %lor.lhs.false
+  %retval.0 = phi i32 [ -1, %lor.lhs.false ], [ -1, %entry ], [ 1, %if.end ], [ %., %if.end25 ]
+  ret i32 %retval.0
+}

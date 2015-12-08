@@ -1,0 +1,258 @@
+define %struct.rtx_def* @allocate_dynamic_stack_space(%struct.rtx_def* %size, %struct.rtx_def* %target, i32 %known_align) #1 {
+entry:
+  %0 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !3
+  %cmp = icmp eq %struct.rtx_def* %0, %size
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 8), align 8, !tbaa !3
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %2 = load %struct.function** @cfun, align 8, !tbaa !3
+  %calls_alloca = getelementptr inbounds %struct.function* %2, i64 0, i32 56
+  %3 = bitcast [4 x i8]* %calls_alloca to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.set = or i32 %bf.load, 64
+  store i32 %bf.set, i32* %3, align 8
+  %4 = bitcast %struct.rtx_def* %size to i32*
+  %bf.load1 = load i32* %4, align 8
+  %bf.lshr = lshr i32 %bf.load1, 16
+  %bf.clear2 = and i32 %bf.lshr, 255
+  %cmp3 = icmp eq i32 %bf.clear2, 0
+  br i1 %cmp3, label %if.end12, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %5 = load i32* @target_flags, align 4, !tbaa !5
+  %and = lshr i32 %5, 25
+  %6 = and i32 %and, 1
+  %7 = or i32 %6, 4
+  %cmp7 = icmp eq i32 %bf.clear2, %7
+  br i1 %cmp7, label %if.end12, label %if.then8
+
+if.then8:                                         ; preds = %land.lhs.true
+  %call = tail call %struct.rtx_def* @convert_to_mode(i32 %7, %struct.rtx_def* %size, i32 1) #4
+  br label %if.end12
+
+if.end12:                                         ; preds = %land.lhs.true, %if.end, %if.then8
+  %size.addr.0 = phi %struct.rtx_def* [ %call, %if.then8 ], [ %size, %land.lhs.true ], [ %size, %if.end ]
+  %8 = load i32* @ix86_preferred_stack_boundary, align 4, !tbaa !5
+  %9 = load %struct.function** @cfun, align 8, !tbaa !3
+  %preferred_stack_boundary = getelementptr inbounds %struct.function* %9, i64 0, i32 53
+  store i32 %8, i32* %preferred_stack_boundary, align 4, !tbaa !5
+  %10 = load i32* @ix86_preferred_stack_boundary, align 4, !tbaa !5
+  %cmp13 = icmp slt i32 %10, 128
+  br i1 %cmp13, label %if.end17, label %lor.lhs.false
+
+if.end17:                                         ; preds = %if.end12
+  %call15 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %size.addr.0, i64 15) #5
+  %call16 = tail call %struct.rtx_def* @force_operand(%struct.rtx_def* %call15, %struct.rtx_def* null) #4
+  %.pr = load i32* @ix86_preferred_stack_boundary, align 4, !tbaa !5
+  %cmp18 = icmp slt i32 %.pr, 128
+  br i1 %cmp18, label %if.then20, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end12, %if.end17
+  %size.addr.1151 = phi %struct.rtx_def* [ %call16, %if.end17 ], [ %size.addr.0, %if.end12 ]
+  %11 = phi i32 [ %.pr, %if.end17 ], [ %10, %if.end12 ]
+  %rem = srem i32 %known_align, %11
+  %cmp19 = icmp eq i32 %rem, 0
+  br i1 %cmp19, label %if.end22, label %if.then20
+
+if.then20:                                        ; preds = %lor.lhs.false, %if.end17
+  %size.addr.1152 = phi %struct.rtx_def* [ %size.addr.1151, %lor.lhs.false ], [ %call16, %if.end17 ]
+  %call21 = tail call %struct.rtx_def* @round_push(%struct.rtx_def* %size.addr.1152) #5
+  br label %if.end22
+
+if.end22:                                         ; preds = %lor.lhs.false, %if.then20
+  %size.addr.2 = phi %struct.rtx_def* [ %call21, %if.then20 ], [ %size.addr.1151, %lor.lhs.false ]
+  tail call void @do_pending_stack_adjust() #4
+  %12 = load %struct.function** @cfun, align 8, !tbaa !3
+  %expr = getelementptr inbounds %struct.function* %12, i64 0, i32 2
+  %13 = load %struct.expr_status** %expr, align 8, !tbaa !3
+  %x_stack_pointer_delta = getelementptr inbounds %struct.expr_status* %13, i64 0, i32 2
+  %14 = load i32* %x_stack_pointer_delta, align 4, !tbaa !5
+  %15 = load i32* @ix86_preferred_stack_boundary, align 4, !tbaa !5
+  %div = sdiv i32 %15, 8
+  %rem23 = srem i32 %14, %div
+  %tobool24 = icmp eq i32 %rem23, 0
+  br i1 %tobool24, label %if.end26, label %if.then25
+
+if.then25:                                        ; preds = %if.end22
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 1306, i8* getelementptr inbounds ([29 x i8]* @__FUNCTION__.allocate_dynamic_stack_space, i64 0, i64 0)) #6
+  unreachable
+
+if.end26:                                         ; preds = %if.end22
+  %16 = load i32* @flag_stack_check, align 4, !tbaa !5
+  %tobool27 = icmp eq i32 %16, 0
+  br i1 %tobool27, label %if.end35, label %if.then28
+
+if.then28:                                        ; preds = %if.end26
+  %17 = load i32* @target_flags, align 4, !tbaa !5
+  %and29 = lshr i32 %17, 23
+  %18 = and i32 %and29, 4
+  %19 = mul i32 %18, 75
+  %sub = sub i32 4392, %18
+  %add = add i32 %sub, %19
+  %conv = sext i32 %add to i64
+  tail call void @probe_stack_range(i64 %conv, %struct.rtx_def* %size.addr.2) #5
+  br label %if.end35
+
+if.end35:                                         ; preds = %if.end26, %if.then28
+  %cmp36 = icmp eq %struct.rtx_def* %target, null
+  br i1 %cmp36, label %if.then55, label %lor.lhs.false38
+
+lor.lhs.false38:                                  ; preds = %if.end35
+  %20 = bitcast %struct.rtx_def* %target to i32*
+  %bf.load39 = load i32* %20, align 8
+  %bf.clear40 = and i32 %bf.load39, 65535
+  %cmp41 = icmp eq i32 %bf.clear40, 61
+  br i1 %cmp41, label %lor.lhs.false43, label %if.then55
+
+lor.lhs.false43:                                  ; preds = %lor.lhs.false38
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %target, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %21 = load i32* %rtuint, align 4, !tbaa !5
+  %cmp44 = icmp ult i32 %21, 53
+  br i1 %cmp44, label %if.then55, label %lor.lhs.false46
+
+lor.lhs.false46:                                  ; preds = %lor.lhs.false43
+  %bf.lshr48 = lshr i32 %bf.load39, 16
+  %bf.clear49 = and i32 %bf.lshr48, 255
+  %22 = load i32* @target_flags, align 4, !tbaa !5
+  %and50 = lshr i32 %22, 25
+  %23 = and i32 %and50, 1
+  %24 = or i32 %23, 4
+  %cmp53 = icmp eq i32 %bf.clear49, %24
+  br i1 %cmp53, label %if.end60, label %if.then55
+
+if.then55:                                        ; preds = %lor.lhs.false43, %lor.lhs.false38, %if.end35, %lor.lhs.false46
+  %25 = load i32* @target_flags, align 4, !tbaa !5
+  %and56 = lshr i32 %25, 25
+  %26 = and i32 %and56, 1
+  %27 = or i32 %26, 4
+  %call59 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %27) #4
+  br label %if.end60
+
+if.end60:                                         ; preds = %lor.lhs.false46, %if.then55
+  %target.addr.0 = phi %struct.rtx_def* [ %call59, %if.then55 ], [ %target, %lor.lhs.false46 ]
+  tail call void @mark_reg_pointer(%struct.rtx_def* %target.addr.0, i32 %known_align) #4
+  %28 = load i32* @target_flags, align 4, !tbaa !5
+  %and61 = and i32 %28, 256
+  %tobool62 = icmp eq i32 %and61, 0
+  br i1 %tobool62, label %if.else, label %if.then63
+
+if.then63:                                        ; preds = %if.end60
+  %29 = load i32* @word_mode, align 4, !tbaa !7
+  %cmp64 = icmp eq i32 %29, 0
+  %30 = load %struct.insn_operand_data** getelementptr inbounds ([0 x %struct.insn_data]* @insn_data, i64 0, i64 1234, i32 3), align 8, !tbaa !3
+  br i1 %cmp64, label %if.then66, label %if.end70
+
+if.then66:                                        ; preds = %if.then63
+  %mode68 = getelementptr inbounds %struct.insn_operand_data* %30, i64 1, i32 2
+  %31 = bitcast [2 x i8]* %mode68 to i16*
+  %bf.load69 = load i16* %31, align 8
+  %bf.cast = zext i16 %bf.load69 to i32
+  br label %if.end70
+
+if.end70:                                         ; preds = %if.then63, %if.then66
+  %mode.0 = phi i32 [ %bf.cast, %if.then66 ], [ %29, %if.then63 ]
+  %predicate = getelementptr inbounds %struct.insn_operand_data* %30, i64 1, i32 0
+  %32 = load i32 (%struct.rtx_def*, i32)** %predicate, align 8, !tbaa !3
+  %tobool72 = icmp eq i32 (%struct.rtx_def*, i32)* %32, null
+  br i1 %tobool72, label %if.end78, label %land.lhs.true73
+
+land.lhs.true73:                                  ; preds = %if.end70
+  %call74 = tail call i32 %32(%struct.rtx_def* %size.addr.2, i32 %mode.0) #4
+  %tobool75 = icmp eq i32 %call74, 0
+  br i1 %tobool75, label %if.then76, label %if.end78
+
+if.then76:                                        ; preds = %land.lhs.true73
+  %call77 = tail call %struct.rtx_def* @copy_to_mode_reg(i32 %mode.0, %struct.rtx_def* %size.addr.2) #5
+  br label %if.end78
+
+if.end78:                                         ; preds = %land.lhs.true73, %if.end70, %if.then76
+  %size.addr.3 = phi %struct.rtx_def* [ %size.addr.2, %land.lhs.true73 ], [ %call77, %if.then76 ], [ %size.addr.2, %if.end70 ]
+  %call79 = tail call %struct.rtx_def* @gen_allocate_stack(%struct.rtx_def* %target.addr.0, %struct.rtx_def* %size.addr.3) #4
+  %call80 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call79) #4
+  br label %if.end100
+
+if.else:                                          ; preds = %if.end60
+  %33 = load %struct.function** @cfun, align 8, !tbaa !3
+  %limit_stack = getelementptr inbounds %struct.function* %33, i64 0, i32 56
+  %34 = bitcast [4 x i8]* %limit_stack to i32*
+  %bf.load81 = load i32* %34, align 8
+  %bf.clear83 = and i32 %bf.load81, 32768
+  %tobool84 = icmp eq i32 %bf.clear83, 0
+  br i1 %tobool84, label %if.end98, label %if.then85
+
+if.then85:                                        ; preds = %if.else
+  %call86 = tail call %struct.rtx_def* @gen_label_rtx() #4
+  %35 = load i32* @target_flags, align 4, !tbaa !5
+  %and87 = lshr i32 %35, 25
+  %36 = and i32 %and87, 1
+  %37 = or i32 %36, 4
+  %38 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 2), align 8, !tbaa !3
+  %39 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !tbaa !3
+  %40 = load %struct.rtx_def** @stack_limit_rtx, align 8, !tbaa !3
+  %call90 = tail call %struct.rtx_def* @expand_binop(i32 %37, %struct.optab* %38, %struct.rtx_def* %39, %struct.rtx_def* %40, %struct.rtx_def* null, i32 1, i32 2) #4
+  %41 = load i32* @target_flags, align 4, !tbaa !5
+  %and91 = lshr i32 %41, 25
+  %42 = and i32 %and91, 1
+  %43 = or i32 %42, 4
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %call90, %struct.rtx_def* %size.addr.2, i32 108, %struct.rtx_def* null, i32 %43, i32 1, %struct.rtx_def* %call86) #4
+  %call94 = tail call %struct.rtx_def* @gen_trap() #4
+  %call95 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call94) #4
+  %call96 = tail call %struct.rtx_def* @emit_barrier() #4
+  %call97 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %call86) #4
+  br label %if.end98
+
+if.end98:                                         ; preds = %if.else, %if.then85
+  tail call void @anti_adjust_stack(%struct.rtx_def* %size.addr.2) #5
+  %44 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 8), align 8, !tbaa !3
+  %call99 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %target.addr.0, %struct.rtx_def* %44) #4
+  br label %if.end100
+
+if.end100:                                        ; preds = %if.end98, %if.end78
+  %45 = load i32* @ix86_preferred_stack_boundary, align 4, !tbaa !5
+  %cmp101 = icmp slt i32 %45, 128
+  br i1 %cmp101, label %if.then103, label %if.end119
+
+if.then103:                                       ; preds = %if.end100
+  %46 = load i32* @target_flags, align 4, !tbaa !5
+  %and104 = lshr i32 %46, 25
+  %47 = and i32 %and104, 1
+  %48 = or i32 %47, 4
+  %49 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 0), align 8, !tbaa !3
+  %call107 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 15) #4
+  %call108 = tail call %struct.rtx_def* @expand_binop(i32 %48, %struct.optab* %49, %struct.rtx_def* %target.addr.0, %struct.rtx_def* %call107, %struct.rtx_def* null, i32 1, i32 3) #4
+  %50 = load i32* @target_flags, align 4, !tbaa !5
+  %and109 = lshr i32 %50, 25
+  %51 = and i32 %and109, 1
+  %52 = or i32 %51, 4
+  %call112 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 16) #4
+  %call113 = tail call %struct.rtx_def* @expand_divmod(i32 0, i32 62, i32 %52, %struct.rtx_def* %call108, %struct.rtx_def* %call112, %struct.rtx_def* null, i32 1) #4
+  %53 = load i32* @target_flags, align 4, !tbaa !5
+  %and114 = lshr i32 %53, 25
+  %54 = and i32 %and114, 1
+  %55 = or i32 %54, 4
+  %call117 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 16) #4
+  %call118 = tail call %struct.rtx_def* @expand_mult(i32 %55, %struct.rtx_def* %call113, %struct.rtx_def* %call117, %struct.rtx_def* null, i32 1) #4
+  br label %if.end119
+
+if.end119:                                        ; preds = %if.then103, %if.end100
+  %target.addr.1 = phi %struct.rtx_def* [ %call118, %if.then103 ], [ %target.addr.0, %if.end100 ]
+  %56 = load %struct.function** @cfun, align 8, !tbaa !3
+  %x_nonlocal_goto_handler_slots = getelementptr inbounds %struct.function* %56, i64 0, i32 20
+  %57 = load %struct.rtx_def** %x_nonlocal_goto_handler_slots, align 8, !tbaa !3
+  %cmp120 = icmp eq %struct.rtx_def* %57, null
+  br i1 %cmp120, label %return, label %if.then122
+
+if.then122:                                       ; preds = %if.end119
+  %x_nonlocal_goto_stack_level = getelementptr inbounds %struct.function* %56, i64 0, i32 22
+  tail call void @emit_stack_save(i32 2, %struct.rtx_def** %x_nonlocal_goto_stack_level, %struct.rtx_def* null) #5
+  br label %return
+
+return:                                           ; preds = %if.then122, %if.end119, %if.then
+  %retval.0 = phi %struct.rtx_def* [ %1, %if.then ], [ %target.addr.1, %if.end119 ], [ %target.addr.1, %if.then122 ]
+  ret %struct.rtx_def* %retval.0
+}

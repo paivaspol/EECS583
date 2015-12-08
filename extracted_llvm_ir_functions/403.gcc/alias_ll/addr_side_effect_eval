@@ -1,0 +1,51 @@
+define %struct.rtx_def* @addr_side_effect_eval(%struct.rtx_def* %addr, i32 %size, i32 %n_refs) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %addr to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %return [
+    i32 97, label %sw.bb
+    i32 96, label %sw.bb1
+    i32 99, label %sw.epilog
+    i32 98, label %sw.bb6
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %add = add nsw i32 %n_refs, 1
+  br label %sw.epilog
+
+sw.bb1:                                           ; preds = %entry
+  %sub = xor i32 %n_refs, -1
+  br label %sw.epilog
+
+sw.bb6:                                           ; preds = %entry
+  %sub7 = sub nsw i32 0, %n_refs
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %entry, %sw.bb6, %sw.bb1, %sw.bb
+  %sub7.pn = phi i32 [ %sub7, %sw.bb6 ], [ %sub, %sw.bb1 ], [ %add, %sw.bb ], [ %n_refs, %entry ]
+  %offset.0 = mul nsw i32 %sub7.pn, %size
+  %tobool = icmp eq i32 %offset.0, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %sw.epilog
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear10 = and i32 %bf.lshr, 255
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %addr, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %conv = sext i32 %offset.0 to i64
+  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv) #7
+  %call11 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 75, i32 %bf.clear10, %struct.rtx_def* %1, %struct.rtx_def* %call) #7
+  br label %return
+
+if.else:                                          ; preds = %sw.epilog
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %addr, i64 0, i32 1, i64 0
+  %rtx14 = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx14, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.then, %if.else, %entry
+  %retval.0 = phi %struct.rtx_def* [ %addr, %entry ], [ %call11, %if.then ], [ %2, %if.else ]
+  ret %struct.rtx_def* %retval.0
+}

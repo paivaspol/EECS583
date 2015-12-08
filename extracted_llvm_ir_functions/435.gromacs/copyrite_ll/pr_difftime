@@ -1,0 +1,64 @@
+define void @pr_difftime(%struct._IO_FILE* nocapture %out, double %dt) #0 {
+entry:
+  %div = fdiv double %dt, 8.640000e+04
+  %conv = fptosi double %div to i32
+  %mul = mul nsw i32 %conv, 86400
+  %conv1 = sitofp i32 %mul to double
+  %sub = fsub double %dt, %conv1
+  %div2 = fdiv double %sub, 3.600000e+03
+  %conv3 = fptosi double %div2 to i32
+  %mul4 = mul nsw i32 %conv3, 3600
+  %conv5 = sitofp i32 %mul4 to double
+  %sub6 = fsub double %sub, %conv5
+  %div7 = fdiv double %sub6, 6.000000e+01
+  %conv8 = fptosi double %div7 to i32
+  %mul9 = mul nsw i32 %conv8, 60
+  %conv10 = sitofp i32 %mul9 to double
+  %sub11 = fsub double %sub6, %conv10
+  %conv12 = fptosi double %sub11 to i32
+  %cmp = icmp sgt i32 %conv, 0
+  br i1 %cmp, label %if.then36.thread, label %if.end
+
+if.end:                                           ; preds = %entry
+  %cmp15 = icmp sgt i32 %conv3, 0
+  br i1 %cmp15, label %if.end23.thread, label %if.end23
+
+if.then36.thread:                                 ; preds = %entry
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i32 %conv) #6
+  tail call fastcc void @pr_two(%struct._IO_FILE* %out, i32 100, i32 %conv3) #7
+  br label %if.end42.thread
+
+if.end23.thread:                                  ; preds = %if.end
+  %call21 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i32 %conv3) #6
+  br label %if.end42.thread
+
+if.end23:                                         ; preds = %if.end
+  %cmp31 = icmp sgt i32 %conv8, 0
+  br i1 %cmp31, label %if.then36, label %if.end42
+
+if.then36:                                        ; preds = %if.end23
+  br i1 %cmp, label %if.end42.thread, label %if.end42.thread97
+
+if.end42.thread:                                  ; preds = %if.then36.thread, %if.end23.thread, %if.then36
+  tail call fastcc void @pr_two(%struct._IO_FILE* %out, i32 104, i32 %conv8) #7
+  br label %if.then49
+
+if.end42.thread97:                                ; preds = %if.then36
+  %call40 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i32 %conv8) #6
+  br label %if.then49
+
+if.end42:                                         ; preds = %if.end23
+  br i1 %cmp, label %if.then49, label %if.else50
+
+if.then49:                                        ; preds = %if.end42.thread97, %if.end42.thread, %if.end42
+  tail call fastcc void @pr_two(%struct._IO_FILE* %out, i32 58, i32 %conv12) #7
+  br label %if.end52
+
+if.else50:                                        ; preds = %if.end42
+  %call51 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i32 %conv12) #6
+  br label %if.end52
+
+if.end52:                                         ; preds = %if.else50, %if.then49
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %out)
+  ret void
+}

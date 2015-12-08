@@ -1,0 +1,24 @@
+define %union.tree_node* @strip_array_types(%union.tree_node* %type) #4 {
+entry:
+  %code4 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code4 to i32*
+  %bf.load5 = load i32* %0, align 8
+  %bf.clear6 = and i32 %bf.load5, 255
+  %cmp7 = icmp eq i32 %bf.clear6, 18
+  br i1 %cmp7, label %while.body, label %while.end
+
+while.body:                                       ; preds = %entry, %while.body
+  %type.addr.08 = phi %union.tree_node* [ %1, %while.body ], [ %type, %entry ]
+  %type2 = getelementptr inbounds %union.tree_node* %type.addr.08, i64 0, i32 0, i32 0, i32 1
+  %1 = load %union.tree_node** %type2, align 8, !tbaa !3
+  %code = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 18
+  br i1 %cmp, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %entry
+  %type.addr.0.lcssa = phi %union.tree_node* [ %type, %entry ], [ %1, %while.body ]
+  ret %union.tree_node* %type.addr.0.lcssa
+}

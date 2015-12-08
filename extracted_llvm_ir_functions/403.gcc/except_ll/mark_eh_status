@@ -1,0 +1,286 @@
+define void @mark_eh_status(%struct.eh_status* %eh) #0 {
+entry:
+  %cmp = icmp eq %struct.eh_status* %eh, null
+  br i1 %cmp, label %do.end138, label %if.end
+
+if.end:                                           ; preds = %entry
+  %region_array = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 1
+  %0 = load %struct.eh_region*** %region_array, align 8, !tbaa !3
+  %tobool = icmp eq %struct.eh_region** %0, null
+  br i1 %tobool, label %if.else, label %if.then1
+
+if.then1:                                         ; preds = %if.end
+  %last_region_number = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 8
+  %1 = load i32* %last_region_number, align 4, !tbaa !0
+  %cmp2192 = icmp sgt i32 %1, 0
+  br i1 %cmp2192, label %for.body.lr.ph, label %do.body30
+
+for.body.lr.ph:                                   ; preds = %if.then1
+  %2 = sext i32 %1 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc.for.body_crit_edge, %for.body.lr.ph
+  %3 = phi %struct.eh_region** [ %0, %for.body.lr.ph ], [ %.pre197, %for.inc.for.body_crit_edge ]
+  %indvars.iv194 = phi i64 [ %2, %for.body.lr.ph ], [ %indvars.iv.next195, %for.inc.for.body_crit_edge ]
+  %arrayidx = getelementptr inbounds %struct.eh_region** %3, i64 %indvars.iv194
+  %4 = load %struct.eh_region** %arrayidx, align 8, !tbaa !3
+  %tobool4 = icmp eq %struct.eh_region* %4, null
+  br i1 %tobool4, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body
+  %region_number = getelementptr inbounds %struct.eh_region* %4, i64 0, i32 3
+  %5 = load i32* %region_number, align 4, !tbaa !0
+  %6 = trunc i64 %indvars.iv194 to i32
+  %cmp5 = icmp eq i32 %5, %6
+  br i1 %cmp5, label %if.then6, label %for.inc
+
+if.then6:                                         ; preds = %land.lhs.true
+  tail call fastcc void @mark_eh_region(%struct.eh_region* %4) #7
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %land.lhs.true, %if.then6
+  %indvars.iv.next195 = add i64 %indvars.iv194, -1
+  %7 = trunc i64 %indvars.iv.next195 to i32
+  %cmp2 = icmp sgt i32 %7, 0
+  br i1 %cmp2, label %for.inc.for.body_crit_edge, label %do.body30
+
+for.inc.for.body_crit_edge:                       ; preds = %for.inc
+  %.pre197 = load %struct.eh_region*** %region_array, align 8, !tbaa !3
+  br label %for.body
+
+if.else:                                          ; preds = %if.end
+  %region_tree = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 0
+  %8 = load %struct.eh_region** %region_tree, align 8, !tbaa !3
+  %tobool8 = icmp eq %struct.eh_region* %8, null
+  br i1 %tobool8, label %do.body30, label %while.body
+
+while.body:                                       ; preds = %if.else15, %while.body, %do.cond, %if.else
+  %r10.0 = phi %struct.eh_region* [ %8, %if.else ], [ %9, %while.body ], [ %10, %if.else15 ], [ %12, %do.cond ]
+  tail call fastcc void @mark_eh_region(%struct.eh_region* %r10.0) #7
+  %inner = getelementptr inbounds %struct.eh_region* %r10.0, i64 0, i32 1
+  %9 = load %struct.eh_region** %inner, align 8, !tbaa !3
+  %tobool12 = icmp eq %struct.eh_region* %9, null
+  br i1 %tobool12, label %if.else15, label %while.body
+
+if.else15:                                        ; preds = %while.body
+  %next_peer = getelementptr inbounds %struct.eh_region* %r10.0, i64 0, i32 2
+  %10 = load %struct.eh_region** %next_peer, align 8, !tbaa !3
+  %tobool16 = icmp eq %struct.eh_region* %10, null
+  br i1 %tobool16, label %do.body, label %while.body
+
+do.body:                                          ; preds = %if.else15, %do.cond
+  %r10.1 = phi %struct.eh_region* [ %11, %do.cond ], [ %r10.0, %if.else15 ]
+  %outer = getelementptr inbounds %struct.eh_region* %r10.1, i64 0, i32 0
+  %11 = load %struct.eh_region** %outer, align 8, !tbaa !3
+  %cmp20 = icmp eq %struct.eh_region* %11, null
+  br i1 %cmp20, label %do.body30, label %do.cond
+
+do.cond:                                          ; preds = %do.body
+  %next_peer23 = getelementptr inbounds %struct.eh_region* %11, i64 0, i32 2
+  %12 = load %struct.eh_region** %next_peer23, align 8, !tbaa !3
+  %cmp24 = icmp eq %struct.eh_region* %12, null
+  br i1 %cmp24, label %do.body, label %while.body
+
+do.body30:                                        ; preds = %if.then1, %for.inc, %do.body, %if.else
+  %protect_list = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 4
+  %13 = load %union.tree_node** %protect_list, align 8, !tbaa !3
+  %cmp31 = icmp eq %union.tree_node* %13, null
+  br i1 %cmp31, label %do.body48, label %land.lhs.true32
+
+land.lhs.true32:                                  ; preds = %do.body30
+  %14 = bitcast %union.tree_node* %13 to i8*
+  %call = tail call i32 @ggc_set_mark(i8* %14) #6
+  %tobool33 = icmp eq i32 %call, 0
+  br i1 %tobool33, label %do.body35, label %do.body48
+
+do.body35:                                        ; preds = %land.lhs.true32
+  %15 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !3
+  %elements_used = getelementptr inbounds %struct.varray_head_tag* %15, i64 0, i32 1
+  %16 = load i64* %elements_used, align 8, !tbaa !4
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %15, i64 0, i32 0
+  %17 = load i64* %num_elements, align 8, !tbaa !4
+  %cmp36 = icmp ult i64 %16, %17
+  br i1 %cmp36, label %if.end40, label %if.then37
+
+if.then37:                                        ; preds = %do.body35
+  %mul = shl i64 %17, 1
+  %call39 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %15, i64 %mul) #6
+  store %struct.varray_head_tag* %call39, %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !3
+  %elements_used41.phi.trans.insert = getelementptr inbounds %struct.varray_head_tag* %call39, i64 0, i32 1
+  %.pre = load i64* %elements_used41.phi.trans.insert, align 8, !tbaa !4
+  br label %if.end40
+
+if.end40:                                         ; preds = %do.body35, %if.then37
+  %18 = phi i64 [ %16, %do.body35 ], [ %.pre, %if.then37 ]
+  %19 = phi %struct.varray_head_tag* [ %15, %do.body35 ], [ %call39, %if.then37 ]
+  %elements_used41 = getelementptr inbounds %struct.varray_head_tag* %19, i64 0, i32 1
+  %inc = add i64 %18, 1
+  store i64 %inc, i64* %elements_used41, align 8, !tbaa !4
+  %data = getelementptr inbounds %struct.varray_head_tag* %19, i64 0, i32 4
+  %tree = bitcast %union.varray_data_tag* %data to [1 x %union.tree_node*]*
+  %arrayidx42 = getelementptr inbounds [1 x %union.tree_node*]* %tree, i64 0, i64 %18
+  store %union.tree_node* %13, %union.tree_node** %arrayidx42, align 8, !tbaa !3
+  br label %do.body48
+
+do.body48:                                        ; preds = %land.lhs.true32, %do.body30, %if.end40
+  %filter = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 5
+  %20 = load %struct.rtx_def** %filter, align 8, !tbaa !3
+  %cmp49 = icmp eq %struct.rtx_def* %20, null
+  br i1 %cmp49, label %do.body57, label %land.lhs.true50
+
+land.lhs.true50:                                  ; preds = %do.body48
+  %21 = getelementptr inbounds %struct.rtx_def* %20, i64 0, i32 0, i64 0
+  %call51 = tail call i32 @ggc_set_mark(i8* %21) #6
+  %tobool52 = icmp eq i32 %call51, 0
+  br i1 %tobool52, label %if.then53, label %do.body57
+
+if.then53:                                        ; preds = %land.lhs.true50
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %20) #6
+  br label %do.body57
+
+do.body57:                                        ; preds = %land.lhs.true50, %do.body48, %if.then53
+  %exc_ptr = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 6
+  %22 = load %struct.rtx_def** %exc_ptr, align 8, !tbaa !3
+  %cmp59 = icmp eq %struct.rtx_def* %22, null
+  br i1 %cmp59, label %do.end66, label %land.lhs.true60
+
+land.lhs.true60:                                  ; preds = %do.body57
+  %23 = getelementptr inbounds %struct.rtx_def* %22, i64 0, i32 0, i64 0
+  %call61 = tail call i32 @ggc_set_mark(i8* %23) #6
+  %tobool62 = icmp eq i32 %call61, 0
+  br i1 %tobool62, label %if.then63, label %do.end66
+
+if.then63:                                        ; preds = %land.lhs.true60
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %22) #6
+  br label %do.end66
+
+do.end66:                                         ; preds = %land.lhs.true60, %do.body57, %if.then63
+  %ttype_data = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 9
+  %24 = load %struct.varray_head_tag** %ttype_data, align 8, !tbaa !3
+  tail call void @ggc_mark_tree_varray(%struct.varray_head_tag* %24) #6
+  %call_site_data = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 12
+  %25 = load %struct.call_site_record** %call_site_data, align 8, !tbaa !3
+  %tobool67 = icmp eq %struct.call_site_record* %25, null
+  br i1 %tobool67, label %do.body89, label %if.then68
+
+if.then68:                                        ; preds = %do.end66
+  %call_site_data_used = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 13
+  %26 = load i32* %call_site_data_used, align 4, !tbaa !0
+  %cmp70189 = icmp sgt i32 %26, 0
+  br i1 %cmp70189, label %do.body72.lr.ph, label %do.body89
+
+do.body72.lr.ph:                                  ; preds = %if.then68
+  %27 = sext i32 %26 to i64
+  br label %do.body72
+
+do.body72:                                        ; preds = %for.cond69.backedge.do.body72_crit_edge, %do.body72.lr.ph
+  %28 = phi %struct.call_site_record* [ %25, %do.body72.lr.ph ], [ %.pre196, %for.cond69.backedge.do.body72_crit_edge ]
+  %indvars.iv = phi i64 [ %27, %do.body72.lr.ph ], [ %indvars.iv.next, %for.cond69.backedge.do.body72_crit_edge ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %landing_pad = getelementptr inbounds %struct.call_site_record* %28, i64 %indvars.iv.next, i32 0
+  %29 = load %struct.rtx_def** %landing_pad, align 8, !tbaa !3
+  %cmp77 = icmp eq %struct.rtx_def* %29, null
+  br i1 %cmp77, label %for.cond69.backedge, label %land.lhs.true78
+
+land.lhs.true78:                                  ; preds = %do.body72
+  %30 = getelementptr inbounds %struct.rtx_def* %29, i64 0, i32 0, i64 0
+  %call79 = tail call i32 @ggc_set_mark(i8* %30) #6
+  %tobool80 = icmp eq i32 %call79, 0
+  br i1 %tobool80, label %if.then81, label %for.cond69.backedge
+
+for.cond69.backedge:                              ; preds = %land.lhs.true78, %do.body72, %if.then81
+  %31 = trunc i64 %indvars.iv.next to i32
+  %cmp70 = icmp sgt i32 %31, 0
+  br i1 %cmp70, label %for.cond69.backedge.do.body72_crit_edge, label %do.body89
+
+for.cond69.backedge.do.body72_crit_edge:          ; preds = %for.cond69.backedge
+  %.pre196 = load %struct.call_site_record** %call_site_data, align 8, !tbaa !3
+  br label %do.body72
+
+if.then81:                                        ; preds = %land.lhs.true78
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %29) #6
+  br label %for.cond69.backedge
+
+do.body89:                                        ; preds = %if.then68, %for.cond69.backedge, %do.end66
+  %ehr_stackadj = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 15
+  %32 = load %struct.rtx_def** %ehr_stackadj, align 8, !tbaa !3
+  %cmp91 = icmp eq %struct.rtx_def* %32, null
+  br i1 %cmp91, label %do.body99, label %land.lhs.true92
+
+land.lhs.true92:                                  ; preds = %do.body89
+  %33 = getelementptr inbounds %struct.rtx_def* %32, i64 0, i32 0, i64 0
+  %call93 = tail call i32 @ggc_set_mark(i8* %33) #6
+  %tobool94 = icmp eq i32 %call93, 0
+  br i1 %tobool94, label %if.then95, label %do.body99
+
+if.then95:                                        ; preds = %land.lhs.true92
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %32) #6
+  br label %do.body99
+
+do.body99:                                        ; preds = %land.lhs.true92, %do.body89, %if.then95
+  %ehr_handler = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 16
+  %34 = load %struct.rtx_def** %ehr_handler, align 8, !tbaa !3
+  %cmp101 = icmp eq %struct.rtx_def* %34, null
+  br i1 %cmp101, label %do.body109, label %land.lhs.true102
+
+land.lhs.true102:                                 ; preds = %do.body99
+  %35 = getelementptr inbounds %struct.rtx_def* %34, i64 0, i32 0, i64 0
+  %call103 = tail call i32 @ggc_set_mark(i8* %35) #6
+  %tobool104 = icmp eq i32 %call103, 0
+  br i1 %tobool104, label %if.then105, label %do.body109
+
+if.then105:                                       ; preds = %land.lhs.true102
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %34) #6
+  br label %do.body109
+
+do.body109:                                       ; preds = %land.lhs.true102, %do.body99, %if.then105
+  %ehr_label = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 17
+  %36 = load %struct.rtx_def** %ehr_label, align 8, !tbaa !3
+  %cmp111 = icmp eq %struct.rtx_def* %36, null
+  br i1 %cmp111, label %do.body119, label %land.lhs.true112
+
+land.lhs.true112:                                 ; preds = %do.body109
+  %37 = getelementptr inbounds %struct.rtx_def* %36, i64 0, i32 0, i64 0
+  %call113 = tail call i32 @ggc_set_mark(i8* %37) #6
+  %tobool114 = icmp eq i32 %call113, 0
+  br i1 %tobool114, label %if.then115, label %do.body119
+
+if.then115:                                       ; preds = %land.lhs.true112
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %36) #6
+  br label %do.body119
+
+do.body119:                                       ; preds = %land.lhs.true112, %do.body109, %if.then115
+  %sjlj_fc = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 18
+  %38 = load %struct.rtx_def** %sjlj_fc, align 8, !tbaa !3
+  %cmp121 = icmp eq %struct.rtx_def* %38, null
+  br i1 %cmp121, label %do.body129, label %land.lhs.true122
+
+land.lhs.true122:                                 ; preds = %do.body119
+  %39 = getelementptr inbounds %struct.rtx_def* %38, i64 0, i32 0, i64 0
+  %call123 = tail call i32 @ggc_set_mark(i8* %39) #6
+  %tobool124 = icmp eq i32 %call123, 0
+  br i1 %tobool124, label %if.then125, label %do.body129
+
+if.then125:                                       ; preds = %land.lhs.true122
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %38) #6
+  br label %do.body129
+
+do.body129:                                       ; preds = %land.lhs.true122, %do.body119, %if.then125
+  %sjlj_exit_after = getelementptr inbounds %struct.eh_status* %eh, i64 0, i32 19
+  %40 = load %struct.rtx_def** %sjlj_exit_after, align 8, !tbaa !3
+  %cmp131 = icmp eq %struct.rtx_def* %40, null
+  br i1 %cmp131, label %do.end138, label %land.lhs.true132
+
+land.lhs.true132:                                 ; preds = %do.body129
+  %41 = getelementptr inbounds %struct.rtx_def* %40, i64 0, i32 0, i64 0
+  %call133 = tail call i32 @ggc_set_mark(i8* %41) #6
+  %tobool134 = icmp eq i32 %call133, 0
+  br i1 %tobool134, label %if.then135, label %do.end138
+
+if.then135:                                       ; preds = %land.lhs.true132
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %40) #6
+  br label %do.end138
+
+do.end138:                                        ; preds = %land.lhs.true132, %do.body129, %if.then135, %entry
+  ret void
+}

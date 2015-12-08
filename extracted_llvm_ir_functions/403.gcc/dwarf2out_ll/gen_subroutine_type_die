@@ -1,0 +1,161 @@
+define internal fastcc void @gen_subroutine_type_die(%union.tree_node* %type, %struct.die_struct* %context_die) #1 {
+entry:
+  %type1 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 1
+  %0 = load %union.tree_node** %type1, align 8, !tbaa !4
+  %call = tail call fastcc %struct.die_struct* @scope_die_for(%union.tree_node* %type, %struct.die_struct* %context_die) #10
+  %call.i = tail call noalias i8* @xcalloc(i64 1, i64 72) #9
+  %1 = bitcast i8* %call.i to %struct.die_struct*
+  %die_tag.i = bitcast i8* %call.i to i32*
+  store i32 21, i32* %die_tag.i, align 4, !tbaa !12
+  %cmp.i = icmp eq %struct.die_struct* %call, null
+  br i1 %cmp.i, label %if.else.i, label %if.then.i
+
+if.then.i:                                        ; preds = %entry
+  %cmp1.i.i = icmp eq i8* %call.i, null
+  br i1 %cmp1.i.i, label %new_die.exit, label %if.then.i.i
+
+if.then.i.i:                                      ; preds = %if.then.i
+  %cmp2.i.i = icmp eq %struct.die_struct* %1, %call
+  br i1 %cmp2.i.i, label %if.then3.i.i, label %if.end.i.i
+
+if.then3.i.i:                                     ; preds = %if.then.i.i
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 5026, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.add_child_die, i64 0, i64 0)) #12
+  unreachable
+
+if.end.i.i:                                       ; preds = %if.then.i.i
+  %die_parent.i.i = getelementptr inbounds i8* %call.i, i64 24
+  %2 = bitcast i8* %die_parent.i.i to %struct.die_struct**
+  store %struct.die_struct* %call, %struct.die_struct** %2, align 8, !tbaa !4
+  %die_child.i.i = getelementptr inbounds %struct.die_struct* %call, i64 0, i32 4
+  %3 = load %struct.die_struct** %die_child.i.i, align 8, !tbaa !4
+  %die_sib.i.i = getelementptr inbounds i8* %call.i, i64 40
+  %4 = bitcast i8* %die_sib.i.i to %struct.die_struct**
+  store %struct.die_struct* %3, %struct.die_struct** %4, align 8, !tbaa !4
+  store %struct.die_struct* %1, %struct.die_struct** %die_child.i.i, align 8, !tbaa !4
+  br label %new_die.exit
+
+if.else.i:                                        ; preds = %entry
+  %call1.i = tail call noalias i8* @xmalloc(i64 24) #9
+  %5 = bitcast i8* %call1.i to %struct.limbo_die_struct*
+  %die2.i = bitcast i8* %call1.i to %struct.die_struct**
+  store %struct.die_struct* %1, %struct.die_struct** %die2.i, align 8, !tbaa !4
+  %created_for.i = getelementptr inbounds i8* %call1.i, i64 8
+  %6 = bitcast i8* %created_for.i to %union.tree_node**
+  store %union.tree_node* %type, %union.tree_node** %6, align 8, !tbaa !4
+  %7 = load %struct.limbo_die_struct** @limbo_die_list, align 8, !tbaa !4
+  %next.i = getelementptr inbounds i8* %call1.i, i64 16
+  %8 = bitcast i8* %next.i to %struct.limbo_die_struct**
+  store %struct.limbo_die_struct* %7, %struct.limbo_die_struct** %8, align 8, !tbaa !4
+  store %struct.limbo_die_struct* %5, %struct.limbo_die_struct** @limbo_die_list, align 8, !tbaa !4
+  br label %new_die.exit
+
+new_die.exit:                                     ; preds = %if.then.i, %if.end.i.i, %if.else.i
+  %symtab.i = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 10
+  %.c.i = bitcast i8* %call.i to %union.tree_node*
+  store %union.tree_node* %.c.i, %union.tree_node** %symtab.i, align 8, !tbaa !4
+  %9 = load %struct.die_struct** @comp_unit_die, align 8, !tbaa !4
+  br label %tailrecurse.i.i.i
+
+tailrecurse.i.i.i:                                ; preds = %for.end.i.i.i, %new_die.exit
+  %die.tr.i.i.i = phi %struct.die_struct* [ %9, %new_die.exit ], [ %spec.1.i.i.i, %for.end.i.i.i ]
+  %cmp.i.i.i = icmp eq %struct.die_struct* %die.tr.i.i.i, null
+  br i1 %cmp.i.i.i, label %add_prototyped_attribute.exit, label %if.then.i.i.i
+
+if.then.i.i.i:                                    ; preds = %tailrecurse.i.i.i
+  %die_attr.i.i.i = getelementptr inbounds %struct.die_struct* %die.tr.i.i.i, i64 0, i32 2
+  %a.026.i.i.i = load %struct.dw_attr_struct** %die_attr.i.i.i, align 8
+  %cmp127.i.i.i = icmp eq %struct.dw_attr_struct* %a.026.i.i.i, null
+  br i1 %cmp127.i.i.i, label %add_prototyped_attribute.exit, label %for.body.i.i.i
+
+for.body.i.i.i:                                   ; preds = %if.then.i.i.i, %for.inc.i.i.i
+  %a.029.i.i.i = phi %struct.dw_attr_struct* [ %a.0.i.i.i, %for.inc.i.i.i ], [ %a.026.i.i.i, %if.then.i.i.i ]
+  %spec.028.i.i.i = phi %struct.die_struct* [ %spec.1.i.i.i, %for.inc.i.i.i ], [ null, %if.then.i.i.i ]
+  %dw_attr.i.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i.i, i64 0, i32 0
+  %10 = load i32* %dw_attr.i.i.i, align 4, !tbaa !11
+  switch i32 %10, label %for.inc.i.i.i [
+    i32 19, label %land.lhs.true.i.i.i
+    i32 71, label %land.lhs.true.i.i.i.i
+    i32 49, label %land.lhs.true.i.i.i.i
+  ]
+
+land.lhs.true.i.i.i.i:                            ; preds = %for.body.i.i.i, %for.body.i.i.i
+  %val_class.i.i.i.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i.i, i64 0, i32 2, i32 0
+  %11 = load i32* %val_class.i.i.i.i.i, align 4, !tbaa !1
+  %cmp.i.i.i.i = icmp eq i32 %11, 10
+  br i1 %cmp.i.i.i.i, label %AT_ref.exit.i.i.i, label %if.end.i.i.i.i
+
+if.end.i.i.i.i:                                   ; preds = %land.lhs.true.i.i.i.i
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4588, i8* getelementptr inbounds ([7 x i8]* @__FUNCTION__.AT_ref, i64 0, i64 0)) #12
+  unreachable
+
+AT_ref.exit.i.i.i:                                ; preds = %land.lhs.true.i.i.i.i
+  %v.i.i.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i.i, i64 0, i32 2, i32 1
+  %die.i.i.i.i = bitcast %union.anon.3* %v.i.i.i.i to %struct.die_struct**
+  %12 = load %struct.die_struct** %die.i.i.i.i, align 8, !tbaa !4
+  br label %for.inc.i.i.i
+
+for.inc.i.i.i:                                    ; preds = %AT_ref.exit.i.i.i, %for.body.i.i.i
+  %spec.1.i.i.i = phi %struct.die_struct* [ %12, %AT_ref.exit.i.i.i ], [ %spec.028.i.i.i, %for.body.i.i.i ]
+  %dw_attr_next.i.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i.i, i64 0, i32 1
+  %a.0.i.i.i = load %struct.dw_attr_struct** %dw_attr_next.i.i.i, align 8
+  %cmp1.i.i.i = icmp eq %struct.dw_attr_struct* %a.0.i.i.i, null
+  br i1 %cmp1.i.i.i, label %for.end.i.i.i, label %for.body.i.i.i
+
+for.end.i.i.i:                                    ; preds = %for.inc.i.i.i
+  %tobool.i.i.i = icmp eq %struct.die_struct* %spec.1.i.i.i, null
+  br i1 %tobool.i.i.i, label %add_prototyped_attribute.exit, label %tailrecurse.i.i.i
+
+land.lhs.true.i.i.i:                              ; preds = %for.body.i.i.i
+  %val_class.i.i.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i.i, i64 0, i32 2, i32 0
+  %13 = load i32* %val_class.i.i.i.i, align 4, !tbaa !1
+  %cmp.i4.i.i = icmp eq i32 %13, 6
+  br i1 %cmp.i4.i.i, label %get_AT_unsigned.exit.i, label %if.end.i.i.i
+
+if.end.i.i.i:                                     ; preds = %land.lhs.true.i.i.i
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4441, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.AT_unsigned, i64 0, i64 0)) #12
+  unreachable
+
+get_AT_unsigned.exit.i:                           ; preds = %land.lhs.true.i.i.i
+  %val_unsigned.i.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i.i, i64 0, i32 2, i32 1, i32 0, i32 0
+  %14 = load i64* %val_unsigned.i.i.i, align 8, !tbaa !6
+  %phitmp.i.i = trunc i64 %14 to i32
+  %cmp.i12 = icmp eq i32 %phitmp.i.i, 1
+  br i1 %cmp.i12, label %land.lhs.true.i, label %add_prototyped_attribute.exit
+
+land.lhs.true.i:                                  ; preds = %get_AT_unsigned.exit.i
+  %values.i = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 1
+  %15 = load i8** %values.i, align 8
+  %cmp1.i = icmp eq i8* %15, null
+  br i1 %cmp1.i, label %add_prototyped_attribute.exit, label %if.then.i13
+
+if.then.i13:                                      ; preds = %land.lhs.true.i
+  %call.i14 = tail call noalias i8* @xmalloc(i64 40) #9
+  %dw_attr_next.i = getelementptr inbounds i8* %call.i14, i64 8
+  %16 = bitcast i8* %dw_attr_next.i to %struct.dw_attr_struct**
+  store %struct.dw_attr_struct* null, %struct.dw_attr_struct** %16, align 8, !tbaa !4
+  %dw_attr.i = bitcast i8* %call.i14 to i32*
+  store i32 39, i32* %dw_attr.i, align 4, !tbaa !11
+  %dw_attr_val.i = getelementptr inbounds i8* %call.i14, i64 16
+  %val_class.i = bitcast i8* %dw_attr_val.i to i32*
+  store i32 9, i32* %val_class.i, align 4, !tbaa !1
+  %v.i = getelementptr inbounds i8* %call.i14, i64 24
+  store i8 1, i8* %v.i, align 1, !tbaa !1
+  %cmp.i.i = icmp eq i8* %call.i, null
+  %cmp1.i.i15 = icmp eq i8* %call.i14, null
+  %or.cond.i.i = or i1 %cmp.i.i, %cmp1.i.i15
+  br i1 %or.cond.i.i, label %add_prototyped_attribute.exit, label %if.then.i.i16
+
+if.then.i.i16:                                    ; preds = %if.then.i13
+  %17 = bitcast i8* %call.i14 to %struct.dw_attr_struct*
+  %die_attr.i.i = getelementptr inbounds i8* %call.i, i64 16
+  %18 = bitcast i8* %die_attr.i.i to %struct.dw_attr_struct**
+  %19 = load %struct.dw_attr_struct** %18, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %19, %struct.dw_attr_struct** %16, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %17, %struct.dw_attr_struct** %18, align 8, !tbaa !4
+  br label %add_prototyped_attribute.exit
+
+add_prototyped_attribute.exit:                    ; preds = %tailrecurse.i.i.i, %if.then.i.i.i, %for.end.i.i.i, %if.then.i.i16, %if.then.i13, %get_AT_unsigned.exit.i, %land.lhs.true.i
+  tail call fastcc void @add_type_attribute(%struct.die_struct* %1, %union.tree_node* %0, i32 0, i32 0, %struct.die_struct* %context_die) #10
+  tail call fastcc void @gen_formal_types_die(%union.tree_node* %type, %struct.die_struct* %1) #10
+  ret void
+}

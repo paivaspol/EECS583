@@ -1,0 +1,14 @@
+define void @bitmap_release_memory() #0 {
+entry:
+  store %struct.bitmap_element_def* null, %struct.bitmap_element_def** @bitmap_free, align 8, !tbaa !0
+  %.b = load i1* @bitmap_obstack_init, align 1
+  br i1 %.b, label %if.then, label %if.end3
+
+if.then:                                          ; preds = %entry
+  store i1 false, i1* @bitmap_obstack_init, align 1
+  tail call void @obstack_free(%struct.obstack* @bitmap_obstack, i8* null) #6
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.then, %entry
+  ret void
+}

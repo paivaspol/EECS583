@@ -1,0 +1,75 @@
+define internal i32 @reload_reg_class_lower(i8* nocapture %r1p, i8* nocapture %r2p) #6 {
+entry:
+  %0 = bitcast i8* %r1p to i16*
+  %1 = load i16* %0, align 2, !tbaa !5
+  %conv = sext i16 %1 to i32
+  %2 = bitcast i8* %r2p to i16*
+  %3 = load i16* %2, align 2, !tbaa !5
+  %conv1 = sext i16 %3 to i32
+  %idxprom = sext i16 %1 to i64
+  %optional = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom, i32 18
+  %bf.load = load i8* %optional, align 8
+  %bf.clear = and i8 %bf.load, 1
+  %idxprom2 = sext i16 %3 to i64
+  %optional4 = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom2, i32 18
+  %bf.load5 = load i8* %optional4, align 8
+  %bf.clear6 = and i8 %bf.load5, 1
+  %cmp = icmp eq i8 %bf.clear, %bf.clear6
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %bf.cast = zext i8 %bf.clear to i32
+  %bf.cast7 = zext i8 %bf.clear6 to i32
+  %sub = sub nsw i32 %bf.cast, %bf.cast7
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %class = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom2, i32 2
+  %4 = load i32* %class, align 8, !tbaa !7
+  %idxprom11 = sext i32 %4 to i64
+  %arrayidx12 = getelementptr inbounds [25 x i32]* @reg_class_size, i64 0, i64 %idxprom11
+  %5 = load i32* %arrayidx12, align 4, !tbaa !0
+  %cmp13 = icmp eq i32 %5, 1
+  %class17 = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom, i32 2
+  %6 = load i32* %class17, align 8, !tbaa !7
+  %idxprom18 = sext i32 %6 to i64
+  %arrayidx19 = getelementptr inbounds [25 x i32]* @reg_class_size, i64 0, i64 %idxprom18
+  %7 = load i32* %arrayidx19, align 4, !tbaa !0
+  %cmp20 = icmp eq i32 %7, 1
+  %cmp23 = xor i1 %cmp13, %cmp20
+  br i1 %cmp23, label %if.then25, label %if.end26
+
+if.then25:                                        ; preds = %if.end
+  %conv14 = zext i1 %cmp13 to i32
+  %conv21 = zext i1 %cmp20 to i32
+  %sub22 = sub nsw i32 %conv14, %conv21
+  br label %return
+
+if.end26:                                         ; preds = %if.end
+  %nregs = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom2, i32 6
+  %8 = load i32* %nregs, align 8, !tbaa !0
+  %nregs31 = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom, i32 6
+  %9 = load i32* %nregs31, align 8, !tbaa !0
+  %cmp33 = icmp eq i32 %8, %9
+  br i1 %cmp33, label %if.end36, label %if.then35
+
+if.then35:                                        ; preds = %if.end26
+  %sub32 = sub i32 %8, %9
+  br label %return
+
+if.end36:                                         ; preds = %if.end26
+  %cmp44 = icmp eq i32 %6, %4
+  br i1 %cmp44, label %if.end47, label %if.then46
+
+if.then46:                                        ; preds = %if.end36
+  %sub43 = sub nsw i32 %6, %4
+  br label %return
+
+if.end47:                                         ; preds = %if.end36
+  %sub48 = sub nsw i32 %conv, %conv1
+  br label %return
+
+return:                                           ; preds = %if.end47, %if.then46, %if.then35, %if.then25, %if.then
+  %retval.0 = phi i32 [ %sub, %if.then ], [ %sub22, %if.then25 ], [ %sub32, %if.then35 ], [ %sub43, %if.then46 ], [ %sub48, %if.end47 ]
+  ret i32 %retval.0
+}

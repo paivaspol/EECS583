@@ -1,0 +1,86 @@
+define i32 @expr_align(%union.tree_node* nocapture %t) #3 {
+entry:
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %sw.bb3, %entry
+  %t.tr = phi %union.tree_node* [ %t, %entry ], [ %5, %sw.bb3 ]
+  %code = getelementptr inbounds %union.tree_node* %t.tr, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  switch i32 %bf.clear, label %sw.epilog [
+    i32 115, label %sw.bb
+    i32 114, label %sw.bb
+    i32 116, label %sw.bb
+    i32 118, label %sw.bb3
+    i32 47, label %sw.bb3
+    i32 48, label %sw.bb3
+    i32 49, label %sw.bb3
+    i32 50, label %sw.bb3
+    i32 55, label %sw.bb3
+    i32 58, label %sw.bb3
+    i32 56, label %sw.bb3
+    i32 119, label %sw.bb3
+    i32 51, label %sw.bb8
+    i32 31, label %sw.bb22
+    i32 32, label %sw.bb22
+    i32 34, label %sw.bb22
+    i32 35, label %sw.bb22
+    i32 36, label %sw.bb22
+    i32 30, label %return
+  ]
+
+sw.bb:                                            ; preds = %tailrecurse, %tailrecurse, %tailrecurse
+  %operands = getelementptr inbounds %union.tree_node* %t.tr, i64 0, i32 0, i32 2
+  %arrayidx = bitcast i32* %operands to %union.tree_node**
+  %1 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
+  %call = tail call i32 @expr_align(%union.tree_node* %1) #10
+  %type = getelementptr inbounds %union.tree_node* %t.tr, i64 0, i32 0, i32 0, i32 1
+  %2 = load %union.tree_node** %type, align 8, !tbaa !0
+  %align = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 7
+  %3 = bitcast %union.tree_node** %align to i32*
+  %4 = load i32* %3, align 4, !tbaa !4
+  %cmp = icmp ugt i32 %call, %4
+  %cond = select i1 %cmp, i32 %call, i32 %4
+  ret i32 %cond
+
+sw.bb3:                                           ; preds = %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse
+  %operands5 = getelementptr inbounds %union.tree_node* %t.tr, i64 0, i32 0, i32 2
+  %arrayidx6 = bitcast i32* %operands5 to %union.tree_node**
+  %5 = load %union.tree_node** %arrayidx6, align 8, !tbaa !0
+  br label %tailrecurse
+
+sw.bb8:                                           ; preds = %tailrecurse
+  %operands10 = getelementptr inbounds %union.tree_node* %t.tr, i64 0, i32 0, i32 2
+  %arrayidx11 = getelementptr inbounds i32* %operands10, i64 2
+  %6 = bitcast i32* %arrayidx11 to %union.tree_node**
+  %7 = load %union.tree_node** %6, align 8, !tbaa !0
+  %call12 = tail call i32 @expr_align(%union.tree_node* %7) #10
+  %arrayidx15 = getelementptr inbounds i32* %operands10, i64 4
+  %8 = bitcast i32* %arrayidx15 to %union.tree_node**
+  %9 = load %union.tree_node** %8, align 8, !tbaa !0
+  %call16 = tail call i32 @expr_align(%union.tree_node* %9) #10
+  %cmp17 = icmp ult i32 %call12, %call16
+  %cond21 = select i1 %cmp17, i32 %call12, i32 %call16
+  ret i32 %cond21
+
+sw.bb22:                                          ; preds = %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse
+  %u1 = getelementptr inbounds %union.tree_node* %t.tr, i64 0, i32 0, i32 6
+  %10 = bitcast %union.anon* %u1 to i32*
+  %bf.load23 = load i32* %10, align 4
+  %bf.clear24 = and i32 %bf.load23, 16777215
+  %cmp25 = icmp eq i32 %bf.clear24, 0
+  br i1 %cmp25, label %sw.epilog, label %return
+
+sw.epilog:                                        ; preds = %tailrecurse, %sw.bb22
+  %type33 = getelementptr inbounds %union.tree_node* %t.tr, i64 0, i32 0, i32 0, i32 1
+  %11 = load %union.tree_node** %type33, align 8, !tbaa !0
+  %align35 = getelementptr inbounds %union.tree_node* %11, i64 0, i32 0, i32 7
+  %12 = bitcast %union.tree_node** %align35 to i32*
+  %13 = load i32* %12, align 4, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %tailrecurse, %sw.bb22, %sw.epilog
+  %retval.0 = phi i32 [ %13, %sw.epilog ], [ %bf.clear24, %sw.bb22 ], [ 16, %tailrecurse ]
+  ret i32 %retval.0
+}

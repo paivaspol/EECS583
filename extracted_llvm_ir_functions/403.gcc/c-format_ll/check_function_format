@@ -1,0 +1,326 @@
+define void @check_function_format(i32* %status, %union.tree_node* %attrs, %union.tree_node* %params) #0 {
+entry:
+  %res.i = alloca %struct.format_check_results, align 4
+  %info = alloca %struct.function_format_info, align 8
+  %tobool82 = icmp eq %union.tree_node* %attrs, null
+  br i1 %tobool82, label %for.end60, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %0 = bitcast %struct.format_check_results* %res.i to i8*
+  %cmp113.i = icmp eq %union.tree_node* %params, null
+  %first_arg_num = getelementptr inbounds %struct.function_format_info* %info, i64 0, i32 2
+  %format_type = getelementptr inbounds %struct.function_format_info* %info, i64 0, i32 0
+  %format_num.i = getelementptr inbounds %struct.function_format_info* %info, i64 0, i32 1
+  %number_non_literal.i = getelementptr inbounds %struct.format_check_results* %res.i, i64 0, i32 0
+  %number_extra_args.i = getelementptr inbounds %struct.format_check_results* %res.i, i64 0, i32 1
+  %number_dollar_extra_args.i = getelementptr inbounds %struct.format_check_results* %res.i, i64 0, i32 2
+  %number_wide.i = getelementptr inbounds %struct.format_check_results* %res.i, i64 0, i32 3
+  %number_empty.i = getelementptr inbounds %struct.format_check_results* %res.i, i64 0, i32 4
+  %number_unterminated.i = getelementptr inbounds %struct.format_check_results* %res.i, i64 0, i32 5
+  %number_other.i = getelementptr inbounds %struct.format_check_results* %res.i, i64 0, i32 6
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc57
+  %a.083 = phi %union.tree_node* [ %attrs, %for.body.lr.ph ], [ %56, %for.inc57 ]
+  %purpose = getelementptr inbounds %union.tree_node* %a.083, i64 0, i32 0, i32 1
+  %1 = load i8** %purpose, align 8
+  %2 = bitcast i8* %1 to %union.tree_node*
+  %call = call i32 @is_attribute_p(i8* getelementptr inbounds ([7 x i8]* @.str5, i64 0, i64 0), %union.tree_node* %2) #8
+  %tobool1 = icmp eq i32 %call, 0
+  br i1 %tobool1, label %for.inc57, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %value = getelementptr inbounds %union.tree_node* %a.083, i64 0, i32 0, i32 2
+  %3 = bitcast i32* %value to %union.tree_node**
+  %4 = load %union.tree_node** %3, align 8, !tbaa !3
+  %call3 = call fastcc zeroext i1 @decode_format_attr(%union.tree_node* %4, %struct.function_format_info* %info, i32 1) #7
+  call void @llvm.lifetime.start(i64 28, i8* %0) #3
+  br i1 %cmp113.i, label %check_format_info.exit, label %if.end.lr.ph.i
+
+if.end.lr.ph.i:                                   ; preds = %if.then
+  %5 = load i64* %format_num.i, align 8, !tbaa !5
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.end3.i, %if.end.lr.ph.i
+  %params.addr.0115.i = phi %union.tree_node* [ %params, %if.end.lr.ph.i ], [ %6, %if.end3.i ]
+  %arg_num.0114.i = phi i64 [ 1, %if.end.lr.ph.i ], [ %inc.i, %if.end3.i ]
+  %cmp1.i = icmp eq i64 %arg_num.0114.i, %5
+  br i1 %cmp1.i, label %for.end.i, label %if.end3.i
+
+if.end3.i:                                        ; preds = %if.end.i
+  %chain.i = getelementptr inbounds %union.tree_node* %params.addr.0115.i, i64 0, i32 0, i32 0, i32 0
+  %6 = load %union.tree_node** %chain.i, align 8, !tbaa !3
+  %inc.i = add i64 %arg_num.0114.i, 1
+  %cmp.i = icmp eq %union.tree_node* %6, null
+  br i1 %cmp.i, label %check_format_info.exit, label %if.end.i
+
+for.end.i:                                        ; preds = %if.end.i
+  %value.i = getelementptr inbounds %union.tree_node* %params.addr.0115.i, i64 0, i32 0, i32 2
+  %7 = bitcast i32* %value.i to %union.tree_node**
+  %8 = load %union.tree_node** %7, align 8, !tbaa !3
+  %chain5.i = getelementptr inbounds %union.tree_node* %params.addr.0115.i, i64 0, i32 0, i32 0, i32 0
+  %9 = load %union.tree_node** %chain5.i, align 8, !tbaa !3
+  %cmp6.i = icmp eq %union.tree_node* %8, null
+  br i1 %cmp6.i, label %check_format_info.exit, label %if.end8.i
+
+if.end8.i:                                        ; preds = %for.end.i
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 28, i32 4, i1 false) #3
+  call fastcc void @check_format_info_recurse(i32* %status, %struct.format_check_results* %res.i, %struct.function_format_info* %info, %union.tree_node* %8, %union.tree_node* %9, i64 %5) #8
+  %10 = load i32* %number_non_literal.i, align 4, !tbaa !0
+  %cmp10.i = icmp sgt i32 %10, 0
+  br i1 %cmp10.i, label %if.then11.i, label %if.end37.i
+
+if.then11.i:                                      ; preds = %if.end8.i
+  %11 = load i32* %format_type, align 8, !tbaa !6
+  %tobool.i = icmp eq i32 %11, 2
+  br i1 %tobool.i, label %if.then12.i, label %if.else.i
+
+if.then12.i:                                      ; preds = %if.then11.i
+  %12 = load i32* @warn_format_nonliteral, align 4, !tbaa !0
+  %tobool13.i = icmp eq i32 %12, 0
+  br i1 %tobool13.i, label %if.end37.i, label %if.then14.i
+
+if.then14.i:                                      ; preds = %if.then12.i
+  call void (i32*, i8*, ...)* @status_warning(i32* %status, i8* getelementptr inbounds ([55 x i8]* @.str7, i64 0, i64 0)) #8
+  br label %if.end37.i
+
+if.else.i:                                        ; preds = %if.then11.i
+  %13 = load i64* %first_arg_num, align 8, !tbaa !5
+  %cmp16.i = icmp eq i64 %13, 0
+  br i1 %cmp16.i, label %if.end37.i, label %while.cond.preheader.i
+
+while.cond.preheader.i:                           ; preds = %if.else.i
+  %add105.i = add i64 %5, 1
+  %cmp19106.i = icmp uge i64 %add105.i, %13
+  %cmp20107.i = icmp eq %union.tree_node* %9, null
+  %or.cond108.i = or i1 %cmp19106.i, %cmp20107.i
+  br i1 %or.cond108.i, label %while.end.i, label %if.end22.i
+
+if.end22.i:                                       ; preds = %while.cond.preheader.i, %if.end22.i
+  %add110.i = phi i64 [ %add.i, %if.end22.i ], [ %add105.i, %while.cond.preheader.i ]
+  %params.addr.1109.i = phi %union.tree_node* [ %14, %if.end22.i ], [ %9, %while.cond.preheader.i ]
+  %chain24.i = getelementptr inbounds %union.tree_node* %params.addr.1109.i, i64 0, i32 0, i32 0, i32 0
+  %14 = load %union.tree_node** %chain24.i, align 8, !tbaa !3
+  %add.i = add i64 %add110.i, 1
+  %cmp19.i = icmp uge i64 %add.i, %13
+  %cmp20.i = icmp eq %union.tree_node* %14, null
+  %or.cond.i = or i1 %cmp19.i, %cmp20.i
+  br i1 %or.cond.i, label %while.end.i, label %if.end22.i
+
+while.end.i:                                      ; preds = %if.end22.i, %while.cond.preheader.i
+  %cmp20.lcssa.i = phi i1 [ %cmp20107.i, %while.cond.preheader.i ], [ %cmp20.i, %if.end22.i ]
+  %15 = load i32* @warn_format_nonliteral, align 4, !tbaa !0
+  br i1 %cmp20.lcssa.i, label %land.lhs.true.i, label %if.else30.i
+
+land.lhs.true.i:                                  ; preds = %while.end.i
+  %16 = load i32* @warn_format_security, align 4, !tbaa !0
+  %17 = or i32 %16, %15
+  %18 = icmp eq i32 %17, 0
+  br i1 %18, label %if.else30.i, label %if.then29.i
+
+if.then29.i:                                      ; preds = %land.lhs.true.i
+  call void (i32*, i8*, ...)* @status_warning(i32* %status, i8* getelementptr inbounds ([52 x i8]* @.str8, i64 0, i64 0)) #8
+  br label %if.end37.i
+
+if.else30.i:                                      ; preds = %land.lhs.true.i, %while.end.i
+  %tobool31.i = icmp eq i32 %15, 0
+  br i1 %tobool31.i, label %if.end37.i, label %if.then32.i
+
+if.then32.i:                                      ; preds = %if.else30.i
+  call void (i32*, i8*, ...)* @status_warning(i32* %status, i8* getelementptr inbounds ([56 x i8]* @.str9, i64 0, i64 0)) #8
+  br label %if.end37.i
+
+if.end37.i:                                       ; preds = %if.then32.i, %if.else30.i, %if.then29.i, %if.else.i, %if.then14.i, %if.then12.i, %if.end8.i
+  %19 = load i32* %number_extra_args.i, align 4, !tbaa !0
+  %cmp39.i = icmp sgt i32 %19, 0
+  br i1 %cmp39.i, label %land.lhs.true40.i, label %if.end49.i
+
+land.lhs.true40.i:                                ; preds = %if.end37.i
+  %20 = load i32* %number_non_literal.i, align 4, !tbaa !0
+  %cmp42.i = icmp eq i32 %20, 0
+  br i1 %cmp42.i, label %land.lhs.true43.i, label %if.end49.i
+
+land.lhs.true43.i:                                ; preds = %land.lhs.true40.i
+  %21 = load i32* %number_other.i, align 4, !tbaa !0
+  %cmp45.i = icmp eq i32 %21, 0
+  %22 = load i32* @warn_format_extra_args, align 4, !tbaa !0
+  %tobool47.i = icmp ne i32 %22, 0
+  %or.cond80.i = and i1 %cmp45.i, %tobool47.i
+  br i1 %or.cond80.i, label %if.then48.i, label %if.end49.i
+
+if.then48.i:                                      ; preds = %land.lhs.true43.i
+  call void (i32*, i8*, ...)* @status_warning(i32* %status, i8* getelementptr inbounds ([30 x i8]* @.str10, i64 0, i64 0)) #8
+  br label %if.end49.i
+
+if.end49.i:                                       ; preds = %if.then48.i, %land.lhs.true43.i, %land.lhs.true40.i, %if.end37.i
+  %23 = load i32* %number_dollar_extra_args.i, align 4, !tbaa !0
+  %cmp51.i = icmp sgt i32 %23, 0
+  br i1 %cmp51.i, label %land.lhs.true52.i, label %if.end61.i
+
+land.lhs.true52.i:                                ; preds = %if.end49.i
+  %24 = load i32* %number_non_literal.i, align 4, !tbaa !0
+  %cmp54.i = icmp eq i32 %24, 0
+  br i1 %cmp54.i, label %land.lhs.true55.i, label %if.end61.i
+
+land.lhs.true55.i:                                ; preds = %land.lhs.true52.i
+  %25 = load i32* %number_other.i, align 4, !tbaa !0
+  %cmp57.i = icmp eq i32 %25, 0
+  %26 = load i32* @warn_format_extra_args, align 4, !tbaa !0
+  %tobool59.i = icmp ne i32 %26, 0
+  %or.cond81.i = and i1 %cmp57.i, %tobool59.i
+  br i1 %or.cond81.i, label %if.then60.i, label %if.end61.i
+
+if.then60.i:                                      ; preds = %land.lhs.true55.i
+  call void (i32*, i8*, ...)* @status_warning(i32* %status, i8* getelementptr inbounds ([35 x i8]* @.str11, i64 0, i64 0)) #8
+  br label %if.end61.i
+
+if.end61.i:                                       ; preds = %if.then60.i, %land.lhs.true55.i, %land.lhs.true52.i, %if.end49.i
+  %27 = load i32* %number_empty.i, align 4, !tbaa !0
+  %cmp63.i = icmp sgt i32 %27, 0
+  br i1 %cmp63.i, label %land.lhs.true64.i, label %if.end71.i
+
+land.lhs.true64.i:                                ; preds = %if.end61.i
+  %28 = load i32* %number_non_literal.i, align 4, !tbaa !0
+  %cmp66.i = icmp eq i32 %28, 0
+  br i1 %cmp66.i, label %land.lhs.true67.i, label %if.end71.i
+
+land.lhs.true67.i:                                ; preds = %land.lhs.true64.i
+  %29 = load i32* %number_other.i, align 4, !tbaa !0
+  %cmp69.i = icmp eq i32 %29, 0
+  br i1 %cmp69.i, label %if.then70.i, label %if.end71.i
+
+if.then70.i:                                      ; preds = %land.lhs.true67.i
+  call void (i32*, i8*, ...)* @status_warning(i32* %status, i8* getelementptr inbounds ([26 x i8]* @.str12, i64 0, i64 0)) #8
+  br label %if.end71.i
+
+if.end71.i:                                       ; preds = %if.then70.i, %land.lhs.true67.i, %land.lhs.true64.i, %if.end61.i
+  %30 = load i32* %number_wide.i, align 4, !tbaa !0
+  %cmp73.i = icmp sgt i32 %30, 0
+  br i1 %cmp73.i, label %if.then74.i, label %if.end75.i
+
+if.then74.i:                                      ; preds = %if.end71.i
+  call void (i32*, i8*, ...)* @status_warning(i32* %status, i8* getelementptr inbounds ([34 x i8]* @.str13, i64 0, i64 0)) #8
+  br label %if.end75.i
+
+if.end75.i:                                       ; preds = %if.then74.i, %if.end71.i
+  %31 = load i32* %number_unterminated.i, align 4, !tbaa !0
+  %cmp77.i = icmp sgt i32 %31, 0
+  br i1 %cmp77.i, label %if.then78.i, label %check_format_info.exit
+
+if.then78.i:                                      ; preds = %if.end75.i
+  call void (i32*, i8*, ...)* @status_warning(i32* %status, i8* getelementptr inbounds ([27 x i8]* @.str14, i64 0, i64 0)) #8
+  br label %check_format_info.exit
+
+check_format_info.exit:                           ; preds = %if.end3.i, %if.then, %for.end.i, %if.end75.i, %if.then78.i
+  call void @llvm.lifetime.end(i64 28, i8* %0) #3
+  %32 = load i32* @warn_missing_format_attribute, align 4, !tbaa !0
+  %tobool4 = icmp eq i32 %32, 0
+  br i1 %tobool4, label %for.inc57, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %check_format_info.exit
+  %33 = load i64* %first_arg_num, align 8, !tbaa !5
+  %cmp = icmp eq i64 %33, 0
+  br i1 %cmp, label %land.lhs.true5, label %for.inc57
+
+land.lhs.true5:                                   ; preds = %land.lhs.true
+  %34 = load i32* %format_type, align 8, !tbaa !6
+  %tobool6 = icmp eq i32 %34, 2
+  br i1 %tobool6, label %for.inc57, label %if.then7
+
+if.then7:                                         ; preds = %land.lhs.true5
+  %35 = load %union.tree_node** @current_function_decl, align 8, !tbaa !3
+  %type = getelementptr inbounds %union.tree_node* %35, i64 0, i32 0, i32 0, i32 1
+  %36 = load %union.tree_node** %type, align 8, !tbaa !3
+  %attributes = getelementptr inbounds %union.tree_node* %36, i64 0, i32 0, i32 5
+  %37 = bitcast [8 x i8]* %attributes to %union.tree_node**
+  %c.074 = load %union.tree_node** %37, align 8
+  %cond75 = icmp eq %union.tree_node* %c.074, null
+  br i1 %cond75, label %if.then27, label %for.body11
+
+for.body11:                                       ; preds = %if.then7, %for.inc
+  %c.076 = phi %union.tree_node* [ %c.0, %for.inc ], [ %c.074, %if.then7 ]
+  %purpose13 = getelementptr inbounds %union.tree_node* %c.076, i64 0, i32 0, i32 1
+  %38 = load i8** %purpose13, align 8
+  %39 = bitcast i8* %38 to %union.tree_node*
+  %call14 = call i32 @is_attribute_p(i8* getelementptr inbounds ([7 x i8]* @.str5, i64 0, i64 0), %union.tree_node* %39) #8
+  %tobool15 = icmp eq i32 %call14, 0
+  br i1 %tobool15, label %for.inc, label %land.lhs.true16
+
+land.lhs.true16:                                  ; preds = %for.body11
+  %value18 = getelementptr inbounds %union.tree_node* %c.076, i64 0, i32 0, i32 2
+  %40 = bitcast i32* %value18 to %union.tree_node**
+  %41 = load %union.tree_node** %40, align 8, !tbaa !3
+  %value20 = getelementptr inbounds %union.tree_node* %41, i64 0, i32 0, i32 2
+  %42 = bitcast i32* %value20 to %union.tree_node**
+  %43 = load %union.tree_node** %42, align 8, !tbaa !3
+  %id = getelementptr inbounds %union.tree_node* %43, i64 0, i32 0, i32 1
+  %44 = getelementptr inbounds i8** %id, i64 1
+  %45 = load i8** %44, align 8, !tbaa !3
+  %call21 = call fastcc i32 @decode_format_type(i8* %45) #7
+  %46 = load i32* %format_type, align 8, !tbaa !6
+  %cmp23 = icmp eq i32 %call21, %46
+  br i1 %cmp23, label %for.end, label %for.inc
+
+for.inc:                                          ; preds = %for.body11, %land.lhs.true16
+  %chain = getelementptr inbounds %union.tree_node* %c.076, i64 0, i32 0, i32 0, i32 0
+  %c.0 = load %union.tree_node** %chain, align 8
+  %cond = icmp eq %union.tree_node* %c.0, null
+  br i1 %cond, label %if.then27, label %for.body11
+
+for.end:                                          ; preds = %land.lhs.true16
+  %cmp26 = icmp eq %union.tree_node* %c.076, null
+  br i1 %cmp26, label %if.then27, label %for.inc57
+
+if.then27:                                        ; preds = %if.then7, %for.inc, %for.end
+  %47 = load %union.tree_node** @current_function_decl, align 8, !tbaa !3
+  %arguments = getelementptr inbounds %union.tree_node* %47, i64 0, i32 0, i32 10
+  %args.078 = load %union.tree_node** %arguments, align 8
+  %cmp2979 = icmp eq %union.tree_node* %args.078, null
+  br i1 %cmp2979, label %for.inc57, label %for.body30.lr.ph
+
+for.body30.lr.ph:                                 ; preds = %if.then27
+  %48 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 0), align 8, !tbaa !3
+  br label %for.body30
+
+for.body30:                                       ; preds = %for.inc44, %for.body30.lr.ph
+  %args.080 = phi %union.tree_node* [ %args.078, %for.body30.lr.ph ], [ %args.0, %for.inc44 ]
+  %type32 = getelementptr inbounds %union.tree_node* %args.080, i64 0, i32 0, i32 0, i32 1
+  %49 = load %union.tree_node** %type32, align 8, !tbaa !3
+  %code = getelementptr inbounds %union.tree_node* %49, i64 0, i32 0, i32 0, i32 2
+  %50 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %50, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp34 = icmp eq i32 %bf.clear, 13
+  br i1 %cmp34, label %land.lhs.true35, label %for.inc44
+
+land.lhs.true35:                                  ; preds = %for.body30
+  %type39 = getelementptr inbounds %union.tree_node* %49, i64 0, i32 0, i32 0, i32 1
+  %51 = load %union.tree_node** %type39, align 8, !tbaa !3
+  %52 = getelementptr inbounds %union.tree_node* %51, i64 0, i32 0, i32 15
+  %53 = load %union.tree_node** %52, align 8, !tbaa !3
+  %cmp41 = icmp eq %union.tree_node* %53, %48
+  br i1 %cmp41, label %if.then49, label %for.inc44
+
+for.inc44:                                        ; preds = %for.body30, %land.lhs.true35
+  %chain46 = getelementptr inbounds %union.tree_node* %args.080, i64 0, i32 0, i32 0, i32 0
+  %args.0 = load %union.tree_node** %chain46, align 8
+  %cmp29 = icmp eq %union.tree_node* %args.0, null
+  br i1 %cmp29, label %for.inc57, label %for.body30
+
+if.then49:                                        ; preds = %land.lhs.true35
+  %54 = load i32* %format_type, align 8, !tbaa !6
+  %idxprom51 = zext i32 %54 to i64
+  %name = getelementptr inbounds [4 x %struct.format_kind_info]* @format_types, i64 0, i64 %idxprom51, i32 0
+  %55 = load i8** %name, align 16, !tbaa !3
+  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([63 x i8]* @.str6, i64 0, i64 0), i8* %55) #8
+  br label %for.inc57
+
+for.inc57:                                        ; preds = %if.then27, %for.inc44, %land.lhs.true5, %check_format_info.exit, %for.body, %for.end, %if.then49, %land.lhs.true
+  %chain59 = getelementptr inbounds %union.tree_node* %a.083, i64 0, i32 0, i32 0, i32 0
+  %56 = load %union.tree_node** %chain59, align 8, !tbaa !3
+  %tobool = icmp eq %union.tree_node* %56, null
+  br i1 %tobool, label %for.end60, label %for.body
+
+for.end60:                                        ; preds = %for.inc57, %entry
+  ret void
+}

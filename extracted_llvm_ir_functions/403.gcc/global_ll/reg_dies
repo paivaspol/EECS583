@@ -1,0 +1,111 @@
+define internal fastcc void @reg_dies(i32 %regno, i32 %mode, %struct.insn_chain* %chain) #0 {
+entry:
+  %cmp = icmp slt i32 %regno, 53
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %regno.off = add i32 %regno, -8
+  %0 = icmp ult i32 %regno.off, 8
+  %regno.off79 = add i32 %regno, -21
+  %1 = icmp ult i32 %regno.off79, 8
+  %or.cond = or i1 %0, %1
+  %regno.off80 = add i32 %regno, -45
+  %2 = icmp ult i32 %regno.off80, 8
+  %or.cond84 = or i1 %or.cond, %2
+  %regno.off81 = add i32 %regno, -29
+  %3 = icmp ult i32 %regno.off81, 8
+  %or.cond86 = or i1 %or.cond84, %3
+  br i1 %or.cond86, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %if.then
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom
+  %4 = load i32* %arrayidx, align 4, !tbaa !6
+  %cmp14 = icmp eq i32 %4, 5
+  br i1 %cmp14, label %while.body.lr.ph, label %lor.rhs
+
+lor.rhs:                                          ; preds = %cond.true
+  %cmp17 = icmp eq i32 %4, 6
+  %phitmp = select i1 %cmp17, i32 2, i32 1
+  br label %while.body.lr.ph
+
+cond.false:                                       ; preds = %if.then
+  switch i32 %mode, label %while.cond.preheader [
+    i32 18, label %cond.true19
+    i32 24, label %cond.true23
+  ]
+
+cond.true19:                                      ; preds = %cond.false
+  %5 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %5, 25
+  %6 = and i32 %and, 1
+  %7 = xor i32 %6, 3
+  br label %while.body.lr.ph
+
+cond.true23:                                      ; preds = %cond.false
+  %8 = load i32* @target_flags, align 4, !tbaa !0
+  %and24 = lshr i32 %8, 24
+  %9 = and i32 %and24, 2
+  %10 = xor i32 %9, 6
+  br label %while.body.lr.ph
+
+while.cond.preheader:                             ; preds = %cond.false
+  %idxprom28 = sext i32 %mode to i64
+  %arrayidx29 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom28
+  %11 = load i8* %arrayidx29, align 1, !tbaa !1
+  %conv = zext i8 %11 to i32
+  %12 = load i32* @target_flags, align 4, !tbaa !0
+  %and30 = lshr i32 %12, 23
+  %13 = and i32 %and30, 4
+  %14 = add i32 %13, 4
+  %add = add i32 %conv, -1
+  %sub = add i32 %add, %14
+  %div = sdiv i32 %sub, %14
+  %cmp4188 = icmp sgt i32 %div, 0
+  br i1 %cmp4188, label %while.body.lr.ph, label %if.end55
+
+while.body.lr.ph:                                 ; preds = %cond.true, %lor.rhs, %cond.true19, %cond.true23, %while.cond.preheader
+  %nregs.0.ph92 = phi i32 [ %div, %while.cond.preheader ], [ %10, %cond.true23 ], [ %7, %cond.true19 ], [ %phitmp, %lor.rhs ], [ 2, %cond.true ]
+  %dead_or_set = getelementptr inbounds %struct.insn_chain* %chain, i64 0, i32 6
+  %15 = sext i32 %regno to i64
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end
+  %indvars.iv = phi i64 [ %15, %while.body.lr.ph ], [ %indvars.iv.next, %if.end ]
+  %dec90.in = phi i32 [ %nregs.0.ph92, %while.body.lr.ph ], [ %dec90, %if.end ]
+  %dec90 = add nsw i32 %dec90.in, -1
+  %16 = load %struct.bitmap_head_def** @live_relevant_regs, align 8, !tbaa !3
+  %17 = trunc i64 %indvars.iv to i32
+  tail call void @bitmap_clear_bit(%struct.bitmap_head_def* %16, i32 %17) #5
+  %arrayidx44 = getelementptr inbounds [53 x i8]* @fixed_regs, i64 0, i64 %indvars.iv
+  %18 = load i8* %arrayidx44, align 1, !tbaa !1
+  %tobool45 = icmp eq i8 %18, 0
+  br i1 %tobool45, label %if.then46, label %if.end
+
+if.then46:                                        ; preds = %while.body
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %dead_or_set, i32 %17) #5
+  br label %if.end
+
+if.end:                                           ; preds = %while.body, %if.then46
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %cmp41 = icmp sgt i32 %dec90, 0
+  br i1 %cmp41, label %while.body, label %if.end55
+
+if.else:                                          ; preds = %entry
+  %19 = load %struct.bitmap_head_def** @live_relevant_regs, align 8, !tbaa !3
+  tail call void @bitmap_clear_bit(%struct.bitmap_head_def* %19, i32 %regno) #5
+  %idxprom47 = sext i32 %regno to i64
+  %20 = load i16** @reg_renumber, align 8, !tbaa !3
+  %arrayidx48 = getelementptr inbounds i16* %20, i64 %idxprom47
+  %21 = load i16* %arrayidx48, align 2, !tbaa !5
+  %cmp50 = icmp sgt i16 %21, -1
+  br i1 %cmp50, label %if.then52, label %if.end55
+
+if.then52:                                        ; preds = %if.else
+  %dead_or_set53 = getelementptr inbounds %struct.insn_chain* %chain, i64 0, i32 6
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %dead_or_set53, i32 %regno) #5
+  br label %if.end55
+
+if.end55:                                         ; preds = %while.cond.preheader, %if.end, %if.else, %if.then52
+  ret void
+}

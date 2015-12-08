@@ -1,0 +1,37 @@
+define i32 @memory_move_secondary_cost(i32 %mode, i32 %class, i32 %in) #0 {
+entry:
+  %tobool = icmp eq i32 %in, 0
+  br i1 %tobool, label %if.else, label %return
+
+if.else:                                          ; preds = %entry
+  %class.off = add i32 %class, -11
+  %0 = icmp ult i32 %class.off, 2
+  %cmp3 = icmp eq i32 %class, 10
+  %or.cond18 = or i1 %0, %cmp3
+  br i1 %or.cond18, label %land.lhs.true, label %return
+
+land.lhs.true:                                    ; preds = %if.else
+  %1 = load i32* @target_flags, align 4, !tbaa !3
+  %and = and i32 %1, 33554432
+  %tobool4 = icmp eq i32 %and, 0
+  br i1 %tobool4, label %if.end, label %return
+
+if.end:                                           ; preds = %land.lhs.true
+  %cmp5 = icmp eq i32 %mode, 2
+  %phitmp = select i1 %cmp5, i32 8, i32 0
+  br i1 %cmp5, label %if.end13, label %return
+
+if.end13:                                         ; preds = %if.end
+  %call12 = tail call i32 @ix86_register_move_cost(i32 2, i32 %class, i32 %phitmp) #5
+  %cmp14 = icmp eq i32 %phitmp, %class
+  br i1 %cmp14, label %return, label %if.end16
+
+if.end16:                                         ; preds = %if.end13
+  %call17 = tail call i32 @memory_move_secondary_cost(i32 2, i32 %phitmp, i32 0) #6
+  %add = add nsw i32 %call17, %call12
+  ret i32 %add
+
+return:                                           ; preds = %entry, %if.end, %if.else, %land.lhs.true, %if.end13
+  %retval.0 = phi i32 [ 0, %if.end ], [ %call12, %if.end13 ], [ 0, %entry ], [ 0, %land.lhs.true ], [ 0, %if.else ]
+  ret i32 %retval.0
+}

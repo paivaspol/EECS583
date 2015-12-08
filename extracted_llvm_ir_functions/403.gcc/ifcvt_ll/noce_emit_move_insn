@@ -1,0 +1,46 @@
+define internal fastcc void @noce_emit_move_insn(%struct.rtx_def* %x, %struct.rtx_def* %y) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 64
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %x, %struct.rtx_def* %y) #6
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %fld1 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1
+  %rtx3 = bitcast [1 x %union.rtunion_def]* %fld1 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx3, align 8, !tbaa !4
+  %3 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load4 = load i32* %3, align 8
+  %bf.lshr = lshr i32 %bf.load4, 16
+  %bf.clear5 = and i32 %bf.lshr, 255
+  %4 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load6 = load i32* %4, align 8
+  %bf.lshr7 = lshr i32 %bf.load6, 16
+  %bf.clear8 = and i32 %bf.lshr7, 255
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 1
+  %rtuint = bitcast %union.rtunion_def* %arrayidx10 to i32*
+  %5 = load i32* %rtuint, align 4, !tbaa !0
+  %mul = shl i32 %5, 3
+  %idxprom23 = zext i32 %bf.clear5 to i64
+  %arrayidx11 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom23
+  %6 = load i16* %arrayidx11, align 2, !tbaa !8
+  %conv = zext i16 %6 to i64
+  %conv12 = sext i32 %mul to i64
+  %idxprom1324 = zext i32 %bf.clear8 to i64
+  %arrayidx14 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom1324
+  %7 = load i16* %arrayidx14, align 2, !tbaa !8
+  %conv15 = zext i16 %7 to i64
+  %call16 = tail call %struct.rtx_def* @store_bit_field(%struct.rtx_def* %2, i64 %conv, i64 %conv12, i32 %bf.clear5, %struct.rtx_def* %y, i64 %conv15) #6
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then
+  ret void
+}

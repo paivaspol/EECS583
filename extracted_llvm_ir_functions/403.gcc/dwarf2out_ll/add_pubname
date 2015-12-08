@@ -1,0 +1,50 @@
+define internal fastcc void @add_pubname(%union.tree_node* %decl, %struct.die_struct* %die) #1 {
+entry:
+  %public_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %public_flag to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 524288
+  %tobool = icmp eq i32 %bf.clear, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = load i32* @pubname_table_in_use, align 4, !tbaa !0
+  %2 = load i32* @pubname_table_allocated, align 4, !tbaa !0
+  %cmp = icmp eq i32 %1, %2
+  br i1 %cmp, label %if.then1, label %if.end.if.end2_crit_edge
+
+if.end.if.end2_crit_edge:                         ; preds = %if.end
+  %.pre8 = load %struct.pubname_struct** @pubname_table, align 8, !tbaa !4
+  br label %if.end2
+
+if.then1:                                         ; preds = %if.end
+  %add = add i32 %1, 64
+  store i32 %add, i32* @pubname_table_allocated, align 4, !tbaa !0
+  %3 = load %struct.pubname_struct** @pubname_table, align 8, !tbaa !4
+  %4 = bitcast %struct.pubname_struct* %3 to i8*
+  %conv = zext i32 %add to i64
+  %mul = shl nuw nsw i64 %conv, 4
+  %call = tail call i8* @xrealloc(i8* %4, i64 %mul) #9
+  %5 = bitcast i8* %call to %struct.pubname_struct*
+  store %struct.pubname_struct* %5, %struct.pubname_struct** @pubname_table, align 8, !tbaa !4
+  %.pre = load i32* @pubname_table_in_use, align 4, !tbaa !0
+  br label %if.end2
+
+if.end2:                                          ; preds = %if.end.if.end2_crit_edge, %if.then1
+  %6 = phi %struct.pubname_struct* [ %5, %if.then1 ], [ %.pre8, %if.end.if.end2_crit_edge ]
+  %7 = phi i32 [ %.pre, %if.then1 ], [ %1, %if.end.if.end2_crit_edge ]
+  %inc = add i32 %7, 1
+  store i32 %inc, i32* @pubname_table_in_use, align 4, !tbaa !0
+  %idxprom = zext i32 %7 to i64
+  %die3 = getelementptr inbounds %struct.pubname_struct* %6, i64 %idxprom, i32 0
+  store %struct.die_struct* %die, %struct.die_struct** %die3, align 8, !tbaa !4
+  %8 = load i8* (%union.tree_node*, i32)** @decl_printable_name, align 8, !tbaa !4
+  %call.i = tail call i8* %8(%union.tree_node* %decl, i32 1) #9
+  %call5 = tail call noalias i8* @xstrdup(i8* %call.i) #9
+  %name = getelementptr inbounds %struct.pubname_struct* %6, i64 %idxprom, i32 1
+  store i8* %call5, i8** %name, align 8, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %entry, %if.end2
+  ret void
+}

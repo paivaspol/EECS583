@@ -1,0 +1,57 @@
+define internal noalias %union.tree_node* @handle_noreturn_attribute(%union.tree_node** nocapture %node, %union.tree_node* nocapture %name, %union.tree_node* nocapture %args, i32 %flags, i8* nocapture %no_add_attrs) #0 {
+entry:
+  %0 = load %union.tree_node** %node, align 8, !tbaa !0
+  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 30
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %bf.set = or i32 %bf.load, 2048
+  store i32 %bf.set, i32* %1, align 8
+  br label %if.end30
+
+if.else:                                          ; preds = %entry
+  %type1 = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 1
+  %2 = load %union.tree_node** %type1, align 8, !tbaa !0
+  %code7 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 2
+  %3 = bitcast [4 x i8]* %code7 to i32*
+  %bf.load8 = load i32* %3, align 8
+  %bf.clear9 = and i32 %bf.load8, 255
+  %cmp10 = icmp eq i32 %bf.clear9, 13
+  br i1 %cmp10, label %land.lhs.true, label %if.else29
+
+land.lhs.true:                                    ; preds = %if.else
+  %type12 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 1
+  %4 = load %union.tree_node** %type12, align 8, !tbaa !0
+  %code14 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 2
+  %5 = bitcast [4 x i8]* %code14 to i32*
+  %bf.load15 = load i32* %5, align 8
+  %bf.clear16 = and i32 %bf.load15, 255
+  %cmp17 = icmp eq i32 %bf.clear16, 23
+  br i1 %cmp17, label %if.then18, label %if.else29
+
+if.then18:                                        ; preds = %land.lhs.true
+  %bf.clear25 = lshr i32 %bf.load15, 12
+  %bf.clear25.lobit = and i32 %bf.clear25, 1
+  %or = or i32 %bf.clear25.lobit, 2
+  %call = tail call %union.tree_node* @build_qualified_type(%union.tree_node* %4, i32 %or) #4
+  %call26 = tail call %union.tree_node* @build_pointer_type(%union.tree_node* %call) #4
+  %6 = load %union.tree_node** %node, align 8, !tbaa !0
+  %type28 = getelementptr inbounds %union.tree_node* %6, i64 0, i32 0, i32 0, i32 1
+  store %union.tree_node* %call26, %union.tree_node** %type28, align 8, !tbaa !0
+  br label %if.end30
+
+if.else29:                                        ; preds = %land.lhs.true, %if.else
+  %id = getelementptr inbounds %union.tree_node* %name, i64 0, i32 0, i32 1
+  %7 = getelementptr inbounds i8** %id, i64 1
+  %8 = load i8** %7, align 8, !tbaa !0
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([23 x i8]* @.str4, i64 0, i64 0), i8* %8) #4
+  store i8 1, i8* %no_add_attrs, align 1, !tbaa !4
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.then18, %if.else29, %if.then
+  ret %union.tree_node* null
+}

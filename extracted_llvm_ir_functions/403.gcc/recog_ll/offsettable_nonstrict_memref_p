@@ -1,0 +1,23 @@
+define i32 @offsettable_nonstrict_memref_p(%struct.rtx_def* nocapture %op) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  br i1 %cmp, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %entry
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear2 = and i32 %bf.lshr, 255
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %call = tail call i32 @offsettable_address_p(i32 0, i32 %bf.clear2, %struct.rtx_def* %1) #7
+  %tobool = icmp ne i32 %call, 0
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %entry
+  %2 = phi i1 [ false, %entry ], [ %tobool, %land.rhs ]
+  %land.ext = zext i1 %2 to i32
+  ret i32 %land.ext
+}

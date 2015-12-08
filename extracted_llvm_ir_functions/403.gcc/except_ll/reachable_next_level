@@ -1,0 +1,191 @@
+define internal fastcc i32 @reachable_next_level(%struct.eh_region* nocapture %region, %union.tree_node* %type_thrown, %struct.reachable_info* %info) #0 {
+entry:
+  %type = getelementptr inbounds %struct.eh_region* %region, i64 0, i32 5
+  %0 = load i32* %type, align 4, !tbaa !5
+  switch i32 %0, label %sw.epilog [
+    i32 1, label %sw.bb
+    i32 2, label %for.cond.preheader
+    i32 4, label %sw.bb53
+    i32 3, label %return
+    i32 5, label %sw.bb80
+  ]
+
+for.cond.preheader:                               ; preds = %entry
+  %tobool4 = icmp eq %union.tree_node* %type_thrown, null
+  %tobool22 = icmp eq %struct.reachable_info* %info, null
+  %types_caught = getelementptr inbounds %struct.reachable_info* %info, i64 0, i32 0
+  br label %for.cond.outer
+
+sw.bb:                                            ; preds = %entry
+  tail call fastcc void @add_reachable_handler(%struct.reachable_info* %info, %struct.eh_region* %region, %struct.eh_region* %region) #7
+  br label %return
+
+for.cond:                                         ; preds = %if.else, %for.cond.outer, %for.end44
+  %region.pn = phi %struct.eh_region* [ %c.0, %for.end44 ], [ %region.pn.ph, %for.cond.outer ], [ %c.0, %if.else ]
+  %c.0.in = getelementptr inbounds %struct.eh_region* %region.pn, i64 0, i32 6, i32 0, i32 0
+  %c.0 = load %struct.eh_region** %c.0.in, align 8
+  %tobool = icmp eq %struct.eh_region* %c.0, null
+  br i1 %tobool, label %return, label %for.body
+
+for.body:                                         ; preds = %for.cond
+  %type_list = getelementptr inbounds %struct.eh_region* %c.0, i64 0, i32 6, i32 0, i32 2
+  %1 = load %struct.eh_region** %type_list, align 8
+  %cmp = icmp eq %struct.eh_region* %1, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %for.body
+  tail call fastcc void @add_reachable_handler(%struct.reachable_info* %info, %struct.eh_region* %region, %struct.eh_region* %c.0) #7
+  br label %return
+
+if.end:                                           ; preds = %for.body
+  %2 = bitcast %struct.eh_region* %1 to %union.tree_node*
+  br i1 %tobool4, label %if.end21, label %for.body11
+
+for.body11:                                       ; preds = %if.end, %for.inc
+  %tp_node.0137 = phi %union.tree_node* [ %6, %for.inc ], [ %2, %if.end ]
+  %value = getelementptr inbounds %union.tree_node* %tp_node.0137, i64 0, i32 0, i32 2
+  %3 = bitcast i32* %value to %union.tree_node**
+  %4 = load %union.tree_node** %3, align 8, !tbaa !3
+  %cmp13 = icmp eq %union.tree_node* %4, %type_thrown
+  br i1 %cmp13, label %if.then16, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %for.body11
+  %5 = load i32 (%union.tree_node*, %union.tree_node*)** @lang_eh_type_covers, align 8, !tbaa !3
+  %tobool14 = icmp eq i32 (%union.tree_node*, %union.tree_node*)* %5, null
+  br i1 %tobool14, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %lor.lhs.false
+  %call = tail call i32 %5(%union.tree_node* %4, %union.tree_node* %type_thrown) #6
+  %tobool15 = icmp eq i32 %call, 0
+  br i1 %tobool15, label %for.inc, label %if.then16
+
+if.then16:                                        ; preds = %land.lhs.true, %for.body11
+  tail call fastcc void @add_reachable_handler(%struct.reachable_info* %info, %struct.eh_region* %region, %struct.eh_region* %c.0) #7
+  br label %return
+
+for.inc:                                          ; preds = %land.lhs.true, %lor.lhs.false
+  %chain = getelementptr inbounds %union.tree_node* %tp_node.0137, i64 0, i32 0, i32 0, i32 0
+  %6 = load %union.tree_node** %chain, align 8, !tbaa !3
+  %tobool10 = icmp eq %union.tree_node* %6, null
+  br i1 %tobool10, label %for.end, label %for.body11
+
+for.end:                                          ; preds = %for.inc
+  %7 = load i32 (%union.tree_node*, %union.tree_node*)** @lang_eh_type_covers, align 8, !tbaa !3
+  %tobool18 = icmp eq i32 (%union.tree_node*, %union.tree_node*)* %7, null
+  br i1 %tobool18, label %if.end21, label %return
+
+if.end21:                                         ; preds = %for.end, %if.end
+  br i1 %tobool22, label %for.cond.outer, label %if.else
+
+for.cond.outer:                                   ; preds = %if.then46, %if.end21, %for.cond.preheader
+  %ret.0.ph = phi i32 [ 0, %for.cond.preheader ], [ 1, %if.end21 ], [ 1, %if.then46 ]
+  %region.pn.ph = phi %struct.eh_region* [ %region, %for.cond.preheader ], [ %c.0, %if.end21 ], [ %c.0, %if.then46 ]
+  br label %for.cond
+
+if.else:                                          ; preds = %if.end21
+  %8 = load %struct.eh_region** %type_list, align 8
+  %tobool29138 = icmp eq %struct.eh_region* %8, null
+  br i1 %tobool29138, label %for.cond, label %for.body30.lr.ph
+
+for.body30.lr.ph:                                 ; preds = %if.else
+  %9 = bitcast %struct.eh_region* %8 to %union.tree_node*
+  br label %for.body30
+
+for.body30:                                       ; preds = %for.inc41, %for.body30.lr.ph
+  %maybe_reachable.0140 = phi i8 [ 0, %for.body30.lr.ph ], [ %maybe_reachable.1, %for.inc41 ]
+  %tp_node24.0139 = phi %union.tree_node* [ %9, %for.body30.lr.ph ], [ %14, %for.inc41 ]
+  %value33 = getelementptr inbounds %union.tree_node* %tp_node24.0139, i64 0, i32 0, i32 2
+  %10 = bitcast i32* %value33 to %union.tree_node**
+  %11 = load %union.tree_node** %10, align 8, !tbaa !3
+  %12 = load %union.tree_node** %types_caught, align 8, !tbaa !3
+  %call34 = tail call fastcc i32 @check_handled(%union.tree_node* %12, %union.tree_node* %11) #7
+  %tobool35 = icmp eq i32 %call34, 0
+  br i1 %tobool35, label %if.then36, label %for.inc41
+
+if.then36:                                        ; preds = %for.body30
+  %13 = load %union.tree_node** %types_caught, align 8, !tbaa !3
+  %call38 = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %11, %union.tree_node* %13) #6
+  store %union.tree_node* %call38, %union.tree_node** %types_caught, align 8, !tbaa !3
+  br label %for.inc41
+
+for.inc41:                                        ; preds = %for.body30, %if.then36
+  %maybe_reachable.1 = phi i8 [ %maybe_reachable.0140, %for.body30 ], [ 1, %if.then36 ]
+  %chain43 = getelementptr inbounds %union.tree_node* %tp_node24.0139, i64 0, i32 0, i32 0, i32 0
+  %14 = load %union.tree_node** %chain43, align 8, !tbaa !3
+  %tobool29 = icmp eq %union.tree_node* %14, null
+  br i1 %tobool29, label %for.end44, label %for.body30
+
+for.end44:                                        ; preds = %for.inc41
+  %15 = and i8 %maybe_reachable.1, 1
+  %tobool45 = icmp eq i8 %15, 0
+  br i1 %tobool45, label %for.cond, label %if.then46
+
+if.then46:                                        ; preds = %for.end44
+  tail call fastcc void @add_reachable_handler(%struct.reachable_info* %info, %struct.eh_region* %region, %struct.eh_region* %c.0) #7
+  br label %for.cond.outer
+
+sw.bb53:                                          ; preds = %entry
+  %u54 = getelementptr inbounds %struct.eh_region* %region, i64 0, i32 6
+  %type_list55 = bitcast %union.anon* %u54 to %union.tree_node**
+  %16 = load %union.tree_node** %type_list55, align 8, !tbaa !3
+  %cmp56 = icmp eq %union.tree_node* %16, null
+  br i1 %cmp56, label %if.then57, label %if.end58
+
+if.then57:                                        ; preds = %sw.bb53
+  tail call fastcc void @add_reachable_handler(%struct.reachable_info* %info, %struct.eh_region* %region, %struct.eh_region* %region) #7
+  br label %return
+
+if.end58:                                         ; preds = %sw.bb53
+  %tobool59 = icmp eq %struct.reachable_info* %info, null
+  br i1 %tobool59, label %if.end66, label %if.then60
+
+if.then60:                                        ; preds = %if.end58
+  %types_allowed = getelementptr inbounds %struct.reachable_info* %info, i64 0, i32 1
+  %17 = load %union.tree_node** %types_allowed, align 8, !tbaa !3
+  %call64 = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %16, %union.tree_node* %17) #6
+  store %union.tree_node* %call64, %union.tree_node** %types_allowed, align 8, !tbaa !3
+  br label %if.end66
+
+if.end66:                                         ; preds = %if.end58, %if.then60
+  %tobool67 = icmp ne %union.tree_node* %type_thrown, null
+  %18 = load i32 (%union.tree_node*, %union.tree_node*)** @lang_eh_type_covers, align 8, !tbaa !3
+  %tobool69 = icmp ne i32 (%union.tree_node*, %union.tree_node*)* %18, null
+  %or.cond = and i1 %tobool67, %tobool69
+  br i1 %or.cond, label %if.then70, label %if.end78
+
+if.then70:                                        ; preds = %if.end66
+  %19 = load %union.tree_node** %type_list55, align 8, !tbaa !3
+  %call74 = tail call fastcc i32 @check_handled(%union.tree_node* %19, %union.tree_node* %type_thrown) #7
+  %tobool75 = icmp eq i32 %call74, 0
+  br i1 %tobool75, label %if.else77, label %return
+
+if.else77:                                        ; preds = %if.then70
+  tail call fastcc void @add_reachable_handler(%struct.reachable_info* %info, %struct.eh_region* %region, %struct.eh_region* %region) #7
+  br label %return
+
+if.end78:                                         ; preds = %if.end66
+  tail call fastcc void @add_reachable_handler(%struct.reachable_info* %info, %struct.eh_region* %region, %struct.eh_region* %region) #7
+  br label %return
+
+sw.bb80:                                          ; preds = %entry
+  %tobool81 = icmp eq %struct.reachable_info* %info, null
+  br i1 %tobool81, label %return, label %land.lhs.true82
+
+land.lhs.true82:                                  ; preds = %sw.bb80
+  %handlers = getelementptr inbounds %struct.reachable_info* %info, i64 0, i32 2
+  %20 = load %struct.rtx_def** %handlers, align 8, !tbaa !3
+  %tobool83 = icmp eq %struct.rtx_def* %20, null
+  br i1 %tobool83, label %return, label %if.then84
+
+if.then84:                                        ; preds = %land.lhs.true82
+  tail call fastcc void @add_reachable_handler(%struct.reachable_info* %info, %struct.eh_region* %region, %struct.eh_region* %region) #7
+  br label %return
+
+sw.epilog:                                        ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str26, i64 0, i64 0), i32 3010, i8* getelementptr inbounds ([21 x i8]* @__FUNCTION__.reachable_next_level, i64 0, i64 0)) #8
+  unreachable
+
+return:                                           ; preds = %for.cond, %for.end, %sw.bb80, %land.lhs.true82, %entry, %if.then70, %if.then84, %if.end78, %if.else77, %if.then57, %if.then16, %if.then, %sw.bb
+  %retval.0 = phi i32 [ 2, %if.then84 ], [ 2, %if.then57 ], [ 2, %if.else77 ], [ 1, %if.end78 ], [ 2, %if.then ], [ 2, %if.then16 ], [ 1, %sw.bb ], [ 0, %if.then70 ], [ 0, %entry ], [ 3, %land.lhs.true82 ], [ 3, %sw.bb80 ], [ %ret.0.ph, %for.cond ], [ 0, %for.end ]
+  ret i32 %retval.0
+}

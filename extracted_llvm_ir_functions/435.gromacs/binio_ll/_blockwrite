@@ -1,0 +1,19 @@
+define void @_blockwrite(%struct._IO_FILE* nocapture %fp, i32 %nelem, i32 %size, i8* nocapture %data, i8* %what, i8* %file, i32 %line) #0 {
+entry:
+  %conv = sext i32 %size to i64
+  %conv1 = sext i32 %nelem to i64
+  %call = tail call i64 @fwrite(i8* %data, i64 %conv, i64 %conv1, %struct._IO_FILE* %fp) #4
+  %conv2 = trunc i64 %call to i32
+  %cmp = icmp eq i32 %conv2, %nelem
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call4 = tail call i32* @__errno_location() #5
+  %0 = load i32* %call4, align 4, !tbaa !0
+  %call5 = tail call i64 @ftell(%struct._IO_FILE* %fp) #4
+  tail call void (i32, i8*, ...)* @fatal_error(i32 %0, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), i8* %what, i32 %nelem, i32 %size, i32 %conv2, i64 %call5, i8* %file, i32 %line) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

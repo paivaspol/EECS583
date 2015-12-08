@@ -1,0 +1,25 @@
+define void @df_insn_modify(%struct.df* nocapture %df, %struct.basic_block_def* nocapture %bb, %struct.rtx_def* nocapture %insn) #0 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %0 = load i32* %rtint, align 4, !tbaa !4
+  %insn_size = getelementptr inbounds %struct.df* %df, i64 0, i32 8
+  %1 = load i32* %insn_size, align 4, !tbaa !4
+  %cmp = icmp ult i32 %0, %1
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call fastcc void @df_insn_table_realloc(%struct.df* %df, i32 0) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %bbs_modified = getelementptr inbounds %struct.df* %df, i64 0, i32 20
+  %2 = load %struct.bitmap_head_def** %bbs_modified, align 8, !tbaa !3
+  %index = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 11
+  %3 = load i32* %index, align 4, !tbaa !4
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %2, i32 %3) #8
+  %insns_modified = getelementptr inbounds %struct.df* %df, i64 0, i32 19
+  %4 = load %struct.bitmap_head_def** %insns_modified, align 8, !tbaa !3
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %4, i32 %0) #8
+  ret void
+}

@@ -1,0 +1,165 @@
+define internal fastcc void @scan_rtx(%struct.rtx_def* %insn, %struct.rtx_def** %loc, i32 %class, i32 %action, i32 %type, i32 %earlyclobber) #0 {
+entry:
+  br label %tailrecurse.outer
+
+tailrecurse.outer:                                ; preds = %tailrecurse.outer.backedge, %entry
+  %loc.tr.ph = phi %struct.rtx_def** [ %loc, %entry ], [ %loc.tr.ph.be, %tailrecurse.outer.backedge ]
+  %type.tr.ph = phi i32 [ %type, %entry ], [ %type.tr.ph.be, %tailrecurse.outer.backedge ]
+  %earlyclobber.tr.ph = phi i32 [ %earlyclobber, %entry ], [ %earlyclobber.tr.ph.be, %tailrecurse.outer.backedge ]
+  %.pre = load %struct.rtx_def** %loc.tr.ph, align 8, !tbaa !0
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %tailrecurse.outer, %sw.bb33
+  %0 = phi %struct.rtx_def* [ %2, %sw.bb33 ], [ %.pre, %tailrecurse.outer ]
+  %loc.tr = phi %struct.rtx_def** [ %rtx39, %sw.bb33 ], [ %loc.tr.ph, %tailrecurse.outer ]
+  %earlyclobber.tr = phi i32 [ 0, %sw.bb33 ], [ %earlyclobber.tr.ph, %tailrecurse.outer ]
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear2 = and i32 %bf.load, 65535
+  switch i32 %bf.clear2, label %sw.epilog [
+    i32 58, label %for.end82
+    i32 54, label %for.end82
+    i32 55, label %for.end82
+    i32 56, label %for.end82
+    i32 68, label %for.end82
+    i32 67, label %for.end82
+    i32 69, label %for.end82
+    i32 59, label %for.end82
+    i32 61, label %sw.bb3
+    i32 66, label %sw.bb4
+    i32 47, label %sw.bb7
+    i32 64, label %sw.bb14
+    i32 133, label %sw.bb18
+    i32 132, label %sw.bb18
+    i32 99, label %sw.bb28
+    i32 97, label %sw.bb28
+    i32 98, label %sw.bb28
+    i32 96, label %sw.bb28
+    i32 101, label %sw.bb28
+    i32 100, label %sw.bb28
+    i32 49, label %sw.bb29
+    i32 3, label %sw.bb33
+  ]
+
+sw.bb3:                                           ; preds = %tailrecurse
+  tail call fastcc void @scan_rtx_reg(%struct.rtx_def* %insn, %struct.rtx_def** %loc.tr, i32 %class, i32 %action, i32 %type.tr.ph, i32 %earlyclobber.tr) #6
+  br label %for.end82
+
+sw.bb4:                                           ; preds = %tailrecurse
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  tail call fastcc void @scan_rtx_address(%struct.rtx_def* %insn, %struct.rtx_def** %rtx, i32 12, i32 %action) #6
+  br label %for.end82
+
+sw.bb7:                                           ; preds = %tailrecurse
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 1
+  %rtx10 = bitcast %union.rtunion_def* %arrayidx9 to %struct.rtx_def**
+  tail call fastcc void @scan_rtx(%struct.rtx_def* %insn, %struct.rtx_def** %rtx10, i32 %class, i32 %action, i32 0, i32 0) #6
+  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  br label %tailrecurse.outer.backedge
+
+sw.bb14:                                          ; preds = %tailrecurse
+  %arrayidx16 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  br label %tailrecurse.outer.backedge
+
+sw.bb18:                                          ; preds = %tailrecurse, %tailrecurse
+  %fld19 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1
+  %rtx21 = bitcast [1 x %union.rtunion_def]* %fld19 to %struct.rtx_def**
+  %cmp = icmp eq i32 %type.tr.ph, 0
+  %cond = select i1 %cmp, i32 0, i32 2
+  tail call fastcc void @scan_rtx(%struct.rtx_def* %insn, %struct.rtx_def** %rtx21, i32 %class, i32 %action, i32 %cond, i32 %earlyclobber.tr) #6
+  %arrayidx23 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 1
+  %rtx24 = bitcast %union.rtunion_def* %arrayidx23 to %struct.rtx_def**
+  tail call fastcc void @scan_rtx(%struct.rtx_def* %insn, %struct.rtx_def** %rtx24, i32 %class, i32 %action, i32 0, i32 0) #6
+  %arrayidx26 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 2
+  br label %tailrecurse.outer.backedge
+
+sw.bb28:                                          ; preds = %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str40, i64 0, i64 0), i32 722, i8* getelementptr inbounds ([9 x i8]* @__FUNCTION__.scan_rtx, i64 0, i64 0)) #7
+  unreachable
+
+sw.bb29:                                          ; preds = %tailrecurse
+  %arrayidx31 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
+  br label %tailrecurse.outer.backedge
+
+tailrecurse.outer.backedge:                       ; preds = %sw.bb29, %sw.bb18, %sw.bb14, %sw.bb7
+  %loc.tr.ph.be.in = phi %union.rtunion_def* [ %arrayidx31, %sw.bb29 ], [ %arrayidx26, %sw.bb18 ], [ %arrayidx16, %sw.bb14 ], [ %arrayidx12, %sw.bb7 ]
+  %type.tr.ph.be = phi i32 [ 1, %sw.bb29 ], [ 0, %sw.bb18 ], [ 2, %sw.bb14 ], [ 1, %sw.bb7 ]
+  %earlyclobber.tr.ph.be = phi i32 [ 1, %sw.bb29 ], [ 0, %sw.bb18 ], [ %earlyclobber.tr, %sw.bb14 ], [ 0, %sw.bb7 ]
+  %loc.tr.ph.be = bitcast %union.rtunion_def* %loc.tr.ph.be.in to %struct.rtx_def**
+  br label %tailrecurse.outer
+
+sw.bb33:                                          ; preds = %tailrecurse
+  %fld34 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1
+  %rtx36 = bitcast [1 x %union.rtunion_def]* %fld34 to %struct.rtx_def**
+  tail call fastcc void @scan_rtx(%struct.rtx_def* %insn, %struct.rtx_def** %rtx36, i32 %class, i32 %action, i32 %type.tr.ph, i32 0) #6
+  %arrayidx38 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 1
+  %rtx39 = bitcast %union.rtunion_def* %arrayidx38 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx39, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %2, null
+  br i1 %tobool, label %for.end82, label %tailrecurse
+
+sw.epilog:                                        ; preds = %tailrecurse
+  %idxprom153 = zext i32 %bf.clear2 to i64
+  %arrayidx43 = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom153
+  %3 = load i8** %arrayidx43, align 8, !tbaa !0
+  %arrayidx45 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom153
+  %4 = load i8* %arrayidx45, align 1, !tbaa !1
+  %cmp46158 = icmp eq i8 %4, 0
+  br i1 %cmp46158, label %for.end82, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %sw.epilog
+  %5 = zext i8 %4 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %indvars.iv197 = phi i64 [ %5, %for.body.lr.ph ], [ %indvars.iv.next198, %for.cond.backedge ]
+  %indvars.iv.next198 = add i64 %indvars.iv197, -1
+  %arrayidx49 = getelementptr inbounds i8* %3, i64 %indvars.iv.next198
+  %6 = load i8* %arrayidx49, align 1, !tbaa !1
+  switch i8 %6, label %for.cond.backedge [
+    i8 101, label %if.then53
+    i8 69, label %if.then63
+  ]
+
+for.cond.backedge:                                ; preds = %if.then63, %for.body71, %for.body, %if.then53
+  %7 = trunc i64 %indvars.iv.next198 to i32
+  %cmp46 = icmp sgt i32 %7, 0
+  br i1 %cmp46, label %for.body, label %for.end82
+
+if.then53:                                        ; preds = %for.body
+  %arrayidx56 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 %indvars.iv.next198
+  %rtx57 = bitcast %union.rtunion_def* %arrayidx56 to %struct.rtx_def**
+  tail call fastcc void @scan_rtx(%struct.rtx_def* %insn, %struct.rtx_def** %rtx57, i32 %class, i32 %action, i32 %type.tr.ph, i32 0) #6
+  br label %for.cond.backedge
+
+if.then63:                                        ; preds = %for.body
+  %arrayidx66 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 %indvars.iv.next198
+  %rtvec = bitcast %union.rtunion_def* %arrayidx66 to %struct.rtvec_def**
+  %8 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %8, i64 0, i32 0
+  %9 = load i32* %num_elem, align 4, !tbaa !3
+  %cmp69155 = icmp sgt i32 %9, 0
+  br i1 %cmp69155, label %for.body71.lr.ph, label %for.cond.backedge
+
+for.body71.lr.ph:                                 ; preds = %if.then63
+  %10 = sext i32 %9 to i64
+  br label %for.body71
+
+for.body71:                                       ; preds = %for.body71.for.body71_crit_edge, %for.body71.lr.ph
+  %11 = phi %struct.rtvec_def* [ %8, %for.body71.lr.ph ], [ %.pre235, %for.body71.for.body71_crit_edge ]
+  %indvars.iv = phi i64 [ %10, %for.body71.lr.ph ], [ %indvars.iv.next, %for.body71.for.body71_crit_edge ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %arrayidx77 = getelementptr inbounds %struct.rtvec_def* %11, i64 0, i32 1, i64 %indvars.iv.next
+  tail call fastcc void @scan_rtx(%struct.rtx_def* %insn, %struct.rtx_def** %arrayidx77, i32 %class, i32 %action, i32 %type.tr.ph, i32 0) #6
+  %12 = trunc i64 %indvars.iv.next to i32
+  %cmp69 = icmp sgt i32 %12, 0
+  br i1 %cmp69, label %for.body71.for.body71_crit_edge, label %for.cond.backedge
+
+for.body71.for.body71_crit_edge:                  ; preds = %for.body71
+  %.pre235 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  br label %for.body71
+
+for.end82:                                        ; preds = %sw.bb33, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %sw.epilog, %for.cond.backedge, %sw.bb3, %sw.bb4
+  ret void
+}

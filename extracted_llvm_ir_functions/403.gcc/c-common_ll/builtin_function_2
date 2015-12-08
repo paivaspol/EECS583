@@ -1,0 +1,84 @@
+define internal fastcc %union.tree_node* @builtin_function_2(i8* %builtin_name, i8* %name, %union.tree_node* %builtin_type, %union.tree_node* %type, i32 %function_code, i32 %class, i32 %library_name_p, i32 %nonansi_p, i32 %noreturn_p) #0 {
+entry:
+  %cmp = icmp eq i8* %builtin_name, null
+  br i1 %cmp, label %if.end7, label %if.then
+
+if.then:                                          ; preds = %entry
+  %tobool = icmp ne i32 %library_name_p, 0
+  %cond = select i1 %tobool, i8* %name, i8* null
+  %call = tail call %union.tree_node* @builtin_function(i8* %builtin_name, %union.tree_node* %builtin_type, i32 %function_code, i32 %class, i8* %cond) #8
+  %tobool1 = icmp eq i32 %noreturn_p, 0
+  br i1 %tobool1, label %if.end7, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %volatile_flag = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %volatile_flag to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.set6 = or i32 %bf.load, 2304
+  store i32 %bf.set6, i32* %0, align 8
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.then, %entry, %if.then2
+  %bdecl.0 = phi %union.tree_node* [ %call, %if.then2 ], [ %call, %if.then ], [ null, %entry ]
+  %cmp8 = icmp eq i8* %name, null
+  %1 = load i32* @flag_no_builtin, align 4, !tbaa !0
+  %tobool9 = icmp ne i32 %1, 0
+  %or.cond = or i1 %cmp8, %tobool9
+  br i1 %or.cond, label %if.end38, label %land.lhs.true10
+
+land.lhs.true10:                                  ; preds = %if.end7
+  %p.05.i = load %struct.disabled_builtin** @disabled_builtins, align 8
+  %cmp6.i = icmp eq %struct.disabled_builtin* %p.05.i, null
+  br i1 %cmp6.i, label %land.lhs.true12, label %for.body.i
+
+for.cond.i:                                       ; preds = %for.body.i
+  %next.i = getelementptr inbounds %struct.disabled_builtin* %p.07.i, i64 0, i32 1
+  %p.0.i = load %struct.disabled_builtin** %next.i, align 8
+  %cmp.i = icmp eq %struct.disabled_builtin* %p.0.i, null
+  br i1 %cmp.i, label %land.lhs.true12, label %for.body.i
+
+for.body.i:                                       ; preds = %land.lhs.true10, %for.cond.i
+  %p.07.i = phi %struct.disabled_builtin* [ %p.0.i, %for.cond.i ], [ %p.05.i, %land.lhs.true10 ]
+  %name1.i = getelementptr inbounds %struct.disabled_builtin* %p.07.i, i64 0, i32 0
+  %2 = load i8** %name1.i, align 8, !tbaa !3
+  %call.i = tail call i32 @strcmp(i8* %name, i8* %2) #10
+  %cmp2.i = icmp eq i32 %call.i, 0
+  br i1 %cmp2.i, label %if.end38, label %for.cond.i
+
+land.lhs.true12:                                  ; preds = %for.cond.i, %land.lhs.true10
+  %tobool13 = icmp ne i32 %nonansi_p, 0
+  %3 = load i32* @flag_no_nonansi_builtin, align 4, !tbaa !0
+  %tobool15 = icmp ne i32 %3, 0
+  %or.cond44 = and i1 %tobool13, %tobool15
+  br i1 %or.cond44, label %if.end38, label %if.then16
+
+if.then16:                                        ; preds = %land.lhs.true12
+  %call17 = tail call %union.tree_node* @builtin_function(i8* %name, %union.tree_node* %type, i32 %function_code, i32 %class, i8* null) #8
+  br i1 %tobool13, label %if.then19, label %if.end24
+
+if.then19:                                        ; preds = %if.then16
+  %unsigned_flag = getelementptr inbounds %union.tree_node* %call17, i64 0, i32 0, i32 0, i32 2
+  %4 = bitcast [4 x i8]* %unsigned_flag to i32*
+  %bf.load21 = load i32* %4, align 8
+  %bf.set23 = or i32 %bf.load21, 8192
+  store i32 %bf.set23, i32* %4, align 8
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.then19, %if.then16
+  %tobool25 = icmp eq i32 %noreturn_p, 0
+  br i1 %tobool25, label %if.end38, label %if.then26
+
+if.then26:                                        ; preds = %if.end24
+  %volatile_flag28 = getelementptr inbounds %union.tree_node* %call17, i64 0, i32 0, i32 0, i32 2
+  %5 = bitcast [4 x i8]* %volatile_flag28 to i32*
+  %bf.load29 = load i32* %5, align 8
+  %bf.set36 = or i32 %bf.load29, 2304
+  store i32 %bf.set36, i32* %5, align 8
+  br label %if.end38
+
+if.end38:                                         ; preds = %for.body.i, %if.end24, %if.then26, %land.lhs.true12, %if.end7
+  %decl.0 = phi %union.tree_node* [ null, %if.end7 ], [ null, %land.lhs.true12 ], [ %call17, %if.then26 ], [ %call17, %if.end24 ], [ null, %for.body.i ]
+  %cmp39 = icmp ne %union.tree_node* %bdecl.0, null
+  %cond43 = select i1 %cmp39, %union.tree_node* %bdecl.0, %union.tree_node* %decl.0
+  ret %union.tree_node* %cond43
+}

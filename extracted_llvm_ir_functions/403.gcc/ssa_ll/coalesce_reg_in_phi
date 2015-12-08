@@ -1,0 +1,15 @@
+define internal i32 @coalesce_reg_in_phi(%struct.rtx_def* nocapture %insn, i32 %dest_regno, i32 %src_regno, i8* nocapture %data) #0 {
+entry:
+  %p = bitcast i8* %data to %struct.partition_def**
+  %0 = load %struct.partition_def** %p, align 8, !tbaa !0
+  %conflicts = getelementptr inbounds i8* %data, i64 8
+  %1 = bitcast i8* %conflicts to %struct.conflict_graph_def**
+  %2 = load %struct.conflict_graph_def** %1, align 8, !tbaa !0
+  %call = tail call fastcc i32 @coalesce_if_unconflicting(%struct.partition_def* %0, %struct.conflict_graph_def* %2, i32 %dest_regno, i32 %src_regno) #7
+  %changed = getelementptr inbounds i8* %data, i64 16
+  %3 = bitcast i8* %changed to i32*
+  %4 = load i32* %3, align 4, !tbaa !3
+  %add = add nsw i32 %4, %call
+  store i32 %add, i32* %3, align 4, !tbaa !3
+  ret i32 0
+}

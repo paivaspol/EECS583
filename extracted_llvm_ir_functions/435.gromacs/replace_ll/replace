@@ -1,0 +1,145 @@
+define i8* @replace(i8* %string, i8* nocapture %search, i8* nocapture %replace) #0 {
+entry:
+  %call = tail call i64 @strlen(i8* %search) #5
+  %conv = trunc i64 %call to i32
+  %call1 = tail call i64 @strlen(i8* %string) #5
+  %conv2 = trunc i64 %call1 to i32
+  %cmp = icmp eq i8* %string, null
+  %cmp4 = icmp eq i32 %conv, 0
+  %or.cond = or i1 %cmp, %cmp4
+  %cmp7 = icmp eq i32 %conv2, 0
+  %or.cond132 = or i1 %or.cond, %cmp7
+  br i1 %or.cond132, label %if.then, label %if.end11
+
+if.then:                                          ; preds = %entry
+  br i1 %cmp, label %return, label %if.then9
+
+if.then9:                                         ; preds = %if.then
+  %call10 = tail call i8* @gmx_strdup(i8* %string) #6
+  br label %return
+
+if.end11:                                         ; preds = %entry
+  %call12 = tail call i64 @strlen(i8* %replace) #5
+  %conv13 = trunc i64 %call12 to i32
+  %mul = mul nsw i32 %conv13, %conv2
+  %div = sdiv i32 %mul, %conv
+  %cmp14 = icmp sgt i32 %conv2, %div
+  %conv2.div = select i1 %cmp14, i32 %conv2, i32 %div
+  %add = add nsw i32 %conv2.div, 1
+  %call18 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 54, i32 %add, i32 1) #6
+  %call19 = tail call i8* @strcpy(i8* %call18, i8* %string) #6
+  %call20148 = tail call i8* @strstr(i8* %call18, i8* %search) #5
+  %cmp21149 = icmp eq i8* %call20148, null
+  br i1 %cmp21149, label %return, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %if.end11
+  %cmp23 = icmp sgt i32 %conv13, %conv
+  %cmp66146 = icmp sgt i32 %conv13, 0
+  %sub59 = sub i64 %call12, %call
+  %sext = shl i64 %call12, 32
+  %idx.ext = ashr exact i64 %sext, 32
+  %cmp30 = icmp slt i32 %conv13, %conv
+  %add34 = sub i32 %conv, %conv13
+  %sext163 = shl i64 %sub59, 32
+  %0 = ashr exact i64 %sext163, 32
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end76
+  %call20150 = phi i8* [ %call20148, %while.body.lr.ph ], [ %call20, %if.end76 ]
+  br i1 %cmp23, label %if.else, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %while.body
+  br i1 %cmp66146, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds i8* %replace, i64 %indvars.iv
+  %1 = load i8* %arrayidx, align 1, !tbaa !0
+  %arrayidx29 = getelementptr inbounds i8* %call20150, i64 %indvars.iv
+  store i8 %1, i8* %arrayidx29, align 1, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %conv13
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %i.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %conv13, %for.body ]
+  br i1 %cmp30, label %while.cond33.preheader, label %if.end76
+
+while.cond33.preheader:                           ; preds = %for.end
+  %sub135 = add i32 %add34, %i.0.lcssa
+  %idxprom35136 = sext i32 %sub135 to i64
+  %arrayidx36137 = getelementptr inbounds i8* %call20150, i64 %idxprom35136
+  %2 = load i8* %arrayidx36137, align 1, !tbaa !0
+  %cmp38138 = icmp eq i8 %2, 0
+  %idxprom48139 = sext i32 %i.0.lcssa to i64
+  %arrayidx49140 = getelementptr inbounds i8* %call20150, i64 %idxprom48139
+  br i1 %cmp38138, label %while.end, label %while.body40
+
+while.body40:                                     ; preds = %while.cond33.preheader, %while.body40
+  %indvars.iv154 = phi i64 [ %indvars.iv.next155, %while.body40 ], [ %idxprom48139, %while.cond33.preheader ]
+  %arrayidx49142 = phi i8* [ %arrayidx49, %while.body40 ], [ %arrayidx49140, %while.cond33.preheader ]
+  %3 = phi i8 [ %5, %while.body40 ], [ %2, %while.cond33.preheader ]
+  store i8 %3, i8* %arrayidx49142, align 1, !tbaa !0
+  %indvars.iv.next155 = add i64 %indvars.iv154, 1
+  %4 = trunc i64 %indvars.iv.next155 to i32
+  %sub = add i32 %add34, %4
+  %idxprom35 = sext i32 %sub to i64
+  %arrayidx36 = getelementptr inbounds i8* %call20150, i64 %idxprom35
+  %5 = load i8* %arrayidx36, align 1, !tbaa !0
+  %cmp38 = icmp eq i8 %5, 0
+  %arrayidx49 = getelementptr inbounds i8* %call20150, i64 %indvars.iv.next155
+  br i1 %cmp38, label %while.end, label %while.body40
+
+while.end:                                        ; preds = %while.body40, %while.cond33.preheader
+  %arrayidx49.lcssa = phi i8* [ %arrayidx49140, %while.cond33.preheader ], [ %arrayidx49, %while.body40 ]
+  store i8 0, i8* %arrayidx49.lcssa, align 1, !tbaa !0
+  br label %if.end76
+
+if.else:                                          ; preds = %while.body
+  %call51 = tail call i64 @strlen(i8* %call20150) #5
+  %conv52 = trunc i64 %call51 to i32
+  %cmp54144 = icmp slt i32 %conv52, %conv
+  br i1 %cmp54144, label %for.cond65.loopexit, label %for.body56.lr.ph
+
+for.body56.lr.ph:                                 ; preds = %if.else
+  %sext164 = shl i64 %call51, 32
+  %6 = ashr exact i64 %sext164, 32
+  br label %for.body56
+
+for.body56:                                       ; preds = %for.body56, %for.body56.lr.ph
+  %indvars.iv156 = phi i64 [ %indvars.iv.next157, %for.body56 ], [ %6, %for.body56.lr.ph ]
+  %arrayidx58 = getelementptr inbounds i8* %call20150, i64 %indvars.iv156
+  %7 = load i8* %arrayidx58, align 1, !tbaa !0
+  %8 = add nsw i64 %0, %indvars.iv156
+  %arrayidx62 = getelementptr inbounds i8* %call20150, i64 %8
+  store i8 %7, i8* %arrayidx62, align 1, !tbaa !0
+  %indvars.iv.next157 = add i64 %indvars.iv156, -1
+  %9 = trunc i64 %indvars.iv156 to i32
+  %cmp54 = icmp sgt i32 %9, %conv
+  br i1 %cmp54, label %for.body56, label %for.cond65.loopexit
+
+for.cond65.loopexit:                              ; preds = %for.body56, %if.else
+  br i1 %cmp66146, label %for.body68, label %if.end76
+
+for.body68:                                       ; preds = %for.cond65.loopexit, %for.body68
+  %indvars.iv159 = phi i64 [ %indvars.iv.next160, %for.body68 ], [ 0, %for.cond65.loopexit ]
+  %arrayidx70 = getelementptr inbounds i8* %replace, i64 %indvars.iv159
+  %10 = load i8* %arrayidx70, align 1, !tbaa !0
+  %arrayidx72 = getelementptr inbounds i8* %call20150, i64 %indvars.iv159
+  store i8 %10, i8* %arrayidx72, align 1, !tbaa !0
+  %indvars.iv.next160 = add i64 %indvars.iv159, 1
+  %lftr.wideiv161 = trunc i64 %indvars.iv.next160 to i32
+  %exitcond162 = icmp eq i32 %lftr.wideiv161, %conv13
+  br i1 %exitcond162, label %if.end76, label %for.body68
+
+if.end76:                                         ; preds = %for.cond65.loopexit, %for.body68, %for.end, %while.end
+  %add.ptr = getelementptr inbounds i8* %call20150, i64 %idx.ext
+  %call20 = tail call i8* @strstr(i8* %add.ptr, i8* %search) #5
+  %cmp21 = icmp eq i8* %call20, null
+  br i1 %cmp21, label %return, label %while.body
+
+return:                                           ; preds = %if.end11, %if.end76, %if.then9, %if.then
+  %retval.0 = phi i8* [ %call10, %if.then9 ], [ null, %if.then ], [ %call18, %if.end76 ], [ %call18, %if.end11 ]
+  ret i8* %retval.0
+}

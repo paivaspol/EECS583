@@ -1,0 +1,124 @@
+define internal fastcc void @moveit(%struct._IO_FILE* %log, i32 %left, i32 %right, i8* %s, [3 x float]* %xx, %struct.t_nsborder* %nsb) #0 {
+entry:
+  %tobool = icmp eq [3 x float]* %xx, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %nodeid = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 0
+  %0 = load i32* %nodeid, align 4, !tbaa !3
+  %idxprom = sext i32 %0 to i64
+  %arrayidx = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %idxprom
+  %1 = load i32* %arrayidx, align 4, !tbaa !3
+  %arrayidx4 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom
+  %2 = load i32* %arrayidx4, align 4, !tbaa !3
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0), i32 179, i32 %2, i32 12) #5
+  %3 = bitcast i8* %call to [3 x float]*
+  %cmp116 = icmp sgt i32 %2, 0
+  br i1 %cmp116, label %for.body.lr.ph, label %for.end69.critedge
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %4 = sext i32 %1 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv124 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next125, %for.body ]
+  %5 = add nsw i64 %indvars.iv124, %4
+  %arraydecay = getelementptr inbounds [3 x float]* %xx, i64 %5, i64 0
+  %arraydecay9 = getelementptr inbounds [3 x float]* %3, i64 %indvars.iv124, i64 0
+  %6 = load float* %arraydecay, align 4, !tbaa !4
+  store float %6, float* %arraydecay9, align 4, !tbaa !4
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %xx, i64 %5, i64 1
+  %7 = load float* %arrayidx2.i, align 4, !tbaa !4
+  %arrayidx3.i = getelementptr inbounds [3 x float]* %3, i64 %indvars.iv124, i64 1
+  store float %7, float* %arrayidx3.i, align 4, !tbaa !4
+  %arrayidx4.i = getelementptr inbounds [3 x float]* %xx, i64 %5, i64 2
+  %8 = load float* %arrayidx4.i, align 4, !tbaa !4
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %3, i64 %indvars.iv124, i64 2
+  store float %8, float* %arrayidx5.i, align 4, !tbaa !4
+  %indvars.iv.next125 = add i64 %indvars.iv124, 1
+  %lftr.wideiv127 = trunc i64 %indvars.iv.next125 to i32
+  %exitcond128 = icmp eq i32 %lftr.wideiv127, %2
+  br i1 %exitcond128, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %nnodes = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 1
+  %9 = load i32* %nnodes, align 4, !tbaa !3
+  %sub = add nsw i32 %9, -1
+  tail call void @move_rvecs(%struct._IO_FILE* %log, i32 0, i32 0, i32 %left, i32 %right, [3 x float]* %xx, [3 x float]* null, i32 %sub, %struct.t_nsborder* %nsb, %struct.t_nrnb* null) #5
+  br i1 %cmp116, label %for.cond13.preheader.lr.ph, label %for.end69
+
+for.cond13.preheader.lr.ph:                       ; preds = %for.end
+  %tobool35 = icmp eq %struct._IO_FILE* %log, null
+  %10 = sext i32 %1 to i64
+  br label %for.cond13.preheader
+
+for.cond13.preheader:                             ; preds = %for.inc67, %for.cond13.preheader.lr.ph
+  %indvars.iv118 = phi i64 [ 0, %for.cond13.preheader.lr.ph ], [ %indvars.iv.next119, %for.inc67 ]
+  %11 = add nsw i64 %indvars.iv118, %10
+  br label %for.body15
+
+for.body15:                                       ; preds = %for.body15, %for.cond13.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond13.preheader ], [ %indvars.iv.next, %for.body15 ]
+  %bP.0112 = phi i32 [ 0, %for.cond13.preheader ], [ %bP.1, %for.body15 ]
+  %arrayidx20 = getelementptr inbounds [3 x float]* %xx, i64 %11, i64 %indvars.iv
+  %12 = load float* %arrayidx20, align 4, !tbaa !4
+  %arrayidx24 = getelementptr inbounds [3 x float]* %3, i64 %indvars.iv118, i64 %indvars.iv
+  %13 = load float* %arrayidx24, align 4, !tbaa !4
+  %sub25 = fsub float %12, %13
+  %fabsf = tail call float @fabsf(float %sub25) #7
+  %14 = fpext float %fabsf to double
+  %cmp27 = fcmp ogt double %14, 1.200000e-38
+  %bP.1 = select i1 %cmp27, i32 1, i32 %bP.0112
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.end33, label %for.body15
+
+for.end33:                                        ; preds = %for.body15
+  %tobool34 = icmp eq i32 %bP.1, 0
+  %or.cond = or i1 %tobool34, %tobool35
+  br i1 %or.cond, label %for.inc67, label %if.then36
+
+if.then36:                                        ; preds = %for.end33
+  %arrayidx40 = getelementptr inbounds [3 x float]* %3, i64 %indvars.iv118, i64 0
+  %15 = load float* %arrayidx40, align 4, !tbaa !4
+  %conv41 = fpext float %15 to double
+  %arrayidx44 = getelementptr inbounds [3 x float]* %3, i64 %indvars.iv118, i64 1
+  %16 = load float* %arrayidx44, align 4, !tbaa !4
+  %conv45 = fpext float %16 to double
+  %arrayidx48 = getelementptr inbounds [3 x float]* %3, i64 %indvars.iv118, i64 2
+  %17 = load float* %arrayidx48, align 4, !tbaa !4
+  %conv49 = fpext float %17 to double
+  %arrayidx53 = getelementptr inbounds [3 x float]* %xx, i64 %11, i64 0
+  %18 = load float* %arrayidx53, align 4, !tbaa !4
+  %conv54 = fpext float %18 to double
+  %arrayidx58 = getelementptr inbounds [3 x float]* %xx, i64 %11, i64 1
+  %19 = load float* %arrayidx58, align 4, !tbaa !4
+  %conv59 = fpext float %19 to double
+  %arrayidx63 = getelementptr inbounds [3 x float]* %xx, i64 %11, i64 2
+  %20 = load float* %arrayidx63, align 4, !tbaa !4
+  %conv64 = fpext float %20 to double
+  %21 = trunc i64 %11 to i32
+  %call65 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([64 x i8]* @.str10, i64 0, i64 0), i8* %s, i32 %21, double %conv41, double %conv45, double %conv49, double %conv54, double %conv59, double %conv64) #5
+  br label %for.inc67
+
+for.inc67:                                        ; preds = %for.end33, %if.then36
+  %indvars.iv.next119 = add i64 %indvars.iv118, 1
+  %lftr.wideiv122 = trunc i64 %indvars.iv.next119 to i32
+  %exitcond123 = icmp eq i32 %lftr.wideiv122, %2
+  br i1 %exitcond123, label %for.end69, label %for.cond13.preheader
+
+for.end69.critedge:                               ; preds = %if.end
+  %nnodes.c = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 1
+  %22 = load i32* %nnodes.c, align 4, !tbaa !3
+  %sub.c = add nsw i32 %22, -1
+  tail call void @move_rvecs(%struct._IO_FILE* %log, i32 0, i32 0, i32 %left, i32 %right, [3 x float]* %xx, [3 x float]* null, i32 %sub.c, %struct.t_nsborder* %nsb, %struct.t_nrnb* null) #5
+  br label %for.end69
+
+for.end69:                                        ; preds = %for.end69.critedge, %for.inc67, %for.end
+  tail call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0), i32 196, i8* %call) #5
+  br label %return
+
+return:                                           ; preds = %entry, %for.end69
+  ret void
+}

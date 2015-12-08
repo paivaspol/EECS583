@@ -1,0 +1,23 @@
+define i32 @htab_hash_string(i8* nocapture %p) #6 {
+entry:
+  %0 = load i8* %p, align 1, !tbaa !1
+  %cmp3 = icmp eq i8 %0, 0
+  br i1 %cmp3, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  %1 = phi i8 [ %2, %while.body ], [ %0, %entry ]
+  %str.05 = phi i8* [ %incdec.ptr, %while.body ], [ %p, %entry ]
+  %r.04 = phi i32 [ %sub, %while.body ], [ 0, %entry ]
+  %conv = zext i8 %1 to i32
+  %incdec.ptr = getelementptr inbounds i8* %str.05, i64 1
+  %mul = mul i32 %r.04, 67
+  %add = add i32 %mul, -113
+  %sub = add i32 %add, %conv
+  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %cmp = icmp eq i8 %2, 0
+  br i1 %cmp, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  %r.0.lcssa = phi i32 [ 0, %entry ], [ %sub, %while.body ]
+  ret i32 %r.0.lcssa
+}

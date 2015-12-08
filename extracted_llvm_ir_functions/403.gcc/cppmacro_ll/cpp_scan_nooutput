@@ -1,0 +1,14 @@
+define void @cpp_scan_nooutput(%struct.cpp_reader* %pfile) #0 {
+entry:
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond, %entry
+  %call = tail call %struct.cpp_token* @cpp_get_token(%struct.cpp_reader* %pfile) #9
+  %type = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2
+  %bf.load = load i8* %type, align 2
+  %cmp = icmp eq i8 %bf.load, 67
+  br i1 %cmp, label %while.end, label %while.cond
+
+while.end:                                        ; preds = %while.cond
+  ret void
+}

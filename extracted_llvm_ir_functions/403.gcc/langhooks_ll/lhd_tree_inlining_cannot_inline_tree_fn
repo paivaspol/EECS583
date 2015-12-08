@@ -1,0 +1,21 @@
+define i32 @lhd_tree_inlining_cannot_inline_tree_fn(%union.tree_node** nocapture %fnp) #1 {
+entry:
+  %0 = load i32* @flag_really_no_inline, align 4, !tbaa !3
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %1 = load %union.tree_node** %fnp, align 8, !tbaa !0
+  %attributes = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 16
+  %2 = load %union.tree_node** %attributes, align 8, !tbaa !0
+  %call = tail call %union.tree_node* @lookup_attribute(i8* getelementptr inbounds ([14 x i8]* @.str1, i64 0, i64 0), %union.tree_node* %2) #5
+  %cmp = icmp eq %union.tree_node* %call, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry, %land.lhs.true
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %if.end
+  %retval.0 = phi i32 [ 0, %if.end ], [ 1, %land.lhs.true ]
+  ret i32 %retval.0
+}

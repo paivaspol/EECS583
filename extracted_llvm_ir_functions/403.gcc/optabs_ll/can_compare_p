@@ -1,0 +1,78 @@
+define i32 @can_compare_p(i32 %code, i32 %mode, i32 %purpose) #4 {
+entry:
+  %0 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 41), align 8, !tbaa !0
+  %cmp1 = icmp eq i32 %purpose, 0
+  %1 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 45), align 8, !tbaa !0
+  %2 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 46), align 16, !tbaa !0
+  %3 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 47), align 8, !tbaa !0
+  br label %do.body
+
+do.body:                                          ; preds = %if.end45, %entry
+  %mode.addr.0 = phi i32 [ %mode, %entry ], [ %conv48, %if.end45 ]
+  %idxprom = sext i32 %mode.addr.0 to i64
+  %insn_code = getelementptr inbounds %struct.optab* %0, i64 0, i32 1, i64 %idxprom, i32 0
+  %4 = load i32* %insn_code, align 4, !tbaa !6
+  %cmp = icmp eq i32 %4, 1317
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %do.body
+  br i1 %cmp1, label %if.then2, label %if.else
+
+if.then2:                                         ; preds = %if.then
+  %idxprom3 = sext i32 %code to i64
+  %arrayidx4 = getelementptr inbounds [153 x %struct.rtx_def* (%struct.rtx_def*)*]* @bcc_gen_fctn, i64 0, i64 %idxprom3
+  %5 = load %struct.rtx_def* (%struct.rtx_def*)** %arrayidx4, align 8, !tbaa !0
+  %cmp5 = icmp ne %struct.rtx_def* (%struct.rtx_def*)* %5, null
+  %conv = zext i1 %cmp5 to i32
+  br label %return
+
+if.else:                                          ; preds = %if.then
+  %cmp6 = icmp eq i32 %purpose, 2
+  br i1 %cmp6, label %if.then8, label %return
+
+if.then8:                                         ; preds = %if.else
+  %idxprom9 = sext i32 %code to i64
+  %arrayidx10 = getelementptr inbounds [153 x i32]* @setcc_gen_code, i64 0, i64 %idxprom9
+  %6 = load i32* %arrayidx10, align 4, !tbaa !6
+  %cmp11 = icmp ne i32 %6, 1317
+  %conv12 = zext i1 %cmp11 to i32
+  br label %return
+
+if.end:                                           ; preds = %do.body
+  br i1 %cmp1, label %land.lhs.true, label %if.end23
+
+land.lhs.true:                                    ; preds = %if.end
+  %insn_code19 = getelementptr inbounds %struct.optab* %1, i64 0, i32 1, i64 %idxprom, i32 0
+  %7 = load i32* %insn_code19, align 4, !tbaa !6
+  %cmp20 = icmp eq i32 %7, 1317
+  br i1 %cmp20, label %if.end45, label %return
+
+if.end23:                                         ; preds = %if.end
+  switch i32 %purpose, label %if.end45 [
+    i32 1, label %land.lhs.true26
+    i32 2, label %land.lhs.true37
+  ]
+
+land.lhs.true26:                                  ; preds = %if.end23
+  %insn_code30 = getelementptr inbounds %struct.optab* %2, i64 0, i32 1, i64 %idxprom, i32 0
+  %8 = load i32* %insn_code30, align 4, !tbaa !6
+  %cmp31 = icmp eq i32 %8, 1317
+  br i1 %cmp31, label %if.end45, label %return
+
+land.lhs.true37:                                  ; preds = %if.end23
+  %insn_code41 = getelementptr inbounds %struct.optab* %3, i64 0, i32 1, i64 %idxprom, i32 0
+  %9 = load i32* %insn_code41, align 4, !tbaa !6
+  %cmp42 = icmp eq i32 %9, 1317
+  br i1 %cmp42, label %if.end45, label %return
+
+if.end45:                                         ; preds = %land.lhs.true26, %land.lhs.true, %if.end23, %land.lhs.true37
+  %arrayidx47 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom
+  %10 = load i8* %arrayidx47, align 1, !tbaa !1
+  %conv48 = zext i8 %10 to i32
+  %cmp49 = icmp eq i8 %10, 0
+  br i1 %cmp49, label %return, label %do.body
+
+return:                                           ; preds = %if.end45, %land.lhs.true37, %land.lhs.true26, %land.lhs.true, %if.else, %if.then8, %if.then2
+  %retval.0 = phi i32 [ %conv, %if.then2 ], [ %conv12, %if.then8 ], [ 1, %if.else ], [ 0, %if.end45 ], [ 1, %land.lhs.true37 ], [ 1, %land.lhs.true26 ], [ 1, %land.lhs.true ]
+  ret i32 %retval.0
+}

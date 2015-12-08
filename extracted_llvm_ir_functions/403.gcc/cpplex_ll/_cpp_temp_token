@@ -1,0 +1,33 @@
+define %struct.cpp_token* @_cpp_temp_token(%struct.cpp_reader* nocapture %pfile) #1 {
+entry:
+  %cur_token = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 15
+  %0 = load %struct.cpp_token** %cur_token, align 8, !tbaa !0
+  %cur_run = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 17
+  %1 = load %struct.tokenrun** %cur_run, align 8, !tbaa !0
+  %limit = getelementptr inbounds %struct.tokenrun* %1, i64 0, i32 3
+  %2 = load %struct.cpp_token** %limit, align 8, !tbaa !0
+  %cmp = icmp eq %struct.cpp_token* %0, %2
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call fastcc %struct.tokenrun* @next_tokenrun(%struct.tokenrun* %1) #10
+  store %struct.tokenrun* %call, %struct.tokenrun** %cur_run, align 8, !tbaa !0
+  %base = getelementptr inbounds %struct.tokenrun* %call, i64 0, i32 2
+  %3 = load %struct.cpp_token** %base, align 8, !tbaa !0
+  store %struct.cpp_token* %3, %struct.cpp_token** %cur_token, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %4 = phi %struct.cpp_token* [ %3, %if.then ], [ %0, %entry ]
+  %incdec.ptr = getelementptr inbounds %struct.cpp_token* %4, i64 1
+  store %struct.cpp_token* %incdec.ptr, %struct.cpp_token** %cur_token, align 8, !tbaa !0
+  %line = getelementptr inbounds %struct.cpp_token* %0, i64 -1, i32 0
+  %5 = load i32* %line, align 4, !tbaa !3
+  %line7 = getelementptr inbounds %struct.cpp_token* %4, i64 0, i32 0
+  store i32 %5, i32* %line7, align 4, !tbaa !3
+  %col = getelementptr inbounds %struct.cpp_token* %0, i64 -1, i32 1
+  %6 = load i16* %col, align 2, !tbaa !4
+  %col8 = getelementptr inbounds %struct.cpp_token* %4, i64 0, i32 1
+  store i16 %6, i16* %col8, align 2, !tbaa !4
+  ret %struct.cpp_token* %4
+}

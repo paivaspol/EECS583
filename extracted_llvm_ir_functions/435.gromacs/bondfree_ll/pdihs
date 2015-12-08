@@ -1,0 +1,101 @@
+define float @pdihs(i32 %nbonds, i32* nocapture %forceatoms, %union.t_iparams* nocapture %forceparams, [3 x float]* nocapture %x, [3 x float]* nocapture %f, %struct.t_forcerec* nocapture %fr, %struct.t_graph* nocapture %g, [3 x float]* nocapture %box, float %lambda, float* nocapture %dvdlambda, %struct.t_mdatoms* nocapture %md, i32 %ngrp, float* nocapture %egnb, float* nocapture %egcoul, %struct.t_fcdata* nocapture %fcd) #0 {
+entry:
+  %r_ij = alloca [3 x float], align 4
+  %r_kj = alloca [3 x float], align 4
+  %r_kl = alloca [3 x float], align 4
+  %m = alloca [3 x float], align 4
+  %n = alloca [3 x float], align 4
+  %cos_phi = alloca float, align 4
+  %sign = alloca float, align 4
+  %cmp76 = icmp sgt i32 %nbonds, 0
+  br i1 %cmp76, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %arraydecay24 = getelementptr inbounds [3 x float]* %r_ij, i64 0, i64 0
+  %arraydecay25 = getelementptr inbounds [3 x float]* %r_kj, i64 0, i64 0
+  %arraydecay26 = getelementptr inbounds [3 x float]* %r_kl, i64 0, i64 0
+  %arraydecay27 = getelementptr inbounds [3 x float]* %m, i64 0, i64 0
+  %arraydecay28 = getelementptr inbounds [3 x float]* %n, i64 0, i64 0
+  %conv1.i = fsub float 1.000000e+00, %lambda
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %vtot.078 = phi float [ 0.000000e+00, %for.body.lr.ph ], [ %add44, %for.body ]
+  %0 = add nsw i64 %indvars.iv, 1
+  %arrayidx = getelementptr inbounds i32* %forceatoms, i64 %indvars.iv
+  %1 = load i32* %arrayidx, align 4, !tbaa !3
+  %2 = add nsw i64 %indvars.iv, 2
+  %arrayidx3 = getelementptr inbounds i32* %forceatoms, i64 %0
+  %3 = load i32* %arrayidx3, align 4, !tbaa !3
+  %4 = add nsw i64 %indvars.iv, 3
+  %arrayidx6 = getelementptr inbounds i32* %forceatoms, i64 %2
+  %5 = load i32* %arrayidx6, align 4, !tbaa !3
+  %6 = add nsw i64 %indvars.iv, 4
+  %arrayidx9 = getelementptr inbounds i32* %forceatoms, i64 %4
+  %7 = load i32* %arrayidx9, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 5
+  %arrayidx12 = getelementptr inbounds i32* %forceatoms, i64 %6
+  %8 = load i32* %arrayidx12, align 4, !tbaa !3
+  %idxprom13 = sext i32 %3 to i64
+  %arraydecay = getelementptr inbounds [3 x float]* %x, i64 %idxprom13, i64 0
+  %idxprom15 = sext i32 %5 to i64
+  %arraydecay17 = getelementptr inbounds [3 x float]* %x, i64 %idxprom15, i64 0
+  %idxprom18 = sext i32 %7 to i64
+  %arraydecay20 = getelementptr inbounds [3 x float]* %x, i64 %idxprom18, i64 0
+  %idxprom21 = sext i32 %8 to i64
+  %arraydecay23 = getelementptr inbounds [3 x float]* %x, i64 %idxprom21, i64 0
+  %call = call float @dih_angle([3 x float]* undef, float* %arraydecay, float* %arraydecay17, float* %arraydecay20, float* %arraydecay23, float* %arraydecay24, float* %arraydecay25, float* %arraydecay26, float* %arraydecay27, float* %arraydecay28, float* %cos_phi, float* %sign) #7
+  %idxprom29 = sext i32 %1 to i64
+  %9 = getelementptr inbounds %union.t_iparams* %forceparams, i64 %idxprom29, i32 0, i32 1
+  %10 = load float* %9, align 4, !tbaa !0
+  %11 = getelementptr inbounds %union.t_iparams* %forceparams, i64 %idxprom29, i32 0, i32 4
+  %12 = load float* %11, align 4, !tbaa !0
+  %phiA = getelementptr inbounds %union.t_iparams* %forceparams, i64 %idxprom29, i32 0, i32 0
+  %13 = load float* %phiA, align 4, !tbaa !0
+  %14 = getelementptr inbounds %union.t_iparams* %forceparams, i64 %idxprom29, i32 0, i32 3
+  %15 = load float* %14, align 4, !tbaa !0
+  %mult = getelementptr inbounds %union.t_iparams* %forceparams, i64 %idxprom29, i32 0, i32 2
+  %16 = bitcast float* %mult to i32*
+  %17 = load i32* %16, align 4, !tbaa !3
+  %mul.i = fmul float %conv1.i, %13
+  %mul2.i = fmul float %15, %lambda
+  %add.i = fadd float %mul.i, %mul2.i
+  %conv3.i = fpext float %add.i to double
+  %mul4.i = fmul double %conv3.i, 0x3F91DF46A2529D39
+  %conv5.i = fptrunc double %mul4.i to float
+  %mul6.i = fmul float %conv1.i, %10
+  %mul7.i = fmul float %12, %lambda
+  %add8.i = fadd float %mul6.i, %mul7.i
+  %conv9.i = sitofp i32 %17 to float
+  %mul10.i = fmul float %call, %conv9.i
+  %sub11.i = fsub float %mul10.i, %conv5.i
+  %conv12.i = fpext float %sub11.i to double
+  %call.i = call double @sin(double %conv12.i) #5
+  %conv13.i = fptrunc double %call.i to float
+  %18 = fmul float %add8.i, %conv9.i
+  %19 = fmul float %18, %conv13.i
+  %mul17.i = fsub float -0.000000e+00, %19
+  %call19.i = call double @cos(double %conv12.i) #5
+  %add20.i = fadd double %call19.i, 1.000000e+00
+  %conv21.i = fptrunc double %add20.i to float
+  %mul22.i = fmul float %add8.i, %conv21.i
+  %sub23.i = fsub float %12, %10
+  %mul24.i = fmul float %sub23.i, %conv21.i
+  %sub25.i = fsub float %13, %15
+  %mul26.i = fmul float %add8.i, %sub25.i
+  %mul27.i = fmul float %mul26.i, %conv13.i
+  %sub28.i = fsub float %mul24.i, %mul27.i
+  %20 = load float* %dvdlambda, align 4, !tbaa !0
+  %add = fadd float %20, %sub28.i
+  store float %add, float* %dvdlambda, align 4, !tbaa !0
+  %add44 = fadd float %vtot.078, %mul22.i
+  call void @do_dih_fup(i32 %3, i32 %5, i32 %7, i32 %8, float %mul17.i, float* %arraydecay24, float* %arraydecay25, float* %arraydecay26, float* %arraydecay27, float* %arraydecay28, [3 x float]* %f, %struct.t_forcerec* %fr, %struct.t_graph* %g, [3 x float]* undef) #7
+  %21 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %21, %nbonds
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  %vtot.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %add44, %for.body ]
+  ret float %vtot.0.lcssa
+}

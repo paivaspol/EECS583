@@ -1,0 +1,213 @@
+define void @mdef_free(%struct.mdef_t* %m) #0 {
+entry:
+  %tobool = icmp eq %struct.mdef_t* %m, null
+  br i1 %tobool, label %if.end97, label %if.then
+
+if.then:                                          ; preds = %entry
+  %ciphone2n_cd_sen = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 13
+  %0 = load i32** %ciphone2n_cd_sen, align 8, !tbaa !3
+  %tobool1 = icmp eq i32* %0, null
+  br i1 %tobool1, label %if.end, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %1 = bitcast i32* %0 to i8*
+  tail call void @ckd_free(i8* %1) #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then2
+  %sen2cimap = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 12
+  %2 = load i8** %sen2cimap, align 8, !tbaa !3
+  %tobool4 = icmp eq i8* %2, null
+  br i1 %tobool4, label %if.end7, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  tail call void @ckd_free(i8* %2) #7
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end, %if.then5
+  %cd2cisen = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 11
+  %3 = load i16** %cd2cisen, align 8, !tbaa !3
+  %tobool8 = icmp eq i16* %3, null
+  br i1 %tobool8, label %for.cond.preheader, label %if.then9
+
+if.then9:                                         ; preds = %if.end7
+  %4 = bitcast i16* %3 to i8*
+  tail call void @ckd_free(i8* %4) #7
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.end7, %if.then9
+  %n_ciphone = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 0
+  %wpos_ci_lclist = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 15
+  %.pre = load i32* %n_ciphone, align 4, !tbaa !0
+  br label %for.cond12.preheader
+
+for.cond12.preheader:                             ; preds = %for.inc30, %for.cond.preheader
+  %5 = phi i32 [ %.pre, %for.cond.preheader ], [ %17, %for.inc30 ]
+  %indvars.iv159 = phi i64 [ 0, %for.cond.preheader ], [ %indvars.iv.next160, %for.inc30 ]
+  %cmp13150 = icmp sgt i32 %5, 0
+  br i1 %cmp13150, label %for.body14, label %for.inc30
+
+for.body14:                                       ; preds = %for.inc, %for.cond12.preheader
+  %6 = phi i32 [ %5, %for.cond12.preheader ], [ %15, %for.inc ]
+  %indvars.iv157 = phi i64 [ 0, %for.cond12.preheader ], [ %indvars.iv.next158, %for.inc ]
+  %7 = load %struct.ph_lc_s**** %wpos_ci_lclist, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.ph_lc_s*** %7, i64 %indvars.iv159
+  %8 = load %struct.ph_lc_s*** %arrayidx, align 8, !tbaa !3
+  %arrayidx16 = getelementptr inbounds %struct.ph_lc_s** %8, i64 %indvars.iv157
+  %9 = load %struct.ph_lc_s** %arrayidx16, align 8, !tbaa !3
+  %tobool17 = icmp eq %struct.ph_lc_s* %9, null
+  br i1 %tobool17, label %for.inc, label %if.then18
+
+if.then18:                                        ; preds = %for.body14
+  %next = getelementptr inbounds %struct.ph_lc_s* %9, i64 0, i32 2
+  %10 = load %struct.ph_lc_s** %next, align 8, !tbaa !3
+  tail call void @mdef_free_recursive_lc(%struct.ph_lc_s* %10) #8
+  %11 = load %struct.ph_lc_s**** %wpos_ci_lclist, align 8, !tbaa !3
+  %arrayidx27 = getelementptr inbounds %struct.ph_lc_s*** %11, i64 %indvars.iv159
+  %12 = load %struct.ph_lc_s*** %arrayidx27, align 8, !tbaa !3
+  %arrayidx28 = getelementptr inbounds %struct.ph_lc_s** %12, i64 %indvars.iv157
+  %13 = load %struct.ph_lc_s** %arrayidx28, align 8, !tbaa !3
+  %rclist = getelementptr inbounds %struct.ph_lc_s* %13, i64 0, i32 1
+  %14 = load %struct.ph_rc_s** %rclist, align 8, !tbaa !3
+  tail call void @mdef_free_recursive_rc(%struct.ph_rc_s* %14) #8
+  %.pre165 = load i32* %n_ciphone, align 4, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body14, %if.then18
+  %15 = phi i32 [ %6, %for.body14 ], [ %.pre165, %if.then18 ]
+  %indvars.iv.next158 = add i64 %indvars.iv157, 1
+  %16 = trunc i64 %indvars.iv.next158 to i32
+  %cmp13 = icmp slt i32 %16, %15
+  br i1 %cmp13, label %for.body14, label %for.inc30
+
+for.inc30:                                        ; preds = %for.inc, %for.cond12.preheader
+  %17 = phi i32 [ %5, %for.cond12.preheader ], [ %15, %for.inc ]
+  %indvars.iv.next160 = add i64 %indvars.iv159, 1
+  %lftr.wideiv161 = trunc i64 %indvars.iv.next160 to i32
+  %exitcond162 = icmp eq i32 %lftr.wideiv161, 4
+  br i1 %exitcond162, label %for.cond36.preheader, label %for.cond12.preheader
+
+for.cond36.preheader:                             ; preds = %for.inc30, %for.inc56
+  %18 = phi i32 [ %26, %for.inc56 ], [ %17, %for.inc30 ]
+  %indvars.iv155 = phi i64 [ %indvars.iv.next156, %for.inc56 ], [ 0, %for.inc30 ]
+  %cmp38147 = icmp sgt i32 %18, 0
+  br i1 %cmp38147, label %for.body39, label %for.inc56
+
+for.body39:                                       ; preds = %for.inc53, %for.cond36.preheader
+  %19 = phi i32 [ %18, %for.cond36.preheader ], [ %24, %for.inc53 ]
+  %indvars.iv153 = phi i64 [ 0, %for.cond36.preheader ], [ %indvars.iv.next154, %for.inc53 ]
+  %20 = load %struct.ph_lc_s**** %wpos_ci_lclist, align 8, !tbaa !3
+  %arrayidx43 = getelementptr inbounds %struct.ph_lc_s*** %20, i64 %indvars.iv155
+  %21 = load %struct.ph_lc_s*** %arrayidx43, align 8, !tbaa !3
+  %arrayidx44 = getelementptr inbounds %struct.ph_lc_s** %21, i64 %indvars.iv153
+  %22 = load %struct.ph_lc_s** %arrayidx44, align 8, !tbaa !3
+  %tobool45 = icmp eq %struct.ph_lc_s* %22, null
+  br i1 %tobool45, label %for.inc53, label %if.then46
+
+if.then46:                                        ; preds = %for.body39
+  %23 = getelementptr inbounds %struct.ph_lc_s* %22, i64 0, i32 0
+  tail call void @ckd_free(i8* %23) #7
+  %.pre164 = load i32* %n_ciphone, align 4, !tbaa !0
+  br label %for.inc53
+
+for.inc53:                                        ; preds = %for.body39, %if.then46
+  %24 = phi i32 [ %19, %for.body39 ], [ %.pre164, %if.then46 ]
+  %indvars.iv.next154 = add i64 %indvars.iv153, 1
+  %25 = trunc i64 %indvars.iv.next154 to i32
+  %cmp38 = icmp slt i32 %25, %24
+  br i1 %cmp38, label %for.body39, label %for.inc56
+
+for.inc56:                                        ; preds = %for.inc53, %for.cond36.preheader
+  %26 = phi i32 [ %18, %for.cond36.preheader ], [ %24, %for.inc53 ]
+  %indvars.iv.next156 = add i64 %indvars.iv155, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next156 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.end58, label %for.cond36.preheader
+
+for.end58:                                        ; preds = %for.inc56
+  %27 = load %struct.ph_lc_s**** %wpos_ci_lclist, align 8, !tbaa !3
+  %tobool60 = icmp eq %struct.ph_lc_s*** %27, null
+  br i1 %tobool60, label %if.end63, label %if.then61
+
+if.then61:                                        ; preds = %for.end58
+  %28 = bitcast %struct.ph_lc_s*** %27 to i8**
+  tail call void @ckd_free_2d(i8** %28) #7
+  br label %if.end63
+
+if.end63:                                         ; preds = %for.end58, %if.then61
+  %sseq = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 9
+  %29 = load i16*** %sseq, align 8, !tbaa !3
+  %tobool64 = icmp eq i16** %29, null
+  br i1 %tobool64, label %if.end67, label %if.then65
+
+if.then65:                                        ; preds = %if.end63
+  %30 = bitcast i16** %29 to i8**
+  tail call void @ckd_free_2d(i8** %30) #7
+  br label %if.end67
+
+if.end67:                                         ; preds = %if.end63, %if.then65
+  %phone = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 8
+  %31 = load %struct.phone_t** %phone, align 8, !tbaa !3
+  %tobool68 = icmp eq %struct.phone_t* %31, null
+  br i1 %tobool68, label %if.end71, label %if.then69
+
+if.then69:                                        ; preds = %if.end67
+  %32 = bitcast %struct.phone_t* %31 to i8*
+  tail call void @ckd_free(i8* %32) #7
+  br label %if.end71
+
+if.end71:                                         ; preds = %if.end67, %if.then69
+  %ciphone_ht = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 6
+  %33 = load %struct.hash_table_t** %ciphone_ht, align 8, !tbaa !3
+  %tobool72 = icmp eq %struct.hash_table_t* %33, null
+  br i1 %tobool72, label %for.cond76.preheader, label %if.then73
+
+if.then73:                                        ; preds = %if.end71
+  tail call void @hash_free(%struct.hash_table_t* %33) #7
+  br label %for.cond76.preheader
+
+for.cond76.preheader:                             ; preds = %if.end71, %if.then73
+  %34 = load i32* %n_ciphone, align 4, !tbaa !0
+  %cmp78145 = icmp sgt i32 %34, 0
+  %ciphone = getelementptr inbounds %struct.mdef_t* %m, i64 0, i32 7
+  br i1 %cmp78145, label %for.body79, label %for.end91
+
+for.body79:                                       ; preds = %for.cond76.preheader, %for.inc89
+  %35 = phi i32 [ %38, %for.inc89 ], [ %34, %for.cond76.preheader ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc89 ], [ 0, %for.cond76.preheader ]
+  %36 = load %struct.ciphone_t** %ciphone, align 8, !tbaa !3
+  %name = getelementptr inbounds %struct.ciphone_t* %36, i64 %indvars.iv, i32 0
+  %37 = load i8** %name, align 8, !tbaa !3
+  %tobool82 = icmp eq i8* %37, null
+  br i1 %tobool82, label %for.inc89, label %if.then83
+
+if.then83:                                        ; preds = %for.body79
+  tail call void @ckd_free(i8* %37) #7
+  %.pre163 = load i32* %n_ciphone, align 4, !tbaa !0
+  br label %for.inc89
+
+for.inc89:                                        ; preds = %for.body79, %if.then83
+  %38 = phi i32 [ %35, %for.body79 ], [ %.pre163, %if.then83 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %39 = trunc i64 %indvars.iv.next to i32
+  %cmp78 = icmp slt i32 %39, %38
+  br i1 %cmp78, label %for.body79, label %for.end91
+
+for.end91:                                        ; preds = %for.cond76.preheader, %for.inc89
+  %40 = load %struct.ciphone_t** %ciphone, align 8, !tbaa !3
+  %tobool93 = icmp eq %struct.ciphone_t* %40, null
+  br i1 %tobool93, label %if.end96, label %if.then94
+
+if.then94:                                        ; preds = %for.end91
+  %41 = bitcast %struct.ciphone_t* %40 to i8*
+  tail call void @ckd_free(i8* %41) #7
+  br label %if.end96
+
+if.end96:                                         ; preds = %for.end91, %if.then94
+  %42 = bitcast %struct.mdef_t* %m to i8*
+  tail call void @ckd_free(i8* %42) #7
+  br label %if.end97
+
+if.end97:                                         ; preds = %entry, %if.end96
+  ret void
+}

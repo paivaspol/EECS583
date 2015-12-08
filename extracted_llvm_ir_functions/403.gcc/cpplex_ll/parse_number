@@ -1,0 +1,192 @@
+define internal fastcc void @parse_number(%struct.cpp_reader* %pfile, %struct.cpp_string* nocapture %number, i32 %c, i32 %leading_period) #1 {
+entry:
+  %buffer1 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
+  %0 = load %struct.cpp_buffer** %buffer1, align 8, !tbaa !0
+  %u_buff = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 7
+  %1 = load %struct._cpp_buff** %u_buff, align 8, !tbaa !0
+  %cur = getelementptr inbounds %struct._cpp_buff* %1, i64 0, i32 2
+  %2 = load i8** %cur, align 8, !tbaa !0
+  %limit3 = getelementptr inbounds %struct._cpp_buff* %1, i64 0, i32 3
+  %3 = load i8** %limit3, align 8, !tbaa !0
+  %tobool = icmp eq i32 %leading_period, 0
+  br i1 %tobool, label %do.body11.preheader, label %if.then
+
+if.then:                                          ; preds = %entry
+  %cmp = icmp eq i8* %2, %3
+  br i1 %cmp, label %if.then4, label %if.end
+
+if.then4:                                         ; preds = %if.then
+  %call.i = tail call %struct._cpp_buff* @_cpp_get_buff(%struct.cpp_reader* %pfile, i64 1) #9
+  %base.i = getelementptr inbounds %struct._cpp_buff* %call.i, i64 0, i32 1
+  %4 = load i8** %base.i, align 8, !tbaa !0
+  %5 = load i8** %cur, align 8, !tbaa !0
+  %6 = load i8** %limit3, align 8, !tbaa !0
+  %sub.ptr.lhs.cast4.i = ptrtoint i8* %6 to i64
+  %sub.ptr.rhs.cast5.i = ptrtoint i8* %5 to i64
+  %sub.ptr.sub6.i = sub i64 %sub.ptr.lhs.cast4.i, %sub.ptr.rhs.cast5.i
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %4, i8* %5, i64 %sub.ptr.sub6.i, i32 1, i1 false) #3
+  %next.i = getelementptr inbounds %struct._cpp_buff* %call.i, i64 0, i32 0
+  store %struct._cpp_buff* %1, %struct._cpp_buff** %next.i, align 8, !tbaa !0
+  store %struct._cpp_buff* %call.i, %struct._cpp_buff** %u_buff, align 8, !tbaa !0
+  %cur7 = getelementptr inbounds %struct._cpp_buff* %call.i, i64 0, i32 2
+  %7 = load i8** %cur7, align 8, !tbaa !0
+  %limit9 = getelementptr inbounds %struct._cpp_buff* %call.i, i64 0, i32 3
+  %8 = load i8** %limit9, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then4, %if.then
+  %dest.0 = phi i8* [ %7, %if.then4 ], [ %2, %if.then ]
+  %limit.0 = phi i8* [ %8, %if.then4 ], [ %3, %if.then ]
+  %incdec.ptr = getelementptr inbounds i8* %dest.0, i64 1
+  store i8 46, i8* %dest.0, align 1, !tbaa !1
+  br label %do.body11.preheader
+
+do.body11.preheader:                              ; preds = %if.end, %entry
+  %dest.1.ph = phi i8* [ %2, %entry ], [ %incdec.ptr, %if.end ]
+  %limit.1.ph = phi i8* [ %3, %entry ], [ %limit.0, %if.end ]
+  %cur26 = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 0
+  %backup_to = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 1
+  %extended_numbers109 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 20
+  br label %do.body11
+
+do.body11:                                        ; preds = %land.rhs87, %land.rhs87, %if.end70, %land.rhs, %land.rhs, %if.end24, %land.rhs58, %land.rhs107, %do.body11.preheader
+  %dest.1 = phi i8* [ %dest.1.ph, %do.body11.preheader ], [ %incdec.ptr25, %land.rhs107 ], [ %incdec.ptr25, %land.rhs58 ], [ %incdec.ptr25, %if.end24 ], [ %incdec.ptr25, %land.rhs ], [ %incdec.ptr25, %land.rhs ], [ %incdec.ptr25, %if.end70 ], [ %incdec.ptr25, %land.rhs87 ], [ %incdec.ptr25, %land.rhs87 ]
+  %limit.1 = phi i8* [ %limit.1.ph, %do.body11.preheader ], [ %limit.2, %land.rhs107 ], [ %limit.2, %land.rhs58 ], [ %limit.2, %if.end24 ], [ %limit.2, %land.rhs ], [ %limit.2, %land.rhs ], [ %limit.2, %if.end70 ], [ %limit.2, %land.rhs87 ], [ %limit.2, %land.rhs87 ]
+  %c.addr.0 = phi i32 [ %c, %do.body11.preheader ], [ %call, %land.rhs107 ], [ %conv28, %land.rhs58 ], [ %conv28, %if.end24 ], [ %conv28, %land.rhs ], [ %conv28, %land.rhs ], [ %call, %if.end70 ], [ %call, %land.rhs87 ], [ %call, %land.rhs87 ]
+  %sub.ptr.lhs.cast = ptrtoint i8* %limit.1 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %dest.1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp12 = icmp ult i64 %sub.ptr.sub, 2
+  br i1 %cmp12, label %if.then13, label %if.end24
+
+if.then13:                                        ; preds = %do.body11
+  %9 = load %struct._cpp_buff** %u_buff, align 8, !tbaa !0
+  %cur15 = getelementptr inbounds %struct._cpp_buff* %9, i64 0, i32 2
+  %10 = load i8** %cur15, align 8, !tbaa !0
+  %sub.ptr.rhs.cast17 = ptrtoint i8* %10 to i64
+  %sub.ptr.sub18 = sub i64 %sub.ptr.rhs.cast, %sub.ptr.rhs.cast17
+  %limit.i193 = getelementptr inbounds %struct._cpp_buff* %9, i64 0, i32 3
+  %11 = load i8** %limit.i193, align 8, !tbaa !0
+  %sub.ptr.lhs.cast.i195 = ptrtoint i8* %11 to i64
+  %sub.ptr.sub.i197 = sub i64 %sub.ptr.lhs.cast.i195, %sub.ptr.rhs.cast17
+  %mul.i198 = shl i64 %sub.ptr.sub.i197, 1
+  %add.i199 = add i64 %mul.i198, 2
+  %call.i200 = tail call %struct._cpp_buff* @_cpp_get_buff(%struct.cpp_reader* %pfile, i64 %add.i199) #9
+  %base.i201 = getelementptr inbounds %struct._cpp_buff* %call.i200, i64 0, i32 1
+  %12 = load i8** %base.i201, align 8, !tbaa !0
+  %13 = load i8** %cur15, align 8, !tbaa !0
+  %14 = load i8** %limit.i193, align 8, !tbaa !0
+  %sub.ptr.lhs.cast4.i202 = ptrtoint i8* %14 to i64
+  %sub.ptr.rhs.cast5.i203 = ptrtoint i8* %13 to i64
+  %sub.ptr.sub6.i204 = sub i64 %sub.ptr.lhs.cast4.i202, %sub.ptr.rhs.cast5.i203
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %12, i8* %13, i64 %sub.ptr.sub6.i204, i32 1, i1 false) #3
+  %next.i205 = getelementptr inbounds %struct._cpp_buff* %call.i200, i64 0, i32 0
+  store %struct._cpp_buff* %9, %struct._cpp_buff** %next.i205, align 8, !tbaa !0
+  store %struct._cpp_buff* %call.i200, %struct._cpp_buff** %u_buff, align 8, !tbaa !0
+  %cur21 = getelementptr inbounds %struct._cpp_buff* %call.i200, i64 0, i32 2
+  %15 = load i8** %cur21, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds i8* %15, i64 %sub.ptr.sub18
+  %limit23 = getelementptr inbounds %struct._cpp_buff* %call.i200, i64 0, i32 3
+  %16 = load i8** %limit23, align 8, !tbaa !0
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.then13, %do.body11
+  %dest.2 = phi i8* [ %add.ptr, %if.then13 ], [ %dest.1, %do.body11 ]
+  %limit.2 = phi i8* [ %16, %if.then13 ], [ %limit.1, %do.body11 ]
+  %conv = trunc i32 %c.addr.0 to i8
+  %incdec.ptr25 = getelementptr inbounds i8* %dest.2, i64 1
+  store i8 %conv, i8* %dest.2, align 1, !tbaa !1
+  %17 = load i8** %cur26, align 8, !tbaa !0
+  %incdec.ptr27 = getelementptr inbounds i8* %17, i64 1
+  store i8* %incdec.ptr27, i8** %cur26, align 8, !tbaa !0
+  %18 = load i8* %17, align 1, !tbaa !1
+  %conv28 = zext i8 %18 to i32
+  %idxprom = zext i8 %18 to i64
+  %arrayidx = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom
+  %19 = load i16* %arrayidx, align 2, !tbaa !4
+  %and30 = and i16 %19, 516
+  %tobool31 = icmp ne i16 %and30, 0
+  %cmp32 = icmp eq i8 %18, 46
+  %or.cond192 = or i1 %tobool31, %cmp32
+  br i1 %or.cond192, label %do.body11, label %lor.rhs
+
+lor.rhs:                                          ; preds = %if.end24
+  switch i8 %18, label %do.end [
+    i8 45, label %land.rhs
+    i8 43, label %land.rhs
+  ]
+
+land.rhs:                                         ; preds = %lor.rhs, %lor.rhs
+  %20 = load i8* %dest.2, align 1, !tbaa !1
+  switch i8 %20, label %do.end [
+    i8 101, label %do.body11
+    i8 69, label %do.body11
+    i8 112, label %land.rhs58
+    i8 80, label %land.rhs58
+  ]
+
+land.rhs58:                                       ; preds = %land.rhs, %land.rhs
+  %21 = load i8* %extended_numbers109, align 1, !tbaa !1
+  %tobool60 = icmp eq i8 %21, 0
+  br i1 %tobool60, label %do.end, label %do.body11
+
+do.end:                                           ; preds = %land.rhs, %lor.rhs, %land.rhs58
+  store i8* %17, i8** %backup_to, align 8, !tbaa !0
+  switch i8 %18, label %do.body117 [
+    i8 92, label %if.end70
+    i8 63, label %if.end70
+  ]
+
+if.end70:                                         ; preds = %do.end, %do.end
+  %call = tail call fastcc i32 @skip_escaped_newlines(%struct.cpp_reader* %pfile) #10
+  %and72 = and i32 %call, 255
+  %idxprom73191 = zext i32 %and72 to i64
+  %arrayidx74 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom73191
+  %22 = load i16* %arrayidx74, align 2, !tbaa !4
+  %and76 = and i16 %22, 516
+  %tobool77 = icmp ne i16 %and76, 0
+  %cmp79 = icmp eq i32 %call, 46
+  %or.cond = or i1 %tobool77, %cmp79
+  br i1 %or.cond, label %do.body11, label %lor.rhs81
+
+lor.rhs81:                                        ; preds = %if.end70
+  switch i32 %call, label %do.body117 [
+    i32 45, label %land.rhs87
+    i32 43, label %land.rhs87
+  ]
+
+land.rhs87:                                       ; preds = %lor.rhs81, %lor.rhs81
+  %23 = load i8* %dest.2, align 1, !tbaa !1
+  switch i8 %23, label %do.body117 [
+    i8 101, label %do.body11
+    i8 69, label %do.body11
+    i8 112, label %land.rhs107
+    i8 80, label %land.rhs107
+  ]
+
+land.rhs107:                                      ; preds = %land.rhs87, %land.rhs87
+  %24 = load i8* %extended_numbers109, align 1, !tbaa !1
+  %tobool111 = icmp eq i8 %24, 0
+  br i1 %tobool111, label %do.body117, label %do.body11
+
+do.body117:                                       ; preds = %land.rhs107, %land.rhs87, %lor.rhs81, %do.end
+  %25 = load i8** %backup_to, align 8, !tbaa !0
+  store i8* %25, i8** %cur26, align 8, !tbaa !0
+  store i8 0, i8* %incdec.ptr25, align 1, !tbaa !1
+  %26 = load %struct._cpp_buff** %u_buff, align 8, !tbaa !0
+  %cur123 = getelementptr inbounds %struct._cpp_buff* %26, i64 0, i32 2
+  %27 = load i8** %cur123, align 8, !tbaa !0
+  %text = getelementptr inbounds %struct.cpp_string* %number, i64 0, i32 1
+  store i8* %27, i8** %text, align 8, !tbaa !0
+  %sub.ptr.lhs.cast125 = ptrtoint i8* %incdec.ptr25 to i64
+  %sub.ptr.rhs.cast126 = ptrtoint i8* %27 to i64
+  %sub.ptr.sub127 = sub i64 %sub.ptr.lhs.cast125, %sub.ptr.rhs.cast126
+  %conv128 = trunc i64 %sub.ptr.sub127 to i32
+  %len = getelementptr inbounds %struct.cpp_string* %number, i64 0, i32 0
+  store i32 %conv128, i32* %len, align 4, !tbaa !3
+  %add.ptr129 = getelementptr inbounds i8* %dest.2, i64 2
+  %28 = load %struct._cpp_buff** %u_buff, align 8, !tbaa !0
+  %cur131 = getelementptr inbounds %struct._cpp_buff* %28, i64 0, i32 2
+  store i8* %add.ptr129, i8** %cur131, align 8, !tbaa !0
+  ret void
+}

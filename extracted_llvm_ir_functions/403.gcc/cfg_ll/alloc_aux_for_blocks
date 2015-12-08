@@ -1,0 +1,103 @@
+define void @alloc_aux_for_blocks(i32 %size) #0 {
+entry:
+  %.b = load i1* @alloc_aux_for_blocks.initialized, align 1
+  br i1 %.b, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @gcc_obstack_init(%struct.obstack* @block_aux_obstack) #5
+  store i1 true, i1* @alloc_aux_for_blocks.initialized, align 1
+  br label %if.end3
+
+if.else:                                          ; preds = %entry
+  %0 = load i8** @first_block_aux_obj, align 8, !tbaa !0
+  %tobool1 = icmp eq i8* %0, null
+  br i1 %tobool1, label %if.end3, label %if.then2
+
+if.then2:                                         ; preds = %if.else
+  tail call void @fancy_abort(i8* getelementptr inbounds ([47 x i8]* @.str, i64 0, i64 0), i32 634, i8* getelementptr inbounds ([21 x i8]* @__FUNCTION__.alloc_aux_for_blocks, i64 0, i64 0)) #6
+  unreachable
+
+if.end3:                                          ; preds = %if.else, %if.then
+  %1 = load i8** getelementptr inbounds (%struct.obstack* @block_aux_obstack, i64 0, i32 4), align 8, !tbaa !0
+  %2 = load i8** getelementptr inbounds (%struct.obstack* @block_aux_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint i8* %1 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %2 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp = icmp slt i64 %sub.ptr.sub, 0
+  br i1 %cmp, label %if.then5, label %if.end6
+
+if.then5:                                         ; preds = %if.end3
+  tail call void @_obstack_newchunk(%struct.obstack* @block_aux_obstack, i32 0) #5
+  %.pre = load i8** getelementptr inbounds (%struct.obstack* @block_aux_obstack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.then5, %if.end3
+  %3 = phi i8* [ %.pre, %if.then5 ], [ %2, %if.end3 ]
+  %4 = load i8** getelementptr inbounds (%struct.obstack* @block_aux_obstack, i64 0, i32 2), align 8, !tbaa !0
+  %cmp9 = icmp eq i8* %3, %4
+  br i1 %cmp9, label %if.then11, label %if.end12
+
+if.then11:                                        ; preds = %if.end6
+  %bf.load = load i8* getelementptr inbounds (%struct.obstack* @block_aux_obstack, i64 0, i32 10), align 8
+  %bf.set = or i8 %bf.load, 2
+  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @block_aux_obstack, i64 0, i32 10), align 8
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end6, %if.then11
+  %sub.ptr.lhs.cast14 = ptrtoint i8* %3 to i64
+  %5 = load i32* getelementptr inbounds (%struct.obstack* @block_aux_obstack, i64 0, i32 6), align 8, !tbaa !3
+  %conv16 = sext i32 %5 to i64
+  %add = add nsw i64 %conv16, %sub.ptr.lhs.cast14
+  %neg = xor i32 %5, -1
+  %conv18 = sext i32 %neg to i64
+  %and = and i64 %add, %conv18
+  %add.ptr19 = getelementptr inbounds i8* null, i64 %and
+  store i8* %add.ptr19, i8** getelementptr inbounds (%struct.obstack* @block_aux_obstack, i64 0, i32 3), align 8, !tbaa !0
+  %6 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @block_aux_obstack, i64 0, i32 1), align 8, !tbaa !0
+  %sub.ptr.lhs.cast22 = ptrtoint i8* %add.ptr19 to i64
+  %sub.ptr.rhs.cast23 = ptrtoint %struct._obstack_chunk* %6 to i64
+  %sub.ptr.sub24 = sub i64 %sub.ptr.lhs.cast22, %sub.ptr.rhs.cast23
+  %7 = load i8** getelementptr inbounds (%struct.obstack* @block_aux_obstack, i64 0, i32 4), align 8, !tbaa !0
+  %sub.ptr.lhs.cast27 = ptrtoint i8* %7 to i64
+  %sub.ptr.sub29 = sub i64 %sub.ptr.lhs.cast27, %sub.ptr.rhs.cast23
+  %cmp30 = icmp sgt i64 %sub.ptr.sub24, %sub.ptr.sub29
+  br i1 %cmp30, label %if.then32, label %if.end35
+
+if.then32:                                        ; preds = %if.end12
+  store i8* %7, i8** getelementptr inbounds (%struct.obstack* @block_aux_obstack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end35
+
+if.end35:                                         ; preds = %if.then32, %if.end12
+  %8 = phi i8* [ %7, %if.then32 ], [ %add.ptr19, %if.end12 ]
+  store i8* %8, i8** getelementptr inbounds (%struct.obstack* @block_aux_obstack, i64 0, i32 2), align 8, !tbaa !0
+  store i8* %4, i8** @first_block_aux_obj, align 8, !tbaa !0
+  %tobool38 = icmp eq i32 %size, 0
+  br i1 %tobool38, label %if.end42, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.end35
+  %9 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %cmp4069 = icmp sgt i32 %9, 0
+  br i1 %cmp4069, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %10 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %10, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv
+  %11 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
+  tail call void @alloc_aux_for_block(%struct.basic_block_def* %11, i32 %size) #7
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %12 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %13 = trunc i64 %indvars.iv.next to i32
+  %cmp40 = icmp slt i32 %13, %12
+  br i1 %cmp40, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  tail call void @alloc_aux_for_block(%struct.basic_block_def* getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0), i32 %size) #7
+  tail call void @alloc_aux_for_block(%struct.basic_block_def* getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1), i32 %size) #7
+  br label %if.end42
+
+if.end42:                                         ; preds = %if.end35, %for.end
+  ret void
+}

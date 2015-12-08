@@ -1,0 +1,31 @@
+define void @push_to_sequence(%struct.rtx_def* %first) #0 {
+entry:
+  tail call void @start_sequence() #9
+  br label %for.cond
+
+for.cond:                                         ; preds = %land.rhs, %entry
+  %last.0 = phi %struct.rtx_def* [ %first, %entry ], [ %0, %land.rhs ]
+  %tobool = icmp eq %struct.rtx_def* %last.0, null
+  br i1 %tobool, label %for.end, label %land.rhs
+
+land.rhs:                                         ; preds = %for.cond
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %last.0, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %tobool1 = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool1, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %land.rhs, %for.cond
+  %last.0.lcssa = phi %struct.rtx_def* [ %last.0, %land.rhs ], [ null, %for.cond ]
+  %1 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit = getelementptr inbounds %struct.function* %1, i64 0, i32 3
+  %2 = load %struct.emit_status** %emit, align 8, !tbaa !4
+  %x_first_insn = getelementptr inbounds %struct.emit_status* %2, i64 0, i32 2
+  store %struct.rtx_def* %first, %struct.rtx_def** %x_first_insn, align 8, !tbaa !4
+  %3 = load %struct.function** @cfun, align 8, !tbaa !4
+  %emit5 = getelementptr inbounds %struct.function* %3, i64 0, i32 3
+  %4 = load %struct.emit_status** %emit5, align 8, !tbaa !4
+  %x_last_insn = getelementptr inbounds %struct.emit_status* %4, i64 0, i32 3
+  store %struct.rtx_def* %last.0.lcssa, %struct.rtx_def** %x_last_insn, align 8, !tbaa !4
+  ret void
+}

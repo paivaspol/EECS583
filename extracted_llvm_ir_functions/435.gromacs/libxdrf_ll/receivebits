@@ -1,0 +1,91 @@
+define internal fastcc i32 @receivebits(i32* nocapture %buf, i32 %num_of_bits) #0 {
+entry:
+  %shl = shl i32 1, %num_of_bits
+  %sub = add nsw i32 %shl, -1
+  %add.ptr58 = getelementptr inbounds i32* %buf, i64 3
+  %add.ptr = bitcast i32* %add.ptr58 to i8*
+  %0 = load i32* %buf, align 4, !tbaa !3
+  %arrayidx1 = getelementptr inbounds i32* %buf, i64 1
+  %1 = load i32* %arrayidx1, align 4, !tbaa !3
+  %arrayidx2 = getelementptr inbounds i32* %buf, i64 2
+  %2 = load i32* %arrayidx2, align 4, !tbaa !3
+  %cmp59 = icmp sgt i32 %num_of_bits, 7
+  br i1 %cmp59, label %while.body.lr.ph, label %while.end
+
+while.body.lr.ph:                                 ; preds = %entry
+  %3 = sext i32 %0 to i64
+  %4 = add i32 %num_of_bits, -8
+  %5 = lshr i32 %4, 3
+  %6 = shl nuw i32 %5, 3
+  %7 = add i32 %0, %5
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %indvars.iv = phi i64 [ %3, %while.body.lr.ph ], [ %indvars.iv.next, %while.body ]
+  %num_of_bits.addr.063 = phi i32 [ %num_of_bits, %while.body.lr.ph ], [ %sub5, %while.body ]
+  %lastbyte.061 = phi i32 [ %2, %while.body.lr.ph ], [ %or, %while.body ]
+  %num.060 = phi i32 [ 0, %while.body.lr.ph ], [ %or7, %while.body ]
+  %shl3 = shl i32 %lastbyte.061, 8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %arrayidx4 = getelementptr inbounds i8* %add.ptr, i64 %indvars.iv
+  %8 = load i8* %arrayidx4, align 1, !tbaa !1
+  %conv = zext i8 %8 to i32
+  %or = or i32 %conv, %shl3
+  %shr = lshr i32 %or, %1
+  %sub5 = add nsw i32 %num_of_bits.addr.063, -8
+  %shl6 = shl i32 %shr, %sub5
+  %or7 = or i32 %shl6, %num.060
+  %cmp = icmp sgt i32 %sub5, 7
+  br i1 %cmp, label %while.body, label %while.cond.while.end_crit_edge
+
+while.cond.while.end_crit_edge:                   ; preds = %while.body
+  %9 = sub i32 %4, %6
+  %10 = add i32 %7, 1
+  br label %while.end
+
+while.end:                                        ; preds = %while.cond.while.end_crit_edge, %entry
+  %num_of_bits.addr.0.lcssa = phi i32 [ %9, %while.cond.while.end_crit_edge ], [ %num_of_bits, %entry ]
+  %cnt.0.lcssa = phi i32 [ %10, %while.cond.while.end_crit_edge ], [ %0, %entry ]
+  %lastbyte.0.lcssa = phi i32 [ %or, %while.cond.while.end_crit_edge ], [ %2, %entry ]
+  %num.0.lcssa = phi i32 [ %or7, %while.cond.while.end_crit_edge ], [ 0, %entry ]
+  %cmp9 = icmp sgt i32 %num_of_bits.addr.0.lcssa, 0
+  br i1 %cmp9, label %if.then, label %if.end25
+
+if.then:                                          ; preds = %while.end
+  %cmp11 = icmp ult i32 %1, %num_of_bits.addr.0.lcssa
+  br i1 %cmp11, label %if.then13, label %if.end
+
+if.then13:                                        ; preds = %if.then
+  %add = add i32 %1, 8
+  %shl14 = shl i32 %lastbyte.0.lcssa, 8
+  %inc15 = add nsw i32 %cnt.0.lcssa, 1
+  %idxprom16 = sext i32 %cnt.0.lcssa to i64
+  %arrayidx17 = getelementptr inbounds i8* %add.ptr, i64 %idxprom16
+  %11 = load i8* %arrayidx17, align 1, !tbaa !1
+  %conv18 = zext i8 %11 to i32
+  %or19 = or i32 %conv18, %shl14
+  br label %if.end
+
+if.end:                                           ; preds = %if.then13, %if.then
+  %lastbits.0 = phi i32 [ %add, %if.then13 ], [ %1, %if.then ]
+  %lastbyte.1 = phi i32 [ %or19, %if.then13 ], [ %lastbyte.0.lcssa, %if.then ]
+  %cnt.1 = phi i32 [ %inc15, %if.then13 ], [ %cnt.0.lcssa, %if.then ]
+  %sub20 = sub i32 %lastbits.0, %num_of_bits.addr.0.lcssa
+  %shr21 = lshr i32 %lastbyte.1, %sub20
+  %shl22 = shl i32 1, %num_of_bits.addr.0.lcssa
+  %sub23 = add nsw i32 %shl22, -1
+  %and = and i32 %shr21, %sub23
+  %or24 = or i32 %and, %num.0.lcssa
+  br label %if.end25
+
+if.end25:                                         ; preds = %if.end, %while.end
+  %num.1 = phi i32 [ %or24, %if.end ], [ %num.0.lcssa, %while.end ]
+  %lastbits.1 = phi i32 [ %sub20, %if.end ], [ %1, %while.end ]
+  %lastbyte.2 = phi i32 [ %lastbyte.1, %if.end ], [ %lastbyte.0.lcssa, %while.end ]
+  %cnt.2 = phi i32 [ %cnt.1, %if.end ], [ %cnt.0.lcssa, %while.end ]
+  %and26 = and i32 %num.1, %sub
+  store i32 %cnt.2, i32* %buf, align 4, !tbaa !3
+  store i32 %lastbits.1, i32* %arrayidx1, align 4, !tbaa !3
+  store i32 %lastbyte.2, i32* %arrayidx2, align 4, !tbaa !3
+  ret i32 %and26
+}

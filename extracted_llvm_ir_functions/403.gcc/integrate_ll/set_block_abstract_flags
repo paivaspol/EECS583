@@ -1,0 +1,41 @@
+define internal fastcc void @set_block_abstract_flags(%union.tree_node* nocapture %stmt, i32 %setting) #0 {
+entry:
+  %abstract_flag = getelementptr inbounds %union.tree_node* %stmt, i64 0, i32 0, i32 1
+  %0 = bitcast i8** %abstract_flag to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.value = shl i32 %setting, 1
+  %bf.shl = and i32 %bf.value, 2
+  %bf.clear = and i32 %bf.load, -3
+  %bf.set = or i32 %bf.clear, %bf.shl
+  store i32 %bf.set, i32* %0, align 8
+  %vars = getelementptr inbounds %union.tree_node* %stmt, i64 0, i32 0, i32 2
+  %1 = bitcast i32* %vars to %union.tree_node**
+  %local_decl.021 = load %union.tree_node** %1, align 8
+  %cmp22 = icmp eq %union.tree_node* %local_decl.021, null
+  br i1 %cmp22, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %local_decl.023 = phi %union.tree_node* [ %local_decl.0, %for.body ], [ %local_decl.021, %entry ]
+  tail call void @set_decl_abstract_flags(%union.tree_node* %local_decl.023, i32 %setting) #8
+  %chain = getelementptr inbounds %union.tree_node* %local_decl.023, i64 0, i32 0, i32 0, i32 0
+  %local_decl.0 = load %union.tree_node** %chain, align 8
+  %cmp = icmp eq %union.tree_node* %local_decl.0, null
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %2 = getelementptr inbounds %union.tree_node* %stmt, i64 0, i32 0, i32 4
+  %subblock.018 = load %union.tree_node** %2, align 8
+  %cmp419 = icmp eq %union.tree_node* %subblock.018, null
+  br i1 %cmp419, label %for.end9, label %for.body5
+
+for.body5:                                        ; preds = %for.end, %for.body5
+  %subblock.020 = phi %union.tree_node* [ %subblock.0, %for.body5 ], [ %subblock.018, %for.end ]
+  tail call fastcc void @set_block_abstract_flags(%union.tree_node* %subblock.020, i32 %setting) #8
+  %chain8 = getelementptr inbounds %union.tree_node* %subblock.020, i64 0, i32 0, i32 0, i32 0
+  %subblock.0 = load %union.tree_node** %chain8, align 8
+  %cmp4 = icmp eq %union.tree_node* %subblock.0, null
+  br i1 %cmp4, label %for.end9, label %for.body5
+
+for.end9:                                         ; preds = %for.body5, %for.end
+  ret void
+}

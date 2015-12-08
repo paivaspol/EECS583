@@ -1,0 +1,158 @@
+define internal fastcc i32 @merge_ranges(i32* nocapture %pin_p, %union.tree_node** nocapture %plow, %union.tree_node** nocapture %phigh, i32 %in0_p, %union.tree_node* %low0, %union.tree_node* %high0, i32 %in1_p, %union.tree_node* %low1, %union.tree_node* %high1) #0 {
+entry:
+  %cmp = icmp eq %union.tree_node* %low0, null
+  %cmp1 = icmp eq %union.tree_node* %low1, null
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %lor.end, label %lor.rhs
+
+lor.rhs:                                          ; preds = %entry
+  %0 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 5), align 8, !tbaa !3
+  %call = tail call fastcc %union.tree_node* @range_binop(i32 101, %union.tree_node* %0, %union.tree_node* %low0, i32 0, %union.tree_node* %low1, i32 0) #7
+  %call2 = tail call i32 @integer_onep(%union.tree_node* %call) #9
+  %tobool = icmp ne i32 %call2, 0
+  br label %lor.end
+
+lor.end:                                          ; preds = %entry, %lor.rhs
+  %1 = phi i1 [ %tobool, %lor.rhs ], [ true, %entry ]
+  %cmp3 = icmp eq %union.tree_node* %high0, null
+  %cmp5 = icmp eq %union.tree_node* %high1, null
+  %or.cond153 = and i1 %cmp3, %cmp5
+  br i1 %or.cond153, label %lor.end10, label %lor.rhs6
+
+lor.rhs6:                                         ; preds = %lor.end
+  %2 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 5), align 8, !tbaa !3
+  %call7 = tail call fastcc %union.tree_node* @range_binop(i32 101, %union.tree_node* %2, %union.tree_node* %high0, i32 1, %union.tree_node* %high1, i32 1) #7
+  %call8 = tail call i32 @integer_onep(%union.tree_node* %call7) #9
+  %tobool9 = icmp ne i32 %call8, 0
+  br label %lor.end10
+
+lor.end10:                                        ; preds = %lor.end, %lor.rhs6
+  %3 = phi i1 [ %tobool9, %lor.rhs6 ], [ true, %lor.end ]
+  %4 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 5), align 8, !tbaa !3
+  %call12 = tail call fastcc %union.tree_node* @range_binop(i32 99, %union.tree_node* %4, %union.tree_node* %low0, i32 0, %union.tree_node* %low1, i32 0) #7
+  %call13 = tail call i32 @integer_onep(%union.tree_node* %call12) #9
+  %tobool14 = icmp eq i32 %call13, 0
+  br i1 %tobool14, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %lor.end10
+  br i1 %1, label %land.lhs.true16, label %if.end
+
+land.lhs.true16:                                  ; preds = %lor.lhs.false
+  %5 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 5), align 8, !tbaa !3
+  %call17 = tail call fastcc %union.tree_node* @range_binop(i32 99, %union.tree_node* %5, %union.tree_node* %high1, i32 1, %union.tree_node* %high0, i32 1) #7
+  %call18 = tail call i32 @integer_onep(%union.tree_node* %call17) #9
+  %tobool19 = icmp eq i32 %call18, 0
+  br i1 %tobool19, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true16, %lor.end10
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true16, %if.then, %lor.lhs.false
+  %high1.addr.0 = phi %union.tree_node* [ %high0, %if.then ], [ %high1, %land.lhs.true16 ], [ %high1, %lor.lhs.false ]
+  %low1.addr.0 = phi %union.tree_node* [ %low0, %if.then ], [ %low1, %land.lhs.true16 ], [ %low1, %lor.lhs.false ]
+  %in1_p.addr.0 = phi i32 [ %in0_p, %if.then ], [ %in1_p, %land.lhs.true16 ], [ %in1_p, %lor.lhs.false ]
+  %high0.addr.0 = phi %union.tree_node* [ %high1, %if.then ], [ %high0, %land.lhs.true16 ], [ %high0, %lor.lhs.false ]
+  %low0.addr.0 = phi %union.tree_node* [ %low1, %if.then ], [ %low0, %land.lhs.true16 ], [ %low0, %lor.lhs.false ]
+  %in0_p.addr.0 = phi i32 [ %in1_p, %if.then ], [ %in0_p, %land.lhs.true16 ], [ %in0_p, %lor.lhs.false ]
+  %6 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 5), align 8, !tbaa !3
+  %call20 = tail call fastcc %union.tree_node* @range_binop(i32 97, %union.tree_node* %6, %union.tree_node* %high0.addr.0, i32 1, %union.tree_node* %low1.addr.0, i32 0) #7
+  %call21 = tail call i32 @integer_onep(%union.tree_node* %call20) #9
+  %7 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 5), align 8, !tbaa !3
+  %call22 = tail call fastcc %union.tree_node* @range_binop(i32 98, %union.tree_node* %7, %union.tree_node* %high1.addr.0, i32 1, %union.tree_node* %high0.addr.0, i32 1) #7
+  %call23 = tail call i32 @integer_onep(%union.tree_node* %call22) #9
+  %tobool24 = icmp ne i32 %in0_p.addr.0, 0
+  %tobool24.not = xor i1 %tobool24, true
+  %tobool26 = icmp eq i32 %in1_p.addr.0, 0
+  %or.cond154 = or i1 %tobool26, %tobool24.not
+  br i1 %or.cond154, label %if.else35, label %if.then27
+
+if.then27:                                        ; preds = %if.end
+  %tobool28 = icmp eq i32 %call21, 0
+  br i1 %tobool28, label %if.else, label %if.end98
+
+if.else:                                          ; preds = %if.then27
+  %tobool30 = icmp eq i32 %call23, 0
+  %high0.addr.0.high1.addr.0 = select i1 %tobool30, %union.tree_node* %high0.addr.0, %union.tree_node* %high1.addr.0
+  br label %if.end98
+
+if.else35:                                        ; preds = %if.end
+  %or.cond155 = and i1 %tobool24, %tobool26
+  br i1 %or.cond155, label %if.then39, label %if.else64
+
+if.then39:                                        ; preds = %if.else35
+  %tobool40 = icmp eq i32 %call21, 0
+  br i1 %tobool40, label %if.else42, label %if.end98
+
+if.else42:                                        ; preds = %if.then39
+  %.not = xor i1 %1, true
+  %.not156 = xor i1 %3, true
+  %brmerge = or i1 %.not, %.not156
+  br i1 %brmerge, label %if.else47, label %if.end98
+
+if.else47:                                        ; preds = %if.else42
+  %tobool48.not = icmp eq i32 %call23, 0
+  %brmerge158 = or i1 %tobool48.not, %.not
+  br i1 %brmerge158, label %if.else53, label %if.then51
+
+if.then51:                                        ; preds = %if.else47
+  %8 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 12), align 8, !tbaa !3
+  %call52 = tail call fastcc %union.tree_node* @range_binop(i32 59, %union.tree_node* null, %union.tree_node* %high1.addr.0, i32 0, %union.tree_node* %8, i32 0) #7
+  br label %if.end98
+
+if.else53:                                        ; preds = %if.else47
+  %brmerge160 = or i1 %tobool48.not, %3
+  br i1 %brmerge160, label %if.then57, label %return
+
+if.then57:                                        ; preds = %if.else53
+  %9 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 12), align 8, !tbaa !3
+  %call58 = tail call fastcc %union.tree_node* @range_binop(i32 60, %union.tree_node* null, %union.tree_node* %low1.addr.0, i32 0, %union.tree_node* %9, i32 0) #7
+  br label %if.end98
+
+if.else64:                                        ; preds = %if.else35
+  %or.cond161 = or i1 %tobool24, %tobool26
+  %tobool81 = icmp eq i32 %call21, 0
+  br i1 %or.cond161, label %if.else80, label %if.then68
+
+if.then68:                                        ; preds = %if.else64
+  br i1 %tobool81, label %if.else71, label %if.end98
+
+if.else71:                                        ; preds = %if.then68
+  %tobool72.not = icmp ne i32 %call23, 0
+  %brmerge162 = or i1 %tobool72.not, %3
+  br i1 %brmerge162, label %if.end98, label %if.else76
+
+if.else76:                                        ; preds = %if.else71
+  %10 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 12), align 8, !tbaa !3
+  %call77 = tail call fastcc %union.tree_node* @range_binop(i32 59, %union.tree_node* null, %union.tree_node* %high0.addr.0, i32 1, %union.tree_node* %10, i32 0) #7
+  br label %if.end98
+
+if.else80:                                        ; preds = %if.else64
+  br i1 %tobool81, label %if.else90, label %if.then82
+
+if.then82:                                        ; preds = %if.else80
+  %11 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 5), align 8, !tbaa !3
+  %12 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 12), align 8, !tbaa !3
+  %call83 = tail call fastcc %union.tree_node* @range_binop(i32 59, %union.tree_node* null, %union.tree_node* %high0.addr.0, i32 1, %union.tree_node* %12, i32 1) #7
+  %call84 = tail call fastcc %union.tree_node* @range_binop(i32 101, %union.tree_node* %11, %union.tree_node* %call83, i32 1, %union.tree_node* %low1.addr.0, i32 0) #7
+  %call85 = tail call i32 @integer_onep(%union.tree_node* %call84) #9
+  %tobool86 = icmp eq i32 %call85, 0
+  br i1 %tobool86, label %return, label %if.end98
+
+if.else90:                                        ; preds = %if.else80
+  %tobool91 = icmp eq i32 %call23, 0
+  %high1.addr.0.high0.addr.0 = select i1 %tobool91, %union.tree_node* %high1.addr.0, %union.tree_node* %high0.addr.0
+  br label %if.end98
+
+if.end98:                                         ; preds = %if.else90, %if.then82, %if.else71, %if.then68, %if.else42, %if.then39, %if.else, %if.then27, %if.then57, %if.then51, %if.else76
+  %in_p.0 = phi i32 [ 1, %if.else76 ], [ 1, %if.then51 ], [ 1, %if.then57 ], [ 0, %if.then27 ], [ 1, %if.else ], [ 1, %if.then39 ], [ 0, %if.else42 ], [ 1, %if.then68 ], [ 0, %if.else71 ], [ 0, %if.then82 ], [ 0, %if.else90 ]
+  %low.0 = phi %union.tree_node* [ %call77, %if.else76 ], [ %call52, %if.then51 ], [ %low0.addr.0, %if.then57 ], [ null, %if.then27 ], [ %low1.addr.0, %if.else ], [ %low0.addr.0, %if.then39 ], [ null, %if.else42 ], [ %low1.addr.0, %if.then68 ], [ null, %if.else71 ], [ %low0.addr.0, %if.then82 ], [ %low0.addr.0, %if.else90 ]
+  %high.0 = phi %union.tree_node* [ %high1.addr.0, %if.else76 ], [ %high0.addr.0, %if.then51 ], [ %call58, %if.then57 ], [ null, %if.then27 ], [ %high0.addr.0.high1.addr.0, %if.else ], [ %high0.addr.0, %if.then39 ], [ null, %if.else42 ], [ %high1.addr.0, %if.then68 ], [ null, %if.else71 ], [ %high1.addr.0, %if.then82 ], [ %high1.addr.0.high0.addr.0, %if.else90 ]
+  store i32 %in_p.0, i32* %pin_p, align 4, !tbaa !4
+  store %union.tree_node* %low.0, %union.tree_node** %plow, align 8, !tbaa !3
+  store %union.tree_node* %high.0, %union.tree_node** %phigh, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.then82, %if.else53, %if.end98
+  %retval.0 = phi i32 [ 1, %if.end98 ], [ 0, %if.else53 ], [ 0, %if.then82 ]
+  ret i32 %retval.0
+}

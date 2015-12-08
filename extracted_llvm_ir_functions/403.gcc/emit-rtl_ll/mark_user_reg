@@ -1,0 +1,39 @@
+define void @mark_user_reg(%struct.rtx_def* nocapture %reg) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %reg to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.else16 [
+    i32 65, label %if.then
+    i32 61, label %if.then12
+  ]
+
+if.then:                                          ; preds = %entry
+  %fld = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load1 = load i32* %2, align 8
+  %bf.set = or i32 %bf.load1, 134217728
+  store i32 %bf.set, i32* %2, align 8
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 1
+  %rtx5 = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx5, align 8, !tbaa !4
+  %4 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load6 = load i32* %4, align 8
+  %bf.set8 = or i32 %bf.load6, 134217728
+  store i32 %bf.set8, i32* %4, align 8
+  br label %if.end17
+
+if.then12:                                        ; preds = %entry
+  %bf.set15 = or i32 %bf.load, 134217728
+  store i32 %bf.set15, i32* %0, align 8
+  br label %if.end17
+
+if.else16:                                        ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 732, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.mark_user_reg, i64 0, i64 0)) #10
+  unreachable
+
+if.end17:                                         ; preds = %if.then12, %if.then
+  ret void
+}

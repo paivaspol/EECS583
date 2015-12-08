@@ -1,0 +1,47 @@
+define void @anti_adjust_stack(%struct.rtx_def* %adjust) #1 {
+entry:
+  %call = tail call %struct.rtx_def* @protect_from_queue(%struct.rtx_def* %adjust, i32 0) #4
+  %0 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !3
+  %cmp = icmp eq %struct.rtx_def* %call, %0
+  br i1 %cmp, label %if.end10, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %call to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp1 = icmp eq i32 %bf.clear, 54
+  br i1 %cmp1, label %if.then2, label %if.end4
+
+if.then2:                                         ; preds = %if.end
+  %rtwint = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0, i32 0
+  %2 = load i64* %rtwint, align 8, !tbaa !4
+  %3 = load %struct.function** @cfun, align 8, !tbaa !3
+  %expr = getelementptr inbounds %struct.function* %3, i64 0, i32 2
+  %4 = load %struct.expr_status** %expr, align 8, !tbaa !3
+  %x_stack_pointer_delta = getelementptr inbounds %struct.expr_status* %4, i64 0, i32 2
+  %5 = load i32* %x_stack_pointer_delta, align 4, !tbaa !5
+  %conv16 = zext i32 %5 to i64
+  %add = add nsw i64 %conv16, %2
+  %conv3 = trunc i64 %add to i32
+  store i32 %conv3, i32* %x_stack_pointer_delta, align 4, !tbaa !5
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.then2, %if.end
+  %6 = load i32* @target_flags, align 4, !tbaa !5
+  %and = lshr i32 %6, 25
+  %7 = and i32 %and, 1
+  %8 = or i32 %7, 4
+  %9 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 2), align 8, !tbaa !3
+  %10 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !tbaa !3
+  %call5 = tail call %struct.rtx_def* @expand_binop(i32 %8, %struct.optab* %9, %struct.rtx_def* %10, %struct.rtx_def* %call, %struct.rtx_def* %10, i32 0, i32 3) #4
+  %11 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !tbaa !3
+  %cmp6 = icmp eq %struct.rtx_def* %call5, %11
+  br i1 %cmp6, label %if.end10, label %if.then8
+
+if.then8:                                         ; preds = %if.end4
+  %call9 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %11, %struct.rtx_def* %call5) #4
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.end4, %entry, %if.then8
+  ret void
+}

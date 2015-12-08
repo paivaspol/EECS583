@@ -1,0 +1,164 @@
+define internal fastcc void @die_checksum(%struct.die_struct* %die, %struct.md5_ctx* %ctx) #1 {
+entry:
+  %0 = bitcast %struct.die_struct* %die to i8*
+  tail call void @md5_process_bytes(i8* %0, i64 4, %struct.md5_ctx* %ctx) #9
+  %die_attr = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 2
+  %a.017 = load %struct.dw_attr_struct** %die_attr, align 8
+  %tobool18 = icmp eq %struct.dw_attr_struct* %a.017, null
+  br i1 %tobool18, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %attr_checksum.exit
+  %a.019 = phi %struct.dw_attr_struct* [ %a.0, %attr_checksum.exit ], [ %a.017, %entry ]
+  %dw_attr.i = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 0
+  %1 = bitcast %struct.dw_attr_struct* %a.019 to i8*
+  tail call void @md5_process_bytes(i8* %1, i64 4, %struct.md5_ctx* %ctx) #9
+  %2 = load i32* %dw_attr.i, align 4, !tbaa !11
+  switch i32 %2, label %if.end.i [
+    i32 58, label %attr_checksum.exit
+    i32 37, label %attr_checksum.exit
+  ]
+
+if.end.i:                                         ; preds = %for.body
+  %val_class.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 2, i32 0
+  %3 = load i32* %val_class.i.i, align 4, !tbaa !1
+  switch i32 %3, label %attr_checksum.exit [
+    i32 5, label %sw.bb.i
+    i32 6, label %sw.bb4.i
+    i32 7, label %sw.bb7.i
+    i32 8, label %sw.bb10.i
+    i32 9, label %sw.bb13.i
+    i32 14, label %AT_string.exit85.i
+    i32 0, label %AT_addr.exit.i
+    i32 1, label %sw.bb27.i
+    i32 2, label %AT_loc.exit.i
+    i32 10, label %AT_ref.exit105.i
+  ]
+
+sw.bb.i:                                          ; preds = %if.end.i
+  %val_int.i = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 2, i32 1, i32 0, i32 0
+  %4 = bitcast i64* %val_int.i to i8*
+  tail call void @md5_process_bytes(i8* %4, i64 8, %struct.md5_ctx* %ctx) #9
+  br label %attr_checksum.exit
+
+sw.bb4.i:                                         ; preds = %if.end.i
+  %val_unsigned.i = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 2, i32 1, i32 0, i32 0
+  %5 = bitcast i64* %val_unsigned.i to i8*
+  tail call void @md5_process_bytes(i8* %5, i64 8, %struct.md5_ctx* %ctx) #9
+  br label %attr_checksum.exit
+
+sw.bb7.i:                                         ; preds = %if.end.i
+  %val_long_long.i = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 2, i32 1, i32 0
+  %6 = bitcast %struct.dw_long_long_struct* %val_long_long.i to i8*
+  tail call void @md5_process_bytes(i8* %6, i64 16, %struct.md5_ctx* %ctx) #9
+  br label %attr_checksum.exit
+
+sw.bb10.i:                                        ; preds = %if.end.i
+  %v12.i = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 2, i32 1
+  %7 = bitcast %union.anon.3* %v12.i to i8*
+  tail call void @md5_process_bytes(i8* %7, i64 16, %struct.md5_ctx* %ctx) #9
+  br label %attr_checksum.exit
+
+sw.bb13.i:                                        ; preds = %if.end.i
+  %v15.i = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 2, i32 1
+  %val_flag.i = bitcast %union.anon.3* %v15.i to i8*
+  tail call void @md5_process_bytes(i8* %val_flag.i, i64 1, %struct.md5_ctx* %ctx) #9
+  br label %attr_checksum.exit
+
+AT_string.exit85.i:                               ; preds = %if.end.i
+  %v.i75.i = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 2, i32 1
+  %val_str.i.i = bitcast %union.anon.3* %v.i75.i to %struct.indirect_string_node**
+  %8 = load %struct.indirect_string_node** %val_str.i.i, align 8, !tbaa !4
+  %str.i.i = getelementptr inbounds %struct.indirect_string_node* %8, i64 0, i32 0, i32 1
+  %9 = load i8** %str.i.i, align 8, !tbaa !4
+  %call19.i = tail call i64 @strlen(i8* %9) #11
+  tail call void @md5_process_bytes(i8* %9, i64 %call19.i, %struct.md5_ctx* %ctx) #9
+  br label %attr_checksum.exit
+
+AT_addr.exit.i:                                   ; preds = %if.end.i
+  %v.i90.i = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 2, i32 1
+  %val_addr.i.i = bitcast %union.anon.3* %v.i90.i to %struct.rtx_def**
+  %10 = load %struct.rtx_def** %val_addr.i.i, align 8, !tbaa !4
+  %11 = bitcast %struct.rtx_def* %10 to i32*
+  %bf.load.i = load i32* %11, align 8
+  %bf.clear.i = and i32 %bf.load.i, 65535
+  %cond.i = icmp eq i32 %bf.clear.i, 68
+  br i1 %cond.i, label %sw.bb22.i, label %sw.default.i
+
+sw.bb22.i:                                        ; preds = %AT_addr.exit.i
+  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %10, i64 0, i32 1, i64 0
+  %rtstr.i = bitcast %union.rtunion_def* %arrayidx.i to i8**
+  %12 = load i8** %rtstr.i, align 8, !tbaa !4
+  %call26.i = tail call i64 @strlen(i8* %12) #11
+  tail call void @md5_process_bytes(i8* %12, i64 %call26.i, %struct.md5_ctx* %ctx) #9
+  br label %attr_checksum.exit
+
+sw.default.i:                                     ; preds = %AT_addr.exit.i
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 5453, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.attr_checksum, i64 0, i64 0)) #12
+  unreachable
+
+sw.bb27.i:                                        ; preds = %if.end.i
+  %val_offset.i = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 2, i32 1, i32 0, i32 0
+  %13 = bitcast i64* %val_offset.i to i8*
+  tail call void @md5_process_bytes(i8* %13, i64 8, %struct.md5_ctx* %ctx) #9
+  br label %attr_checksum.exit
+
+AT_loc.exit.i:                                    ; preds = %if.end.i
+  %v.i96.i = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 2, i32 1
+  %val_loc.i.i = bitcast %union.anon.3* %v.i96.i to %struct.dw_loc_descr_struct**
+  %loc.0106.i = load %struct.dw_loc_descr_struct** %val_loc.i.i, align 8
+  %tobool107.i = icmp eq %struct.dw_loc_descr_struct* %loc.0106.i, null
+  br i1 %tobool107.i, label %attr_checksum.exit, label %for.body.i
+
+for.body.i:                                       ; preds = %AT_loc.exit.i, %for.body.i
+  %loc.0108.i = phi %struct.dw_loc_descr_struct* [ %loc.0.i, %for.body.i ], [ %loc.0106.i, %AT_loc.exit.i ]
+  %dw_loc_opc.i.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.0108.i, i64 0, i32 1
+  %14 = bitcast i32* %dw_loc_opc.i.i to i8*
+  tail call void @md5_process_bytes(i8* %14, i64 4, %struct.md5_ctx* %ctx) #9
+  %dw_loc_oprnd1.i.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.0108.i, i64 0, i32 2
+  %15 = bitcast %struct.dw_val_struct* %dw_loc_oprnd1.i.i to i8*
+  tail call void @md5_process_bytes(i8* %15, i64 24, %struct.md5_ctx* %ctx) #9
+  %dw_loc_oprnd2.i.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.0108.i, i64 0, i32 3
+  %16 = bitcast %struct.dw_val_struct* %dw_loc_oprnd2.i.i to i8*
+  tail call void @md5_process_bytes(i8* %16, i64 24, %struct.md5_ctx* %ctx) #9
+  %dw_loc_next.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.0108.i, i64 0, i32 0
+  %loc.0.i = load %struct.dw_loc_descr_struct** %dw_loc_next.i, align 8
+  %tobool.i = icmp eq %struct.dw_loc_descr_struct* %loc.0.i, null
+  br i1 %tobool.i, label %attr_checksum.exit, label %for.body.i
+
+AT_ref.exit105.i:                                 ; preds = %if.end.i
+  %v.i102.i = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 2, i32 1
+  %die.i103.i = bitcast %union.anon.3* %v.i102.i to %struct.die_struct**
+  %17 = load %struct.die_struct** %die.i103.i, align 8, !tbaa !4
+  %die_offset.i = getelementptr inbounds %struct.die_struct* %17, i64 0, i32 6
+  %18 = load i64* %die_offset.i, align 8, !tbaa !6
+  %tobool34.i = icmp eq i64 %18, 0
+  br i1 %tobool34.i, label %attr_checksum.exit, label %AT_ref.exit.i
+
+AT_ref.exit.i:                                    ; preds = %AT_ref.exit105.i
+  %19 = bitcast i64* %die_offset.i to i8*
+  tail call void @md5_process_bytes(i8* %19, i64 8, %struct.md5_ctx* %ctx) #9
+  br label %attr_checksum.exit
+
+attr_checksum.exit:                               ; preds = %for.body.i, %for.body, %for.body, %if.end.i, %sw.bb.i, %sw.bb4.i, %sw.bb7.i, %sw.bb10.i, %sw.bb13.i, %AT_string.exit85.i, %sw.bb22.i, %sw.bb27.i, %AT_loc.exit.i, %AT_ref.exit105.i, %AT_ref.exit.i
+  %dw_attr_next = getelementptr inbounds %struct.dw_attr_struct* %a.019, i64 0, i32 1
+  %a.0 = load %struct.dw_attr_struct** %dw_attr_next, align 8
+  %tobool = icmp eq %struct.dw_attr_struct* %a.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %attr_checksum.exit, %entry
+  %die_child = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 4
+  %c.014 = load %struct.die_struct** %die_child, align 8
+  %tobool215 = icmp eq %struct.die_struct* %c.014, null
+  br i1 %tobool215, label %for.end5, label %for.body3
+
+for.body3:                                        ; preds = %for.end, %for.body3
+  %c.016 = phi %struct.die_struct* [ %c.0, %for.body3 ], [ %c.014, %for.end ]
+  tail call fastcc void @die_checksum(%struct.die_struct* %c.016, %struct.md5_ctx* %ctx) #10
+  %die_sib = getelementptr inbounds %struct.die_struct* %c.016, i64 0, i32 5
+  %c.0 = load %struct.die_struct** %die_sib, align 8
+  %tobool2 = icmp eq %struct.die_struct* %c.0, null
+  br i1 %tobool2, label %for.end5, label %for.body3
+
+for.end5:                                         ; preds = %for.body3, %for.end
+  ret void
+}

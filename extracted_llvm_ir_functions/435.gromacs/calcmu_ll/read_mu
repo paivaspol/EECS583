@@ -1,0 +1,29 @@
+define i32 @read_mu(%struct._IO_FILE* nocapture %fp, float* nocapture %mu, float* nocapture %vol) #0 {
+entry:
+  %mmm = alloca [4 x float], align 16
+  %0 = bitcast [4 x float]* %mmm to i8*
+  %call = call i64 @fread(i8* %0, i64 64, i64 1, %struct._IO_FILE* %fp) #3
+  %cmp = icmp eq i64 %call, 1
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %arraydecay = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 0
+  %1 = load float* %arraydecay, align 16, !tbaa !3
+  store float %1, float* %mu, align 4, !tbaa !3
+  %arrayidx2.i = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 1
+  %2 = load float* %arrayidx2.i, align 4, !tbaa !3
+  %arrayidx3.i = getelementptr inbounds float* %mu, i64 1
+  store float %2, float* %arrayidx3.i, align 4, !tbaa !3
+  %arrayidx4.i = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 2
+  %3 = load float* %arrayidx4.i, align 8, !tbaa !3
+  %arrayidx5.i = getelementptr inbounds float* %mu, i64 2
+  store float %3, float* %arrayidx5.i, align 4, !tbaa !3
+  %arrayidx = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 3
+  %4 = load float* %arrayidx, align 4, !tbaa !3
+  store float %4, float* %vol, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,134 @@
+define internal fastcc i32 @noce_operand_ok(%struct.rtx_def* %op) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 66
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %call = tail call i32 @side_effects_p(%struct.rtx_def* %1) #6
+  %lnot = icmp eq i32 %call, 0
+  %lnot.ext = zext i1 %lnot to i32
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call1 = tail call i32 @side_effects_p(%struct.rtx_def* %op) #6
+  %tobool2 = icmp eq i32 %call1, 0
+  br i1 %tobool2, label %if.end4, label %return
+
+if.end4:                                          ; preds = %if.end
+  %2 = load i32* @flag_trapping_math, align 4, !tbaa !0
+  %tobool5 = icmp eq i32 %2, 0
+  br i1 %tobool5, label %land.lhs.true, label %if.end127
+
+land.lhs.true:                                    ; preds = %if.end4
+  %bf.load6 = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load6, 16
+  %bf.clear7 = and i32 %bf.lshr, 255
+  %idxprom152 = zext i32 %bf.clear7 to i64
+  %arrayidx8 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom152
+  %3 = load i32* %arrayidx8, align 4, !tbaa !7
+  switch i32 %3, label %if.end127 [
+    i32 2, label %if.then23
+    i32 6, label %if.then23
+    i32 8, label %if.then23
+  ]
+
+if.then23:                                        ; preds = %land.lhs.true, %land.lhs.true, %land.lhs.true
+  %bf.clear25 = and i32 %bf.load6, 65535
+  %bf.clear25.off = add i32 %bf.clear25, -79
+  %switch = icmp ult i32 %bf.clear25.off, 4
+  br i1 %switch, label %sw.bb, label %sw.default
+
+sw.bb:                                            ; preds = %if.then23
+  %arrayidx27 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 1
+  %rtx28 = bitcast %union.rtunion_def* %arrayidx27 to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx28, align 8, !tbaa !4
+  %5 = bitcast %struct.rtx_def* %4 to i32*
+  %bf.load29 = load i32* %5, align 8
+  %bf.clear30 = and i32 %bf.load29, 65535
+  switch i32 %bf.clear30, label %land.end [
+    i32 67, label %land.lhs.true81
+    i32 68, label %land.lhs.true81
+    i32 54, label %land.lhs.true81
+    i32 55, label %land.lhs.true81
+    i32 58, label %land.lhs.true81
+    i32 134, label %land.lhs.true81
+    i32 56, label %land.lhs.true81
+    i32 140, label %land.lhs.true81
+  ]
+
+land.lhs.true81:                                  ; preds = %sw.bb, %sw.bb, %sw.bb, %sw.bb, %sw.bb, %sw.bb, %sw.bb, %sw.bb
+  %arrayidx89 = getelementptr inbounds [3 x [59 x %struct.rtx_def*]]* @const_tiny_rtx, i64 0, i64 0, i64 %idxprom152
+  %6 = load %struct.rtx_def** %arrayidx89, align 8, !tbaa !4
+  %cmp90 = icmp eq %struct.rtx_def* %4, %6
+  br i1 %cmp90, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %land.lhs.true81
+  %arrayidx92 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
+  %rtx93 = bitcast %union.rtunion_def* %arrayidx92 to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %rtx93, align 8, !tbaa !4
+  %call94 = tail call i32 @may_trap_p(%struct.rtx_def* %7) #6
+  %lnot96 = icmp eq i32 %call94, 0
+  br label %land.end
+
+land.end:                                         ; preds = %sw.bb, %land.lhs.true81, %land.rhs
+  %8 = phi i1 [ false, %land.lhs.true81 ], [ %lnot96, %land.rhs ], [ false, %sw.bb ]
+  %land.ext = zext i1 %8 to i32
+  br label %return
+
+sw.default:                                       ; preds = %if.then23
+  %idxprom100153 = zext i32 %bf.clear25 to i64
+  %arrayidx101 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom100153
+  %9 = load i8* %arrayidx101, align 1, !tbaa !1
+  %conv = sext i8 %9 to i32
+  switch i32 %conv, label %if.end127 [
+    i32 49, label %sw.bb102
+    i32 99, label %sw.bb110
+    i32 50, label %sw.bb110
+  ]
+
+sw.bb102:                                         ; preds = %sw.default
+  %arrayidx104 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
+  %rtx105 = bitcast %union.rtunion_def* %arrayidx104 to %struct.rtx_def**
+  %10 = load %struct.rtx_def** %rtx105, align 8, !tbaa !4
+  %call106 = tail call i32 @may_trap_p(%struct.rtx_def* %10) #6
+  %lnot108 = icmp eq i32 %call106, 0
+  %lnot.ext109 = zext i1 %lnot108 to i32
+  br label %return
+
+sw.bb110:                                         ; preds = %sw.default, %sw.default
+  %fld111 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1
+  %rtx113 = bitcast [1 x %union.rtunion_def]* %fld111 to %struct.rtx_def**
+  %11 = load %struct.rtx_def** %rtx113, align 8, !tbaa !4
+  %call114 = tail call i32 @may_trap_p(%struct.rtx_def* %11) #6
+  %tobool115 = icmp eq i32 %call114, 0
+  br i1 %tobool115, label %land.rhs116, label %land.end124
+
+land.rhs116:                                      ; preds = %sw.bb110
+  %arrayidx118 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 1
+  %rtx119 = bitcast %union.rtunion_def* %arrayidx118 to %struct.rtx_def**
+  %12 = load %struct.rtx_def** %rtx119, align 8, !tbaa !4
+  %call120 = tail call i32 @may_trap_p(%struct.rtx_def* %12) #6
+  %lnot122 = icmp eq i32 %call120, 0
+  br label %land.end124
+
+land.end124:                                      ; preds = %sw.bb110, %land.rhs116
+  %13 = phi i1 [ false, %sw.bb110 ], [ %lnot122, %land.rhs116 ]
+  %land.ext125 = zext i1 %13 to i32
+  br label %return
+
+if.end127:                                        ; preds = %land.lhs.true, %if.end4, %sw.default
+  %call128 = tail call i32 @may_trap_p(%struct.rtx_def* %op) #6
+  %lnot130 = icmp eq i32 %call128, 0
+  %lnot.ext131 = zext i1 %lnot130 to i32
+  br label %return
+
+return:                                           ; preds = %if.end, %if.end127, %land.end124, %sw.bb102, %land.end, %if.then
+  %retval.0 = phi i32 [ %lnot.ext, %if.then ], [ %lnot.ext131, %if.end127 ], [ %land.ext, %land.end ], [ %land.ext125, %land.end124 ], [ %lnot.ext109, %sw.bb102 ], [ 0, %if.end ]
+  ret i32 %retval.0
+}

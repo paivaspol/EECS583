@@ -1,0 +1,89 @@
+define internal fastcc i32 @memory_address_length(%struct.rtx_def* %addr) #1 {
+entry:
+  %parts = alloca %struct.ix86_address, align 8
+  %0 = bitcast %struct.rtx_def* %addr to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.end [
+    i32 96, label %return
+    i32 99, label %return
+    i32 100, label %return
+    i32 101, label %return
+  ]
+
+if.end:                                           ; preds = %entry
+  %call = call fastcc i32 @ix86_decompose_address(%struct.rtx_def* %addr, %struct.ix86_address* %parts) #10
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then12, label %if.end13
+
+if.then12:                                        ; preds = %if.end
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 9877, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.memory_address_length, i64 0, i64 0)) #11
+  unreachable
+
+if.end13:                                         ; preds = %if.end
+  %base14 = getelementptr inbounds %struct.ix86_address* %parts, i64 0, i32 0
+  %1 = load %struct.rtx_def** %base14, align 8, !tbaa !4
+  %index15 = getelementptr inbounds %struct.ix86_address* %parts, i64 0, i32 1
+  %2 = load %struct.rtx_def** %index15, align 8, !tbaa !4
+  %disp16 = getelementptr inbounds %struct.ix86_address* %parts, i64 0, i32 2
+  %3 = load %struct.rtx_def** %disp16, align 8, !tbaa !4
+  %tobool17 = icmp ne %struct.rtx_def* %1, null
+  %tobool18 = icmp eq %struct.rtx_def* %2, null
+  %or.cond = and i1 %tobool17, %tobool18
+  %tobool20 = icmp eq %struct.rtx_def* %3, null
+  %or.cond131 = and i1 %or.cond, %tobool20
+  br i1 %or.cond131, label %if.then21, label %if.else
+
+if.then21:                                        ; preds = %if.end13
+  %4 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !tbaa !4
+  %cmp22 = icmp eq %struct.rtx_def* %4, %addr
+  %5 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 5), align 8, !tbaa !4
+  %cmp24 = icmp eq %struct.rtx_def* %5, %addr
+  %or.cond132 = or i1 %cmp22, %cmp24
+  %6 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 3), align 8, !tbaa !4
+  %cmp26 = icmp eq %struct.rtx_def* %6, %addr
+  %or.cond133 = or i1 %or.cond132, %cmp26
+  %7 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 4), align 8, !tbaa !4
+  %cmp28 = icmp eq %struct.rtx_def* %7, %addr
+  %or.cond134 = or i1 %or.cond133, %cmp28
+  %. = zext i1 %or.cond134 to i32
+  ret i32 %.
+
+if.else:                                          ; preds = %if.end13
+  %tobool31 = icmp ne %struct.rtx_def* %3, null
+  %tobool17.not = xor i1 %tobool17, true
+  %brmerge.not = and i1 %tobool31, %tobool17.not
+  %or.cond135 = and i1 %brmerge.not, %tobool18
+  br i1 %or.cond135, label %return, label %if.else37
+
+if.else37:                                        ; preds = %if.else
+  br i1 %tobool31, label %if.then39, label %if.end108
+
+if.then39:                                        ; preds = %if.else37
+  %8 = bitcast %struct.rtx_def* %3 to i32*
+  %bf.load40 = load i32* %8, align 8
+  %bf.clear41 = and i32 %bf.load40, 65535
+  %cmp42 = icmp eq i32 %bf.clear41, 54
+  br i1 %cmp42, label %cond.true61, label %if.else106
+
+cond.true61:                                      ; preds = %if.then39
+  %rtwint64 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0, i32 0
+  %9 = load i64* %rtwint64, align 8, !tbaa !14
+  %.off = add i64 %9, 128
+  %10 = icmp ult i64 %.off, 256
+  br i1 %10, label %if.end108, label %if.else106
+
+if.else106:                                       ; preds = %cond.true61, %if.then39
+  br label %if.end108
+
+if.end108:                                        ; preds = %cond.true61, %if.else106, %if.else37
+  %len.0 = phi i32 [ 4, %if.else106 ], [ 0, %if.else37 ], [ 1, %cond.true61 ]
+  %11 = zext i1 %tobool18 to i32
+  %add = xor i32 %11, 1
+  %len.0.add = add nsw i32 %len.0, %add
+  ret i32 %len.0.add
+
+return:                                           ; preds = %if.else, %entry, %entry, %entry, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 0, %entry ], [ 0, %entry ], [ 0, %entry ], [ 4, %if.else ]
+  ret i32 %retval.0
+}

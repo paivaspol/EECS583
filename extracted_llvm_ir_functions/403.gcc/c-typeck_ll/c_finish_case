@@ -1,0 +1,29 @@
+define void @c_finish_case() #0 {
+entry:
+  %0 = load %struct.c_switch** @switch_stack, align 8, !tbaa !0
+  %switch_stmt = getelementptr inbounds %struct.c_switch* %0, i64 0, i32 0
+  %1 = load %union.tree_node** %switch_stmt, align 8, !tbaa !0
+  %chain = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 0
+  %2 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %operands = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 2
+  %arrayidx = getelementptr inbounds i32* %operands, i64 2
+  %3 = bitcast i32* %arrayidx to %union.tree_node**
+  store %union.tree_node* %2, %union.tree_node** %3, align 8, !tbaa !0
+  %4 = load %union.tree_node** %switch_stmt, align 8, !tbaa !0
+  %chain4 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 0
+  store %union.tree_node* null, %union.tree_node** %chain4, align 8, !tbaa !0
+  %5 = load %union.tree_node** %switch_stmt, align 8, !tbaa !0
+  %call = tail call %struct.stmt_tree_s* @current_stmt_tree() #8
+  %x_last_stmt = getelementptr inbounds %struct.stmt_tree_s* %call, i64 0, i32 0
+  store %union.tree_node* %5, %union.tree_node** %x_last_stmt, align 8, !tbaa !0
+  %6 = load %struct.c_switch** @switch_stack, align 8, !tbaa !0
+  %next = getelementptr inbounds %struct.c_switch* %6, i64 0, i32 2
+  %7 = load %struct.c_switch** %next, align 8, !tbaa !0
+  store %struct.c_switch* %7, %struct.c_switch** @switch_stack, align 8, !tbaa !0
+  %cases = getelementptr inbounds %struct.c_switch* %0, i64 0, i32 1
+  %8 = load %struct.splay_tree_s** %cases, align 8, !tbaa !0
+  tail call void @splay_tree_delete(%struct.splay_tree_s* %8) #8
+  %9 = bitcast %struct.c_switch* %0 to i8*
+  tail call void @free(i8* %9) #8
+  ret void
+}

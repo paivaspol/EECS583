@@ -1,0 +1,37 @@
+define internal i32 @check_for_label_ref(%struct.rtx_def** nocapture %rtl, i8* %data) #0 {
+entry:
+  %0 = bitcast i8* %data to %struct.rtx_def*
+  %1 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load = load i32* %2, align 8
+  %3 = and i32 %bf.load, 134283263
+  %4 = icmp eq i32 %3, 67
+  br i1 %4, label %land.lhs.true3, label %land.end
+
+land.lhs.true3:                                   ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %6 = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load4 = load i32* %6, align 8
+  %bf.clear5 = and i32 %bf.load4, 65535
+  %cmp6 = icmp eq i32 %bf.clear5, 36
+  br i1 %cmp6, label %land.lhs.true7, label %land.end
+
+land.lhs.true7:                                   ; preds = %land.lhs.true3
+  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx12 to i32*
+  %7 = load i32* %rtint, align 4, !tbaa !4
+  %cmp13 = icmp eq i32 %7, 0
+  br i1 %cmp13, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %land.lhs.true7
+  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %0, i32 13, %struct.rtx_def* %5) #6
+  %lnot = icmp eq %struct.rtx_def* %call, null
+  br label %land.end
+
+land.end:                                         ; preds = %land.lhs.true7, %land.rhs, %land.lhs.true3, %entry
+  %8 = phi i1 [ false, %land.lhs.true7 ], [ false, %land.lhs.true3 ], [ false, %entry ], [ %lnot, %land.rhs ]
+  %land.ext = zext i1 %8 to i32
+  ret i32 %land.ext
+}

@@ -1,0 +1,283 @@
+define %struct.lmset_s* @lm_read_ctl(i8* %ctlfile, %struct.dict_t* %dict, double %lw, double %wip, double %uw, i8* nocapture %lmdumpdir, i32* nocapture %n_lm, i32* nocapture %n_alloclm, i32 %dict_size) #2 {
+entry:
+  %lmfile = alloca [4096 x i8], align 16
+  %lmname = alloca [4096 x i8], align 16
+  %str = alloca [4096 x i8], align 16
+  %0 = getelementptr inbounds [4096 x i8]* %lmfile, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %0) #4
+  %1 = getelementptr inbounds [4096 x i8]* %lmname, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %1) #4
+  %2 = getelementptr inbounds [4096 x i8]* %str, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %2) #4
+  %call = call %struct.lmclass_set_s* @lmclass_newset() #8
+  call void @_E__pr_info_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 291, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #8
+  call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([30 x i8]* @.str6, i64 0, i64 0), i8* %ctlfile) #8
+  %call12 = call i8* @cmd_ln_access(i8* getelementptr inbounds ([12 x i8]* @.str7, i64 0, i64 0)) #8
+  %3 = bitcast i8* %call12 to i32*
+  %4 = load i32* %3, align 4, !tbaa !3
+  %not.tobool = icmp ne i32 %4, 0
+  store i1 %not.tobool, i1* @LM_IN_MEMORY, align 1
+  %call13 = call %struct._IO_FILE* @_myfopen(i8* %ctlfile, i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 299) #8
+  %call14 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %call13, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %2) #8
+  %cmp = icmp eq i32 %call14, 1
+  br i1 %cmp, label %if.then15, label %if.else39
+
+if.then15:                                        ; preds = %entry
+  %call17 = call i32 @strcmp(i8* %2, i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0)) #7
+  %cmp18 = icmp eq i32 %call17, 0
+  br i1 %cmp18, label %while.cond.preheader, label %if.end41
+
+while.cond.preheader:                             ; preds = %if.then15
+  %call21241 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %call13, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %2) #8
+  %cmp22242 = icmp eq i32 %call21241, 1
+  br i1 %cmp22242, label %land.rhs, label %while.end
+
+land.rhs:                                         ; preds = %while.cond.preheader, %while.body
+  %lmclass_set.0243 = phi %struct.lmclass_set_s* [ %call27, %while.body ], [ %call, %while.cond.preheader ]
+  %call24 = call i32 @strcmp(i8* %2, i8* getelementptr inbounds ([2 x i8]* @.str11, i64 0, i64 0)) #7
+  %cmp25 = icmp eq i32 %call24, 0
+  br i1 %cmp25, label %while.end, label %while.body
+
+while.body:                                       ; preds = %land.rhs
+  %call27 = call %struct.lmclass_set_s* @lmclass_loadfile(%struct.lmclass_set_s* %lmclass_set.0243, i8* %2) #8
+  %call21 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %call13, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %2) #8
+  %cmp22 = icmp eq i32 %call21, 1
+  br i1 %cmp22, label %land.rhs, label %while.end
+
+while.end:                                        ; preds = %while.body, %land.rhs, %while.cond.preheader
+  %lmclass_set.0.lcssa = phi %struct.lmclass_set_s* [ %call, %while.cond.preheader ], [ %lmclass_set.0243, %land.rhs ], [ %call27, %while.body ]
+  %call29 = call i32 @strcmp(i8* %2, i8* getelementptr inbounds ([2 x i8]* @.str11, i64 0, i64 0)) #7
+  %cmp30 = icmp eq i32 %call29, 0
+  br i1 %cmp30, label %if.end32, label %if.then31
+
+if.then31:                                        ; preds = %while.end
+  call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 308, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #8
+  call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([20 x i8]* @.str12, i64 0, i64 0), i8* %ctlfile) #8
+  br label %if.end32
+
+if.end32:                                         ; preds = %while.end, %if.then31
+  %call34 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %call13, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %2) #8
+  %cmp35 = icmp eq i32 %call34, 1
+  br i1 %cmp35, label %if.end41, label %if.then36
+
+if.then36:                                        ; preds = %if.end32
+  store i8 0, i8* %2, align 16, !tbaa !1
+  br label %if.end41
+
+if.else39:                                        ; preds = %entry
+  store i8 0, i8* %2, align 16, !tbaa !1
+  br label %if.end41
+
+if.end41:                                         ; preds = %if.end32, %if.then15, %if.then36, %if.else39
+  %lmclass_set.1 = phi %struct.lmclass_set_s* [ %lmclass_set.0.lcssa, %if.then36 ], [ %lmclass_set.0.lcssa, %if.end32 ], [ %call, %if.then15 ], [ %call, %if.else39 ]
+  %lmclass_list = getelementptr inbounds %struct.lmclass_set_s* %lmclass_set.1, i64 0, i32 0
+  %cl.0238 = load %struct.lmclass_s** %lmclass_list, align 8
+  %cmp42239 = icmp eq %struct.lmclass_s* %cl.0238, null
+  br i1 %cmp42239, label %for.end51, label %for.body
+
+for.body:                                         ; preds = %if.end41, %for.inc49
+  %cl.0240 = phi %struct.lmclass_s* [ %cl.0, %for.inc49 ], [ %cl.0238, %if.end41 ]
+  %wordlist = getelementptr inbounds %struct.lmclass_s* %cl.0240, i64 0, i32 1
+  %w.0235 = load %struct.lmclass_word_s** %wordlist, align 8
+  %cmp46236 = icmp eq %struct.lmclass_word_s* %w.0235, null
+  br i1 %cmp46236, label %for.inc49, label %for.body47
+
+for.body47:                                       ; preds = %for.body, %for.body47
+  %w.0237 = phi %struct.lmclass_word_s* [ %w.0, %for.body47 ], [ %w.0235, %for.body ]
+  %word = getelementptr inbounds %struct.lmclass_word_s* %w.0237, i64 0, i32 0
+  %5 = load i8** %word, align 8, !tbaa !0
+  %call48 = call i32 @dict_wordid(%struct.dict_t* %dict, i8* %5) #8
+  call void @lmclass_set_dictwid(%struct.lmclass_word_s* %w.0237, i32 %call48) #8
+  %next = getelementptr inbounds %struct.lmclass_word_s* %w.0237, i64 0, i32 3
+  %w.0 = load %struct.lmclass_word_s** %next, align 8
+  %cmp46 = icmp eq %struct.lmclass_word_s* %w.0, null
+  br i1 %cmp46, label %for.inc49, label %for.body47
+
+for.inc49:                                        ; preds = %for.body47, %for.body
+  %next50 = getelementptr inbounds %struct.lmclass_s* %cl.0240, i64 0, i32 2
+  %cl.0 = load %struct.lmclass_s** %next50, align 8
+  %cmp42 = icmp eq %struct.lmclass_s* %cl.0, null
+  br i1 %cmp42, label %for.end51, label %for.body
+
+for.end51:                                        ; preds = %for.inc49, %if.end41
+  %call52 = call i32 @lmclass_get_nclass(%struct.lmclass_set_s* %lmclass_set.1) #8
+  %conv = sext i32 %call52 to i64
+  %call53 = call i8* @__ckd_calloc__(i64 %conv, i64 8, i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 350) #8
+  %6 = bitcast i8* %call53 to %struct.lmclass_s**
+  call void @_E__pr_info_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 352, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #8
+  call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([44 x i8]* @.str13, i64 0, i64 0), i32 %call52, i8* %ctlfile) #8
+  %7 = load i8* %2, align 16, !tbaa !1
+  %cmp57232 = icmp eq i8 %7, 0
+  br i1 %cmp57232, label %while.end175, label %while.body59
+
+while.body59:                                     ; preds = %for.end51, %if.end166
+  %lmset.0233 = phi %struct.lmset_s* [ %lmset.1, %if.end166 ], [ null, %for.end51 ]
+  %call62 = call i8* @strcpy(i8* %0, i8* %2) #8
+  %call64 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %call13, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %1) #8
+  %cmp65 = icmp eq i32 %call64, 1
+  br i1 %cmp65, label %if.end69, label %if.then67
+
+if.then67:                                        ; preds = %while.body59
+  call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 358, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #8
+  call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([38 x i8]* @.str14, i64 0, i64 0), i8* %0) #8
+  br label %if.end69
+
+if.end69:                                         ; preds = %while.body59, %if.then67
+  %call71 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %call13, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %2) #8
+  %cmp72 = icmp eq i32 %call71, 1
+  br i1 %cmp72, label %if.then74, label %if.else122
+
+if.then74:                                        ; preds = %if.end69
+  %call76 = call i32 @strcmp(i8* %2, i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0)) #7
+  %cmp77 = icmp eq i32 %call76, 0
+  br i1 %cmp77, label %while.cond80.preheader, label %if.else142
+
+while.cond80.preheader:                           ; preds = %if.then74
+  %call82226 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %call13, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %2) #8
+  %cmp83227 = icmp eq i32 %call82226, 1
+  br i1 %cmp83227, label %land.rhs85, label %while.end107
+
+land.rhs85:                                       ; preds = %while.cond80.preheader, %if.end106
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end106 ], [ 0, %while.cond80.preheader ]
+  %n_lmclass_used.0228 = phi i32 [ %inc, %if.end106 ], [ 0, %while.cond80.preheader ]
+  %call87 = call i32 @strcmp(i8* %2, i8* getelementptr inbounds ([2 x i8]* @.str11, i64 0, i64 0)) #7
+  %cmp88 = icmp eq i32 %call87, 0
+  br i1 %cmp88, label %while.end107, label %while.body91
+
+while.body91:                                     ; preds = %land.rhs85
+  %8 = trunc i64 %indvars.iv to i32
+  %cmp92 = icmp slt i32 %8, %call52
+  br i1 %cmp92, label %if.end96, label %if.then94
+
+if.then94:                                        ; preds = %while.body91
+  call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 367, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #8
+  call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([40 x i8]* @.str15, i64 0, i64 0), i8* %0) #8
+  br label %if.end96
+
+if.end96:                                         ; preds = %while.body91, %if.then94
+  %call98 = call %struct.lmclass_s* @lmclass_get_lmclass(%struct.lmclass_set_s* %lmclass_set.1, i8* %2) #8
+  %arrayidx99 = getelementptr inbounds %struct.lmclass_s** %6, i64 %indvars.iv
+  store %struct.lmclass_s* %call98, %struct.lmclass_s** %arrayidx99, align 8, !tbaa !0
+  %cmp102 = icmp eq %struct.lmclass_s* %call98, null
+  br i1 %cmp102, label %if.then104, label %if.end106
+
+if.then104:                                       ; preds = %if.end96
+  call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 374, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #8
+  call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([25 x i8]* @.str16, i64 0, i64 0), i8* %2) #8
+  br label %if.end106
+
+if.end106:                                        ; preds = %if.end96, %if.then104
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %n_lmclass_used.0228, 1
+  %call82 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %call13, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %2) #8
+  %cmp83 = icmp eq i32 %call82, 1
+  br i1 %cmp83, label %land.rhs85, label %while.end107
+
+while.end107:                                     ; preds = %if.end106, %land.rhs85, %while.cond80.preheader
+  %n_lmclass_used.0.lcssa = phi i32 [ 0, %while.cond80.preheader ], [ %n_lmclass_used.0228, %land.rhs85 ], [ %inc, %if.end106 ]
+  %call109 = call i32 @strcmp(i8* %2, i8* getelementptr inbounds ([2 x i8]* @.str11, i64 0, i64 0)) #7
+  %cmp110 = icmp eq i32 %call109, 0
+  br i1 %cmp110, label %if.end113, label %if.then112
+
+if.then112:                                       ; preds = %while.end107
+  call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 378, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #8
+  call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([20 x i8]* @.str12, i64 0, i64 0), i8* %ctlfile) #8
+  br label %if.end113
+
+if.end113:                                        ; preds = %while.end107, %if.then112
+  %call115 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %call13, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %2) #8
+  %cmp116 = icmp eq i32 %call115, 1
+  br i1 %cmp116, label %if.end124, label %if.then118
+
+if.then118:                                       ; preds = %if.end113
+  store i8 0, i8* %2, align 16, !tbaa !1
+  br label %if.end124
+
+if.else122:                                       ; preds = %if.end69
+  store i8 0, i8* %2, align 16, !tbaa !1
+  br label %if.else142
+
+if.end124:                                        ; preds = %if.end113, %if.then118
+  %cmp125 = icmp sgt i32 %n_lmclass_used.0.lcssa, 0
+  br i1 %cmp125, label %if.then127, label %if.else142
+
+if.then127:                                       ; preds = %if.end124
+  %call129 = call fastcc %struct.lm_s* @lm_read_dump(i8* %0, double %lw, double %wip, double %uw, i32 %n_lmclass_used.0.lcssa, %struct.lmclass_s** %6, i32 %dict_size) #9
+  %call130 = call i8* @__ckd_calloc__(i64 100003, i64 12, i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 399) #8
+  %9 = bitcast i8* %call130 to %struct.lm_tgcache_entry_t*
+  %tgcache = getelementptr inbounds %struct.lm_s* %call129, i64 0, i32 27
+  store %struct.lm_tgcache_entry_t* %9, %struct.lm_tgcache_entry_t** %tgcache, align 8, !tbaa !0
+  br label %for.body134
+
+for.body134:                                      ; preds = %for.body134, %if.then127
+  %indvars.iv248 = phi i64 [ 0, %if.then127 ], [ %indvars.iv.next249, %for.body134 ]
+  %arrayidx138 = getelementptr inbounds %struct.lm_tgcache_entry_t* %9, i64 %indvars.iv248, i32 0, i64 0
+  store i16 -1, i16* %arrayidx138, align 2, !tbaa !5
+  %indvars.iv.next249 = add i64 %indvars.iv248, 1
+  %lftr.wideiv250 = trunc i64 %indvars.iv.next249 to i32
+  %exitcond251 = icmp eq i32 %lftr.wideiv250, 100003
+  br i1 %exitcond251, label %if.end159, label %for.body134
+
+if.else142:                                       ; preds = %if.else122, %if.then74, %if.end124
+  %call144 = call fastcc %struct.lm_s* @lm_read_dump(i8* %0, double %lw, double %wip, double %uw, i32 0, %struct.lmclass_s** null, i32 %dict_size) #9
+  %call145 = call i8* @__ckd_calloc__(i64 100003, i64 12, i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 410) #8
+  %10 = bitcast i8* %call145 to %struct.lm_tgcache_entry_t*
+  %tgcache146 = getelementptr inbounds %struct.lm_s* %call144, i64 0, i32 27
+  store %struct.lm_tgcache_entry_t* %10, %struct.lm_tgcache_entry_t** %tgcache146, align 8, !tbaa !0
+  br label %for.body150
+
+for.body150:                                      ; preds = %for.body150, %if.else142
+  %indvars.iv246 = phi i64 [ 0, %if.else142 ], [ %indvars.iv.next247, %for.body150 ]
+  %arrayidx155 = getelementptr inbounds %struct.lm_tgcache_entry_t* %10, i64 %indvars.iv246, i32 0, i64 0
+  store i16 -1, i16* %arrayidx155, align 2, !tbaa !5
+  %indvars.iv.next247 = add i64 %indvars.iv246, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next247 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 100003
+  br i1 %exitcond, label %if.end159, label %for.body150
+
+if.end159:                                        ; preds = %for.body134, %for.body150
+  %lm.0 = phi %struct.lm_s* [ %call144, %for.body150 ], [ %call129, %for.body134 ]
+  %11 = load i32* %n_lm, align 4, !tbaa !3
+  %12 = load i32* %n_alloclm, align 4, !tbaa !3
+  %cmp160 = icmp eq i32 %11, %12
+  br i1 %cmp160, label %if.then162, label %if.end166
+
+if.then162:                                       ; preds = %if.end159
+  %13 = bitcast %struct.lmset_s* %lmset.0233 to i8*
+  %add = add nsw i32 %11, 16
+  %conv163 = sext i32 %add to i64
+  %mul = shl nsw i64 %conv163, 4
+  %call164 = call i8* @__ckd_realloc__(i8* %13, i64 %mul, i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 416) #8
+  %14 = bitcast i8* %call164 to %struct.lmset_s*
+  %15 = load i32* %n_alloclm, align 4, !tbaa !3
+  %add165 = add nsw i32 %15, 16
+  store i32 %add165, i32* %n_alloclm, align 4, !tbaa !3
+  br label %if.end166
+
+if.end166:                                        ; preds = %if.then162, %if.end159
+  %lmset.1 = phi %struct.lmset_s* [ %14, %if.then162 ], [ %lmset.0233, %if.end159 ]
+  %call168 = call i8* @__ckd_salloc__(i8* %1, i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 419) #8
+  %16 = load i32* %n_lm, align 4, !tbaa !3
+  %idxprom169 = sext i32 %16 to i64
+  %name = getelementptr inbounds %struct.lmset_s* %lmset.1, i64 %idxprom169, i32 0
+  store i8* %call168, i8** %name, align 8, !tbaa !0
+  %lm173 = getelementptr inbounds %struct.lmset_s* %lmset.1, i64 %idxprom169, i32 1
+  store %struct.lm_s* %lm.0, %struct.lm_s** %lm173, align 8, !tbaa !0
+  %add174 = add nsw i32 %16, 1
+  store i32 %add174, i32* %n_lm, align 4, !tbaa !3
+  %17 = load i8* %2, align 16, !tbaa !1
+  %cmp57 = icmp eq i8 %17, 0
+  br i1 %cmp57, label %while.end175, label %while.body59
+
+while.end175:                                     ; preds = %if.end166, %for.end51
+  %lmset.0.lcssa = phi %struct.lmset_s* [ null, %for.end51 ], [ %lmset.1, %if.end166 ]
+  call void @_E__pr_info_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 424, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #8
+  %18 = load i32* %n_alloclm, align 4, !tbaa !3
+  %19 = load i32* %n_lm, align 4, !tbaa !3
+  call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([43 x i8]* @.str17, i64 0, i64 0), i32 %18, i32 %19) #8
+  %call176 = call i32 @fclose(%struct._IO_FILE* %call13) #8
+  call void @llvm.lifetime.end(i64 4096, i8* %2) #4
+  call void @llvm.lifetime.end(i64 4096, i8* %1) #4
+  call void @llvm.lifetime.end(i64 4096, i8* %0) #4
+  ret %struct.lmset_s* %lmset.0.lcssa
+}

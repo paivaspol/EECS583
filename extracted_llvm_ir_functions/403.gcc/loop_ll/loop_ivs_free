@@ -1,0 +1,57 @@
+define internal fastcc void @loop_ivs_free(%struct.loop* nocapture %loop) #0 {
+entry:
+  %aux = getelementptr inbounds %struct.loop* %loop, i64 0, i32 22
+  %0 = load i8** %aux, align 8, !tbaa !4
+  %ivs1 = getelementptr inbounds i8* %0, i64 208
+  %list = getelementptr inbounds i8* %0, i64 224
+  %1 = bitcast i8* %list to %struct.iv_class**
+  %2 = load %struct.iv_class** %1, align 8, !tbaa !4
+  %regs = bitcast i8* %ivs1 to %struct.iv**
+  %3 = load %struct.iv** %regs, align 8, !tbaa !4
+  %4 = bitcast %struct.iv* %3 to i8*
+  tail call void @free(i8* %4) #8
+  %tobool25 = icmp eq %struct.iv_class* %2, null
+  br i1 %tobool25, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %for.end9
+  %iv.026 = phi %struct.iv_class* [ %5, %for.end9 ], [ %2, %entry ]
+  %next2 = getelementptr inbounds %struct.iv_class* %iv.026, i64 0, i32 9
+  %5 = load %struct.iv_class** %next2, align 8, !tbaa !4
+  %biv = getelementptr inbounds %struct.iv_class* %iv.026, i64 0, i32 2
+  %6 = load %struct.induction** %biv, align 8, !tbaa !4
+  %tobool321 = icmp eq %struct.induction* %6, null
+  br i1 %tobool321, label %for.end, label %for.body
+
+for.body:                                         ; preds = %while.body, %for.body
+  %induction.022 = phi %struct.induction* [ %7, %for.body ], [ %6, %while.body ]
+  %next_iv = getelementptr inbounds %struct.induction* %induction.022, i64 0, i32 17
+  %7 = load %struct.induction** %next_iv, align 8, !tbaa !4
+  %8 = bitcast %struct.induction* %induction.022 to i8*
+  tail call void @free(i8* %8) #8
+  %tobool3 = icmp eq %struct.induction* %7, null
+  br i1 %tobool3, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %while.body
+  %giv = getelementptr inbounds %struct.iv_class* %iv.026, i64 0, i32 4
+  %9 = load %struct.induction** %giv, align 8, !tbaa !4
+  %tobool523 = icmp eq %struct.induction* %9, null
+  br i1 %tobool523, label %for.end9, label %for.body6
+
+for.body6:                                        ; preds = %for.end, %for.body6
+  %induction.124 = phi %struct.induction* [ %10, %for.body6 ], [ %9, %for.end ]
+  %next_iv7 = getelementptr inbounds %struct.induction* %induction.124, i64 0, i32 17
+  %10 = load %struct.induction** %next_iv7, align 8, !tbaa !4
+  %11 = bitcast %struct.induction* %induction.124 to i8*
+  tail call void @free(i8* %11) #8
+  %tobool5 = icmp eq %struct.induction* %10, null
+  br i1 %tobool5, label %for.end9, label %for.body6
+
+for.end9:                                         ; preds = %for.body6, %for.end
+  %12 = bitcast %struct.iv_class* %iv.026 to i8*
+  tail call void @free(i8* %12) #8
+  %tobool = icmp eq %struct.iv_class* %5, null
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %for.end9, %entry
+  ret void
+}

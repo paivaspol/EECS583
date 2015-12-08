@@ -1,0 +1,11 @@
+define i8* @field_pointer_at_coordinates(i32 %field, i32 %size, i32 %x, i32 %y, i32 %z, i32 %t) #1 {
+entry:
+  %call = tail call i32 @node_index(i32 %x, i32 %y, i32 %z, i32 %t) #8
+  %idxprom = sext i32 %call to i64
+  %0 = load %struct.site** @lattice, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.site* %0, i64 %idxprom
+  %1 = bitcast %struct.site* %arrayidx to i8*
+  %idx.ext = sext i32 %field to i64
+  %add.ptr = getelementptr inbounds i8* %1, i64 %idx.ext
+  ret i8* %add.ptr
+}

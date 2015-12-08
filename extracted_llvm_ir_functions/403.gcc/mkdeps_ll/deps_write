@@ -1,0 +1,115 @@
+define void @deps_write(%struct.deps* nocapture %d, %struct._IO_FILE* nocapture %fp, i32 %colmax) #0 {
+entry:
+  %tobool = icmp ne i32 %colmax, 0
+  %cmp = icmp ult i32 %colmax, 34
+  %or.cond = and i1 %tobool, %cmp
+  %.colmax = select i1 %or.cond, i32 34, i32 %colmax
+  %ntargets = getelementptr inbounds %struct.deps* %d, i64 0, i32 1
+  %0 = load i32* %ntargets, align 4, !tbaa !3
+  %cmp193 = icmp eq i32 %0, 0
+  br i1 %cmp193, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %targetv = getelementptr inbounds %struct.deps* %d, i64 0, i32 0
+  %tobool2 = icmp ne i32 %.colmax, 0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end13
+  %column.095 = phi i32 [ 0, %for.body.lr.ph ], [ %column.2, %if.end13 ]
+  %i.094 = phi i32 [ 0, %for.body.lr.ph ], [ %inc18, %if.end13 ]
+  %idxprom = zext i32 %i.094 to i64
+  %1 = load i8*** %targetv, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8** %1, i64 %idxprom
+  %2 = load i8** %arrayidx, align 8, !tbaa !0
+  %call = tail call i64 @strlen(i8* %2) #7
+  %conv = trunc i64 %call to i32
+  %add = add i32 %conv, %column.095
+  %cmp4 = icmp ugt i32 %add, %.colmax
+  %or.cond88 = and i1 %tobool2, %cmp4
+  br i1 %or.cond88, label %if.then6, label %if.end9
+
+if.then6:                                         ; preds = %for.body
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %fp)
+  %add8 = add i32 %conv, 1
+  br label %if.end9
+
+if.end9:                                          ; preds = %for.body, %if.then6
+  %column.1 = phi i32 [ %add8, %if.then6 ], [ %add, %for.body ]
+  %tobool10 = icmp eq i32 %i.094, 0
+  br i1 %tobool10, label %if.end13, label %if.then11
+
+if.then11:                                        ; preds = %if.end9
+  %call12 = tail call i32 @_IO_putc(i32 32, %struct._IO_FILE* %fp) #5
+  %inc = add i32 %column.1, 1
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.end9, %if.then11
+  %column.2 = phi i32 [ %inc, %if.then11 ], [ %column.1, %if.end9 ]
+  %4 = load i8*** %targetv, align 8, !tbaa !0
+  %arrayidx16 = getelementptr inbounds i8** %4, i64 %idxprom
+  %5 = load i8** %arrayidx16, align 8, !tbaa !0
+  %call17 = tail call i32 @fputs(i8* %5, %struct._IO_FILE* %fp) #5
+  %inc18 = add i32 %i.094, 1
+  %6 = load i32* %ntargets, align 4, !tbaa !3
+  %cmp1 = icmp ult i32 %inc18, %6
+  br i1 %cmp1, label %for.body, label %for.end
+
+for.end:                                          ; preds = %if.end13, %entry
+  %column.0.lcssa = phi i32 [ 0, %entry ], [ %column.2, %if.end13 ]
+  %call19 = tail call i32 @_IO_putc(i32 58, %struct._IO_FILE* %fp) #5
+  %call20 = tail call i32 @_IO_putc(i32 32, %struct._IO_FILE* %fp) #5
+  %ndeps = getelementptr inbounds %struct.deps* %d, i64 0, i32 4
+  %7 = load i32* %ndeps, align 4, !tbaa !3
+  %cmp2390 = icmp eq i32 %7, 0
+  br i1 %cmp2390, label %for.end50, label %for.body25.lr.ph
+
+for.body25.lr.ph:                                 ; preds = %for.end
+  %add21 = add i32 %column.0.lcssa, 2
+  %depv = getelementptr inbounds %struct.deps* %d, i64 0, i32 3
+  %tobool31 = icmp ne i32 %.colmax, 0
+  br label %for.body25
+
+for.body25:                                       ; preds = %for.body25.lr.ph, %if.end43
+  %column.392 = phi i32 [ %add21, %for.body25.lr.ph ], [ %column.5, %if.end43 ]
+  %i.191 = phi i32 [ 0, %for.body25.lr.ph ], [ %inc49, %if.end43 ]
+  %idxprom26 = zext i32 %i.191 to i64
+  %8 = load i8*** %depv, align 8, !tbaa !0
+  %arrayidx27 = getelementptr inbounds i8** %8, i64 %idxprom26
+  %9 = load i8** %arrayidx27, align 8, !tbaa !0
+  %call28 = tail call i64 @strlen(i8* %9) #7
+  %conv29 = trunc i64 %call28 to i32
+  %add30 = add i32 %conv29, %column.392
+  %cmp33 = icmp ugt i32 %add30, %.colmax
+  %or.cond89 = and i1 %tobool31, %cmp33
+  br i1 %or.cond89, label %if.then35, label %if.end38
+
+if.then35:                                        ; preds = %for.body25
+  %10 = tail call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %fp)
+  %add37 = add i32 %conv29, 1
+  br label %if.end38
+
+if.end38:                                         ; preds = %for.body25, %if.then35
+  %column.4 = phi i32 [ %add37, %if.then35 ], [ %add30, %for.body25 ]
+  %tobool39 = icmp eq i32 %i.191, 0
+  br i1 %tobool39, label %if.end43, label %if.then40
+
+if.then40:                                        ; preds = %if.end38
+  %call41 = tail call i32 @_IO_putc(i32 32, %struct._IO_FILE* %fp) #5
+  %inc42 = add i32 %column.4, 1
+  br label %if.end43
+
+if.end43:                                         ; preds = %if.end38, %if.then40
+  %column.5 = phi i32 [ %inc42, %if.then40 ], [ %column.4, %if.end38 ]
+  %11 = load i8*** %depv, align 8, !tbaa !0
+  %arrayidx46 = getelementptr inbounds i8** %11, i64 %idxprom26
+  %12 = load i8** %arrayidx46, align 8, !tbaa !0
+  %call47 = tail call i32 @fputs(i8* %12, %struct._IO_FILE* %fp) #5
+  %inc49 = add i32 %i.191, 1
+  %13 = load i32* %ndeps, align 4, !tbaa !3
+  %cmp23 = icmp ult i32 %inc49, %13
+  br i1 %cmp23, label %for.body25, label %for.end50
+
+for.end50:                                        ; preds = %if.end43, %for.end
+  %call51 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %fp) #5
+  ret void
+}

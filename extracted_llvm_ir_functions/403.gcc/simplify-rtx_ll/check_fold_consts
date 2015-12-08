@@ -1,0 +1,52 @@
+define internal void @check_fold_consts(i8* nocapture %data) #0 {
+entry:
+  %d0 = alloca %struct.realvaluetype, align 8
+  %d1 = alloca %struct.realvaluetype, align 8
+  %unordered = getelementptr inbounds i8* %data, i64 28
+  %0 = bitcast i8* %unordered to i32*
+  store i32 1, i32* %0, align 4, !tbaa !8
+  %op0 = bitcast i8* %data to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %op0, align 8, !tbaa !4
+  %u.sroa.0.0.idx = getelementptr inbounds %struct.rtx_def* %1, i64 1, i32 0, i64 0
+  %u.sroa.0.0.cast20 = bitcast %struct.realvaluetype* %d0 to i8*
+  call void @llvm.memmove.p0i8.p0i8.i64(i8* %u.sroa.0.0.cast20, i8* %u.sroa.0.0.idx, i64 24, i32 8, i1 false)
+  %op1 = getelementptr inbounds i8* %data, i64 8
+  %2 = bitcast i8* %op1 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %2, align 8, !tbaa !4
+  %u2.sroa.0.0.idx = getelementptr inbounds %struct.rtx_def* %3, i64 1, i32 0, i64 0
+  %u2.sroa.0.0.cast18 = bitcast %struct.realvaluetype* %d1 to i8*
+  call void @llvm.memmove.p0i8.p0i8.i64(i8* %u2.sroa.0.0.cast18, i8* %u2.sroa.0.0.idx, i64 24, i32 8, i1 false)
+  %call = call i32 @target_isnan(%struct.realvaluetype* byval align 8 %d0) #4
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %lor.lhs.false, label %return
+
+lor.lhs.false:                                    ; preds = %entry
+  %call8 = call i32 @target_isnan(%struct.realvaluetype* byval align 8 %d1) #4
+  %tobool9 = icmp eq i32 %call8, 0
+  br i1 %tobool9, label %if.end, label %return
+
+if.end:                                           ; preds = %lor.lhs.false
+  %call10 = call i32 @ereal_cmp(%struct.realvaluetype* byval align 8 %d0, %struct.realvaluetype* byval align 8 %d1) #4
+  %cmp = icmp eq i32 %call10, 0
+  %conv = zext i1 %cmp to i32
+  %equal = getelementptr inbounds i8* %data, i64 16
+  %4 = bitcast i8* %equal to i32*
+  store i32 %conv, i32* %4, align 4, !tbaa !8
+  %call11 = call i32 @ereal_cmp(%struct.realvaluetype* byval align 8 %d0, %struct.realvaluetype* byval align 8 %d1) #4
+  %cmp12 = icmp eq i32 %call11, -1
+  %conv13 = zext i1 %cmp12 to i32
+  %op0lt = getelementptr inbounds i8* %data, i64 20
+  %5 = bitcast i8* %op0lt to i32*
+  store i32 %conv13, i32* %5, align 4, !tbaa !8
+  %call14 = call i32 @ereal_cmp(%struct.realvaluetype* byval align 8 %d1, %struct.realvaluetype* byval align 8 %d0) #4
+  %cmp15 = icmp eq i32 %call14, -1
+  %conv16 = zext i1 %cmp15 to i32
+  %op1lt = getelementptr inbounds i8* %data, i64 24
+  %6 = bitcast i8* %op1lt to i32*
+  store i32 %conv16, i32* %6, align 4, !tbaa !8
+  store i32 0, i32* %0, align 4, !tbaa !8
+  br label %return
+
+return:                                           ; preds = %lor.lhs.false, %entry, %if.end
+  ret void
+}

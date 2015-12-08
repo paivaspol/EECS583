@@ -1,0 +1,47 @@
+define void @set_decl_origin_self(%union.tree_node* %decl) #0 {
+entry:
+  %abstract_origin = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 13
+  %0 = load %union.tree_node** %abstract_origin, align 8, !tbaa !0
+  %cmp = icmp eq %union.tree_node* %0, null
+  br i1 %cmp, label %if.then, label %if.end19
+
+if.then:                                          ; preds = %entry
+  store %union.tree_node* %decl, %union.tree_node** %abstract_origin, align 8, !tbaa !0
+  %code = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp4 = icmp eq i32 %bf.clear, 30
+  br i1 %cmp4, label %if.then5, label %if.end19
+
+if.then5:                                         ; preds = %if.then
+  %arguments = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 10
+  %arg.030 = load %union.tree_node** %arguments, align 8
+  %tobool31 = icmp eq %union.tree_node* %arg.030, null
+  br i1 %tobool31, label %for.end, label %for.body
+
+for.body:                                         ; preds = %if.then5, %for.body
+  %arg.032 = phi %union.tree_node* [ %arg.0, %for.body ], [ %arg.030, %if.then5 ]
+  %abstract_origin8 = getelementptr inbounds %union.tree_node* %arg.032, i64 0, i32 0, i32 13
+  store %union.tree_node* %arg.032, %union.tree_node** %abstract_origin8, align 8, !tbaa !0
+  %chain = getelementptr inbounds %union.tree_node* %arg.032, i64 0, i32 0, i32 0, i32 0
+  %arg.0 = load %union.tree_node** %chain, align 8
+  %tobool = icmp eq %union.tree_node* %arg.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %if.then5
+  %initial = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 12
+  %2 = load %union.tree_node** %initial, align 8, !tbaa !0
+  %cmp11 = icmp eq %union.tree_node* %2, null
+  %3 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 8, !tbaa !0
+  %cmp14 = icmp eq %union.tree_node* %2, %3
+  %or.cond = or i1 %cmp11, %cmp14
+  br i1 %or.cond, label %if.end19, label %if.then15
+
+if.then15:                                        ; preds = %for.end
+  tail call fastcc void @set_block_origin_self(%union.tree_node* %2) #8
+  br label %if.end19
+
+if.end19:                                         ; preds = %for.end, %if.then, %if.then15, %entry
+  ret void
+}

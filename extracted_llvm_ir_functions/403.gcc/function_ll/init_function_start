@@ -1,0 +1,104 @@
+define void @init_function_start(%union.tree_node* %subr, i8* %filename, i32 %line) #0 {
+entry:
+  tail call fastcc void @prepare_function_start() #9
+  %0 = load i8* (%union.tree_node*, i32)** @decl_printable_name, align 8, !tbaa !0
+  %call = tail call i8* %0(%union.tree_node* %subr, i32 2) #10
+  %1 = load %struct.function** @cfun, align 8, !tbaa !0
+  %name = getelementptr inbounds %struct.function* %1, i64 0, i32 5
+  store i8* %call, i8** %name, align 8, !tbaa !0
+  %2 = load %struct.function** @cfun, align 8, !tbaa !0
+  %decl = getelementptr inbounds %struct.function* %2, i64 0, i32 6
+  store %union.tree_node* %subr, %union.tree_node** %decl, align 8, !tbaa !0
+  %3 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %call1 = tail call %union.tree_node* @decl_function_context(%union.tree_node* %3) #10
+  %cmp = icmp eq %union.tree_node* %call1, null
+  br i1 %cmp, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %entry
+  %4 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
+  %regdecl_flag = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 5
+  %5 = bitcast [8 x i8]* %regdecl_flag to i64*
+  %bf.load = load i64* %5, align 8
+  %bf.cast = and i64 %bf.load, 1024
+  %lnot = icmp eq i64 %bf.cast, 0
+  br label %land.end
+
+land.end:                                         ; preds = %entry, %land.rhs
+  %6 = phi i1 [ false, %entry ], [ %lnot, %land.rhs ]
+  %land.ext = zext i1 %6 to i32
+  %7 = load %struct.function** @cfun, align 8, !tbaa !0
+  %needs_context = getelementptr inbounds %struct.function* %7, i64 0, i32 56
+  %8 = bitcast [4 x i8]* %needs_context to i32*
+  %bf.load3 = load i32* %8, align 8
+  %bf.shl = shl nuw nsw i32 %land.ext, 3
+  %bf.clear4 = and i32 %bf.load3, -9
+  %bf.set = or i32 %bf.clear4, %bf.shl
+  store i32 %bf.set, i32* %8, align 8
+  %9 = load i32* @immediate_size_expand, align 4, !tbaa !4
+  %inc = add nsw i32 %9, 1
+  store i32 %inc, i32* @immediate_size_expand, align 4, !tbaa !4
+  %cmp5 = icmp sgt i32 %line, 0
+  br i1 %cmp5, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.end
+  %call6 = tail call %struct.rtx_def* @emit_line_note(i8* %filename, i32 %line) #10
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %land.end
+  %call7 = tail call %struct.rtx_def* @emit_note(i8* null, i32 -99) #10
+  %result = getelementptr inbounds %union.tree_node* %subr, i64 0, i32 0, i32 11
+  %10 = load %union.tree_node** %result, align 8, !tbaa !0
+  %call9 = tail call i32 @aggregate_value_p(%union.tree_node* %10) #9
+  %tobool10 = icmp eq i32 %call9, 0
+  br i1 %tobool10, label %if.end15, label %if.then11
+
+if.then11:                                        ; preds = %if.end
+  %11 = load %struct.function** @cfun, align 8, !tbaa !0
+  %returns_struct = getelementptr inbounds %struct.function* %11, i64 0, i32 56
+  %12 = bitcast [4 x i8]* %returns_struct to i32*
+  %bf.load12 = load i32* %12, align 8
+  %bf.set14 = or i32 %bf.load12, 1
+  store i32 %bf.set14, i32* %12, align 8
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.end, %if.then11
+  %13 = load i32* @warn_aggregate_return, align 4, !tbaa !4
+  %tobool16 = icmp eq i32 %13, 0
+  br i1 %tobool16, label %if.end63, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end15
+  %14 = load %union.tree_node** %result, align 8, !tbaa !0
+  %type = getelementptr inbounds %union.tree_node* %14, i64 0, i32 0, i32 0, i32 1
+  %15 = load %union.tree_node** %type, align 8, !tbaa !0
+  %code = getelementptr inbounds %union.tree_node* %15, i64 0, i32 0, i32 0, i32 2
+  %16 = bitcast [4 x i8]* %code to i32*
+  %bf.load20 = load i32* %16, align 8
+  %bf.clear21 = and i32 %bf.load20, 255
+  %bf.clear21.off = add i32 %bf.clear21, -18
+  %switch = icmp ult i32 %bf.clear21.off, 5
+  br i1 %switch, label %if.then62, label %if.end63
+
+if.then62:                                        ; preds = %land.lhs.true
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([30 x i8]* @.str7, i64 0, i64 0)) #10
+  br label %if.end63
+
+if.end63:                                         ; preds = %if.end15, %land.lhs.true, %if.then62
+  %17 = load %union.tree_node** %result, align 8, !tbaa !0
+  %type67 = getelementptr inbounds %union.tree_node* %17, i64 0, i32 0, i32 0, i32 1
+  %18 = load %union.tree_node** %type67, align 8, !tbaa !0
+  %code69 = getelementptr inbounds %union.tree_node* %18, i64 0, i32 0, i32 0, i32 2
+  %19 = bitcast [4 x i8]* %code69 to i32*
+  %bf.load70 = load i32* %19, align 8
+  %20 = and i32 %bf.load70, 253
+  %21 = icmp eq i32 %20, 13
+  %lor.ext = zext i1 %21 to i32
+  %22 = load %struct.function** @cfun, align 8, !tbaa !0
+  %returns_pointer = getelementptr inbounds %struct.function* %22, i64 0, i32 56
+  %23 = bitcast [4 x i8]* %returns_pointer to i32*
+  %bf.load82 = load i32* %23, align 8
+  %bf.shl84 = shl nuw nsw i32 %lor.ext, 2
+  %bf.clear85 = and i32 %bf.load82, -5
+  %bf.set86 = or i32 %bf.shl84, %bf.clear85
+  store i32 %bf.set86, i32* %23, align 8
+  ret void
+}

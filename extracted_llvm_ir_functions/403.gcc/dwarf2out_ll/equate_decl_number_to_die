@@ -1,0 +1,46 @@
+define internal fastcc void @equate_decl_number_to_die(%union.tree_node* nocapture %decl, %struct.die_struct* %decl_die) #1 {
+entry:
+  %uid = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 3
+  %0 = load i32* %uid, align 4, !tbaa !0
+  %1 = load i32* @decl_die_table_allocated, align 4, !tbaa !0
+  %cmp = icmp ult i32 %0, %1
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sub = add i32 %0, 256
+  %div = and i32 %sub, -256
+  %2 = load %struct.die_struct*** @decl_die_table, align 8, !tbaa !4
+  %3 = bitcast %struct.die_struct** %2 to i8*
+  %conv = zext i32 %div to i64
+  %mul3 = shl nuw nsw i64 %conv, 3
+  %call = tail call i8* @xrealloc(i8* %3, i64 %mul3) #9
+  %4 = bitcast i8* %call to %struct.die_struct**
+  store %struct.die_struct** %4, %struct.die_struct*** @decl_die_table, align 8, !tbaa !4
+  %5 = load i32* @decl_die_table_allocated, align 4, !tbaa !0
+  %idxprom = zext i32 %5 to i64
+  %arrayidx = getelementptr inbounds %struct.die_struct** %4, i64 %idxprom
+  %6 = bitcast %struct.die_struct** %arrayidx to i8*
+  %sub4 = sub i32 %div, %5
+  %conv5 = zext i32 %sub4 to i64
+  %mul6 = shl nuw nsw i64 %conv5, 3
+  tail call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 %mul6, i32 1, i1 false)
+  store i32 %div, i32* @decl_die_table_allocated, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %7 = load i32* @decl_die_table_in_use, align 4, !tbaa !0
+  %cmp7 = icmp ult i32 %0, %7
+  br i1 %cmp7, label %if.end11, label %if.then9
+
+if.then9:                                         ; preds = %if.end
+  %add10 = add i32 %0, 1
+  store i32 %add10, i32* @decl_die_table_in_use, align 4, !tbaa !0
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.end, %if.then9
+  %idxprom12 = zext i32 %0 to i64
+  %8 = load %struct.die_struct*** @decl_die_table, align 8, !tbaa !4
+  %arrayidx13 = getelementptr inbounds %struct.die_struct** %8, i64 %idxprom12
+  store %struct.die_struct* %decl_die, %struct.die_struct** %arrayidx13, align 8, !tbaa !4
+  ret void
+}

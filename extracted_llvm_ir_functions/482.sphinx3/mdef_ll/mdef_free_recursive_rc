@@ -1,0 +1,23 @@
+define void @mdef_free_recursive_rc(%struct.ph_rc_s* %rc) #0 {
+entry:
+  %cmp = icmp eq %struct.ph_rc_s* %rc, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %next = getelementptr inbounds %struct.ph_rc_s* %rc, i64 0, i32 2
+  %0 = load %struct.ph_rc_s** %next, align 8, !tbaa !3
+  %tobool = icmp eq %struct.ph_rc_s* %0, null
+  br i1 %tobool, label %if.end3, label %if.then1
+
+if.then1:                                         ; preds = %if.end
+  tail call void @mdef_free_recursive_rc(%struct.ph_rc_s* %0) #8
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %if.then1
+  %1 = getelementptr inbounds %struct.ph_rc_s* %rc, i64 0, i32 0
+  tail call void @ckd_free(i8* %1) #7
+  br label %return
+
+return:                                           ; preds = %entry, %if.end3
+  ret void
+}

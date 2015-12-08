@@ -1,0 +1,77 @@
+define i32 @index_type_equal(%union.tree_node* nocapture %itype1, %union.tree_node* nocapture %itype2) #0 {
+entry:
+  %code = getelementptr inbounds %union.tree_node* %itype1, i64 0, i32 0, i32 0, i32 2
+  %0 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %code2 = getelementptr inbounds %union.tree_node* %itype2, i64 0, i32 0, i32 0, i32 2
+  %1 = bitcast [4 x i8]* %code2 to i32*
+  %bf.load3 = load i32* %1, align 8
+  %bf.clear4 = and i32 %bf.load3, 255
+  %cmp = icmp eq i32 %bf.clear, %bf.clear4
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %cmp9 = icmp eq i32 %bf.clear, 6
+  br i1 %cmp9, label %if.then10, label %if.end51
+
+if.then10:                                        ; preds = %if.end
+  %type = bitcast %union.tree_node* %itype1 to %struct.tree_type*
+  %precision = getelementptr inbounds %struct.tree_type* %type, i64 0, i32 6
+  %2 = bitcast [4 x i8]* %precision to i32*
+  %bf.load11 = load i32* %2, align 4
+  %type13 = bitcast %union.tree_node* %itype2 to %struct.tree_type*
+  %precision14 = getelementptr inbounds %struct.tree_type* %type13, i64 0, i32 6
+  %3 = bitcast [4 x i8]* %precision14 to i32*
+  %bf.load15 = load i32* %3, align 4
+  %4 = xor i32 %bf.load15, %bf.load11
+  %5 = and i32 %4, 65535
+  %6 = icmp eq i32 %5, 0
+  br i1 %6, label %lor.lhs.false27, label %return
+
+lor.lhs.false27:                                  ; preds = %if.then10
+  %size = getelementptr inbounds %union.tree_node* %itype1, i64 0, i32 0, i32 2
+  %7 = bitcast i32* %size to %union.tree_node**
+  %8 = load %union.tree_node** %7, align 8, !tbaa !0
+  %size30 = getelementptr inbounds %union.tree_node* %itype2, i64 0, i32 0, i32 2
+  %9 = bitcast i32* %size30 to %union.tree_node**
+  %10 = load %union.tree_node** %9, align 8, !tbaa !0
+  %call = tail call i32 @simple_cst_equal(%union.tree_node* %8, %union.tree_node* %10) #10
+  %cmp31 = icmp eq i32 %call, 1
+  br i1 %cmp31, label %lor.lhs.false32, label %return
+
+lor.lhs.false32:                                  ; preds = %lor.lhs.false27
+  %align = getelementptr inbounds %union.tree_node* %itype1, i64 0, i32 0, i32 7
+  %11 = bitcast %union.tree_node** %align to i32*
+  %12 = load i32* %11, align 4, !tbaa !4
+  %align35 = getelementptr inbounds %union.tree_node* %itype2, i64 0, i32 0, i32 7
+  %13 = bitcast %union.tree_node** %align35 to i32*
+  %14 = load i32* %13, align 4, !tbaa !4
+  %cmp36 = icmp eq i32 %12, %14
+  br i1 %cmp36, label %if.end38, label %return
+
+if.end38:                                         ; preds = %lor.lhs.false32
+  %15 = getelementptr inbounds %union.tree_node* %itype1, i64 0, i32 0, i32 12
+  %16 = load %union.tree_node** %15, align 8, !tbaa !0
+  %17 = getelementptr inbounds %union.tree_node* %itype2, i64 0, i32 0, i32 12
+  %18 = load %union.tree_node** %17, align 8, !tbaa !0
+  %call42 = tail call i32 @simple_cst_equal(%union.tree_node* %16, %union.tree_node* %18) #10
+  %cmp43 = icmp eq i32 %call42, 1
+  br i1 %cmp43, label %land.lhs.true, label %if.end51
+
+land.lhs.true:                                    ; preds = %if.end38
+  %19 = getelementptr inbounds %union.tree_node* %itype1, i64 0, i32 0, i32 13
+  %20 = load %union.tree_node** %19, align 8, !tbaa !0
+  %21 = getelementptr inbounds %union.tree_node* %itype2, i64 0, i32 0, i32 13
+  %22 = load %union.tree_node** %21, align 8, !tbaa !0
+  %call47 = tail call i32 @simple_cst_equal(%union.tree_node* %20, %union.tree_node* %22) #10
+  %cmp48 = icmp eq i32 %call47, 1
+  br i1 %cmp48, label %return, label %if.end51
+
+if.end51:                                         ; preds = %if.end38, %land.lhs.true, %if.end
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %if.then10, %lor.lhs.false27, %lor.lhs.false32, %entry, %if.end51
+  %retval.0 = phi i32 [ 0, %if.end51 ], [ 0, %entry ], [ 0, %lor.lhs.false32 ], [ 0, %lor.lhs.false27 ], [ 0, %if.then10 ], [ 1, %land.lhs.true ]
+  ret i32 %retval.0
+}

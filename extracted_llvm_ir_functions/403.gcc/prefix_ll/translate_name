@@ -1,0 +1,69 @@
+define internal fastcc i8* @translate_name(i8* %name) #0 {
+entry:
+  br label %for.cond
+
+for.cond:                                         ; preds = %if.end32, %entry
+  %name.addr.0 = phi i8* [ %name, %entry ], [ %call40, %if.end32 ]
+  %0 = load i8* %name.addr.0, align 1, !tbaa !1
+  switch i8 %0, label %for.end41 [
+    i8 64, label %for.cond5
+    i8 36, label %for.cond5
+  ]
+
+for.cond5:                                        ; preds = %for.cond, %for.cond, %for.cond5
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond5 ], [ 0, %for.cond ], [ 0, %for.cond ]
+  %keylen.0 = phi i32 [ %add, %for.cond5 ], [ 0, %for.cond ], [ 0, %for.cond ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %add = add nsw i32 %keylen.0, 1
+  %arrayidx6 = getelementptr inbounds i8* %name.addr.0, i64 %indvars.iv.next
+  %1 = load i8* %arrayidx6, align 1, !tbaa !1
+  switch i8 %1, label %for.cond5 [
+    i8 0, label %for.end
+    i8 47, label %for.end
+  ]
+
+for.end:                                          ; preds = %for.cond5, %for.cond5
+  %2 = alloca i8, i64 %indvars.iv.next, align 1
+  %arrayidx18 = getelementptr inbounds i8* %name.addr.0, i64 1
+  %conv19 = sext i32 %keylen.0 to i64
+  %call = call i8* @strncpy(i8* %2, i8* %arrayidx18, i64 %conv19) #6
+  %arrayidx21 = getelementptr inbounds i8* %2, i64 %conv19
+  store i8 0, i8* %arrayidx21, align 1, !tbaa !1
+  %cmp23 = icmp eq i8 %0, 64
+  br i1 %cmp23, label %if.then25, label %if.else
+
+if.then25:                                        ; preds = %for.end
+  %call.i = call noalias i8* (i8*, ...)* @concat(i8* %2, i8* getelementptr inbounds ([6 x i8]* @.str2, i64 0, i64 0), i8* null) #6
+  %call1.i = call i8* @getenv(i8* %call.i) #6
+  %cmp2.i = icmp eq i8* %call1.i, null
+  %3 = load i8** @std_prefix, align 8, !tbaa !0
+  %prefix.1.i = select i1 %cmp2.i, i8* %3, i8* %call1.i
+  %tobool.i = icmp eq i8* %call.i, null
+  br i1 %tobool.i, label %get_key_value.exit, label %if.then5.i
+
+if.then5.i:                                       ; preds = %if.then25
+  call void @free(i8* %call.i) #6
+  %.pre = load i8** @std_prefix, align 8, !tbaa !0
+  br label %get_key_value.exit
+
+get_key_value.exit:                               ; preds = %if.then25, %if.then5.i
+  %4 = phi i8* [ %3, %if.then25 ], [ %.pre, %if.then5.i ]
+  %cmp27 = icmp eq i8* %prefix.1.i, null
+  %.call26 = select i1 %cmp27, i8* %4, i8* %prefix.1.i
+  br label %if.end32
+
+if.else:                                          ; preds = %for.end
+  %call31 = call i8* @getenv(i8* %2) #6
+  br label %if.end32
+
+if.end32:                                         ; preds = %get_key_value.exit, %if.else
+  %prefix.0 = phi i8* [ %call31, %if.else ], [ %.call26, %get_key_value.exit ]
+  %cmp33 = icmp eq i8* %prefix.0, null
+  %.prefix.0 = select i1 %cmp33, i8* getelementptr inbounds ([3 x i8]* @.str1, i64 0, i64 0), i8* %prefix.0
+  %call40 = call noalias i8* (i8*, ...)* @concat(i8* %.prefix.0, i8* %arrayidx6, i8* null) #6
+  call void @free(i8* %name.addr.0) #6
+  br label %for.cond
+
+for.end41:                                        ; preds = %for.cond
+  ret i8* %name.addr.0
+}

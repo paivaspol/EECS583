@@ -1,0 +1,104 @@
+define internal fastcc void @do_longrange(%struct._IO_FILE* %log, %struct.t_commrec* %cr, %struct.t_topology* nocapture %top, %struct.t_forcerec* %fr, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %nlr, i32* nocapture %lr, i64* nocapture %bexcl, i32 %shift, [3 x float]* %x, float* %box_size, %struct.t_nrnb* %nrnb, float %lambda, float* %dvdlambda, %struct.t_groups* nocapture %grps, i32 %bVDWOnly, i32 %bCoulOnly, i32 %bDoForces, i32* nocapture %bHaveLJ) #0 {
+entry:
+  %tobool = icmp eq i32 %bDoForces, 0
+  %f_twin = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 53
+  %arrayidx5 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 4
+  %arrayidx8 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 3
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
+  %nri = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 1
+  %0 = load i32* %nri, align 4, !tbaa !0
+  %maxnri = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 2
+  %1 = load i32* %maxnri, align 4, !tbaa !0
+  %sub = add nsw i32 %1, -32
+  %cmp4 = icmp sle i32 %0, %sub
+  %or.cond = and i1 %cmp4, %tobool
+  br i1 %or.cond, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %cmp.i.i = icmp sgt i32 %1, 0
+  br i1 %cmp.i.i, label %if.then.i.i, label %close_neighbor_list.exit
+
+if.then.i.i:                                      ; preds = %if.then
+  %add.i.i = add nsw i32 %0, 1
+  %idxprom.i.i = sext i32 %add.i.i to i64
+  %jindex.i.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 10
+  %2 = load i32** %jindex.i.i, align 8, !tbaa !3
+  %arrayidx.i.i = getelementptr inbounds i32* %2, i64 %idxprom.i.i
+  %3 = load i32* %arrayidx.i.i, align 4, !tbaa !0
+  %idxprom2.i.i = sext i32 %0 to i64
+  %arrayidx4.i.i = getelementptr inbounds i32* %2, i64 %idxprom2.i.i
+  %4 = load i32* %arrayidx4.i.i, align 4, !tbaa !0
+  %cmp5.i.i = icmp sgt i32 %3, %4
+  br i1 %cmp5.i.i, label %land.lhs.true.i.i, label %close_neighbor_list.exit
+
+land.lhs.true.i.i:                                ; preds = %if.then.i.i
+  %gid.i.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 8
+  %5 = load i32** %gid.i.i, align 8, !tbaa !3
+  %arrayidx7.i.i = getelementptr inbounds i32* %5, i64 %idxprom2.i.i
+  %6 = load i32* %arrayidx7.i.i, align 4, !tbaa !0
+  %cmp8.i.i = icmp eq i32 %6, -1
+  br i1 %cmp8.i.i, label %close_neighbor_list.exit, label %if.then9.i.i
+
+if.then9.i.i:                                     ; preds = %land.lhs.true.i.i
+  store i32 %add.i.i, i32* %nri, align 4, !tbaa !0
+  %nrj.i.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 3
+  %7 = load i32* %nrj.i.i, align 4, !tbaa !0
+  %add11.i.i = add nsw i32 %0, 2
+  %idxprom12.i.i = sext i32 %add11.i.i to i64
+  %arrayidx14.i.i = getelementptr inbounds i32* %2, i64 %idxprom12.i.i
+  store i32 %7, i32* %arrayidx14.i.i, align 4, !tbaa !0
+  br label %close_neighbor_list.exit
+
+close_neighbor_list.exit:                         ; preds = %if.then, %if.then.i.i, %land.lhs.true.i.i, %if.then9.i.i
+  %8 = load [3 x float]** %f_twin, align 8, !tbaa !3
+  %9 = load float** %arrayidx5, align 8, !tbaa !3
+  %10 = load float** %arrayidx8, align 8, !tbaa !3
+  %11 = trunc i64 %indvars.iv to i32
+  tail call void @do_fnbf(%struct._IO_FILE* %log, %struct.t_commrec* %cr, %struct.t_forcerec* %fr, [3 x float]* %x, [3 x float]* %8, %struct.t_mdatoms* %md, float* %9, float* %10, float* %box_size, %struct.t_nrnb* %nrnb, float %lambda, float* %dvdlambda, i32 1, i32 %11) #8
+  store i32 0, i32* %nri, align 4, !tbaa !0
+  %nrj.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 3
+  store i32 0, i32* %nrj.i, align 4, !tbaa !0
+  %maxlen.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 5
+  store i32 0, i32* %maxlen.i, align 4, !tbaa !0
+  %12 = load i32* %maxnri, align 4, !tbaa !0
+  %cmp.i = icmp sgt i32 %12, 0
+  br i1 %cmp.i, label %if.then.i, label %for.inc
+
+if.then.i:                                        ; preds = %close_neighbor_list.exit
+  %gid.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 8
+  %13 = load i32** %gid.i, align 8, !tbaa !3
+  store i32 -1, i32* %13, align 4, !tbaa !0
+  %maxnrj.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 4
+  %14 = load i32* %maxnrj.i, align 4, !tbaa !0
+  %cmp1.i = icmp sgt i32 %14, 1
+  br i1 %cmp1.i, label %if.then2.i, label %for.inc
+
+if.then2.i:                                       ; preds = %if.then.i
+  %jindex.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 10
+  %15 = load i32** %jindex.i, align 8, !tbaa !3
+  store i32 0, i32* %15, align 4, !tbaa !0
+  %arrayidx5.i = getelementptr inbounds i32* %15, i64 1
+  store i32 0, i32* %arrayidx5.i, align 4, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then2.i, %if.then.i, %close_neighbor_list.exit, %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 13
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  br i1 %tobool, label %if.then10, label %if.end12
+
+if.then10:                                        ; preds = %for.end
+  %index = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, i32 2
+  %16 = load i32** %index, align 8, !tbaa !3
+  tail call fastcc void @put_in_list(i32* %bHaveLJ, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %nlr, i32* %lr, i32* %16, i64* %bexcl, i32 %shift, %struct.t_forcerec* %fr, i32 1, i32 %bVDWOnly, i32 %bCoulOnly) #7
+  br label %if.end12
+
+if.end12:                                         ; preds = %for.end, %if.then10
+  ret void
+}

@@ -1,0 +1,63 @@
+define internal fastcc %struct.bitmap_element_def* @bitmap_find_bit(%struct.bitmap_head_def* nocapture %head, i32 %bit) #0 {
+entry:
+  %div = lshr i32 %bit, 7
+  %current = getelementptr inbounds %struct.bitmap_head_def* %head, i64 0, i32 1
+  %0 = load %struct.bitmap_element_def** %current, align 8, !tbaa !0
+  %cmp = icmp eq %struct.bitmap_element_def* %0, null
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %indx2 = getelementptr inbounds %struct.bitmap_head_def* %head, i64 0, i32 2
+  %1 = load i32* %indx2, align 4, !tbaa !3
+  %cmp4 = icmp eq i32 %1, %div
+  br i1 %cmp4, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false
+  %cmp9 = icmp ugt i32 %1, %div
+  br i1 %cmp9, label %for.cond, label %for.cond21
+
+for.cond:                                         ; preds = %if.end, %land.rhs
+  %element.0 = phi %struct.bitmap_element_def* [ %2, %land.rhs ], [ %0, %if.end ]
+  %prev = getelementptr inbounds %struct.bitmap_element_def* %element.0, i64 0, i32 1
+  %2 = load %struct.bitmap_element_def** %prev, align 8, !tbaa !0
+  %cmp13 = icmp eq %struct.bitmap_element_def* %2, null
+  br i1 %cmp13, label %if.end34, label %land.rhs
+
+land.rhs:                                         ; preds = %for.cond
+  %indx15 = getelementptr inbounds %struct.bitmap_element_def* %element.0, i64 0, i32 2
+  %3 = load i32* %indx15, align 4, !tbaa !3
+  %cmp17 = icmp ugt i32 %3, %div
+  br i1 %cmp17, label %for.cond, label %if.end34
+
+for.cond21:                                       ; preds = %if.end, %land.rhs24
+  %element.1 = phi %struct.bitmap_element_def* [ %4, %land.rhs24 ], [ %0, %if.end ]
+  %next = getelementptr inbounds %struct.bitmap_element_def* %element.1, i64 0, i32 0
+  %4 = load %struct.bitmap_element_def** %next, align 8, !tbaa !0
+  %cmp22 = icmp eq %struct.bitmap_element_def* %4, null
+  br i1 %cmp22, label %if.end34, label %land.rhs24
+
+land.rhs24:                                       ; preds = %for.cond21
+  %indx25 = getelementptr inbounds %struct.bitmap_element_def* %element.1, i64 0, i32 2
+  %5 = load i32* %indx25, align 4, !tbaa !3
+  %cmp27 = icmp ult i32 %5, %div
+  br i1 %cmp27, label %for.cond21, label %if.end34
+
+if.end34:                                         ; preds = %for.cond21, %land.rhs24, %for.cond, %land.rhs
+  %element.2 = phi %struct.bitmap_element_def* [ %element.0, %land.rhs ], [ %element.0, %for.cond ], [ %element.1, %land.rhs24 ], [ %element.1, %for.cond21 ]
+  store %struct.bitmap_element_def* %element.2, %struct.bitmap_element_def** %current, align 8, !tbaa !0
+  %indx36 = getelementptr inbounds %struct.bitmap_element_def* %element.2, i64 0, i32 2
+  %6 = load i32* %indx36, align 4, !tbaa !3
+  store i32 %6, i32* %indx2, align 4, !tbaa !3
+  %cmp38 = icmp eq %struct.bitmap_element_def* %element.2, null
+  br i1 %cmp38, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end34
+  %7 = load i32* %indx36, align 4, !tbaa !3
+  %cmp42 = icmp eq i32 %7, %div
+  %element.2. = select i1 %cmp42, %struct.bitmap_element_def* %element.2, %struct.bitmap_element_def* null
+  ret %struct.bitmap_element_def* %element.2.
+
+return:                                           ; preds = %entry, %lor.lhs.false, %if.end34
+  %retval.0 = phi %struct.bitmap_element_def* [ null, %if.end34 ], [ %0, %lor.lhs.false ], [ null, %entry ]
+  ret %struct.bitmap_element_def* %retval.0
+}

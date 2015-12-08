@@ -1,0 +1,16 @@
+define %struct.rtvec_def* @rtvec_alloc(i32 %n) #0 {
+entry:
+  %sub = add nsw i32 %n, -1
+  %conv = sext i32 %sub to i64
+  %mul = shl nsw i64 %conv, 3
+  %add = add i64 %mul, 16
+  %call = tail call i8* @ggc_alloc(i64 %add) #6
+  %0 = bitcast i8* %call to %struct.rtvec_def*
+  %elem = getelementptr inbounds i8* %call, i64 8
+  %conv1 = sext i32 %n to i64
+  %mul2 = shl nsw i64 %conv1, 3
+  tail call void @llvm.memset.p0i8.i64(i8* %elem, i8 0, i64 %mul2, i32 8, i1 false)
+  %num_elem = bitcast i8* %call to i32*
+  store i32 %n, i32* %num_elem, align 4, !tbaa !0
+  ret %struct.rtvec_def* %0
+}

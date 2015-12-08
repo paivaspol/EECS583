@@ -1,0 +1,73 @@
+define void @mark_varasm_status(%struct.varasm_status* %p) #0 {
+entry:
+  %cmp = icmp eq %struct.varasm_status* %p, null
+  br i1 %cmp, label %do.end, label %if.end
+
+if.end:                                           ; preds = %entry
+  %x_first_pool = getelementptr inbounds %struct.varasm_status* %p, i64 0, i32 2
+  %0 = load %struct.pool_constant** %x_first_pool, align 8, !tbaa !3
+  %tobool26.i = icmp eq %struct.pool_constant* %0, null
+  br i1 %tobool26.i, label %mark_pool_constant.exit, label %if.then.i
+
+if.then.i:                                        ; preds = %if.end, %do.end16.i
+  %pc.addr.027.i = phi %struct.pool_constant* [ %7, %do.end16.i ], [ %0, %if.end ]
+  %1 = bitcast %struct.pool_constant* %pc.addr.027.i to i8*
+  %call.i = tail call i32 @ggc_set_mark(i8* %1) #9
+  %constant.i = getelementptr inbounds %struct.pool_constant* %pc.addr.027.i, i64 0, i32 3
+  %2 = load %struct.rtx_def** %constant.i, align 8, !tbaa !3
+  %cmp2.i = icmp eq %struct.rtx_def* %2, null
+  br i1 %cmp2.i, label %do.body8.i, label %land.lhs.true.i
+
+land.lhs.true.i:                                  ; preds = %if.then.i
+  %3 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 0, i64 0
+  %call3.i = tail call i32 @ggc_set_mark(i8* %3) #9
+  %tobool4.i = icmp eq i32 %call3.i, 0
+  br i1 %tobool4.i, label %if.then5.i, label %do.body8.i
+
+if.then5.i:                                       ; preds = %land.lhs.true.i
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %2) #9
+  br label %do.body8.i
+
+do.body8.i:                                       ; preds = %if.then5.i, %land.lhs.true.i, %if.then.i
+  %desc.i = getelementptr inbounds %struct.pool_constant* %pc.addr.027.i, i64 0, i32 0
+  %4 = load %struct.constant_descriptor** %desc.i, align 8, !tbaa !3
+  %rtl.i = getelementptr inbounds %struct.constant_descriptor* %4, i64 0, i32 2
+  %5 = load %struct.rtx_def** %rtl.i, align 8, !tbaa !3
+  %cmp10.i = icmp eq %struct.rtx_def* %5, null
+  br i1 %cmp10.i, label %do.end16.i, label %land.lhs.true11.i
+
+land.lhs.true11.i:                                ; preds = %do.body8.i
+  %6 = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 0, i64 0
+  %call12.i = tail call i32 @ggc_set_mark(i8* %6) #9
+  %tobool13.i = icmp eq i32 %call12.i, 0
+  br i1 %tobool13.i, label %if.then14.i, label %do.end16.i
+
+if.then14.i:                                      ; preds = %land.lhs.true11.i
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %5) #9
+  br label %do.end16.i
+
+do.end16.i:                                       ; preds = %if.then14.i, %land.lhs.true11.i, %do.body8.i
+  %next.i = getelementptr inbounds %struct.pool_constant* %pc.addr.027.i, i64 0, i32 1
+  %7 = load %struct.pool_constant** %next.i, align 8, !tbaa !3
+  %tobool.i = icmp eq %struct.pool_constant* %7, null
+  br i1 %tobool.i, label %mark_pool_constant.exit, label %if.then.i
+
+mark_pool_constant.exit:                          ; preds = %do.end16.i, %if.end
+  %x_const_double_chain = getelementptr inbounds %struct.varasm_status* %p, i64 0, i32 5
+  %8 = load %struct.rtx_def** %x_const_double_chain, align 8, !tbaa !3
+  %cmp1 = icmp eq %struct.rtx_def* %8, null
+  br i1 %cmp1, label %do.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %mark_pool_constant.exit
+  %9 = getelementptr inbounds %struct.rtx_def* %8, i64 0, i32 0, i64 0
+  %call = tail call i32 @ggc_set_mark(i8* %9) #9
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then2, label %do.end
+
+if.then2:                                         ; preds = %land.lhs.true
+  tail call void @ggc_mark_rtx_children(%struct.rtx_def* %8) #9
+  br label %do.end
+
+do.end:                                           ; preds = %land.lhs.true, %mark_pool_constant.exit, %if.then2, %entry
+  ret void
+}

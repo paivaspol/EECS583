@@ -1,0 +1,34 @@
+define void @mark_elimination(i32 %from, i32 %to) #0 {
+entry:
+  %0 = load i32* @n_basic_blocks, align 4, !tbaa !0
+  %cmp6 = icmp sgt i32 %0, 0
+  br i1 %cmp6, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
+  %1 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
+  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv
+  %2 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !3
+  %global_live_at_start = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 8
+  %3 = load %struct.bitmap_head_def** %global_live_at_start, align 8, !tbaa !3
+  %call = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %3, i32 %from) #5
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body
+  tail call void @bitmap_clear_bit(%struct.bitmap_head_def* %3, i32 %from) #5
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %3, i32 %to) #5
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %4 = load i32* @n_basic_blocks, align 4, !tbaa !0
+  %5 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %5, %4
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

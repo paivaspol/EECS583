@@ -1,0 +1,21 @@
+define internal fastcc void @mk_gct_nm(i8* nocapture %fn, i32 %ati, i32 %atj) #0 {
+entry:
+  %call = tail call i8* @strcpy(i8* getelementptr inbounds ([256 x i8]* @mk_gct_nm.buf, i64 0, i64 0), i8* %fn) #6
+  %cmp = icmp eq i32 %atj, -1
+  %call1 = tail call i64 @strlen(i8* %fn) #9
+  %add.ptr.sum = add i64 %call1, -4
+  %add.ptr2 = getelementptr inbounds [256 x i8]* @mk_gct_nm.buf, i64 0, i64 %add.ptr.sum
+  %call3 = tail call i8* @ftp2ext(i32 19) #6
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call4 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %add.ptr2, i8* getelementptr inbounds ([6 x i8]* @.str63, i64 0, i64 0), i32 %ati, i8* %call3) #6
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %call9 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %add.ptr2, i8* getelementptr inbounds ([9 x i8]* @.str64, i64 0, i64 0), i32 %ati, i32 %atj, i8* %call3) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void
+}

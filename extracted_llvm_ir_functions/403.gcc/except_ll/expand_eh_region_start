@@ -1,0 +1,66 @@
+define void @expand_eh_region_start() #0 {
+entry:
+  %0 = load i32* @flag_exceptions, align 4, !tbaa !0
+  %tobool.i = icmp eq i32 %0, 0
+  br i1 %tobool.i, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call1 = tail call noalias i8* @xcalloc(i64 1, i64 112) #6
+  %1 = bitcast i8* %call1 to %struct.eh_region*
+  %2 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh = getelementptr inbounds %struct.function* %2, i64 0, i32 0
+  %3 = load %struct.eh_status** %eh, align 8, !tbaa !3
+  %cur_region2 = getelementptr inbounds %struct.eh_status* %3, i64 0, i32 2
+  %4 = load %struct.eh_region** %cur_region2, align 8, !tbaa !3
+  %outer = bitcast i8* %call1 to %struct.eh_region**
+  store %struct.eh_region* %4, %struct.eh_region** %outer, align 8, !tbaa !3
+  %tobool3 = icmp eq %struct.eh_region* %4, null
+  br i1 %tobool3, label %if.else, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %inner = getelementptr inbounds %struct.eh_region* %4, i64 0, i32 1
+  %5 = load %struct.eh_region** %inner, align 8, !tbaa !3
+  %next_peer = getelementptr inbounds i8* %call1, i64 16
+  %6 = bitcast i8* %next_peer to %struct.eh_region**
+  store %struct.eh_region* %5, %struct.eh_region** %6, align 8, !tbaa !3
+  store %struct.eh_region* %1, %struct.eh_region** %inner, align 8, !tbaa !3
+  br label %if.end10
+
+if.else:                                          ; preds = %if.end
+  %7 = load %struct.eh_status** %eh, align 8, !tbaa !3
+  %region_tree = getelementptr inbounds %struct.eh_status* %7, i64 0, i32 0
+  %8 = load %struct.eh_region** %region_tree, align 8, !tbaa !3
+  %next_peer7 = getelementptr inbounds i8* %call1, i64 16
+  %9 = bitcast i8* %next_peer7 to %struct.eh_region**
+  store %struct.eh_region* %8, %struct.eh_region** %9, align 8, !tbaa !3
+  %10 = load %struct.eh_status** %eh, align 8, !tbaa !3
+  %region_tree9 = getelementptr inbounds %struct.eh_status* %10, i64 0, i32 0
+  store %struct.eh_region* %1, %struct.eh_region** %region_tree9, align 8, !tbaa !3
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.else, %if.then4
+  %11 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh11 = getelementptr inbounds %struct.function* %11, i64 0, i32 0
+  %12 = load %struct.eh_status** %eh11, align 8, !tbaa !3
+  %cur_region12 = getelementptr inbounds %struct.eh_status* %12, i64 0, i32 2
+  store %struct.eh_region* %1, %struct.eh_region** %cur_region12, align 8, !tbaa !3
+  %13 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh13 = getelementptr inbounds %struct.function* %13, i64 0, i32 0
+  %14 = load %struct.eh_status** %eh13, align 8, !tbaa !3
+  %last_region_number = getelementptr inbounds %struct.eh_status* %14, i64 0, i32 8
+  %15 = load i32* %last_region_number, align 4, !tbaa !0
+  %inc = add nsw i32 %15, 1
+  store i32 %inc, i32* %last_region_number, align 4, !tbaa !0
+  %region_number = getelementptr inbounds i8* %call1, i64 24
+  %16 = bitcast i8* %region_number to i32*
+  store i32 %inc, i32* %16, align 4, !tbaa !0
+  %call14 = tail call %struct.rtx_def* @emit_note(i8* null, i32 -86) #6
+  %17 = load i32* %16, align 4, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call14, i64 0, i32 1, i64 3
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
+  store i32 %17, i32* %rtint, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %if.end10
+  ret void
+}

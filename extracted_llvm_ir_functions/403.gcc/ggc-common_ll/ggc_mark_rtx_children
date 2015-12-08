@@ -1,0 +1,49 @@
+define void @ggc_mark_rtx_children(%struct.rtx_def* %r) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %r to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %bf.clear.off = add i32 %bf.clear, -32
+  %switch = icmp ult i32 %bf.clear.off, 6
+  br i1 %switch, label %sw.bb, label %sw.epilog
+
+sw.bb:                                            ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %r, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %i.026 = load %struct.rtx_def** %rtx, align 8
+  %cmp27 = icmp eq %struct.rtx_def* %i.026, null
+  br i1 %cmp27, label %for.cond7.preheader, label %land.lhs.true
+
+for.cond7.preheader:                              ; preds = %for.inc, %land.lhs.true, %sw.bb
+  %i.0.lcssa = phi %struct.rtx_def* [ null, %sw.bb ], [ %i.028, %land.lhs.true ], [ null, %for.inc ]
+  %i.123 = load %struct.rtx_def** %rtx, align 8
+  %cmp824 = icmp eq %struct.rtx_def* %i.123, %i.0.lcssa
+  br i1 %cmp824, label %sw.epilog, label %for.body
+
+land.lhs.true:                                    ; preds = %sw.bb, %for.inc
+  %i.028 = phi %struct.rtx_def* [ %i.0, %for.inc ], [ %i.026, %sw.bb ]
+  %1 = getelementptr inbounds %struct.rtx_def* %i.028, i64 0, i32 0, i64 0
+  %call = tail call i32 @ggc_set_mark(i8* %1) #5
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %for.inc, label %for.cond7.preheader
+
+for.inc:                                          ; preds = %land.lhs.true
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %i.028, i64 0, i32 1, i64 2
+  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
+  %i.0 = load %struct.rtx_def** %rtx3, align 8
+  %cmp = icmp eq %struct.rtx_def* %i.0, null
+  br i1 %cmp, label %for.cond7.preheader, label %land.lhs.true
+
+for.body:                                         ; preds = %for.cond7.preheader, %for.body
+  %i.125 = phi %struct.rtx_def* [ %i.1, %for.body ], [ %i.123, %for.cond7.preheader ]
+  tail call fastcc void @ggc_mark_rtx_children_1(%struct.rtx_def* %i.125) #6
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %i.125, i64 0, i32 1, i64 2
+  %rtx12 = bitcast %union.rtunion_def* %arrayidx11 to %struct.rtx_def**
+  %i.1 = load %struct.rtx_def** %rtx12, align 8
+  %cmp8 = icmp eq %struct.rtx_def* %i.1, %i.0.lcssa
+  br i1 %cmp8, label %sw.epilog, label %for.body
+
+sw.epilog:                                        ; preds = %for.cond7.preheader, %for.body, %entry
+  tail call fastcc void @ggc_mark_rtx_children_1(%struct.rtx_def* %r) #6
+  ret void
+}

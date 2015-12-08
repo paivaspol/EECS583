@@ -1,0 +1,188 @@
+define internal fastcc i32 @skip_escaped_newlines(%struct.cpp_reader* %pfile) #1 {
+entry:
+  %buffer1 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 0
+  %0 = load %struct.cpp_buffer** %buffer1, align 8, !tbaa !0
+  %cur = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 0
+  %1 = load i8** %cur, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8* %1, i64 -1
+  %2 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = zext i8 %2 to i32
+  %from_stage3 = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 12
+  %3 = load i8* %from_stage3, align 1, !tbaa !1
+  %tobool = icmp eq i8 %3, 0
+  br i1 %tobool, label %do.body.preheader, label %if.end70
+
+do.body.preheader:                                ; preds = %entry
+  %trigraphs.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 18
+  %warn_trigraphs.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 31
+  %lexing_comment.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 4
+  %line.i = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 4
+  %rlimit = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 2
+  %backup_to = getelementptr inbounds %struct.cpp_buffer* %0, i64 0, i32 1
+  br label %do.body
+
+do.body:                                          ; preds = %do.cond64, %do.cond64, %do.body.preheader
+  %4 = phi i8* [ %1, %do.body.preheader ], [ %incdec.ptr61, %do.cond64 ], [ %incdec.ptr61, %do.cond64 ]
+  %next.0 = phi i32 [ %conv, %do.body.preheader ], [ %conv62, %do.cond64 ], [ %conv62, %do.cond64 ]
+  %cmp = icmp eq i32 %next.0, 63
+  br i1 %cmp, label %if.then3, label %if.end19
+
+if.then3:                                         ; preds = %do.body
+  %5 = load i8* %4, align 1, !tbaa !1
+  %cmp7 = icmp eq i8 %5, 63
+  br i1 %cmp7, label %lor.lhs.false, label %if.end70
+
+lor.lhs.false:                                    ; preds = %if.then3
+  %6 = load %struct.cpp_buffer** %buffer1, align 8, !tbaa !0
+  %cur.i = getelementptr inbounds %struct.cpp_buffer* %6, i64 0, i32 0
+  %7 = load i8** %cur.i, align 8, !tbaa !0
+  %arrayidx.i = getelementptr inbounds i8* %7, i64 1
+  %8 = load i8* %arrayidx.i, align 1, !tbaa !1
+  %conv.i = zext i8 %8 to i32
+  %idxprom.i = zext i8 %8 to i64
+  %arrayidx2.i = getelementptr inbounds [256 x i8]* @_cpp_trigraph_map, i64 0, i64 %idxprom.i
+  %9 = load i8* %arrayidx2.i, align 1, !tbaa !1
+  %tobool.i = icmp eq i8 %9, 0
+  br i1 %tobool.i, label %if.end70, label %if.end.i
+
+if.end.i:                                         ; preds = %lor.lhs.false
+  %10 = load i8* %trigraphs.i, align 1, !tbaa !1
+  %tobool3.i = icmp ne i8 %10, 0
+  %11 = load i8* %warn_trigraphs.i, align 1, !tbaa !1
+  %tobool6.i = icmp eq i8 %11, 0
+  br i1 %tobool6.i, label %trigraph_p.exit, label %land.lhs.true.i
+
+land.lhs.true.i:                                  ; preds = %if.end.i
+  %12 = load i8* %lexing_comment.i, align 1, !tbaa !1
+  %tobool7.i = icmp eq i8 %12, 0
+  br i1 %tobool7.i, label %if.then8.i, label %trigraph_p.exit
+
+if.then8.i:                                       ; preds = %land.lhs.true.i
+  br i1 %tobool3.i, label %trigraph_p.exit.thread97, label %if.else.i
+
+trigraph_p.exit.thread97:                         ; preds = %if.then8.i
+  %13 = load i32* %line.i, align 4, !tbaa !3
+  %line_base.i = getelementptr inbounds %struct.cpp_buffer* %6, i64 0, i32 3
+  %14 = load i8** %line_base.i, align 8, !tbaa !0
+  %sub.ptr.lhs.cast.i = ptrtoint i8* %7 to i64
+  %sub.ptr.rhs.cast.i = ptrtoint i8* %14 to i64
+  %col_adjust.i = getelementptr inbounds %struct.cpp_buffer* %6, i64 0, i32 8
+  %15 = load i32* %col_adjust.i, align 4, !tbaa !3
+  %conv12.i = zext i32 %15 to i64
+  %sub.ptr.sub.i = add i64 %sub.ptr.lhs.cast.i, 4294967295
+  %add.i = sub i64 %sub.ptr.sub.i, %sub.ptr.rhs.cast.i
+  %sub.i = add i64 %add.i, %conv12.i
+  %conv13.i = trunc i64 %sub.i to i32
+  %conv16.i = zext i8 %9 to i32
+  tail call void (%struct.cpp_reader*, i32, i32, i8*, ...)* @cpp_warning_with_line(%struct.cpp_reader* %pfile, i32 %13, i32 %conv13.i, i8* getelementptr inbounds ([30 x i8]* @.str108, i64 0, i64 0), i32 %conv.i, i32 %conv16.i) #9
+  %.pre = load i8** %cur, align 8, !tbaa !0
+  br label %if.end
+
+if.else.i:                                        ; preds = %if.then8.i
+  %last_Wtrigraphs.i = getelementptr inbounds %struct.cpp_buffer* %6, i64 0, i32 10
+  %16 = load i8** %last_Wtrigraphs.i, align 8, !tbaa !0
+  %cmp.i = icmp eq i8* %7, %16
+  br i1 %cmp.i, label %if.end70, label %if.then19.i
+
+if.then19.i:                                      ; preds = %if.else.i
+  store i8* %7, i8** %last_Wtrigraphs.i, align 8, !tbaa !0
+  %17 = load i32* %line.i, align 4, !tbaa !3
+  %line_base24.i = getelementptr inbounds %struct.cpp_buffer* %6, i64 0, i32 3
+  %18 = load i8** %line_base24.i, align 8, !tbaa !0
+  %sub.ptr.lhs.cast25.i = ptrtoint i8* %7 to i64
+  %sub.ptr.rhs.cast26.i = ptrtoint i8* %18 to i64
+  %col_adjust28.i = getelementptr inbounds %struct.cpp_buffer* %6, i64 0, i32 8
+  %19 = load i32* %col_adjust28.i, align 4, !tbaa !3
+  %conv29.i = zext i32 %19 to i64
+  %sub.ptr.sub27.i = add i64 %sub.ptr.lhs.cast25.i, 4294967295
+  %add30.i = sub i64 %sub.ptr.sub27.i, %sub.ptr.rhs.cast26.i
+  %sub31.i = add i64 %add30.i, %conv29.i
+  %conv32.i = trunc i64 %sub31.i to i32
+  tail call void (%struct.cpp_reader*, i32, i32, i8*, ...)* @cpp_warning_with_line(%struct.cpp_reader* %pfile, i32 %17, i32 %conv32.i, i8* getelementptr inbounds ([22 x i8]* @.str109, i64 0, i64 0), i32 %conv.i) #9
+  br label %if.end70
+
+trigraph_p.exit:                                  ; preds = %if.end.i, %land.lhs.true.i
+  br i1 %tobool3.i, label %if.end, label %if.end70
+
+if.end:                                           ; preds = %trigraph_p.exit.thread97, %trigraph_p.exit
+  %20 = phi i8* [ %.pre, %trigraph_p.exit.thread97 ], [ %4, %trigraph_p.exit ]
+  %arrayidx11 = getelementptr inbounds i8* %20, i64 1
+  %21 = load i8* %arrayidx11, align 1, !tbaa !1
+  %idxprom = zext i8 %21 to i64
+  %arrayidx12 = getelementptr inbounds [256 x i8]* @_cpp_trigraph_map, i64 0, i64 %idxprom
+  %22 = load i8* %arrayidx12, align 1, !tbaa !1
+  %conv13 = zext i8 %22 to i32
+  %add.ptr = getelementptr inbounds i8* %20, i64 2
+  store i8* %add.ptr, i8** %cur, align 8, !tbaa !0
+  %cmp15 = icmp eq i8 %22, 92
+  br i1 %cmp15, label %if.end19, label %if.end70
+
+if.end19:                                         ; preds = %if.end, %do.body
+  %23 = phi i8* [ %4, %do.body ], [ %add.ptr, %if.end ]
+  %next.1 = phi i32 [ %next.0, %do.body ], [ %conv13, %if.end ]
+  %24 = load i8** %rlimit, align 8, !tbaa !0
+  %cmp21 = icmp eq i8* %23, %24
+  br i1 %cmp21, label %if.end70, label %do.body26
+
+do.body26:                                        ; preds = %do.body26, %if.end19
+  %25 = phi i8* [ %23, %if.end19 ], [ %incdec.ptr, %do.body26 ]
+  %incdec.ptr = getelementptr inbounds i8* %25, i64 1
+  store i8* %incdec.ptr, i8** %cur, align 8, !tbaa !0
+  %26 = load i8* %25, align 1, !tbaa !1
+  %idxprom29 = zext i8 %26 to i64
+  %arrayidx30 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom29
+  %27 = load i16* %arrayidx30, align 2, !tbaa !4
+  %and32 = and i16 %27, 2048
+  %tobool33 = icmp ne i16 %and32, 0
+  %cmp36 = icmp ult i8* %incdec.ptr, %24
+  %or.cond = and i1 %tobool33, %cmp36
+  br i1 %or.cond, label %do.body26, label %do.end
+
+do.end:                                           ; preds = %do.body26
+  %and42 = and i16 %27, 1024
+  %tobool43 = icmp eq i16 %and42, 0
+  br i1 %tobool43, label %if.then44, label %if.end46
+
+if.then44:                                        ; preds = %do.end
+  store i8* %23, i8** %cur, align 8, !tbaa !0
+  br label %if.end70
+
+if.end46:                                         ; preds = %do.end
+  %cmp49 = icmp eq i8* %23, %25
+  br i1 %cmp49, label %if.end53, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end46
+  %28 = load i8* %lexing_comment.i, align 1, !tbaa !1
+  %tobool51 = icmp eq i8 %28, 0
+  br i1 %tobool51, label %if.then52, label %if.end53
+
+if.then52:                                        ; preds = %land.lhs.true
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([41 x i8]* @.str106, i64 0, i64 0)) #9
+  br label %if.end53
+
+if.end53:                                         ; preds = %land.lhs.true, %if.end46, %if.then52
+  tail call fastcc void @handle_newline(%struct.cpp_reader* %pfile) #10
+  %29 = load i8** %cur, align 8, !tbaa !0
+  store i8* %29, i8** %backup_to, align 8, !tbaa !0
+  %30 = load i8** %rlimit, align 8, !tbaa !0
+  %cmp57 = icmp eq i8* %29, %30
+  br i1 %cmp57, label %do.cond64.thread, label %do.cond64
+
+do.cond64.thread:                                 ; preds = %if.end53
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_pedwarn(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([33 x i8]* @.str107, i64 0, i64 0)) #9
+  br label %if.end70
+
+do.cond64:                                        ; preds = %if.end53
+  %incdec.ptr61 = getelementptr inbounds i8* %29, i64 1
+  store i8* %incdec.ptr61, i8** %cur, align 8, !tbaa !0
+  %31 = load i8* %29, align 1, !tbaa !1
+  %conv62 = zext i8 %31 to i32
+  switch i32 %conv62, label %if.end70 [
+    i32 92, label %do.body
+    i32 63, label %do.body
+  ]
+
+if.end70:                                         ; preds = %lor.lhs.false, %do.cond64, %if.end, %if.then3, %trigraph_p.exit, %if.end19, %if.then19.i, %if.else.i, %do.cond64.thread, %entry, %if.then44
+  %next.3 = phi i32 [ %conv, %entry ], [ %next.1, %if.then44 ], [ -1, %do.cond64.thread ], [ 63, %if.else.i ], [ 63, %if.then19.i ], [ 63, %lor.lhs.false ], [ %conv62, %do.cond64 ], [ %conv13, %if.end ], [ 63, %if.then3 ], [ 63, %trigraph_p.exit ], [ %next.1, %if.end19 ]
+  ret i32 %next.3
+}

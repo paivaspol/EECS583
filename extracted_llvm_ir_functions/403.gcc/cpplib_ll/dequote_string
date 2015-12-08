@@ -1,0 +1,40 @@
+define internal fastcc i8* @dequote_string(%struct.cpp_reader* %pfile, i8* %str, i32 %len) #0 {
+entry:
+  %str.addr = alloca i8*, align 8
+  store i8* %str, i8** %str.addr, align 8, !tbaa !3
+  %add = add i32 %len, 1
+  %conv = zext i32 %add to i64
+  %call = call i8* @_cpp_unaligned_alloc(%struct.cpp_reader* %pfile, i64 %conv) #8
+  %0 = load i8** %str.addr, align 8, !tbaa !3
+  %idx.ext = zext i32 %len to i64
+  %add.ptr = getelementptr inbounds i8* %0, i64 %idx.ext
+  %cmp18 = icmp eq i32 %len, 0
+  br i1 %cmp18, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.cond.backedge
+  %1 = phi i8* [ %3, %while.cond.backedge ], [ %0, %entry ]
+  %dst.019 = phi i8* [ %dst.0.be, %while.cond.backedge ], [ %call, %entry ]
+  %incdec.ptr = getelementptr inbounds i8* %1, i64 1
+  store i8* %incdec.ptr, i8** %str.addr, align 8, !tbaa !3
+  %2 = load i8* %1, align 1, !tbaa !0
+  %cmp3 = icmp eq i8 %2, 92
+  br i1 %cmp3, label %if.else, label %while.cond.backedge
+
+if.else:                                          ; preds = %while.body
+  %call7 = call i32 @cpp_parse_escape(%struct.cpp_reader* %pfile, i8** %str.addr, i8* %add.ptr, i64 255, i32 0) #8
+  %conv8 = trunc i32 %call7 to i8
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %while.body, %if.else
+  %storemerge = phi i8 [ %conv8, %if.else ], [ %2, %while.body ]
+  %dst.0.be = getelementptr inbounds i8* %dst.019, i64 1
+  store i8 %storemerge, i8* %dst.019, align 1, !tbaa !0
+  %3 = load i8** %str.addr, align 8, !tbaa !3
+  %cmp = icmp ult i8* %3, %add.ptr
+  br i1 %cmp, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.cond.backedge, %entry
+  %dst.0.lcssa = phi i8* [ %call, %entry ], [ %dst.0.be, %while.cond.backedge ]
+  store i8 0, i8* %dst.0.lcssa, align 1, !tbaa !0
+  ret i8* %call
+}

@@ -1,0 +1,118 @@
+define void @ix86_split_fp_branch(i32 %code, %struct.rtx_def* %op1, %struct.rtx_def* %op2, %struct.rtx_def* %target1, %struct.rtx_def* %target2, %struct.rtx_def* %tmp) #1 {
+entry:
+  %second = alloca %struct.rtx_def*, align 8
+  %bypass = alloca %struct.rtx_def*, align 8
+  %0 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !4
+  %cmp = icmp eq %struct.rtx_def* %0, %target2
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = call i32 @reverse_condition_maybe_unordered(i32 %code) #9
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %target2.addr.0 = phi %struct.rtx_def* [ %target1, %if.then ], [ %target2, %entry ]
+  %target1.addr.0 = phi %struct.rtx_def* [ %target2, %if.then ], [ %target1, %entry ]
+  %code.addr.0 = phi i32 [ %call, %if.then ], [ %code, %entry ]
+  %call11 = call fastcc %struct.rtx_def* @ix86_expand_fp_compare(i32 %code.addr.0, %struct.rtx_def* %op1, %struct.rtx_def* %op2, %struct.rtx_def* %tmp, %struct.rtx_def** %second, %struct.rtx_def** %bypass) #10
+  %1 = load i32* @split_branch_probability, align 4, !tbaa !0
+  %cmp12 = icmp sgt i32 %1, -1
+  %2 = load %struct.rtx_def** %bypass, align 8, !tbaa !4
+  br i1 %cmp12, label %if.then13, label %if.end19
+
+if.then13:                                        ; preds = %if.end
+  %tobool = icmp eq %struct.rtx_def* %2, null
+  %. = select i1 %tobool, i32 -1, i32 1
+  %3 = load %struct.rtx_def** %second, align 8, !tbaa !4
+  %tobool16 = icmp eq %struct.rtx_def* %3, null
+  %.93 = select i1 %tobool16, i32 -1, i32 1
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.end, %if.then13
+  %bypass_probability.1 = phi i32 [ %., %if.then13 ], [ -1, %if.end ]
+  %second_probability.0 = phi i32 [ %.93, %if.then13 ], [ -1, %if.end ]
+  %probability.0 = phi i32 [ %1, %if.then13 ], [ -1, %if.end ]
+  %cmp20 = icmp eq %struct.rtx_def* %2, null
+  br i1 %cmp20, label %if.end35, label %if.then21
+
+if.then21:                                        ; preds = %if.end19
+  %call22 = call %struct.rtx_def* @gen_label_rtx() #9
+  %4 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !4
+  %5 = load %struct.rtx_def** %bypass, align 8, !tbaa !4
+  %call23 = call %struct.rtx_def* @gen_rtx_fmt_u00(i32 67, i32 0, %struct.rtx_def* %call22) #9
+  %6 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !4
+  %call24 = call %struct.rtx_def* @gen_rtx_fmt_eee(i32 72, i32 0, %struct.rtx_def* %5, %struct.rtx_def* %call23, %struct.rtx_def* %6) #9
+  %call25 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %4, %struct.rtx_def* %call24) #9
+  %call26 = call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call25) #9
+  %cmp27 = icmp sgt i32 %bypass_probability.1, -1
+  br i1 %cmp27, label %if.then28, label %if.end35
+
+if.then28:                                        ; preds = %if.then21
+  %conv = sext i32 %bypass_probability.1 to i64
+  %call29 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv) #9
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call26, i64 0, i32 1, i64 6
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %call30 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 3, i32 16, %struct.rtx_def* %call29, %struct.rtx_def* %7) #9
+  %8 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0
+  %call30.c = ptrtoint %struct.rtx_def* %call30 to i64
+  store i64 %call30.c, i64* %8, align 8, !tbaa !4
+  br label %if.end35
+
+if.end35:                                         ; preds = %if.end19, %if.then21, %if.then28
+  %label.0 = phi %struct.rtx_def* [ %call22, %if.then28 ], [ %call22, %if.then21 ], [ null, %if.end19 ]
+  %9 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !4
+  %call36 = call %struct.rtx_def* @gen_rtx_fmt_eee(i32 72, i32 0, %struct.rtx_def* %call11, %struct.rtx_def* %target1.addr.0, %struct.rtx_def* %target2.addr.0) #9
+  %call37 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %9, %struct.rtx_def* %call36) #9
+  %call38 = call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call37) #9
+  %cmp39 = icmp sgt i32 %probability.0, -1
+  br i1 %cmp39, label %if.then41, label %if.end51
+
+if.then41:                                        ; preds = %if.end35
+  %conv42 = sext i32 %probability.0 to i64
+  %call43 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv42) #9
+  %arrayidx45 = getelementptr inbounds %struct.rtx_def* %call38, i64 0, i32 1, i64 6
+  %rtx46 = bitcast %union.rtunion_def* %arrayidx45 to %struct.rtx_def**
+  %10 = load %struct.rtx_def** %rtx46, align 8, !tbaa !4
+  %call47 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 3, i32 16, %struct.rtx_def* %call43, %struct.rtx_def* %10) #9
+  %11 = getelementptr inbounds %union.rtunion_def* %arrayidx45, i64 0, i32 0
+  %call47.c = ptrtoint %struct.rtx_def* %call47 to i64
+  store i64 %call47.c, i64* %11, align 8, !tbaa !4
+  br label %if.end51
+
+if.end51:                                         ; preds = %if.then41, %if.end35
+  %12 = load %struct.rtx_def** %second, align 8, !tbaa !4
+  %cmp52 = icmp eq %struct.rtx_def* %12, null
+  br i1 %cmp52, label %if.end71, label %if.then54
+
+if.then54:                                        ; preds = %if.end51
+  %13 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !4
+  %call55 = call %struct.rtx_def* @gen_rtx_fmt_eee(i32 72, i32 0, %struct.rtx_def* %12, %struct.rtx_def* %target1.addr.0, %struct.rtx_def* %target2.addr.0) #9
+  %call56 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %13, %struct.rtx_def* %call55) #9
+  %call57 = call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call56) #9
+  %cmp58 = icmp sgt i32 %second_probability.0, -1
+  br i1 %cmp58, label %if.then60, label %if.end71
+
+if.then60:                                        ; preds = %if.then54
+  %conv61 = sext i32 %second_probability.0 to i64
+  %call62 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv61) #9
+  %arrayidx64 = getelementptr inbounds %struct.rtx_def* %call57, i64 0, i32 1, i64 6
+  %rtx65 = bitcast %union.rtunion_def* %arrayidx64 to %struct.rtx_def**
+  %14 = load %struct.rtx_def** %rtx65, align 8, !tbaa !4
+  %call66 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 3, i32 16, %struct.rtx_def* %call62, %struct.rtx_def* %14) #9
+  %15 = getelementptr inbounds %union.rtunion_def* %arrayidx64, i64 0, i32 0
+  %call66.c = ptrtoint %struct.rtx_def* %call66 to i64
+  store i64 %call66.c, i64* %15, align 8, !tbaa !4
+  br label %if.end71
+
+if.end71:                                         ; preds = %if.end51, %if.then54, %if.then60
+  %cmp72 = icmp eq %struct.rtx_def* %label.0, null
+  br i1 %cmp72, label %if.end76, label %if.then74
+
+if.then74:                                        ; preds = %if.end71
+  %call75 = call %struct.rtx_def* @emit_label(%struct.rtx_def* %label.0) #9
+  br label %if.end76
+
+if.end76:                                         ; preds = %if.end71, %if.then74
+  ret void
+}

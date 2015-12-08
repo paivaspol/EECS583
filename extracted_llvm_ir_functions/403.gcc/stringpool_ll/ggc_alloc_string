@@ -1,0 +1,102 @@
+define i8* @ggc_alloc_string(i8* nocapture %contents, i32 %length) #0 {
+entry:
+  %cmp = icmp eq i32 %length, -1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i64 @strlen(i8* %contents) #5
+  %conv = trunc i64 %call to i32
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %length.addr.0 = phi i32 [ %conv, %if.then ], [ %length, %entry ]
+  switch i32 %length.addr.0, label %if.end14 [
+    i32 0, label %return
+    i32 1, label %land.lhs.true
+  ]
+
+land.lhs.true:                                    ; preds = %if.end
+  %0 = load i8* %contents, align 1, !tbaa !1
+  %conv7 = sext i8 %0 to i32
+  %and = and i32 %conv7, 255
+  %idxprom86 = zext i32 %and to i64
+  %arrayidx8 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom86
+  %1 = load i16* %arrayidx8, align 2, !tbaa !3
+  %and10 = and i16 %1, 4
+  %tobool = icmp eq i16 %and10, 0
+  br i1 %tobool, label %if.end14, label %if.then11
+
+if.then11:                                        ; preds = %land.lhs.true
+  %sub = shl nsw i32 %conv7, 1
+  %mul = add i32 %sub, -96
+  %idx.ext = sext i32 %mul to i64
+  %add.ptr = getelementptr inbounds [20 x i8]* @digit_vector, i64 0, i64 %idx.ext
+  br label %return
+
+if.end14:                                         ; preds = %if.end, %land.lhs.true
+  %2 = load i8** getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 3), align 8, !tbaa !0
+  %idx.ext15 = sext i32 %length.addr.0 to i64
+  %add.ptr16.sum = add i64 %idx.ext15, 1
+  %add.ptr17 = getelementptr inbounds i8* %2, i64 %add.ptr16.sum
+  %3 = load i8** getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 4), align 8, !tbaa !0
+  %cmp18 = icmp ugt i8* %add.ptr17, %3
+  br i1 %cmp18, label %if.then20, label %if.end21
+
+if.then20:                                        ; preds = %if.end14
+  %add = add nsw i32 %length.addr.0, 1
+  tail call void @_obstack_newchunk(%struct.obstack* @string_stack, i32 %add) #4
+  %.pre = load i8** getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then20, %if.end14
+  %4 = phi i8* [ %.pre, %if.then20 ], [ %2, %if.end14 ]
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %4, i8* %contents, i64 %idx.ext15, i32 1, i1 false)
+  %5 = load i8** getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 3), align 8, !tbaa !0
+  %add.ptr26 = getelementptr inbounds i8* %5, i64 %idx.ext15
+  %incdec.ptr = getelementptr inbounds i8* %5, i64 %add.ptr16.sum
+  store i8* %incdec.ptr, i8** getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 3), align 8, !tbaa !0
+  store i8 0, i8* %add.ptr26, align 1, !tbaa !1
+  %6 = load i8** getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 2), align 8, !tbaa !0
+  %7 = load i8** getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 3), align 8, !tbaa !0
+  %cmp29 = icmp eq i8* %7, %6
+  br i1 %cmp29, label %if.then31, label %if.end32
+
+if.then31:                                        ; preds = %if.end21
+  %bf.load = load i8* getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 10), align 8
+  %bf.set = or i8 %bf.load, 2
+  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 10), align 8
+  br label %if.end32
+
+if.end32:                                         ; preds = %if.then31, %if.end21
+  %sub.ptr.lhs.cast = ptrtoint i8* %7 to i64
+  %8 = load i32* getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 6), align 8, !tbaa !4
+  %conv34 = sext i32 %8 to i64
+  %add35 = add nsw i64 %conv34, %sub.ptr.lhs.cast
+  %neg = xor i32 %8, -1
+  %conv37 = sext i32 %neg to i64
+  %and38 = and i64 %add35, %conv37
+  %add.ptr39 = getelementptr inbounds i8* null, i64 %and38
+  store i8* %add.ptr39, i8** getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 3), align 8, !tbaa !0
+  %9 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 1), align 8, !tbaa !0
+  %sub.ptr.lhs.cast42 = ptrtoint i8* %add.ptr39 to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct._obstack_chunk* %9 to i64
+  %sub.ptr.sub43 = sub i64 %sub.ptr.lhs.cast42, %sub.ptr.rhs.cast
+  %10 = load i8** getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 4), align 8, !tbaa !0
+  %sub.ptr.lhs.cast46 = ptrtoint i8* %10 to i64
+  %sub.ptr.sub48 = sub i64 %sub.ptr.lhs.cast46, %sub.ptr.rhs.cast
+  %cmp49 = icmp sgt i64 %sub.ptr.sub43, %sub.ptr.sub48
+  br i1 %cmp49, label %if.then51, label %if.end54
+
+if.then51:                                        ; preds = %if.end32
+  store i8* %10, i8** getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end54
+
+if.end54:                                         ; preds = %if.then51, %if.end32
+  %11 = phi i8* [ %10, %if.then51 ], [ %add.ptr39, %if.end32 ]
+  store i8* %11, i8** getelementptr inbounds (%struct.obstack* @string_stack, i64 0, i32 2), align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end, %if.end54, %if.then11
+  %retval.0 = phi i8* [ %add.ptr, %if.then11 ], [ %6, %if.end54 ], [ getelementptr inbounds ([1 x i8]* @empty_string, i64 0, i64 0), %if.end ]
+  ret i8* %retval.0
+}

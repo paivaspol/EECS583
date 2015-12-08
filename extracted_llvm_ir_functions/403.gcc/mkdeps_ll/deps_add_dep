@@ -1,0 +1,40 @@
+define void @deps_add_dep(%struct.deps* nocapture %d, i8* %t) #0 {
+entry:
+  %call = tail call fastcc i8* @munge(i8* %t) #6
+  %ndeps = getelementptr inbounds %struct.deps* %d, i64 0, i32 4
+  %0 = load i32* %ndeps, align 4, !tbaa !3
+  %deps_size = getelementptr inbounds %struct.deps* %d, i64 0, i32 5
+  %1 = load i32* %deps_size, align 4, !tbaa !3
+  %cmp = icmp eq i32 %0, %1
+  br i1 %cmp, label %if.then, label %entry.if.end_crit_edge
+
+entry.if.end_crit_edge:                           ; preds = %entry
+  %depv8.phi.trans.insert = getelementptr inbounds %struct.deps* %d, i64 0, i32 3
+  %.pre18 = load i8*** %depv8.phi.trans.insert, align 8, !tbaa !0
+  br label %if.end
+
+if.then:                                          ; preds = %entry
+  %mul = shl i32 %0, 1
+  %add = add i32 %mul, 8
+  store i32 %add, i32* %deps_size, align 4, !tbaa !3
+  %depv = getelementptr inbounds %struct.deps* %d, i64 0, i32 3
+  %2 = load i8*** %depv, align 8, !tbaa !0
+  %3 = bitcast i8** %2 to i8*
+  %conv = zext i32 %add to i64
+  %mul4 = shl nuw nsw i64 %conv, 3
+  %call5 = tail call i8* @xrealloc(i8* %3, i64 %mul4) #5
+  %4 = bitcast i8* %call5 to i8**
+  store i8** %4, i8*** %depv, align 8, !tbaa !0
+  %.pre = load i32* %ndeps, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
+  %5 = phi i8** [ %4, %if.then ], [ %.pre18, %entry.if.end_crit_edge ]
+  %6 = phi i32 [ %.pre, %if.then ], [ %0, %entry.if.end_crit_edge ]
+  %inc = add i32 %6, 1
+  store i32 %inc, i32* %ndeps, align 4, !tbaa !3
+  %idxprom = zext i32 %6 to i64
+  %arrayidx = getelementptr inbounds i8** %5, i64 %idxprom
+  store i8* %call, i8** %arrayidx, align 8, !tbaa !0
+  ret void
+}

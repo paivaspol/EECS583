@@ -1,0 +1,35 @@
+define i32 @search_subdirs(i8* %parent, i8* %libdir) #0 {
+entry:
+  %call = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %libdir, i8* getelementptr inbounds ([27 x i8]* @.str19, i64 0, i64 0), i8* %parent, i32 47, i32 47, i32 47) #6
+  %call1 = tail call i32 @fexist(i8* %libdir) #8
+  %tobool = icmp eq i32 %call1, 0
+  br i1 %tobool, label %if.end, label %if.then15
+
+if.end:                                           ; preds = %entry
+  %call2 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %libdir, i8* getelementptr inbounds ([36 x i8]* @.str20, i64 0, i64 0), i8* %parent, i32 47, i32 47, i32 47, i32 47) #6
+  %call3 = tail call i32 @fexist(i8* %libdir) #8
+  %tobool4 = icmp eq i32 %call3, 0
+  br i1 %tobool4, label %if.end8, label %if.then15
+
+if.end8:                                          ; preds = %if.end
+  %call6 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %libdir, i8* getelementptr inbounds ([39 x i8]* @.str21, i64 0, i64 0), i8* %parent, i32 47, i32 47, i8* getelementptr inbounds ([16 x i8]* @.str22, i64 0, i64 0), i32 47, i32 47) #6
+  %call7 = tail call i32 @fexist(i8* %libdir) #8
+  %tobool9 = icmp eq i32 %call7, 0
+  br i1 %tobool9, label %if.end13, label %if.then15
+
+if.end13:                                         ; preds = %if.end8
+  %call11 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %libdir, i8* getelementptr inbounds ([48 x i8]* @.str23, i64 0, i64 0), i8* %parent, i32 47, i32 47, i32 47, i8* getelementptr inbounds ([16 x i8]* @.str22, i64 0, i64 0), i32 47, i32 47) #6
+  %call12 = tail call i32 @fexist(i8* %libdir) #8
+  %tobool14 = icmp eq i32 %call12, 0
+  br i1 %tobool14, label %if.end17, label %if.then15
+
+if.then15:                                        ; preds = %entry, %if.end, %if.end8, %if.end13
+  %found.236 = phi i32 [ %call12, %if.end13 ], [ %call7, %if.end8 ], [ %call3, %if.end ], [ %call1, %entry ]
+  %call16 = tail call i8* @strrchr(i8* %libdir, i32 47) #7
+  store i8 0, i8* %call16, align 1, !tbaa !1
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.end13, %if.then15
+  %found.237 = phi i32 [ 0, %if.end13 ], [ %found.236, %if.then15 ]
+  ret i32 %found.237
+}

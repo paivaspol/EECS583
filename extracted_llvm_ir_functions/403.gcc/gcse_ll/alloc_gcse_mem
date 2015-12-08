@@ -1,0 +1,149 @@
+define internal fastcc void @alloc_gcse_mem(%struct.rtx_def* %f) #0 {
+entry:
+  %call = tail call i32 @get_max_uid() #6
+  %add = shl i32 %call, 2
+  %mul = add i32 %add, 4
+  %0 = load i32* @bytes_used, align 4, !tbaa !3
+  %add.i = add i32 %mul, %0
+  store i32 %add.i, i32* @bytes_used, align 4, !tbaa !3
+  %conv.i = zext i32 %mul to i64
+  %call.i = tail call noalias i8* @xmalloc(i64 %conv.i) #6
+  %1 = bitcast i8* %call.i to i32*
+  store i32* %1, i32** @uid_cuid, align 8, !tbaa !0
+  %conv3 = sext i32 %mul to i64
+  tail call void @llvm.memset.p0i8.i64(i8* %call.i, i8 0, i64 %conv3, i32 1, i1 false)
+  %tobool89 = icmp eq %struct.rtx_def* %f, null
+  br i1 %tobool89, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %insn.091 = phi %struct.rtx_def* [ %6, %for.inc ], [ %f, %entry ]
+  %i.090 = phi i32 [ %i.1, %for.inc ], [ 0, %entry ]
+  %2 = bitcast %struct.rtx_def* %insn.091 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom76 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom76
+  %3 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %3, 105
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.body
+  %inc = add nsw i32 %i.090, 1
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %insn.091, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx6 to i32*
+  %4 = load i32* %rtint, align 4, !tbaa !3
+  %idxprom7 = sext i32 %4 to i64
+  %arrayidx8 = getelementptr inbounds i32* %1, i64 %idxprom7
+  store i32 %i.090, i32* %arrayidx8, align 4, !tbaa !3
+  br label %for.inc
+
+if.else:                                          ; preds = %for.body
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %insn.091, i64 0, i32 1, i64 0
+  %rtint11 = bitcast %union.rtunion_def* %arrayidx10 to i32*
+  %5 = load i32* %rtint11, align 4, !tbaa !3
+  %idxprom12 = sext i32 %5 to i64
+  %arrayidx13 = getelementptr inbounds i32* %1, i64 %idxprom12
+  store i32 %i.090, i32* %arrayidx13, align 4, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then, %if.else
+  %i.1 = phi i32 [ %inc, %if.then ], [ %i.090, %if.else ]
+  %arrayidx15 = getelementptr inbounds %struct.rtx_def* %insn.091, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx15 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %6, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  %i.0.lcssa = phi i32 [ 0, %entry ], [ %i.1, %for.inc ]
+  store i32 %i.0.lcssa, i32* @max_cuid, align 4, !tbaa !3
+  %add16 = shl i32 %i.0.lcssa, 3
+  %mul18 = add i32 %add16, 8
+  %7 = load i32* @bytes_used, align 4, !tbaa !3
+  %add.i77 = add i32 %7, %mul18
+  store i32 %add.i77, i32* @bytes_used, align 4, !tbaa !3
+  %conv.i78 = zext i32 %mul18 to i64
+  %call.i79 = tail call noalias i8* @xmalloc(i64 %conv.i78) #6
+  %8 = bitcast i8* %call.i79 to %struct.rtx_def**
+  store %struct.rtx_def** %8, %struct.rtx_def*** @cuid_insn, align 8, !tbaa !0
+  %conv21 = sext i32 %mul18 to i64
+  tail call void @llvm.memset.p0i8.i64(i8* %call.i79, i8 0, i64 %conv21, i32 1, i1 false)
+  br i1 %tobool89, label %for.end41, label %for.body24
+
+for.body24:                                       ; preds = %for.end, %for.inc37
+  %insn.188 = phi %struct.rtx_def* [ %12, %for.inc37 ], [ %f, %for.end ]
+  %i.287 = phi i32 [ %i.3, %for.inc37 ], [ 0, %for.end ]
+  %9 = bitcast %struct.rtx_def* %insn.188 to i32*
+  %bf.load25 = load i32* %9, align 8
+  %bf.clear26 = and i32 %bf.load25, 65535
+  %idxprom2775 = zext i32 %bf.clear26 to i64
+  %arrayidx28 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom2775
+  %10 = load i8* %arrayidx28, align 1, !tbaa !1
+  %cmp30 = icmp eq i8 %10, 105
+  br i1 %cmp30, label %if.then32, label %for.inc37
+
+if.then32:                                        ; preds = %for.body24
+  %inc33 = add nsw i32 %i.287, 1
+  %idxprom34 = sext i32 %i.287 to i64
+  %11 = load %struct.rtx_def*** @cuid_insn, align 8, !tbaa !0
+  %arrayidx35 = getelementptr inbounds %struct.rtx_def** %11, i64 %idxprom34
+  store %struct.rtx_def* %insn.188, %struct.rtx_def** %arrayidx35, align 8, !tbaa !0
+  br label %for.inc37
+
+for.inc37:                                        ; preds = %for.body24, %if.then32
+  %i.3 = phi i32 [ %inc33, %if.then32 ], [ %i.287, %for.body24 ]
+  %arrayidx39 = getelementptr inbounds %struct.rtx_def* %insn.188, i64 0, i32 1, i64 2
+  %rtx40 = bitcast %union.rtunion_def* %arrayidx39 to %struct.rtx_def**
+  %12 = load %struct.rtx_def** %rtx40, align 8, !tbaa !0
+  %tobool23 = icmp eq %struct.rtx_def* %12, null
+  br i1 %tobool23, label %for.end41, label %for.body24
+
+for.end41:                                        ; preds = %for.inc37, %for.end
+  %call42 = tail call noalias i8* @xmalloc(i64 24) #6
+  %13 = bitcast i8* %call42 to %struct.bitmap_head_def*
+  %call43 = tail call %struct.bitmap_head_def* @bitmap_initialize(%struct.bitmap_head_def* %13) #6
+  store %struct.bitmap_head_def* %call43, %struct.bitmap_head_def** @reg_set_bitmap, align 8, !tbaa !0
+  %14 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %15 = load i32* @max_gcse_regno, align 4, !tbaa !3
+  %call44 = tail call %struct.simple_bitmap_def** @sbitmap_vector_alloc(i32 %14, i32 %15) #6
+  store %struct.simple_bitmap_def** %call44, %struct.simple_bitmap_def*** @reg_set_in_block, align 8, !tbaa !0
+  %16 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %mul46 = shl i32 %16, 3
+  %17 = load i32* @bytes_used, align 4, !tbaa !3
+  %add.i80 = add i32 %17, %mul46
+  store i32 %add.i80, i32* @bytes_used, align 4, !tbaa !3
+  %conv.i81 = zext i32 %mul46 to i64
+  %call.i82 = tail call noalias i8* @xmalloc(i64 %conv.i81) #6
+  %18 = bitcast i8* %call.i82 to %struct.rtx_def**
+  store %struct.rtx_def** %18, %struct.rtx_def*** @modify_mem_list, align 8, !tbaa !0
+  %19 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %mul50 = shl i32 %19, 3
+  %20 = load i32* @bytes_used, align 4, !tbaa !3
+  %add.i83 = add i32 %20, %mul50
+  store i32 %add.i83, i32* @bytes_used, align 4, !tbaa !3
+  %conv.i84 = zext i32 %mul50 to i64
+  %call.i85 = tail call noalias i8* @xmalloc(i64 %conv.i84) #6
+  %21 = bitcast i8* %call.i85 to %struct.rtx_def**
+  store %struct.rtx_def** %21, %struct.rtx_def*** @canon_modify_mem_list, align 8, !tbaa !0
+  %22 = load %struct.rtx_def*** @modify_mem_list, align 8, !tbaa !0
+  %23 = bitcast %struct.rtx_def** %22 to i8*
+  %24 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %conv53 = sext i32 %24 to i64
+  %mul54 = shl nsw i64 %conv53, 3
+  tail call void @llvm.memset.p0i8.i64(i8* %23, i8 0, i64 %mul54, i32 1, i1 false)
+  %25 = load %struct.rtx_def*** @canon_modify_mem_list, align 8, !tbaa !0
+  %26 = bitcast %struct.rtx_def** %25 to i8*
+  %27 = load i32* @n_basic_blocks, align 4, !tbaa !3
+  %conv55 = sext i32 %27 to i64
+  %mul56 = shl nsw i64 %conv55, 3
+  tail call void @llvm.memset.p0i8.i64(i8* %26, i8 0, i64 %mul56, i32 1, i1 false)
+  %call57 = tail call noalias i8* @xmalloc(i64 24) #6
+  %28 = bitcast i8* %call57 to %struct.bitmap_head_def*
+  %call58 = tail call %struct.bitmap_head_def* @bitmap_initialize(%struct.bitmap_head_def* %28) #6
+  store %struct.bitmap_head_def* %call58, %struct.bitmap_head_def** @modify_mem_list_set, align 8, !tbaa !0
+  %call59 = tail call noalias i8* @xmalloc(i64 24) #6
+  %29 = bitcast i8* %call59 to %struct.bitmap_head_def*
+  %call60 = tail call %struct.bitmap_head_def* @bitmap_initialize(%struct.bitmap_head_def* %29) #6
+  store %struct.bitmap_head_def* %call60, %struct.bitmap_head_def** @canon_modify_mem_list_set, align 8, !tbaa !0
+  ret void
+}

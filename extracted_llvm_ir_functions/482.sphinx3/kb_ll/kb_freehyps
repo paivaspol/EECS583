@@ -1,0 +1,58 @@
+define void @kb_freehyps(%struct.kb_t* nocapture %kb) #0 {
+entry:
+  %hyp_segs = getelementptr inbounds %struct.kb_t* %kb, i64 0, i32 50
+  %0 = load %struct.hyp_t*** %hyp_segs, align 8, !tbaa !0
+  %tobool = icmp eq %struct.hyp_t** %0, null
+  br i1 %tobool, label %if.end9, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %hyp_seglen = getelementptr inbounds %struct.kb_t* %kb, i64 0, i32 51
+  %1 = load i32* %hyp_seglen, align 4, !tbaa !4
+  %cmp25 = icmp sgt i32 %1, 0
+  br i1 %cmp25, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.inc, %for.cond.preheader
+  %2 = phi %struct.hyp_t** [ %0, %for.cond.preheader ], [ %.pre28, %for.inc ]
+  %3 = phi i32 [ %1, %for.cond.preheader ], [ %6, %for.inc ]
+  %indvars.iv = phi i64 [ 0, %for.cond.preheader ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds %struct.hyp_t** %2, i64 %indvars.iv
+  %4 = load %struct.hyp_t** %arrayidx, align 8, !tbaa !0
+  %tobool2 = icmp eq %struct.hyp_t* %4, null
+  br i1 %tobool2, label %for.inc, label %if.then3
+
+if.then3:                                         ; preds = %for.body
+  %5 = bitcast %struct.hyp_t* %4 to i8*
+  tail call void @ckd_free(i8* %5) #5
+  %.pre27 = load i32* %hyp_seglen, align 4, !tbaa !4
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then3
+  %6 = phi i32 [ %3, %for.body ], [ %.pre27, %if.then3 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %7 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %7, %6
+  %.pre28 = load %struct.hyp_t*** %hyp_segs, align 8, !tbaa !0
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %8 = phi %struct.hyp_t** [ %0, %for.cond.preheader ], [ %.pre28, %for.inc ]
+  %9 = bitcast %struct.hyp_t** %8 to i8*
+  tail call void @ckd_free(i8* %9) #5
+  store i32 0, i32* %hyp_seglen, align 4, !tbaa !4
+  br label %if.end9
+
+if.end9:                                          ; preds = %entry, %for.end
+  %hyp_str = getelementptr inbounds %struct.kb_t* %kb, i64 0, i32 52
+  %10 = load i8** %hyp_str, align 8, !tbaa !0
+  %tobool10 = icmp eq i8* %10, null
+  br i1 %tobool10, label %if.end13, label %if.then11
+
+if.then11:                                        ; preds = %if.end9
+  tail call void @ckd_free(i8* %10) #5
+  %hyp_strlen = getelementptr inbounds %struct.kb_t* %kb, i64 0, i32 53
+  store i32 0, i32* %hyp_strlen, align 4, !tbaa !4
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.end9, %if.then11
+  ret void
+}

@@ -1,0 +1,38 @@
+define void @maxwell_speed(float %tempi, i32 %nrdf, i32 %seed, %struct.t_atoms* nocapture %atoms, [3 x float]* nocapture %v) #0 {
+entry:
+  %cmp = icmp eq i32 %seed, -1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @make_seed() #4
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str2, i64 0, i64 0), i32 %call) #4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %seed.addr.0 = phi i32 [ %call, %if.then ], [ %seed, %entry ]
+  %nr = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 0
+  %1 = load i32* %nr, align 4, !tbaa !0
+  %call2 = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str4, i64 0, i64 0), i32 143, i32 %1, i32 4) #4
+  %2 = bitcast i8* %call2 to i32*
+  %3 = load i32* %nr, align 4, !tbaa !0
+  %cmp416 = icmp sgt i32 %3, 0
+  br i1 %cmp416, label %for.body, label %for.end
+
+for.body:                                         ; preds = %if.end, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.end ]
+  %arrayidx = getelementptr inbounds i32* %2, i64 %indvars.iv
+  %4 = trunc i64 %indvars.iv to i32
+  store i32 %4, i32* %arrayidx, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %5 = load i32* %nr, align 4, !tbaa !0
+  %6 = trunc i64 %indvars.iv.next to i32
+  %cmp4 = icmp slt i32 %6, %5
+  br i1 %cmp4, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %if.end
+  %.lcssa = phi i32 [ %3, %if.end ], [ %5, %for.body ]
+  tail call void @low_mspeed(float %tempi, i32 %nrdf, i32 %seed.addr.0, i32 %.lcssa, i32* %2, %struct.t_atoms* %atoms, [3 x float]* %v) #5
+  tail call void @save_free(i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str4, i64 0, i64 0), i32 147, i8* %call2) #4
+  ret void
+}

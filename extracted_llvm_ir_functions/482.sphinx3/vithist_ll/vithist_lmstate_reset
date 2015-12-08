@@ -1,0 +1,61 @@
+define internal fastcc void @vithist_lmstate_reset(%struct.vithist_t* nocapture %vh) #0 {
+entry:
+  %lwidlist = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 9
+  %lgn.028 = load %struct.gnode_s** %lwidlist, align 8
+  %tobool29 = icmp eq %struct.gnode_s* %lgn.028, null
+  br i1 %tobool29, label %for.end11, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %lms2vh_root = getelementptr inbounds %struct.vithist_t* %vh, i64 0, i32 8
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.end
+  %lgn.030 = phi %struct.gnode_s* [ %lgn.028, %for.body.lr.ph ], [ %lgn.0, %for.end ]
+  %int32 = bitcast %struct.gnode_s* %lgn.030 to i32*
+  %0 = load i32* %int32, align 4, !tbaa !3
+  %idxprom = sext i32 %0 to i64
+  %1 = load %struct.vh_lms2vh_t*** %lms2vh_root, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.vh_lms2vh_t** %1, i64 %idxprom
+  %2 = load %struct.vh_lms2vh_t** %arrayidx, align 8, !tbaa !0
+  %children = getelementptr inbounds %struct.vh_lms2vh_t* %2, i64 0, i32 3
+  %gn.025 = load %struct.gnode_s** %children, align 8
+  %tobool226 = icmp eq %struct.gnode_s* %gn.025, null
+  br i1 %tobool226, label %for.end, label %for.body3
+
+for.body3:                                        ; preds = %for.body, %for.body3
+  %gn.027 = phi %struct.gnode_s* [ %gn.0, %for.body3 ], [ %gn.025, %for.body ]
+  %ptr = getelementptr inbounds %struct.gnode_s* %gn.027, i64 0, i32 0, i32 0
+  %3 = load i8** %ptr, align 8, !tbaa !0
+  tail call void @ckd_free(i8* %3) #6
+  %next = getelementptr inbounds %struct.gnode_s* %gn.027, i64 0, i32 1
+  %gn.0 = load %struct.gnode_s** %next, align 8
+  %tobool2 = icmp eq %struct.gnode_s* %gn.0, null
+  br i1 %tobool2, label %for.cond1.for.end_crit_edge, label %for.body3
+
+for.cond1.for.end_crit_edge:                      ; preds = %for.body3
+  %.pre31 = load %struct.gnode_s** %children, align 8, !tbaa !0
+  br label %for.end
+
+for.end:                                          ; preds = %for.cond1.for.end_crit_edge, %for.body
+  %4 = phi %struct.gnode_s* [ %.pre31, %for.cond1.for.end_crit_edge ], [ null, %for.body ]
+  tail call void @glist_free(%struct.gnode_s* %4) #6
+  %5 = bitcast %struct.vh_lms2vh_t* %2 to i8*
+  tail call void @ckd_free(i8* %5) #6
+  %6 = load %struct.vh_lms2vh_t*** %lms2vh_root, align 8, !tbaa !0
+  %arrayidx8 = getelementptr inbounds %struct.vh_lms2vh_t** %6, i64 %idxprom
+  store %struct.vh_lms2vh_t* null, %struct.vh_lms2vh_t** %arrayidx8, align 8, !tbaa !0
+  %next10 = getelementptr inbounds %struct.gnode_s* %lgn.030, i64 0, i32 1
+  %lgn.0 = load %struct.gnode_s** %next10, align 8
+  %tobool = icmp eq %struct.gnode_s* %lgn.0, null
+  br i1 %tobool, label %for.cond.for.end11_crit_edge, label %for.body
+
+for.cond.for.end11_crit_edge:                     ; preds = %for.end
+  %.pre = load %struct.gnode_s** %lwidlist, align 8, !tbaa !0
+  br label %for.end11
+
+for.end11:                                        ; preds = %for.cond.for.end11_crit_edge, %entry
+  %7 = phi %struct.gnode_s* [ %.pre, %for.cond.for.end11_crit_edge ], [ null, %entry ]
+  tail call void @glist_free(%struct.gnode_s* %7) #6
+  store %struct.gnode_s* null, %struct.gnode_s** %lwidlist, align 8, !tbaa !0
+  ret void
+}

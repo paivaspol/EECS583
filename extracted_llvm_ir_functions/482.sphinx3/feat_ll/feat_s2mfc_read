@@ -1,0 +1,191 @@
+define i32 @feat_s2mfc_read(i8* %file, i32 %sf, i32 %ef, float** nocapture %mfc, i32 %maxfr) #0 {
+entry:
+  %n_float32 = alloca i32, align 4
+  %statbuf = alloca %struct.stat, align 8
+  %0 = bitcast %struct.stat* %statbuf to i8*
+  call void @llvm.lifetime.start(i64 144, i8* %0) #4
+  %cmp = icmp slt i32 %ef, 0
+  %.ef = select i1 %cmp, i32 2147418112, i32 %ef
+  call void @_E__pr_info_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 277, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #7
+  call void (i8*, ...)* @_E__pr_info(i8* getelementptr inbounds ([32 x i8]* @.str23, i64 0, i64 0), i8* %file, i32 %sf, i32 %.ef) #7
+  %cmp1 = icmp sgt i32 %.ef, %sf
+  br i1 %cmp1, label %if.end3, label %if.then2
+
+if.then2:                                         ; preds = %entry
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 279, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([40 x i8]* @.str4, i64 0, i64 0), i8* %file, i32 %.ef, i32 %sf) #7
+  br label %cleanup
+
+if.end3:                                          ; preds = %entry
+  %call = call i32 @stat_retry(i8* %file, %struct.stat* %statbuf) #7
+  %cmp4 = icmp slt i32 %call, 0
+  br i1 %cmp4, label %if.then7, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end3
+  %call5 = call %struct._IO_FILE* @fopen(i8* %file, i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0)) #7
+  %cmp6 = icmp eq %struct._IO_FILE* %call5, null
+  br i1 %cmp6, label %if.then7, label %if.end8
+
+if.then7:                                         ; preds = %lor.lhs.false, %if.end3
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 287, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([29 x i8]* @.str24, i64 0, i64 0), i8* %file) #7
+  br label %cleanup
+
+if.end8:                                          ; preds = %lor.lhs.false
+  %1 = bitcast i32* %n_float32 to i8*
+  %call9 = call i32 @fread_retry(i8* %1, i32 4, i32 1, %struct._IO_FILE* %call5) #7
+  %cmp10 = icmp eq i32 %call9, 1
+  br i1 %cmp10, label %if.end13, label %if.then11
+
+if.then11:                                        ; preds = %if.end8
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 293, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([27 x i8]* @.str25, i64 0, i64 0), i8* %file) #7
+  %call12 = call i32 @fclose(%struct._IO_FILE* %call5) #7
+  br label %cleanup
+
+if.end13:                                         ; preds = %if.end8
+  %2 = load i32* %n_float32, align 4, !tbaa !3
+  %mul = shl i32 %2, 2
+  %add = add i32 %mul, 4
+  %st_size = getelementptr inbounds %struct.stat* %statbuf, i64 0, i32 8
+  %3 = load i64* %st_size, align 8, !tbaa !4
+  %conv15 = trunc i64 %3 to i32
+  %cmp16 = icmp eq i32 %add, %conv15
+  br i1 %cmp16, label %if.end39, label %if.then18
+
+if.then18:                                        ; preds = %if.end13
+  %or25 = call i32 @llvm.bswap.i32(i32 %2)
+  %mul27 = shl i32 %or25, 2
+  %add28 = add i32 %mul27, 4
+  %cmp32 = icmp eq i32 %add28, %conv15
+  br i1 %cmp32, label %if.end38, label %if.then34
+
+if.then34:                                        ; preds = %if.then18
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 305, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  %4 = load i32* %n_float32, align 4, !tbaa !3
+  %5 = load i64* %st_size, align 8, !tbaa !4
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([53 x i8]* @.str26, i64 0, i64 0), i8* %file, i32 %4, i32 %4, i64 %5, i64 %5) #7
+  %call37 = call i32 @fclose(%struct._IO_FILE* %call5) #7
+  br label %cleanup
+
+if.end38:                                         ; preds = %if.then18
+  store i32 %or25, i32* %n_float32, align 4, !tbaa !3
+  br label %if.end39
+
+if.end39:                                         ; preds = %if.end13, %if.end38
+  %6 = phi i32 [ %or25, %if.end38 ], [ %2, %if.end13 ]
+  %byterev.0 = phi i32 [ 1, %if.end38 ], [ 0, %if.end13 ]
+  %cmp40 = icmp slt i32 %6, 1
+  br i1 %cmp40, label %if.then42, label %if.end44
+
+if.then42:                                        ; preds = %if.end39
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 315, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  %7 = load i32* %n_float32, align 4, !tbaa !3
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([38 x i8]* @.str27, i64 0, i64 0), i8* %file, i32 %7) #7
+  %call43 = call i32 @fclose(%struct._IO_FILE* %call5) #7
+  br label %cleanup
+
+if.end44:                                         ; preds = %if.end39
+  %div = sdiv i32 %6, 13
+  %mul45 = mul nsw i32 %div, 13
+  %cmp46 = icmp eq i32 %mul45, %6
+  br i1 %cmp46, label %if.end50, label %if.then48
+
+if.then48:                                        ; preds = %if.end44
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 323, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  %8 = load i32* %n_float32, align 4, !tbaa !3
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([43 x i8]* @.str28, i64 0, i64 0), i32 %8, i32 13) #7
+  %call49 = call i32 @fclose(%struct._IO_FILE* %call5) #7
+  br label %cleanup
+
+if.end50:                                         ; preds = %if.end44
+  %cmp51 = icmp sgt i32 %sf, 0
+  br i1 %cmp51, label %if.then53, label %if.end59
+
+if.then53:                                        ; preds = %if.end50
+  %cmp54 = icmp sgt i32 %div, %sf
+  br i1 %cmp54, label %if.end58, label %if.then56
+
+if.then56:                                        ; preds = %if.then53
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 331, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([44 x i8]* @.str16, i64 0, i64 0), i8* %file, i32 %sf, i32 %div) #7
+  %call57 = call i32 @fclose(%struct._IO_FILE* %call5) #7
+  br label %cleanup
+
+if.end58:                                         ; preds = %if.then53
+  %sub = sub nsw i32 %div, %sf
+  br label %if.end59
+
+if.end59:                                         ; preds = %if.end58, %if.end50
+  %n.0 = phi i32 [ %sub, %if.end58 ], [ %div, %if.end50 ]
+  %sub60 = sub nsw i32 %.ef, %sf
+  %add61 = add nsw i32 %sub60, 1
+  %cmp62 = icmp slt i32 %add61, %n.0
+  %add61.n.0 = select i1 %cmp62, i32 %add61, i32 %n.0
+  %cmp68 = icmp sgt i32 %add61.n.0, %maxfr
+  br i1 %cmp68, label %if.then70, label %if.end72
+
+if.then70:                                        ; preds = %if.end59
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 342, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([53 x i8]* @.str29, i64 0, i64 0), i8* %file, i32 %maxfr, i32 %add61.n.0) #7
+  %call71 = call i32 @fclose(%struct._IO_FILE* %call5) #7
+  br label %cleanup
+
+if.end72:                                         ; preds = %if.end59
+  br i1 %cmp51, label %if.then75, label %if.end80
+
+if.then75:                                        ; preds = %if.end72
+  %mul76 = mul nsw i32 %sf, 13
+  %conv77 = sext i32 %mul76 to i64
+  %mul78 = shl nsw i64 %conv77, 2
+  %call79 = call i32 @fseek(%struct._IO_FILE* %call5, i64 %mul78, i32 1) #7
+  br label %if.end80
+
+if.end80:                                         ; preds = %if.then75, %if.end72
+  %mul81 = mul nsw i32 %add61.n.0, 13
+  store i32 %mul81, i32* %n_float32, align 4, !tbaa !3
+  %9 = load float** %mfc, align 8, !tbaa !0
+  %10 = bitcast float* %9 to i8*
+  %call82 = call i32 @fread_retry(i8* %10, i32 4, i32 %mul81, %struct._IO_FILE* %call5) #7
+  %11 = load i32* %n_float32, align 4, !tbaa !3
+  %cmp83 = icmp eq i32 %call82, %11
+  br i1 %cmp83, label %if.end87, label %if.then85
+
+if.then85:                                        ; preds = %if.end80
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 352, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #7
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([36 x i8]* @.str30, i64 0, i64 0), i8* %file, i32 %add61.n.0, i32 13) #7
+  %call86 = call i32 @fclose(%struct._IO_FILE* %call5) #7
+  br label %cleanup
+
+if.end87:                                         ; preds = %if.end80
+  %tobool = icmp ne i32 %byterev.0, 0
+  %cmp89189 = icmp sgt i32 %call82, 0
+  %or.cond = and i1 %tobool, %cmp89189
+  br i1 %or.cond, label %for.body.lr.ph, label %if.end116
+
+for.body.lr.ph:                                   ; preds = %if.end87
+  %12 = load float** %mfc, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %arrayidx92 = getelementptr inbounds float* %12, i64 %indvars.iv
+  %13 = bitcast float* %arrayidx92 to i32*
+  %14 = load i32* %13, align 4, !tbaa !3
+  %or112 = call i32 @llvm.bswap.i32(i32 %14)
+  store i32 %or112, i32* %13, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %15 = load i32* %n_float32, align 4, !tbaa !3
+  %16 = trunc i64 %indvars.iv.next to i32
+  %cmp89 = icmp slt i32 %16, %15
+  br i1 %cmp89, label %for.body, label %if.end116
+
+if.end116:                                        ; preds = %if.end87, %for.body
+  %call117 = call i32 @fclose(%struct._IO_FILE* %call5) #7
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.end116, %if.then85, %if.then70, %if.then56, %if.then48, %if.then42, %if.then34, %if.then11, %if.then7, %if.then2
+  %retval.0 = phi i32 [ -1, %if.then2 ], [ -1, %if.then7 ], [ -1, %if.then11 ], [ -1, %if.then34 ], [ -1, %if.then42 ], [ -1, %if.then48 ], [ -1, %if.then56 ], [ -1, %if.then70 ], [ -1, %if.then85 ], [ %add61.n.0, %if.end116 ]
+  call void @llvm.lifetime.end(i64 144, i8* %0) #4
+  ret i32 %retval.0
+}

@@ -1,0 +1,100 @@
+define void @assemble_real(%struct.realvaluetype* byval align 8 %d, i32 %mode, i32 %align) #0 {
+entry:
+  %data = alloca [4 x i64], align 16
+  %or.i = or i32 %align, 32
+  %sub.i = sub i32 0, %or.i
+  %and.i = and i32 %or.i, %sub.i
+  switch i32 %mode, label %sw.default [
+    i32 15, label %sw.bb
+    i32 16, label %sw.bb4
+    i32 17, label %sw.bb10
+    i32 18, label %sw.bb37
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %call1 = call i64 @etarsingle(%struct.realvaluetype* byval align 8 %d) #9
+  %call2 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %call1) #9
+  %call3 = call zeroext i1 @assemble_integer(%struct.rtx_def* %call2, i32 4, i32 %align, i32 1) #10
+  br label %sw.epilog
+
+sw.bb4:                                           ; preds = %entry
+  %arraydecay = getelementptr inbounds [4 x i64]* %data, i64 0, i64 0
+  call void @etardouble(%struct.realvaluetype* byval align 8 %d, i64* %arraydecay) #9
+  %0 = load i64* %arraydecay, align 16, !tbaa !10
+  %call5 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %0) #9
+  %call6 = call zeroext i1 @assemble_integer(%struct.rtx_def* %call5, i32 4, i32 %align, i32 1) #10
+  %arrayidx7 = getelementptr inbounds [4 x i64]* %data, i64 0, i64 1
+  %1 = load i64* %arrayidx7, align 8, !tbaa !10
+  %call8 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %1) #9
+  %call9 = call zeroext i1 @assemble_integer(%struct.rtx_def* %call8, i32 4, i32 %and.i, i32 1) #10
+  br label %sw.epilog
+
+sw.bb10:                                          ; preds = %entry
+  %2 = load i32* @target_flags, align 4, !tbaa !4
+  %and = and i32 %2, 16777216
+  %cmp15 = icmp eq i32 %and, 0
+  %arraydecay17 = getelementptr inbounds [4 x i64]* %data, i64 0, i64 0
+  br i1 %cmp15, label %cond.true16, label %cond.true23
+
+cond.true16:                                      ; preds = %sw.bb10
+  call void @etarldouble(%struct.realvaluetype* byval align 8 %d, i64* %arraydecay17) #9
+  br label %cond.end27
+
+cond.true23:                                      ; preds = %sw.bb10
+  call void @etartdouble(%struct.realvaluetype* byval align 8 %d, i64* %arraydecay17) #9
+  br label %cond.end27
+
+cond.end27:                                       ; preds = %cond.true16, %cond.true23
+  %3 = load i64* %arraydecay17, align 16, !tbaa !10
+  %call29 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %3) #9
+  %call30 = call zeroext i1 @assemble_integer(%struct.rtx_def* %call29, i32 4, i32 %align, i32 1) #10
+  %arrayidx31 = getelementptr inbounds [4 x i64]* %data, i64 0, i64 1
+  %4 = load i64* %arrayidx31, align 8, !tbaa !10
+  %call32 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %4) #9
+  %call33 = call zeroext i1 @assemble_integer(%struct.rtx_def* %call32, i32 4, i32 %and.i, i32 1) #10
+  %arrayidx34 = getelementptr inbounds [4 x i64]* %data, i64 0, i64 2
+  %5 = load i64* %arrayidx34, align 16, !tbaa !10
+  %call35 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %5) #9
+  %call36 = call zeroext i1 @assemble_integer(%struct.rtx_def* %call35, i32 4, i32 %and.i, i32 1) #10
+  br label %sw.epilog
+
+sw.bb37:                                          ; preds = %entry
+  %6 = load i32* @target_flags, align 4, !tbaa !4
+  %and38 = and i32 %6, 16777216
+  %cmp48 = icmp eq i32 %and38, 0
+  %arraydecay50 = getelementptr inbounds [4 x i64]* %data, i64 0, i64 0
+  br i1 %cmp48, label %cond.true49, label %cond.true56
+
+cond.true49:                                      ; preds = %sw.bb37
+  call void @etarldouble(%struct.realvaluetype* byval align 8 %d, i64* %arraydecay50) #9
+  br label %cond.end61
+
+cond.true56:                                      ; preds = %sw.bb37
+  call void @etartdouble(%struct.realvaluetype* byval align 8 %d, i64* %arraydecay50) #9
+  br label %cond.end61
+
+cond.end61:                                       ; preds = %cond.true49, %cond.true56
+  %7 = load i64* %arraydecay50, align 16, !tbaa !10
+  %call63 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %7) #9
+  %call64 = call zeroext i1 @assemble_integer(%struct.rtx_def* %call63, i32 4, i32 %align, i32 1) #10
+  %arrayidx65 = getelementptr inbounds [4 x i64]* %data, i64 0, i64 1
+  %8 = load i64* %arrayidx65, align 8, !tbaa !10
+  %call66 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %8) #9
+  %call67 = call zeroext i1 @assemble_integer(%struct.rtx_def* %call66, i32 4, i32 %and.i, i32 1) #10
+  %arrayidx68 = getelementptr inbounds [4 x i64]* %data, i64 0, i64 2
+  %9 = load i64* %arrayidx68, align 16, !tbaa !10
+  %call69 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %9) #9
+  %call70 = call zeroext i1 @assemble_integer(%struct.rtx_def* %call69, i32 4, i32 %and.i, i32 1) #10
+  %arrayidx71 = getelementptr inbounds [4 x i64]* %data, i64 0, i64 3
+  %10 = load i64* %arrayidx71, align 8, !tbaa !10
+  %call72 = call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %10) #9
+  %call73 = call zeroext i1 @assemble_integer(%struct.rtx_def* %call72, i32 4, i32 %and.i, i32 1) #10
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %entry
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), i32 2055, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.assemble_real, i64 0, i64 0)) #12
+  unreachable
+
+sw.epilog:                                        ; preds = %cond.end61, %cond.end27, %sw.bb4, %sw.bb
+  ret void
+}

@@ -1,0 +1,18 @@
+define internal i32 @elem_compare(i8* nocapture %elem1, i8* nocapture %elem2) #4 {
+entry:
+  %0 = bitcast i8* %elem1 to i32*
+  %1 = load i32* %0, align 4, !tbaa !0
+  %2 = bitcast i8* %elem2 to i32*
+  %3 = load i32* %2, align 4, !tbaa !0
+  %cmp = icmp slt i32 %1, %3
+  br i1 %cmp, label %return, label %if.else
+
+if.else:                                          ; preds = %entry
+  %cmp1 = icmp sgt i32 %1, %3
+  %. = zext i1 %cmp1 to i32
+  br label %return
+
+return:                                           ; preds = %if.else, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %., %if.else ]
+  ret i32 %retval.0
+}

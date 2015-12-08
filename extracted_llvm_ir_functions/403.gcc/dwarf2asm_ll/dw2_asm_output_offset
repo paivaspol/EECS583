@@ -1,0 +1,31 @@
+define void @dw2_asm_output_offset(i32 %size, i8* %label, i8* %comment, ...) #0 {
+entry:
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %0 = load i32* @target_flags, align 4, !tbaa !4
+  %and = lshr i32 %0, 25
+  %1 = and i32 %and, 1
+  %2 = or i32 %1, 4
+  %call = call %struct.rtx_def* @gen_rtx_fmt_s(i32 68, i32 %2, i8* %label) #7
+  call void @dw2_assemble_integer(i32 %size, %struct.rtx_def* %call) #8
+  %3 = load i32* @flag_debug_asm, align 4, !tbaa !4
+  %tobool2 = icmp eq i32 %3, 0
+  %tobool3 = icmp eq i8* %comment, null
+  %or.cond = or i1 %tobool2, %tobool3
+  br i1 %or.cond, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
+  %4 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %call4 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0)) #7
+  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %call6 = call i32 @vfprintf(%struct._IO_FILE* %5, i8* %comment, %struct.__va_list_tag* %arraydecay) #7
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %6 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %call7 = call i32 @fputc(i32 10, %struct._IO_FILE* %6) #7
+  call void @llvm.va_end(i8* %arraydecay1)
+  ret void
+}

@@ -1,0 +1,55 @@
+define internal fastcc i32 @get_hard_regnum(%struct.stack_def* nocapture %regstack, %struct.rtx_def* nocapture %reg) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %reg to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 61
+  br i1 %cmp, label %land.lhs.true, label %if.then
+
+land.lhs.true:                                    ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !3
+  %.off = add i32 %1, -8
+  %2 = icmp ult i32 %.off, 8
+  br i1 %2, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true, %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 900, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.get_hard_regnum, i64 0, i64 0)) #8
+  unreachable
+
+if.end:                                           ; preds = %land.lhs.true
+  %top = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 0
+  %3 = load i32* %top, align 4, !tbaa !3
+  %cmp730 = icmp sgt i32 %3, -1
+  br i1 %cmp730, label %for.body.lr.ph, label %cond.end
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %4 = sext i32 %3 to i64
+  br label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %dec = add nsw i32 %i.031, -1
+  %5 = trunc i64 %indvars.iv to i32
+  %cmp7 = icmp sgt i32 %5, 0
+  br i1 %cmp7, label %for.body, label %cond.end
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ %4, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %i.031 = phi i32 [ %3, %for.body.lr.ph ], [ %dec, %for.cond ]
+  %arrayidx9 = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 2, i64 %indvars.iv
+  %6 = load i8* %arrayidx9, align 1, !tbaa !0
+  %conv = zext i8 %6 to i32
+  %cmp13 = icmp eq i32 %conv, %1
+  br i1 %cmp13, label %cond.true, label %for.cond
+
+cond.true:                                        ; preds = %for.body
+  %add = sub i32 8, %i.031
+  %sub = add i32 %add, %3
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.end, %for.cond, %cond.true
+  %cond = phi i32 [ %sub, %cond.true ], [ -1, %for.cond ], [ -1, %if.end ]
+  ret i32 %cond
+}

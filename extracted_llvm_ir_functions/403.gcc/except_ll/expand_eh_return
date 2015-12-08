@@ -1,0 +1,56 @@
+define void @expand_eh_return() #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh = getelementptr inbounds %struct.function* %0, i64 0, i32 0
+  %1 = load %struct.eh_status** %eh, align 8, !tbaa !3
+  %ehr_label = getelementptr inbounds %struct.eh_status* %1, i64 0, i32 17
+  %2 = load %struct.rtx_def** %ehr_label, align 8, !tbaa !3
+  %tobool = icmp eq %struct.rtx_def* %2, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %3 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %3, 25
+  %4 = and i32 %and, 1
+  %5 = or i32 %4, 4
+  %call = tail call %struct.rtx_def* @gen_rtx_REG(i32 %5, i32 2) #6
+  %tobool2 = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool2, label %if.then3, label %if.end4
+
+if.then3:                                         ; preds = %if.end
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0)) #6
+  br label %return
+
+if.end4:                                          ; preds = %if.end
+  %6 = load %struct.function** @cfun, align 8, !tbaa !3
+  %calls_eh_return = getelementptr inbounds %struct.function* %6, i64 0, i32 56
+  %7 = bitcast [4 x i8]* %calls_eh_return to i32*
+  %bf.load = load i32* %7, align 8
+  %bf.set = or i32 %bf.load, 128
+  store i32 %bf.set, i32* %7, align 8
+  %call5 = tail call %struct.rtx_def* @gen_label_rtx() #6
+  %8 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !3
+  %call6 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call, %struct.rtx_def* %8) #6
+  tail call void @emit_jump(%struct.rtx_def* %call5) #6
+  %9 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh7 = getelementptr inbounds %struct.function* %9, i64 0, i32 0
+  %10 = load %struct.eh_status** %eh7, align 8, !tbaa !3
+  %ehr_label8 = getelementptr inbounds %struct.eh_status* %10, i64 0, i32 17
+  %11 = load %struct.rtx_def** %ehr_label8, align 8, !tbaa !3
+  %call9 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %11) #6
+  tail call void @clobber_return_register() #6
+  %12 = load %struct.function** @cfun, align 8, !tbaa !3
+  %eh10 = getelementptr inbounds %struct.function* %12, i64 0, i32 0
+  %13 = load %struct.eh_status** %eh10, align 8, !tbaa !3
+  %ehr_stackadj = getelementptr inbounds %struct.eh_status* %13, i64 0, i32 15
+  %14 = load %struct.rtx_def** %ehr_stackadj, align 8, !tbaa !3
+  %ehr_handler = getelementptr inbounds %struct.eh_status* %13, i64 0, i32 16
+  %15 = load %struct.rtx_def** %ehr_handler, align 8, !tbaa !3
+  %call12 = tail call %struct.rtx_def* @gen_eh_return(%struct.rtx_def* %14, %struct.rtx_def* %15) #6
+  %call13 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call12) #6
+  %call14 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %call5) #6
+  br label %return
+
+return:                                           ; preds = %entry, %if.end4, %if.then3
+  ret void
+}

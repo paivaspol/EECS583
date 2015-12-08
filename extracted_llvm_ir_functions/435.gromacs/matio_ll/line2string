@@ -1,0 +1,62 @@
+define i8* @line2string(i8** nocapture %line) #0 {
+entry:
+  %0 = load i8** %line, align 8, !tbaa !0
+  %cmp = icmp eq i8* %0, null
+  br i1 %cmp, label %return, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %entry
+  %1 = load i8* %0, align 1, !tbaa !1
+  %cmp150 = icmp eq i8 %1, 34
+  %cmp551 = icmp ne i8 %1, 0
+  %not.cmp152 = xor i1 %cmp150, true
+  %.cmp553 = and i1 %cmp551, %not.cmp152
+  br i1 %.cmp553, label %while.body, label %while.end
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %2 = phi i8* [ %incdec.ptr, %while.body ], [ %0, %while.cond.preheader ]
+  %incdec.ptr = getelementptr inbounds i8* %2, i64 1
+  store i8* %incdec.ptr, i8** %line, align 8, !tbaa !0
+  %3 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %cmp1 = icmp eq i8 %3, 34
+  %cmp5 = icmp ne i8 %3, 0
+  %not.cmp1 = xor i1 %cmp1, true
+  %.cmp5 = and i1 %cmp5, %not.cmp1
+  br i1 %.cmp5, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  %cmp1.lcssa = phi i1 [ %cmp150, %while.cond.preheader ], [ %cmp1, %while.body ]
+  %.lcssa = phi i8* [ %0, %while.cond.preheader ], [ %incdec.ptr, %while.body ]
+  br i1 %cmp1.lcssa, label %if.end, label %return
+
+if.end:                                           ; preds = %while.end
+  %incdec.ptr12 = getelementptr inbounds i8* %.lcssa, i64 1
+  store i8* %incdec.ptr12, i8** %line, align 8, !tbaa !0
+  br label %while.cond13
+
+while.cond13:                                     ; preds = %while.cond13, %if.end
+  %indvars.iv = phi i64 [ %incdec.ptr12.sum, %while.cond13 ], [ 0, %if.end ]
+  %incdec.ptr12.sum = add i64 %indvars.iv, 1
+  %arrayidx14 = getelementptr inbounds i8* %.lcssa, i64 %incdec.ptr12.sum
+  %4 = load i8* %arrayidx14, align 1, !tbaa !1
+  %cmp16 = icmp eq i8 %4, 34
+  %cmp22 = icmp ne i8 %4, 0
+  %not.cmp16 = xor i1 %cmp16, true
+  %.cmp22 = and i1 %cmp22, %not.cmp16
+  br i1 %.cmp22, label %while.cond13, label %while.end26
+
+while.end26:                                      ; preds = %while.cond13
+  br i1 %cmp16, label %if.else, label %if.then32
+
+if.then32:                                        ; preds = %while.end26
+  store i8* null, i8** %line, align 8, !tbaa !0
+  br label %return
+
+if.else:                                          ; preds = %while.end26
+  store i8 0, i8* %arrayidx14, align 1, !tbaa !1
+  %.pre = load i8** %line, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then32, %entry, %while.end
+  %retval.0 = phi i8* [ null, %while.end ], [ null, %entry ], [ null, %if.then32 ], [ %.pre, %if.else ]
+  ret i8* %retval.0
+}

@@ -1,0 +1,50 @@
+define void @free_resource_info() #0 {
+entry:
+  %0 = load %struct.target_info*** @target_hash_table, align 8, !tbaa !0
+  %cmp = icmp eq %struct.target_info** %0, null
+  br i1 %cmp, label %if.end, label %for.body
+
+for.body:                                         ; preds = %for.inc, %entry
+  %1 = phi %struct.target_info** [ %0, %entry ], [ %5, %for.inc ]
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds %struct.target_info** %1, i64 %indvars.iv
+  %2 = load %struct.target_info** %arrayidx, align 8, !tbaa !0
+  %tobool10 = icmp eq %struct.target_info* %2, null
+  br i1 %tobool10, label %for.inc, label %while.body
+
+while.body:                                       ; preds = %for.body, %while.body
+  %ti.011 = phi %struct.target_info* [ %3, %while.body ], [ %2, %for.body ]
+  %next2 = getelementptr inbounds %struct.target_info* %ti.011, i64 0, i32 1
+  %3 = load %struct.target_info** %next2, align 8, !tbaa !0
+  %4 = bitcast %struct.target_info* %ti.011 to i8*
+  tail call void @free(i8* %4) #5
+  %tobool = icmp eq %struct.target_info* %3, null
+  br i1 %tobool, label %for.inc, label %while.body
+
+for.inc:                                          ; preds = %while.body, %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 257
+  %5 = load %struct.target_info*** @target_hash_table, align 8, !tbaa !0
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  %6 = bitcast %struct.target_info** %5 to i8*
+  tail call void @free(i8* %6) #5
+  store %struct.target_info** null, %struct.target_info*** @target_hash_table, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %for.end
+  %7 = load i32** @bb_ticks, align 8, !tbaa !0
+  %cmp3 = icmp eq i32* %7, null
+  br i1 %cmp3, label %if.end5, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %8 = bitcast i32* %7 to i8*
+  tail call void @free(i8* %8) #5
+  store i32* null, i32** @bb_ticks, align 8, !tbaa !0
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.end, %if.then4
+  ret void
+}

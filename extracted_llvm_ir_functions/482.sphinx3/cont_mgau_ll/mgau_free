@@ -1,0 +1,76 @@
+define void @mgau_free(%struct.mgau_model_t* %g) #0 {
+entry:
+  %tobool = icmp eq %struct.mgau_model_t* %g, null
+  br i1 %tobool, label %if.end35, label %if.then
+
+if.then:                                          ; preds = %entry
+  %mgau = getelementptr inbounds %struct.mgau_model_t* %g, i64 0, i32 3
+  %0 = load %struct.mgau_t** %mgau, align 8, !tbaa !3
+  %mean = getelementptr inbounds %struct.mgau_t* %0, i64 0, i32 1
+  %1 = load float*** %mean, align 8, !tbaa !3
+  %tobool1 = icmp eq float** %1, null
+  br i1 %tobool1, label %if.end, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %2 = bitcast float** %1 to i8*
+  tail call void @ckd_free(i8* %2) #5
+  %.pre = load %struct.mgau_t** %mgau, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then2
+  %3 = phi %struct.mgau_t* [ %0, %if.then ], [ %.pre, %if.then2 ]
+  %var = getelementptr inbounds %struct.mgau_t* %3, i64 0, i32 2
+  %4 = load float*** %var, align 8, !tbaa !3
+  %tobool8 = icmp eq float** %4, null
+  br i1 %tobool8, label %if.end13, label %if.then9
+
+if.then9:                                         ; preds = %if.end
+  %5 = bitcast float** %4 to i8*
+  tail call void @ckd_free(i8* %5) #5
+  %.pre47 = load %struct.mgau_t** %mgau, align 8, !tbaa !3
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.end, %if.then9
+  %6 = phi %struct.mgau_t* [ %3, %if.end ], [ %.pre47, %if.then9 ]
+  %lrd = getelementptr inbounds %struct.mgau_t* %6, i64 0, i32 3
+  %7 = load float** %lrd, align 8, !tbaa !3
+  %tobool16 = icmp eq float* %7, null
+  br i1 %tobool16, label %if.end21, label %if.then17
+
+if.then17:                                        ; preds = %if.end13
+  %8 = bitcast float* %7 to i8*
+  tail call void @ckd_free(i8* %8) #5
+  %.pre48 = load %struct.mgau_t** %mgau, align 8, !tbaa !3
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.end13, %if.then17
+  %9 = phi %struct.mgau_t* [ %6, %if.end13 ], [ %.pre48, %if.then17 ]
+  %mixw = getelementptr inbounds %struct.mgau_t* %9, i64 0, i32 4
+  %10 = load i32** %mixw, align 8, !tbaa !3
+  %tobool24 = icmp eq i32* %10, null
+  br i1 %tobool24, label %if.end29, label %if.then25
+
+if.then25:                                        ; preds = %if.end21
+  %11 = bitcast i32* %10 to i8*
+  tail call void @ckd_free(i8* %11) #5
+  %.pr = load %struct.mgau_t** %mgau, align 8, !tbaa !3
+  br label %if.end29
+
+if.end29:                                         ; preds = %if.end21, %if.then25
+  %12 = phi %struct.mgau_t* [ %9, %if.end21 ], [ %.pr, %if.then25 ]
+  %tobool31 = icmp eq %struct.mgau_t* %12, null
+  br i1 %tobool31, label %if.end34, label %if.then32
+
+if.then32:                                        ; preds = %if.end29
+  %13 = bitcast %struct.mgau_t* %12 to i8*
+  tail call void @ckd_free(i8* %13) #5
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.end29, %if.then32
+  %14 = bitcast %struct.mgau_model_t* %g to i8*
+  tail call void @ckd_free(i8* %14) #5
+  br label %if.end35
+
+if.end35:                                         ; preds = %entry, %if.end34
+  ret void
+}

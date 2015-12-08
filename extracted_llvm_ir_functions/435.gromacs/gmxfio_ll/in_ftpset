@@ -1,0 +1,21 @@
+define i32 @in_ftpset(i32 %ftp, i32 %nset, i32* nocapture %set) #0 {
+entry:
+  %cmp4 = icmp sgt i32 %nset, 0
+  br i1 %cmp4, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %bResult.06 = phi i32 [ %.bResult.0, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i32* %set, i64 %indvars.iv
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp1 = icmp eq i32 %0, %ftp
+  %.bResult.0 = select i1 %cmp1, i32 1, i32 %bResult.06
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nset
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %bResult.0.lcssa = phi i32 [ 0, %entry ], [ %.bResult.0, %for.body ]
+  ret i32 %bResult.0.lcssa
+}

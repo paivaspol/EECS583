@@ -1,0 +1,35 @@
+define i32 @signed_condition(i32 %code) #0 {
+entry:
+  switch i32 %code, label %sw.default [
+    i32 103, label %return
+    i32 102, label %return
+    i32 105, label %return
+    i32 104, label %return
+    i32 107, label %return
+    i32 106, label %return
+    i32 109, label %sw.bb1
+    i32 108, label %sw.bb2
+    i32 111, label %sw.bb3
+    i32 110, label %sw.bb4
+  ]
+
+sw.bb1:                                           ; preds = %entry
+  br label %return
+
+sw.bb2:                                           ; preds = %entry
+  br label %return
+
+sw.bb3:                                           ; preds = %entry
+  br label %return
+
+sw.bb4:                                           ; preds = %entry
+  br label %return
+
+sw.default:                                       ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 981, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.signed_condition, i64 0, i64 0)) #9
+  unreachable
+
+return:                                           ; preds = %entry, %entry, %entry, %entry, %entry, %entry, %sw.bb4, %sw.bb3, %sw.bb2, %sw.bb1
+  %retval.0 = phi i32 [ 106, %sw.bb4 ], [ 107, %sw.bb3 ], [ 104, %sw.bb2 ], [ 105, %sw.bb1 ], [ %code, %entry ], [ %code, %entry ], [ %code, %entry ], [ %code, %entry ], [ %code, %entry ], [ %code, %entry ]
+  ret i32 %retval.0
+}

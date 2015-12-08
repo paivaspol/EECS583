@@ -1,0 +1,27 @@
+define void @output_verbatim(%struct.output_buffer* %buffer, i8* %msgid, ...) #2 {
+entry:
+  %os.i = alloca %struct.output_state, align 8
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %os.0.cast.i = bitcast %struct.output_state* %os.i to i8*
+  call void @llvm.lifetime.start(i64 80, i8* %os.0.cast.i)
+  %0 = bitcast %struct.output_buffer* %buffer to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %os.0.cast.i, i8* %0, i64 80, i32 8, i1 false) #3, !tbaa.struct !6
+  %prefix.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 0
+  store i8* null, i8** %prefix.i, align 8, !tbaa !3
+  %prefixing_rule.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 6
+  store i32 1, i32* %prefixing_rule.i, align 4, !tbaa !1
+  %cursor.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 7
+  store i8* %msgid, i8** %cursor.i, align 8, !tbaa !3
+  %format_args.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 8
+  store [1 x %struct.__va_list_tag]* %ap, [1 x %struct.__va_list_tag]** %format_args.i, align 8, !tbaa !3
+  %ideal_maximum_length.i.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 2
+  store i32 0, i32* %ideal_maximum_length.i.i, align 4, !tbaa !0
+  call fastcc void @set_real_maximum_length(%struct.output_buffer* %buffer) #10
+  call fastcc void @output_format(%struct.output_buffer* %buffer) #10
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %os.0.cast.i, i64 80, i32 8, i1 false) #3, !tbaa.struct !6
+  call void @llvm.lifetime.end(i64 80, i8* %os.0.cast.i)
+  call void @llvm.va_end(i8* %arraydecay1)
+  ret void
+}

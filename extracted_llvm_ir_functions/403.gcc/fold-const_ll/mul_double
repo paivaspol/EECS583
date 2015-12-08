@@ -1,0 +1,178 @@
+define i32 @mul_double(i64 %l1, i64 %h1, i64 %l2, i64 %h2, i64* nocapture %lv, i64* nocapture %hv) #0 {
+entry:
+  %arg1 = alloca [4 x i64], align 16
+  %arg2 = alloca [4 x i64], align 16
+  %prod = alloca [8 x i64], align 16
+  %0 = bitcast [8 x i64]* %prod to i8*
+  call void @llvm.lifetime.start(i64 64, i8* %0) #1
+  %arraydecay = getelementptr inbounds [4 x i64]* %arg1, i64 0, i64 0
+  %and.i = and i64 %l1, 4294967295
+  store i64 %and.i, i64* %arraydecay, align 16, !tbaa !0
+  %shr.i = lshr i64 %l1, 32
+  %arrayidx1.i = getelementptr inbounds [4 x i64]* %arg1, i64 0, i64 1
+  store i64 %shr.i, i64* %arrayidx1.i, align 8, !tbaa !0
+  %and2.i = and i64 %h1, 4294967295
+  %arrayidx3.i = getelementptr inbounds [4 x i64]* %arg1, i64 0, i64 2
+  store i64 %and2.i, i64* %arrayidx3.i, align 16, !tbaa !0
+  %shr4.i = lshr i64 %h1, 32
+  %arrayidx5.i = getelementptr inbounds [4 x i64]* %arg1, i64 0, i64 3
+  store i64 %shr4.i, i64* %arrayidx5.i, align 8, !tbaa !0
+  %arraydecay1 = getelementptr inbounds [4 x i64]* %arg2, i64 0, i64 0
+  %and.i85 = and i64 %l2, 4294967295
+  store i64 %and.i85, i64* %arraydecay1, align 16, !tbaa !0
+  %shr.i86 = lshr i64 %l2, 32
+  %arrayidx1.i87 = getelementptr inbounds [4 x i64]* %arg2, i64 0, i64 1
+  store i64 %shr.i86, i64* %arrayidx1.i87, align 8, !tbaa !0
+  %and2.i88 = and i64 %h2, 4294967295
+  %arrayidx3.i89 = getelementptr inbounds [4 x i64]* %arg2, i64 0, i64 2
+  store i64 %and2.i88, i64* %arrayidx3.i89, align 16, !tbaa !0
+  %shr4.i90 = lshr i64 %h2, 32
+  %arrayidx5.i91 = getelementptr inbounds [4 x i64]* %arg2, i64 0, i64 3
+  store i64 %shr4.i90, i64* %arrayidx5.i91, align 8, !tbaa !0
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 64, i32 16, i1 false)
+  br label %for.cond3.preheader
+
+for.cond3.preheader:                              ; preds = %for.end.for.cond3.preheader_crit_edge, %entry
+  %1 = phi i64 [ %and.i, %entry ], [ %.pre, %for.end.for.cond3.preheader_crit_edge ]
+  %indvars.iv108 = phi i64 [ 0, %entry ], [ %indvars.iv.next109, %for.end.for.cond3.preheader_crit_edge ]
+  br label %for.body5
+
+for.body5:                                        ; preds = %for.body5, %for.cond3.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond3.preheader ], [ %indvars.iv.next, %for.body5 ]
+  %carry.0105 = phi i64 [ 0, %for.cond3.preheader ], [ %shr, %for.body5 ]
+  %2 = add nsw i64 %indvars.iv, %indvars.iv108
+  %arrayidx7 = getelementptr inbounds [4 x i64]* %arg2, i64 0, i64 %indvars.iv
+  %3 = load i64* %arrayidx7, align 8, !tbaa !0
+  %mul = mul nsw i64 %3, %1
+  %add8 = add i64 %mul, %carry.0105
+  %arrayidx10 = getelementptr inbounds [8 x i64]* %prod, i64 0, i64 %2
+  %4 = load i64* %arrayidx10, align 8, !tbaa !0
+  %add11 = add i64 %add8, %4
+  %and = and i64 %add11, 4294967295
+  store i64 %and, i64* %arrayidx10, align 8, !tbaa !0
+  %shr = lshr i64 %add11, 32
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.end, label %for.body5
+
+for.end:                                          ; preds = %for.body5
+  %5 = add nsw i64 %indvars.iv108, 4
+  %arrayidx16 = getelementptr inbounds [8 x i64]* %prod, i64 0, i64 %5
+  store i64 %shr, i64* %arrayidx16, align 8, !tbaa !0
+  %indvars.iv.next109 = add i64 %indvars.iv108, 1
+  %lftr.wideiv111 = trunc i64 %indvars.iv.next109 to i32
+  %exitcond112 = icmp eq i32 %lftr.wideiv111, 4
+  br i1 %exitcond112, label %for.end19, label %for.end.for.cond3.preheader_crit_edge
+
+for.end.for.cond3.preheader_crit_edge:            ; preds = %for.end
+  %arrayidx.phi.trans.insert = getelementptr inbounds [4 x i64]* %arg1, i64 0, i64 %indvars.iv.next109
+  %.pre = load i64* %arrayidx.phi.trans.insert, align 8, !tbaa !0
+  br label %for.cond3.preheader
+
+for.end19:                                        ; preds = %for.end
+  %arraydecay2 = getelementptr inbounds [8 x i64]* %prod, i64 0, i64 0
+  %6 = load i64* %arraydecay2, align 16, !tbaa !0
+  %arrayidx1.i78 = getelementptr inbounds [8 x i64]* %prod, i64 0, i64 1
+  %7 = load i64* %arrayidx1.i78, align 8, !tbaa !0
+  %mul.i79 = shl i64 %7, 32
+  %add.i80 = add i64 %mul.i79, %6
+  store i64 %add.i80, i64* %lv, align 8, !tbaa !0
+  %arrayidx2.i81 = getelementptr inbounds [8 x i64]* %prod, i64 0, i64 2
+  %8 = load i64* %arrayidx2.i81, align 16, !tbaa !0
+  %arrayidx3.i82 = getelementptr inbounds [8 x i64]* %prod, i64 0, i64 3
+  %9 = load i64* %arrayidx3.i82, align 8, !tbaa !0
+  %mul4.i83 = shl i64 %9, 32
+  %add5.i84 = add i64 %mul4.i83, %8
+  store i64 %add5.i84, i64* %hv, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds [8 x i64]* %prod, i64 0, i64 4
+  %10 = load i64* %add.ptr, align 16, !tbaa !0
+  %arrayidx1.i76 = getelementptr inbounds [8 x i64]* %prod, i64 0, i64 5
+  %11 = load i64* %arrayidx1.i76, align 8, !tbaa !0
+  %mul.i = shl i64 %11, 32
+  %add.i = add i64 %mul.i, %10
+  %arrayidx2.i = getelementptr inbounds [8 x i64]* %prod, i64 0, i64 6
+  %12 = load i64* %arrayidx2.i, align 16, !tbaa !0
+  %arrayidx3.i77 = getelementptr inbounds [8 x i64]* %prod, i64 0, i64 7
+  %13 = load i64* %arrayidx3.i77, align 8, !tbaa !0
+  %mul4.i = shl i64 %13, 32
+  %add5.i = add i64 %mul4.i, %12
+  %cmp22 = icmp slt i64 %h1, 0
+  br i1 %cmp22, label %if.then, label %if.end
+
+if.then:                                          ; preds = %for.end19
+  %cmp.i66 = icmp eq i64 %l2, 0
+  br i1 %cmp.i66, label %if.then.i70, label %if.else.i73
+
+if.then.i70:                                      ; preds = %if.then
+  %sub.i67 = sub nsw i64 0, %h2
+  br label %neg_double.exit75
+
+if.else.i73:                                      ; preds = %if.then
+  %sub2.i71 = sub i64 0, %l2
+  %neg.i72 = xor i64 %h2, -1
+  br label %neg_double.exit75
+
+neg_double.exit75:                                ; preds = %if.then.i70, %if.else.i73
+  %14 = phi i64 [ 0, %if.then.i70 ], [ %sub2.i71, %if.else.i73 ]
+  %sub.i6799 = phi i64 [ %sub.i67, %if.then.i70 ], [ %neg.i72, %if.else.i73 ]
+  %uadd.i56 = call { i64, i1 } @llvm.uadd.with.overflow.i64(i64 %14, i64 %add.i) #1
+  %15 = extractvalue { i64, i1 } %uadd.i56, 0
+  %add1.i57 = add nsw i64 %sub.i6799, %add5.i
+  %cmp.i58 = extractvalue { i64, i1 } %uadd.i56, 1
+  %conv2.i59 = zext i1 %cmp.i58 to i64
+  %add3.i60 = add nsw i64 %add1.i57, %conv2.i59
+  br label %if.end
+
+if.end:                                           ; preds = %neg_double.exit75, %for.end19
+  %add.i102 = phi i64 [ %15, %neg_double.exit75 ], [ %add.i, %for.end19 ]
+  %add5.i100 = phi i64 [ %add3.i60, %neg_double.exit75 ], [ %add5.i, %for.end19 ]
+  %cmp24 = icmp slt i64 %h2, 0
+  br i1 %cmp24, label %if.then25, label %if.end28
+
+if.then25:                                        ; preds = %if.end
+  %cmp.i52 = icmp eq i64 %l1, 0
+  br i1 %cmp.i52, label %if.then.i, label %if.else.i
+
+if.then.i:                                        ; preds = %if.then25
+  %sub.i = sub nsw i64 0, %h1
+  br label %neg_double.exit
+
+if.else.i:                                        ; preds = %if.then25
+  %sub2.i = sub i64 0, %l1
+  %neg.i55 = xor i64 %h1, -1
+  br label %neg_double.exit
+
+neg_double.exit:                                  ; preds = %if.then.i, %if.else.i
+  %16 = phi i64 [ 0, %if.then.i ], [ %sub2.i, %if.else.i ]
+  %sub.i6798 = phi i64 [ %sub.i, %if.then.i ], [ %neg.i55, %if.else.i ]
+  %uadd.i = call { i64, i1 } @llvm.uadd.with.overflow.i64(i64 %16, i64 %add.i102) #1
+  %17 = extractvalue { i64, i1 } %uadd.i, 0
+  %add1.i = add nsw i64 %sub.i6798, %add5.i100
+  %cmp.i = extractvalue { i64, i1 } %uadd.i, 1
+  %conv2.i = zext i1 %cmp.i to i64
+  %add3.i = add nsw i64 %add1.i, %conv2.i
+  br label %if.end28
+
+if.end28:                                         ; preds = %neg_double.exit, %if.end
+  %add.i103 = phi i64 [ %17, %neg_double.exit ], [ %add.i102, %if.end ]
+  %add5.i101 = phi i64 [ %add3.i, %neg_double.exit ], [ %add5.i100, %if.end ]
+  %cmp29 = icmp slt i64 %add5.i84, 0
+  br i1 %cmp29, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %if.end28
+  %and30 = and i64 %add5.i101, %add.i103
+  %neg = xor i64 %and30, -1
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.end28
+  %or = or i64 %add5.i101, %add.i103
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i64 [ %neg, %cond.true ], [ %or, %cond.false ]
+  %cmp31 = icmp ne i64 %cond, 0
+  %conv = zext i1 %cmp31 to i32
+  call void @llvm.lifetime.end(i64 64, i8* %0) #1
+  ret i32 %conv
+}

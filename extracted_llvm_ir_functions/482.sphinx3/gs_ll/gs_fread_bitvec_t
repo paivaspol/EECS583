@@ -1,0 +1,20 @@
+define void @gs_fread_bitvec_t(i32* nocapture %val, %struct.gs_s* nocapture %gs) #0 {
+entry:
+  %0 = bitcast i32* %val to i8*
+  %n_mbyte = getelementptr inbounds %struct.gs_s* %gs, i64 0, i32 5
+  %1 = load i32* %n_mbyte, align 4, !tbaa !3
+  %conv = sext i32 %1 to i64
+  %fp = getelementptr inbounds %struct.gs_s* %gs, i64 0, i32 8
+  %2 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
+  %call = tail call i64 @fread(i8* %0, i64 %conv, i64 1, %struct._IO_FILE* %2) #5
+  %cmp = icmp eq i64 %call, 1
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @_E__pr_header(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i64 78, i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0)) #5
+  tail call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([14 x i8]* @.str2, i64 0, i64 0)) #5
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

@@ -1,0 +1,94 @@
+define internal fastcc %struct.rtx_def* @walk_fixup_memory_subreg(%struct.rtx_def* %x, %struct.rtx_def* %insn) #0 {
+entry:
+  %cmp = icmp eq %struct.rtx_def* %x, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp1 = icmp eq i32 %bf.clear, 63
+  br i1 %cmp1, label %land.lhs.true, label %if.end6
+
+land.lhs.true:                                    ; preds = %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load2 = load i32* %2, align 8
+  %bf.clear3 = and i32 %bf.load2, 65535
+  %cmp4 = icmp eq i32 %bf.clear3, 66
+  br i1 %cmp4, label %if.then5, label %if.end6
+
+if.then5:                                         ; preds = %land.lhs.true
+  %call = tail call fastcc %struct.rtx_def* @fixup_memory_subreg(%struct.rtx_def* %x, %struct.rtx_def* %insn, i32 1) #9
+  br label %return
+
+if.end6:                                          ; preds = %land.lhs.true, %if.end
+  %idxprom1 = zext i32 %bf.clear to i64
+  %arrayidx7 = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom1
+  %3 = load i8** %arrayidx7, align 8, !tbaa !0
+  %arrayidx9 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom1
+  %4 = load i8* %arrayidx9, align 1, !tbaa !1
+  %cmp106 = icmp eq i8 %4, 0
+  br i1 %cmp106, label %return, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.end6
+  %5 = zext i8 %4 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %indvars.iv8 = phi i64 [ %5, %for.body.lr.ph ], [ %indvars.iv.next9, %for.cond.backedge ]
+  %indvars.iv.next9 = add i64 %indvars.iv8, -1
+  %arrayidx13 = getelementptr inbounds i8* %3, i64 %indvars.iv.next9
+  %6 = load i8* %arrayidx13, align 1, !tbaa !1
+  switch i8 %6, label %for.cond.backedge [
+    i8 101, label %if.then17
+    i8 69, label %for.cond33.preheader
+  ]
+
+for.cond.backedge:                                ; preds = %for.cond33.preheader, %for.body39, %for.body, %if.then17
+  %7 = trunc i64 %indvars.iv.next9 to i32
+  %cmp10 = icmp sgt i32 %7, 0
+  br i1 %cmp10, label %for.body, label %return
+
+for.cond33.preheader:                             ; preds = %for.body
+  %arrayidx36 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next9
+  %rtvec = bitcast %union.rtunion_def* %arrayidx36 to %struct.rtvec_def**
+  %8 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem2 = getelementptr inbounds %struct.rtvec_def* %8, i64 0, i32 0
+  %9 = load i32* %num_elem2, align 4, !tbaa !4
+  %cmp373 = icmp sgt i32 %9, 0
+  br i1 %cmp373, label %for.body39, label %for.cond.backedge
+
+if.then17:                                        ; preds = %for.body
+  %arrayidx20 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 %indvars.iv.next9
+  %rtx21 = bitcast %union.rtunion_def* %arrayidx20 to %struct.rtx_def**
+  %10 = load %struct.rtx_def** %rtx21, align 8, !tbaa !0
+  %call22 = tail call fastcc %struct.rtx_def* @walk_fixup_memory_subreg(%struct.rtx_def* %10, %struct.rtx_def* %insn) #9
+  %11 = getelementptr inbounds %union.rtunion_def* %arrayidx20, i64 0, i32 0
+  %call22.c = ptrtoint %struct.rtx_def* %call22 to i64
+  store i64 %call22.c, i64* %11, align 8, !tbaa !0
+  br label %for.cond.backedge
+
+for.body39:                                       ; preds = %for.cond33.preheader, %for.body39
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body39 ], [ 0, %for.cond33.preheader ]
+  %12 = phi %struct.rtvec_def* [ %15, %for.body39 ], [ %8, %for.cond33.preheader ]
+  %arrayidx45 = getelementptr inbounds %struct.rtvec_def* %12, i64 0, i32 1, i64 %indvars.iv
+  %13 = load %struct.rtx_def** %arrayidx45, align 8, !tbaa !0
+  %call46 = tail call fastcc %struct.rtx_def* @walk_fixup_memory_subreg(%struct.rtx_def* %13, %struct.rtx_def* %insn) #9
+  %14 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %arrayidx53 = getelementptr inbounds %struct.rtvec_def* %14, i64 0, i32 1, i64 %indvars.iv
+  store %struct.rtx_def* %call46, %struct.rtx_def** %arrayidx53, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %15 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %15, i64 0, i32 0
+  %16 = load i32* %num_elem, align 4, !tbaa !4
+  %17 = trunc i64 %indvars.iv.next to i32
+  %cmp37 = icmp slt i32 %17, %16
+  br i1 %cmp37, label %for.body39, label %for.cond.backedge
+
+return:                                           ; preds = %if.end6, %for.cond.backedge, %entry, %if.then5
+  %retval.0 = phi %struct.rtx_def* [ %call, %if.then5 ], [ null, %entry ], [ %x, %for.cond.backedge ], [ %x, %if.end6 ]
+  ret %struct.rtx_def* %retval.0
+}

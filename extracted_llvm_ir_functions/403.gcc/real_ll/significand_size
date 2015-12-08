@@ -1,0 +1,30 @@
+define i32 @significand_size(i32 %mode) #0 {
+entry:
+  %idxprom = sext i32 %mode to i64
+  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom
+  %0 = load i16* %arrayidx, align 2, !tbaa !0
+  %conv = zext i16 %0 to i32
+  switch i32 %conv, label %sw.default [
+    i32 32, label %return
+    i32 64, label %sw.bb1
+    i32 96, label %sw.bb2
+    i32 128, label %sw.bb3
+  ]
+
+sw.bb1:                                           ; preds = %entry
+  br label %return
+
+sw.bb2:                                           ; preds = %entry
+  br label %return
+
+sw.bb3:                                           ; preds = %entry
+  br label %return
+
+sw.default:                                       ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str2, i64 0, i64 0), i32 6993, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.significand_size, i64 0, i64 0)) #8
+  unreachable
+
+return:                                           ; preds = %entry, %sw.bb3, %sw.bb2, %sw.bb1
+  %retval.0 = phi i32 [ 64, %sw.bb3 ], [ 64, %sw.bb2 ], [ 53, %sw.bb1 ], [ 24, %entry ]
+  ret i32 %retval.0
+}

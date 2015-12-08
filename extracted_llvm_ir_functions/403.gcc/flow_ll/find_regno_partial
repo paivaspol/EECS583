@@ -1,0 +1,68 @@
+define internal i32 @find_regno_partial(%struct.rtx_def** nocapture %ptr, i8* nocapture %data) #0 {
+entry:
+  %regno_to_find = bitcast i8* %data to i32*
+  %0 = load i32* %regno_to_find, align 4, !tbaa !0
+  %retval1 = getelementptr inbounds i8* %data, i64 8
+  %1 = bitcast i8* %retval1 to %struct.rtx_def**
+  store %struct.rtx_def* null, %struct.rtx_def** %1, align 8, !tbaa !3
+  %2 = load %struct.rtx_def** %ptr, align 8, !tbaa !3
+  %cmp = icmp eq %struct.rtx_def* %2, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load = load i32* %3, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %return [
+    i32 133, label %sw.bb
+    i32 132, label %sw.bb
+    i32 64, label %sw.bb
+    i32 63, label %sw.bb17
+  ]
+
+sw.bb:                                            ; preds = %if.end, %if.end, %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %5 = bitcast %struct.rtx_def* %4 to i32*
+  %bf.load2 = load i32* %5, align 8
+  %bf.clear3 = and i32 %bf.load2, 65535
+  %cmp4 = icmp eq i32 %bf.clear3, 61
+  br i1 %cmp4, label %land.lhs.true, label %return
+
+land.lhs.true:                                    ; preds = %sw.bb
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %4, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx9 to i32*
+  %6 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp10 = icmp eq i32 %6, %0
+  br i1 %cmp10, label %if.then11, label %return
+
+if.then11:                                        ; preds = %land.lhs.true
+  store %struct.rtx_def* %4, %struct.rtx_def** %1, align 8, !tbaa !3
+  br label %return
+
+sw.bb17:                                          ; preds = %if.end
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtx20 = bitcast %union.rtunion_def* %arrayidx19 to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %rtx20, align 8, !tbaa !3
+  %8 = bitcast %struct.rtx_def* %7 to i32*
+  %bf.load21 = load i32* %8, align 8
+  %bf.clear22 = and i32 %bf.load21, 65535
+  %cmp23 = icmp eq i32 %bf.clear22, 61
+  br i1 %cmp23, label %land.lhs.true24, label %return
+
+land.lhs.true24:                                  ; preds = %sw.bb17
+  %arrayidx29 = getelementptr inbounds %struct.rtx_def* %7, i64 0, i32 1, i64 0
+  %rtuint30 = bitcast %union.rtunion_def* %arrayidx29 to i32*
+  %9 = load i32* %rtuint30, align 4, !tbaa !0
+  %cmp31 = icmp eq i32 %9, %0
+  br i1 %cmp31, label %if.then32, label %return
+
+if.then32:                                        ; preds = %land.lhs.true24
+  store %struct.rtx_def* %7, %struct.rtx_def** %1, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %sw.bb, %land.lhs.true24, %sw.bb17, %if.end, %entry, %if.then32, %if.then11
+  %retval.0 = phi i32 [ 1, %if.then32 ], [ 1, %if.then11 ], [ 0, %entry ], [ 0, %if.end ], [ 0, %sw.bb17 ], [ 0, %land.lhs.true24 ], [ 0, %sw.bb ], [ 0, %land.lhs.true ]
+  ret i32 %retval.0
+}

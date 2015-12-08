@@ -1,0 +1,120 @@
+define void @init_neighbor_list(%struct._IO_FILE* nocapture %log, %struct.t_forcerec* %fr, i32 %homenr) #0 {
+entry:
+  %nWatMol = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 41
+  %0 = load i32* %nWatMol, align 4, !tbaa !0
+  %1 = mul i32 %0, -3
+  %sub = add i32 %1, %homenr
+  %nMNOMol = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 39
+  %2 = load i32* %nMNOMol, align 4, !tbaa !0
+  %conv = sitofp i32 %2 to float
+  %arrayidx = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 40, i64 0
+  %3 = load float* %arrayidx, align 4, !tbaa !4
+  %mul1 = fmul float %conv, %3
+  %conv2 = fptosi float %mul1 to i32
+  %sub3 = sub i32 %sub, %conv2
+  %cmp = icmp slt i32 %sub3, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([87 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([50 x i8]* @.str2, i64 0, i64 0), i32 286) #8
+  %.pre = load i32* %nMNOMol, align 4, !tbaa !0
+  %.pre162 = load i32* %nWatMol, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %4 = phi i32 [ %.pre162, %if.then ], [ %0, %entry ]
+  %5 = phi i32 [ %.pre, %if.then ], [ %2, %entry ]
+  %bTwinRange = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 51
+  %6 = load i32* %bTwinRange, align 4, !tbaa !0
+  %tobool = icmp eq i32 %6, 0
+  br i1 %tobool, label %if.end20, label %if.then7
+
+if.then7:                                         ; preds = %if.end
+  %cmp9 = icmp slt i32 %5, 50
+  %. = select i1 %cmp9, i32 %5, i32 50
+  %cmp13 = icmp slt i32 %4, 50
+  %cond19 = select i1 %cmp13, i32 %4, i32 50
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.end, %if.then7
+  %maxlr.0 = phi i32 [ 50, %if.then7 ], [ 0, %if.end ]
+  %maxlr_mno.0 = phi i32 [ %., %if.then7 ], [ 0, %if.end ]
+  %maxlr_wat.0 = phi i32 [ %cond19, %if.then7 ], [ 0, %if.end ]
+  %arrayidx21 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 0
+  %arrayidx22 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 0
+  %call = tail call fastcc i32 @nbf_index(%struct.t_forcerec* %fr, i32 1, i32 1, i32 0, i32 0) #7
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx21, %struct.t_nblist* %arrayidx22, i32 %sub3, i32 %maxlr.0, i32 0, i32 %call) #7
+  %arrayidx24 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 1
+  %arrayidx26 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 1
+  %call27 = tail call fastcc i32 @nbf_index(%struct.t_forcerec* %fr, i32 1, i32 0, i32 0, i32 0) #7
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx24, %struct.t_nblist* %arrayidx26, i32 %sub3, i32 %maxlr.0, i32 0, i32 %call27) #7
+  %arrayidx29 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 2
+  %arrayidx31 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 2
+  %bcoultab.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 13
+  %7 = load i32* %bcoultab.i, align 4, !tbaa !0
+  %8 = icmp eq i32 %7, 0
+  br i1 %8, label %if.else.i, label %nbf_index.exit
+
+if.else.i:                                        ; preds = %if.end20
+  %bRF.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 7
+  %9 = load i32* %bRF.i, align 4, !tbaa !0
+  %tobool4.i = icmp eq i32 %9, 0
+  %phitmp161 = select i1 %tobool4.i, i64 5, i64 10
+  br label %nbf_index.exit
+
+nbf_index.exit:                                   ; preds = %if.end20, %if.else.i
+  %icoul.0.i = phi i64 [ 15, %if.end20 ], [ %phitmp161, %if.else.i ]
+  %arrayidx.i = getelementptr inbounds [20 x i32]* @nbf_index.inloop, i64 0, i64 %icoul.0.i
+  %10 = load i32* %arrayidx.i, align 4, !tbaa !0
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx29, %struct.t_nblist* %arrayidx31, i32 %sub3, i32 %maxlr.0, i32 0, i32 %10) #7
+  %arrayidx34 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 6
+  %arrayidx36 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 6
+  %call37 = tail call fastcc i32 @nbf_index(%struct.t_forcerec* %fr, i32 1, i32 1, i32 0, i32 1) #7
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx34, %struct.t_nblist* %arrayidx36, i32 %5, i32 %maxlr_mno.0, i32 1, i32 %call37) #7
+  %arrayidx39 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 7
+  %arrayidx41 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 7
+  %call42 = tail call fastcc i32 @nbf_index(%struct.t_forcerec* %fr, i32 1, i32 0, i32 0, i32 1) #7
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx39, %struct.t_nblist* %arrayidx41, i32 %5, i32 %maxlr_mno.0, i32 1, i32 %call42) #7
+  %arrayidx44 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 8
+  %arrayidx46 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 8
+  %call47 = tail call fastcc i32 @nbf_index(%struct.t_forcerec* %fr, i32 0, i32 1, i32 0, i32 1) #7
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx44, %struct.t_nblist* %arrayidx46, i32 %5, i32 %maxlr_mno.0, i32 1, i32 %call47) #7
+  %arrayidx49 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 9
+  %arrayidx51 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 9
+  %call52 = tail call fastcc i32 @nbf_index(%struct.t_forcerec* %fr, i32 1, i32 1, i32 0, i32 2) #7
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx49, %struct.t_nblist* %arrayidx51, i32 %4, i32 %maxlr_wat.0, i32 2, i32 %call52) #7
+  %arrayidx54 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 10
+  %arrayidx56 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 10
+  %call57 = tail call fastcc i32 @nbf_index(%struct.t_forcerec* %fr, i32 0, i32 1, i32 0, i32 2) #7
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx54, %struct.t_nblist* %arrayidx56, i32 %4, i32 %maxlr_wat.0, i32 2, i32 %call57) #7
+  %arrayidx59 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 11
+  %arrayidx61 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 11
+  %call62 = tail call fastcc i32 @nbf_index(%struct.t_forcerec* %fr, i32 1, i32 1, i32 0, i32 3) #7
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx59, %struct.t_nblist* %arrayidx61, i32 %4, i32 %maxlr_wat.0, i32 3, i32 %call62) #7
+  %arrayidx64 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 12
+  %arrayidx66 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 12
+  %call67 = tail call fastcc i32 @nbf_index(%struct.t_forcerec* %fr, i32 0, i32 1, i32 0, i32 3) #7
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx64, %struct.t_nblist* %arrayidx66, i32 %4, i32 %maxlr_wat.0, i32 3, i32 %call67) #7
+  %efep = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 29
+  %11 = load i32* %efep, align 4, !tbaa !0
+  %cmp68 = icmp eq i32 %11, 0
+  br i1 %cmp68, label %if.end86, label %if.then70
+
+if.then70:                                        ; preds = %nbf_index.exit
+  %arrayidx72 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 3
+  %arrayidx74 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 3
+  %call75 = tail call fastcc i32 @nbf_index(%struct.t_forcerec* %fr, i32 1, i32 1, i32 1, i32 0) #7
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx72, %struct.t_nblist* %arrayidx74, i32 %sub3, i32 %maxlr.0, i32 0, i32 %call75) #7
+  %arrayidx77 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 4
+  %arrayidx79 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 4
+  %call80 = tail call fastcc i32 @nbf_index(%struct.t_forcerec* %fr, i32 1, i32 0, i32 1, i32 0) #7
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx77, %struct.t_nblist* %arrayidx79, i32 %sub3, i32 %maxlr.0, i32 0, i32 %call80) #7
+  %arrayidx82 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 49, i64 5
+  %arrayidx84 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 5
+  %call85 = tail call fastcc i32 @nbf_index(%struct.t_forcerec* %fr, i32 0, i32 1, i32 1, i32 0) #7
+  tail call fastcc void @init_nblist(%struct.t_nblist* %arrayidx82, %struct.t_nblist* %arrayidx84, i32 %sub3, i32 %maxlr.0, i32 0, i32 %call85) #7
+  br label %if.end86
+
+if.end86:                                         ; preds = %nbf_index.exit, %if.then70
+  ret void
+}

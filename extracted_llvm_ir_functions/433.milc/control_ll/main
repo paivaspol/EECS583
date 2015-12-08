@@ -1,0 +1,130 @@
+define i32 @main(i32 %argc, i8** %argv) #0 {
+entry:
+  tail call void @initialize_machine(i32 %argc, i8** %argv) #4
+  tail call void (...)* @g_sync() #4
+  %call = tail call i32 (...)* @setup() #4
+  %call173 = tail call i32 @readin(i32 %call) #4
+  %cmp74 = icmp eq i32 %call173, 0
+  br i1 %cmp74, label %while.body, label %while.end
+
+while.body:                                       ; preds = %entry, %while.cond.backedge
+  %call2 = tail call double (...)* @dclock() #4
+  %0 = load i32* @warms, align 4, !tbaa !0
+  %cmp366 = icmp sgt i32 %0, 0
+  br i1 %cmp366, label %for.body, label %for.end
+
+for.body:                                         ; preds = %while.body, %for.body
+  %traj_done.067 = phi i32 [ %inc, %for.body ], [ 0, %while.body ]
+  %call4 = tail call i32 (...)* @update() #4
+  %inc = add nsw i32 %traj_done.067, 1
+  %1 = load i32* @warms, align 4, !tbaa !0
+  %cmp3 = icmp slt i32 %inc, %1
+  br i1 %cmp3, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %while.body
+  %2 = load i32* @this_node, align 4, !tbaa !0
+  %cmp5 = icmp eq i32 %2, 0
+  br i1 %cmp5, label %if.then, label %if.end
+
+if.then:                                          ; preds = %for.end
+  %puts65 = tail call i32 @puts(i8* getelementptr inbounds ([18 x i8]* @str40, i64 0, i64 0))
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %for.end
+  %3 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call7 = tail call i32 @fflush(%struct._IO_FILE* %3) #4
+  %4 = load i32* @trajecs, align 4, !tbaa !0
+  %cmp968 = icmp sgt i32 %4, 0
+  br i1 %cmp968, label %for.body10, label %for.end27
+
+for.body10:                                       ; preds = %if.end, %for.inc25
+  %meascount.071 = phi i32 [ %meascount.1, %for.inc25 ], [ 0, %if.end ]
+  %traj_done.170 = phi i32 [ %inc26, %for.inc25 ], [ 0, %if.end ]
+  %avs_iters.069 = phi i32 [ %avs_iters.1, %for.inc25 ], [ 0, %if.end ]
+  %call11 = tail call i32 (...)* @update() #4
+  %5 = load i32* @propinterval, align 4, !tbaa !0
+  %rem = srem i32 %traj_done.170, %5
+  %sub12 = add nsw i32 %5, -1
+  %cmp13 = icmp eq i32 %rem, %sub12
+  br i1 %cmp13, label %if.then14, label %for.inc25
+
+if.then14:                                        ; preds = %for.body10
+  tail call void @rephase(i32 0) #4
+  tail call void @g_measure() #4
+  tail call void @rephase(i32 1) #4
+  %6 = load double* @mass, align 8, !tbaa !4
+  tail call void @f_meas_imp(i32 1040, i32 1184, double %6) #4
+  %add = add nsw i32 %call11, %avs_iters.069
+  %inc22 = add nsw i32 %meascount.071, 1
+  %7 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call23 = tail call i32 @fflush(%struct._IO_FILE* %7) #4
+  br label %for.inc25
+
+for.inc25:                                        ; preds = %for.body10, %if.then14
+  %avs_iters.1 = phi i32 [ %add, %if.then14 ], [ %avs_iters.069, %for.body10 ]
+  %meascount.1 = phi i32 [ %inc22, %if.then14 ], [ %meascount.071, %for.body10 ]
+  %inc26 = add nsw i32 %traj_done.170, 1
+  %8 = load i32* @trajecs, align 4, !tbaa !0
+  %cmp9 = icmp slt i32 %inc26, %8
+  br i1 %cmp9, label %for.body10, label %for.end27
+
+for.end27:                                        ; preds = %for.inc25, %if.end
+  %meascount.0.lcssa = phi i32 [ 0, %if.end ], [ %meascount.1, %for.inc25 ]
+  %avs_iters.0.lcssa = phi i32 [ 0, %if.end ], [ %avs_iters.1, %for.inc25 ]
+  %9 = load i32* @this_node, align 4, !tbaa !0
+  %cmp28 = icmp eq i32 %9, 0
+  br i1 %cmp28, label %if.then30, label %if.end32
+
+if.then30:                                        ; preds = %for.end27
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([18 x i8]* @str, i64 0, i64 0))
+  br label %if.end32
+
+if.end32:                                         ; preds = %if.then30, %for.end27
+  %10 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call33 = tail call i32 @fflush(%struct._IO_FILE* %10) #4
+  %cmp34 = icmp sgt i32 %meascount.0.lcssa, 0
+  %11 = load i32* @this_node, align 4, !tbaa !0
+  %cmp37 = icmp eq i32 %11, 0
+  %or.cond = and i1 %cmp34, %cmp37
+  br i1 %or.cond, label %if.then39, label %if.end44
+
+if.then39:                                        ; preds = %if.end32
+  %conv40 = sitofp i32 %avs_iters.0.lcssa to double
+  %conv41 = sitofp i32 %meascount.0.lcssa to double
+  %div = fdiv double %conv40, %conv41
+  %call42 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([31 x i8]* @.str38, i64 0, i64 0), double %div) #4
+  br label %if.end44
+
+if.end44:                                         ; preds = %if.then39, %if.end32
+  %call45 = tail call double (...)* @dclock() #4
+  %12 = load i32* @this_node, align 4, !tbaa !0
+  %cmp47 = icmp eq i32 %12, 0
+  br i1 %cmp47, label %if.then49, label %if.end51
+
+if.then49:                                        ; preds = %if.end44
+  %13 = load i32* @total_iters, align 4, !tbaa !0
+  %call50 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([18 x i8]* @.str39, i64 0, i64 0), i32 %13) #4
+  br label %if.end51
+
+if.end51:                                         ; preds = %if.then49, %if.end44
+  %14 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call52 = tail call i32 @fflush(%struct._IO_FILE* %14) #4
+  %15 = load i32* @saveflag, align 4, !tbaa !0
+  %cmp53 = icmp eq i32 %15, 20
+  br i1 %cmp53, label %while.cond.backedge, label %if.then55
+
+if.then55:                                        ; preds = %if.end51
+  tail call void @rephase(i32 0) #4
+  %16 = load i32* @saveflag, align 4, !tbaa !0
+  %call56 = tail call %struct.gauge_file* @save_lattice(i32 %16, i8* getelementptr inbounds ([256 x i8]* @savefile, i64 0, i64 0)) #4
+  tail call void @rephase(i32 1) #4
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.then55, %if.end51
+  %call1 = tail call i32 @readin(i32 %call) #4
+  %cmp = icmp eq i32 %call1, 0
+  br i1 %cmp, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.cond.backedge, %entry
+  ret i32 0
+}

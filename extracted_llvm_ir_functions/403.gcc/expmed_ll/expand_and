@@ -1,0 +1,42 @@
+define %struct.rtx_def* @expand_and(i32 %mode, %struct.rtx_def* %op0, %struct.rtx_def* %op1, %struct.rtx_def* %target) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %op0 to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 16711680
+  %cmp = icmp eq i32 %bf.clear, 0
+  br i1 %cmp, label %land.lhs.true, label %if.then6
+
+land.lhs.true:                                    ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %op1 to i32*
+  %bf.load1 = load i32* %1, align 8
+  %bf.clear3 = and i32 %bf.load1, 16711680
+  %cmp4 = icmp eq i32 %bf.clear3, 0
+  br i1 %cmp4, label %if.end, label %if.then6
+
+if.end:                                           ; preds = %land.lhs.true
+  %call = tail call %struct.rtx_def* @simplify_binary_operation(i32 83, i32 %mode, %struct.rtx_def* %op0, %struct.rtx_def* %op1) #4
+  %cmp5 = icmp eq %struct.rtx_def* %call, null
+  br i1 %cmp5, label %if.then6, label %if.end8
+
+if.then6:                                         ; preds = %entry, %land.lhs.true, %if.end
+  %2 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 18), align 8, !tbaa !3
+  %call7 = tail call %struct.rtx_def* @expand_binop(i32 %mode, %struct.optab* %2, %struct.rtx_def* %op0, %struct.rtx_def* %op1, %struct.rtx_def* %target, i32 0, i32 3) #4
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.then6, %if.end
+  %tem.1 = phi %struct.rtx_def* [ %call7, %if.then6 ], [ %call, %if.end ]
+  %cmp9 = icmp eq %struct.rtx_def* %target, null
+  br i1 %cmp9, label %if.end15, label %if.else
+
+if.else:                                          ; preds = %if.end8
+  %cmp11 = icmp eq %struct.rtx_def* %tem.1, %target
+  br i1 %cmp11, label %if.end15, label %if.then12
+
+if.then12:                                        ; preds = %if.else
+  %call13 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %target, %struct.rtx_def* %tem.1) #4
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.end8, %if.else, %if.then12
+  %target.addr.0 = phi %struct.rtx_def* [ %target, %if.then12 ], [ %target, %if.else ], [ %tem.1, %if.end8 ]
+  ret %struct.rtx_def* %target.addr.0
+}

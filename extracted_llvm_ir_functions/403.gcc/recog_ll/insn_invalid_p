@@ -1,0 +1,80 @@
+define i32 @insn_invalid_p(%struct.rtx_def* %insn) #0 {
+entry:
+  %num_clobbers = alloca i32, align 4
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  store i32 0, i32* %num_clobbers, align 4, !tbaa !0
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp ne i32 %bf.clear, 47
+  %2 = load i32* @reload_completed, align 4, !tbaa !0
+  %tobool = icmp ne i32 %2, 0
+  %or.cond = or i1 %cmp, %tobool
+  %3 = load i32* @reload_in_progress, align 4, !tbaa !0
+  %tobool2 = icmp ne i32 %3, 0
+  %or.cond43 = or i1 %or.cond, %tobool2
+  %cond = select i1 %or.cond43, i32* null, i32* %num_clobbers
+  %call = call i32 @recog(%struct.rtx_def* %0, %struct.rtx_def* %insn, i32* %cond) #6
+  %cmp3 = icmp slt i32 %call, 0
+  br i1 %cmp3, label %land.end, label %if.end
+
+land.end:                                         ; preds = %entry
+  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %call7 = call i32 @asm_noperands(%struct.rtx_def* %4) #7
+  %cmp8 = icmp sgt i32 %call7, -1
+  br i1 %cmp8, label %land.lhs.true10, label %return
+
+land.lhs.true10:                                  ; preds = %land.end
+  %call14 = call i32 @check_asm_operands(%struct.rtx_def* %4) #7
+  %tobool15 = icmp eq i32 %call14, 0
+  br i1 %tobool15, label %return, label %if.end
+
+if.end:                                           ; preds = %land.lhs.true10, %entry
+  %5 = load i32* %num_clobbers, align 4, !tbaa !0
+  %cmp19 = icmp sgt i32 %5, 0
+  br i1 %cmp19, label %if.then20, label %if.end33
+
+if.then20:                                        ; preds = %if.end
+  %call21 = call i32 @added_clobbers_hard_reg_p(i32 %call) #6
+  %tobool22 = icmp eq i32 %call21, 0
+  br i1 %tobool22, label %if.end24, label %return
+
+if.end24:                                         ; preds = %if.then20
+  %6 = load i32* %num_clobbers, align 4, !tbaa !0
+  %add = add nsw i32 %6, 1
+  %call25 = call %struct.rtvec_def* @rtvec_alloc(i32 %add) #6
+  %call26 = call %struct.rtx_def* @gen_rtx_fmt_E(i32 39, i32 0, %struct.rtvec_def* %call25) #6
+  %arrayidx28 = getelementptr inbounds %struct.rtx_def* %call26, i64 0, i32 1, i64 0
+  %rtvec = bitcast %union.rtunion_def* %arrayidx28 to %struct.rtvec_def**
+  %7 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !3
+  %arrayidx29 = getelementptr inbounds %struct.rtvec_def* %7, i64 0, i32 1, i64 0
+  store %struct.rtx_def* %0, %struct.rtx_def** %arrayidx29, align 8, !tbaa !3
+  call void @add_clobbers(%struct.rtx_def* %call26, i32 %call) #6
+  %8 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0
+  %call26.c = ptrtoint %struct.rtx_def* %call26 to i64
+  store i64 %call26.c, i64* %8, align 8, !tbaa !3
+  br label %if.end33
+
+if.end33:                                         ; preds = %if.end24, %if.end
+  %9 = load i32* @reload_completed, align 4, !tbaa !0
+  %tobool34 = icmp eq i32 %9, 0
+  br i1 %tobool34, label %if.end40, label %if.then35
+
+if.then35:                                        ; preds = %if.end33
+  call void @extract_insn(%struct.rtx_def* %insn) #7
+  %call36 = call i32 @constrain_operands(i32 1) #7
+  %tobool37 = icmp eq i32 %call36, 0
+  br i1 %tobool37, label %return, label %if.end40
+
+if.end40:                                         ; preds = %if.then35, %if.end33
+  %arrayidx42 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4
+  %rtint = bitcast %union.rtunion_def* %arrayidx42 to i32*
+  store i32 %call, i32* %rtint, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %land.end, %if.then35, %if.then20, %land.lhs.true10, %if.end40
+  %retval.0 = phi i32 [ 0, %if.end40 ], [ 1, %land.lhs.true10 ], [ 1, %if.then20 ], [ 1, %if.then35 ], [ 1, %land.end ]
+  ret i32 %retval.0
+}

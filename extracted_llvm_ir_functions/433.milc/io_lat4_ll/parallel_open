@@ -1,0 +1,52 @@
+define noalias %struct.gauge_file* @parallel_open(i32 %order, i8* %filename) #0 {
+entry:
+  %call = tail call %struct.gauge_file* @setup_output_gauge_file() #8
+  %header = getelementptr inbounds %struct.gauge_file* %call, i64 0, i32 1
+  %0 = load %struct.gauge_header** %header, align 8, !tbaa !3
+  %order1 = getelementptr inbounds %struct.gauge_header* %0, i64 0, i32 4
+  store i32 %order, i32* %order1, align 4, !tbaa !0
+  %call2 = tail call %struct._IO_FILE* @g_open(i8* %filename, i8* getelementptr inbounds ([3 x i8]* @.str38, i64 0, i64 0)) #9
+  %cmp = icmp eq %struct._IO_FILE* %call2, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = load i32* @this_node, align 4, !tbaa !0
+  %call3 = tail call i32* @__errno_location() #10
+  %2 = load i32* %call3, align 4, !tbaa !0
+  %call4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([53 x i8]* @.str115, i64 0, i64 0), i32 %1, i8* %filename, i32 %2) #9
+  %3 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call5 = tail call i32 @fflush(%struct._IO_FILE* %3) #9
+  tail call void @terminate(i32 1) #9
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %4 = load i32* @this_node, align 4, !tbaa !0
+  %cmp6 = icmp eq i32 %4, 0
+  br i1 %cmp6, label %if.then7, label %if.end8
+
+if.then7:                                         ; preds = %if.end
+  tail call void @pwrite_gauge_hdr(%struct._IO_FILE* %call2, %struct.gauge_header* %0) #8
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.then7, %if.end
+  %header_bytes = getelementptr inbounds %struct.gauge_header* %0, i64 0, i32 3
+  %5 = bitcast i32* %header_bytes to i8*
+  tail call void @broadcast_bytes(i8* %5, i32 4) #9
+  %cmp9 = icmp eq i32 %order, 0
+  br i1 %cmp9, label %if.end11, label %if.then10
+
+if.then10:                                        ; preds = %if.end8
+  tail call void @write_site_list(%struct._IO_FILE* %call2, %struct.gauge_header* %0) #8
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.end8, %if.then10
+  %fp12 = getelementptr inbounds %struct.gauge_file* %call, i64 0, i32 0
+  store %struct._IO_FILE* %call2, %struct._IO_FILE** %fp12, align 8, !tbaa !3
+  %filename13 = getelementptr inbounds %struct.gauge_file* %call, i64 0, i32 2
+  store i8* %filename, i8** %filename13, align 8, !tbaa !3
+  %byterevflag = getelementptr inbounds %struct.gauge_file* %call, i64 0, i32 3
+  store i32 0, i32* %byterevflag, align 4, !tbaa !0
+  %parallel = getelementptr inbounds %struct.gauge_file* %call, i64 0, i32 5
+  store i32 1, i32* %parallel, align 4, !tbaa !0
+  ret %struct.gauge_file* %call
+}

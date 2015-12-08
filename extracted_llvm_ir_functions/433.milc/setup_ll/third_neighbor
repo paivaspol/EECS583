@@ -1,0 +1,93 @@
+define void @third_neighbor(i32 %x, i32 %y, i32 %z, i32 %t, i32* nocapture %dirpt, i32 %FB, i32* nocapture %xp, i32* nocapture %yp, i32* nocapture %zp, i32* nocapture %tp) #0 {
+entry:
+  %cmp = icmp eq i32 %FB, 1
+  %0 = load i32* %dirpt, align 4, !tbaa !0
+  %sub = sub nsw i32 7, %0
+  %cond = select i1 %cmp, i32 %0, i32 %sub
+  store i32 %x, i32* %xp, align 4, !tbaa !0
+  store i32 %y, i32* %yp, align 4, !tbaa !0
+  store i32 %z, i32* %zp, align 4, !tbaa !0
+  store i32 %t, i32* %tp, align 4, !tbaa !0
+  switch i32 %cond, label %sw.default [
+    i32 0, label %sw.bb
+    i32 7, label %sw.bb1
+    i32 1, label %sw.bb5
+    i32 6, label %sw.bb8
+    i32 2, label %sw.bb13
+    i32 5, label %sw.bb16
+    i32 3, label %sw.bb21
+    i32 4, label %sw.bb24
+  ]
+
+sw.bb:                                            ; preds = %entry
+  %add = add nsw i32 %x, 3
+  %1 = load i32* @nx, align 4, !tbaa !0
+  %rem = srem i32 %add, %1
+  store i32 %rem, i32* %xp, align 4, !tbaa !0
+  br label %sw.epilog
+
+sw.bb1:                                           ; preds = %entry
+  %2 = load i32* @nx, align 4, !tbaa !0
+  %mul = shl i32 %2, 2
+  %add2 = add i32 %x, -3
+  %sub3 = add i32 %add2, %mul
+  %rem4 = srem i32 %sub3, %2
+  store i32 %rem4, i32* %xp, align 4, !tbaa !0
+  br label %sw.epilog
+
+sw.bb5:                                           ; preds = %entry
+  %add6 = add nsw i32 %y, 3
+  %3 = load i32* @ny, align 4, !tbaa !0
+  %rem7 = srem i32 %add6, %3
+  store i32 %rem7, i32* %yp, align 4, !tbaa !0
+  br label %sw.epilog
+
+sw.bb8:                                           ; preds = %entry
+  %4 = load i32* @ny, align 4, !tbaa !0
+  %mul9 = shl i32 %4, 2
+  %add10 = add i32 %y, -3
+  %sub11 = add i32 %add10, %mul9
+  %rem12 = srem i32 %sub11, %4
+  store i32 %rem12, i32* %yp, align 4, !tbaa !0
+  br label %sw.epilog
+
+sw.bb13:                                          ; preds = %entry
+  %add14 = add nsw i32 %z, 3
+  %5 = load i32* @nz, align 4, !tbaa !0
+  %rem15 = srem i32 %add14, %5
+  store i32 %rem15, i32* %zp, align 4, !tbaa !0
+  br label %sw.epilog
+
+sw.bb16:                                          ; preds = %entry
+  %6 = load i32* @nz, align 4, !tbaa !0
+  %mul17 = shl i32 %6, 2
+  %add18 = add i32 %z, -3
+  %sub19 = add i32 %add18, %mul17
+  %rem20 = srem i32 %sub19, %6
+  store i32 %rem20, i32* %zp, align 4, !tbaa !0
+  br label %sw.epilog
+
+sw.bb21:                                          ; preds = %entry
+  %add22 = add nsw i32 %t, 3
+  %7 = load i32* @nt, align 4, !tbaa !0
+  %rem23 = srem i32 %add22, %7
+  store i32 %rem23, i32* %tp, align 4, !tbaa !0
+  br label %sw.epilog
+
+sw.bb24:                                          ; preds = %entry
+  %8 = load i32* @nt, align 4, !tbaa !0
+  %mul25 = shl i32 %8, 2
+  %add26 = add i32 %t, -3
+  %sub27 = add i32 %add26, %mul25
+  %rem28 = srem i32 %sub27, %8
+  store i32 %rem28, i32* %tp, align 4, !tbaa !0
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %entry
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([28 x i8]* @str36, i64 0, i64 0))
+  tail call void @exit(i32 1) #7
+  unreachable
+
+sw.epilog:                                        ; preds = %sw.bb24, %sw.bb21, %sw.bb16, %sw.bb13, %sw.bb8, %sw.bb5, %sw.bb1, %sw.bb
+  ret void
+}

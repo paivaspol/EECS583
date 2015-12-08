@@ -1,0 +1,35 @@
+define internal fastcc void @add_AT_location_description(%struct.die_struct* %die, %struct.rtx_def* nocapture %rtl) #1 {
+entry:
+  %call = tail call fastcc %struct.dw_loc_descr_struct* @loc_descriptor(%struct.rtx_def* %rtl) #10
+  %cmp = icmp eq %struct.dw_loc_descr_struct* %call, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call.i = tail call noalias i8* @xmalloc(i64 40) #9
+  %dw_attr_next.i = getelementptr inbounds i8* %call.i, i64 8
+  %0 = bitcast i8* %dw_attr_next.i to %struct.dw_attr_struct**
+  store %struct.dw_attr_struct* null, %struct.dw_attr_struct** %0, align 8, !tbaa !4
+  %dw_attr.i = bitcast i8* %call.i to i32*
+  store i32 2, i32* %dw_attr.i, align 4, !tbaa !11
+  %dw_attr_val.i = getelementptr inbounds i8* %call.i, i64 16
+  %val_class.i = bitcast i8* %dw_attr_val.i to i32*
+  store i32 2, i32* %val_class.i, align 4, !tbaa !1
+  %v.i = getelementptr inbounds i8* %call.i, i64 24
+  %val_loc.i = bitcast i8* %v.i to %struct.dw_loc_descr_struct**
+  store %struct.dw_loc_descr_struct* %call, %struct.dw_loc_descr_struct** %val_loc.i, align 8, !tbaa !4
+  %cmp.i.i = icmp eq %struct.die_struct* %die, null
+  %cmp1.i.i = icmp eq i8* %call.i, null
+  %or.cond.i.i = or i1 %cmp.i.i, %cmp1.i.i
+  br i1 %or.cond.i.i, label %if.end, label %if.then.i.i
+
+if.then.i.i:                                      ; preds = %if.then
+  %1 = bitcast i8* %call.i to %struct.dw_attr_struct*
+  %die_attr.i.i = getelementptr inbounds %struct.die_struct* %die, i64 0, i32 2
+  %2 = load %struct.dw_attr_struct** %die_attr.i.i, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %2, %struct.dw_attr_struct** %0, align 8, !tbaa !4
+  store %struct.dw_attr_struct* %1, %struct.dw_attr_struct** %die_attr.i.i, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then.i.i, %if.then, %entry
+  ret void
+}

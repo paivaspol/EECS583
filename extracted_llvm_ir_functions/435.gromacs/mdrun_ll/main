@@ -1,0 +1,195 @@
+define i32 @main(i32 %argc, i8** %argv) #0 {
+entry:
+  %argc.addr = alloca i32, align 4
+  %argv.addr = alloca i8**, align 8
+  %edyn = alloca %struct.t_edsamyn, align 8
+  store i32 %argc, i32* %argc.addr, align 4, !tbaa !0
+  store i8** %argv, i8*** %argv.addr, align 8, !tbaa !3
+  %call = call %struct.t_commrec* @init_par(i32* %argc.addr, i8*** %argv.addr) #3
+  %bEdsam = getelementptr inbounds %struct.t_edsamyn* %edyn, i64 0, i32 0
+  store i32 0, i32* %bEdsam, align 8, !tbaa !0
+  %nodeid = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 0
+  %0 = load i32* %nodeid, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, 0
+  br i1 %cmp, label %land.lhs.true, label %if.end5
+
+land.lhs.true:                                    ; preds = %entry
+  %threadid = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 4
+  %1 = load i32* %threadid, align 4, !tbaa !0
+  %cmp1 = icmp eq i32 %1, 0
+  br i1 %cmp1, label %for.cond.preheader, label %if.end5
+
+for.cond.preheader:                               ; preds = %land.lhs.true
+  %2 = load i32* %argc.addr, align 4, !tbaa !0
+  %cmp290 = icmp sgt i32 %2, 1
+  br i1 %cmp290, label %for.body.lr.ph, label %if.end5
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %3 = load i8*** %argv.addr, align 8, !tbaa !3
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %pca_quiet.091 = phi i64 [ 4096, %for.body.lr.ph ], [ %.pca_quiet.0, %for.body ]
+  %arrayidx = getelementptr inbounds i8** %3, i64 %indvars.iv
+  %4 = load i8** %arrayidx, align 8, !tbaa !3
+  %call3 = call i32 @strncmp(i8* getelementptr inbounds ([3 x i8]* @.str102, i64 0, i64 0), i8* %4, i64 2) #4
+  %tobool = icmp eq i32 %call3, 0
+  %.pca_quiet.0 = select i1 %tobool, i64 0, i64 %pca_quiet.091
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %5 = trunc i64 %indvars.iv.next to i32
+  %cmp2 = icmp slt i32 %5, %2
+  br i1 %cmp2, label %for.body, label %if.end5
+
+if.end5:                                          ; preds = %for.cond.preheader, %for.body, %land.lhs.true, %entry
+  %pca_quiet.2 = phi i64 [ 4096, %entry ], [ 4096, %land.lhs.true ], [ 4096, %for.cond.preheader ], [ %.pca_quiet.0, %for.body ]
+  %6 = load i8*** %argv.addr, align 8, !tbaa !3
+  %or = or i64 %pca_quiet.2, 11520
+  call void @parse_common_args(i32* %argc.addr, i8** %6, i64 %or, i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0), i32 8, %struct.t_pargs* getelementptr inbounds ([8 x %struct.t_pargs]* @main.pa, i64 0, i64 0), i32 63, i8** getelementptr inbounds ([63 x i8*]* @main.desc, i64 0, i64 0), i32 0, i8** null) #3
+  %7 = load i32* @main.bVerbose, align 4, !tbaa !0
+  %tobool6 = icmp eq i32 %7, 0
+  br i1 %tobool6, label %land.end12, label %land.rhs
+
+land.rhs:                                         ; preds = %if.end5
+  %8 = load i32* %nodeid, align 4, !tbaa !0
+  %cmp8 = icmp eq i32 %8, 0
+  br i1 %cmp8, label %land.rhs9, label %land.end12
+
+land.rhs9:                                        ; preds = %land.rhs
+  %threadid10 = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 4
+  %9 = load i32* %threadid10, align 4, !tbaa !0
+  %cmp11 = icmp eq i32 %9, 0
+  br label %land.end12
+
+land.end12:                                       ; preds = %if.end5, %land.rhs, %land.rhs9
+  %10 = phi i1 [ false, %if.end5 ], [ false, %land.rhs ], [ %cmp11, %land.rhs9 ]
+  %land.ext = zext i1 %10 to i32
+  store i32 %land.ext, i32* @main.bVerbose, align 4, !tbaa !0
+  %11 = load i32* @main.nnodes, align 4, !tbaa !0
+  %cmp13 = icmp sgt i32 %11, 1
+  br i1 %cmp13, label %if.then14, label %if.end15
+
+if.then14:                                        ; preds = %land.end12
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([62 x i8]* @.str116, i64 0, i64 0)) #3
+  %.pr = load i32* @main.bVerbose, align 4, !tbaa !0
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then14, %land.end12
+  %12 = phi i32 [ %.pr, %if.then14 ], [ %land.ext, %land.end12 ]
+  %tobool16 = icmp eq i32 %12, 0
+  br i1 %tobool16, label %if.end19, label %if.then17
+
+if.then17:                                        ; preds = %if.end15
+  %call18 = call i8* @ftp2fn(i32 18, i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0)) #3
+  call void @open_log(i8* %call18, %struct.t_commrec* %call) #3
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.end15, %if.then17
+  %13 = load i32* @main.bMultiSim, align 4, !tbaa !0
+  %tobool20 = icmp eq i32 %13, 0
+  br i1 %tobool20, label %if.end26, label %land.lhs.true21
+
+land.lhs.true21:                                  ; preds = %if.end19
+  %nnodes = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 1
+  %14 = load i32* %nnodes, align 4, !tbaa !0
+  %cmp22 = icmp sgt i32 %14, 1
+  br i1 %cmp22, label %if.then24, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true21
+  %nthreads = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 5
+  %15 = load i32* %nthreads, align 4, !tbaa !0
+  %cmp23 = icmp sgt i32 %15, 1
+  br i1 %cmp23, label %if.then24, label %if.end26
+
+if.then24:                                        ; preds = %lor.lhs.false, %land.lhs.true21
+  %call25 = call %struct.t_commrec* @init_multisystem(%struct.t_commrec* %call, i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0)) #3
+  br label %if.end26
+
+if.end26:                                         ; preds = %lor.lhs.false, %if.end19, %if.then24
+  %mcr.0 = phi %struct.t_commrec* [ %call25, %if.then24 ], [ null, %if.end19 ], [ null, %lor.lhs.false ]
+  %16 = load i32* %nodeid, align 4, !tbaa !0
+  %cmp28 = icmp eq i32 %16, 0
+  br i1 %cmp28, label %land.lhs.true29, label %if.end36
+
+land.lhs.true29:                                  ; preds = %if.end26
+  %threadid30 = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 4
+  %17 = load i32* %threadid30, align 4, !tbaa !0
+  %cmp31 = icmp eq i32 %17, 0
+  %18 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  %cmp33 = icmp ne %struct._IO_FILE* %18, null
+  %or.cond = and i1 %cmp31, %cmp33
+  br i1 %or.cond, label %if.then34, label %if.end36
+
+if.then34:                                        ; preds = %land.lhs.true29
+  %19 = load i8*** %argv.addr, align 8, !tbaa !3
+  %20 = load i8** %19, align 8, !tbaa !3
+  call void @CopyRight(%struct._IO_FILE* %18, i8* %20) #3
+  %21 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  call void @please_cite(%struct._IO_FILE* %21, i8* getelementptr inbounds ([13 x i8]* @.str117, i64 0, i64 0)) #3
+  %22 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
+  call void @please_cite(%struct._IO_FILE* %22, i8* getelementptr inbounds ([13 x i8]* @.str118, i64 0, i64 0)) #3
+  br label %if.end36
+
+if.end36:                                         ; preds = %if.then34, %land.lhs.true29, %if.end26
+  %call37 = call i32 @opt2bSet(i8* getelementptr inbounds ([4 x i8]* @.str77, i64 0, i64 0), i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0)) #3
+  %tobool38 = icmp eq i32 %call37, 0
+  br i1 %tobool38, label %if.end40, label %if.then39
+
+if.then39:                                        ; preds = %if.end36
+  call void @ed_open(i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0), %struct.t_edsamyn* %edyn) #3
+  br label %if.end40
+
+if.end40:                                         ; preds = %if.end36, %if.then39
+  %call41 = call i32 @opt2bSet(i8* getelementptr inbounds ([7 x i8]* @.str75, i64 0, i64 0), i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0)) #3
+  %tobool42 = icmp ne i32 %call41, 0
+  %conv = select i1 %tobool42, i64 16, i64 0
+  %23 = load i32* @main.bSepDVDL, align 4, !tbaa !0
+  %tobool43 = icmp ne i32 %23, 0
+  %conv45 = select i1 %tobool43, i64 128, i64 0
+  %or46 = or i64 %conv45, %conv
+  %24 = load i32* @main.bIonize, align 4, !tbaa !0
+  %tobool47 = icmp ne i32 %24, 0
+  %conv49 = select i1 %tobool47, i64 8, i64 0
+  %or50 = or i64 %or46, %conv49
+  %25 = load i32* @main.bMultiSim, align 4, !tbaa !0
+  %tobool51 = icmp ne i32 %25, 0
+  %conv53 = zext i1 %tobool51 to i64
+  %or54 = or i64 %or50, %conv53
+  %26 = load i32* @main.bGlas, align 4, !tbaa !0
+  %tobool55 = icmp ne i32 %26, 0
+  %conv57 = select i1 %tobool55, i64 2, i64 0
+  %or58 = or i64 %or54, %conv57
+  %27 = load i32* @main.bVerbose, align 4, !tbaa !0
+  %28 = load i32* @main.bCompact, align 4, !tbaa !0
+  %29 = load i32* @main.nstepout, align 4, !tbaa !0
+  call void @mdrunner(%struct.t_commrec* %call, %struct.t_commrec* %mcr.0, i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0), i32 %27, i32 %28, i32 0, i32 %29, %struct.t_edsamyn* %edyn, i64 %or58) #3
+  %30 = load i32* @gmx_parallel, align 4, !tbaa !0
+  %tobool59 = icmp eq i32 %30, 0
+  br i1 %tobool59, label %if.end61, label %if.then60
+
+if.then60:                                        ; preds = %if.end40
+  call void @gmx_finalize() #3
+  br label %if.end61
+
+if.end61:                                         ; preds = %if.end40, %if.then60
+  %31 = load i32* %nodeid, align 4, !tbaa !0
+  %cmp63 = icmp eq i32 %31, 0
+  br i1 %cmp63, label %land.lhs.true65, label %if.end72
+
+land.lhs.true65:                                  ; preds = %if.end61
+  %threadid66 = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 4
+  %32 = load i32* %threadid66, align 4, !tbaa !0
+  %cmp67 = icmp eq i32 %32, 0
+  %33 = load i32* @main.bVerbose, align 4, !tbaa !0
+  %tobool70 = icmp ne i32 %33, 0
+  %or.cond73 = and i1 %cmp67, %tobool70
+  br i1 %or.cond73, label %if.then71, label %if.end72
+
+if.then71:                                        ; preds = %land.lhs.true65
+  %34 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  call void @thanx(%struct._IO_FILE* %34) #3
+  br label %if.end72
+
+if.end72:                                         ; preds = %if.then71, %land.lhs.true65, %if.end61
+  ret i32 0
+}

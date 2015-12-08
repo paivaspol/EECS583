@@ -1,0 +1,123 @@
+define internal i32 @insert_loop_mem(%struct.rtx_def** nocapture %mem, i8* nocapture %data) #0 {
+entry:
+  %0 = load %struct.rtx_def** %mem, align 8, !tbaa !4
+  %cmp = icmp eq %struct.rtx_def* %0, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.default [
+    i32 66, label %for.cond.preheader
+    i32 49, label %return
+    i32 55, label %return
+    i32 3, label %return
+  ]
+
+for.cond.preheader:                               ; preds = %if.end
+  %mems_idx = getelementptr inbounds i8* %data, i64 136
+  %2 = bitcast i8* %mems_idx to i32*
+  %3 = load i32* %2, align 4, !tbaa !3
+  %cmp389 = icmp sgt i32 %3, 0
+  br i1 %cmp389, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %mems = getelementptr inbounds i8* %data, i64 128
+  %4 = bitcast i8* %mems to %struct.loop_mem_info**
+  br label %for.body
+
+sw.default:                                       ; preds = %if.end
+  br label %return
+
+for.cond:                                         ; preds = %for.body
+  %5 = load i32* %2, align 4, !tbaa !3
+  %6 = trunc i64 %indvars.iv.next to i32
+  %cmp3 = icmp slt i32 %6, %5
+  br i1 %cmp3, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %7 = load %struct.loop_mem_info** %4, align 8, !tbaa !4
+  %mem4 = getelementptr inbounds %struct.loop_mem_info* %7, i64 %indvars.iv, i32 0
+  %8 = load %struct.rtx_def** %mem4, align 8, !tbaa !4
+  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %0, %struct.rtx_def* %8) #8
+  %tobool = icmp eq i32 %call, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %tobool, label %for.cond, label %if.then5
+
+if.then5:                                         ; preds = %for.body
+  %bf.load6 = load i32* %1, align 8
+  %9 = load %struct.loop_mem_info** %4, align 8, !tbaa !4
+  %mem11 = getelementptr inbounds %struct.loop_mem_info* %9, i64 %indvars.iv, i32 0
+  %10 = load %struct.rtx_def** %mem11, align 8, !tbaa !4
+  %11 = bitcast %struct.rtx_def* %10 to i32*
+  %bf.load12 = load i32* %11, align 8
+  %bf.lshr84 = xor i32 %bf.load12, %bf.load6
+  %12 = and i32 %bf.lshr84, 16711680
+  %cmp15 = icmp eq i32 %12, 0
+  br i1 %cmp15, label %return, label %if.then16
+
+if.then16:                                        ; preds = %if.then5
+  %optimize = getelementptr inbounds %struct.loop_mem_info* %9, i64 %indvars.iv, i32 2
+  store i32 0, i32* %optimize, align 4, !tbaa !3
+  br label %return
+
+for.end:                                          ; preds = %for.cond, %for.cond.preheader
+  %13 = phi i32 [ %3, %for.cond.preheader ], [ %5, %for.cond ]
+  %mems_allocated = getelementptr inbounds i8* %data, i64 140
+  %14 = bitcast i8* %mems_allocated to i32*
+  %15 = load i32* %14, align 4, !tbaa !3
+  %cmp23 = icmp eq i32 %13, %15
+  br i1 %cmp23, label %if.then24, label %for.end.if.end36_crit_edge
+
+for.end.if.end36_crit_edge:                       ; preds = %for.end
+  %mems39.phi.trans.insert = getelementptr inbounds i8* %data, i64 128
+  %.phi.trans.insert = bitcast i8* %mems39.phi.trans.insert to %struct.loop_mem_info**
+  %.pre93 = load %struct.loop_mem_info** %.phi.trans.insert, align 8, !tbaa !4
+  br label %if.end36
+
+if.then24:                                        ; preds = %for.end
+  %cmp26 = icmp eq i32 %13, 0
+  %mul = shl nsw i32 %13, 1
+  %storemerge = select i1 %cmp26, i32 32, i32 %mul
+  store i32 %storemerge, i32* %14, align 4, !tbaa !3
+  %mems31 = getelementptr inbounds i8* %data, i64 128
+  %16 = bitcast i8* %mems31 to %struct.loop_mem_info**
+  %17 = load %struct.loop_mem_info** %16, align 8, !tbaa !4
+  %18 = bitcast %struct.loop_mem_info* %17 to i8*
+  %conv = sext i32 %storemerge to i64
+  %mul33 = mul i64 %conv, 24
+  %call34 = tail call i8* @xrealloc(i8* %18, i64 %mul33) #8
+  %19 = bitcast i8* %call34 to %struct.loop_mem_info*
+  store %struct.loop_mem_info* %19, %struct.loop_mem_info** %16, align 8, !tbaa !4
+  %.pre = load i32* %2, align 4, !tbaa !3
+  br label %if.end36
+
+if.end36:                                         ; preds = %for.end.if.end36_crit_edge, %if.then24
+  %20 = phi %struct.loop_mem_info* [ %19, %if.then24 ], [ %.pre93, %for.end.if.end36_crit_edge ]
+  %21 = phi i32 [ %.pre, %if.then24 ], [ %13, %for.end.if.end36_crit_edge ]
+  %idxprom38 = sext i32 %21 to i64
+  %mems39 = getelementptr inbounds i8* %data, i64 128
+  %22 = bitcast i8* %mems39 to %struct.loop_mem_info**
+  %mem41 = getelementptr inbounds %struct.loop_mem_info* %20, i64 %idxprom38, i32 0
+  store %struct.rtx_def* %0, %struct.rtx_def** %mem41, align 8, !tbaa !4
+  %bf.load42 = load i32* %1, align 8
+  %bf.clear44 = and i32 %bf.load42, 16711680
+  %cmp45 = icmp ne i32 %bf.clear44, 3342336
+  %conv46 = zext i1 %cmp45 to i32
+  %23 = load %struct.loop_mem_info** %22, align 8, !tbaa !4
+  %optimize51 = getelementptr inbounds %struct.loop_mem_info* %23, i64 %idxprom38, i32 2
+  store i32 %conv46, i32* %optimize51, align 4, !tbaa !3
+  %24 = load i32* %2, align 4, !tbaa !3
+  %idxprom53 = sext i32 %24 to i64
+  %reg = getelementptr inbounds %struct.loop_mem_info* %23, i64 %idxprom53, i32 1
+  store %struct.rtx_def* null, %struct.rtx_def** %reg, align 8, !tbaa !4
+  %inc57 = add nsw i32 %24, 1
+  store i32 %inc57, i32* %2, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.then16, %if.then5, %if.end, %if.end, %if.end, %entry, %if.end36, %sw.default
+  %retval.0 = phi i32 [ 0, %sw.default ], [ 0, %if.end36 ], [ 0, %entry ], [ -1, %if.end ], [ -1, %if.end ], [ -1, %if.end ], [ 0, %if.then5 ], [ 0, %if.then16 ]
+  ret i32 %retval.0
+}

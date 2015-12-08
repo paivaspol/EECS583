@@ -1,0 +1,16 @@
+define void @pswrite_data(i32 %parallel, %struct._IO_FILE* %fp, i8* %src, i64 %size, i8* %myname, i8* %descrip) #0 {
+entry:
+  %tobool = icmp eq i32 %parallel, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @pwrite_data(%struct._IO_FILE* %fp, i8* %src, i64 %size, i8* %myname, i8* %descrip) #8
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  tail call void @swrite_data(%struct._IO_FILE* %fp, i8* %src, i64 %size, i8* %myname, i8* %descrip) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void
+}

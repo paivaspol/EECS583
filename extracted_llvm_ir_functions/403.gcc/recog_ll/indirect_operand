@@ -1,0 +1,126 @@
+define i32 @indirect_operand(%struct.rtx_def* %op, i32 %mode) #0 {
+entry:
+  %0 = load i32* @reload_completed, align 4, !tbaa !0
+  %tobool = icmp eq i32 %0, 0
+  %1 = bitcast %struct.rtx_def* %op to i32*
+  %bf.load = load i32* %1, align 8
+  br i1 %tobool, label %land.lhs.true, label %if.end61
+
+land.lhs.true:                                    ; preds = %entry
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 63
+  br i1 %cmp, label %land.lhs.true1, label %if.end61
+
+land.lhs.true1:                                   ; preds = %land.lhs.true
+  %fld = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %3 = bitcast %struct.rtx_def* %2 to i32*
+  %bf.load2 = load i32* %3, align 8
+  %bf.clear3 = and i32 %bf.load2, 65535
+  %cmp4 = icmp eq i32 %bf.clear3, 66
+  br i1 %cmp4, label %if.then, label %if.end61
+
+if.then:                                          ; preds = %land.lhs.true1
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 1
+  %rtuint = bitcast %union.rtunion_def* %arrayidx6 to i32*
+  %4 = load i32* %rtuint, align 4, !tbaa !0
+  %cmp10 = icmp eq i32 %mode, 0
+  br i1 %cmp10, label %if.end, label %land.lhs.true11
+
+land.lhs.true11:                                  ; preds = %if.then
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear13 = and i32 %bf.lshr, 255
+  %cmp14 = icmp eq i32 %bf.clear13, %mode
+  br i1 %cmp14, label %if.end, label %return
+
+if.end:                                           ; preds = %land.lhs.true11, %if.then
+  %cmp16 = icmp eq i32 %4, 0
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
+  %rtx20 = bitcast %union.rtunion_def* %arrayidx19 to %struct.rtx_def**
+  br i1 %cmp16, label %land.lhs.true17, label %lor.rhs
+
+land.lhs.true17:                                  ; preds = %if.end
+  %5 = load %struct.rtx_def** %rtx20, align 8, !tbaa !3
+  %6 = load i32* @target_flags, align 4, !tbaa !0
+  %and = lshr i32 %6, 25
+  %7 = and i32 %and, 1
+  %8 = or i32 %7, 4
+  %call = tail call i32 @general_operand(%struct.rtx_def* %5, i32 %8) #7
+  %tobool22 = icmp eq i32 %call, 0
+  br i1 %tobool22, label %lor.rhs, label %lor.end
+
+lor.rhs:                                          ; preds = %if.end, %land.lhs.true17
+  %9 = load %struct.rtx_def** %rtx20, align 8, !tbaa !3
+  %10 = bitcast %struct.rtx_def* %9 to i32*
+  %bf.load26 = load i32* %10, align 8
+  %bf.clear27 = and i32 %bf.load26, 65535
+  %cmp28 = icmp eq i32 %bf.clear27, 75
+  br i1 %cmp28, label %land.lhs.true29, label %lor.end
+
+land.lhs.true29:                                  ; preds = %lor.rhs
+  %arrayidx34 = getelementptr inbounds %struct.rtx_def* %9, i64 0, i32 1, i64 1
+  %rtx35 = bitcast %union.rtunion_def* %arrayidx34 to %struct.rtx_def**
+  %11 = load %struct.rtx_def** %rtx35, align 8, !tbaa !3
+  %12 = bitcast %struct.rtx_def* %11 to i32*
+  %bf.load36 = load i32* %12, align 8
+  %bf.clear37 = and i32 %bf.load36, 65535
+  %cmp38 = icmp eq i32 %bf.clear37, 54
+  br i1 %cmp38, label %land.lhs.true39, label %lor.end
+
+land.lhs.true39:                                  ; preds = %land.lhs.true29
+  %rtwint = getelementptr inbounds %struct.rtx_def* %11, i64 0, i32 1, i64 0, i32 0
+  %13 = load i64* %rtwint, align 8, !tbaa !7
+  %sub = sub nsw i32 0, %4
+  %conv = sext i32 %sub to i64
+  %cmp48 = icmp eq i64 %13, %conv
+  br i1 %cmp48, label %land.rhs, label %lor.end
+
+land.rhs:                                         ; preds = %land.lhs.true39
+  %arrayidx54 = getelementptr inbounds %struct.rtx_def* %9, i64 0, i32 1, i64 0
+  %rtx55 = bitcast %union.rtunion_def* %arrayidx54 to %struct.rtx_def**
+  %14 = load %struct.rtx_def** %rtx55, align 8, !tbaa !3
+  %15 = load i32* @target_flags, align 4, !tbaa !0
+  %and56 = lshr i32 %15, 25
+  %16 = and i32 %and56, 1
+  %17 = or i32 %16, 4
+  %call59 = tail call i32 @general_operand(%struct.rtx_def* %14, i32 %17) #7
+  %tobool60 = icmp ne i32 %call59, 0
+  br label %lor.end
+
+lor.end:                                          ; preds = %land.lhs.true17, %lor.rhs, %land.lhs.true29, %land.lhs.true39, %land.rhs
+  %18 = phi i1 [ true, %land.lhs.true17 ], [ false, %land.lhs.true39 ], [ false, %land.lhs.true29 ], [ false, %lor.rhs ], [ %tobool60, %land.rhs ]
+  %lor.ext = zext i1 %18 to i32
+  br label %return
+
+if.end61:                                         ; preds = %entry, %land.lhs.true1, %land.lhs.true
+  %bf.clear63 = and i32 %bf.load, 65535
+  %cmp64 = icmp eq i32 %bf.clear63, 66
+  br i1 %cmp64, label %land.lhs.true66, label %land.end78
+
+land.lhs.true66:                                  ; preds = %if.end61
+  %call67 = tail call i32 @memory_operand(%struct.rtx_def* %op, i32 %mode) #7
+  %tobool68 = icmp eq i32 %call67, 0
+  br i1 %tobool68, label %land.end78, label %land.rhs69
+
+land.rhs69:                                       ; preds = %land.lhs.true66
+  %arrayidx71 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
+  %rtx72 = bitcast %union.rtunion_def* %arrayidx71 to %struct.rtx_def**
+  %19 = load %struct.rtx_def** %rtx72, align 8, !tbaa !3
+  %20 = load i32* @target_flags, align 4, !tbaa !0
+  %and73 = lshr i32 %20, 25
+  %21 = and i32 %and73, 1
+  %22 = or i32 %21, 4
+  %call76 = tail call i32 @general_operand(%struct.rtx_def* %19, i32 %22) #7
+  %tobool77 = icmp ne i32 %call76, 0
+  br label %land.end78
+
+land.end78:                                       ; preds = %land.lhs.true66, %land.rhs69, %if.end61
+  %23 = phi i1 [ false, %land.lhs.true66 ], [ false, %if.end61 ], [ %tobool77, %land.rhs69 ]
+  %land.ext = zext i1 %23 to i32
+  br label %return
+
+return:                                           ; preds = %land.lhs.true11, %land.end78, %lor.end
+  %retval.0 = phi i32 [ %land.ext, %land.end78 ], [ %lor.ext, %lor.end ], [ 0, %land.lhs.true11 ]
+  ret i32 %retval.0
+}

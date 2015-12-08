@@ -1,0 +1,59 @@
+define internal i8* @output_60(%struct.rtx_def** nocapture %operands, %struct.rtx_def* %insn) #1 {
+entry:
+  %call = tail call i32 @get_attr_type(%struct.rtx_def* %insn) #6
+  %cond = icmp eq i32 %call, 8
+  br i1 %cond, label %sw.bb, label %sw.default
+
+sw.bb:                                            ; preds = %entry
+  %0 = load i32* @target_flags, align 4, !tbaa !3
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %operands, i64 1
+  %1 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 61
+  br i1 %tobool, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %sw.bb
+  br i1 %cmp, label %land.lhs.true, label %land.lhs.true25
+
+land.lhs.true:                                    ; preds = %cond.true
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx2 to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp3 = icmp ult i32 %3, 8
+  %.off = add i32 %3, -37
+  %4 = icmp ult i32 %.off, 8
+  %or.cond = or i1 %cmp3, %4
+  br i1 %or.cond, label %return, label %if.then
+
+cond.false:                                       ; preds = %sw.bb
+  br i1 %cmp, label %land.lhs.true19, label %land.lhs.true25
+
+land.lhs.true19:                                  ; preds = %cond.false
+  %arrayidx22 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtuint23 = bitcast %union.rtunion_def* %arrayidx22 to i32*
+  %5 = load i32* %rtuint23, align 4, !tbaa !3
+  %cmp24 = icmp ult i32 %5, 4
+  br i1 %cmp24, label %return, label %if.then
+
+land.lhs.true25:                                  ; preds = %cond.false, %cond.true
+  %cmp29 = icmp eq i32 %bf.clear, 66
+  br i1 %cmp29, label %return, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true19, %land.lhs.true, %land.lhs.true25
+  tail call void @fancy_abort(i8* getelementptr inbounds ([55 x i8]* @.str1644, i64 0, i64 0), i32 332, i8* getelementptr inbounds ([10 x i8]* @__FUNCTION__.output_60, i64 0, i64 0)) #7
+  unreachable
+
+sw.default:                                       ; preds = %entry
+  %call30 = tail call i32 @get_attr_mode(%struct.rtx_def* %insn) #6
+  %cmp31 = icmp eq i32 %call30, 4
+  %. = select i1 %cmp31, i8* getelementptr inbounds ([27 x i8]* @.str1814, i64 0, i64 0), i8* getelementptr inbounds ([23 x i8]* @.str84, i64 0, i64 0)
+  br label %return
+
+return:                                           ; preds = %sw.default, %land.lhs.true, %land.lhs.true19, %land.lhs.true25
+  %retval.0 = phi i8* [ getelementptr inbounds ([29 x i8]* @.str1824, i64 0, i64 0), %land.lhs.true25 ], [ getelementptr inbounds ([29 x i8]* @.str1824, i64 0, i64 0), %land.lhs.true19 ], [ getelementptr inbounds ([29 x i8]* @.str1824, i64 0, i64 0), %land.lhs.true ], [ %., %sw.default ]
+  ret i8* %retval.0
+}

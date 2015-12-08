@@ -1,0 +1,48 @@
+define i32 @fe_close(%struct.fe_t* nocapture %FE) #0 {
+entry:
+  %FB_TYPE = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 6
+  %0 = load i32* %FB_TYPE, align 4, !tbaa !4
+  %cmp = icmp eq i32 %0, 1
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %MEL_FB = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 11
+  %1 = load %struct.melfb_t** %MEL_FB, align 8, !tbaa !0
+  %filter_coeffs = getelementptr inbounds %struct.melfb_t* %1, i64 0, i32 6
+  %2 = load float*** %filter_coeffs, align 8, !tbaa !0
+  %3 = bitcast float** %2 to i8**
+  tail call void @fe_free_2d(i8** %3) #5
+  %4 = load %struct.melfb_t** %MEL_FB, align 8, !tbaa !0
+  %mel_cosine = getelementptr inbounds %struct.melfb_t* %4, i64 0, i32 7
+  %5 = load float*** %mel_cosine, align 8, !tbaa !0
+  %6 = bitcast float** %5 to i8**
+  tail call void @fe_free_2d(i8** %6) #5
+  %7 = load %struct.melfb_t** %MEL_FB, align 8, !tbaa !0
+  %left_apex = getelementptr inbounds %struct.melfb_t* %7, i64 0, i32 8
+  %8 = load float** %left_apex, align 8, !tbaa !0
+  %9 = bitcast float* %8 to i8*
+  tail call void @free(i8* %9) #5
+  %10 = load %struct.melfb_t** %MEL_FB, align 8, !tbaa !0
+  %width = getelementptr inbounds %struct.melfb_t* %10, i64 0, i32 9
+  %11 = load i32** %width, align 8, !tbaa !0
+  %12 = bitcast i32* %11 to i8*
+  tail call void @free(i8* %12) #5
+  %13 = load %struct.melfb_t** %MEL_FB, align 8, !tbaa !0
+  %14 = bitcast %struct.melfb_t* %13 to i8*
+  tail call void @free(i8* %14) #5
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %15 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %16 = tail call i64 @fwrite(i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 48, i64 1, %struct._IO_FILE* %15)
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %OVERFLOW_SAMPS = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 9
+  %17 = load i16** %OVERFLOW_SAMPS, align 8, !tbaa !0
+  %18 = bitcast i16* %17 to i8*
+  tail call void @free(i8* %18) #5
+  %19 = bitcast %struct.fe_t* %FE to i8*
+  tail call void @free(i8* %19) #5
+  ret i32 0
+}

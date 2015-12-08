@@ -1,0 +1,68 @@
+define void @diddle_return_value(void (%struct.rtx_def*, i8*)* nocapture %doit, i8* %arg) #0 {
+entry:
+  %0 = load %struct.function** @cfun, align 8, !tbaa !0
+  %return_rtx = getelementptr inbounds %struct.function* %0, i64 0, i32 14
+  %1 = load %struct.rtx_def** %return_rtx, align 8, !tbaa !0
+  %tobool = icmp eq %struct.rtx_def* %1, null
+  br i1 %tobool, label %if.end22, label %if.end
+
+if.end:                                           ; preds = %entry
+  %2 = bitcast %struct.rtx_def* %1 to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %if.end22 [
+    i32 61, label %if.then1
+    i32 39, label %for.cond.preheader
+  ]
+
+for.cond.preheader:                               ; preds = %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
+  %rtvec = bitcast %union.rtunion_def* %arrayidx to %struct.rtvec_def**
+  %3 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem34 = getelementptr inbounds %struct.rtvec_def* %3, i64 0, i32 0
+  %4 = load i32* %num_elem34, align 4, !tbaa !4
+  %cmp635 = icmp sgt i32 %4, 0
+  br i1 %cmp635, label %for.body, label %if.end22
+
+if.then1:                                         ; preds = %if.end
+  tail call void %doit(%struct.rtx_def* %1, i8* %arg) #10
+  br label %if.end22
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond.preheader ]
+  %5 = phi %struct.rtvec_def* [ %10, %for.inc ], [ %3, %for.cond.preheader ]
+  %arrayidx10 = getelementptr inbounds %struct.rtvec_def* %5, i64 0, i32 1, i64 %indvars.iv
+  %6 = load %struct.rtx_def** %arrayidx10, align 8, !tbaa !0
+  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx12 to %struct.rtx_def**
+  %7 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %8 = bitcast %struct.rtx_def* %7 to i32*
+  %bf.load13 = load i32* %8, align 8
+  %bf.clear14 = and i32 %bf.load13, 65535
+  %cmp15 = icmp eq i32 %bf.clear14, 61
+  br i1 %cmp15, label %land.lhs.true, label %for.inc
+
+land.lhs.true:                                    ; preds = %for.body
+  %arrayidx17 = getelementptr inbounds %struct.rtx_def* %7, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx17 to i32*
+  %9 = load i32* %rtuint, align 4, !tbaa !4
+  %cmp18 = icmp ult i32 %9, 53
+  br i1 %cmp18, label %if.then19, label %for.inc
+
+if.then19:                                        ; preds = %land.lhs.true
+  tail call void %doit(%struct.rtx_def* %7, i8* %arg) #10
+  %.pre = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %land.lhs.true, %if.then19
+  %10 = phi %struct.rtvec_def* [ %5, %for.body ], [ %5, %land.lhs.true ], [ %.pre, %if.then19 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %10, i64 0, i32 0
+  %11 = load i32* %num_elem, align 4, !tbaa !4
+  %12 = trunc i64 %indvars.iv.next to i32
+  %cmp6 = icmp slt i32 %12, %11
+  br i1 %cmp6, label %for.body, label %if.end22
+
+if.end22:                                         ; preds = %for.cond.preheader, %for.inc, %if.end, %entry, %if.then1
+  ret void
+}

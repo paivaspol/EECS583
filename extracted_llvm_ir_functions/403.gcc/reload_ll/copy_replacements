@@ -1,0 +1,21 @@
+define void @copy_replacements(%struct.rtx_def* %x, %struct.rtx_def* %y) #0 {
+entry:
+  %x.addr = alloca %struct.rtx_def*, align 8
+  %y.addr = alloca %struct.rtx_def*, align 8
+  store %struct.rtx_def* %x, %struct.rtx_def** %x.addr, align 8, !tbaa !5
+  store %struct.rtx_def* %y, %struct.rtx_def** %y.addr, align 8, !tbaa !5
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 63
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 5935, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.copy_replacements, i64 0, i64 0)) #8
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %1 = load i32* @n_replacements, align 4, !tbaa !3
+  call fastcc void @copy_replacements_1(%struct.rtx_def** %x.addr, %struct.rtx_def** %y.addr, i32 %1) #7
+  ret void
+}

@@ -1,0 +1,96 @@
+define void @record_excess_regs(%struct.rtx_def* %in_this, %struct.rtx_def* %not_in_this, %struct.rtx_def** %output) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %in_this to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %sw.epilog [
+    i32 59, label %for.end31
+    i32 69, label %for.end31
+    i32 54, label %for.end31
+    i32 55, label %for.end31
+    i32 58, label %for.end31
+    i32 68, label %for.end31
+    i32 67, label %for.end31
+    i32 61, label %sw.bb1
+  ]
+
+sw.bb1:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %in_this, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %1 = load i32* %rtuint, align 4, !tbaa !3
+  %cmp = icmp ugt i32 %1, 52
+  br i1 %cmp, label %land.lhs.true, label %for.end31
+
+land.lhs.true:                                    ; preds = %sw.bb1
+  %call = tail call i32 @reg_mentioned_p(%struct.rtx_def* %in_this, %struct.rtx_def* %not_in_this) #8
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then, label %for.end31
+
+if.then:                                          ; preds = %land.lhs.true
+  %2 = load %struct.rtx_def** %output, align 8, !tbaa !4
+  %call2 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 3, i32 0, %struct.rtx_def* %in_this, %struct.rtx_def* %2) #8
+  store %struct.rtx_def* %call2, %struct.rtx_def** %output, align 8, !tbaa !4
+  br label %for.end31
+
+sw.epilog:                                        ; preds = %entry
+  %idxprom52 = zext i32 %bf.clear to i64
+  %arrayidx3 = getelementptr inbounds [153 x i8*]* @rtx_format, i64 0, i64 %idxprom52
+  %3 = load i8** %arrayidx3, align 8, !tbaa !4
+  %arrayidx5 = getelementptr inbounds [153 x i8]* @rtx_length, i64 0, i64 %idxprom52
+  %4 = load i8* %arrayidx5, align 1, !tbaa !1
+  %cmp657 = icmp eq i8 %4, 0
+  br i1 %cmp657, label %for.end31, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %sw.epilog
+  %5 = zext i8 %4 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %indvars.iv59 = phi i64 [ %5, %for.body.lr.ph ], [ %indvars.iv.next60, %for.cond.backedge ]
+  %indvars.iv.next60 = add i64 %indvars.iv59, -1
+  %arrayidx9 = getelementptr inbounds i8* %3, i64 %indvars.iv.next60
+  %6 = load i8* %arrayidx9, align 1, !tbaa !1
+  %conv10 = sext i8 %6 to i32
+  switch i32 %conv10, label %for.cond.backedge [
+    i32 69, label %for.cond12.preheader
+    i32 101, label %sw.bb25
+  ]
+
+for.cond12.preheader:                             ; preds = %for.body
+  %arrayidx15 = getelementptr inbounds %struct.rtx_def* %in_this, i64 0, i32 1, i64 %indvars.iv.next60
+  %rtvec = bitcast %union.rtunion_def* %arrayidx15 to %struct.rtvec_def**
+  %7 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  %num_elem53 = getelementptr inbounds %struct.rtvec_def* %7, i64 0, i32 0
+  %8 = load i32* %num_elem53, align 4, !tbaa !3
+  %cmp1654 = icmp sgt i32 %8, 0
+  br i1 %cmp1654, label %for.body18, label %for.cond.backedge
+
+for.body18:                                       ; preds = %for.cond12.preheader, %for.body18
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body18 ], [ 0, %for.cond12.preheader ]
+  %9 = phi %struct.rtvec_def* [ %11, %for.body18 ], [ %7, %for.cond12.preheader ]
+  %arrayidx24 = getelementptr inbounds %struct.rtvec_def* %9, i64 0, i32 1, i64 %indvars.iv
+  %10 = load %struct.rtx_def** %arrayidx24, align 8, !tbaa !4
+  tail call void @record_excess_regs(%struct.rtx_def* %10, %struct.rtx_def* %not_in_this, %struct.rtx_def** %output) #10
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %11 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !4
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %11, i64 0, i32 0
+  %12 = load i32* %num_elem, align 4, !tbaa !3
+  %13 = trunc i64 %indvars.iv.next to i32
+  %cmp16 = icmp slt i32 %13, %12
+  br i1 %cmp16, label %for.body18, label %for.cond.backedge
+
+sw.bb25:                                          ; preds = %for.body
+  %arrayidx28 = getelementptr inbounds %struct.rtx_def* %in_this, i64 0, i32 1, i64 %indvars.iv.next60
+  %rtx = bitcast %union.rtunion_def* %arrayidx28 to %struct.rtx_def**
+  %14 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  tail call void @record_excess_regs(%struct.rtx_def* %14, %struct.rtx_def* %not_in_this, %struct.rtx_def** %output) #10
+  br label %for.cond.backedge
+
+for.cond.backedge:                                ; preds = %for.cond12.preheader, %for.body18, %sw.bb25, %for.body
+  %15 = trunc i64 %indvars.iv.next60 to i32
+  %cmp6 = icmp sgt i32 %15, 0
+  br i1 %cmp6, label %for.body, label %for.end31
+
+for.end31:                                        ; preds = %sw.epilog, %for.cond.backedge, %land.lhs.true, %sw.bb1, %if.then, %entry, %entry, %entry, %entry, %entry, %entry, %entry
+  ret void
+}

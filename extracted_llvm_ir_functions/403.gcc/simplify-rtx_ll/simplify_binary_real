@@ -1,0 +1,46 @@
+define internal void @simplify_binary_real(i8* nocapture %p) #0 {
+entry:
+  %f0 = alloca %struct.realvaluetype, align 8
+  %f1 = alloca %struct.realvaluetype, align 8
+  %value = alloca %struct.realvaluetype, align 8
+  %tmp = alloca %struct.realvaluetype, align 8
+  %tmp9 = alloca %struct.realvaluetype, align 8
+  %tmp11 = alloca %struct.realvaluetype, align 8
+  %trueop0 = bitcast i8* %p to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %trueop0, align 8, !tbaa !4
+  %u.sroa.0.0.idx = getelementptr inbounds %struct.rtx_def* %0, i64 1, i32 0, i64 0
+  %u.sroa.0.0.cast16 = bitcast %struct.realvaluetype* %f0 to i8*
+  call void @llvm.memmove.p0i8.p0i8.i64(i8* %u.sroa.0.0.cast16, i8* %u.sroa.0.0.idx, i64 24, i32 8, i1 false)
+  %trueop1 = getelementptr inbounds i8* %p, i64 8
+  %1 = bitcast i8* %trueop1 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %1, align 8, !tbaa !4
+  %u2.sroa.0.0.idx = getelementptr inbounds %struct.rtx_def* %2, i64 1, i32 0, i64 0
+  %u2.sroa.0.0.cast14 = bitcast %struct.realvaluetype* %f1 to i8*
+  call void @llvm.memmove.p0i8.p0i8.i64(i8* %u2.sroa.0.0.cast14, i8* %u2.sroa.0.0.idx, i64 24, i32 8, i1 false)
+  %mode = getelementptr inbounds i8* %p, i64 28
+  %3 = bitcast i8* %mode to i32*
+  %4 = load i32* %3, align 4, !tbaa !5
+  call void @real_value_truncate(%struct.realvaluetype* sret %tmp, i32 %4, %struct.realvaluetype* byval align 8 %f0) #4
+  %5 = bitcast %struct.realvaluetype* %tmp to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %u.sroa.0.0.cast16, i8* %5, i64 24, i32 8, i1 false), !tbaa.struct !10
+  %6 = load i32* %3, align 4, !tbaa !5
+  call void @real_value_truncate(%struct.realvaluetype* sret %tmp9, i32 %6, %struct.realvaluetype* byval align 8 %f1) #4
+  %7 = bitcast %struct.realvaluetype* %tmp9 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %u2.sroa.0.0.cast14, i8* %7, i64 24, i32 8, i1 false), !tbaa.struct !10
+  %code = getelementptr inbounds i8* %p, i64 24
+  %8 = bitcast i8* %code to i32*
+  %9 = load i32* %8, align 4, !tbaa !6
+  %call = call i32 @rtx_to_tree_code(i32 %9) #4
+  call void @earith(%struct.realvaluetype* %value, i32 %call, %struct.realvaluetype* %f0, %struct.realvaluetype* %f1) #4
+  %10 = load i32* %3, align 4, !tbaa !5
+  call void @real_value_truncate(%struct.realvaluetype* sret %tmp11, i32 %10, %struct.realvaluetype* byval align 8 %value) #4
+  %11 = bitcast %struct.realvaluetype* %value to i8*
+  %12 = bitcast %struct.realvaluetype* %tmp11 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %11, i8* %12, i64 24, i32 8, i1 false), !tbaa.struct !10
+  %13 = load i32* %3, align 4, !tbaa !5
+  %call13 = call %struct.rtx_def* @immed_real_const_1(%struct.realvaluetype* byval align 8 %tmp11, i32 %13) #4
+  %result = getelementptr inbounds i8* %p, i64 16
+  %14 = bitcast i8* %result to %struct.rtx_def**
+  store %struct.rtx_def* %call13, %struct.rtx_def** %14, align 8, !tbaa !4
+  ret void
+}

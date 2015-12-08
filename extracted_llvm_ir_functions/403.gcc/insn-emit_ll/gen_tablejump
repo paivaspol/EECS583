@@ -1,0 +1,44 @@
+define %struct.rtx_def* @gen_tablejump(%struct.rtx_def* %operand0, %struct.rtx_def* %operand1) #0 {
+entry:
+  tail call void @start_sequence() #4
+  %0 = load i32* @flag_pic, align 4, !tbaa !3
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.end19, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = load i32* @target_flags, align 4, !tbaa !3
+  %and = and i32 %1, 33554432
+  %tobool2 = icmp eq i32 %and, 0
+  %2 = lshr exact i32 %and, 25
+  %3 = or i32 %2, 4
+  br i1 %tobool2, label %if.else, label %if.then3
+
+if.then3:                                         ; preds = %if.then
+  %call = tail call %struct.rtx_def* @gen_rtx_fmt_u00(i32 67, i32 %3, %struct.rtx_def* %operand1) #4
+  %call11 = tail call %struct.rtx_def* @expand_simple_binop(i32 %3, i32 75, %struct.rtx_def* %operand0, %struct.rtx_def* %call, %struct.rtx_def* null, i32 0, i32 0) #4
+  br label %if.end19
+
+if.else:                                          ; preds = %if.then
+  %4 = load %struct.rtx_def** @pic_offset_table_rtx, align 8, !tbaa !0
+  %call17 = tail call %struct.rtx_def* @expand_simple_binop(i32 %3, i32 76, %struct.rtx_def* %4, %struct.rtx_def* %operand0, %struct.rtx_def* null, i32 1, i32 0) #4
+  %5 = load %struct.function** @cfun, align 8, !tbaa !0
+  %uses_pic_offset_table = getelementptr inbounds %struct.function* %5, i64 0, i32 56
+  %6 = bitcast [4 x i8]* %uses_pic_offset_table to i32*
+  %bf.load = load i32* %6, align 8
+  %bf.set = or i32 %bf.load, 2097152
+  store i32 %bf.set, i32* %6, align 8
+  br label %if.end19
+
+if.end19:                                         ; preds = %entry, %if.then3, %if.else
+  %operands.sroa.0.0 = phi %struct.rtx_def* [ %call11, %if.then3 ], [ %call17, %if.else ], [ %operand0, %entry ]
+  %7 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !0
+  %call22 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 47, i32 0, %struct.rtx_def* %7, %struct.rtx_def* %operands.sroa.0.0) #4
+  %call23 = tail call %struct.rtx_def* @gen_rtx_fmt_u00(i32 67, i32 0, %struct.rtx_def* %operand1) #4
+  %call24 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 48, i32 0, %struct.rtx_def* %call23) #4
+  %call25 = tail call %struct.rtvec_def* (i32, ...)* @gen_rtvec(i32 2, %struct.rtx_def* %call22, %struct.rtx_def* %call24) #4
+  %call26 = tail call %struct.rtx_def* @gen_rtx_fmt_E(i32 39, i32 0, %struct.rtvec_def* %call25) #4
+  %call27 = tail call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call26) #4
+  %call28 = tail call %struct.rtx_def* @gen_sequence() #4
+  tail call void @end_sequence() #4
+  ret %struct.rtx_def* %call28
+}

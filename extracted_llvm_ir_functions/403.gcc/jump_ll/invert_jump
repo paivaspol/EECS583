@@ -1,0 +1,28 @@
+define i32 @invert_jump(%struct.rtx_def* %jump, %struct.rtx_def* %nlabel, i32 %delete_unused) #0 {
+entry:
+  %call = tail call fastcc i32 @invert_exp(%struct.rtx_def* %jump) #8
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call1 = tail call i32 @redirect_jump(%struct.rtx_def* %jump, %struct.rtx_def* %nlabel, i32 %delete_unused) #8
+  %tobool2 = icmp eq i32 %call1, 0
+  br i1 %tobool2, label %if.end4, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  tail call void @invert_br_probabilities(%struct.rtx_def* %jump) #7
+  br label %return
+
+if.end4:                                          ; preds = %if.end
+  %call5 = tail call fastcc i32 @invert_exp(%struct.rtx_def* %jump) #8
+  %tobool6 = icmp eq i32 %call5, 0
+  br i1 %tobool6, label %if.then7, label %return
+
+if.then7:                                         ; preds = %if.end4
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 2202, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.invert_jump, i64 0, i64 0)) #9
+  unreachable
+
+return:                                           ; preds = %if.end4, %entry, %if.then3
+  %retval.0 = phi i32 [ 1, %if.then3 ], [ 0, %entry ], [ 0, %if.end4 ]
+  ret i32 %retval.0
+}

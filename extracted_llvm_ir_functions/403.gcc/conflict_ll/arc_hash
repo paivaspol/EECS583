@@ -1,0 +1,14 @@
+define internal i32 @arc_hash(i8* nocapture %arcp) #2 {
+entry:
+  %larger = getelementptr inbounds i8* %arcp, i64 20
+  %0 = bitcast i8* %larger to i32*
+  %1 = load i32* %0, align 4, !tbaa !0
+  %sub = add nsw i32 %1, -1
+  %mul = mul nsw i32 %sub, %1
+  %div = sdiv i32 %mul, 2
+  %smaller = getelementptr inbounds i8* %arcp, i64 16
+  %2 = bitcast i8* %smaller to i32*
+  %3 = load i32* %2, align 4, !tbaa !0
+  %add = add nsw i32 %3, %div
+  ret i32 %add
+}

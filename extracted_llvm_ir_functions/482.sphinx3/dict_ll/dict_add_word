@@ -1,0 +1,112 @@
+define i32 @dict_add_word(%struct.dict_t* nocapture %d, i8* %word, i8* %p, i32 %np) #0 {
+entry:
+  %w = alloca i32, align 4
+  %n_word = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 7
+  %0 = load i32* %n_word, align 4, !tbaa !3
+  %max_words = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 6
+  %1 = load i32* %max_words, align 4, !tbaa !3
+  %cmp = icmp slt i32 %0, %1
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 112, i8* getelementptr inbounds ([6 x i8]* @.str1, i64 0, i64 0)) #6
+  call void (i8*, ...)* @_E__pr_warn(i8* getelementptr inbounds ([33 x i8]* @.str2, i64 0, i64 0), i8* %word) #6
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %word1 = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 4
+  %2 = load %struct.dictword_t** %word1, align 8, !tbaa !0
+  %idx.ext = sext i32 %0 to i64
+  %call = call i8* @__ckd_salloc__(i8* %word, i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 117) #6
+  %word3 = getelementptr inbounds %struct.dictword_t* %2, i64 %idx.ext, i32 0
+  store i8* %call, i8** %word3, align 8, !tbaa !0
+  %ht = getelementptr inbounds %struct.dict_t* %d, i64 0, i32 5
+  %3 = load %struct.hash_table_t** %ht, align 8, !tbaa !0
+  %4 = load i32* %n_word, align 4, !tbaa !3
+  %call6 = call i32 @hash_enter(%struct.hash_table_t* %3, i8* %call, i32 %4) #6
+  %5 = load i32* %n_word, align 4, !tbaa !3
+  %cmp8 = icmp eq i32 %call6, %5
+  br i1 %cmp8, label %if.end11, label %if.then9
+
+if.then9:                                         ; preds = %if.end
+  %6 = load i8** %word3, align 8, !tbaa !0
+  call void @ckd_free(i8* %6) #6
+  br label %return
+
+if.end11:                                         ; preds = %if.end
+  %tobool = icmp ne i8* %p, null
+  %cmp12 = icmp sgt i32 %np, 0
+  %or.cond = and i1 %tobool, %cmp12
+  br i1 %or.cond, label %if.then13, label %if.else
+
+if.then13:                                        ; preds = %if.end11
+  %conv = sext i32 %np to i64
+  %call14 = call i8* @__ckd_malloc__(i64 %conv, i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 127) #6
+  %ciphone = getelementptr inbounds %struct.dictword_t* %2, i64 %idx.ext, i32 1
+  store i8* %call14, i8** %ciphone, align 8, !tbaa !0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call14, i8* %p, i64 %conv, i32 1, i1 false)
+  %pronlen = getelementptr inbounds %struct.dictword_t* %2, i64 %idx.ext, i32 2
+  store i32 %np, i32* %pronlen, align 4, !tbaa !3
+  br label %if.end20
+
+if.else:                                          ; preds = %if.end11
+  %ciphone18 = getelementptr inbounds %struct.dictword_t* %2, i64 %idx.ext, i32 1
+  store i8* null, i8** %ciphone18, align 8, !tbaa !0
+  %pronlen19 = getelementptr inbounds %struct.dictword_t* %2, i64 %idx.ext, i32 2
+  store i32 0, i32* %pronlen19, align 4, !tbaa !3
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.else, %if.then13
+  %alt = getelementptr inbounds %struct.dictword_t* %2, i64 %idx.ext, i32 3
+  store i32 -1, i32* %alt, align 4, !tbaa !3
+  %7 = load i32* %n_word, align 4, !tbaa !3
+  %basewid = getelementptr inbounds %struct.dictword_t* %2, i64 %idx.ext, i32 4
+  store i32 %7, i32* %basewid, align 4, !tbaa !3
+  %n_comp = getelementptr inbounds %struct.dictword_t* %2, i64 %idx.ext, i32 5
+  store i32 0, i32* %n_comp, align 4, !tbaa !3
+  %comp = getelementptr inbounds %struct.dictword_t* %2, i64 %idx.ext, i32 6
+  store i32* null, i32** %comp, align 8, !tbaa !0
+  %call22 = call i32 @dict_word2basestr(i8* %word) #7
+  %cmp23 = icmp sgt i32 %call22, 0
+  br i1 %cmp23, label %if.then25, label %if.end46
+
+if.then25:                                        ; preds = %if.end20
+  %8 = load %struct.hash_table_t** %ht, align 8, !tbaa !0
+  %call27 = call i32 @hash_lookup(%struct.hash_table_t* %8, i8* %word, i32* %w) #6
+  %cmp28 = icmp slt i32 %call27, 0
+  %idxprom = sext i32 %call22 to i64
+  %arrayidx = getelementptr inbounds i8* %word, i64 %idxprom
+  store i8 40, i8* %arrayidx, align 1, !tbaa !1
+  br i1 %cmp28, label %if.then30, label %if.end34
+
+if.then30:                                        ; preds = %if.then25
+  call void @_E__pr_header(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i64 144, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0)) #6
+  call void (i8*, ...)* @_E__die_error(i8* getelementptr inbounds ([27 x i8]* @.str4, i64 0, i64 0), i8* %word) #6
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.then25, %if.then30
+  %9 = load i32* %w, align 4, !tbaa !3
+  store i32 %9, i32* %basewid, align 4, !tbaa !3
+  %10 = load i32* %w, align 4, !tbaa !3
+  %idxprom36 = sext i32 %10 to i64
+  %11 = load %struct.dictword_t** %word1, align 8, !tbaa !0
+  %alt39 = getelementptr inbounds %struct.dictword_t* %11, i64 %idxprom36, i32 3
+  %12 = load i32* %alt39, align 4, !tbaa !3
+  store i32 %12, i32* %alt, align 4, !tbaa !3
+  %13 = load i32* %n_word, align 4, !tbaa !3
+  %14 = load i32* %w, align 4, !tbaa !3
+  %idxprom42 = sext i32 %14 to i64
+  %alt45 = getelementptr inbounds %struct.dictword_t* %11, i64 %idxprom42, i32 3
+  store i32 %13, i32* %alt45, align 4, !tbaa !3
+  br label %if.end46
+
+if.end46:                                         ; preds = %if.end34, %if.end20
+  %15 = load i32* %n_word, align 4, !tbaa !3
+  %inc = add nsw i32 %15, 1
+  store i32 %inc, i32* %n_word, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.end46, %if.then9, %if.then
+  %retval.0 = phi i32 [ -1, %if.then ], [ -1, %if.then9 ], [ %15, %if.end46 ]
+  ret i32 %retval.0
+}

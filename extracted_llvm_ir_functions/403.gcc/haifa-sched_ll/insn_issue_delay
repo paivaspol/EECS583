@@ -1,0 +1,122 @@
+define i32 @insn_issue_delay(%struct.rtx_def* %insn) #3 {
+entry:
+  %fld.i = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1
+  %rtint.i = bitcast [1 x %union.rtunion_def]* %fld.i to i32*
+  %0 = load i32* %rtint.i, align 4, !tbaa !0
+  %idxprom.i = sext i32 %0 to i64
+  %1 = load %struct.haifa_insn_data** @h_i_d, align 8, !tbaa !3
+  %units.i = getelementptr inbounds %struct.haifa_insn_data* %1, i64 %idxprom.i, i32 9
+  %2 = load i16* %units.i, align 2, !tbaa !4
+  %conv.i = sext i16 %2 to i32
+  %cmp.i = icmp eq i16 %2, 0
+  br i1 %cmp.i, label %if.then.i, label %insn_unit.exit
+
+if.then.i:                                        ; preds = %entry
+  %arrayidx4.i = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4
+  %rtint5.i = bitcast %union.rtunion_def* %arrayidx4.i to i32*
+  %3 = load i32* %rtint5.i, align 4, !tbaa !0
+  %cmp6.i = icmp sgt i32 %3, -1
+  br i1 %cmp6.i, label %if.else.i, label %cond.end.i
+
+cond.end.i:                                       ; preds = %if.then.i
+  %call.i = tail call i32 @recog_memoized_1(%struct.rtx_def* %insn) #9
+  %.pr.i = load i32* %rtint5.i, align 4, !tbaa !0
+  %cmp14.i = icmp slt i32 %.pr.i, 0
+  br i1 %cmp14.i, label %if.end21.i, label %if.else.i
+
+if.else.i:                                        ; preds = %cond.end.i, %if.then.i
+  %call17.i = tail call i32 @function_units_used(%struct.rtx_def* %insn) #9
+  %call17.lobit.i = lshr i32 %call17.i, 31
+  %call17.lobit.not.i = xor i32 %call17.lobit.i, 1
+  %inc.call17.i = add nsw i32 %call17.lobit.not.i, %call17.i
+  br label %if.end21.i
+
+if.end21.i:                                       ; preds = %if.else.i, %cond.end.i
+  %unit.0.i = phi i32 [ -1, %cond.end.i ], [ %inc.call17.i, %if.else.i ]
+  %cmp22.i = icmp sgt i32 %unit.0.i, -1
+  %cmp24.i = icmp ult i32 %unit.0.i, 32768
+  %or.cond.i = or i1 %cmp22.i, %cmp24.i
+  br i1 %or.cond.i, label %if.then26.i, label %insn_unit.exit
+
+if.then26.i:                                      ; preds = %if.end21.i
+  %conv27.i = trunc i32 %unit.0.i to i16
+  %4 = load i32* %rtint.i, align 4, !tbaa !0
+  %idxprom31.i = sext i32 %4 to i64
+  %5 = load %struct.haifa_insn_data** @h_i_d, align 8, !tbaa !3
+  %units33.i = getelementptr inbounds %struct.haifa_insn_data* %5, i64 %idxprom31.i, i32 9
+  store i16 %conv27.i, i16* %units33.i, align 2, !tbaa !4
+  br label %insn_unit.exit
+
+insn_unit.exit:                                   ; preds = %entry, %if.end21.i, %if.then26.i
+  %unit.1.i = phi i32 [ %unit.0.i, %if.then26.i ], [ %conv.i, %entry ], [ %unit.0.i, %if.end21.i ]
+  %cmp36.i = icmp sgt i32 %unit.1.i, 0
+  %sub.i = sext i1 %cmp36.i to i32
+  %cond41.i = add nsw i32 %sub.i, %unit.1.i
+  %cmp = icmp sgt i32 %cond41.i, -1
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %insn_unit.exit
+  %idxprom = sext i32 %cond41.i to i64
+  %blockage_range_function = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom, i32 9
+  %6 = load i32 (%struct.rtx_def*)** %blockage_range_function, align 8, !tbaa !3
+  %tobool = icmp eq i32 (%struct.rtx_def*)* %6, null
+  br i1 %tobool, label %if.end32, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then
+  %blockage_function = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom, i32 10
+  %7 = load i32 (%struct.rtx_def*, %struct.rtx_def*)** %blockage_function, align 8, !tbaa !3
+  %tobool3 = icmp eq i32 (%struct.rtx_def*, %struct.rtx_def*)* %7, null
+  br i1 %tobool3, label %if.end32, label %if.then4
+
+if.then4:                                         ; preds = %land.lhs.true
+  %call8 = tail call i32 %7(%struct.rtx_def* %insn, %struct.rtx_def* %insn) #9
+  br label %if.end32
+
+if.else:                                          ; preds = %insn_unit.exit
+  %tobool952 = icmp eq i32 %cond41.i, -1
+  br i1 %tobool952, label %if.end32, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.else
+  %neg = xor i32 %cond41.i, -1
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %unit.055 = phi i32 [ %neg, %for.body.lr.ph ], [ %shr, %for.inc ]
+  %delay.054 = phi i32 [ 0, %for.body.lr.ph ], [ %delay.1, %for.inc ]
+  %and = and i32 %unit.055, 1
+  %cmp10 = icmp eq i32 %and, 0
+  br i1 %cmp10, label %for.inc, label %land.lhs.true11
+
+land.lhs.true11:                                  ; preds = %for.body
+  %blockage_range_function14 = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %indvars.iv, i32 9
+  %8 = load i32 (%struct.rtx_def*)** %blockage_range_function14, align 8, !tbaa !3
+  %tobool15 = icmp eq i32 (%struct.rtx_def*)* %8, null
+  br i1 %tobool15, label %for.inc, label %land.lhs.true16
+
+land.lhs.true16:                                  ; preds = %land.lhs.true11
+  %blockage_function19 = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %indvars.iv, i32 10
+  %9 = load i32 (%struct.rtx_def*, %struct.rtx_def*)** %blockage_function19, align 8, !tbaa !3
+  %tobool20 = icmp eq i32 (%struct.rtx_def*, %struct.rtx_def*)* %9, null
+  br i1 %tobool20, label %for.inc, label %if.then21
+
+if.then21:                                        ; preds = %land.lhs.true16
+  %call25 = tail call i32 %9(%struct.rtx_def* %insn, %struct.rtx_def* %insn) #9
+  %cmp26 = icmp sgt i32 %delay.054, %call25
+  br i1 %cmp26, label %for.inc, label %cond.false
+
+cond.false:                                       ; preds = %if.then21
+  %call30 = tail call i32 %9(%struct.rtx_def* %insn, %struct.rtx_def* %insn) #9
+  br label %for.inc
+
+for.inc:                                          ; preds = %cond.false, %if.then21, %land.lhs.true16, %land.lhs.true11, %for.body
+  %delay.1 = phi i32 [ %delay.054, %land.lhs.true16 ], [ %delay.054, %land.lhs.true11 ], [ %delay.054, %for.body ], [ %call30, %cond.false ], [ %delay.054, %if.then21 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %shr = ashr i32 %unit.055, 1
+  %tobool9 = icmp eq i32 %shr, 0
+  br i1 %tobool9, label %if.end32, label %for.body
+
+if.end32:                                         ; preds = %if.else, %for.inc, %land.lhs.true, %if.then, %if.then4
+  %delay.2 = phi i32 [ %call8, %if.then4 ], [ 0, %land.lhs.true ], [ 0, %if.then ], [ 0, %if.else ], [ %delay.1, %for.inc ]
+  ret i32 %delay.2
+}

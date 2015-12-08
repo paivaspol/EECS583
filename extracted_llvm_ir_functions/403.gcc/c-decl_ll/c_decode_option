@@ -1,0 +1,1100 @@
+define i32 @c_decode_option(i32 %argc, i8** %argv) #0 {
+entry:
+  %0 = load i8** %argv, align 8, !tbaa !0
+  %1 = load %struct.cpp_reader** @parse_in, align 8, !tbaa !0
+  %call = tail call i32 @cpp_handle_option(%struct.cpp_reader* %1, i32 %argc, i8** %argv, i32 0) #8
+  %call1 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str, i64 0, i64 0)) #9
+  %tobool = icmp eq i32 %call1, 0
+  br i1 %tobool, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %call2 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([13 x i8]* @.str1, i64 0, i64 0)) #9
+  %tobool3 = icmp eq i32 %call2, 0
+  br i1 %tobool3, label %if.then, label %if.else
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  tail call void (i8*, ...)* @warning(i8* getelementptr inbounds ([46 x i8]* @.str2, i64 0, i64 0)) #8
+  store i32 1, i32* @flag_traditional, align 4, !tbaa !3
+  store i32 1, i32* @flag_writable_strings, align 4, !tbaa !3
+  br label %return
+
+if.else:                                          ; preds = %lor.lhs.false
+  %call4 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([25 x i8]* @.str3, i64 0, i64 0)) #9
+  %tobool5 = icmp eq i32 %call4, 0
+  br i1 %tobool5, label %if.then6, label %if.else7
+
+if.then6:                                         ; preds = %if.else
+  store i32 1, i32* @flag_allow_single_precision, align 4, !tbaa !3
+  br label %return
+
+if.else7:                                         ; preds = %if.else
+  %call8 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([9 x i8]* @.str4, i64 0, i64 0)) #9
+  %tobool9 = icmp eq i32 %call8, 0
+  br i1 %tobool9, label %if.then13, label %lor.lhs.false10
+
+lor.lhs.false10:                                  ; preds = %if.else7
+  %call11 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0)) #9
+  %tobool12 = icmp eq i32 %call11, 0
+  br i1 %tobool12, label %if.then13, label %if.else14
+
+if.then13:                                        ; preds = %lor.lhs.false10, %if.else7
+  store i32 1, i32* @flag_hosted, align 4, !tbaa !3
+  store i32 0, i32* @flag_no_builtin, align 4, !tbaa !3
+  br label %return
+
+if.else14:                                        ; preds = %lor.lhs.false10
+  %call15 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([15 x i8]* @.str6, i64 0, i64 0)) #9
+  %tobool16 = icmp eq i32 %call15, 0
+  br i1 %tobool16, label %if.then20, label %lor.lhs.false17
+
+lor.lhs.false17:                                  ; preds = %if.else14
+  %call18 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([12 x i8]* @.str7, i64 0, i64 0)) #9
+  %tobool19 = icmp eq i32 %call18, 0
+  br i1 %tobool19, label %if.then20, label %if.else22
+
+if.then20:                                        ; preds = %lor.lhs.false17, %if.else14
+  store i32 0, i32* @flag_hosted, align 4, !tbaa !3
+  store i32 1, i32* @flag_no_builtin, align 4, !tbaa !3
+  %2 = load i32* @warn_main, align 4, !tbaa !3
+  %cmp = icmp eq i32 %2, 2
+  br i1 %cmp, label %if.then21, label %return
+
+if.then21:                                        ; preds = %if.then20
+  store i32 0, i32* @warn_main, align 4, !tbaa !3
+  br label %return
+
+if.else22:                                        ; preds = %lor.lhs.false17
+  %call23 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([16 x i8]* @.str8, i64 0, i64 0)) #9
+  %tobool24 = icmp eq i32 %call23, 0
+  br i1 %tobool24, label %if.then28, label %lor.lhs.false25
+
+lor.lhs.false25:                                  ; preds = %if.else22
+  %call26 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([17 x i8]* @.str9, i64 0, i64 0)) #9
+  %tobool27 = icmp eq i32 %call26, 0
+  br i1 %tobool27, label %if.then28, label %if.else29
+
+if.then28:                                        ; preds = %lor.lhs.false25, %if.else22
+  store i32 0, i32* @flag_traditional, align 4, !tbaa !3
+  store i32 0, i32* @flag_writable_strings, align 4, !tbaa !3
+  br label %return
+
+if.else29:                                        ; preds = %lor.lhs.false25
+  %call30 = tail call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([6 x i8]* @.str10, i64 0, i64 0), i64 5) #9
+  %tobool31 = icmp eq i32 %call30, 0
+  br i1 %tobool31, label %if.then32, label %if.else74
+
+if.then32:                                        ; preds = %if.else29
+  %arrayidx33 = getelementptr inbounds i8* %0, i64 5
+  %call34 = tail call i32 @strcmp(i8* %arrayidx33, i8* getelementptr inbounds ([13 x i8]* @.str11, i64 0, i64 0)) #9
+  %tobool35 = icmp eq i32 %call34, 0
+  br i1 %tobool35, label %iso_1994, label %lor.lhs.false36
+
+lor.lhs.false36:                                  ; preds = %if.then32
+  %call37 = tail call i32 @strcmp(i8* %arrayidx33, i8* getelementptr inbounds ([4 x i8]* @.str12, i64 0, i64 0)) #9
+  %tobool38 = icmp eq i32 %call37, 0
+  br i1 %tobool38, label %iso_1994, label %if.else40
+
+iso_1994:                                         ; preds = %if.else40, %if.then32, %lor.lhs.false36, %if.else177
+  %storemerge = phi i32 [ 0, %if.else177 ], [ 0, %lor.lhs.false36 ], [ 0, %if.then32 ], [ 1, %if.else40 ]
+  store i32 %storemerge, i32* @flag_isoc94, align 4, !tbaa !3
+  store i32 0, i32* @flag_traditional, align 4, !tbaa !3
+  store i32 0, i32* @flag_writable_strings, align 4, !tbaa !3
+  store i32 1, i32* @flag_no_asm, align 4, !tbaa !3
+  store i32 1, i32* @flag_no_nonansi_builtin, align 4, !tbaa !3
+  store i32 0, i32* @flag_noniso_default_format_attributes, align 4, !tbaa !3
+  store i32 0, i32* @flag_isoc99, align 4, !tbaa !3
+  br label %return
+
+if.else40:                                        ; preds = %lor.lhs.false36
+  %call41 = tail call i32 @strcmp(i8* %arrayidx33, i8* getelementptr inbounds ([15 x i8]* @.str13, i64 0, i64 0)) #9
+  %tobool42 = icmp eq i32 %call41, 0
+  br i1 %tobool42, label %iso_1994, label %if.else44
+
+if.else44:                                        ; preds = %if.else40
+  %call45 = tail call i32 @strcmp(i8* %arrayidx33, i8* getelementptr inbounds ([13 x i8]* @.str14, i64 0, i64 0)) #9
+  %tobool46 = icmp eq i32 %call45, 0
+  br i1 %tobool46, label %if.then56, label %lor.lhs.false47
+
+lor.lhs.false47:                                  ; preds = %if.else44
+  %call48 = tail call i32 @strcmp(i8* %arrayidx33, i8* getelementptr inbounds ([13 x i8]* @.str15, i64 0, i64 0)) #9
+  %tobool49 = icmp eq i32 %call48, 0
+  br i1 %tobool49, label %if.then56, label %lor.lhs.false50
+
+lor.lhs.false50:                                  ; preds = %lor.lhs.false47
+  %call51 = tail call i32 @strcmp(i8* %arrayidx33, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0)) #9
+  %tobool52 = icmp eq i32 %call51, 0
+  br i1 %tobool52, label %if.then56, label %lor.lhs.false53
+
+lor.lhs.false53:                                  ; preds = %lor.lhs.false50
+  %call54 = tail call i32 @strcmp(i8* %arrayidx33, i8* getelementptr inbounds ([4 x i8]* @.str17, i64 0, i64 0)) #9
+  %tobool55 = icmp eq i32 %call54, 0
+  br i1 %tobool55, label %if.then56, label %if.else57
+
+if.then56:                                        ; preds = %lor.lhs.false53, %lor.lhs.false50, %lor.lhs.false47, %if.else44
+  store i32 0, i32* @flag_traditional, align 4, !tbaa !3
+  store i32 0, i32* @flag_writable_strings, align 4, !tbaa !3
+  store i32 1, i32* @flag_no_asm, align 4, !tbaa !3
+  store i32 1, i32* @flag_no_nonansi_builtin, align 4, !tbaa !3
+  store i32 0, i32* @flag_noniso_default_format_attributes, align 4, !tbaa !3
+  store i32 1, i32* @flag_isoc99, align 4, !tbaa !3
+  store i32 1, i32* @flag_isoc94, align 4, !tbaa !3
+  br label %return
+
+if.else57:                                        ; preds = %lor.lhs.false53
+  %call58 = tail call i32 @strcmp(i8* %arrayidx33, i8* getelementptr inbounds ([6 x i8]* @.str18, i64 0, i64 0)) #9
+  %tobool59 = icmp eq i32 %call58, 0
+  br i1 %tobool59, label %if.then60, label %if.else61
+
+if.then60:                                        ; preds = %if.else57
+  store i32 0, i32* @flag_traditional, align 4, !tbaa !3
+  store i32 0, i32* @flag_writable_strings, align 4, !tbaa !3
+  store i32 0, i32* @flag_no_asm, align 4, !tbaa !3
+  store i32 0, i32* @flag_no_nonansi_builtin, align 4, !tbaa !3
+  store i32 1, i32* @flag_noniso_default_format_attributes, align 4, !tbaa !3
+  store i32 0, i32* @flag_isoc99, align 4, !tbaa !3
+  store i32 0, i32* @flag_isoc94, align 4, !tbaa !3
+  br label %return
+
+if.else61:                                        ; preds = %if.else57
+  %call62 = tail call i32 @strcmp(i8* %arrayidx33, i8* getelementptr inbounds ([6 x i8]* @.str19, i64 0, i64 0)) #9
+  %tobool63 = icmp eq i32 %call62, 0
+  br i1 %tobool63, label %if.then67, label %lor.lhs.false64
+
+lor.lhs.false64:                                  ; preds = %if.else61
+  %call65 = tail call i32 @strcmp(i8* %arrayidx33, i8* getelementptr inbounds ([6 x i8]* @.str20, i64 0, i64 0)) #9
+  %tobool66 = icmp eq i32 %call65, 0
+  br i1 %tobool66, label %if.then67, label %if.else68
+
+if.then67:                                        ; preds = %lor.lhs.false64, %if.else61
+  store i32 0, i32* @flag_traditional, align 4, !tbaa !3
+  store i32 0, i32* @flag_writable_strings, align 4, !tbaa !3
+  store i32 0, i32* @flag_no_asm, align 4, !tbaa !3
+  store i32 0, i32* @flag_no_nonansi_builtin, align 4, !tbaa !3
+  store i32 1, i32* @flag_noniso_default_format_attributes, align 4, !tbaa !3
+  store i32 1, i32* @flag_isoc99, align 4, !tbaa !3
+  store i32 1, i32* @flag_isoc94, align 4, !tbaa !3
+  br label %return
+
+if.else68:                                        ; preds = %lor.lhs.false64
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([24 x i8]* @.str21, i64 0, i64 0), i8* %arrayidx33) #8
+  br label %return
+
+if.else74:                                        ; preds = %if.else29
+  %call75 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([25 x i8]* @.str22, i64 0, i64 0)) #9
+  %tobool76 = icmp eq i32 %call75, 0
+  br i1 %tobool76, label %if.then77, label %if.else78
+
+if.then77:                                        ; preds = %if.else74
+  store i32 1, i32* @dollars_in_ident, align 4, !tbaa !3
+  br label %return
+
+if.else78:                                        ; preds = %if.else74
+  %call79 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([28 x i8]* @.str23, i64 0, i64 0)) #9
+  %tobool80 = icmp eq i32 %call79, 0
+  br i1 %tobool80, label %if.then81, label %if.else82
+
+if.then81:                                        ; preds = %if.else78
+  store i32 0, i32* @dollars_in_ident, align 4, !tbaa !3
+  br label %return
+
+if.else82:                                        ; preds = %if.else78
+  %call83 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str24, i64 0, i64 0)) #9
+  %tobool84 = icmp eq i32 %call83, 0
+  br i1 %tobool84, label %if.then85, label %if.else86
+
+if.then85:                                        ; preds = %if.else82
+  store i32 1, i32* @flag_signed_char, align 4, !tbaa !3
+  br label %return
+
+if.else86:                                        ; preds = %if.else82
+  %call87 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([16 x i8]* @.str25, i64 0, i64 0)) #9
+  %tobool88 = icmp eq i32 %call87, 0
+  br i1 %tobool88, label %if.then89, label %if.else90
+
+if.then89:                                        ; preds = %if.else86
+  store i32 0, i32* @flag_signed_char, align 4, !tbaa !3
+  br label %return
+
+if.else90:                                        ; preds = %if.else86
+  %call91 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([17 x i8]* @.str26, i64 0, i64 0)) #9
+  %tobool92 = icmp eq i32 %call91, 0
+  br i1 %tobool92, label %if.then93, label %if.else94
+
+if.then93:                                        ; preds = %if.else90
+  store i32 0, i32* @flag_signed_char, align 4, !tbaa !3
+  br label %return
+
+if.else94:                                        ; preds = %if.else90
+  %call95 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([19 x i8]* @.str27, i64 0, i64 0)) #9
+  %tobool96 = icmp eq i32 %call95, 0
+  br i1 %tobool96, label %if.then97, label %if.else98
+
+if.then97:                                        ; preds = %if.else94
+  store i32 1, i32* @flag_signed_char, align 4, !tbaa !3
+  br label %return
+
+if.else98:                                        ; preds = %if.else94
+  %call99 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([19 x i8]* @.str28, i64 0, i64 0)) #9
+  %tobool100 = icmp eq i32 %call99, 0
+  br i1 %tobool100, label %if.then104, label %lor.lhs.false101
+
+lor.lhs.false101:                                 ; preds = %if.else98
+  %call102 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([24 x i8]* @.str29, i64 0, i64 0)) #9
+  %tobool103 = icmp eq i32 %call102, 0
+  br i1 %tobool103, label %if.then104, label %if.else105
+
+if.then104:                                       ; preds = %lor.lhs.false101, %if.else98
+  store i32 1, i32* @flag_signed_bitfields, align 4, !tbaa !3
+  store i32 1, i32* @explicit_flag_signed_bitfields, align 4, !tbaa !3
+  br label %return
+
+if.else105:                                       ; preds = %lor.lhs.false101
+  %call106 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([21 x i8]* @.str30, i64 0, i64 0)) #9
+  %tobool107 = icmp eq i32 %call106, 0
+  br i1 %tobool107, label %if.then111, label %lor.lhs.false108
+
+lor.lhs.false108:                                 ; preds = %if.else105
+  %call109 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([22 x i8]* @.str31, i64 0, i64 0)) #9
+  %tobool110 = icmp eq i32 %call109, 0
+  br i1 %tobool110, label %if.then111, label %if.else112
+
+if.then111:                                       ; preds = %lor.lhs.false108, %if.else105
+  store i32 0, i32* @flag_signed_bitfields, align 4, !tbaa !3
+  store i32 1, i32* @explicit_flag_signed_bitfields, align 4, !tbaa !3
+  br label %return
+
+if.else112:                                       ; preds = %lor.lhs.false108
+  %call113 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str32, i64 0, i64 0)) #9
+  %tobool114 = icmp eq i32 %call113, 0
+  br i1 %tobool114, label %if.then115, label %if.else116
+
+if.then115:                                       ; preds = %if.else112
+  store i32 1, i32* @flag_short_enums, align 4, !tbaa !3
+  br label %return
+
+if.else116:                                       ; preds = %if.else112
+  %call117 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([17 x i8]* @.str33, i64 0, i64 0)) #9
+  %tobool118 = icmp eq i32 %call117, 0
+  br i1 %tobool118, label %if.then119, label %if.else120
+
+if.then119:                                       ; preds = %if.else116
+  store i32 0, i32* @flag_short_enums, align 4, !tbaa !3
+  br label %return
+
+if.else120:                                       ; preds = %if.else116
+  %call121 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str34, i64 0, i64 0)) #9
+  %tobool122 = icmp eq i32 %call121, 0
+  br i1 %tobool122, label %if.then123, label %if.else124
+
+if.then123:                                       ; preds = %if.else120
+  store i32 1, i32* @flag_short_wchar, align 4, !tbaa !3
+  br label %return
+
+if.else124:                                       ; preds = %if.else120
+  %call125 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([17 x i8]* @.str35, i64 0, i64 0)) #9
+  %tobool126 = icmp eq i32 %call125, 0
+  br i1 %tobool126, label %if.then127, label %if.else128
+
+if.then127:                                       ; preds = %if.else124
+  store i32 0, i32* @flag_short_wchar, align 4, !tbaa !3
+  br label %return
+
+if.else128:                                       ; preds = %if.else124
+  %call129 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([16 x i8]* @.str36, i64 0, i64 0)) #9
+  %tobool130 = icmp eq i32 %call129, 0
+  br i1 %tobool130, label %if.then131, label %if.else132
+
+if.then131:                                       ; preds = %if.else128
+  store i32 1, i32* @flag_cond_mismatch, align 4, !tbaa !3
+  br label %return
+
+if.else132:                                       ; preds = %if.else128
+  %call133 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([19 x i8]* @.str37, i64 0, i64 0)) #9
+  %tobool134 = icmp eq i32 %call133, 0
+  br i1 %tobool134, label %if.then135, label %if.else136
+
+if.then135:                                       ; preds = %if.else132
+  store i32 0, i32* @flag_cond_mismatch, align 4, !tbaa !3
+  br label %return
+
+if.else136:                                       ; preds = %if.else132
+  %call137 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([15 x i8]* @.str38, i64 0, i64 0)) #9
+  %tobool138 = icmp eq i32 %call137, 0
+  br i1 %tobool138, label %if.then139, label %if.else140
+
+if.then139:                                       ; preds = %if.else136
+  store i32 1, i32* @flag_short_double, align 4, !tbaa !3
+  br label %return
+
+if.else140:                                       ; preds = %if.else136
+  %call141 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([18 x i8]* @.str39, i64 0, i64 0)) #9
+  %tobool142 = icmp eq i32 %call141, 0
+  br i1 %tobool142, label %if.then143, label %if.else144
+
+if.then143:                                       ; preds = %if.else140
+  store i32 0, i32* @flag_short_double, align 4, !tbaa !3
+  br label %return
+
+if.else144:                                       ; preds = %if.else140
+  %call145 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([6 x i8]* @.str40, i64 0, i64 0)) #9
+  %tobool146 = icmp eq i32 %call145, 0
+  br i1 %tobool146, label %if.then147, label %if.else148
+
+if.then147:                                       ; preds = %if.else144
+  store i32 0, i32* @flag_no_asm, align 4, !tbaa !3
+  br label %return
+
+if.else148:                                       ; preds = %if.else144
+  %call149 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([9 x i8]* @.str41, i64 0, i64 0)) #9
+  %tobool150 = icmp eq i32 %call149, 0
+  br i1 %tobool150, label %if.then151, label %if.else152
+
+if.then151:                                       ; preds = %if.else148
+  store i32 1, i32* @flag_no_asm, align 4, !tbaa !3
+  br label %return
+
+if.else152:                                       ; preds = %if.else148
+  %call153 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([10 x i8]* @.str42, i64 0, i64 0)) #9
+  %tobool154 = icmp eq i32 %call153, 0
+  br i1 %tobool154, label %if.then155, label %if.else156
+
+if.then155:                                       ; preds = %if.else152
+  store i32 0, i32* @flag_no_builtin, align 4, !tbaa !3
+  br label %return
+
+if.else156:                                       ; preds = %if.else152
+  %call157 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([13 x i8]* @.str43, i64 0, i64 0)) #9
+  %tobool158 = icmp eq i32 %call157, 0
+  br i1 %tobool158, label %if.then159, label %if.else160
+
+if.then159:                                       ; preds = %if.else156
+  store i32 1, i32* @flag_no_builtin, align 4, !tbaa !3
+  br label %return
+
+if.else160:                                       ; preds = %if.else156
+  %call161 = tail call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str44, i64 0, i64 0), i64 13) #9
+  %tobool162 = icmp eq i32 %call161, 0
+  br i1 %tobool162, label %if.then163, label %if.else164
+
+if.then163:                                       ; preds = %if.else160
+  %add.ptr = getelementptr inbounds i8* %0, i64 13
+  tail call void @disable_builtin_function(i8* %add.ptr) #8
+  br label %return
+
+if.else164:                                       ; preds = %if.else160
+  %3 = load i8* %0, align 1, !tbaa !1
+  %cmp166 = icmp eq i8 %3, 45
+  br i1 %cmp166, label %land.lhs.true, label %if.else177
+
+land.lhs.true:                                    ; preds = %if.else164
+  %arrayidx168 = getelementptr inbounds i8* %0, i64 1
+  %4 = load i8* %arrayidx168, align 1, !tbaa !1
+  %cmp170 = icmp eq i8 %4, 102
+  br i1 %cmp170, label %land.lhs.true172, label %if.else177
+
+land.lhs.true172:                                 ; preds = %land.lhs.true
+  %add.ptr173 = getelementptr inbounds i8* %0, i64 2
+  %call174 = tail call i32 @dump_switch_p(i8* %add.ptr173) #8
+  %tobool175 = icmp eq i32 %call174, 0
+  br i1 %tobool175, label %if.else177, label %return
+
+if.else177:                                       ; preds = %land.lhs.true172, %land.lhs.true, %if.else164
+  %call178 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([6 x i8]* @.str45, i64 0, i64 0)) #9
+  %tobool179 = icmp eq i32 %call178, 0
+  br i1 %tobool179, label %iso_1994, label %if.else181
+
+if.else181:                                       ; preds = %if.else177
+  %call182 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([38 x i8]* @.str46, i64 0, i64 0)) #9
+  %tobool183 = icmp eq i32 %call182, 0
+  br i1 %tobool183, label %if.then184, label %if.else185
+
+if.then184:                                       ; preds = %if.else181
+  store i32 2, i32* @mesg_implicit_function_declaration, align 4, !tbaa !3
+  br label %return
+
+if.else185:                                       ; preds = %if.else181
+  %call186 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([32 x i8]* @.str47, i64 0, i64 0)) #9
+  %tobool187 = icmp eq i32 %call186, 0
+  br i1 %tobool187, label %if.then188, label %if.else189
+
+if.then188:                                       ; preds = %if.else185
+  store i32 1, i32* @mesg_implicit_function_declaration, align 4, !tbaa !3
+  br label %return
+
+if.else189:                                       ; preds = %if.else185
+  %call190 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([35 x i8]* @.str48, i64 0, i64 0)) #9
+  %tobool191 = icmp eq i32 %call190, 0
+  br i1 %tobool191, label %if.then192, label %if.else193
+
+if.then192:                                       ; preds = %if.else189
+  store i32 0, i32* @mesg_implicit_function_declaration, align 4, !tbaa !3
+  br label %return
+
+if.else193:                                       ; preds = %if.else189
+  %call194 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([15 x i8]* @.str49, i64 0, i64 0)) #9
+  %tobool195 = icmp eq i32 %call194, 0
+  br i1 %tobool195, label %if.then196, label %if.else197
+
+if.then196:                                       ; preds = %if.else193
+  store i32 1, i32* @warn_implicit_int, align 4, !tbaa !3
+  br label %return
+
+if.else197:                                       ; preds = %if.else193
+  %call198 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([18 x i8]* @.str50, i64 0, i64 0)) #9
+  %tobool199 = icmp eq i32 %call198, 0
+  br i1 %tobool199, label %if.then200, label %if.else201
+
+if.then200:                                       ; preds = %if.else197
+  store i32 0, i32* @warn_implicit_int, align 4, !tbaa !3
+  br label %return
+
+if.else201:                                       ; preds = %if.else197
+  %call202 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([11 x i8]* @.str51, i64 0, i64 0)) #9
+  %tobool203 = icmp eq i32 %call202, 0
+  br i1 %tobool203, label %if.then204, label %if.else209
+
+if.then204:                                       ; preds = %if.else201
+  store i32 1, i32* @warn_implicit_int, align 4, !tbaa !3
+  %5 = load i32* @mesg_implicit_function_declaration, align 4, !tbaa !3
+  %cmp205 = icmp eq i32 %5, 2
+  br i1 %cmp205, label %return, label %if.then207
+
+if.then207:                                       ; preds = %if.then204
+  store i32 1, i32* @mesg_implicit_function_declaration, align 4, !tbaa !3
+  br label %return
+
+if.else209:                                       ; preds = %if.else201
+  %call210 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str52, i64 0, i64 0)) #9
+  %tobool211 = icmp eq i32 %call210, 0
+  br i1 %tobool211, label %if.then212, label %if.else213
+
+if.then212:                                       ; preds = %if.else209
+  store i32 0, i32* @warn_implicit_int, align 4, !tbaa !3
+  store i32 0, i32* @mesg_implicit_function_declaration, align 4, !tbaa !3
+  br label %return
+
+if.else213:                                       ; preds = %if.else209
+  %call214 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([12 x i8]* @.str53, i64 0, i64 0)) #9
+  %tobool215 = icmp eq i32 %call214, 0
+  br i1 %tobool215, label %if.then216, label %if.else217
+
+if.then216:                                       ; preds = %if.else213
+  store i32 1, i32* @warn_long_long, align 4, !tbaa !3
+  br label %return
+
+if.else217:                                       ; preds = %if.else213
+  %call218 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([15 x i8]* @.str54, i64 0, i64 0)) #9
+  %tobool219 = icmp eq i32 %call218, 0
+  br i1 %tobool219, label %if.then220, label %if.else221
+
+if.then220:                                       ; preds = %if.else217
+  store i32 0, i32* @warn_long_long, align 4, !tbaa !3
+  br label %return
+
+if.else221:                                       ; preds = %if.else217
+  %call222 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([16 x i8]* @.str55, i64 0, i64 0)) #9
+  %tobool223 = icmp eq i32 %call222, 0
+  br i1 %tobool223, label %if.then224, label %if.else225
+
+if.then224:                                       ; preds = %if.else221
+  store i32 1, i32* @flag_const_strings, align 4, !tbaa !3
+  br label %return
+
+if.else225:                                       ; preds = %if.else221
+  %call226 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([19 x i8]* @.str56, i64 0, i64 0)) #9
+  %tobool227 = icmp eq i32 %call226, 0
+  br i1 %tobool227, label %if.then228, label %if.else229
+
+if.then228:                                       ; preds = %if.else225
+  store i32 0, i32* @flag_const_strings, align 4, !tbaa !3
+  br label %return
+
+if.else229:                                       ; preds = %if.else225
+  %call230 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([12 x i8]* @.str57, i64 0, i64 0)) #9
+  %tobool231 = icmp eq i32 %call230, 0
+  br i1 %tobool231, label %if.then232, label %if.else233
+
+if.then232:                                       ; preds = %if.else229
+  store i32 1, i32* @warn_cast_qual, align 4, !tbaa !3
+  br label %return
+
+if.else233:                                       ; preds = %if.else229
+  %call234 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([15 x i8]* @.str58, i64 0, i64 0)) #9
+  %tobool235 = icmp eq i32 %call234, 0
+  br i1 %tobool235, label %if.then236, label %if.else237
+
+if.then236:                                       ; preds = %if.else233
+  store i32 0, i32* @warn_cast_qual, align 4, !tbaa !3
+  br label %return
+
+if.else237:                                       ; preds = %if.else233
+  %call238 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([20 x i8]* @.str59, i64 0, i64 0)) #9
+  %tobool239 = icmp eq i32 %call238, 0
+  br i1 %tobool239, label %if.then240, label %if.else241
+
+if.then240:                                       ; preds = %if.else237
+  store i32 1, i32* @warn_bad_function_cast, align 4, !tbaa !3
+  br label %return
+
+if.else241:                                       ; preds = %if.else237
+  %call242 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([23 x i8]* @.str60, i64 0, i64 0)) #9
+  %tobool243 = icmp eq i32 %call242, 0
+  br i1 %tobool243, label %if.then244, label %if.else245
+
+if.then244:                                       ; preds = %if.else241
+  store i32 0, i32* @warn_bad_function_cast, align 4, !tbaa !3
+  br label %return
+
+if.else245:                                       ; preds = %if.else241
+  %call246 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([22 x i8]* @.str61, i64 0, i64 0)) #9
+  %tobool247 = icmp eq i32 %call246, 0
+  br i1 %tobool247, label %if.then248, label %if.else249
+
+if.then248:                                       ; preds = %if.else245
+  store i32 0, i32* @warn_missing_noreturn, align 4, !tbaa !3
+  br label %return
+
+if.else249:                                       ; preds = %if.else245
+  %call250 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([27 x i8]* @.str62, i64 0, i64 0)) #9
+  %tobool251 = icmp eq i32 %call250, 0
+  br i1 %tobool251, label %if.then252, label %if.else253
+
+if.then252:                                       ; preds = %if.else249
+  store i32 1, i32* @warn_missing_format_attribute, align 4, !tbaa !3
+  br label %return
+
+if.else253:                                       ; preds = %if.else249
+  %call254 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([30 x i8]* @.str63, i64 0, i64 0)) #9
+  %tobool255 = icmp eq i32 %call254, 0
+  br i1 %tobool255, label %if.then256, label %if.else257
+
+if.then256:                                       ; preds = %if.else253
+  store i32 0, i32* @warn_missing_format_attribute, align 4, !tbaa !3
+  br label %return
+
+if.else257:                                       ; preds = %if.else253
+  %call258 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([16 x i8]* @.str64, i64 0, i64 0)) #9
+  %tobool259 = icmp eq i32 %call258, 0
+  br i1 %tobool259, label %if.then260, label %if.else261
+
+if.then260:                                       ; preds = %if.else257
+  store i32 1, i32* @warn_pointer_arith, align 4, !tbaa !3
+  br label %return
+
+if.else261:                                       ; preds = %if.else257
+  %call262 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([19 x i8]* @.str65, i64 0, i64 0)) #9
+  %tobool263 = icmp eq i32 %call262, 0
+  br i1 %tobool263, label %if.then264, label %if.else265
+
+if.then264:                                       ; preds = %if.else261
+  store i32 0, i32* @warn_pointer_arith, align 4, !tbaa !3
+  br label %return
+
+if.else265:                                       ; preds = %if.else261
+  %call266 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([20 x i8]* @.str66, i64 0, i64 0)) #9
+  %tobool267 = icmp eq i32 %call266, 0
+  br i1 %tobool267, label %if.then268, label %if.else269
+
+if.then268:                                       ; preds = %if.else265
+  store i32 1, i32* @warn_strict_prototypes, align 4, !tbaa !3
+  br label %return
+
+if.else269:                                       ; preds = %if.else265
+  %call270 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([23 x i8]* @.str67, i64 0, i64 0)) #9
+  %tobool271 = icmp eq i32 %call270, 0
+  br i1 %tobool271, label %if.then272, label %if.else273
+
+if.then272:                                       ; preds = %if.else269
+  store i32 0, i32* @warn_strict_prototypes, align 4, !tbaa !3
+  br label %return
+
+if.else273:                                       ; preds = %if.else269
+  %call274 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([21 x i8]* @.str68, i64 0, i64 0)) #9
+  %tobool275 = icmp eq i32 %call274, 0
+  br i1 %tobool275, label %if.then276, label %if.else277
+
+if.then276:                                       ; preds = %if.else273
+  store i32 1, i32* @warn_missing_prototypes, align 4, !tbaa !3
+  br label %return
+
+if.else277:                                       ; preds = %if.else273
+  %call278 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([24 x i8]* @.str69, i64 0, i64 0)) #9
+  %tobool279 = icmp eq i32 %call278, 0
+  br i1 %tobool279, label %if.then280, label %if.else281
+
+if.then280:                                       ; preds = %if.else277
+  store i32 0, i32* @warn_missing_prototypes, align 4, !tbaa !3
+  br label %return
+
+if.else281:                                       ; preds = %if.else277
+  %call282 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([23 x i8]* @.str70, i64 0, i64 0)) #9
+  %tobool283 = icmp eq i32 %call282, 0
+  br i1 %tobool283, label %if.then284, label %if.else285
+
+if.then284:                                       ; preds = %if.else281
+  store i32 1, i32* @warn_missing_declarations, align 4, !tbaa !3
+  br label %return
+
+if.else285:                                       ; preds = %if.else281
+  %call286 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([26 x i8]* @.str71, i64 0, i64 0)) #9
+  %tobool287 = icmp eq i32 %call286, 0
+  br i1 %tobool287, label %if.then288, label %if.else289
+
+if.then288:                                       ; preds = %if.else285
+  store i32 0, i32* @warn_missing_declarations, align 4, !tbaa !3
+  br label %return
+
+if.else289:                                       ; preds = %if.else285
+  %call290 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([18 x i8]* @.str72, i64 0, i64 0)) #9
+  %tobool291 = icmp eq i32 %call290, 0
+  br i1 %tobool291, label %if.then292, label %if.else293
+
+if.then292:                                       ; preds = %if.else289
+  store i32 1, i32* @warn_redundant_decls, align 4, !tbaa !3
+  br label %return
+
+if.else293:                                       ; preds = %if.else289
+  %call294 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([21 x i8]* @.str73, i64 0, i64 0)) #9
+  %tobool295 = icmp eq i32 %call294, 0
+  br i1 %tobool295, label %if.then296, label %if.else297
+
+if.then296:                                       ; preds = %if.else293
+  store i32 0, i32* @warn_redundant_decls, align 4, !tbaa !3
+  br label %return
+
+if.else297:                                       ; preds = %if.else293
+  %call298 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([17 x i8]* @.str74, i64 0, i64 0)) #9
+  %tobool299 = icmp eq i32 %call298, 0
+  br i1 %tobool299, label %if.then300, label %if.else301
+
+if.then300:                                       ; preds = %if.else297
+  store i32 1, i32* @warn_nested_externs, align 4, !tbaa !3
+  br label %return
+
+if.else301:                                       ; preds = %if.else297
+  %call302 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([20 x i8]* @.str75, i64 0, i64 0)) #9
+  %tobool303 = icmp eq i32 %call302, 0
+  br i1 %tobool303, label %if.then304, label %if.else305
+
+if.then304:                                       ; preds = %if.else301
+  store i32 0, i32* @warn_nested_externs, align 4, !tbaa !3
+  br label %return
+
+if.else305:                                       ; preds = %if.else301
+  %call306 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str76, i64 0, i64 0)) #9
+  %tobool307 = icmp eq i32 %call306, 0
+  br i1 %tobool307, label %if.then308, label %if.else309
+
+if.then308:                                       ; preds = %if.else305
+  store i32 1, i32* @warn_traditional, align 4, !tbaa !3
+  br label %return
+
+if.else309:                                       ; preds = %if.else305
+  %call310 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([17 x i8]* @.str77, i64 0, i64 0)) #9
+  %tobool311 = icmp eq i32 %call310, 0
+  br i1 %tobool311, label %if.then312, label %if.else313
+
+if.then312:                                       ; preds = %if.else309
+  store i32 0, i32* @warn_traditional, align 4, !tbaa !3
+  br label %return
+
+if.else313:                                       ; preds = %if.else309
+  %call314 = tail call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([10 x i8]* @.str78, i64 0, i64 0), i64 9) #9
+  %tobool315 = icmp eq i32 %call314, 0
+  br i1 %tobool315, label %if.then316, label %if.else319
+
+if.then316:                                       ; preds = %if.else313
+  %add.ptr317 = getelementptr inbounds i8* %0, i64 9
+  %call318 = tail call i32 @atoi(i8* %add.ptr317) #9
+  tail call void @set_Wformat(i32 %call318) #8
+  br label %return
+
+if.else319:                                       ; preds = %if.else313
+  %call320 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([9 x i8]* @.str79, i64 0, i64 0)) #9
+  %tobool321 = icmp eq i32 %call320, 0
+  br i1 %tobool321, label %if.then322, label %if.else323
+
+if.then322:                                       ; preds = %if.else319
+  tail call void @set_Wformat(i32 1) #8
+  br label %return
+
+if.else323:                                       ; preds = %if.else319
+  %call324 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([12 x i8]* @.str80, i64 0, i64 0)) #9
+  %tobool325 = icmp eq i32 %call324, 0
+  br i1 %tobool325, label %if.then326, label %if.else327
+
+if.then326:                                       ; preds = %if.else323
+  tail call void @set_Wformat(i32 0) #8
+  br label %return
+
+if.else327:                                       ; preds = %if.else323
+  %call328 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([13 x i8]* @.str81, i64 0, i64 0)) #9
+  %tobool329 = icmp eq i32 %call328, 0
+  br i1 %tobool329, label %if.then330, label %if.else331
+
+if.then330:                                       ; preds = %if.else327
+  store i32 1, i32* @warn_format_y2k, align 4, !tbaa !3
+  br label %return
+
+if.else331:                                       ; preds = %if.else327
+  %call332 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([16 x i8]* @.str82, i64 0, i64 0)) #9
+  %tobool333 = icmp eq i32 %call332, 0
+  br i1 %tobool333, label %if.then334, label %if.else335
+
+if.then334:                                       ; preds = %if.else331
+  store i32 0, i32* @warn_format_y2k, align 4, !tbaa !3
+  br label %return
+
+if.else335:                                       ; preds = %if.else331
+  %call336 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([20 x i8]* @.str83, i64 0, i64 0)) #9
+  %tobool337 = icmp eq i32 %call336, 0
+  br i1 %tobool337, label %if.then338, label %if.else339
+
+if.then338:                                       ; preds = %if.else335
+  store i32 1, i32* @warn_format_extra_args, align 4, !tbaa !3
+  br label %return
+
+if.else339:                                       ; preds = %if.else335
+  %call340 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([23 x i8]* @.str84, i64 0, i64 0)) #9
+  %tobool341 = icmp eq i32 %call340, 0
+  br i1 %tobool341, label %if.then342, label %if.else343
+
+if.then342:                                       ; preds = %if.else339
+  store i32 0, i32* @warn_format_extra_args, align 4, !tbaa !3
+  br label %return
+
+if.else343:                                       ; preds = %if.else339
+  %call344 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([20 x i8]* @.str85, i64 0, i64 0)) #9
+  %tobool345 = icmp eq i32 %call344, 0
+  br i1 %tobool345, label %if.then346, label %if.else347
+
+if.then346:                                       ; preds = %if.else343
+  store i32 1, i32* @warn_format_nonliteral, align 4, !tbaa !3
+  br label %return
+
+if.else347:                                       ; preds = %if.else343
+  %call348 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([23 x i8]* @.str86, i64 0, i64 0)) #9
+  %tobool349 = icmp eq i32 %call348, 0
+  br i1 %tobool349, label %if.then350, label %if.else351
+
+if.then350:                                       ; preds = %if.else347
+  store i32 0, i32* @warn_format_nonliteral, align 4, !tbaa !3
+  br label %return
+
+if.else351:                                       ; preds = %if.else347
+  %call352 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([18 x i8]* @.str87, i64 0, i64 0)) #9
+  %tobool353 = icmp eq i32 %call352, 0
+  br i1 %tobool353, label %if.then354, label %if.else355
+
+if.then354:                                       ; preds = %if.else351
+  store i32 1, i32* @warn_format_security, align 4, !tbaa !3
+  br label %return
+
+if.else355:                                       ; preds = %if.else351
+  %call356 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([21 x i8]* @.str88, i64 0, i64 0)) #9
+  %tobool357 = icmp eq i32 %call356, 0
+  br i1 %tobool357, label %if.then358, label %if.else359
+
+if.then358:                                       ; preds = %if.else355
+  store i32 0, i32* @warn_format_security, align 4, !tbaa !3
+  br label %return
+
+if.else359:                                       ; preds = %if.else355
+  %call360 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([18 x i8]* @.str89, i64 0, i64 0)) #9
+  %tobool361 = icmp eq i32 %call360, 0
+  br i1 %tobool361, label %if.then362, label %if.else363
+
+if.then362:                                       ; preds = %if.else359
+  store i32 1, i32* @warn_char_subscripts, align 4, !tbaa !3
+  br label %return
+
+if.else363:                                       ; preds = %if.else359
+  %call364 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([21 x i8]* @.str90, i64 0, i64 0)) #9
+  %tobool365 = icmp eq i32 %call364, 0
+  br i1 %tobool365, label %if.then366, label %if.else367
+
+if.then366:                                       ; preds = %if.else363
+  store i32 0, i32* @warn_char_subscripts, align 4, !tbaa !3
+  br label %return
+
+if.else367:                                       ; preds = %if.else363
+  %call368 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([13 x i8]* @.str91, i64 0, i64 0)) #9
+  %tobool369 = icmp eq i32 %call368, 0
+  br i1 %tobool369, label %if.then370, label %if.else371
+
+if.then370:                                       ; preds = %if.else367
+  store i32 1, i32* @warn_conversion, align 4, !tbaa !3
+  br label %return
+
+if.else371:                                       ; preds = %if.else367
+  %call372 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([16 x i8]* @.str92, i64 0, i64 0)) #9
+  %tobool373 = icmp eq i32 %call372, 0
+  br i1 %tobool373, label %if.then374, label %if.else375
+
+if.then374:                                       ; preds = %if.else371
+  store i32 0, i32* @warn_conversion, align 4, !tbaa !3
+  br label %return
+
+if.else375:                                       ; preds = %if.else371
+  %call376 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str93, i64 0, i64 0)) #9
+  %tobool377 = icmp eq i32 %call376, 0
+  br i1 %tobool377, label %if.then378, label %if.else379
+
+if.then378:                                       ; preds = %if.else375
+  store i32 1, i32* @warn_parentheses, align 4, !tbaa !3
+  br label %return
+
+if.else379:                                       ; preds = %if.else375
+  %call380 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([17 x i8]* @.str94, i64 0, i64 0)) #9
+  %tobool381 = icmp eq i32 %call380, 0
+  br i1 %tobool381, label %if.then382, label %if.else383
+
+if.then382:                                       ; preds = %if.else379
+  store i32 0, i32* @warn_parentheses, align 4, !tbaa !3
+  br label %return
+
+if.else383:                                       ; preds = %if.else379
+  %call384 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str95, i64 0, i64 0)) #9
+  %tobool385 = icmp eq i32 %call384, 0
+  br i1 %tobool385, label %if.then386, label %if.else387
+
+if.then386:                                       ; preds = %if.else383
+  store i32 1, i32* @warn_return_type, align 4, !tbaa !3
+  br label %return
+
+if.else387:                                       ; preds = %if.else383
+  %call388 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([17 x i8]* @.str96, i64 0, i64 0)) #9
+  %tobool389 = icmp eq i32 %call388, 0
+  br i1 %tobool389, label %if.then390, label %if.else391
+
+if.then390:                                       ; preds = %if.else387
+  store i32 0, i32* @warn_return_type, align 4, !tbaa !3
+  br label %return
+
+if.else391:                                       ; preds = %if.else387
+  %call392 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([17 x i8]* @.str97, i64 0, i64 0)) #9
+  %tobool393 = icmp eq i32 %call392, 0
+  br i1 %tobool393, label %if.then394, label %if.else395
+
+if.then394:                                       ; preds = %if.else391
+  store i32 1, i32* @warn_sequence_point, align 4, !tbaa !3
+  br label %return
+
+if.else395:                                       ; preds = %if.else391
+  %call396 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([20 x i8]* @.str98, i64 0, i64 0)) #9
+  %tobool397 = icmp eq i32 %call396, 0
+  br i1 %tobool397, label %if.then398, label %if.else399
+
+if.then398:                                       ; preds = %if.else395
+  store i32 0, i32* @warn_sequence_point, align 4, !tbaa !3
+  br label %return
+
+if.else399:                                       ; preds = %if.else395
+  %call400 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([10 x i8]* @.str99, i64 0, i64 0)) #9
+  %tobool401 = icmp eq i32 %call400, 0
+  br i1 %tobool401, label %return, label %if.else403
+
+if.else403:                                       ; preds = %if.else399
+  %call404 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([13 x i8]* @.str100, i64 0, i64 0)) #9
+  %tobool405 = icmp eq i32 %call404, 0
+  br i1 %tobool405, label %return, label %if.else407
+
+if.else407:                                       ; preds = %if.else403
+  %call408 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([11 x i8]* @.str101, i64 0, i64 0)) #9
+  %tobool409 = icmp eq i32 %call408, 0
+  br i1 %tobool409, label %return, label %if.else411
+
+if.else411:                                       ; preds = %if.else407
+  %call412 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str102, i64 0, i64 0)) #9
+  %tobool413 = icmp eq i32 %call412, 0
+  br i1 %tobool413, label %return, label %if.else415
+
+if.else415:                                       ; preds = %if.else411
+  %call416 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([12 x i8]* @.str103, i64 0, i64 0)) #9
+  %tobool417 = icmp eq i32 %call416, 0
+  br i1 %tobool417, label %return, label %if.else419
+
+if.else419:                                       ; preds = %if.else415
+  %call420 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([15 x i8]* @.str104, i64 0, i64 0)) #9
+  %tobool421 = icmp eq i32 %call420, 0
+  br i1 %tobool421, label %return, label %if.else423
+
+if.else423:                                       ; preds = %if.else419
+  %call424 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([8 x i8]* @.str105, i64 0, i64 0)) #9
+  %tobool425 = icmp eq i32 %call424, 0
+  br i1 %tobool425, label %return, label %if.else427
+
+if.else427:                                       ; preds = %if.else423
+  %call428 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([11 x i8]* @.str106, i64 0, i64 0)) #9
+  %tobool429 = icmp eq i32 %call428, 0
+  br i1 %tobool429, label %return, label %if.else431
+
+if.else431:                                       ; preds = %if.else427
+  %call432 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([9 x i8]* @.str107, i64 0, i64 0)) #9
+  %tobool433 = icmp eq i32 %call432, 0
+  br i1 %tobool433, label %return, label %if.else435
+
+if.else435:                                       ; preds = %if.else431
+  %call436 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([12 x i8]* @.str108, i64 0, i64 0)) #9
+  %tobool437 = icmp eq i32 %call436, 0
+  br i1 %tobool437, label %return, label %if.else439
+
+if.else439:                                       ; preds = %if.else435
+  %call440 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([17 x i8]* @.str109, i64 0, i64 0)) #9
+  %tobool441 = icmp eq i32 %call440, 0
+  br i1 %tobool441, label %if.then442, label %if.else443
+
+if.then442:                                       ; preds = %if.else439
+  store i32 1, i32* @warn_missing_braces, align 4, !tbaa !3
+  br label %return
+
+if.else443:                                       ; preds = %if.else439
+  %call444 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([20 x i8]* @.str110, i64 0, i64 0)) #9
+  %tobool445 = icmp eq i32 %call444, 0
+  br i1 %tobool445, label %if.then446, label %if.else447
+
+if.then446:                                       ; preds = %if.else443
+  store i32 0, i32* @warn_missing_braces, align 4, !tbaa !3
+  br label %return
+
+if.else447:                                       ; preds = %if.else443
+  %call448 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str111, i64 0, i64 0)) #9
+  %tobool449 = icmp eq i32 %call448, 0
+  br i1 %tobool449, label %if.then450, label %if.else451
+
+if.then450:                                       ; preds = %if.else447
+  store i32 1, i32* @warn_main, align 4, !tbaa !3
+  br label %return
+
+if.else451:                                       ; preds = %if.else447
+  %call452 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([10 x i8]* @.str112, i64 0, i64 0)) #9
+  %tobool453 = icmp eq i32 %call452, 0
+  br i1 %tobool453, label %if.then454, label %if.else455
+
+if.then454:                                       ; preds = %if.else451
+  store i32 -1, i32* @warn_main, align 4, !tbaa !3
+  br label %return
+
+if.else455:                                       ; preds = %if.else451
+  %call456 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([15 x i8]* @.str113, i64 0, i64 0)) #9
+  %tobool457 = icmp eq i32 %call456, 0
+  br i1 %tobool457, label %if.then458, label %if.else459
+
+if.then458:                                       ; preds = %if.else455
+  store i32 1, i32* @warn_sign_compare, align 4, !tbaa !3
+  br label %return
+
+if.else459:                                       ; preds = %if.else455
+  %call460 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([18 x i8]* @.str114, i64 0, i64 0)) #9
+  %tobool461 = icmp eq i32 %call460, 0
+  br i1 %tobool461, label %if.then462, label %if.else463
+
+if.then462:                                       ; preds = %if.else459
+  store i32 0, i32* @warn_sign_compare, align 4, !tbaa !3
+  br label %return
+
+if.else463:                                       ; preds = %if.else459
+  %call464 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str115, i64 0, i64 0)) #9
+  %tobool465 = icmp eq i32 %call464, 0
+  br i1 %tobool465, label %if.then466, label %if.else467
+
+if.then466:                                       ; preds = %if.else463
+  store i32 1, i32* @warn_float_equal, align 4, !tbaa !3
+  br label %return
+
+if.else467:                                       ; preds = %if.else463
+  %call468 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([17 x i8]* @.str116, i64 0, i64 0)) #9
+  %tobool469 = icmp eq i32 %call468, 0
+  br i1 %tobool469, label %if.then470, label %if.else471
+
+if.then470:                                       ; preds = %if.else467
+  store i32 0, i32* @warn_float_equal, align 4, !tbaa !3
+  br label %return
+
+if.else471:                                       ; preds = %if.else467
+  %call472 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([12 x i8]* @.str117, i64 0, i64 0)) #9
+  %tobool473 = icmp eq i32 %call472, 0
+  br i1 %tobool473, label %if.then474, label %if.else475
+
+if.then474:                                       ; preds = %if.else471
+  store i32 1, i32* @warn_multichar, align 4, !tbaa !3
+  br label %return
+
+if.else475:                                       ; preds = %if.else471
+  %call476 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([15 x i8]* @.str118, i64 0, i64 0)) #9
+  %tobool477 = icmp eq i32 %call476, 0
+  br i1 %tobool477, label %if.then478, label %if.else479
+
+if.then478:                                       ; preds = %if.else475
+  store i32 0, i32* @warn_multichar, align 4, !tbaa !3
+  br label %return
+
+if.else479:                                       ; preds = %if.else475
+  %call480 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str119, i64 0, i64 0)) #9
+  %tobool481 = icmp eq i32 %call480, 0
+  br i1 %tobool481, label %if.then482, label %if.else483
+
+if.then482:                                       ; preds = %if.else479
+  store i32 1, i32* @warn_div_by_zero, align 4, !tbaa !3
+  br label %return
+
+if.else483:                                       ; preds = %if.else479
+  %call484 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([17 x i8]* @.str120, i64 0, i64 0)) #9
+  %tobool485 = icmp eq i32 %call484, 0
+  br i1 %tobool485, label %if.then486, label %if.else487
+
+if.then486:                                       ; preds = %if.else483
+  store i32 0, i32* @warn_div_by_zero, align 4, !tbaa !3
+  br label %return
+
+if.else487:                                       ; preds = %if.else483
+  %call488 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([18 x i8]* @.str121, i64 0, i64 0)) #9
+  %tobool489 = icmp eq i32 %call488, 0
+  br i1 %tobool489, label %if.then490, label %if.else491
+
+if.then490:                                       ; preds = %if.else487
+  store i32 2, i32* @warn_unknown_pragmas, align 4, !tbaa !3
+  br label %return
+
+if.else491:                                       ; preds = %if.else487
+  %call492 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([21 x i8]* @.str122, i64 0, i64 0)) #9
+  %tobool493 = icmp eq i32 %call492, 0
+  br i1 %tobool493, label %if.then494, label %if.else495
+
+if.then494:                                       ; preds = %if.else491
+  store i32 0, i32* @warn_unknown_pragmas, align 4, !tbaa !3
+  br label %return
+
+if.else495:                                       ; preds = %if.else491
+  %call496 = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([6 x i8]* @.str123, i64 0, i64 0)) #9
+  %tobool497 = icmp eq i32 %call496, 0
+  br i1 %tobool497, label %if.then498, label %return
+
+if.then498:                                       ; preds = %if.else495
+  %6 = load i32* @warn_uninitialized, align 4, !tbaa !3
+  %cmp499 = icmp eq i32 %6, 1
+  br i1 %cmp499, label %if.end502, label %if.then501
+
+if.then501:                                       ; preds = %if.then498
+  store i32 2, i32* @warn_uninitialized, align 4, !tbaa !3
+  br label %if.end502
+
+if.end502:                                        ; preds = %if.then498, %if.then501
+  store i32 1, i32* @warn_implicit_int, align 4, !tbaa !3
+  store i32 1, i32* @mesg_implicit_function_declaration, align 4, !tbaa !3
+  store i32 1, i32* @warn_return_type, align 4, !tbaa !3
+  tail call void @set_Wunused(i32 1) #8
+  store i32 1, i32* @warn_switch, align 4, !tbaa !3
+  tail call void @set_Wformat(i32 1) #8
+  store i32 1, i32* @warn_char_subscripts, align 4, !tbaa !3
+  store i32 1, i32* @warn_parentheses, align 4, !tbaa !3
+  store i32 1, i32* @warn_sequence_point, align 4, !tbaa !3
+  store i32 1, i32* @warn_missing_braces, align 4, !tbaa !3
+  store i32 2, i32* @warn_main, align 4, !tbaa !3
+  store i32 1, i32* @warn_unknown_pragmas, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.then, %if.then13, %if.then28, %if.then77, %if.then85, %if.then93, %if.then104, %if.then115, %if.then123, %if.then131, %if.then139, %if.then147, %if.then155, %if.then163, %if.then188, %if.then196, %if.then207, %if.then216, %if.then224, %if.then232, %if.then240, %if.then248, %if.then256, %if.then264, %if.then272, %if.then280, %if.then288, %if.then296, %if.then304, %if.then312, %if.then322, %if.then330, %if.then338, %if.then346, %if.then354, %if.then362, %if.then370, %if.then378, %if.then386, %if.then394, %if.then442, %if.then450, %if.then458, %if.then466, %if.then474, %if.then482, %if.then490, %if.end502, %if.then494, %if.then486, %if.then478, %if.then470, %if.then462, %if.then454, %if.then446, %if.then398, %if.then390, %if.then382, %if.then374, %if.then366, %if.then358, %if.then350, %if.then342, %if.then334, %if.then326, %if.then316, %if.then308, %if.then300, %if.then292, %if.then284, %if.then276, %if.then268, %if.then260, %if.then252, %if.then244, %if.then236, %if.then228, %if.then220, %if.then212, %if.then200, %if.then192, %if.then184, %if.then159, %if.then151, %if.then143, %if.then135, %if.then127, %if.then119, %if.then111, %if.then97, %if.then89, %if.then81, %iso_1994, %if.then56, %if.then67, %if.else68, %if.then60, %if.then20, %if.then21, %if.then6, %if.then204, %if.else399, %if.else403, %if.else407, %if.else411, %if.else415, %if.else419, %if.else423, %if.else427, %if.else431, %if.else435, %land.lhs.true172, %if.else495
+  %retval.0 = phi i32 [ %call, %if.else495 ], [ 1, %land.lhs.true172 ], [ 1, %if.else435 ], [ 1, %if.else431 ], [ 1, %if.else427 ], [ 1, %if.else423 ], [ 1, %if.else419 ], [ 1, %if.else415 ], [ 1, %if.else411 ], [ 1, %if.else407 ], [ 1, %if.else403 ], [ 1, %if.else399 ], [ 1, %if.then204 ], [ 1, %if.then6 ], [ 1, %if.then21 ], [ 1, %if.then20 ], [ 1, %if.then60 ], [ 1, %if.else68 ], [ 1, %if.then67 ], [ 1, %if.then56 ], [ 1, %iso_1994 ], [ 1, %if.then81 ], [ 1, %if.then89 ], [ 1, %if.then97 ], [ 1, %if.then111 ], [ 1, %if.then119 ], [ 1, %if.then127 ], [ 1, %if.then135 ], [ 1, %if.then143 ], [ 1, %if.then151 ], [ 1, %if.then159 ], [ 1, %if.then184 ], [ 1, %if.then192 ], [ 1, %if.then200 ], [ 1, %if.then212 ], [ 1, %if.then220 ], [ 1, %if.then228 ], [ 1, %if.then236 ], [ 1, %if.then244 ], [ 1, %if.then252 ], [ 1, %if.then260 ], [ 1, %if.then268 ], [ 1, %if.then276 ], [ 1, %if.then284 ], [ 1, %if.then292 ], [ 1, %if.then300 ], [ 1, %if.then308 ], [ 1, %if.then316 ], [ 1, %if.then326 ], [ 1, %if.then334 ], [ 1, %if.then342 ], [ 1, %if.then350 ], [ 1, %if.then358 ], [ 1, %if.then366 ], [ 1, %if.then374 ], [ 1, %if.then382 ], [ 1, %if.then390 ], [ 1, %if.then398 ], [ 1, %if.then446 ], [ 1, %if.then454 ], [ 1, %if.then462 ], [ 1, %if.then470 ], [ 1, %if.then478 ], [ 1, %if.then486 ], [ 1, %if.then494 ], [ 1, %if.end502 ], [ 1, %if.then490 ], [ 1, %if.then482 ], [ 1, %if.then474 ], [ 1, %if.then466 ], [ 1, %if.then458 ], [ 1, %if.then450 ], [ 1, %if.then442 ], [ 1, %if.then394 ], [ 1, %if.then386 ], [ 1, %if.then378 ], [ 1, %if.then370 ], [ 1, %if.then362 ], [ 1, %if.then354 ], [ 1, %if.then346 ], [ 1, %if.then338 ], [ 1, %if.then330 ], [ 1, %if.then322 ], [ 1, %if.then312 ], [ 1, %if.then304 ], [ 1, %if.then296 ], [ 1, %if.then288 ], [ 1, %if.then280 ], [ 1, %if.then272 ], [ 1, %if.then264 ], [ 1, %if.then256 ], [ 1, %if.then248 ], [ 1, %if.then240 ], [ 1, %if.then232 ], [ 1, %if.then224 ], [ 1, %if.then216 ], [ 1, %if.then207 ], [ 1, %if.then196 ], [ 1, %if.then188 ], [ 1, %if.then163 ], [ 1, %if.then155 ], [ 1, %if.then147 ], [ 1, %if.then139 ], [ 1, %if.then131 ], [ 1, %if.then123 ], [ 1, %if.then115 ], [ 1, %if.then104 ], [ 1, %if.then93 ], [ 1, %if.then85 ], [ 1, %if.then77 ], [ 1, %if.then28 ], [ 1, %if.then13 ], [ 1, %if.then ]
+  ret i32 %retval.0
+}

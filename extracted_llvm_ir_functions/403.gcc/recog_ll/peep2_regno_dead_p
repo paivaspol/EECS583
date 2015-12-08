@@ -1,0 +1,33 @@
+define i32 @peep2_regno_dead_p(i32 %ofs, i32 %regno) #0 {
+entry:
+  %cmp = icmp sgt i32 %ofs, 4
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 2878, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.peep2_regno_dead_p, i64 0, i64 0)) #8
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %0 = load i32* @peep2_current, align 4, !tbaa !0
+  %add = add nsw i32 %0, %ofs
+  %cmp1 = icmp sgt i32 %add, 4
+  %sub = add nsw i32 %add, -5
+  %sub.add = select i1 %cmp1, i32 %sub, i32 %add
+  %idxprom = sext i32 %sub.add to i64
+  %insn = getelementptr inbounds [5 x %struct.peep2_insn_data]* @peep2_insn_data, i64 0, i64 %idxprom, i32 0
+  %1 = load %struct.rtx_def** %insn, align 16, !tbaa !3
+  %cmp4 = icmp eq %struct.rtx_def* %1, null
+  br i1 %cmp4, label %if.then5, label %if.end6
+
+if.then5:                                         ; preds = %if.end
+  tail call void @fancy_abort(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 2885, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.peep2_regno_dead_p, i64 0, i64 0)) #8
+  unreachable
+
+if.end6:                                          ; preds = %if.end
+  %live_before = getelementptr inbounds [5 x %struct.peep2_insn_data]* @peep2_insn_data, i64 0, i64 %idxprom, i32 1
+  %2 = load %struct.bitmap_head_def** %live_before, align 8, !tbaa !3
+  %call = tail call i32 @bitmap_bit_p(%struct.bitmap_head_def* %2, i32 %regno) #6
+  %lnot = icmp eq i32 %call, 0
+  %lnot.ext = zext i1 %lnot to i32
+  ret i32 %lnot.ext
+}

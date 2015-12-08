@@ -1,0 +1,111 @@
+define i32 @attribute_list_contained(%union.tree_node* %l1, %union.tree_node* %l2) #0 {
+entry:
+  %cmp = icmp eq %union.tree_node* %l1, %l2
+  br i1 %cmp, label %return, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp190 = icmp eq %union.tree_node* %l1, null
+  %cmp291 = icmp eq %union.tree_node* %l2, null
+  %or.cond92 = or i1 %cmp190, %cmp291
+  br i1 %or.cond92, label %for.end, label %land.lhs.true3
+
+land.lhs.true3:                                   ; preds = %for.cond.preheader, %for.inc
+  %t2.094 = phi %union.tree_node* [ %7, %for.inc ], [ %l2, %for.cond.preheader ]
+  %t1.093 = phi %union.tree_node* [ %6, %for.inc ], [ %l1, %for.cond.preheader ]
+  %purpose = getelementptr inbounds %union.tree_node* %t1.093, i64 0, i32 0, i32 1
+  %0 = load i8** %purpose, align 8
+  %purpose5 = getelementptr inbounds %union.tree_node* %t2.094, i64 0, i32 0, i32 1
+  %1 = load i8** %purpose5, align 8
+  %cmp6 = icmp eq i8* %0, %1
+  br i1 %cmp6, label %land.rhs, label %for.cond18.preheader
+
+land.rhs:                                         ; preds = %land.lhs.true3
+  %value = getelementptr inbounds %union.tree_node* %t1.093, i64 0, i32 0, i32 2
+  %2 = bitcast i32* %value to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !0
+  %value9 = getelementptr inbounds %union.tree_node* %t2.094, i64 0, i32 0, i32 2
+  %4 = bitcast i32* %value9 to %union.tree_node**
+  %5 = load %union.tree_node** %4, align 8, !tbaa !0
+  %cmp10 = icmp eq %union.tree_node* %3, %5
+  br i1 %cmp10, label %for.inc, label %for.cond18.preheader
+
+for.inc:                                          ; preds = %land.rhs
+  %chain = getelementptr inbounds %union.tree_node* %t1.093, i64 0, i32 0, i32 0, i32 0
+  %6 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %chain12 = getelementptr inbounds %union.tree_node* %t2.094, i64 0, i32 0, i32 0, i32 0
+  %7 = load %union.tree_node** %chain12, align 8, !tbaa !0
+  %cmp1 = icmp eq %union.tree_node* %6, null
+  %cmp2 = icmp eq %union.tree_node* %7, null
+  %or.cond = or i1 %cmp1, %cmp2
+  br i1 %or.cond, label %for.end, label %land.lhs.true3
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %cmp2.lcssa = phi i1 [ %cmp291, %for.cond.preheader ], [ %cmp2, %for.inc ]
+  %cmp1.lcssa = phi i1 [ %cmp190, %for.cond.preheader ], [ %cmp1, %for.inc ]
+  %t2.0.lcssa = phi %union.tree_node* [ %l2, %for.cond.preheader ], [ %7, %for.inc ]
+  %or.cond82 = and i1 %cmp1.lcssa, %cmp2.lcssa
+  br i1 %or.cond82, label %return, label %for.cond18.preheader
+
+for.cond18.preheader:                             ; preds = %land.lhs.true3, %land.rhs, %for.end
+  %t2.0.lcssa109 = phi %union.tree_node* [ %t2.0.lcssa, %for.end ], [ %t2.094, %land.rhs ], [ %t2.094, %land.lhs.true3 ]
+  %cmp1988 = icmp eq %union.tree_node* %t2.0.lcssa109, null
+  br i1 %cmp1988, label %return, label %for.body20
+
+for.body20:                                       ; preds = %for.cond18.preheader, %for.inc55
+  %t2.189 = phi %union.tree_node* [ %21, %for.inc55 ], [ %t2.0.lcssa109, %for.cond18.preheader ]
+  %purpose22 = getelementptr inbounds %union.tree_node* %t2.189, i64 0, i32 0, i32 1
+  %8 = load i8** %purpose22, align 8
+  %str = getelementptr inbounds i8* %8, i64 32
+  %9 = bitcast i8* %str to i8**
+  %10 = load i8** %9, align 8, !tbaa !0
+  %call = tail call %union.tree_node* @lookup_attribute(i8* %10, %union.tree_node* %l1) #10
+  %cond85 = icmp eq %union.tree_node* %call, null
+  br i1 %cond85, label %return, label %for.body25.lr.ph
+
+for.body25.lr.ph:                                 ; preds = %for.body20
+  %value27 = getelementptr inbounds %union.tree_node* %t2.189, i64 0, i32 0, i32 2
+  %11 = bitcast i32* %value27 to %union.tree_node**
+  br label %for.body25
+
+for.body25:                                       ; preds = %for.body25.lr.ph, %for.inc34
+  %attr.086 = phi %union.tree_node* [ %call, %for.body25.lr.ph ], [ %call42, %for.inc34 ]
+  %12 = load %union.tree_node** %11, align 8, !tbaa !0
+  %value29 = getelementptr inbounds %union.tree_node* %attr.086, i64 0, i32 0, i32 2
+  %13 = bitcast i32* %value29 to %union.tree_node**
+  %14 = load %union.tree_node** %13, align 8, !tbaa !0
+  %call30 = tail call i32 @simple_cst_equal(%union.tree_node* %12, %union.tree_node* %14) #10
+  %cmp31 = icmp eq i32 %call30, 1
+  br i1 %cmp31, label %for.end43, label %for.inc34
+
+for.inc34:                                        ; preds = %for.body25
+  %15 = load i8** %purpose22, align 8
+  %str39 = getelementptr inbounds i8* %15, i64 32
+  %16 = bitcast i8* %str39 to i8**
+  %17 = load i8** %16, align 8, !tbaa !0
+  %chain41 = getelementptr inbounds %union.tree_node* %attr.086, i64 0, i32 0, i32 0, i32 0
+  %18 = load %union.tree_node** %chain41, align 8, !tbaa !0
+  %call42 = tail call %union.tree_node* @lookup_attribute(i8* %17, %union.tree_node* %18) #10
+  %cond = icmp eq %union.tree_node* %call42, null
+  br i1 %cond, label %return, label %for.body25
+
+for.end43:                                        ; preds = %for.body25
+  %cmp44 = icmp eq %union.tree_node* %attr.086, null
+  br i1 %cmp44, label %return, label %if.end46
+
+if.end46:                                         ; preds = %for.end43
+  %19 = load %union.tree_node** %11, align 8, !tbaa !0
+  %20 = load %union.tree_node** %13, align 8, !tbaa !0
+  %call51 = tail call i32 @simple_cst_equal(%union.tree_node* %19, %union.tree_node* %20) #10
+  %cmp52 = icmp eq i32 %call51, 1
+  br i1 %cmp52, label %for.inc55, label %return
+
+for.inc55:                                        ; preds = %if.end46
+  %chain57 = getelementptr inbounds %union.tree_node* %t2.189, i64 0, i32 0, i32 0, i32 0
+  %21 = load %union.tree_node** %chain57, align 8, !tbaa !0
+  %cmp19 = icmp eq %union.tree_node* %21, null
+  br i1 %cmp19, label %return, label %for.body20
+
+return:                                           ; preds = %for.cond18.preheader, %if.end46, %for.end43, %for.inc55, %for.inc34, %for.body20, %for.end, %entry
+  %retval.0 = phi i32 [ 1, %entry ], [ 1, %for.end ], [ 0, %for.body20 ], [ 0, %for.inc34 ], [ 1, %for.cond18.preheader ], [ 0, %if.end46 ], [ 0, %for.end43 ], [ 1, %for.inc55 ]
+  ret i32 %retval.0
+}

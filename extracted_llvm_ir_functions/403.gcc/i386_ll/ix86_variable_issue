@@ -1,0 +1,102 @@
+define internal i32 @ix86_variable_issue(%struct._IO_FILE* nocapture %dump, i32 %sched_verbose, %struct.rtx_def* %insn, i32 %can_issue_more) #1 {
+entry:
+  %0 = load i32* @ix86_cpu, align 4, !tbaa !3
+  %cond = icmp eq i32 %0, 3
+  br i1 %cond, label %sw.bb, label %sw.default
+
+sw.default:                                       ; preds = %entry
+  %sub = add nsw i32 %can_issue_more, -1
+  br label %return
+
+sw.bb:                                            ; preds = %entry
+  %call = tail call fastcc i32 @ix86_safe_ppro_uops(%struct.rtx_def* %insn) #10
+  switch i32 %call, label %for.body [
+    i32 2, label %if.then
+    i32 1, label %if.then6
+  ]
+
+if.then:                                          ; preds = %sw.bb
+  %tobool = icmp eq i32 %sched_verbose, 0
+  br i1 %tobool, label %if.end4.critedge, label %if.then1
+
+if.then1:                                         ; preds = %if.then
+  tail call fastcc void @ix86_dump_ppro_packet(%struct._IO_FILE* %dump) #10
+  store %struct.rtx_def* %insn, %struct.rtx_def** getelementptr inbounds (%union.anon.4* @ix86_sched_data, i64 0, i32 0, i32 0, i64 0), align 8, !tbaa !4
+  call void @llvm.memset.p0i8.i64(i8* bitcast (%struct.rtx_def** getelementptr inbounds (%union.anon.4* @ix86_sched_data, i64 0, i32 0, i32 0, i64 1) to i8*), i8 0, i64 16, i32 8, i1 false)
+  tail call fastcc void @ix86_dump_ppro_packet(%struct._IO_FILE* %dump) #10
+  br label %if.end4
+
+if.end4.critedge:                                 ; preds = %if.then
+  store %struct.rtx_def* %insn, %struct.rtx_def** getelementptr inbounds (%union.anon.4* @ix86_sched_data, i64 0, i32 0, i32 0, i64 0), align 8, !tbaa !4
+  call void @llvm.memset.p0i8.i64(i8* bitcast (%struct.rtx_def** getelementptr inbounds (%union.anon.4* @ix86_sched_data, i64 0, i32 0, i32 0, i64 1) to i8*), i8 0, i64 16, i32 8, i1 false)
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.end4.critedge, %if.then1
+  store %struct.rtx_def* null, %struct.rtx_def** getelementptr inbounds (%union.anon.4* @ix86_sched_data, i64 0, i32 0, i32 0, i64 0), align 8, !tbaa !4
+  br label %if.end27
+
+if.then6:                                         ; preds = %sw.bb
+  %tobool7 = icmp eq i32 %sched_verbose, 0
+  br i1 %tobool7, label %if.end9, label %if.then8
+
+if.then8:                                         ; preds = %if.then6
+  tail call fastcc void @ix86_dump_ppro_packet(%struct._IO_FILE* %dump) #10
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.then6, %if.then8
+  store %struct.rtx_def* %insn, %struct.rtx_def** getelementptr inbounds (%union.anon.4* @ix86_sched_data, i64 0, i32 0, i32 0, i64 0), align 8, !tbaa !4
+  call void @llvm.memset.p0i8.i64(i8* bitcast (%struct.rtx_def** getelementptr inbounds (%union.anon.4* @ix86_sched_data, i64 0, i32 0, i32 0, i64 1) to i8*), i8 0, i64 16, i32 8, i1 false)
+  br label %if.end27
+
+for.cond:                                         ; preds = %for.body
+  %1 = trunc i64 %indvars.iv.next to i32
+  %cmp11 = icmp slt i32 %1, 3
+  br i1 %cmp11, label %for.body, label %for.end
+
+for.body:                                         ; preds = %sw.bb, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %sw.bb ]
+  %i.045 = phi i32 [ %inc, %for.cond ], [ 0, %sw.bb ]
+  %arrayidx = getelementptr inbounds %union.anon.4* @ix86_sched_data, i64 0, i32 0, i32 0, i64 %indvars.iv
+  %2 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !4
+  %cmp12 = icmp eq %struct.rtx_def* %2, null
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %i.045, 1
+  br i1 %cmp12, label %if.then13, label %for.cond
+
+if.then13:                                        ; preds = %for.body
+  store %struct.rtx_def* %insn, %struct.rtx_def** %arrayidx, align 8, !tbaa !4
+  br label %for.end
+
+for.end:                                          ; preds = %for.cond, %if.then13
+  %i.044 = phi i32 [ %i.045, %if.then13 ], [ %inc, %for.cond ]
+  switch i32 %i.044, label %if.end27 [
+    i32 3, label %if.then18
+    i32 2, label %if.then21
+  ]
+
+if.then18:                                        ; preds = %for.end
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 10629, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.ix86_variable_issue, i64 0, i64 0)) #11
+  unreachable
+
+if.then21:                                        ; preds = %for.end
+  %tobool22 = icmp eq i32 %sched_verbose, 0
+  br i1 %tobool22, label %if.end24, label %if.then23
+
+if.then23:                                        ; preds = %if.then21
+  tail call fastcc void @ix86_dump_ppro_packet(%struct._IO_FILE* %dump) #10
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.then21, %if.then23
+  call void @llvm.memset.p0i8.i64(i8* bitcast (%union.anon.4* @ix86_sched_data to i8*), i8 0, i64 24, i32 8, i1 false)
+  br label %if.end27
+
+if.end27:                                         ; preds = %for.end, %if.end9, %if.end24, %if.end4
+  %3 = load i32* getelementptr inbounds (%union.anon.4* @ix86_sched_data, i64 0, i32 0, i32 1), align 8, !tbaa !0
+  %dec = add nsw i32 %3, -1
+  store i32 %dec, i32* getelementptr inbounds (%union.anon.4* @ix86_sched_data, i64 0, i32 0, i32 1), align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end27, %sw.default
+  %retval.0 = phi i32 [ %dec, %if.end27 ], [ %sub, %sw.default ]
+  ret i32 %retval.0
+}

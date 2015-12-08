@@ -1,0 +1,133 @@
+define void @dw2_asm_output_encoded_addr_rtx(i32 %encoding, %struct.rtx_def* %addr, i8* %comment, ...) #0 {
+entry:
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %call = call i32 @size_of_encoded_value(i32 %encoding) #8
+  %cmp = icmp eq i32 %encoding, 80
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load i32* @target_flags, align 4, !tbaa !4
+  %and = lshr i32 %0, 20
+  %1 = and i32 %and, 32
+  %2 = add i32 %1, 32
+  call void @assemble_align(i32 %2) #7
+  %3 = load i32* @target_flags, align 4, !tbaa !4
+  %and2 = lshr i32 %3, 20
+  %4 = and i32 %and2, 32
+  %5 = add i32 %4, 32
+  %call5 = call zeroext i1 @assemble_integer(%struct.rtx_def* %addr, i32 %call, i32 %5, i32 1) #7
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %6 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
+  %cmp6 = icmp eq %struct.rtx_def* %6, %addr
+  %7 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 65), align 8, !tbaa !0
+  %cmp7 = icmp eq %struct.rtx_def* %7, %addr
+  %or.cond = or i1 %cmp6, %cmp7
+  br i1 %or.cond, label %if.then8, label %do.body.preheader
+
+do.body.preheader:                                ; preds = %if.end
+  %cmp10 = icmp eq i32 %call, 4
+  br label %do.body
+
+if.then8:                                         ; preds = %if.end
+  %call9 = call zeroext i1 @assemble_integer(%struct.rtx_def* %addr, i32 %call, i32 8, i32 1) #7
+  br label %if.end35
+
+do.body:                                          ; preds = %do.body.preheader, %if.then22
+  %addr.addr.0 = phi %struct.rtx_def* [ %call23, %if.then22 ], [ %addr, %do.body.preheader ]
+  %encoding.addr.0 = phi i32 [ %and24, %if.then22 ], [ %encoding, %do.body.preheader ]
+  br i1 %cmp10, label %land.lhs.true, label %do.end
+
+land.lhs.true:                                    ; preds = %do.body
+  %and11 = and i32 %encoding.addr.0, 112
+  %cmp12 = icmp eq i32 %and11, 48
+  br i1 %cmp12, label %if.then13, label %do.end
+
+if.then13:                                        ; preds = %land.lhs.true
+  %8 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %9 = call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str99, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %8)
+  %10 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %addr.addr.0, i64 0, i32 1, i64 0
+  %rtstr = bitcast %union.rtunion_def* %arrayidx to i8**
+  %11 = load i8** %rtstr, align 8, !tbaa !0
+  call void @assemble_name(%struct._IO_FILE* %10, i8* %11) #7
+  %and15 = and i32 %encoding.addr.0, 128
+  %tobool16 = icmp ne i32 %and15, 0
+  %cond17 = select i1 %tobool16, i8* getelementptr inbounds ([5 x i8]* @.str100, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str101, i64 0, i64 0)
+  %12 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %call18 = call i32 @fputs(i8* %cond17, %struct._IO_FILE* %12) #7
+  br label %if.end35
+
+do.end:                                           ; preds = %do.body, %land.lhs.true
+  %and20 = and i32 %encoding.addr.0, 128
+  %tobool21 = icmp eq i32 %and20, 0
+  br i1 %tobool21, label %if.end25, label %if.then22
+
+if.then22:                                        ; preds = %do.end
+  %call23 = call fastcc %struct.rtx_def* @dw2_force_const_mem(%struct.rtx_def* %addr.addr.0) #8
+  %and24 = and i32 %encoding.addr.0, -129
+  br label %do.body
+
+if.end25:                                         ; preds = %do.end
+  %and26 = and i32 %encoding.addr.0, 240
+  switch i32 %and26, label %sw.default [
+    i32 0, label %sw.bb
+    i32 16, label %sw.bb27
+  ]
+
+sw.bb:                                            ; preds = %if.end25
+  call void @dw2_assemble_integer(i32 %call, %struct.rtx_def* %addr.addr.0) #8
+  br label %if.end35
+
+sw.bb27:                                          ; preds = %if.end25
+  %13 = bitcast %struct.rtx_def* %addr.addr.0 to i32*
+  %bf.load = load i32* %13, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp28 = icmp eq i32 %bf.clear, 68
+  br i1 %cmp28, label %if.end30, label %if.then29
+
+if.then29:                                        ; preds = %sw.bb27
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 877, i8* getelementptr inbounds ([32 x i8]* @__FUNCTION__.dw2_asm_output_encoded_addr_rtx, i64 0, i64 0)) #10
+  unreachable
+
+if.end30:                                         ; preds = %sw.bb27
+  %14 = load i32* @target_flags, align 4, !tbaa !4
+  %and31 = lshr i32 %14, 25
+  %15 = and i32 %and31, 1
+  %16 = or i32 %15, 4
+  %17 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !0
+  %call34 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 76, i32 %16, %struct.rtx_def* %addr.addr.0, %struct.rtx_def* %17) #7
+  call void @dw2_assemble_integer(i32 %call, %struct.rtx_def* %call34) #8
+  br label %if.end35
+
+sw.default:                                       ; preds = %if.end25
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 888, i8* getelementptr inbounds ([32 x i8]* @__FUNCTION__.dw2_asm_output_encoded_addr_rtx, i64 0, i64 0)) #10
+  unreachable
+
+if.end35:                                         ; preds = %if.then13, %if.end30, %sw.bb, %if.then8
+  %18 = load i32* @flag_debug_asm, align 4, !tbaa !4
+  %tobool36 = icmp eq i32 %18, 0
+  %tobool38 = icmp eq i8* %comment, null
+  %or.cond66 = or i1 %tobool36, %tobool38
+  br i1 %or.cond66, label %if.end43, label %if.then39
+
+if.then39:                                        ; preds = %if.end35
+  %19 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %call40 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %19, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0)) #7
+  %20 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %call42 = call i32 @vfprintf(%struct._IO_FILE* %20, i8* %comment, %struct.__va_list_tag* %arraydecay) #7
+  br label %if.end43
+
+if.end43:                                         ; preds = %if.end35, %if.then39
+  %21 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
+  %call44 = call i32 @fputc(i32 10, %struct._IO_FILE* %21) #7
+  call void @llvm.va_end(i8* %arraydecay1)
+  br label %return
+
+return:                                           ; preds = %if.end43, %if.then
+  ret void
+}

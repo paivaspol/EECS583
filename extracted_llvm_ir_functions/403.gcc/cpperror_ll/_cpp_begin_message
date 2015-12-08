@@ -1,0 +1,123 @@
+define i32 @_cpp_begin_message(%struct.cpp_reader* %pfile, i32 %code, i32 %line, i32 %column) #0 {
+entry:
+  switch i32 %code, label %if.end49.critedge [
+    i32 2, label %sw.bb
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb5
+    i32 3, label %sw.bb29
+    i32 4, label %sw.bb42
+    i32 5, label %sw.bb44
+  ]
+
+sw.bb:                                            ; preds = %entry, %entry
+  %map = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 3
+  %0 = load %struct.line_map** %map, align 8, !tbaa !0
+  %tobool = icmp eq %struct.line_map* %0, null
+  br i1 %tobool, label %sw.bb5, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %sw.bb
+  %sysp = getelementptr inbounds %struct.line_map* %0, i64 0, i32 5
+  %1 = load i8* %sysp, align 1, !tbaa !1
+  %tobool2 = icmp eq i8 %1, 0
+  br i1 %tobool2, label %sw.bb5, label %land.lhs.true3
+
+land.lhs.true3:                                   ; preds = %land.lhs.true
+  %warn_system_headers = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 28
+  %2 = load i8* %warn_system_headers, align 1, !tbaa !1
+  %tobool4 = icmp eq i8 %2, 0
+  br i1 %tobool4, label %return, label %sw.bb5
+
+sw.bb5:                                           ; preds = %land.lhs.true3, %land.lhs.true, %sw.bb, %entry
+  %warnings_are_errors = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 34
+  %3 = load i8* %warnings_are_errors, align 1, !tbaa !1
+  %tobool8 = icmp eq i8 %3, 0
+  br i1 %tobool8, label %lor.lhs.false, label %if.then14
+
+lor.lhs.false:                                    ; preds = %sw.bb5
+  %cmp = icmp eq i32 %code, 2
+  br i1 %cmp, label %land.lhs.true10, label %if.else
+
+land.lhs.true10:                                  ; preds = %lor.lhs.false
+  %pedantic_errors = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 26
+  %4 = load i8* %pedantic_errors, align 1, !tbaa !1
+  %tobool13 = icmp eq i8 %4, 0
+  br i1 %tobool13, label %if.else, label %if.then14
+
+if.then14:                                        ; preds = %land.lhs.true10, %sw.bb5
+  %inhibit_errors = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 29
+  %5 = load i8* %inhibit_errors, align 1, !tbaa !1
+  %tobool16 = icmp eq i8 %5, 0
+  br i1 %tobool16, label %if.end18, label %return
+
+if.end18:                                         ; preds = %if.then14
+  %errors = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 20
+  %6 = load i32* %errors, align 4, !tbaa !3
+  %cmp19 = icmp ult i32 %6, 1000
+  br i1 %cmp19, label %if.then21, label %if.end49.critedge70
+
+if.then21:                                        ; preds = %if.end18
+  %inc = add i32 %6, 1
+  store i32 %inc, i32* %errors, align 4, !tbaa !3
+  tail call fastcc void @print_location(%struct.cpp_reader* %pfile, i32 %line, i32 %column) #5
+  br label %return
+
+if.else:                                          ; preds = %land.lhs.true10, %lor.lhs.false
+  %inhibit_warnings = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 27
+  %7 = load i8* %inhibit_warnings, align 1, !tbaa !1
+  %tobool25 = icmp eq i8 %7, 0
+  br i1 %tobool25, label %sw.epilog, label %return
+
+sw.bb29:                                          ; preds = %entry
+  %inhibit_errors31 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 29
+  %8 = load i8* %inhibit_errors31, align 1, !tbaa !1
+  %tobool32 = icmp eq i8 %8, 0
+  br i1 %tobool32, label %if.end34, label %return
+
+if.end34:                                         ; preds = %sw.bb29
+  %errors35 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 20
+  %9 = load i32* %errors35, align 4, !tbaa !3
+  %cmp36 = icmp ult i32 %9, 1000
+  br i1 %cmp36, label %if.then38, label %if.end49.critedge68
+
+if.then38:                                        ; preds = %if.end34
+  %inc40 = add i32 %9, 1
+  store i32 %inc40, i32* %errors35, align 4, !tbaa !3
+  tail call fastcc void @print_location(%struct.cpp_reader* %pfile, i32 %line, i32 %column) #5
+  br label %return
+
+sw.bb42:                                          ; preds = %entry
+  %errors43 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 20
+  store i32 1000, i32* %errors43, align 4, !tbaa !3
+  tail call fastcc void @print_location(%struct.cpp_reader* %pfile, i32 %line, i32 %column) #5
+  br label %return
+
+sw.bb44:                                          ; preds = %entry
+  %10 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %11 = tail call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %10)
+  %errors45 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 20
+  store i32 1000, i32* %errors45, align 4, !tbaa !3
+  tail call fastcc void @print_location(%struct.cpp_reader* %pfile, i32 %line, i32 %column) #5
+  br label %return
+
+sw.epilog:                                        ; preds = %if.else
+  tail call fastcc void @print_location(%struct.cpp_reader* %pfile, i32 %line, i32 %column) #5
+  %12 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %13 = tail call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str1, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %12)
+  br label %return
+
+if.end49.critedge:                                ; preds = %entry
+  tail call fastcc void @print_location(%struct.cpp_reader* %pfile, i32 %line, i32 %column) #5
+  br label %return
+
+if.end49.critedge68:                              ; preds = %if.end34
+  tail call fastcc void @print_location(%struct.cpp_reader* %pfile, i32 %line, i32 %column) #5
+  br label %return
+
+if.end49.critedge70:                              ; preds = %if.end18
+  tail call fastcc void @print_location(%struct.cpp_reader* %pfile, i32 %line, i32 %column) #5
+  br label %return
+
+return:                                           ; preds = %sw.epilog, %if.end49.critedge, %sw.bb44, %sw.bb42, %if.then38, %if.end49.critedge68, %if.then21, %if.end49.critedge70, %sw.bb29, %if.else, %if.then14, %land.lhs.true3
+  %retval.0 = phi i32 [ 0, %land.lhs.true3 ], [ 0, %if.then14 ], [ 0, %if.else ], [ 0, %sw.bb29 ], [ 1, %if.end49.critedge70 ], [ 1, %if.then21 ], [ 1, %if.end49.critedge68 ], [ 1, %if.then38 ], [ 1, %sw.bb42 ], [ 1, %sw.bb44 ], [ 1, %if.end49.critedge ], [ 1, %sw.epilog ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,131 @@
+define void @fe_spec_magnitude(double* nocapture %data, i32 %data_len, double* nocapture %spec, i32 %fftsize) #0 {
+entry:
+  %conv = sext i32 %fftsize to i64
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 16) #5
+  %0 = bitcast i8* %call to %struct.complex*
+  %call2 = tail call noalias i8* @calloc(i64 %conv, i64 16) #5
+  %1 = bitcast i8* %call2 to %struct.complex*
+  %cmp = icmp eq i8* %call, null
+  %cmp4 = icmp eq i8* %call2, null
+  %or.cond = or i1 %cmp, %cmp4
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([55 x i8]* @.str4, i64 0, i64 0), i64 54, i64 1, %struct._IO_FILE* %2)
+  tail call void @exit(i32 0) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %cmp7 = icmp sgt i32 %data_len, %fftsize
+  br i1 %cmp7, label %for.cond.preheader, label %for.cond33.preheader
+
+for.cond33.preheader:                             ; preds = %if.end
+  %cmp34147 = icmp sgt i32 %data_len, 0
+  br i1 %cmp34147, label %for.body36, label %for.cond48.preheader
+
+for.cond.preheader:                               ; preds = %if.end
+  %cmp10142 = icmp sgt i32 %fftsize, 0
+  br i1 %cmp10142, label %for.body, label %for.cond16.preheader
+
+for.cond16.preheader:                             ; preds = %for.body, %for.cond.preheader
+  %j.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %fftsize, %for.body ]
+  %cmp17139 = icmp slt i32 %j.0.lcssa, %data_len
+  br i1 %cmp17139, label %for.body19.lr.ph, label %if.end61
+
+for.body19.lr.ph:                                 ; preds = %for.cond16.preheader
+  %4 = sext i32 %j.0.lcssa to i64
+  %5 = sub i32 %data_len, %j.0.lcssa
+  br label %for.body19
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv154 = phi i64 [ %indvars.iv.next155, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds double* %data, i64 %indvars.iv154
+  %6 = load double* %arrayidx, align 8, !tbaa !6
+  %r = getelementptr inbounds %struct.complex* %1, i64 %indvars.iv154, i32 0
+  store double %6, double* %r, align 8, !tbaa !6
+  %i = getelementptr inbounds %struct.complex* %1, i64 %indvars.iv154, i32 1
+  store double 0.000000e+00, double* %i, align 8, !tbaa !6
+  %indvars.iv.next155 = add i64 %indvars.iv154, 1
+  %lftr.wideiv156 = trunc i64 %indvars.iv.next155 to i32
+  %exitcond157 = icmp eq i32 %lftr.wideiv156, %fftsize
+  br i1 %exitcond157, label %for.cond16.preheader, label %for.body
+
+for.body19:                                       ; preds = %for.body19, %for.body19.lr.ph
+  %indvars.iv152 = phi i64 [ 0, %for.body19.lr.ph ], [ %indvars.iv.next153, %for.body19 ]
+  %indvars.iv150 = phi i64 [ %4, %for.body19.lr.ph ], [ %indvars.iv.next151, %for.body19 ]
+  %arrayidx21 = getelementptr inbounds double* %data, i64 %indvars.iv150
+  %7 = load double* %arrayidx21, align 8, !tbaa !6
+  %r24 = getelementptr inbounds %struct.complex* %1, i64 %indvars.iv152, i32 0
+  %8 = load double* %r24, align 8, !tbaa !6
+  %add = fadd double %7, %8
+  store double %add, double* %r24, align 8, !tbaa !6
+  %i27 = getelementptr inbounds %struct.complex* %1, i64 %indvars.iv152, i32 1
+  %9 = load double* %i27, align 8, !tbaa !6
+  %add28 = fadd double %9, 0.000000e+00
+  store double %add28, double* %i27, align 8, !tbaa !6
+  %indvars.iv.next153 = add i64 %indvars.iv152, 1
+  %indvars.iv.next151 = add i64 %indvars.iv150, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next153 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %5
+  br i1 %exitcond, label %if.end61, label %for.body19
+
+for.cond48.preheader:                             ; preds = %for.body36, %for.cond33.preheader
+  %j.2.lcssa = phi i32 [ 0, %for.cond33.preheader ], [ %data_len, %for.body36 ]
+  %cmp49145 = icmp slt i32 %j.2.lcssa, %fftsize
+  br i1 %cmp49145, label %for.body51.lr.ph, label %if.end61
+
+for.body51.lr.ph:                                 ; preds = %for.cond48.preheader
+  %10 = sext i32 %j.2.lcssa to i64
+  br label %for.body51
+
+for.body36:                                       ; preds = %for.cond33.preheader, %for.body36
+  %indvars.iv162 = phi i64 [ %indvars.iv.next163, %for.body36 ], [ 0, %for.cond33.preheader ]
+  %arrayidx38 = getelementptr inbounds double* %data, i64 %indvars.iv162
+  %11 = load double* %arrayidx38, align 8, !tbaa !6
+  %r41 = getelementptr inbounds %struct.complex* %1, i64 %indvars.iv162, i32 0
+  store double %11, double* %r41, align 8, !tbaa !6
+  %i44 = getelementptr inbounds %struct.complex* %1, i64 %indvars.iv162, i32 1
+  store double 0.000000e+00, double* %i44, align 8, !tbaa !6
+  %indvars.iv.next163 = add i64 %indvars.iv162, 1
+  %lftr.wideiv164 = trunc i64 %indvars.iv.next163 to i32
+  %exitcond165 = icmp eq i32 %lftr.wideiv164, %data_len
+  br i1 %exitcond165, label %for.cond48.preheader, label %for.body36
+
+for.body51:                                       ; preds = %for.body51, %for.body51.lr.ph
+  %indvars.iv158 = phi i64 [ %10, %for.body51.lr.ph ], [ %indvars.iv.next159, %for.body51 ]
+  %r54 = getelementptr inbounds %struct.complex* %1, i64 %indvars.iv158, i32 0
+  %indvars.iv.next159 = add i64 %indvars.iv158, 1
+  %lftr.wideiv160 = trunc i64 %indvars.iv.next159 to i32
+  %exitcond161 = icmp eq i32 %lftr.wideiv160, %fftsize
+  %12 = bitcast double* %r54 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %12, i8 0, i64 16, i32 8, i1 false)
+  br i1 %exitcond161, label %if.end61, label %for.body51
+
+if.end61:                                         ; preds = %for.cond48.preheader, %for.body51, %for.cond16.preheader, %for.body19
+  %call62 = tail call i32 @fe_fft(%struct.complex* %1, %struct.complex* %0, i32 %fftsize, i32 1) #4
+  %div = sdiv i32 %fftsize, 2
+  %cmp64137 = icmp slt i32 %fftsize, -1
+  br i1 %cmp64137, label %for.end85, label %for.body66
+
+for.body66:                                       ; preds = %if.end61, %for.body66
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body66 ], [ 0, %if.end61 ]
+  %r69 = getelementptr inbounds %struct.complex* %0, i64 %indvars.iv, i32 0
+  %13 = load double* %r69, align 8, !tbaa !6
+  %mul = fmul double %13, %13
+  %i75 = getelementptr inbounds %struct.complex* %0, i64 %indvars.iv, i32 1
+  %14 = load double* %i75, align 8, !tbaa !6
+  %mul79 = fmul double %14, %14
+  %add80 = fadd double %mul, %mul79
+  %arrayidx82 = getelementptr inbounds double* %spec, i64 %indvars.iv
+  store double %add80, double* %arrayidx82, align 8, !tbaa !6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %15 = trunc i64 %indvars.iv to i32
+  %cmp64 = icmp slt i32 %15, %div
+  br i1 %cmp64, label %for.body66, label %for.end85
+
+for.end85:                                        ; preds = %for.body66, %if.end61
+  tail call void @free(i8* %call) #5
+  tail call void @free(i8* %call2) #5
+  ret void
+}

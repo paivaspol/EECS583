@@ -1,0 +1,207 @@
+define internal fastcc void @df_insn_refs_record(%struct.df* %df, %struct.rtx_def* %insn) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %insn to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %idxprom1 = zext i32 %bf.clear to i64
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom1
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %1, 105
+  br i1 %cmp, label %if.then, label %if.end122
+
+if.then:                                          ; preds = %entry
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
+  %rtx = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  tail call fastcc void @df_defs_record(%struct.df* %df, %struct.rtx_def* %2, %struct.rtx_def* %insn) #6
+  %flags = getelementptr inbounds %struct.df* %df, i64 0, i32 0
+  %3 = load i32* %flags, align 4, !tbaa !4
+  %and = and i32 %3, 2048
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %if.then3
+
+if.then3:                                         ; preds = %if.then
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 6
+  %note.0.in31 = bitcast %union.rtunion_def* %arrayidx5 to %struct.rtx_def**
+  %note.032 = load %struct.rtx_def** %note.0.in31, align 8
+  %tobool733 = icmp eq %struct.rtx_def* %note.032, null
+  br i1 %tobool733, label %if.end, label %for.body
+
+for.body:                                         ; preds = %if.then3, %for.inc
+  %note.034 = phi %struct.rtx_def* [ %note.0, %for.inc ], [ %note.032, %if.then3 ]
+  %4 = bitcast %struct.rtx_def* %note.034 to i32*
+  %bf.load8 = load i32* %4, align 8
+  %bf.lshr = lshr i32 %bf.load8, 16
+  %bf.clear9 = and i32 %bf.lshr, 255
+  %bf.clear9.off = add i32 %bf.clear9, -3
+  %switch = icmp ult i32 %bf.clear9.off, 2
+  br i1 %switch, label %sw.bb, label %for.inc
+
+sw.bb:                                            ; preds = %for.body
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %note.034, i64 0, i32 1, i64 0
+  %rtx12 = bitcast %union.rtunion_def* %arrayidx11 to %struct.rtx_def**
+  tail call fastcc void @df_uses_record(%struct.df* %df, %struct.rtx_def** %rtx12, i32 1, %struct.rtx_def* %insn, i32 0) #6
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %sw.bb
+  %arrayidx14 = getelementptr inbounds %struct.rtx_def* %note.034, i64 0, i32 1, i64 1
+  %note.0.in = bitcast %union.rtunion_def* %arrayidx14 to %struct.rtx_def**
+  %note.0 = load %struct.rtx_def** %note.0.in, align 8
+  %tobool7 = icmp eq %struct.rtx_def* %note.0, null
+  br i1 %tobool7, label %if.end, label %for.body
+
+if.end:                                           ; preds = %if.then3, %for.inc, %if.then
+  %bf.load16 = load i32* %0, align 8
+  %bf.clear17 = and i32 %bf.load16, 65535
+  %cmp18 = icmp eq i32 %bf.clear17, 34
+  br i1 %cmp18, label %if.then20, label %if.end71
+
+if.then20:                                        ; preds = %if.end
+  %arrayidx23 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 7
+  %note21.0.in27 = bitcast %union.rtunion_def* %arrayidx23 to %struct.rtx_def**
+  %note21.028 = load %struct.rtx_def** %note21.0.in27, align 8
+  %tobool2629 = icmp eq %struct.rtx_def* %note21.028, null
+  br i1 %tobool2629, label %for.end47, label %for.body27
+
+for.body27:                                       ; preds = %if.then20, %for.inc43
+  %note21.030 = phi %struct.rtx_def* [ %note21.0, %for.inc43 ], [ %note21.028, %if.then20 ]
+  %fld28 = getelementptr inbounds %struct.rtx_def* %note21.030, i64 0, i32 1
+  %rtx30 = bitcast [1 x %union.rtunion_def]* %fld28 to %struct.rtx_def**
+  %5 = load %struct.rtx_def** %rtx30, align 8, !tbaa !3
+  %6 = bitcast %struct.rtx_def* %5 to i32*
+  %bf.load31 = load i32* %6, align 8
+  %bf.clear32 = and i32 %bf.load31, 65535
+  %cmp33 = icmp eq i32 %bf.clear32, 48
+  br i1 %cmp33, label %if.then35, label %for.inc43
+
+if.then35:                                        ; preds = %for.body27
+  %arrayidx40 = getelementptr inbounds %struct.rtx_def* %5, i64 0, i32 1, i64 0
+  %rtx41 = bitcast %union.rtunion_def* %arrayidx40 to %struct.rtx_def**
+  tail call fastcc void @df_uses_record(%struct.df* %df, %struct.rtx_def** %rtx41, i32 1, %struct.rtx_def* %insn, i32 0) #6
+  br label %for.inc43
+
+for.inc43:                                        ; preds = %for.body27, %if.then35
+  %arrayidx45 = getelementptr inbounds %struct.rtx_def* %note21.030, i64 0, i32 1, i64 1
+  %note21.0.in = bitcast %union.rtunion_def* %arrayidx45 to %struct.rtx_def**
+  %note21.0 = load %struct.rtx_def** %note21.0.in, align 8
+  %tobool26 = icmp eq %struct.rtx_def* %note21.0, null
+  br i1 %tobool26, label %for.end47, label %for.body27
+
+for.end47:                                        ; preds = %for.inc43, %if.then20
+  %7 = load i32* getelementptr inbounds ([53 x i32]* @reg_raw_mode, i64 0, i64 7), align 4, !tbaa !7
+  %call.i = tail call %struct.rtx_def* @gen_rtx_REG(i32 %7, i32 7) #8
+  %8 = bitcast %struct.rtx_def* %call.i to i32*
+  %bf.load.i = load i32* %8, align 8
+  %bf.lshr.i = lshr i32 %bf.load.i, 16
+  %bf.clear.i = and i32 %bf.lshr.i, 255
+  %call3.i = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 48, i32 %bf.clear.i, %struct.rtx_def* %call.i) #8
+  %arrayidx49 = getelementptr inbounds %struct.rtx_def* %call3.i, i64 0, i32 1, i64 0
+  %rtx50 = bitcast %union.rtunion_def* %arrayidx49 to %struct.rtx_def**
+  tail call fastcc void @df_uses_record(%struct.df* %df, %struct.rtx_def** %rtx50, i32 1, %struct.rtx_def* %insn, i32 0) #6
+  %9 = load i32* %flags, align 4, !tbaa !4
+  %and52 = and i32 %9, 1024
+  %tobool53 = icmp eq i32 %and52, 0
+  br i1 %tobool53, label %if.end71, label %for.body58
+
+for.body58:                                       ; preds = %for.end47, %for.inc68
+  %indvars.iv35 = phi i64 [ %indvars.iv.next36, %for.inc68 ], [ 0, %for.end47 ]
+  %sext = shl i64 %indvars.iv35, 32
+  %idxprom59 = ashr exact i64 %sext, 32
+  %arrayidx60 = getelementptr inbounds [53 x i8]* @global_regs, i64 0, i64 %idxprom59
+  %10 = load i8* %arrayidx60, align 1, !tbaa !1
+  %tobool61 = icmp eq i8 %10, 0
+  br i1 %tobool61, label %for.inc68, label %df_reg_use_gen.exit
+
+df_reg_use_gen.exit:                              ; preds = %for.body58
+  %11 = trunc i64 %indvars.iv35 to i32
+  %arrayidx2.i = getelementptr inbounds [53 x i32]* @reg_raw_mode, i64 0, i64 %indvars.iv35
+  %12 = load i32* %arrayidx2.i, align 4, !tbaa !7
+  %call.i2 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %12, i32 %11) #8
+  %13 = bitcast %struct.rtx_def* %call.i2 to i32*
+  %bf.load.i3 = load i32* %13, align 8
+  %bf.lshr.i4 = lshr i32 %bf.load.i3, 16
+  %bf.clear.i5 = and i32 %bf.lshr.i4, 255
+  %call3.i6 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 48, i32 %bf.clear.i5, %struct.rtx_def* %call.i2) #8
+  %arrayidx65 = getelementptr inbounds %struct.rtx_def* %call3.i6, i64 0, i32 1, i64 0
+  %rtx66 = bitcast %union.rtunion_def* %arrayidx65 to %struct.rtx_def**
+  tail call fastcc void @df_uses_record(%struct.df* %df, %struct.rtx_def** %rtx66, i32 1, %struct.rtx_def* %insn, i32 0) #6
+  br label %for.inc68
+
+for.inc68:                                        ; preds = %for.body58, %df_reg_use_gen.exit
+  %indvars.iv.next36 = add i64 %indvars.iv35, 1
+  %lftr.wideiv37 = trunc i64 %indvars.iv.next36 to i32
+  %exitcond38 = icmp eq i32 %lftr.wideiv37, 53
+  br i1 %exitcond38, label %if.end71, label %for.body58
+
+if.end71:                                         ; preds = %for.inc68, %for.end47, %if.end
+  tail call fastcc void @df_uses_record(%struct.df* %df, %struct.rtx_def** %rtx, i32 1, %struct.rtx_def* %insn, i32 0) #6
+  %bf.load75 = load i32* %0, align 8
+  %bf.clear76 = and i32 %bf.load75, 65535
+  %cmp77 = icmp eq i32 %bf.clear76, 34
+  br i1 %cmp77, label %if.then79, label %if.end122
+
+if.then79:                                        ; preds = %if.end71
+  %14 = load i32* %flags, align 4, !tbaa !4
+  %and82 = and i32 %14, 1024
+  %tobool83 = icmp eq i32 %and82, 0
+  br i1 %tobool83, label %if.end97, label %for.body88
+
+for.body88:                                       ; preds = %for.inc94, %if.then79
+  %indvars.iv = phi i64 [ 0, %if.then79 ], [ %indvars.iv.next, %for.inc94 ]
+  %15 = load i64* @regs_invalidated_by_call, align 8, !tbaa !5
+  %shl = shl i64 1, %indvars.iv
+  %and89 = and i64 %15, %shl
+  %tobool90 = icmp eq i64 %and89, 0
+  br i1 %tobool90, label %for.inc94, label %df_reg_clobber_gen.exit
+
+df_reg_clobber_gen.exit:                          ; preds = %for.body88
+  %arrayidx2.i13 = getelementptr inbounds [53 x i32]* @reg_raw_mode, i64 0, i64 %indvars.iv
+  %16 = load i32* %arrayidx2.i13, align 4, !tbaa !7
+  %17 = trunc i64 %indvars.iv to i32
+  %call.i14 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %16, i32 %17) #8
+  %18 = bitcast %struct.rtx_def* %call.i14 to i32*
+  %bf.load.i17 = load i32* %18, align 8
+  %bf.lshr.i18 = lshr i32 %bf.load.i17, 16
+  %bf.clear.i19 = and i32 %bf.lshr.i18, 255
+  %call3.i20 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 49, i32 %bf.clear.i19, %struct.rtx_def* %call.i14) #8
+  tail call fastcc void @df_defs_record(%struct.df* %df, %struct.rtx_def* %call3.i20, %struct.rtx_def* %insn) #6
+  br label %for.inc94
+
+for.inc94:                                        ; preds = %for.body88, %df_reg_clobber_gen.exit
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 53
+  br i1 %exitcond, label %if.end97, label %for.body88
+
+if.end97:                                         ; preds = %for.inc94, %if.then79
+  %arrayidx99 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 7
+  %note80.0.in21 = bitcast %union.rtunion_def* %arrayidx99 to %struct.rtx_def**
+  %note80.022 = load %struct.rtx_def** %note80.0.in21, align 8
+  %tobool10223 = icmp eq %struct.rtx_def* %note80.022, null
+  br i1 %tobool10223, label %if.end122, label %for.body103
+
+for.body103:                                      ; preds = %if.end97, %for.inc116
+  %note80.024 = phi %struct.rtx_def* [ %note80.0, %for.inc116 ], [ %note80.022, %if.end97 ]
+  %fld104 = getelementptr inbounds %struct.rtx_def* %note80.024, i64 0, i32 1
+  %rtx106 = bitcast [1 x %union.rtunion_def]* %fld104 to %struct.rtx_def**
+  %19 = load %struct.rtx_def** %rtx106, align 8, !tbaa !3
+  %20 = bitcast %struct.rtx_def* %19 to i32*
+  %bf.load107 = load i32* %20, align 8
+  %bf.clear108 = and i32 %bf.load107, 65535
+  %cmp109 = icmp eq i32 %bf.clear108, 49
+  br i1 %cmp109, label %if.then111, label %for.inc116
+
+if.then111:                                       ; preds = %for.body103
+  tail call fastcc void @df_defs_record(%struct.df* %df, %struct.rtx_def* %19, %struct.rtx_def* %insn) #6
+  br label %for.inc116
+
+for.inc116:                                       ; preds = %for.body103, %if.then111
+  %arrayidx118 = getelementptr inbounds %struct.rtx_def* %note80.024, i64 0, i32 1, i64 1
+  %note80.0.in = bitcast %union.rtunion_def* %arrayidx118 to %struct.rtx_def**
+  %note80.0 = load %struct.rtx_def** %note80.0.in, align 8
+  %tobool102 = icmp eq %struct.rtx_def* %note80.0, null
+  br i1 %tobool102, label %if.end122, label %for.body103
+
+if.end122:                                        ; preds = %if.end97, %for.inc116, %if.end71, %entry
+  ret void
+}

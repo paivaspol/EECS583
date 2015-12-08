@@ -1,0 +1,72 @@
+define internal fastcc void @record_insns(%struct.rtx_def* nocapture %insns, %struct.varray_head_tag** nocapture %vecp) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %insns to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 24
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insns, i64 0, i32 1, i64 0
+  %rtvec = bitcast %union.rtunion_def* %arrayidx to %struct.rtvec_def**
+  %1 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %1, i64 0, i32 0
+  %2 = load i32* %num_elem, align 4, !tbaa !4
+  %3 = load %struct.varray_head_tag** %vecp, align 8, !tbaa !0
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 0
+  %4 = load i64* %num_elements, align 8, !tbaa !5
+  %conv = trunc i64 %4 to i32
+  %add = add nsw i32 %conv, %2
+  %conv1 = sext i32 %add to i64
+  %call = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %3, i64 %conv1) #10
+  store %struct.varray_head_tag* %call, %struct.varray_head_tag** %vecp, align 8, !tbaa !0
+  %cmp243 = icmp sgt i32 %2, 0
+  br i1 %cmp243, label %while.body.lr.ph, label %if.end
+
+while.body.lr.ph:                                 ; preds = %if.then
+  %5 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.varray_head_tag* %call, i64 0, i32 4
+  %i11 = bitcast %union.varray_data_tag* %data to [1 x i32]*
+  %6 = sext i32 %2 to i64
+  %sext48 = shl i64 %4, 32
+  %7 = ashr exact i64 %sext48, 32
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %indvars.iv46 = phi i64 [ %7, %while.body.lr.ph ], [ %indvars.iv.next47, %while.body ]
+  %indvars.iv = phi i64 [ %6, %while.body.lr.ph ], [ %indvars.iv.next, %while.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %arrayidx7 = getelementptr inbounds %struct.rtvec_def* %5, i64 0, i32 1, i64 %indvars.iv.next
+  %8 = load %struct.rtx_def** %arrayidx7, align 8, !tbaa !0
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %8, i64 0, i32 1, i64 0
+  %rtint = bitcast %union.rtunion_def* %arrayidx9 to i32*
+  %9 = load i32* %rtint, align 4, !tbaa !4
+  %arrayidx12 = getelementptr inbounds [1 x i32]* %i11, i64 0, i64 %indvars.iv46
+  store i32 %9, i32* %arrayidx12, align 4, !tbaa !4
+  %indvars.iv.next47 = add i64 %indvars.iv46, 1
+  %10 = trunc i64 %indvars.iv.next to i32
+  %cmp2 = icmp sgt i32 %10, 0
+  br i1 %cmp2, label %while.body, label %if.end
+
+if.else:                                          ; preds = %entry
+  %11 = load %struct.varray_head_tag** %vecp, align 8, !tbaa !0
+  %num_elements14 = getelementptr inbounds %struct.varray_head_tag* %11, i64 0, i32 0
+  %12 = load i64* %num_elements14, align 8, !tbaa !5
+  %add16 = shl i64 %12, 32
+  %sext = add i64 %add16, 4294967296
+  %conv17 = ashr exact i64 %sext, 32
+  %call18 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %11, i64 %conv17) #10
+  store %struct.varray_head_tag* %call18, %struct.varray_head_tag** %vecp, align 8, !tbaa !0
+  %arrayidx20 = getelementptr inbounds %struct.rtx_def* %insns, i64 0, i32 1, i64 0
+  %rtint21 = bitcast %union.rtunion_def* %arrayidx20 to i32*
+  %13 = load i32* %rtint21, align 4, !tbaa !4
+  %idxprom22 = ashr exact i64 %add16, 32
+  %data23 = getelementptr inbounds %struct.varray_head_tag* %call18, i64 0, i32 4
+  %i24 = bitcast %union.varray_data_tag* %data23 to [1 x i32]*
+  %arrayidx25 = getelementptr inbounds [1 x i32]* %i24, i64 0, i64 %idxprom22
+  store i32 %13, i32* %arrayidx25, align 4, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %while.body, %if.else
+  ret void
+}

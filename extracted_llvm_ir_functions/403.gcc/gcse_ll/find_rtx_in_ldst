@@ -1,0 +1,30 @@
+define internal fastcc %struct.ls_expr* @find_rtx_in_ldst(%struct.rtx_def* %x) #0 {
+entry:
+  %ptr.06 = load %struct.ls_expr** @pre_ldst_mems, align 8
+  %cmp7 = icmp eq %struct.ls_expr* %ptr.06, null
+  br i1 %cmp7, label %return, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %ptr.08 = phi %struct.ls_expr* [ %ptr.0, %for.inc ], [ %ptr.06, %entry ]
+  %pattern = getelementptr inbounds %struct.ls_expr* %ptr.08, i64 0, i32 1
+  %0 = load %struct.rtx_def** %pattern, align 8, !tbaa !0
+  %call = tail call fastcc i32 @expr_equiv_p(%struct.rtx_def* %0, %struct.rtx_def* %x) #7
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body
+  %invalid = getelementptr inbounds %struct.ls_expr* %ptr.08, i64 0, i32 5
+  %1 = load i32* %invalid, align 4, !tbaa !3
+  %tobool1 = icmp eq i32 %1, 0
+  br i1 %tobool1, label %return, label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true, %for.body
+  %next = getelementptr inbounds %struct.ls_expr* %ptr.08, i64 0, i32 4
+  %ptr.0 = load %struct.ls_expr** %next, align 8
+  %cmp = icmp eq %struct.ls_expr* %ptr.0, null
+  br i1 %cmp, label %return, label %for.body
+
+return:                                           ; preds = %for.inc, %land.lhs.true, %entry
+  %retval.0 = phi %struct.ls_expr* [ null, %entry ], [ %ptr.08, %land.lhs.true ], [ null, %for.inc ]
+  ret %struct.ls_expr* %retval.0
+}

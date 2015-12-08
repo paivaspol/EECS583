@@ -1,0 +1,67 @@
+define zeroext i1 @ix86_function_arg_regno_p(i32 %regno) #2 {
+entry:
+  %0 = load i32* @target_flags, align 4, !tbaa !0
+  %and = and i32 %0, 33554432
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %cmp = icmp slt i32 %regno, 3
+  br i1 %cmp, label %return, label %lor.rhs
+
+lor.rhs:                                          ; preds = %if.then
+  %and3 = and i32 %0, 327680
+  %cmp4 = icmp eq i32 %and3, 0
+  br i1 %cmp4, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %lor.rhs
+  %regno.off = add i32 %regno, -21
+  %1 = icmp ult i32 %regno.off, 8
+  %regno.off51 = add i32 %regno, -45
+  %2 = icmp ult i32 %regno.off51, 8
+  %or.cond = or i1 %1, %2
+  br i1 %or.cond, label %land.rhs, label %return
+
+land.rhs:                                         ; preds = %land.lhs.true
+  %idxprom = sext i32 %regno to i64
+  %arrayidx = getelementptr inbounds [53 x i8]* @fixed_regs, i64 0, i64 %idxprom
+  %3 = load i8* %arrayidx, align 1, !tbaa !1
+  %lnot = icmp eq i8 %3, 0
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %regno.off52 = add i32 %regno, -21
+  %4 = icmp ult i32 %regno.off52, 8
+  %regno.off53 = add i32 %regno, -45
+  %5 = icmp ult i32 %regno.off53, 8
+  %or.cond56 = or i1 %4, %5
+  br i1 %or.cond56, label %land.lhs.true19, label %if.end23
+
+land.lhs.true19:                                  ; preds = %if.end
+  %and20 = and i32 %0, 327680
+  %cmp21 = icmp ne i32 %and20, 0
+  %tobool24 = icmp eq i32 %regno, 0
+  %or.cond57 = or i1 %cmp21, %tobool24
+  br i1 %or.cond57, label %return, label %for.body
+
+if.end23:                                         ; preds = %if.end
+  %tobool24.old = icmp eq i32 %regno, 0
+  br i1 %tobool24.old, label %return, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %6 = trunc i64 %indvars.iv.next to i32
+  %cmp30 = icmp slt i32 %6, 6
+  br i1 %cmp30, label %for.body, label %return
+
+for.body:                                         ; preds = %land.lhs.true19, %if.end23, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %if.end23 ], [ 0, %land.lhs.true19 ]
+  %arrayidx32 = getelementptr inbounds [6 x i32]* @x86_64_int_parameter_registers, i64 0, i64 %indvars.iv
+  %7 = load i32* %arrayidx32, align 4, !tbaa !0
+  %cmp33 = icmp eq i32 %7, %regno
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp33, label %return, label %for.cond
+
+return:                                           ; preds = %for.cond, %for.body, %land.lhs.true19, %if.end23, %if.then, %land.rhs, %lor.rhs, %land.lhs.true
+  %retval.0 = phi i1 [ true, %if.then ], [ false, %lor.rhs ], [ %lnot, %land.rhs ], [ false, %land.lhs.true ], [ true, %land.lhs.true19 ], [ true, %if.end23 ], [ false, %for.cond ], [ true, %for.body ]
+  ret i1 %retval.0
+}

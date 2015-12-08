@@ -1,0 +1,42 @@
+define %struct.rtx_def* @libcall_other_reg(%struct.rtx_def* %insn, %struct.rtx_def* %equiv) #0 {
+entry:
+  %output = alloca %struct.rtx_def*, align 8
+  %call = call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn, i32 6, %struct.rtx_def* null) #8
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  store %struct.rtx_def* null, %struct.rtx_def** %output, align 8, !tbaa !4
+  %cmp21 = icmp eq %struct.rtx_def* %0, %insn
+  br i1 %cmp21, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %if.end
+  %p.022 = phi %struct.rtx_def* [ %3, %if.end ], [ %0, %entry ]
+  %1 = bitcast %struct.rtx_def* %p.022 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %bf.clear.off = add i32 %bf.clear, -32
+  %switch = icmp ult i32 %bf.clear.off, 3
+  br i1 %switch, label %if.then, label %if.end
+
+if.then:                                          ; preds = %while.body
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %p.022, i64 0, i32 1, i64 3
+  %rtx11 = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**
+  %2 = load %struct.rtx_def** %rtx11, align 8, !tbaa !4
+  call void @record_excess_regs(%struct.rtx_def* %2, %struct.rtx_def* %equiv, %struct.rtx_def** %output) #10
+  br label %if.end
+
+if.end:                                           ; preds = %while.body, %if.then
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %p.022, i64 0, i32 1, i64 2
+  %rtx14 = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**
+  %3 = load %struct.rtx_def** %rtx14, align 8, !tbaa !4
+  %cmp = icmp eq %struct.rtx_def* %3, %insn
+  br i1 %cmp, label %while.cond.while.end_crit_edge, label %while.body
+
+while.cond.while.end_crit_edge:                   ; preds = %if.end
+  %.pre = load %struct.rtx_def** %output, align 8, !tbaa !4
+  br label %while.end
+
+while.end:                                        ; preds = %while.cond.while.end_crit_edge, %entry
+  %4 = phi %struct.rtx_def* [ %.pre, %while.cond.while.end_crit_edge ], [ null, %entry ]
+  ret %struct.rtx_def* %4
+}

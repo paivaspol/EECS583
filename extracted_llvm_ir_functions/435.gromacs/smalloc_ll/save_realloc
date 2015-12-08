@@ -1,0 +1,33 @@
+define i8* @save_realloc(i8* %name, i8* %file, i32 %line, i8* %ptr, i32 %size) #0 {
+entry:
+  %cmp = icmp eq i32 %size, 0
+  br i1 %cmp, label %if.end11, label %if.else
+
+if.else:                                          ; preds = %entry
+  %cmp1 = icmp eq i8* %ptr, null
+  %conv = zext i32 %size to i64
+  br i1 %cmp1, label %if.then2, label %if.else3
+
+if.then2:                                         ; preds = %if.else
+  %call = tail call noalias i8* @malloc(i64 %conv) #6
+  br label %if.end
+
+if.else3:                                         ; preds = %if.else
+  %call5 = tail call i8* @realloc(i8* %ptr, i64 %conv) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.else3, %if.then2
+  %p.0 = phi i8* [ %call, %if.then2 ], [ %call5, %if.else3 ]
+  %cmp6 = icmp eq i8* %p.0, null
+  br i1 %cmp6, label %if.then8, label %if.end11
+
+if.then8:                                         ; preds = %if.end
+  %call9 = tail call i32* @__errno_location() #7
+  %0 = load i32* %call9, align 4, !tbaa !0
+  tail call void (i32, i8*, ...)* @fatal_error(i32 %0, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), i8* %name, i32 %size, i8* %file, i32 %line, i8* %name, i8* %ptr) #6
+  br label %if.end11
+
+if.end11:                                         ; preds = %entry, %if.end, %if.then8
+  %p.1 = phi i8* [ null, %if.then8 ], [ %p.0, %if.end ], [ null, %entry ]
+  ret i8* %p.1
+}

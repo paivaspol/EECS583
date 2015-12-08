@@ -1,0 +1,68 @@
+define void @copy_PSgrid(%struct.t_PSgrid* nocapture %dest, %struct.t_PSgrid* nocapture %src) #0 {
+entry:
+  %ptr4.i = getelementptr inbounds %struct.t_PSgrid* %dest, i64 0, i32 3
+  %0 = load float**** %ptr4.i, align 8, !tbaa !3
+  %nx1.i32 = getelementptr inbounds %struct.t_PSgrid* %src, i64 0, i32 0
+  %1 = load i32* %nx1.i32, align 4, !tbaa !0
+  %ny2.i33 = getelementptr inbounds %struct.t_PSgrid* %src, i64 0, i32 1
+  %2 = load i32* %ny2.i33, align 4, !tbaa !0
+  %nz3.i34 = getelementptr inbounds %struct.t_PSgrid* %src, i64 0, i32 2
+  %3 = load i32* %nz3.i34, align 4, !tbaa !0
+  %ptr4.i35 = getelementptr inbounds %struct.t_PSgrid* %src, i64 0, i32 3
+  %4 = load float**** %ptr4.i35, align 8, !tbaa !3
+  %cmp40 = icmp sgt i32 %1, 0
+  br i1 %cmp40, label %for.cond1.preheader.lr.ph, label %for.end22
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %cmp238 = icmp sgt i32 %2, 0
+  %cmp536 = icmp sgt i32 %3, 0
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc20, %for.cond1.preheader.lr.ph
+  %indvars.iv46 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next47, %for.inc20 ]
+  br i1 %cmp238, label %for.cond4.preheader.lr.ph, label %for.inc20
+
+for.cond4.preheader.lr.ph:                        ; preds = %for.cond1.preheader
+  %arrayidx = getelementptr inbounds float*** %4, i64 %indvars.iv46
+  %arrayidx14 = getelementptr inbounds float*** %0, i64 %indvars.iv46
+  br label %for.cond4.preheader
+
+for.cond4.preheader:                              ; preds = %for.inc17, %for.cond4.preheader.lr.ph
+  %indvars.iv42 = phi i64 [ 0, %for.cond4.preheader.lr.ph ], [ %indvars.iv.next43, %for.inc17 ]
+  br i1 %cmp536, label %for.body6.lr.ph, label %for.inc17
+
+for.body6.lr.ph:                                  ; preds = %for.cond4.preheader
+  %5 = load float*** %arrayidx, align 8, !tbaa !3
+  %arrayidx9 = getelementptr inbounds float** %5, i64 %indvars.iv42
+  %6 = load float** %arrayidx9, align 8, !tbaa !3
+  %7 = load float*** %arrayidx14, align 8, !tbaa !3
+  %arrayidx15 = getelementptr inbounds float** %7, i64 %indvars.iv42
+  %8 = load float** %arrayidx15, align 8, !tbaa !3
+  br label %for.body6
+
+for.body6:                                        ; preds = %for.body6, %for.body6.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body6.lr.ph ], [ %indvars.iv.next, %for.body6 ]
+  %arrayidx10 = getelementptr inbounds float* %6, i64 %indvars.iv
+  %9 = load float* %arrayidx10, align 4, !tbaa !4
+  %arrayidx16 = getelementptr inbounds float* %8, i64 %indvars.iv
+  store float %9, float* %arrayidx16, align 4, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %3
+  br i1 %exitcond, label %for.inc17, label %for.body6
+
+for.inc17:                                        ; preds = %for.body6, %for.cond4.preheader
+  %indvars.iv.next43 = add i64 %indvars.iv42, 1
+  %lftr.wideiv44 = trunc i64 %indvars.iv.next43 to i32
+  %exitcond45 = icmp eq i32 %lftr.wideiv44, %2
+  br i1 %exitcond45, label %for.inc20, label %for.cond4.preheader
+
+for.inc20:                                        ; preds = %for.inc17, %for.cond1.preheader
+  %indvars.iv.next47 = add i64 %indvars.iv46, 1
+  %lftr.wideiv48 = trunc i64 %indvars.iv.next47 to i32
+  %exitcond49 = icmp eq i32 %lftr.wideiv48, %1
+  br i1 %exitcond49, label %for.end22, label %for.cond1.preheader
+
+for.end22:                                        ; preds = %for.inc20, %entry
+  ret void
+}

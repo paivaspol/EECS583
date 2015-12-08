@@ -1,0 +1,64 @@
+define i32 @tmat_chk_uppertri(%struct.tmat_t* nocapture %tmat) #2 {
+entry:
+  %n_tmat = getelementptr inbounds %struct.tmat_t* %tmat, i64 0, i32 1
+  %0 = load i32* %n_tmat, align 4, !tbaa !0
+  %cmp33 = icmp sgt i32 %0, 0
+  br i1 %cmp33, label %for.cond1.preheader.lr.ph, label %return
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %n_state = getelementptr inbounds %struct.tmat_t* %tmat, i64 0, i32 2
+  %1 = load i32* %n_state, align 4, !tbaa !0
+  %cmp230 = icmp sgt i32 %1, 0
+  %tp = getelementptr inbounds %struct.tmat_t* %tmat, i64 0, i32 0
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.cond1.preheader.lr.ph, %for.inc16
+  %indvars.iv40 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next41, %for.inc16 ]
+  br i1 %cmp230, label %for.body3, label %for.inc16
+
+for.cond1.loopexit:                               ; preds = %for.cond4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp628, label %for.body3, label %for.inc16
+
+for.body3:                                        ; preds = %for.cond1.preheader, %for.cond1.loopexit
+  %indvars.iv38 = phi i64 [ %indvars.iv.next39, %for.cond1.loopexit ], [ 0, %for.cond1.preheader ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond1.loopexit ], [ 1, %for.cond1.preheader ]
+  %dst.031 = phi i32 [ %add, %for.cond1.loopexit ], [ 0, %for.cond1.preheader ]
+  %indvars.iv.next39 = add i64 %indvars.iv38, 1
+  %add = add nsw i32 %dst.031, 1
+  %2 = trunc i64 %indvars.iv.next39 to i32
+  %cmp628 = icmp slt i32 %2, %1
+  br i1 %cmp628, label %for.body7.lr.ph, label %for.inc16
+
+for.body7.lr.ph:                                  ; preds = %for.body3
+  %3 = load i32**** %tp, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i32*** %3, i64 %indvars.iv40
+  %4 = load i32*** %arrayidx, align 8, !tbaa !3
+  br label %for.body7
+
+for.cond4:                                        ; preds = %for.body7
+  %cmp6 = icmp slt i32 %inc, %1
+  %indvars.iv.next36 = add i64 %indvars.iv35, 1
+  br i1 %cmp6, label %for.body7, label %for.cond1.loopexit
+
+for.body7:                                        ; preds = %for.body7.lr.ph, %for.cond4
+  %indvars.iv35 = phi i64 [ %indvars.iv, %for.body7.lr.ph ], [ %indvars.iv.next36, %for.cond4 ]
+  %src.029 = phi i32 [ %add, %for.body7.lr.ph ], [ %inc, %for.cond4 ]
+  %arrayidx10 = getelementptr inbounds i32** %4, i64 %indvars.iv35
+  %5 = load i32** %arrayidx10, align 8, !tbaa !3
+  %arrayidx11 = getelementptr inbounds i32* %5, i64 %indvars.iv38
+  %6 = load i32* %arrayidx11, align 4, !tbaa !0
+  %cmp12 = icmp sgt i32 %6, -939524096
+  %inc = add nsw i32 %src.029, 1
+  br i1 %cmp12, label %return, label %for.cond4
+
+for.inc16:                                        ; preds = %for.cond1.loopexit, %for.body3, %for.cond1.preheader
+  %indvars.iv.next41 = add i64 %indvars.iv40, 1
+  %7 = trunc i64 %indvars.iv.next41 to i32
+  %cmp = icmp slt i32 %7, %0
+  br i1 %cmp, label %for.cond1.preheader, label %return
+
+return:                                           ; preds = %entry, %for.inc16, %for.body7
+  %retval.0 = phi i32 [ -1, %for.body7 ], [ 0, %for.inc16 ], [ 0, %entry ]
+  ret i32 %retval.0
+}

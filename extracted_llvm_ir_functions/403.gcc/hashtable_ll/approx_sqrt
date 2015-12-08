@@ -1,0 +1,27 @@
+define double @approx_sqrt(double %x) #0 {
+entry:
+  %cmp = fcmp olt double %x, 0.000000e+00
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @abort() #9
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %cmp1 = fcmp oeq double %x, 0.000000e+00
+  br i1 %cmp1, label %return, label %do.body
+
+do.body:                                          ; preds = %if.end, %do.body
+  %s.0 = phi double [ %sub5, %do.body ], [ %x, %if.end ]
+  %mul = fmul double %s.0, %s.0
+  %sub = fsub double %mul, %x
+  %mul4 = fmul double %s.0, 2.000000e+00
+  %div = fdiv double %sub, %mul4
+  %sub5 = fsub double %s.0, %div
+  %cmp6 = fcmp ogt double %div, 1.000000e-04
+  br i1 %cmp6, label %do.body, label %return
+
+return:                                           ; preds = %do.body, %if.end
+  %retval.0 = phi double [ 0.000000e+00, %if.end ], [ %sub5, %do.body ]
+  ret double %retval.0
+}

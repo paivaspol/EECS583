@@ -1,0 +1,30 @@
+define i32 @fields_length(%union.tree_node* nocapture %type) #3 {
+entry:
+  %values = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 1
+  %0 = load i8** %values, align 8
+  %tobool6 = icmp eq i8* %0, null
+  br i1 %tobool6, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = bitcast i8* %0 to %union.tree_node*
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %count.08 = phi i32 [ 0, %for.body.lr.ph ], [ %inc.count.0, %for.body ]
+  %t.07 = phi %union.tree_node* [ %1, %for.body.lr.ph ], [ %3, %for.body ]
+  %code = getelementptr inbounds %union.tree_node* %t.07, i64 0, i32 0, i32 0, i32 2
+  %2 = bitcast [4 x i8]* %code to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 255
+  %cmp = icmp eq i32 %bf.clear, 37
+  %inc = zext i1 %cmp to i32
+  %inc.count.0 = add nsw i32 %inc, %count.08
+  %chain = getelementptr inbounds %union.tree_node* %t.07, i64 0, i32 0, i32 0, i32 0
+  %3 = load %union.tree_node** %chain, align 8, !tbaa !0
+  %tobool = icmp eq %union.tree_node* %3, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %count.0.lcssa = phi i32 [ 0, %entry ], [ %inc.count.0, %for.body ]
+  ret i32 %count.0.lcssa
+}

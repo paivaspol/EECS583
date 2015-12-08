@@ -1,0 +1,36 @@
+define internal fastcc %struct.rtx_def* @expand_builtin_va_start(i32 %stdarg_p, %union.tree_node* nocapture %arglist) #0 {
+entry:
+  %tobool = icmp eq i32 %stdarg_p, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %chain1 = getelementptr inbounds %union.tree_node* %arglist, i64 0, i32 0, i32 0, i32 0
+  %0 = load %union.tree_node** %chain1, align 8, !tbaa !3
+  %call = tail call fastcc %struct.rtx_def* @expand_builtin_next_arg(%union.tree_node* %0) #9
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %call2 = tail call fastcc %struct.rtx_def* @expand_builtin_next_arg(%union.tree_node* null) #9
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %chain.0 = phi %union.tree_node* [ %0, %if.then ], [ %arglist, %if.else ]
+  %nextarg.0 = phi %struct.rtx_def* [ %call, %if.then ], [ %call2, %if.else ]
+  %chain4 = getelementptr inbounds %union.tree_node* %chain.0, i64 0, i32 0, i32 0, i32 0
+  %1 = load %union.tree_node** %chain4, align 8, !tbaa !3
+  %tobool5 = icmp eq %union.tree_node* %1, null
+  br i1 %tobool5, label %if.end7, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([42 x i8]* @.str115, i64 0, i64 0)) #7
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end, %if.then6
+  %value = getelementptr inbounds %union.tree_node* %arglist, i64 0, i32 0, i32 2
+  %2 = bitcast i32* %value to %union.tree_node**
+  %3 = load %union.tree_node** %2, align 8, !tbaa !3
+  %call8 = tail call fastcc %union.tree_node* @stabilize_va_list(%union.tree_node* %3, i32 1) #9
+  tail call void @ix86_va_start(i32 %stdarg_p, %union.tree_node* %call8, %struct.rtx_def* %nextarg.0) #7
+  %4 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !3
+  ret %struct.rtx_def* %4
+}

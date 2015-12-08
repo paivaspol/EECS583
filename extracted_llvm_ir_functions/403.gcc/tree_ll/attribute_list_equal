@@ -1,0 +1,16 @@
+define i32 @attribute_list_equal(%union.tree_node* %l1, %union.tree_node* %l2) #0 {
+entry:
+  %call = tail call i32 @attribute_list_contained(%union.tree_node* %l1, %union.tree_node* %l2) #10
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %entry
+  %call1 = tail call i32 @attribute_list_contained(%union.tree_node* %l2, %union.tree_node* %l1) #10
+  %tobool2 = icmp ne i32 %call1, 0
+  br label %land.end
+
+land.end:                                         ; preds = %entry, %land.rhs
+  %0 = phi i1 [ false, %entry ], [ %tobool2, %land.rhs ]
+  %land.ext = zext i1 %0 to i32
+  ret i32 %land.ext
+}

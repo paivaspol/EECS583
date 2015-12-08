@@ -1,0 +1,47 @@
+define internal fastcc i32 @last_use_this_basic_block(%struct.rtx_def* nocapture %reg, %struct.rtx_def* %insn) #5 {
+entry:
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
+  %tobool16 = icmp eq %struct.rtx_def* %insn, null
+  br i1 %tobool16, label %return, label %land.lhs.true.lr.ph
+
+land.lhs.true.lr.ph:                              ; preds = %entry
+  %0 = load %struct.varray_head_tag** @reg_n_info, align 8, !tbaa !4
+  %data = getelementptr inbounds %struct.varray_head_tag* %0, i64 0, i32 4
+  %reg4 = bitcast %union.varray_data_tag* %data to [1 x %struct.reg_info_def*]*
+  br label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %land.lhs.true.lr.ph, %for.inc
+  %n.017 = phi %struct.rtx_def* [ %insn, %land.lhs.true.lr.ph ], [ %6, %for.inc ]
+  %1 = bitcast %struct.rtx_def* %n.017 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  switch i32 %bf.clear, label %for.body [
+    i32 36, label %return
+    i32 33, label %return
+  ]
+
+for.body:                                         ; preds = %land.lhs.true
+  %2 = load i32* %rtuint, align 4, !tbaa !3
+  %idxprom = zext i32 %2 to i64
+  %arrayidx5 = getelementptr inbounds [1 x %struct.reg_info_def*]* %reg4, i64 0, i64 %idxprom
+  %3 = load %struct.reg_info_def** %arrayidx5, align 8, !tbaa !4
+  %last_uid = getelementptr inbounds %struct.reg_info_def* %3, i64 0, i32 1
+  %4 = load i32* %last_uid, align 4, !tbaa !3
+  %fld6 = getelementptr inbounds %struct.rtx_def* %n.017, i64 0, i32 1
+  %rtint = bitcast [1 x %union.rtunion_def]* %fld6 to i32*
+  %5 = load i32* %rtint, align 4, !tbaa !3
+  %cmp8 = icmp eq i32 %4, %5
+  br i1 %cmp8, label %return, label %for.inc
+
+for.inc:                                          ; preds = %for.body
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %n.017, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**
+  %6 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  %tobool = icmp eq %struct.rtx_def* %6, null
+  br i1 %tobool, label %return, label %land.lhs.true
+
+return:                                           ; preds = %for.inc, %land.lhs.true, %land.lhs.true, %for.body, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 0, %land.lhs.true ], [ 0, %land.lhs.true ], [ 1, %for.body ], [ 0, %for.inc ]
+  ret i32 %retval.0
+}

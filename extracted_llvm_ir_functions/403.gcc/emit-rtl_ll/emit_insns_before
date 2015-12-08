@@ -1,0 +1,18 @@
+define %struct.rtx_def* @emit_insns_before(%struct.rtx_def* %insn, %struct.rtx_def* %before) #0 {
+entry:
+  %tobool4 = icmp eq %struct.rtx_def* %insn, null
+  br i1 %tobool4, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  %insn.addr.05 = phi %struct.rtx_def* [ %0, %while.body ], [ %insn, %entry ]
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.addr.05, i64 0, i32 1, i64 2
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
+  tail call void @add_insn_before(%struct.rtx_def* %insn.addr.05, %struct.rtx_def* %before) #9
+  %tobool = icmp eq %struct.rtx_def* %0, null
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  %last.0.lcssa = phi %struct.rtx_def* [ null, %entry ], [ %insn.addr.05, %while.body ]
+  ret %struct.rtx_def* %last.0.lcssa
+}

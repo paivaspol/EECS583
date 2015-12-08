@@ -1,0 +1,25 @@
+define void @output_add_newline(%struct.output_buffer* %buffer) #2 {
+entry:
+  %next_free = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 2, i32 3
+  %0 = load i8** %next_free, align 8, !tbaa !3
+  %add.ptr = getelementptr inbounds i8* %0, i64 1
+  %chunk_limit = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 2, i32 4
+  %1 = load i8** %chunk_limit, align 8, !tbaa !3
+  %cmp = icmp ugt i8* %add.ptr, %1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %obstack = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 2
+  tail call void @_obstack_newchunk(%struct.obstack* %obstack, i32 1) #10
+  %.pre = load i8** %next_free, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i8* [ %.pre, %if.then ], [ %0, %entry ]
+  %incdec.ptr = getelementptr inbounds i8* %2, i64 1
+  store i8* %incdec.ptr, i8** %next_free, align 8, !tbaa !3
+  store i8 10, i8* %2, align 1, !tbaa !1
+  %line_length = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 3
+  store i32 0, i32* %line_length, align 4, !tbaa !0
+  ret void
+}

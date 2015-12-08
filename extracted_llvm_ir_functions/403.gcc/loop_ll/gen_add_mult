@@ -1,0 +1,20 @@
+define internal fastcc %struct.rtx_def* @gen_add_mult(%struct.rtx_def* %b, %struct.rtx_def* %m, %struct.rtx_def* %a, %struct.rtx_def* %reg) #0 {
+entry:
+  tail call void @start_sequence() #8
+  %0 = bitcast %struct.rtx_def* %reg to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %call = tail call %struct.rtx_def* @expand_mult_add(%struct.rtx_def* %b, %struct.rtx_def* %reg, %struct.rtx_def* %m, %struct.rtx_def* %a, i32 %bf.clear, i32 1) #8
+  %cmp = icmp eq %struct.rtx_def* %call, %reg
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %reg, %struct.rtx_def* %call) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %call2 = tail call %struct.rtx_def* @gen_sequence() #8
+  tail call void @end_sequence() #8
+  ret %struct.rtx_def* %call2
+}

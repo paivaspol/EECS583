@@ -1,0 +1,55 @@
+define %struct.rtx_def* @gen_add2_insn(%struct.rtx_def* %x, %struct.rtx_def* %y) #0 {
+entry:
+  %0 = bitcast %struct.rtx_def* %x to i32*
+  %bf.load = load i32* %0, align 8
+  %bf.lshr = lshr i32 %bf.load, 16
+  %bf.clear = and i32 %bf.lshr, 255
+  %idxprom52 = zext i32 %bf.clear to i64
+  %1 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 0), align 16, !tbaa !0
+  %insn_code = getelementptr inbounds %struct.optab* %1, i64 0, i32 1, i64 %idxprom52, i32 0
+  %2 = load i32* %insn_code, align 4, !tbaa !6
+  %idxprom1 = sext i32 %2 to i64
+  %operand = getelementptr inbounds [0 x %struct.insn_data]* @insn_data, i64 0, i64 %idxprom1, i32 3
+  %3 = load %struct.insn_operand_data** %operand, align 8, !tbaa !0
+  %predicate = getelementptr inbounds %struct.insn_operand_data* %3, i64 0, i32 0
+  %4 = load i32 (%struct.rtx_def*, i32)** %predicate, align 8, !tbaa !0
+  %mode = getelementptr inbounds %struct.insn_operand_data* %3, i64 0, i32 2
+  %5 = bitcast [2 x i8]* %mode to i16*
+  %bf.load8 = load i16* %5, align 8
+  %bf.cast = zext i16 %bf.load8 to i32
+  %call = tail call i32 %4(%struct.rtx_def* %x, i32 %bf.cast) #8
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %predicate13 = getelementptr inbounds %struct.insn_operand_data* %3, i64 1, i32 0
+  %6 = load i32 (%struct.rtx_def*, i32)** %predicate13, align 8, !tbaa !0
+  %mode18 = getelementptr inbounds %struct.insn_operand_data* %3, i64 1, i32 2
+  %7 = bitcast [2 x i8]* %mode18 to i16*
+  %bf.load19 = load i16* %7, align 8
+  %bf.cast20 = zext i16 %bf.load19 to i32
+  %call21 = tail call i32 %6(%struct.rtx_def* %x, i32 %bf.cast20) #8
+  %tobool22 = icmp eq i32 %call21, 0
+  br i1 %tobool22, label %if.then, label %lor.lhs.false23
+
+lor.lhs.false23:                                  ; preds = %lor.lhs.false
+  %predicate28 = getelementptr inbounds %struct.insn_operand_data* %3, i64 2, i32 0
+  %8 = load i32 (%struct.rtx_def*, i32)** %predicate28, align 8, !tbaa !0
+  %mode33 = getelementptr inbounds %struct.insn_operand_data* %3, i64 2, i32 2
+  %9 = bitcast [2 x i8]* %mode33 to i16*
+  %bf.load34 = load i16* %9, align 8
+  %bf.cast35 = zext i16 %bf.load34 to i32
+  %call36 = tail call i32 %8(%struct.rtx_def* %y, i32 %bf.cast35) #8
+  %tobool37 = icmp eq i32 %call36, 0
+  br i1 %tobool37, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false23, %lor.lhs.false, %entry
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 3823, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.gen_add2_insn, i64 0, i64 0)) #6
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false23
+  %genfun = getelementptr inbounds [0 x %struct.insn_data]* @insn_data, i64 0, i64 %idxprom1, i32 2
+  %10 = load %struct.rtx_def* (%struct.rtx_def*, ...)** %genfun, align 8, !tbaa !0
+  %call40 = tail call %struct.rtx_def* (%struct.rtx_def*, ...)* %10(%struct.rtx_def* %x, %struct.rtx_def* %x, %struct.rtx_def* %y) #8
+  ret %struct.rtx_def* %call40
+}

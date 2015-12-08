@@ -1,0 +1,26 @@
+define internal fastcc void @output_gcov_string(i8* nocapture %string, i64 %delimiter) #0 {
+entry:
+  %c = alloca i32, align 4
+  %0 = load %struct._IO_FILE** @bb_file, align 8, !tbaa !3
+  call fastcc void @__write_long(i64 %delimiter, %struct._IO_FILE* %0) #6
+  %call1 = call i64 @strlen(i8* %string) #9
+  %add = add i64 %call1, 1
+  %1 = load %struct._IO_FILE** @bb_file, align 8, !tbaa !3
+  %call2 = call i64 @fwrite(i8* %string, i64 %add, i64 1, %struct._IO_FILE* %1) #7
+  %and = and i64 %add, 3
+  %tobool = icmp eq i64 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %arrayidx5 = bitcast i32* %c to i8*
+  %sub = sub nsw i64 4, %and
+  store i32 0, i32* %c, align 4
+  %2 = load %struct._IO_FILE** @bb_file, align 8, !tbaa !3
+  %call6 = call i64 @fwrite(i8* %arrayidx5, i64 1, i64 %sub, %struct._IO_FILE* %2) #7
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %3 = load %struct._IO_FILE** @bb_file, align 8, !tbaa !3
+  call fastcc void @__write_long(i64 %delimiter, %struct._IO_FILE* %3) #6
+  ret void
+}

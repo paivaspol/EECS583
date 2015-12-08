@@ -1,0 +1,266 @@
+define void @do_hit(i32 %gauge_dir, i32 %parity, i32 %p, i32 %q, double %relax_boost, i32 %nvector, i32* nocapture %vector_offset, i32* nocapture %vector_parity, i32 %nantiherm, i32* nocapture %antiherm_offset, i32* nocapture %antiherm_parity) #0 {
+entry:
+  %u = alloca %struct.su2_matrix, align 8
+  %htemp = alloca %struct.su3_matrix, align 8
+  %0 = bitcast %struct.su2_matrix* %u to i8*
+  call void @llvm.lifetime.start(i64 64, i8* %0) #2
+  %1 = bitcast %struct.su3_matrix* %htemp to i8*
+  call void @llvm.lifetime.start(i64 144, i8* %1) #2
+  call void @accum_gauge_hit(i32 %gauge_dir, i32 %parity) #6
+  %cmp = icmp eq i32 %parity, 1
+  %2 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %cond = select i1 %cmp, i32 %2, i32 0
+  %cmp1 = icmp eq i32 %parity, 2
+  %3 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cond5357 = select i1 %cmp1, i32 %2, i32 %3
+  %cmp6358 = icmp slt i32 %cond, %cond5357
+  br i1 %cmp6358, label %for.body.lr.ph, label %for.end239
+
+for.body.lr.ph:                                   ; preds = %entry
+  %4 = load %struct.site** @lattice, align 8, !tbaa !3
+  %idxprom = sext i32 %cond to i64
+  %arrayidx = getelementptr inbounds %struct.site* %4, i64 %idxprom
+  %idxprom8 = sext i32 %p to i64
+  %idxprom10 = sext i32 %q to i64
+  %coerce.sroa.0.0.idx = getelementptr inbounds %struct.su2_matrix* %u, i64 0, i32 0, i64 0, i64 0, i32 0
+  %coerce.sroa.1.8.idx243 = getelementptr inbounds %struct.su2_matrix* %u, i64 0, i32 0, i64 0, i64 0, i32 1
+  %coerce158.sroa.0.0.idx = getelementptr inbounds %struct.su2_matrix* %u, i64 0, i32 0, i64 0, i64 1, i32 0
+  %coerce158.sroa.1.8.idx242 = getelementptr inbounds %struct.su2_matrix* %u, i64 0, i32 0, i64 0, i64 1, i32 1
+  %coerce164.sroa.0.0.idx = getelementptr inbounds %struct.su2_matrix* %u, i64 0, i32 0, i64 1, i64 0, i32 0
+  %coerce164.sroa.1.8.idx241 = getelementptr inbounds %struct.su2_matrix* %u, i64 0, i32 0, i64 1, i64 0, i32 1
+  %coerce170.sroa.0.0.idx = getelementptr inbounds %struct.su2_matrix* %u, i64 0, i32 0, i64 1, i64 1, i32 0
+  %coerce170.sroa.1.8.idx240 = getelementptr inbounds %struct.su2_matrix* %u, i64 0, i32 0, i64 1, i64 1, i32 1
+  %cmp187353 = icmp sgt i32 %nvector, 0
+  %cmp215355 = icmp sgt i32 %nantiherm, 0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc237
+  %indvars.iv373 = phi i64 [ %idxprom, %for.body.lr.ph ], [ %indvars.iv.next374, %for.inc237 ]
+  %s.0359 = phi %struct.site* [ %arrayidx, %for.body.lr.ph ], [ %incdec.ptr, %for.inc237 ]
+  %5 = load i32* @sumvec_offset, align 4, !tbaa !0
+  %cmp7 = icmp sgt i32 %5, -1
+  br i1 %cmp7, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.body
+  %6 = bitcast %struct.site* %s.0359 to i8*
+  %idx.ext = sext i32 %5 to i64
+  %add.ptr = getelementptr inbounds i8* %6, i64 %idx.ext
+  %c = bitcast i8* %add.ptr to [3 x %struct.complex]*
+  %real = getelementptr inbounds [3 x %struct.complex]* %c, i64 0, i64 %idxprom8, i32 0
+  %7 = load double* %real, align 8, !tbaa !4
+  %real15 = getelementptr inbounds [3 x %struct.complex]* %c, i64 0, i64 %idxprom10, i32 0
+  %8 = load double* %real15, align 8, !tbaa !4
+  %add = fadd double %7, %8
+  br label %if.end
+
+if.else:                                          ; preds = %for.body
+  %9 = load %struct.su3_vector** @sumvecp, align 8, !tbaa !3
+  %real21 = getelementptr inbounds %struct.su3_vector* %9, i64 %indvars.iv373, i32 0, i64 %idxprom8, i32 0
+  %10 = load double* %real21, align 8, !tbaa !4
+  %real27 = getelementptr inbounds %struct.su3_vector* %9, i64 %indvars.iv373, i32 0, i64 %idxprom10, i32 0
+  %11 = load double* %real27, align 8, !tbaa !4
+  %add28 = fadd double %10, %11
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %a0.0 = phi double [ %add, %if.then ], [ %add28, %if.else ]
+  %12 = load i32* @diffmat_offset, align 4, !tbaa !0
+  %cmp29 = icmp sgt i32 %12, -1
+  br i1 %cmp29, label %if.then30, label %if.else80
+
+if.then30:                                        ; preds = %if.end
+  %13 = bitcast %struct.site* %s.0359 to i8*
+  %idx.ext33 = sext i32 %12 to i64
+  %add.ptr34 = getelementptr inbounds i8* %13, i64 %idx.ext33
+  %e = bitcast i8* %add.ptr34 to [3 x [3 x %struct.complex]]*
+  %imag = getelementptr inbounds [3 x [3 x %struct.complex]]* %e, i64 0, i64 %idxprom10, i64 %idxprom8, i32 1
+  %14 = load double* %imag, align 8, !tbaa !4
+  %imag44 = getelementptr inbounds [3 x [3 x %struct.complex]]* %e, i64 0, i64 %idxprom8, i64 %idxprom10, i32 1
+  %15 = load double* %imag44, align 8, !tbaa !4
+  %add45 = fadd double %14, %15
+  %real53 = getelementptr inbounds [3 x [3 x %struct.complex]]* %e, i64 0, i64 %idxprom10, i64 %idxprom8, i32 0
+  %16 = load double* %real53, align 8, !tbaa !4
+  %real61 = getelementptr inbounds [3 x [3 x %struct.complex]]* %e, i64 0, i64 %idxprom8, i64 %idxprom10, i32 0
+  %17 = load double* %real61, align 8, !tbaa !4
+  %add62 = fsub double %17, %16
+  %imag70 = getelementptr inbounds [3 x [3 x %struct.complex]]* %e, i64 0, i64 %idxprom8, i64 %idxprom8, i32 1
+  %18 = load double* %imag70, align 8, !tbaa !4
+  %imag78 = getelementptr inbounds [3 x [3 x %struct.complex]]* %e, i64 0, i64 %idxprom10, i64 %idxprom10, i32 1
+  %19 = load double* %imag78, align 8, !tbaa !4
+  %sub79 = fsub double %18, %19
+  br label %if.end133
+
+if.else80:                                        ; preds = %if.end
+  %20 = load %struct.su3_matrix** @diffmatp, align 8, !tbaa !3
+  %imag88 = getelementptr inbounds %struct.su3_matrix* %20, i64 %indvars.iv373, i32 0, i64 %idxprom10, i64 %idxprom8, i32 1
+  %21 = load double* %imag88, align 8, !tbaa !4
+  %imag96 = getelementptr inbounds %struct.su3_matrix* %20, i64 %indvars.iv373, i32 0, i64 %idxprom8, i64 %idxprom10, i32 1
+  %22 = load double* %imag96, align 8, !tbaa !4
+  %add97 = fadd double %21, %22
+  %real105 = getelementptr inbounds %struct.su3_matrix* %20, i64 %indvars.iv373, i32 0, i64 %idxprom10, i64 %idxprom8, i32 0
+  %23 = load double* %real105, align 8, !tbaa !4
+  %real114 = getelementptr inbounds %struct.su3_matrix* %20, i64 %indvars.iv373, i32 0, i64 %idxprom8, i64 %idxprom10, i32 0
+  %24 = load double* %real114, align 8, !tbaa !4
+  %add115 = fsub double %24, %23
+  %imag123 = getelementptr inbounds %struct.su3_matrix* %20, i64 %indvars.iv373, i32 0, i64 %idxprom8, i64 %idxprom8, i32 1
+  %25 = load double* %imag123, align 8, !tbaa !4
+  %imag131 = getelementptr inbounds %struct.su3_matrix* %20, i64 %indvars.iv373, i32 0, i64 %idxprom10, i64 %idxprom10, i32 1
+  %26 = load double* %imag131, align 8, !tbaa !4
+  %sub132 = fsub double %25, %26
+  br label %if.end133
+
+if.end133:                                        ; preds = %if.else80, %if.then30
+  %a3.0 = phi double [ %sub79, %if.then30 ], [ %sub132, %if.else80 ]
+  %a2.0 = phi double [ %add62, %if.then30 ], [ %add115, %if.else80 ]
+  %a1.0 = phi double [ %add45, %if.then30 ], [ %add97, %if.else80 ]
+  %mul = fmul double %a1.0, %a1.0
+  %mul134 = fmul double %a2.0, %a2.0
+  %add135 = fadd double %mul134, %mul
+  %mul136 = fmul double %a3.0, %a3.0
+  %add137 = fadd double %mul136, %add135
+  %mul138 = fmul double %a0.0, %a0.0
+  %mul139 = fmul double %mul138, %relax_boost
+  %add140 = fadd double %mul139, %add137
+  %add141 = fadd double %mul138, %add137
+  %div = fdiv double %add140, %add141
+  %mul142 = fmul double %div, %div
+  %mul143 = fmul double %mul142, %add137
+  %add144 = fadd double %mul138, %mul143
+  %call = call double @sqrt(double %add144) #5
+  %div145 = fdiv double %div, %call
+  %div146 = fdiv double %a0.0, %call
+  %mul147 = fmul double %a1.0, %div145
+  %mul148 = fmul double %a2.0, %div145
+  %mul149 = fmul double %a3.0, %div145
+  %call153 = call { double, double } @cmplx(double %div146, double %mul149) #5
+  %27 = extractvalue { double, double } %call153, 0
+  %28 = extractvalue { double, double } %call153, 1
+  store double %27, double* %coerce.sroa.0.0.idx, align 8
+  store double %28, double* %coerce.sroa.1.8.idx243, align 8
+  %call157 = call { double, double } @cmplx(double %mul148, double %mul147) #5
+  %29 = extractvalue { double, double } %call157, 0
+  %30 = extractvalue { double, double } %call157, 1
+  store double %29, double* %coerce158.sroa.0.0.idx, align 8
+  store double %30, double* %coerce158.sroa.1.8.idx242, align 8
+  %sub162 = fsub double -0.000000e+00, %mul148
+  %call163 = call { double, double } @cmplx(double %sub162, double %mul147) #5
+  %31 = extractvalue { double, double } %call163, 0
+  %32 = extractvalue { double, double } %call163, 1
+  store double %31, double* %coerce164.sroa.0.0.idx, align 8
+  store double %32, double* %coerce164.sroa.1.8.idx241, align 8
+  %sub168 = fsub double -0.000000e+00, %mul149
+  %call169 = call { double, double } @cmplx(double %div146, double %sub168) #5
+  %33 = extractvalue { double, double } %call169, 0
+  %34 = extractvalue { double, double } %call169, 1
+  store double %33, double* %coerce170.sroa.0.0.idx, align 8
+  store double %34, double* %coerce170.sroa.1.8.idx240, align 8
+  br label %for.body173
+
+for.body173:                                      ; preds = %for.body173, %if.end133
+  %indvars.iv = phi i64 [ 0, %if.end133 ], [ %indvars.iv.next, %for.body173 ]
+  %arrayidx175 = getelementptr inbounds %struct.site* %s.0359, i64 0, i32 8, i64 %indvars.iv
+  call void @left_su2_hit_n(%struct.su2_matrix* %u, i32 %p, i32 %q, %struct.su3_matrix* %arrayidx175) #5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.body178, label %for.body173
+
+for.body178:                                      ; preds = %for.body173, %for.body178
+  %indvars.iv361 = phi i64 [ %indvars.iv.next362, %for.body178 ], [ 0, %for.body173 ]
+  %arrayidx181 = getelementptr inbounds [16 x i8**]* @gen_pt, i64 0, i64 %indvars.iv361
+  %35 = load i8*** %arrayidx181, align 8, !tbaa !3
+  %arrayidx182 = getelementptr inbounds i8** %35, i64 %indvars.iv373
+  %36 = load i8** %arrayidx182, align 8, !tbaa !3
+  %37 = bitcast i8* %36 to %struct.su3_matrix*
+  call void @right_su2_hit_a(%struct.su2_matrix* %u, i32 %p, i32 %q, %struct.su3_matrix* %37) #5
+  %indvars.iv.next362 = add i64 %indvars.iv361, 1
+  %lftr.wideiv363 = trunc i64 %indvars.iv.next362 to i32
+  %exitcond364 = icmp eq i32 %lftr.wideiv363, 4
+  br i1 %exitcond364, label %for.cond186.loopexit, label %for.body178
+
+for.cond186.loopexit:                             ; preds = %for.body178
+  br i1 %cmp187353, label %for.body188.lr.ph, label %for.cond214.loopexit
+
+for.body188.lr.ph:                                ; preds = %for.cond186.loopexit
+  %38 = bitcast %struct.site* %s.0359 to i8*
+  br label %for.body188
+
+for.body188:                                      ; preds = %for.inc211, %for.body188.lr.ph
+  %indvars.iv365 = phi i64 [ 0, %for.body188.lr.ph ], [ %indvars.iv.next366, %for.inc211 ]
+  %arrayidx190 = getelementptr inbounds i32* %vector_parity, i64 %indvars.iv365
+  %39 = load i32* %arrayidx190, align 4, !tbaa !0
+  %cmp191 = icmp eq i32 %39, 3
+  %cmp194 = icmp eq i32 %39, %parity
+  %or.cond = or i1 %cmp191, %cmp194
+  br i1 %or.cond, label %if.then195, label %for.inc211
+
+if.then195:                                       ; preds = %for.body188
+  %arrayidx198 = getelementptr inbounds i32* %vector_offset, i64 %indvars.iv365
+  %40 = load i32* %arrayidx198, align 4, !tbaa !0
+  %idx.ext199 = sext i32 %40 to i64
+  %add.ptr200 = getelementptr inbounds i8* %38, i64 %idx.ext199
+  %c201 = bitcast i8* %add.ptr200 to [3 x %struct.complex]*
+  %arrayidx202 = getelementptr inbounds [3 x %struct.complex]* %c201, i64 0, i64 %idxprom8
+  %arrayidx209 = getelementptr inbounds [3 x %struct.complex]* %c201, i64 0, i64 %idxprom10
+  call void @mult_su2_mat_vec_elem_n(%struct.su2_matrix* %u, %struct.complex* %arrayidx202, %struct.complex* %arrayidx209) #5
+  br label %for.inc211
+
+for.inc211:                                       ; preds = %for.body188, %if.then195
+  %indvars.iv.next366 = add i64 %indvars.iv365, 1
+  %lftr.wideiv367 = trunc i64 %indvars.iv.next366 to i32
+  %exitcond368 = icmp eq i32 %lftr.wideiv367, %nvector
+  br i1 %exitcond368, label %for.cond214.loopexit, label %for.body188
+
+for.cond214.loopexit:                             ; preds = %for.inc211, %for.cond186.loopexit
+  br i1 %cmp215355, label %for.body216.lr.ph, label %for.inc237
+
+for.body216.lr.ph:                                ; preds = %for.cond214.loopexit
+  %41 = bitcast %struct.site* %s.0359 to i8*
+  br label %for.body216
+
+for.body216:                                      ; preds = %for.inc234, %for.body216.lr.ph
+  %indvars.iv369 = phi i64 [ 0, %for.body216.lr.ph ], [ %indvars.iv.next370, %for.inc234 ]
+  %arrayidx218 = getelementptr inbounds i32* %antiherm_parity, i64 %indvars.iv369
+  %42 = load i32* %arrayidx218, align 4, !tbaa !0
+  %cmp219 = icmp eq i32 %42, 3
+  %cmp223 = icmp eq i32 %42, %parity
+  %or.cond350 = or i1 %cmp219, %cmp223
+  br i1 %or.cond350, label %if.then224, label %for.inc234
+
+if.then224:                                       ; preds = %for.body216
+  %arrayidx226 = getelementptr inbounds i32* %antiherm_offset, i64 %indvars.iv369
+  %43 = load i32* %arrayidx226, align 4, !tbaa !0
+  %idx.ext227 = sext i32 %43 to i64
+  %add.ptr228 = getelementptr inbounds i8* %41, i64 %idx.ext227
+  %44 = bitcast i8* %add.ptr228 to %struct.anti_hermitmat*
+  call void @uncompress_anti_hermitian(%struct.anti_hermitmat* %44, %struct.su3_matrix* %htemp) #5
+  call void @left_su2_hit_n(%struct.su2_matrix* %u, i32 %p, i32 %q, %struct.su3_matrix* %htemp) #5
+  call void @right_su2_hit_a(%struct.su2_matrix* %u, i32 %p, i32 %q, %struct.su3_matrix* %htemp) #5
+  %45 = load i32* %arrayidx226, align 4, !tbaa !0
+  %idx.ext231 = sext i32 %45 to i64
+  %add.ptr232 = getelementptr inbounds i8* %41, i64 %idx.ext231
+  %46 = bitcast i8* %add.ptr232 to %struct.anti_hermitmat*
+  call void @make_anti_hermitian(%struct.su3_matrix* %htemp, %struct.anti_hermitmat* %46) #5
+  br label %for.inc234
+
+for.inc234:                                       ; preds = %for.body216, %if.then224
+  %indvars.iv.next370 = add i64 %indvars.iv369, 1
+  %lftr.wideiv371 = trunc i64 %indvars.iv.next370 to i32
+  %exitcond372 = icmp eq i32 %lftr.wideiv371, %nantiherm
+  br i1 %exitcond372, label %for.inc237, label %for.body216
+
+for.inc237:                                       ; preds = %for.inc234, %for.cond214.loopexit
+  %indvars.iv.next374 = add i64 %indvars.iv373, 1
+  %incdec.ptr = getelementptr inbounds %struct.site* %s.0359, i64 1
+  %47 = load i32* @even_sites_on_node, align 4, !tbaa !0
+  %48 = load i32* @sites_on_node, align 4, !tbaa !0
+  %cond5 = select i1 %cmp1, i32 %47, i32 %48
+  %49 = trunc i64 %indvars.iv.next374 to i32
+  %cmp6 = icmp slt i32 %49, %cond5
+  br i1 %cmp6, label %for.body, label %for.end239
+
+for.end239:                                       ; preds = %for.inc237, %entry
+  call void @llvm.lifetime.end(i64 144, i8* %1) #2
+  call void @llvm.lifetime.end(i64 64, i8* %0) #2
+  ret void
+}

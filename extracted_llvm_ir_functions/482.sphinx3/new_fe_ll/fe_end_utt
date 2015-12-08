@@ -1,0 +1,101 @@
+define i32 @fe_end_utt(%struct.fe_t* %FE, float* nocapture %cepvector) #0 {
+entry:
+  %NUM_OVERFLOW_SAMPS = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 10
+  %0 = load i32* %NUM_OVERFLOW_SAMPS, align 4, !tbaa !4
+  %cmp = icmp sgt i32 %0, 0
+  br i1 %cmp, label %if.then, label %if.end35
+
+if.then:                                          ; preds = %entry
+  %FRAME_SIZE = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 4
+  %1 = load i32* %FRAME_SIZE, align 4, !tbaa !4
+  %sub = sub nsw i32 %1, %0
+  %OVERFLOW_SAMPS = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 9
+  %2 = load i16** %OVERFLOW_SAMPS, align 8, !tbaa !0
+  %idx.ext = sext i32 %0 to i64
+  %add.ptr = getelementptr inbounds i16* %2, i64 %idx.ext
+  %3 = bitcast i16* %add.ptr to i8*
+  %conv = sext i32 %sub to i64
+  %mul = shl nsw i64 %conv, 1
+  tail call void @llvm.memset.p0i8.i64(i8* %3, i8 0, i64 %mul, i32 2, i1 false)
+  %4 = load i32* %NUM_OVERFLOW_SAMPS, align 4, !tbaa !4
+  %add = add nsw i32 %4, %sub
+  store i32 %add, i32* %NUM_OVERFLOW_SAMPS, align 4, !tbaa !4
+  %5 = load i32* %FRAME_SIZE, align 4, !tbaa !4
+  %conv5 = sext i32 %5 to i64
+  %call = tail call noalias i8* @calloc(i64 %conv5, i64 8) #5
+  %6 = bitcast i8* %call to double*
+  %cmp6 = icmp eq i8* %call, null
+  br i1 %cmp6, label %if.then8, label %if.end
+
+if.then8:                                         ; preds = %if.then
+  %7 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %8 = tail call i64 @fwrite(i8* getelementptr inbounds ([48 x i8]* @.str4, i64 0, i64 0), i64 47, i64 1, %struct._IO_FILE* %7)
+  tail call void @exit(i32 0) #6
+  unreachable
+
+if.end:                                           ; preds = %if.then
+  %PRE_EMPHASIS_ALPHA = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 8
+  %9 = load float* %PRE_EMPHASIS_ALPHA, align 4, !tbaa !3
+  %cmp11 = fcmp une float %9, 0.000000e+00
+  %10 = load i16** %OVERFLOW_SAMPS, align 8, !tbaa !0
+  br i1 %cmp11, label %if.then13, label %if.else
+
+if.then13:                                        ; preds = %if.end
+  %PRIOR = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 13
+  %11 = load i16* %PRIOR, align 2, !tbaa !5
+  tail call void @fe_pre_emphasis(i16* %10, double* %6, i32 %5, float %9, i16 signext %11) #5
+  br label %if.end19
+
+if.else:                                          ; preds = %if.end
+  tail call void @fe_short_to_double(i16* %10, double* %6, i32 %5) #5
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.else, %if.then13
+  %NUM_CEPSTRA = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 7
+  %12 = load i32* %NUM_CEPSTRA, align 4, !tbaa !4
+  %conv20 = sext i32 %12 to i64
+  %call21 = tail call noalias i8* @calloc(i64 %conv20, i64 8) #5
+  %13 = bitcast i8* %call21 to double*
+  %cmp22 = icmp eq i8* %call21, null
+  br i1 %cmp22, label %if.then24, label %if.end26
+
+if.then24:                                        ; preds = %if.end19
+  %14 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %15 = tail call i64 @fwrite(i8* getelementptr inbounds ([48 x i8]* @.str4, i64 0, i64 0), i64 47, i64 1, %struct._IO_FILE* %14)
+  tail call void @exit(i32 0) #6
+  unreachable
+
+if.end26:                                         ; preds = %if.end19
+  %HAMMING_WINDOW = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 14
+  %16 = load double** %HAMMING_WINDOW, align 8, !tbaa !0
+  %17 = load i32* %FRAME_SIZE, align 4, !tbaa !4
+  tail call void @fe_hamming_window(double* %6, double* %16, i32 %17) #5
+  tail call void @fe_frame_to_fea(%struct.fe_t* %FE, double* %6, double* %13) #5
+  %18 = load i32* %NUM_CEPSTRA, align 4, !tbaa !4
+  %cmp2964 = icmp sgt i32 %18, 0
+  br i1 %cmp2964, label %for.body, label %for.end
+
+for.body:                                         ; preds = %if.end26, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.end26 ]
+  %arrayidx = getelementptr inbounds double* %13, i64 %indvars.iv
+  %19 = load double* %arrayidx, align 8, !tbaa !6
+  %conv31 = fptrunc double %19 to float
+  %arrayidx33 = getelementptr inbounds float* %cepvector, i64 %indvars.iv
+  store float %conv31, float* %arrayidx33, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %20 = trunc i64 %indvars.iv.next to i32
+  %cmp29 = icmp slt i32 %20, %18
+  br i1 %cmp29, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %if.end26
+  tail call void @free(i8* %call21) #5
+  tail call void @free(i8* %call) #5
+  br label %if.end35
+
+if.end35:                                         ; preds = %entry, %for.end
+  %frame_count.0 = phi i32 [ 1, %for.end ], [ 0, %entry ]
+  store i32 0, i32* %NUM_OVERFLOW_SAMPS, align 4, !tbaa !4
+  %START_FLAG = getelementptr inbounds %struct.fe_t* %FE, i64 0, i32 12
+  store i32 0, i32* %START_FLAG, align 4, !tbaa !4
+  ret i32 %frame_count.0
+}

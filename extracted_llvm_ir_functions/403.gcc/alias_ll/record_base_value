@@ -1,0 +1,54 @@
+define void @record_base_value(i32 %regno, %struct.rtx_def* %val, i32 %invariant) #0 {
+entry:
+  %0 = load i32* @reg_base_value_size, align 4, !tbaa !4
+  %cmp = icmp ugt i32 %0, %regno
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %tobool = icmp ne i32 %invariant, 0
+  %1 = load %struct.rtx_def*** @alias_invariant, align 8, !tbaa !0
+  %tobool1 = icmp ne %struct.rtx_def** %1, null
+  %or.cond = and i1 %tobool, %tobool1
+  br i1 %or.cond, label %if.then2, label %if.end3
+
+if.then2:                                         ; preds = %if.end
+  %idxprom = zext i32 %regno to i64
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %1, i64 %idxprom
+  store %struct.rtx_def* %val, %struct.rtx_def** %arrayidx, align 8, !tbaa !0
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.then2, %if.end
+  %2 = bitcast %struct.rtx_def* %val to i32*
+  %bf.load = load i32* %2, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp4 = icmp eq i32 %bf.clear, 61
+  br i1 %cmp4, label %if.then5, label %if.end17
+
+if.then5:                                         ; preds = %if.end3
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %val, i64 0, i32 1, i64 0
+  %rtuint = bitcast %union.rtunion_def* %arrayidx6 to i32*
+  %3 = load i32* %rtuint, align 4, !tbaa !4
+  %cmp7 = icmp ult i32 %3, %0
+  br i1 %cmp7, label %if.then8, label %return
+
+if.then8:                                         ; preds = %if.then5
+  %idxprom12 = zext i32 %3 to i64
+  %4 = load %struct.rtx_def*** @reg_base_value, align 8, !tbaa !0
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def** %4, i64 %idxprom12
+  %5 = load %struct.rtx_def** %arrayidx13, align 8, !tbaa !0
+  %idxprom14 = zext i32 %regno to i64
+  %arrayidx15 = getelementptr inbounds %struct.rtx_def** %4, i64 %idxprom14
+  store %struct.rtx_def* %5, %struct.rtx_def** %arrayidx15, align 8, !tbaa !0
+  br label %return
+
+if.end17:                                         ; preds = %if.end3
+  %call = tail call fastcc %struct.rtx_def* @find_base_value(%struct.rtx_def* %val) #8
+  %idxprom18 = zext i32 %regno to i64
+  %6 = load %struct.rtx_def*** @reg_base_value, align 8, !tbaa !0
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def** %6, i64 %idxprom18
+  store %struct.rtx_def* %call, %struct.rtx_def** %arrayidx19, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %if.then5, %if.then8, %if.end17
+  ret void
+}

@@ -1,0 +1,21 @@
+define i32 @any_uncondjump_p(%struct.rtx_def* nocapture %insn) #2 {
+entry:
+  %call = tail call %struct.rtx_def* @pc_set(%struct.rtx_def* %insn) #8
+  %tobool = icmp eq %struct.rtx_def* %call, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 1
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
+  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %1 = bitcast %struct.rtx_def* %0 to i32*
+  %bf.load = load i32* %1, align 8
+  %bf.clear = and i32 %bf.load, 65535
+  %cmp = icmp eq i32 %bf.clear, 67
+  %. = zext i1 %cmp to i32
+  br label %return
+
+return:                                           ; preds = %if.end, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ %., %if.end ]
+  ret i32 %retval.0
+}

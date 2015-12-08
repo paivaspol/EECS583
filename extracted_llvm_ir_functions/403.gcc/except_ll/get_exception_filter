@@ -1,0 +1,24 @@
+define internal fastcc %struct.rtx_def* @get_exception_filter(%struct.function* %fun) #0 {
+entry:
+  %eh = getelementptr inbounds %struct.function* %fun, i64 0, i32 0
+  %0 = load %struct.eh_status** %eh, align 8, !tbaa !3
+  %filter1 = getelementptr inbounds %struct.eh_status* %0, i64 0, i32 5
+  %1 = load %struct.rtx_def** %filter1, align 8, !tbaa !3
+  %2 = load %struct.function** @cfun, align 8, !tbaa !3
+  %cmp = icmp eq %struct.function* %2, %fun
+  %tobool = icmp eq %struct.rtx_def* %1, null
+  %or.cond = and i1 %cmp, %tobool
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %3 = load i32* @word_mode, align 4, !tbaa !6
+  %call = tail call %struct.rtx_def* @gen_reg_rtx(i32 %3) #6
+  %4 = load %struct.eh_status** %eh, align 8, !tbaa !3
+  %filter3 = getelementptr inbounds %struct.eh_status* %4, i64 0, i32 5
+  store %struct.rtx_def* %call, %struct.rtx_def** %filter3, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %filter.0 = phi %struct.rtx_def* [ %call, %if.then ], [ %1, %entry ]
+  ret %struct.rtx_def* %filter.0
+}

@@ -1,0 +1,47 @@
+define void @read_edx(%struct._IO_FILE* %file, i32 %number, i32* %anrs, [3 x float]* nocapture %x) #0 {
+entry:
+  %line = alloca [4097 x i8], align 16
+  %d = alloca [3 x double], align 16
+  %0 = getelementptr inbounds [4097 x i8]* %line, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4097, i8* %0) #3
+  %cmp29 = icmp sgt i32 %number, 0
+  br i1 %cmp29, label %for.body.lr.ph, label %for.end19
+
+for.body.lr.ph:                                   ; preds = %entry
+  %arrayidx2 = getelementptr inbounds [3 x double]* %d, i64 0, i64 0
+  %arrayidx3 = getelementptr inbounds [3 x double]* %d, i64 0, i64 1
+  %arrayidx4 = getelementptr inbounds [3 x double]* %d, i64 0, i64 2
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc17, %for.body.lr.ph
+  %indvars.iv31 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next32, %for.inc17 ]
+  %call = call i8* @fgets2(i8* %0, i32 4096, %struct._IO_FILE* %file) #6
+  %arrayidx = getelementptr inbounds i32* %anrs, i64 %indvars.iv31
+  %call5 = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %0, i8* getelementptr inbounds ([12 x i8]* @.str32, i64 0, i64 0), i32* %arrayidx, double* %arrayidx2, double* %arrayidx3, double* %arrayidx4) #6
+  %1 = load i32* %arrayidx, align 4, !tbaa !3
+  %dec = add nsw i32 %1, -1
+  store i32 %dec, i32* %arrayidx, align 4, !tbaa !3
+  br label %for.body10
+
+for.body10:                                       ; preds = %for.body10, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body ], [ %indvars.iv.next, %for.body10 ]
+  %arrayidx12 = getelementptr inbounds [3 x double]* %d, i64 0, i64 %indvars.iv
+  %2 = load double* %arrayidx12, align 8, !tbaa !5
+  %conv = fptrunc double %2 to float
+  %arrayidx16 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv31, i64 %indvars.iv
+  store float %conv, float* %arrayidx16, align 4, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc17, label %for.body10
+
+for.inc17:                                        ; preds = %for.body10
+  %indvars.iv.next32 = add i64 %indvars.iv31, 1
+  %lftr.wideiv33 = trunc i64 %indvars.iv.next32 to i32
+  %exitcond34 = icmp eq i32 %lftr.wideiv33, %number
+  br i1 %exitcond34, label %for.end19, label %for.body
+
+for.end19:                                        ; preds = %for.inc17, %entry
+  call void @llvm.lifetime.end(i64 4097, i8* %0) #3
+  ret void
+}
