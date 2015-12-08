@@ -3,11 +3,11 @@ import os
 import string
 import numpy as np
 
-path ="../llvm_ir_sources"
+path ="../extracted_sources"
 results_path = "../valgrind_output/"
 input_path = "./"
 num_buckets = 10
-not_found = {}
+
 found = {}
 values = []
 
@@ -20,20 +20,30 @@ def split_macros(word):
 
     return rtn_words
 
-def parse_file(input_filename, out_filename, sources_path): 
-    values = []
-    with open(input_filename, 'rb') as input_file:
-        for line in input_file:
-            words = line.split()
-            this_path =  words[0].replace(".","_")
-            if os.path.isdir(sources_path + this_path):
-                for f in os.listdir(sources_path + this_path):
-                    if f == words[1]:                                                    
-                        found[this_path + "/" + f] = float(words[2])
-                        values.append(float(words[2]))
+def find_bucket(buckets, value):
+    for i in range(len(buckets)):
+        if bucket[i].count(value) > 0:
+            return i
+    print "couldn't find the bucket!"
+
+def parse_file(input_filename, out_filename, sources_path, buckets): 
+    not_found = {}
+    with open(out_filename, "w+") as out_file:
+        with open(input_filename, 'rb') as input_file:
+            for line in input_file:
+                words = line.split()
+                this_path =  words[0].replace(".","_")
+                found = False
+                if os.path.isdir(sources_path + this_path):
+                    for f in os.listdir(sources_path + this_path):
+                        if f == words[1]:                                                    
+                            found = True
+                            out_file.write(this_path +"/" + f + "\t" + str(find_bucket(buckets, float(words[2]))) + "\n")
                         
-            if this_path + "/" + f not in found:
-                not_found[words[0] + " : " + words[1]] = 1
+                if not found:
+                    not_found[words[0] + " : " + words[1]] = 1
+
+    return not_found
 
 
 def get_buckets(type_of_file):
@@ -84,23 +94,24 @@ def main():
     if(len(sys.argv) < 1):
         return "I need to know the program name"
 
-    
-    base_filename = sys.argv[1]
-    sources_path = path + base_filename + "/"
-    results_data_path = results_path + base_filename + ".data.results"
-    results_inst_path = results_path  + base_filename + ".instruction.results"
-    data_filename = base_filename + ".data.results.unlinked"
-    inst_filename = base_filename + ".instruction.results.unlinked"
- 
-
     data_buckets = get_buckets("data")
     inst_buckets = get_buckets("inst")
-    
-    
-   
 
-#    parse_file(data_filename, results_data_path, sources_path)
-#    parse_file(inst_filename, results_inst_path, sources_path)
+
+    for f in os.listdir(input_path): 
+        if ".merge" in f:
+            benchname = ".".join(f.split(".")[:2])
+            print benchname
+    
+            sources_path = path + benchname + "/"
+            results_data_path = results_path + benchname + ".data.results"
+            results_inst_path = results_path  + benchname + ".instruction.results"
+            data_filename = benchname + ".data.results.unlinked"
+            inst_filename = benchname + ".instruction.results.unlinked"
+          
+
+            not_found =parse_file(data_filename, results_data_path, sources_path, data_buckets)
+            #    parse_file(inst_filename, results_inst_path, sources_path)
 
 #    for word in not_found:
 #        print word
