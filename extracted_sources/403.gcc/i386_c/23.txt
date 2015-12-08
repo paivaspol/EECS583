@@ -1,35 +1,65 @@
-static enum x86_64_reg_class
-merge_classes (class1, class2)
-     enum x86_64_reg_class class1, class2;
+void
+init_cumulative_args (cum, fntype, libname)
+     CUMULATIVE_ARGS *cum;	/* Argument info to initialize */
+     tree fntype;		/* tree ptr for function decl */
+     rtx libname;		/* SYMBOL_REF of library name or 0 */
 {
-  /* Rule #1: If both classes are equal, this is the resulting class.  */
-  if (class1 == class2)
-    return class1;
+  static CUMULATIVE_ARGS zero_cum;
+  tree param, next_param;
 
-  /* Rule #2: If one of the classes is NO_CLASS, the resulting class is
-     the other class.  */
-  if (class1 == X86_64_NO_CLASS)
-    return class2;
-  if (class2 == X86_64_NO_CLASS)
-    return class1;
+  if (TARGET_DEBUG_ARG)
+    {
+      fprintf (stderr, "\ninit_cumulative_args (");
+      if (fntype)
+	fprintf (stderr, "fntype code = %s, ret code = %s",
+		 tree_code_name[(int) TREE_CODE (fntype)],
+		 tree_code_name[(int) TREE_CODE (TREE_TYPE (fntype))]);
+      else
+	fprintf (stderr, "no fntype");
 
-  /* Rule #3: If one of the classes is MEMORY, the result is MEMORY.  */
-  if (class1 == X86_64_MEMORY_CLASS || class2 == X86_64_MEMORY_CLASS)
-    return X86_64_MEMORY_CLASS;
+      if (libname)
+	fprintf (stderr, ", libname = %s", XSTR (libname, 0));
+    }
 
-  /* Rule #4: If one of the classes is INTEGER, the result is INTEGER.  */
-  if ((class1 == X86_64_INTEGERSI_CLASS && class2 == X86_64_SSESF_CLASS)
-      || (class2 == X86_64_INTEGERSI_CLASS && class1 == X86_64_SSESF_CLASS))
-    return X86_64_INTEGERSI_CLASS;
-  if (class1 == X86_64_INTEGER_CLASS || class1 == X86_64_INTEGERSI_CLASS
-      || class2 == X86_64_INTEGER_CLASS || class2 == X86_64_INTEGERSI_CLASS)
-    return X86_64_INTEGER_CLASS;
+  *cum = zero_cum;
 
-  /* Rule #5: If one of the classes is X87 or X87UP class, MEMORY is used.  */
-  if (class1 == X86_64_X87_CLASS || class1 == X86_64_X87UP_CLASS
-      || class2 == X86_64_X87_CLASS || class2 == X86_64_X87UP_CLASS)
-    return X86_64_MEMORY_CLASS;
+  /* Set up the number of registers to use for passing arguments.  */
+  cum->nregs = ix86_regparm;
+  cum->sse_nregs = SSE_REGPARM_MAX;
+  if (fntype && !TARGET_64BIT)
+    {
+      tree attr = lookup_attribute ("regparm", TYPE_ATTRIBUTES (fntype));
 
-  /* Rule #6: Otherwise class SSE is used.  */
-  return X86_64_SSE_CLASS;
+      if (attr)
+	cum->nregs = TREE_INT_CST_LOW (TREE_VALUE (TREE_VALUE (attr)));
+    }
+  cum->maybe_vaarg = false;
+
+  /* Determine if this function has variable arguments.  This is
+     indicated by the last argument being 'void_type_mode' if there
+     are no variable arguments.  If there are variable arguments, then
+     we won't pass anything in registers */
+
+  if (cum->nregs)
+    {
+      for (param = (fntype) ? TYPE_ARG_TYPES (fntype) : 0;
+	   param != 0; param = next_param)
+	{
+	  next_param = TREE_CHAIN (param);
+	  if (next_param == 0 && TREE_VALUE (param) != void_type_node)
+	    {
+	      if (!TARGET_64BIT)
+		cum->nregs = 0;
+	      cum->maybe_vaarg = true;
+	    }
+	}
+    }
+  if ((!fntype && !libname)
+      || (fntype && !TYPE_ARG_TYPES (fntype)))
+    cum->maybe_vaarg = 1;
+
+  if (TARGET_DEBUG_ARG)
+    fprintf (stderr, ", nregs=%d )\n", cum->nregs);
+
+  return;
 }

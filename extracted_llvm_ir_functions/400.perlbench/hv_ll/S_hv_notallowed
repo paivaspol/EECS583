@@ -1,0 +1,38 @@
+define internal fastcc void @S_hv_notallowed(i32 %flags, i8* %key, i32 %klen, i8* %msg) #0 {
+entry:
+  %call = tail call %struct.sv* @Perl_sv_newmortal() #4
+  %call1 = tail call %struct.sv* @Perl_sv_newmortal() #4
+  %and = and i32 %flags, 256
+  %tobool = icmp eq i32 %and, 0
+  %conv2 = sext i32 %klen to i64
+  br i1 %tobool, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call void @Perl_sv_setpvn(%struct.sv* %call, i8* %key, i64 %conv2) #4
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  tail call void @Perl_sv_usepvn(%struct.sv* %call, i8* %key, i64 %conv2) #4
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %and3 = and i32 %flags, 1
+  %tobool4 = icmp eq i32 %and3, 0
+  br i1 %tobool4, label %if.end6, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %sv_flags = getelementptr inbounds %struct.sv* %call, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !4
+  %or = or i32 %0, 536870912
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !4
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end, %if.then5
+  tail call void (%struct.sv*, i8*, ...)* @Perl_sv_setpvf(%struct.sv* %call1, i8* getelementptr inbounds ([32 x i8]* @.str8, i64 0, i64 0), i8* %msg) #4
+  %sv_any = getelementptr inbounds %struct.sv* %call1, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %1 to i8**
+  %2 = load i8** %xpv_pv, align 8, !tbaa !0
+  tail call void (i8*, ...)* @Perl_croak(i8* %2, %struct.sv* %call) #4
+  ret void
+}

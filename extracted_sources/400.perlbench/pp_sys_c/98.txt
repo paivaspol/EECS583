@@ -1,0 +1,29 @@
+PP(pp_closedir)
+{
+#if defined(Direntry_t) && defined(HAS_READDIR)
+    dSP;
+    GV *gv = (GV*)POPs;
+    register IO *io = GvIOn(gv);
+
+    if (!io || !IoDIRP(io))
+	goto nope;
+
+#ifdef VOID_CLOSEDIR
+    PerlDir_close(IoDIRP(io));
+#else
+    if (PerlDir_close(IoDIRP(io)) < 0) {
+	IoDIRP(io) = 0; /* Don't try to close again--coredumps on SysV */
+	goto nope;
+    }
+#endif
+    IoDIRP(io) = 0;
+
+    RETPUSHYES;
+nope:
+    if (!errno)
+	SETERRNO(EBADF,RMS_IFI);
+    RETPUSHUNDEF;
+#else
+    DIE(aTHX_ PL_no_dir_func, "closedir");
+#endif
+}

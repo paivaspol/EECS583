@@ -1,6 +1,6 @@
 int
-pushcase_range (value1, value2, converter, label, duplicate)
-     tree value1, value2;
+pushcase (value, converter, label, duplicate)
+     tree value;
      tree (*converter) PARAMS ((tree, tree));
      tree label;
      tree *duplicate;
@@ -23,37 +23,18 @@ pushcase_range (value1, value2, converter, label, duplicate)
   if (index_type == error_mark_node)
     return 0;
 
+  /* Convert VALUE to the type in which the comparisons are nominally done.  */
+  if (value != 0)
+    value = (*converter) (nominal_type, value);
+
   check_seenlabel ();
 
-  /* Convert VALUEs to type in which the comparisons are nominally done
-     and replace any unspecified value with the corresponding bound.  */
-  if (value1 == 0)
-    value1 = TYPE_MIN_VALUE (index_type);
-  if (value2 == 0)
-    value2 = TYPE_MAX_VALUE (index_type);
-
-  /* Fail if the range is empty.  Do this before any conversion since
-     we want to allow out-of-range empty ranges.  */
-  if (value2 != 0 && tree_int_cst_lt (value2, value1))
-    return 4;
-
-  /* If the max was unbounded, use the max of the nominal_type we are
-     converting to.  Do this after the < check above to suppress false
-     positives.  */
-  if (value2 == 0)
-    value2 = TYPE_MAX_VALUE (nominal_type);
-
-  value1 = (*converter) (nominal_type, value1);
-  value2 = (*converter) (nominal_type, value2);
-
-  /* Fail if these values are out of range.  */
-  if (TREE_CONSTANT_OVERFLOW (value1)
-      || ! int_fits_type_p (value1, index_type))
+  /* Fail if this value is out of range for the actual type of the index
+     (which may be narrower than NOMINAL_TYPE).  */
+  if (value != 0
+      && (TREE_CONSTANT_OVERFLOW (value)
+	  || ! int_fits_type_p (value, index_type)))
     return 3;
 
-  if (TREE_CONSTANT_OVERFLOW (value2)
-      || ! int_fits_type_p (value2, index_type))
-    return 3;
-
-  return add_case_node (value1, value2, label, duplicate);
+  return add_case_node (value, value, label, duplicate);
 }

@@ -1,0 +1,10 @@
+define i32 @asprintf(i8** %buf, i8* %fmt, ...) #0 {
+entry:
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %call = call i32 @vasprintf(i8** %buf, i8* %fmt, %struct.__va_list_tag* %arraydecay) #3
+  call void @llvm.va_end(i8* %arraydecay1)
+  ret i32 %call
+}

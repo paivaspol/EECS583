@@ -1,19 +1,8 @@
-static void
-S_hv_notallowed(pTHX_ int flags, const char *key, I32 klen,
-		const char *msg)
+STATIC void
+S_del_he(pTHX_ HE *p)
 {
-    SV *sv = sv_newmortal(), *esv = sv_newmortal();
-    if (!(flags & HVhek_FREEKEY)) {
-	sv_setpvn(sv, key, klen);
-    }
-    else {
-	/* Need to free saved eventually assign to mortal SV */
-	/* XXX is this line an error ???:  SV *sv = sv_newmortal(); */
-	sv_usepvn(sv, (char *) key, klen);
-    }
-    if (flags & HVhek_UTF8) {
-	SvUTF8_on(sv);
-    }
-    Perl_sv_setpvf(aTHX_ esv, "Attempt to %s a restricted hash", msg);
-    Perl_croak(aTHX_ SvPVX(esv), sv);
+    LOCK_SV_MUTEX;
+    HeNEXT(p) = (HE*)PL_he_root;
+    PL_he_root = p;
+    UNLOCK_SV_MUTEX;
 }

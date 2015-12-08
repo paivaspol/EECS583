@@ -1,15 +1,19 @@
-static SV *retrieve_sv_undef(pTHX_ stcxt_t *cxt, char *cname)
+static SV *retrieve_byte(pTHX_ stcxt_t *cxt, char *cname)
 {
-	SV *sv = &PL_sv_undef;
+	SV *sv;
+	int siv;
+	signed char tmp;	/* Workaround for AIX cc bug --H.Merijn Brand */
 
-	TRACEME(("retrieve_sv_undef"));
+	TRACEME(("retrieve_byte (#%d)", cxt->tagnum));
 
-	/* Special case PL_sv_undef, as av_fetch uses it internally to mark
-	   deleted elements, and will return NULL (fetch failed) whenever it
-	   is fetched.  */
-	if (cxt->where_is_undef == -1) {
-		cxt->where_is_undef = cxt->tagnum;
-	}
-	SEEN(sv, cname, 1);
+	GETMARK(siv);
+	TRACEME(("small integer read as %d", (unsigned char) siv));
+	tmp = (unsigned char) siv - 128;
+	sv = newSViv(tmp);
+	SEEN(sv, cname, 0);	/* Associate this new scalar with tag "tagnum" */
+
+	TRACEME(("byte %d", tmp));
+	TRACEME(("ok (retrieve_byte at 0x%"UVxf")", PTR2UV(sv)));
+
 	return sv;
 }

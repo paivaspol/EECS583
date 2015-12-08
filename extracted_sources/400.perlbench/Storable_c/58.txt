@@ -1,19 +1,21 @@
-static SV *retrieve_byte(pTHX_ stcxt_t *cxt, char *cname)
+static SV *retrieve_netint(pTHX_ stcxt_t *cxt, char *cname)
 {
 	SV *sv;
-	int siv;
-	signed char tmp;	/* Workaround for AIX cc bug --H.Merijn Brand */
+	I32 iv;
 
-	TRACEME(("retrieve_byte (#%d)", cxt->tagnum));
+	TRACEME(("retrieve_netint (#%d)", cxt->tagnum));
 
-	GETMARK(siv);
-	TRACEME(("small integer read as %d", (unsigned char) siv));
-	tmp = (unsigned char) siv - 128;
-	sv = newSViv(tmp);
+	READ_I32(iv);
+#ifdef HAS_NTOHL
+	sv = newSViv((int) ntohl(iv));
+	TRACEME(("network integer %d", (int) ntohl(iv)));
+#else
+	sv = newSViv(iv);
+	TRACEME(("network integer (as-is) %d", iv));
+#endif
 	SEEN(sv, cname, 0);	/* Associate this new scalar with tag "tagnum" */
 
-	TRACEME(("byte %d", tmp));
-	TRACEME(("ok (retrieve_byte at 0x%"UVxf")", PTR2UV(sv)));
+	TRACEME(("ok (retrieve_netint at 0x%"UVxf")", PTR2UV(sv)));
 
 	return sv;
 }

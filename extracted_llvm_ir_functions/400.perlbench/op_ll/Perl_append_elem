@@ -1,0 +1,61 @@
+define %struct.op* @Perl_append_elem(i32 %type, %struct.op* %first, %struct.op* %last) #0 {
+entry:
+  %tobool = icmp eq %struct.op* %first, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %tobool1 = icmp eq %struct.op* %last, null
+  br i1 %tobool1, label %return, label %if.end3
+
+if.end3:                                          ; preds = %if.end
+  %op_type = getelementptr inbounds %struct.op* %first, i64 0, i32 4
+  %0 = load i16* %op_type, align 2, !tbaa !4
+  %conv = zext i16 %0 to i32
+  %cmp = icmp eq i32 %conv, %type
+  br i1 %cmp, label %lor.lhs.false, label %if.then9
+
+lor.lhs.false:                                    ; preds = %if.end3
+  %cmp5 = icmp eq i32 %type, 141
+  %op_flags = getelementptr inbounds %struct.op* %first, i64 0, i32 6
+  %1 = load i8* %op_flags, align 1, !tbaa !1
+  br i1 %cmp5, label %land.lhs.true, label %if.end10
+
+land.lhs.true:                                    ; preds = %lor.lhs.false
+  %and = and i8 %1, 8
+  %tobool8 = icmp eq i8 %and, 0
+  br i1 %tobool8, label %if.end10, label %if.then9
+
+if.then9:                                         ; preds = %land.lhs.true, %if.end3
+  %call = tail call %struct.op* @Perl_newLISTOP(i32 %type, i32 0, %struct.op* %first, %struct.op* %last) #8
+  br label %return
+
+if.end10:                                         ; preds = %lor.lhs.false, %land.lhs.true
+  %and13 = and i8 %1, 4
+  %tobool14 = icmp eq i8 %and13, 0
+  br i1 %tobool14, label %if.else, label %if.then15
+
+if.then15:                                        ; preds = %if.end10
+  %2 = getelementptr inbounds %struct.op* %first, i64 1, i32 1
+  %3 = load %struct.op** %2, align 8, !tbaa !3
+  %op_sibling = getelementptr inbounds %struct.op* %3, i64 0, i32 1
+  store %struct.op* %last, %struct.op** %op_sibling, align 8, !tbaa !3
+  br label %if.end19
+
+if.else:                                          ; preds = %if.end10
+  %op_flags11 = getelementptr inbounds %struct.op* %first, i64 0, i32 6
+  %or = or i8 %1, 4
+  store i8 %or, i8* %op_flags11, align 1, !tbaa !1
+  %4 = getelementptr inbounds %struct.op* %first, i64 1, i32 0
+  store %struct.op* %last, %struct.op** %4, align 8, !tbaa !3
+  %.pre36 = getelementptr inbounds %struct.op* %first, i64 1, i32 1
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.else, %if.then15
+  %.pre-phi = phi %struct.op** [ %.pre36, %if.else ], [ %2, %if.then15 ]
+  store %struct.op* %last, %struct.op** %.pre-phi, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.end, %entry, %if.end19, %if.then9
+  %retval.0 = phi %struct.op* [ %call, %if.then9 ], [ %first, %if.end19 ], [ %last, %entry ], [ %first, %if.end ]
+  ret %struct.op* %retval.0
+}

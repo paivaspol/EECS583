@@ -1,24 +1,28 @@
-int
-Perl_rsignal_save(pTHX_ int signo, Sighandler_t handler, Sigsave_t *save)
+void
+Perl_vwarner(pTHX_ U32  err, const char* pat, va_list* args)
 {
-    struct sigaction act;
+    if (ckDEAD(err)) {
+	SV *msv = vmess(pat, args);
+	STRLEN msglen;
+	char *message = SvPV(msv, msglen);
+	I32 utf8 = SvUTF8(msv);
 
-#ifdef USE_ITHREADS
-    /* only "parent" interpreter can diddle signals */
-    if (PL_curinterp != aTHX)
-	return -1;
-#endif
-
-    act.sa_handler = handler;
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = 0;
-#ifdef SA_RESTART
-    if (PL_signals & PERL_SIGNALS_UNSAFE_FLAG)
-        act.sa_flags |= SA_RESTART;	/* SVR4, 4.3+BSD */
-#endif
-#if defined(SA_NOCLDWAIT) && !defined(BSDish) /* See [perl #18849] */
-    if (signo == SIGCHLD && handler == (Sighandler_t)SIG_IGN)
-	act.sa_flags |= SA_NOCLDWAIT;
-#endif
-    return sigaction(signo, &act, save);
+#ifdef USE_5005THREADS
+	DEBUG_S(PerlIO_printf(Perl_debug_log, "croak: 0x%"UVxf" %s", PTR2UV(thr), message));
+#endif /* USE_5005THREADS */
+	if (PL_diehook) {
+	    assert(message);
+	    S_vdie_common(aTHX_ message, msglen, utf8);
+	}
+	if (PL_in_eval) {
+	    PL_restartop = die_where(message, msglen);
+	    SvFLAGS(ERRSV) |= utf8;
+	    JMPENV_JUMP(3);
+	}
+	write_to_stderr(message, msglen);
+	my_failure_exit();
+    }
+    else {
+	Perl_vwarn(aTHX_ pat, args);
+    }
 }

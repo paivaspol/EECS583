@@ -1,17 +1,12 @@
 static int
-ix86_fp_comparison_cost (code)
+ix86_fp_comparison_fcomi_cost (code)
      enum rtx_code code;
 {
-  int fcomi_cost, sahf_cost, arithmetics_cost = 1024;
-  int min;
-
-  fcomi_cost = ix86_fp_comparison_fcomi_cost (code);
-  sahf_cost = ix86_fp_comparison_sahf_cost (code);
-
-  min = arithmetics_cost = ix86_fp_comparison_arithmetics_cost (code);
-  if (min > sahf_cost)
-    min = sahf_cost;
-  if (min > fcomi_cost)
-    min = fcomi_cost;
-  return min;
+  enum rtx_code bypass_code, first_code, second_code;
+  /* Return arbitarily high cost when instruction is not supported - this
+     prevents gcc from using it.  */
+  if (!TARGET_CMOVE)
+    return 1024;
+  ix86_fp_comparison_codes (code, &bypass_code, &first_code, &second_code);
+  return (bypass_code != NIL || second_code != NIL) + 2;
 }

@@ -1,22 +1,18 @@
-int
-Perl_magic_setdbline(pTHX_ SV *sv, MAGIC *mg)
+STATIC int
+S_magic_methpack(pTHX_ SV *sv, MAGIC *mg, char *meth)
 {
-    OP *o;
-    I32 i;
-    GV* gv;
-    SV** svp;
-    STRLEN n_a;
+    dSP;
 
-    gv = PL_DBline;
-    i = SvTRUE(sv);
-    svp = av_fetch(GvAV(gv),
-		     atoi(MgPV(mg,n_a)), FALSE);
-    if (svp && SvIOKp(*svp) && (o = INT2PTR(OP*,SvIVX(*svp)))) {
-	/* set or clear breakpoint in the relevant control op */
-	if (i)
-	    o->op_flags |= OPf_SPECIAL;
-	else
-	    o->op_flags &= ~OPf_SPECIAL;
+    ENTER;
+    SAVETMPS;
+    PUSHSTACKi(PERLSI_MAGIC);
+
+    if (magic_methcall(sv, mg, meth, G_SCALAR, 2, NULL)) {
+	sv_setsv(sv, *PL_stack_sp--);
     }
+
+    POPSTACK;
+    FREETMPS;
+    LEAVE;
     return 0;
 }

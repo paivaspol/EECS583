@@ -1,0 +1,72 @@
+define internal fastcc i32 @S_div128(%struct.sv* %pnum, i8* nocapture %done) #0 {
+entry:
+  %len = alloca i64, align 8
+  %sv_flags = getelementptr inbounds %struct.sv* %pnum, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %pnum, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %1, i64 8
+  %2 = bitcast i8* %xpv_cur to i64*
+  %3 = load i64* %2, align 8, !tbaa !4
+  store i64 %3, i64* %len, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %1 to i8**
+  %4 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %call = call i8* @Perl_sv_2pv_flags(%struct.sv* %pnum, i64* %len, i32 2) #8
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %4, %cond.true ], [ %call, %cond.false ]
+  store i8 1, i8* %done, align 1, !tbaa !1
+  %5 = load i8* %cond, align 1, !tbaa !1
+  %tobool21 = icmp eq i8 %5, 0
+  br i1 %tobool21, label %while.end, label %while.body
+
+while.body:                                       ; preds = %cond.end, %if.end
+  %6 = phi i8 [ %7, %if.end ], [ %5, %cond.end ]
+  %m.023 = phi i32 [ %and2, %if.end ], [ 0, %cond.end ]
+  %t.022 = phi i8* [ %incdec.ptr, %if.end ], [ %cond, %cond.end ]
+  %mul = mul nsw i32 %m.023, 10
+  %conv = sext i8 %6 to i32
+  %sub = add i32 %mul, -48
+  %add = add i32 %sub, %conv
+  %and2 = and i32 %add, 127
+  %shr = ashr i32 %add, 7
+  %tobool3 = icmp eq i32 %shr, 0
+  br i1 %tobool3, label %if.end, label %if.then
+
+if.then:                                          ; preds = %while.body
+  store i8 0, i8* %done, align 1, !tbaa !1
+  br label %if.end
+
+if.end:                                           ; preds = %while.body, %if.then
+  %add4 = add nsw i32 %shr, 48
+  %conv5 = trunc i32 %add4 to i8
+  %incdec.ptr = getelementptr inbounds i8* %t.022, i64 1
+  store i8 %conv5, i8* %t.022, align 1, !tbaa !1
+  %7 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %tobool = icmp eq i8 %7, 0
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.end, %cond.end
+  %m.0.lcssa = phi i32 [ 0, %cond.end ], [ %and2, %if.end ]
+  %t.0.lcssa = phi i8* [ %cond, %cond.end ], [ %incdec.ptr, %if.end ]
+  %incdec.ptr6 = getelementptr inbounds i8* %t.0.lcssa, i64 1
+  store i8 0, i8* %t.0.lcssa, align 1, !tbaa !1
+  %sub.ptr.lhs.cast = ptrtoint i8* %incdec.ptr6 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %cond to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %sv_any7 = getelementptr inbounds %struct.sv* %pnum, i64 0, i32 0
+  %8 = load i8** %sv_any7, align 8, !tbaa !0
+  %xpv_cur8 = getelementptr inbounds i8* %8, i64 8
+  %9 = bitcast i8* %xpv_cur8 to i64*
+  store i64 %sub.ptr.sub, i64* %9, align 8, !tbaa !4
+  ret i32 %m.0.lcssa
+}

@@ -1,0 +1,39 @@
+STATIC void
+S_hfreeentries(pTHX_ HV *hv)
+{
+    register HE **array;
+    register HE *entry;
+    register HE *oentry = Null(HE*);
+    I32 riter;
+    I32 max;
+
+    if (!hv)
+	return;
+    if (!HvARRAY(hv))
+	return;
+
+    riter = 0;
+    max = HvMAX(hv);
+    array = HvARRAY(hv);
+    /* make everyone else think the array is empty, so that the destructors
+     * called for freed entries can't recusively mess with us */
+    HvARRAY(hv) = Null(HE**); 
+    HvFILL(hv) = 0;
+    ((XPVHV*) SvANY(hv))->xhv_keys = 0;
+
+    entry = array[0];
+    for (;;) {
+	if (entry) {
+	    oentry = entry;
+	    entry = HeNEXT(entry);
+	    hv_free_ent(hv, oentry);
+	}
+	if (!entry) {
+	    if (++riter > max)
+		break;
+	    entry = array[riter];
+	}
+    }
+    HvARRAY(hv) = array;
+    (void)hv_iterinit(hv);
+}

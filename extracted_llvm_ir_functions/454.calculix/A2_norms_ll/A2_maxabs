@@ -1,0 +1,141 @@
+define double @A2_maxabs(%struct._A2* %a) #0 {
+entry:
+  %cmp = icmp eq %struct._A2* %a, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %n11 = getelementptr inbounds %struct._A2* %a, i64 0, i32 1
+  %0 = load i32* %n11, align 4, !tbaa !0
+  %cmp2 = icmp slt i32 %0, 0
+  br i1 %cmp2, label %if.then, label %lor.lhs.false3
+
+lor.lhs.false3:                                   ; preds = %lor.lhs.false
+  %n24 = getelementptr inbounds %struct._A2* %a, i64 0, i32 2
+  %1 = load i32* %n24, align 4, !tbaa !0
+  %cmp5 = icmp slt i32 %1, 0
+  br i1 %cmp5, label %if.then, label %lor.lhs.false6
+
+lor.lhs.false6:                                   ; preds = %lor.lhs.false3
+  %inc17 = getelementptr inbounds %struct._A2* %a, i64 0, i32 3
+  %2 = load i32* %inc17, align 4, !tbaa !0
+  %cmp8 = icmp slt i32 %2, 0
+  br i1 %cmp8, label %if.then, label %lor.lhs.false9
+
+lor.lhs.false9:                                   ; preds = %lor.lhs.false6
+  %inc210 = getelementptr inbounds %struct._A2* %a, i64 0, i32 4
+  %3 = load i32* %inc210, align 4, !tbaa !0
+  %cmp11 = icmp slt i32 %3, 0
+  br i1 %cmp11, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false9, %lor.lhs.false6, %lor.lhs.false3, %lor.lhs.false, %entry
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([43 x i8]* @.str, i64 0, i64 0), %struct._A2* %a) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false9
+  %type = getelementptr inbounds %struct._A2* %a, i64 0, i32 0
+  %5 = load i32* %type, align 4, !tbaa !0
+  %.off = add i32 %5, -1
+  %switch = icmp ult i32 %.off, 2
+  br i1 %switch, label %if.end19, label %if.then16
+
+if.then16:                                        ; preds = %if.end
+  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call18 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([86 x i8]* @.str1, i64 0, i64 0), %struct._A2* %a, i32 %5) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end19:                                         ; preds = %if.end
+  %entries20 = getelementptr inbounds %struct._A2* %a, i64 0, i32 6
+  %7 = load double** %entries20, align 8, !tbaa !3
+  switch i32 %5, label %if.end64 [
+    i32 1, label %for.cond.preheader
+    i32 2, label %for.cond38.preheader
+  ]
+
+for.cond38.preheader:                             ; preds = %if.end19
+  %cmp39116 = icmp sgt i32 %0, 0
+  br i1 %cmp39116, label %for.cond41.preheader.lr.ph, label %if.end64
+
+for.cond41.preheader.lr.ph:                       ; preds = %for.cond38.preheader
+  %cmp42110 = icmp sgt i32 %1, 0
+  %idx.ext58 = sext i32 %2 to i64
+  %8 = sext i32 %3 to i64
+  br label %for.cond41.preheader
+
+for.cond.preheader:                               ; preds = %if.end19
+  %cmp24105 = icmp sgt i32 %0, 0
+  br i1 %cmp24105, label %for.cond25.preheader.lr.ph, label %if.end64
+
+for.cond25.preheader.lr.ph:                       ; preds = %for.cond.preheader
+  %cmp26101 = icmp sgt i32 %1, 0
+  %idx.ext = sext i32 %2 to i64
+  %9 = sext i32 %3 to i64
+  br label %for.cond25.preheader
+
+for.cond25.preheader:                             ; preds = %for.end, %for.cond25.preheader.lr.ph
+  %maxval.0108 = phi double [ 0.000000e+00, %for.cond25.preheader.lr.ph ], [ %maxval.1.lcssa, %for.end ]
+  %irow.0107 = phi i32 [ 0, %for.cond25.preheader.lr.ph ], [ %inc33, %for.end ]
+  %row.0106 = phi double* [ %7, %for.cond25.preheader.lr.ph ], [ %add.ptr, %for.end ]
+  br i1 %cmp26101, label %for.body27, label %for.end
+
+for.body27:                                       ; preds = %for.cond25.preheader, %for.body27
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body27 ], [ 0, %for.cond25.preheader ]
+  %maxval.1104 = phi double [ %maxval.2, %for.body27 ], [ %maxval.0108, %for.cond25.preheader ]
+  %jcol.0102 = phi i32 [ %inc, %for.body27 ], [ 0, %for.cond25.preheader ]
+  %arrayidx = getelementptr inbounds double* %row.0106, i64 %indvars.iv
+  %10 = load double* %arrayidx, align 8, !tbaa !4
+  %call28 = tail call double @fabs(double %10) #7
+  %cmp29 = fcmp olt double %maxval.1104, %call28
+  %maxval.2 = select i1 %cmp29, double %call28, double %maxval.1104
+  %inc = add nsw i32 %jcol.0102, 1
+  %indvars.iv.next = add i64 %indvars.iv, %9
+  %exitcond = icmp eq i32 %inc, %1
+  br i1 %exitcond, label %for.end, label %for.body27
+
+for.end:                                          ; preds = %for.body27, %for.cond25.preheader
+  %maxval.1.lcssa = phi double [ %maxval.0108, %for.cond25.preheader ], [ %maxval.2, %for.body27 ]
+  %add.ptr = getelementptr inbounds double* %row.0106, i64 %idx.ext
+  %inc33 = add nsw i32 %irow.0107, 1
+  %exitcond121 = icmp eq i32 %inc33, %0
+  br i1 %exitcond121, label %if.end64, label %for.cond25.preheader
+
+for.cond41.preheader:                             ; preds = %for.end57, %for.cond41.preheader.lr.ph
+  %maxval.3119 = phi double [ 0.000000e+00, %for.cond41.preheader.lr.ph ], [ %maxval.4.lcssa, %for.end57 ]
+  %irow.1118 = phi i32 [ 0, %for.cond41.preheader.lr.ph ], [ %inc61, %for.end57 ]
+  %row.1117 = phi double* [ %7, %for.cond41.preheader.lr.ph ], [ %add.ptr59, %for.end57 ]
+  br i1 %cmp42110, label %for.body43, label %for.end57
+
+for.body43:                                       ; preds = %for.cond41.preheader, %for.body43
+  %indvars.iv122 = phi i64 [ %indvars.iv.next123, %for.body43 ], [ 0, %for.cond41.preheader ]
+  %maxval.4113 = phi double [ %maxval.5, %for.body43 ], [ %maxval.3119, %for.cond41.preheader ]
+  %jcol.1111 = phi i32 [ %inc55, %for.body43 ], [ 0, %for.cond41.preheader ]
+  %11 = trunc i64 %indvars.iv122 to i32
+  %mul = shl nsw i32 %11, 1
+  %idxprom44 = sext i32 %mul to i64
+  %arrayidx45 = getelementptr inbounds double* %row.1117, i64 %idxprom44
+  %12 = load double* %arrayidx45, align 8, !tbaa !4
+  %add47100 = or i32 %mul, 1
+  %idxprom48 = sext i32 %add47100 to i64
+  %arrayidx49 = getelementptr inbounds double* %row.1117, i64 %idxprom48
+  %13 = load double* %arrayidx49, align 8, !tbaa !4
+  %call50 = tail call double @Zabs(double %12, double %13) #5
+  %cmp51 = fcmp olt double %maxval.4113, %call50
+  %maxval.5 = select i1 %cmp51, double %call50, double %maxval.4113
+  %inc55 = add nsw i32 %jcol.1111, 1
+  %indvars.iv.next123 = add i64 %indvars.iv122, %8
+  %exitcond124 = icmp eq i32 %inc55, %1
+  br i1 %exitcond124, label %for.end57, label %for.body43
+
+for.end57:                                        ; preds = %for.body43, %for.cond41.preheader
+  %maxval.4.lcssa = phi double [ %maxval.3119, %for.cond41.preheader ], [ %maxval.5, %for.body43 ]
+  %add.ptr59 = getelementptr inbounds double* %row.1117, i64 %idx.ext58
+  %inc61 = add nsw i32 %irow.1118, 1
+  %exitcond125 = icmp eq i32 %inc61, %0
+  br i1 %exitcond125, label %if.end64, label %for.cond41.preheader
+
+if.end64:                                         ; preds = %for.cond38.preheader, %for.end57, %for.cond.preheader, %for.end, %if.end19
+  %maxval.6 = phi double [ 0.000000e+00, %if.end19 ], [ 0.000000e+00, %for.cond.preheader ], [ %maxval.1.lcssa, %for.end ], [ 0.000000e+00, %for.cond38.preheader ], [ %maxval.4.lcssa, %for.end57 ]
+  ret double %maxval.6
+}

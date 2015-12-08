@@ -1,0 +1,28 @@
+PP(pp_unshift)
+{
+    dSP; dMARK; dORIGMARK; dTARGET;
+    register AV *ary = (AV*)*++MARK;
+    register SV *sv;
+    register I32 i = 0;
+    MAGIC *mg;
+
+    if ((mg = SvTIED_mg((SV*)ary, PERL_MAGIC_tied))) {
+	*MARK-- = SvTIED_obj((SV*)ary, mg);
+	PUSHMARK(MARK);
+	PUTBACK;
+	ENTER;
+	call_method("UNSHIFT",G_SCALAR|G_DISCARD);
+	LEAVE;
+	SPAGAIN;
+    }
+    else {
+	av_unshift(ary, SP - MARK);
+	while (MARK < SP) {
+	    sv = newSVsv(*++MARK);
+	    (void)av_store(ary, i++, sv);
+	}
+    }
+    SP = ORIGMARK;
+    PUSHi( AvFILL(ary) + 1 );
+    RETURN;
+}

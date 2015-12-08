@@ -1,16 +1,54 @@
 int
-PerlIOUnix_refcnt_dec(int fd)
+PerlIO_binmode(pTHX_ PerlIO *f, int iotype, int mode, const char *names)
 {
-    int cnt = 0;
-    if (fd >= 0 && fd < PERLIO_MAX_REFCOUNTABLE_FD) {
-#ifdef USE_THREADS
-	MUTEX_LOCK(&PerlIO_mutex);
-#endif
-	cnt = --PerlIO_fd_refcnt[fd];
-	PerlIO_debug("fd %d refcnt=%d\n",fd,cnt);
-#ifdef USE_THREADS
-	MUTEX_UNLOCK(&PerlIO_mutex);
-#endif
+    PerlIO_debug("PerlIO_binmode f=%p %s %c %x %s\n",
+		 (void*)f, PerlIOBase(f)->tab->name, iotype, mode,
+		 (names) ? names : "(Null)");
+    if (names) {
+	/* Do not flush etc. if (e.g.) switching encodings.
+	   if a pushed layer knows it needs to flush lower layers
+	   (for example :unix which is never going to call them)
+	   it can do the flush when it is pushed.
+	 */
+	return PerlIO_apply_layers(aTHX_ f, NULL, names) == 0 ? TRUE : FALSE;
     }
-    return cnt;
+    else {
+	/* Fake 5.6 legacy of using this call to turn ON O_TEXT */
+#ifdef PERLIO_USING_CRLF
+	/* Legacy binmode only has meaning if O_TEXT has a value distinct from
+	   O_BINARY so we can look for it in mode.
+	 */
+	if (!(mode & O_BINARY)) {
+	    /* Text mode */
+	    /* FIXME?: Looking down the layer stack seems wrong,
+	       but is a way of reaching past (say) an encoding layer
+	       to flip CRLF-ness of the layer(s) below
+	     */
+	    while (*f) {
+		/* Perhaps we should turn on bottom-most aware layer
+		   e.g. Ilya's idea that UNIX TTY could serve
+		 */
+		if (PerlIOBase(f)->tab->kind & PERLIO_K_CANCRLF) {
+		    if (!(PerlIOBase(f)->flags & PERLIO_F_CRLF)) {
+			/* Not in text mode - flush any pending stuff and flip it */
+			PerlIO_flush(f);
+			PerlIOBase(f)->flags |= PERLIO_F_CRLF;
+		    }
+		    /* Only need to turn it on in one layer so we are done */
+		    return TRUE;
+		}
+		f = PerlIONext(f);
+	    }
+	    /* Not finding a CRLF aware layer presumably means we are binary
+	       which is not what was requested - so we failed
+	       We _could_ push :crlf layer but so could caller
+	     */
+	    return FALSE;
+	}
+#endif
+	/* Legacy binmode is now _defined_ as being equivalent to pushing :raw
+	   So code that used to be here is now in PerlIORaw_pushed().
+	 */
+	return PerlIO_push(aTHX_ f, &PerlIO_raw, Nullch, Nullsv) ? TRUE : FALSE;
+    }
 }

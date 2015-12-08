@@ -1,7 +1,15 @@
 int
-PerlIO_puts(PerlIO *f, const char *s)
+PerlIO_has_base(PerlIO *f)
 {
-    dTHX;
-    STRLEN len = strlen(s);
-    return PerlIO_write(f, s, len);
+     if (PerlIOValid(f)) {
+	  PerlIO_funcs *tab = PerlIOBase(f)->tab;
+
+	  if (tab)
+	       return (tab->Get_base != NULL);
+	  SETERRNO(EINVAL, LIB_INVARG);
+     }
+     else
+	  SETERRNO(EBADF, SS_IVCHAN);
+
+     return 0;
 }

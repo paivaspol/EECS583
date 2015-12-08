@@ -1,0 +1,196 @@
+define internal fastcc i32 @S_measure_struct(%struct.tempsym_t* nocapture %symptr) #0 {
+entry:
+  %savsym.sroa.0 = alloca { i8*, i8* }, align 8
+  %savsym.sroa.3 = alloca [24 x i8], align 8
+  %call129 = call fastcc signext i8 @S_next_symbol(%struct.tempsym_t* %symptr) #7
+  %tobool130 = icmp eq i8 %call129, 0
+  br i1 %tobool130, label %while.end, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %entry
+  %code = getelementptr inbounds %struct.tempsym_t* %symptr, i64 0, i32 4
+  %howlen = getelementptr inbounds %struct.tempsym_t* %symptr, i64 0, i32 6
+  %flags22 = getelementptr inbounds %struct.tempsym_t* %symptr, i64 0, i32 8
+  %savsym.sroa.0.0.cast87 = bitcast { i8*, i8* }* %savsym.sroa.0 to i8*
+  %savsym.sroa.3.0.idx = getelementptr inbounds [24 x i8]* %savsym.sroa.3, i64 0, i64 0
+  %savsym.sroa.0.0.cast67 = bitcast %struct.tempsym_t* %symptr to i8*
+  %savsym.sroa.1.16.idx72 = getelementptr inbounds %struct.tempsym_t* %symptr, i64 0, i32 2
+  %savsym.sroa.2.24.idx76 = getelementptr inbounds %struct.tempsym_t* %symptr, i64 0, i32 3
+  %savsym.sroa.3.32.cast = bitcast i32* %code to i8*
+  %patptr = getelementptr inbounds %struct.tempsym_t* %symptr, i64 0, i32 0
+  %patend = getelementptr inbounds %struct.tempsym_t* %symptr, i64 0, i32 1
+  %length = getelementptr inbounds %struct.tempsym_t* %symptr, i64 0, i32 5
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end65
+  %len.0132 = phi i32 [ 0, %while.body.lr.ph ], [ %len.6, %if.end65 ]
+  %total.0131 = phi i32 [ 0, %while.body.lr.ph ], [ %add66, %if.end65 ]
+  %0 = load i32* %code, align 4, !tbaa !3
+  %and = lshr i32 %0, 8
+  %and.lobit = and i32 %and, 1
+  %and3 = and i32 %0, 255
+  %idxprom123 = zext i32 %and.lobit to i64
+  %first = getelementptr inbounds [2 x %struct.packsize_t]* @packsize, i64 0, i64 %idxprom123, i32 1
+  %1 = load i32* %first, align 8, !tbaa !3
+  %sub = sub nsw i32 %and3, %1
+  %2 = load i32* %howlen, align 4, !tbaa !1
+  switch i32 %2, label %sw.epilog [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb4
+  ]
+
+sw.bb:                                            ; preds = %while.body, %while.body
+  %3 = load i32* %length, align 4, !tbaa !3
+  br label %sw.epilog
+
+sw.bb4:                                           ; preds = %while.body
+  %4 = load i32* %flags22, align 4, !tbaa !3
+  %and5 = and i32 %4, 1
+  %tobool6 = icmp ne i32 %and5, 0
+  %cond7 = select i1 %tobool6, i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str18, i64 0, i64 0)
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([39 x i8]* @.str26, i64 0, i64 0), i8* %cond7) #8
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %while.body, %sw.bb4, %sw.bb
+  %len.1 = phi i32 [ %len.0132, %while.body ], [ %len.0132, %sw.bb4 ], [ %3, %sw.bb ]
+  %cmp = icmp sgt i32 %sub, -1
+  br i1 %cmp, label %land.lhs.true, label %if.then18
+
+land.lhs.true:                                    ; preds = %sw.epilog
+  %size10 = getelementptr inbounds [2 x %struct.packsize_t]* @packsize, i64 0, i64 %idxprom123, i32 2
+  %5 = load i32* %size10, align 4, !tbaa !3
+  %cmp11 = icmp slt i32 %sub, %5
+  br i1 %cmp11, label %if.end, label %if.then18
+
+if.end:                                           ; preds = %land.lhs.true
+  %idxprom12 = sext i32 %sub to i64
+  %array = getelementptr inbounds [2 x %struct.packsize_t]* @packsize, i64 0, i64 %idxprom123, i32 0
+  %6 = load i8** %array, align 16, !tbaa !0
+  %arrayidx15 = getelementptr inbounds i8* %6, i64 %idxprom12
+  %7 = load i8* %arrayidx15, align 1, !tbaa !1
+  %conv = zext i8 %7 to i32
+  %and16 = and i32 %conv, 63
+  %tobool17 = icmp eq i32 %and16, 0
+  br i1 %tobool17, label %if.then18, label %if.end65
+
+if.then18:                                        ; preds = %if.end, %land.lhs.true, %sw.epilog
+  %8 = load i32* %code, align 4, !tbaa !3
+  switch i32 %8, label %sw.default [
+    i32 64, label %sw.bb26
+    i32 47, label %sw.bb26
+    i32 85, label %sw.bb26
+    i32 119, label %sw.bb26
+    i32 117, label %sw.bb26
+    i32 37, label %if.end65
+    i32 40, label %sw.bb33
+    i32 344, label %sw.bb35
+    i32 88, label %sw.bb39
+    i32 376, label %sw.bb48
+    i32 120, label %sw.bb58
+    i32 65, label %sw.bb58
+    i32 90, label %sw.bb58
+    i32 97, label %sw.bb58
+    i32 99, label %sw.bb58
+    i32 67, label %sw.bb58
+    i32 66, label %sw.bb59
+    i32 98, label %sw.bb59
+    i32 72, label %sw.bb60
+    i32 104, label %sw.bb60
+    i32 80, label %sw.bb63
+  ]
+
+sw.default:                                       ; preds = %if.then18
+  %and21 = and i32 %8, 255
+  %9 = load i32* %flags22, align 4, !tbaa !3
+  %and23 = and i32 %9, 1
+  %tobool24 = icmp ne i32 %and23, 0
+  %cond25 = select i1 %tobool24, i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str18, i64 0, i64 0)
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([24 x i8]* @.str27, i64 0, i64 0), i32 %and21, i8* %cond25) #8
+  %.pre = load i32* %code, align 4, !tbaa !3
+  br label %sw.bb26
+
+sw.bb26:                                          ; preds = %if.then18, %if.then18, %if.then18, %if.then18, %if.then18, %sw.default
+  %10 = phi i32 [ %8, %if.then18 ], [ %8, %if.then18 ], [ %8, %if.then18 ], [ %8, %if.then18 ], [ %8, %if.then18 ], [ %.pre, %sw.default ]
+  %11 = load i32* %flags22, align 4, !tbaa !3
+  %and29 = and i32 %11, 1
+  %tobool30 = icmp ne i32 %and29, 0
+  %cond31 = select i1 %tobool30, i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str18, i64 0, i64 0)
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([40 x i8]* @.str28, i64 0, i64 0), i32 %10, i8* %cond31) #8
+  br label %if.end65
+
+sw.bb33:                                          ; preds = %if.then18
+  call void @llvm.lifetime.start(i64 16, i8* %savsym.sroa.0.0.cast87)
+  call void @llvm.lifetime.start(i64 24, i8* %savsym.sroa.3.0.idx)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %savsym.sroa.0.0.cast87, i8* %savsym.sroa.0.0.cast67, i64 16, i32 8, i1 false)
+  %savsym.sroa.1.16.copyload = load i8** %savsym.sroa.1.16.idx72, align 8
+  %savsym.sroa.2.24.copyload = load i8** %savsym.sroa.2.24.idx76, align 8
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %savsym.sroa.3.0.idx, i8* %savsym.sroa.3.32.cast, i64 24, i32 8, i1 false)
+  store i8* %savsym.sroa.1.16.copyload, i8** %patptr, align 8, !tbaa !0
+  store i8* %savsym.sroa.2.24.copyload, i8** %patend, align 8, !tbaa !0
+  %call34 = call fastcc i32 @S_measure_struct(%struct.tempsym_t* %symptr) #7
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %savsym.sroa.0.0.cast67, i8* %savsym.sroa.0.0.cast87, i64 16, i32 8, i1 false)
+  store i8* %savsym.sroa.1.16.copyload, i8** %savsym.sroa.1.16.idx72, align 8
+  store i8* %savsym.sroa.2.24.copyload, i8** %savsym.sroa.2.24.idx76, align 8
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %savsym.sroa.3.32.cast, i8* %savsym.sroa.3.0.idx, i64 24, i32 8, i1 false)
+  call void @llvm.lifetime.end(i64 16, i8* %savsym.sroa.0.0.cast87)
+  call void @llvm.lifetime.end(i64 24, i8* %savsym.sroa.3.0.idx)
+  br label %if.end65
+
+sw.bb35:                                          ; preds = %if.then18
+  %tobool36 = icmp eq i32 %len.1, 0
+  %.len.1 = select i1 %tobool36, i32 1, i32 %len.1
+  %rem = srem i32 %total.0131, %.len.1
+  br label %sw.bb39
+
+sw.bb39:                                          ; preds = %if.then18, %sw.bb35
+  %len.3 = phi i32 [ %len.1, %if.then18 ], [ %rem, %sw.bb35 ]
+  %cmp40 = icmp slt i32 %total.0131, %len.3
+  br i1 %cmp40, label %if.then42, label %if.end65
+
+if.then42:                                        ; preds = %sw.bb39
+  %12 = load i32* %flags22, align 4, !tbaa !3
+  %and44 = and i32 %12, 1
+  %tobool45 = icmp ne i32 %and44, 0
+  %cond46 = select i1 %tobool45, i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str18, i64 0, i64 0)
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([28 x i8]* @.str29, i64 0, i64 0), i8* %cond46) #8
+  br label %if.end65
+
+sw.bb48:                                          ; preds = %if.then18
+  %tobool49 = icmp eq i32 %len.1, 0
+  %.len.1124 = select i1 %tobool49, i32 1, i32 %len.1
+  %rem52 = srem i32 %total.0131, %.len.1124
+  %tobool53 = icmp eq i32 %rem52, 0
+  %sub55 = sub nsw i32 %.len.1124, %rem52
+  %.sub55 = select i1 %tobool53, i32 0, i32 %sub55
+  br label %sw.bb58
+
+sw.bb58:                                          ; preds = %sw.bb48, %if.then18, %if.then18, %if.then18, %if.then18, %if.then18, %if.then18
+  %len.5 = phi i32 [ %len.1, %if.then18 ], [ %len.1, %if.then18 ], [ %len.1, %if.then18 ], [ %len.1, %if.then18 ], [ %len.1, %if.then18 ], [ %len.1, %if.then18 ], [ %.sub55, %sw.bb48 ]
+  br label %if.end65
+
+sw.bb59:                                          ; preds = %if.then18, %if.then18
+  %add = add nsw i32 %len.1, 7
+  %div = sdiv i32 %add, 8
+  br label %if.end65
+
+sw.bb60:                                          ; preds = %if.then18, %if.then18
+  %add61 = add nsw i32 %len.1, 1
+  %div62 = sdiv i32 %add61, 2
+  br label %if.end65
+
+sw.bb63:                                          ; preds = %if.then18
+  br label %if.end65
+
+if.end65:                                         ; preds = %sw.bb26, %if.then18, %if.end, %sw.bb33, %sw.bb58, %sw.bb59, %sw.bb60, %sw.bb63, %if.then42, %sw.bb39
+  %size.1 = phi i32 [ %and16, %if.end ], [ 8, %sw.bb63 ], [ 1, %sw.bb60 ], [ 1, %sw.bb59 ], [ 1, %sw.bb58 ], [ -1, %if.then42 ], [ -1, %sw.bb39 ], [ %call34, %sw.bb33 ], [ 0, %if.then18 ], [ 0, %sw.bb26 ]
+  %len.6 = phi i32 [ %len.1, %if.end ], [ 1, %sw.bb63 ], [ %div62, %sw.bb60 ], [ %div, %sw.bb59 ], [ %len.5, %sw.bb58 ], [ %len.3, %if.then42 ], [ %len.3, %sw.bb39 ], [ %len.1, %sw.bb33 ], [ %len.1, %if.then18 ], [ %len.1, %sw.bb26 ]
+  %mul = mul nsw i32 %len.6, %size.1
+  %add66 = add nsw i32 %mul, %total.0131
+  %call = call fastcc signext i8 @S_next_symbol(%struct.tempsym_t* %symptr) #7
+  %tobool = icmp eq i8 %call, 0
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.end65, %entry
+  %total.0.lcssa = phi i32 [ 0, %entry ], [ %add66, %if.end65 ]
+  ret i32 %total.0.lcssa
+}

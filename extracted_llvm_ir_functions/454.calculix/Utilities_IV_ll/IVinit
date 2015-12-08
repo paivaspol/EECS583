@@ -1,0 +1,14 @@
+define i32* @IVinit(i32 %size, i32 %ival) #0 {
+entry:
+  %cmp = icmp sgt i32 %size, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32* @IVinit2(i32 %size) #8
+  tail call void @IVfill(i32 %size, i32* %call, i32 %ival) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %y.0 = phi i32* [ %call, %if.then ], [ null, %entry ]
+  ret i32* %y.0
+}

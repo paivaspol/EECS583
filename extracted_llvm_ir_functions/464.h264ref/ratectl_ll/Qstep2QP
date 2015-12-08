@@ -1,0 +1,65 @@
+define i32 @Qstep2QP(double %Qstep) #5 {
+entry:
+  %cmp = fcmp olt double %Qstep, 6.250000e-01
+  br i1 %cmp, label %return, label %for.body.i
+
+for.body.i:                                       ; preds = %entry, %for.body.i
+  %Qstep.05.i = phi double [ %mul.i, %for.body.i ], [ 8.750000e-01, %entry ]
+  %i.04.i = phi i32 [ %inc.i, %for.body.i ], [ 0, %entry ]
+  %mul.i = fmul double %Qstep.05.i, 2.000000e+00
+  %inc.i = add nsw i32 %i.04.i, 1
+  %exitcond = icmp eq i32 %inc.i, 8
+  br i1 %exitcond, label %QP2Qstep.exit, label %for.body.i
+
+QP2Qstep.exit:                                    ; preds = %for.body.i
+  %cmp2 = fcmp olt double %mul.i, %Qstep
+  br i1 %cmp2, label %return, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %QP2Qstep.exit
+  %cmp636 = fcmp ogt double %Qstep, 1.125000e+00
+  br i1 %cmp636, label %while.body, label %while.end
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %q_per.038 = phi i32 [ %add, %while.body ], [ 0, %while.cond.preheader ]
+  %Qstep.addr.037 = phi double [ %div, %while.body ], [ %Qstep, %while.cond.preheader ]
+  %div = fmul double %Qstep.addr.037, 5.000000e-01
+  %add = add nsw i32 %q_per.038, 1
+  %cmp6 = fcmp ogt double %div, 1.125000e+00
+  br i1 %cmp6, label %while.body, label %while.cond.while.end_crit_edge
+
+while.cond.while.end_crit_edge:                   ; preds = %while.body
+  %phitmp = mul i32 %add, 6
+  br label %while.end
+
+while.end:                                        ; preds = %while.cond.while.end_crit_edge, %while.cond.preheader
+  %q_per.0.lcssa = phi i32 [ %phitmp, %while.cond.while.end_crit_edge ], [ 0, %while.cond.preheader ]
+  %Qstep.addr.0.lcssa = phi double [ %div, %while.cond.while.end_crit_edge ], [ %Qstep, %while.cond.preheader ]
+  %cmp7 = fcmp ugt double %Qstep.addr.0.lcssa, 6.562500e-01
+  br i1 %cmp7, label %if.else9, label %if.end26
+
+if.else9:                                         ; preds = %while.end
+  %cmp10 = fcmp ugt double %Qstep.addr.0.lcssa, 7.500000e-01
+  br i1 %cmp10, label %if.else12, label %if.end26
+
+if.else12:                                        ; preds = %if.else9
+  %cmp13 = fcmp ugt double %Qstep.addr.0.lcssa, 8.437500e-01
+  br i1 %cmp13, label %if.else15, label %if.end26
+
+if.else15:                                        ; preds = %if.else12
+  %cmp16 = fcmp ugt double %Qstep.addr.0.lcssa, 9.375000e-01
+  br i1 %cmp16, label %if.else18, label %if.end26
+
+if.else18:                                        ; preds = %if.else15
+  %cmp19 = fcmp ugt double %Qstep.addr.0.lcssa, 1.062500e+00
+  %. = select i1 %cmp19, i32 5, i32 4
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.else18, %if.else15, %if.else12, %if.else9, %while.end
+  %q_rem.0 = phi i32 [ 0, %while.end ], [ 1, %if.else9 ], [ 2, %if.else12 ], [ 3, %if.else15 ], [ %., %if.else18 ]
+  %add27 = add nsw i32 %q_rem.0, %q_per.0.lcssa
+  br label %return
+
+return:                                           ; preds = %QP2Qstep.exit, %entry, %if.end26
+  %retval.0 = phi i32 [ %add27, %if.end26 ], [ 0, %entry ], [ 51, %QP2Qstep.exit ]
+  ret i32 %retval.0
+}

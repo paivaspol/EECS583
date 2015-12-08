@@ -1,0 +1,39 @@
+define %struct._DV* @ETree_forwardOps(%struct._ETree* %etree, i32 %type, i32 %symflag) #0 {
+entry:
+  %cmp = icmp eq %struct._ETree* %etree, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str12, i64 0, i64 0), %struct._ETree* null) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %nfront1 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
+  %1 = load i32* %nfront1, align 4, !tbaa !3
+  %call2 = tail call %struct._DV* @DV_new() #4
+  tail call void @DV_init(%struct._DV* %call2, i32 %1, double* null) #4
+  %call3 = tail call double* @DV_entries(%struct._DV* %call2) #4
+  tail call void @DV_fill(%struct._DV* %call2, double 0.000000e+00) #4
+  %cmp422 = icmp sgt i32 %1, 0
+  br i1 %cmp422, label %for.body, label %for.end
+
+for.body:                                         ; preds = %if.end, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.end ]
+  %2 = trunc i64 %indvars.iv to i32
+  %call5 = tail call double @ETree_nInternalOpsInFront(%struct._ETree* %etree, i32 %type, i32 %symflag, i32 %2) #6
+  %call6 = tail call double @ETree_nExternalOpsInFront(%struct._ETree* %etree, i32 %type, i32 %symflag, i32 %2) #6
+  %add = fadd double %call5, %call6
+  %arrayidx = getelementptr inbounds double* %call3, i64 %indvars.iv
+  %3 = load double* %arrayidx, align 8, !tbaa !4
+  %add7 = fadd double %3, %add
+  store double %add7, double* %arrayidx, align 8, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %1
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %if.end
+  ret %struct._DV* %call2
+}

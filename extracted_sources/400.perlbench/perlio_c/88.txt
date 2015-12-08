@@ -1,0 +1,60 @@
+IV
+PerlIOStdio_fill(pTHX_ PerlIO *f)
+{
+    FILE *stdio = PerlIOSelf(f, PerlIOStdio)->stdio;
+    int c;
+    /*
+     * fflush()ing read-only streams can cause trouble on some stdio-s
+     */
+    if ((PerlIOBase(f)->flags & PERLIO_F_CANWRITE)) {
+	if (PerlSIO_fflush(stdio) != 0)
+	    return EOF;
+    }
+    c = PerlSIO_fgetc(stdio);
+    if (c == EOF)
+	return EOF;
+
+#if (defined(STDIO_PTR_LVALUE) && (defined(STDIO_CNT_LVALUE) || defined(STDIO_PTR_LVAL_SETS_CNT)))
+
+#ifdef STDIO_BUFFER_WRITABLE
+    if (PerlIO_fast_gets(f) && PerlIO_has_base(f)) {
+	/* Fake ungetc() to the real buffer in case system's ungetc
+	   goes elsewhere
+	 */
+	STDCHAR *base = (STDCHAR*)PerlSIO_get_base(stdio);
+	SSize_t cnt   = PerlSIO_get_cnt(stdio);
+	STDCHAR *ptr  = (STDCHAR*)PerlSIO_get_ptr(stdio);
+	if (ptr == base+1) {
+	    *--ptr = (STDCHAR) c;
+	    PerlIOStdio_set_ptrcnt(aTHX_ f,ptr,cnt+1);
+	    if (PerlSIO_feof(stdio))
+		PerlSIO_clearerr(stdio);
+	    return 0;
+	}
+    }
+    else
+#endif
+    if (PerlIO_has_cntptr(f)) {
+	STDCHAR ch = c;
+	if (PerlIOStdio_unread(aTHX_ f,&ch,1) == 1) {
+	    return 0;
+	}
+    }
+#endif
+
+#if defined(VMS)
+    /* An ungetc()d char is handled separately from the regular
+     * buffer, so we stuff it in the buffer ourselves.
+     * Should never get called as should hit code above
+     */
+    *(--((*stdio)->_ptr)) = (unsigned char) c;
+    (*stdio)->_cnt++;
+#else
+    /* If buffer snoop scheme above fails fall back to
+       using ungetc().
+     */
+    if (PerlSIO_ungetc(c, stdio) != c)
+	return EOF;
+#endif
+    return 0;
+}

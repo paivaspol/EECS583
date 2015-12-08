@@ -1,5 +1,15 @@
-void
-Perl_unshare_hek(pTHX_ HEK *hek)
+static location, so be sure to make a copy of the structure if you need to
+store it somewhere.
+
+See L<perlguts/"Understanding the Magic of Tied Hashes and Arrays"> for more
+information on how to use this function on tied hashes.
+
+=cut
+*/
+
+HE *
+Perl_hv_fetch_ent(pTHX_ HV *hv, SV *keysv, I32 lval, register U32 hash)
 {
-    unshare_hek_or_pvn(hek, NULL, 0, 0);
+    return hv_fetch_common(hv, keysv, NULL, 0, 0, 
+			   (lval ? HV_FETCH_LVALUE : 0), Nullsv, hash);
 }

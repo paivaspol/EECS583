@@ -1,0 +1,21 @@
+bool
+Perl_grok_numeric_radix(pTHX_ const char **sp, const char *send)
+{
+#ifdef USE_LOCALE_NUMERIC
+    if (PL_numeric_radix_sv && IN_LOCALE) { 
+        STRLEN len;
+        char* radix = SvPV(PL_numeric_radix_sv, len);
+        if (*sp + len <= send && memEQ(*sp, radix, len)) {
+            *sp += len;
+            return TRUE; 
+        }
+    }
+    /* always try "." if numeric radix didn't match because
+     * we may have data from different locales mixed */
+#endif
+    if (*sp < send && **sp == '.') {
+        ++*sp;
+        return TRUE;
+    }
+    return FALSE;
+}

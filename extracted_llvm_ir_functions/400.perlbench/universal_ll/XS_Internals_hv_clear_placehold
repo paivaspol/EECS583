@@ -1,0 +1,39 @@
+define void @XS_Internals_hv_clear_placehold(%struct.cv* nocapture %cv) #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !3
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !3
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !3
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !3
+  %3 = load i32* %2, align 4, !tbaa !0
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %add.ptr.idx = shl nsw i64 %idx.ext, 32
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %sext = add i64 %add.ptr.idx, 4294967296
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds %struct.sv** %1, i64 %idxprom
+  %4 = load %struct.sv** %arrayidx, align 8, !tbaa !3
+  %sv_any = getelementptr inbounds %struct.sv* %4, i64 0, i32 0
+  %5 = load i8** %sv_any, align 8, !tbaa !3
+  %xrv_rv = bitcast i8* %5 to %struct.sv**
+  %6 = load %struct.sv** %xrv_rv, align 8, !tbaa !3
+  %7 = bitcast %struct.sv* %6 to %struct.hv*
+  %8 = and i64 %sub.ptr.sub3, 34359738360
+  %cmp = icmp eq i64 %8, 8
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([44 x i8]* @.str41, i64 0, i64 0)) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  tail call void @Perl_hv_clear_placeholders(%struct.hv* %7) #4
+  %9 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !3
+  %add.ptr9.sum = add i64 %idxprom, -1
+  %add.ptr10 = getelementptr inbounds %struct.sv** %9, i64 %add.ptr9.sum
+  store %struct.sv** %add.ptr10, %struct.sv*** @PL_stack_sp, align 8, !tbaa !3
+  ret void
+}

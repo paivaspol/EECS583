@@ -1,5 +1,10 @@
-int
-Perl_PerlIO_get_cnt(pTHX_ PerlIO *f)
+IV
+PerlIOPop_pushed(pTHX_ PerlIO *f, const char *mode, SV *arg, PerlIO_funcs *tab)
 {
-     Perl_PerlIO_or_fail(f, Get_cnt, -1, (aTHX_ f));
+    if (PerlIOValid(f)) {
+	PerlIO_flush(f);
+	PerlIO_pop(aTHX_ f);
+	return 0;
+    }
+    return -1;
 }

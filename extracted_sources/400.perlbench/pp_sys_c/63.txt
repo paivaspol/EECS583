@@ -1,0 +1,13 @@
+PP(pp_ftsize)
+{
+    I32 result = my_stat();
+    dSP; dTARGET;
+    if (result < 0)
+	RETPUSHUNDEF;
+#if Off_t_size > IVSIZE
+    PUSHn(PL_statcache.st_size);
+#else
+    PUSHi(PL_statcache.st_size);
+#endif
+    RETURN;
+}

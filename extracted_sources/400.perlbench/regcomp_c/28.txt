@@ -1,0 +1,21 @@
+SV *
+Perl_re_intuit_string(pTHX_ regexp *prog)
+{				/* Assume that RE_INTUIT is set */
+    DEBUG_r(
+	{   STRLEN n_a;
+	    char *s = SvPV(prog->check_substr
+		      ? prog->check_substr : prog->check_utf8, n_a);
+
+	    if (!PL_colorset) reginitcolors();
+	    PerlIO_printf(Perl_debug_log,
+		      "%sUsing REx %ssubstr:%s `%s%.60s%s%s'\n",
+		      PL_colors[4],
+		      prog->check_substr ? "" : "utf8 ",
+		      PL_colors[5],PL_colors[0],
+		      s,
+		      PL_colors[1],
+		      (strlen(s) > 60 ? "..." : ""));
+	} );
+
+    return prog->check_substr ? prog->check_substr : prog->check_utf8;
+}

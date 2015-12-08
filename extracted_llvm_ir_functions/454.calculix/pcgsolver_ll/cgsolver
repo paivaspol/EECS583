@@ -1,0 +1,94 @@
+define i32 @cgsolver(double* nocapture %A, double* nocapture %x, double* nocapture %b, i32 %neq, i32 %len, i32* nocapture %ia, i32* nocapture %iz, double* nocapture %eps, i32* nocapture %niter, i32 %precFlg) #0 {
+entry:
+  %cmp97 = icmp sgt i32 %neq, 0
+  br i1 %cmp97, label %for.body, label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.body, %entry
+  %cmp295 = icmp sgt i32 %len, 0
+  br i1 %cmp295, label %for.body3, label %for.end9
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv103 = phi i64 [ %indvars.iv.next104, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i32* %iz, i64 %indvars.iv103
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %dec = add nsw i32 %0, -1
+  store i32 %dec, i32* %arrayidx, align 4, !tbaa !0
+  %indvars.iv.next104 = add i64 %indvars.iv103, 1
+  %lftr.wideiv105 = trunc i64 %indvars.iv.next104 to i32
+  %exitcond106 = icmp eq i32 %lftr.wideiv105, %neq
+  br i1 %exitcond106, label %for.cond1.preheader, label %for.body
+
+for.body3:                                        ; preds = %for.cond1.preheader, %for.body3
+  %indvars.iv99 = phi i64 [ %indvars.iv.next100, %for.body3 ], [ 0, %for.cond1.preheader ]
+  %arrayidx5 = getelementptr inbounds i32* %ia, i64 %indvars.iv99
+  %1 = load i32* %arrayidx5, align 4, !tbaa !0
+  %dec6 = add nsw i32 %1, -1
+  store i32 %dec6, i32* %arrayidx5, align 4, !tbaa !0
+  %indvars.iv.next100 = add i64 %indvars.iv99, 1
+  %lftr.wideiv101 = trunc i64 %indvars.iv.next100 to i32
+  %exitcond102 = icmp eq i32 %lftr.wideiv101, %len
+  br i1 %exitcond102, label %for.end9, label %for.body3
+
+for.end9:                                         ; preds = %for.body3, %for.cond1.preheader
+  %conv = sext i32 %neq to i64
+  %call = tail call i8* @u_calloc(i64 %conv, i64 8) #5
+  %2 = bitcast i8* %call to double*
+  tail call void @Scaling(double* %A, double* %b, i32 %neq, i32* %ia, i32* %iz, double* %2) #6
+  switch i32 %precFlg, label %for.cond30.preheader [
+    i32 0, label %if.then
+    i32 3, label %if.then18
+  ]
+
+if.then:                                          ; preds = %for.end9
+  %call11 = tail call i8* @u_calloc(i64 %conv, i64 8) #5
+  %3 = bitcast i8* %call11 to double*
+  %call13 = tail call i8* @u_calloc(i64 %conv, i64 8) #5
+  %4 = bitcast i8* %call13 to double*
+  %call15 = tail call i8* @u_calloc(i64 %conv, i64 8) #5
+  %5 = bitcast i8* %call15 to double*
+  tail call void @CG(double* %A, double* %x, double* %b, i32 %neq, i32 undef, i32* %ia, i32* %iz, double* %eps, i32* %niter, double* %3, double* %4, double* %5) #6
+  tail call void @free(i8* %call11) #5
+  tail call void @free(i8* %call13) #5
+  tail call void @free(i8* %call15) #5
+  br label %for.cond30.preheader
+
+if.then18:                                        ; preds = %for.end9
+  %call20 = tail call i8* @u_calloc(i64 %conv, i64 8) #5
+  %6 = bitcast i8* %call20 to double*
+  %call22 = tail call i8* @u_calloc(i64 %conv, i64 8) #5
+  %7 = bitcast i8* %call22 to double*
+  %call24 = tail call i8* @u_calloc(i64 %conv, i64 8) #5
+  %8 = bitcast i8* %call24 to double*
+  %conv25 = sext i32 %len to i64
+  %call26 = tail call i8* @u_calloc(i64 %conv25, i64 8) #5
+  %9 = bitcast i8* %call26 to double*
+  %call28 = tail call i8* @u_calloc(i64 %conv, i64 8) #5
+  %10 = bitcast i8* %call28 to double*
+  tail call void @PCG(double* %A, double* %x, double* %b, i32 %neq, i32 %len, i32* %ia, i32* %iz, double* %eps, i32* %niter, i32 3, double* %6, double* %7, double* %8, double* %9, double* %10) #6
+  tail call void @free(i8* %call20) #5
+  tail call void @free(i8* %call22) #5
+  tail call void @free(i8* %call24) #5
+  tail call void @free(i8* %call26) #5
+  tail call void @free(i8* %call28) #5
+  br label %for.cond30.preheader
+
+for.cond30.preheader:                             ; preds = %for.end9, %if.then18, %if.then
+  br i1 %cmp97, label %for.body33, label %for.end40
+
+for.body33:                                       ; preds = %for.cond30.preheader, %for.body33
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body33 ], [ 0, %for.cond30.preheader ]
+  %arrayidx35 = getelementptr inbounds double* %2, i64 %indvars.iv
+  %11 = load double* %arrayidx35, align 8, !tbaa !3
+  %arrayidx37 = getelementptr inbounds double* %x, i64 %indvars.iv
+  %12 = load double* %arrayidx37, align 8, !tbaa !3
+  %mul = fmul double %11, %12
+  store double %mul, double* %arrayidx37, align 8, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %neq
+  br i1 %exitcond, label %for.end40, label %for.body33
+
+for.end40:                                        ; preds = %for.body33, %for.cond30.preheader
+  tail call void @free(i8* %call) #5
+  ret i32 0
+}

@@ -1,0 +1,172 @@
+STATIC bool
+S_next_symbol(pTHX_ register tempsym_t* symptr )
+{
+  register char* patptr = symptr->patptr; 
+  register char* patend = symptr->patend; 
+
+  symptr->flags &= ~FLAG_SLASH;
+
+  while (patptr < patend) {
+    if (isSPACE(*patptr))
+      patptr++;
+    else if (*patptr == '#') {
+      patptr++;
+      while (patptr < patend && *patptr != '\n')
+	patptr++;
+      if (patptr < patend)
+	patptr++;
+    } else {
+      /* We should have found a template code */ 
+      I32 code = *patptr++ & 0xFF;
+      U32 inherited_modifiers = 0;
+
+      if (code == ','){ /* grandfather in commas but with a warning */
+	if (((symptr->flags & FLAG_COMMA) == 0) && ckWARN(WARN_UNPACK)){
+          symptr->flags |= FLAG_COMMA;
+	  Perl_warner(aTHX_ packWARN(WARN_UNPACK),
+	 	      "Invalid type ',' in %s",
+                      symptr->flags & FLAG_PACK ? "pack" : "unpack" );
+        }
+	continue;
+      }
+      
+      /* for '(', skip to ')' */
+      if (code == '(') {  
+        if( isDIGIT(*patptr) || *patptr == '*' || *patptr == '[' )
+          Perl_croak(aTHX_ "()-group starts with a count in %s",
+                     symptr->flags & FLAG_PACK ? "pack" : "unpack" );
+        symptr->grpbeg = patptr;
+        patptr = 1 + ( symptr->grpend = group_end(patptr, patend, ')') );
+        if( symptr->level >= MAX_SUB_TEMPLATE_LEVEL )
+	  Perl_croak(aTHX_ "Too deeply nested ()-groups in %s",
+                     symptr->flags & FLAG_PACK ? "pack" : "unpack" );
+      }
+
+      /* look for group modifiers to inherit */
+      if (TYPE_ENDIANNESS(symptr->flags)) {
+        if (strchr(ENDIANNESS_ALLOWED_TYPES, TYPE_NO_MODIFIERS(code)))
+          inherited_modifiers |= TYPE_ENDIANNESS(symptr->flags);
+      }
+
+      /* look for modifiers */
+      while (patptr < patend) {
+        const char *allowed;
+        I32 modifier = 0;
+        switch (*patptr) {
+          case '!':
+            modifier = TYPE_IS_SHRIEKING;
+            allowed = SHRIEKING_ALLOWED_TYPES;
+            break;
+#ifdef PERL_PACK_CAN_BYTEORDER
+          case '>':
+            modifier = TYPE_IS_BIG_ENDIAN;
+            allowed = ENDIANNESS_ALLOWED_TYPES;
+            break;
+          case '<':
+            modifier = TYPE_IS_LITTLE_ENDIAN;
+            allowed = ENDIANNESS_ALLOWED_TYPES;
+            break;
+#endif
+          default:
+            break;
+        }
+
+        if (modifier == 0)
+          break;
+
+        if (!strchr(allowed, TYPE_NO_MODIFIERS(code)))
+          Perl_croak(aTHX_ "'%c' allowed only after types %s in %s", *patptr,
+                     allowed, symptr->flags & FLAG_PACK ? "pack" : "unpack" );
+
+        if (TYPE_ENDIANNESS(code | modifier) == TYPE_ENDIANNESS_MASK)
+          Perl_croak(aTHX_ "Can't use both '<' and '>' after type '%c' in %s",
+                     (int) TYPE_NO_MODIFIERS(code),
+                     symptr->flags & FLAG_PACK ? "pack" : "unpack" );
+        else if (TYPE_ENDIANNESS(code | modifier | inherited_modifiers) ==
+                 TYPE_ENDIANNESS_MASK)
+          Perl_croak(aTHX_ "Can't use '%c' in a group with different byte-order in %s",
+                     *patptr, symptr->flags & FLAG_PACK ? "pack" : "unpack" );
+
+        if (ckWARN(WARN_UNPACK)) {
+          if (code & modifier)
+	    Perl_warner(aTHX_ packWARN(WARN_UNPACK),
+                        "Duplicate modifier '%c' after '%c' in %s",
+                        *patptr, (int) TYPE_NO_MODIFIERS(code),
+                        symptr->flags & FLAG_PACK ? "pack" : "unpack" );
+        }
+
+        code |= modifier;
+        patptr++;
+      }
+
+      /* inherit modifiers */
+      code |= inherited_modifiers;
+
+      /* look for count and/or / */ 
+      if (patptr < patend) {
+	if (isDIGIT(*patptr)) {
+ 	  patptr = get_num( patptr, &symptr->length );
+          symptr->howlen = e_number;
+
+        } else if (*patptr == '*') {
+          patptr++;
+          symptr->howlen = e_star;
+
+        } else if (*patptr == '[') {
+          char* lenptr = ++patptr;            
+          symptr->howlen = e_number;
+          patptr = group_end( patptr, patend, ']' ) + 1;
+          /* what kind of [] is it? */
+          if (isDIGIT(*lenptr)) {
+            lenptr = get_num( lenptr, &symptr->length );
+            if( *lenptr != ']' )
+              Perl_croak(aTHX_ "Malformed integer in [] in %s",
+                         symptr->flags & FLAG_PACK ? "pack" : "unpack");
+          } else {
+            tempsym_t savsym = *symptr;
+            symptr->patend = patptr-1;
+            symptr->patptr = lenptr;
+            savsym.length = measure_struct(symptr);
+            *symptr = savsym;
+          }
+        } else {
+          symptr->howlen = e_no_len;
+          symptr->length = 1;
+        }
+
+        /* try to find / */
+        while (patptr < patend) {
+          if (isSPACE(*patptr))
+            patptr++;
+          else if (*patptr == '#') {
+            patptr++;
+            while (patptr < patend && *patptr != '\n')
+	      patptr++;
+            if (patptr < patend)
+	      patptr++;
+          } else {
+            if (*patptr == '/') {
+              symptr->flags |= FLAG_SLASH;
+              patptr++;
+              if (patptr < patend &&
+                  (isDIGIT(*patptr) || *patptr == '*' || *patptr == '['))
+                Perl_croak(aTHX_ "'/' does not take a repeat count in %s",
+                           symptr->flags & FLAG_PACK ? "pack" : "unpack" );
+            }
+            break;
+	  }
+	}
+      } else {
+        /* at end - no count, no / */
+        symptr->howlen = e_no_len;
+        symptr->length = 1;
+      }
+
+      symptr->code = code;
+      symptr->patptr = patptr; 
+      return TRUE;
+    }
+  }
+  symptr->patptr = patptr; 
+  return FALSE;
+}

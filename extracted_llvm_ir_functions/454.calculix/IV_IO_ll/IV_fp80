@@ -1,0 +1,35 @@
+define i32 @IV_fp80(%struct._IV* %iv, %struct._IO_FILE* %fp, i32 %column, i32* %pierr) #0 {
+entry:
+  %cmp = icmp eq %struct._IV* %iv, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq i32* %pierr, null
+  %or.cond21 = or i1 %or.cond, %cmp3
+  br i1 %or.cond21, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str31, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp, i32* %pierr) #5
+  tail call void @exit(i32 -1) #8
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
+  %1 = load i32* %size, align 4, !tbaa !3
+  %cmp4 = icmp sgt i32 %1, 0
+  br i1 %cmp4, label %land.lhs.true, label %if.end10
+
+land.lhs.true:                                    ; preds = %if.end
+  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
+  %2 = load i32** %vec, align 8, !tbaa !0
+  %cmp5 = icmp eq i32* %2, null
+  br i1 %cmp5, label %if.end10, label %if.then6
+
+if.then6:                                         ; preds = %land.lhs.true
+  %call9 = tail call i32 @IVfp80(%struct._IO_FILE* %fp, i32 %1, i32* %2, i32 %column, i32* %pierr) #5
+  br label %if.end10
+
+if.end10:                                         ; preds = %land.lhs.true, %if.then6, %if.end
+  %column.addr.0 = phi i32 [ %call9, %if.then6 ], [ %column, %land.lhs.true ], [ %column, %if.end ]
+  ret i32 %column.addr.0
+}

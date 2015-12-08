@@ -1,0 +1,31 @@
+OP *
+Perl_my_attrs(pTHX_ OP *o, OP *attrs)
+{
+    OP *rops = Nullop;
+    int maybe_scalar = 0;
+
+/* [perl #17376]: this appears to be premature, and results in code such as
+   C< our(%x); > executing in list mode rather than void mode */
+#if 0
+    if (o->op_flags & OPf_PARENS)
+	list(o);
+    else
+	maybe_scalar = 1;
+#else
+    maybe_scalar = 1;
+#endif
+    if (attrs)
+	SAVEFREEOP(attrs);
+    o = my_kid(o, attrs, &rops);
+    if (rops) {
+	if (maybe_scalar && o->op_type == OP_PADSV) {
+	    o = scalar(append_list(OP_LIST, (LISTOP*)rops, (LISTOP*)o));
+	    o->op_private |= OPpLVAL_INTRO;
+	}
+	else
+	    o = append_list(OP_LIST, (LISTOP*)o, (LISTOP*)rops);
+    }
+    PL_in_my = FALSE;
+    PL_in_my_stash = Nullhv;
+    return o;
+}

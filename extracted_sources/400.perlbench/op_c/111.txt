@@ -1,0 +1,24 @@
+OP *
+Perl_ck_spair(pTHX_ OP *o)
+{
+    if (o->op_flags & OPf_KIDS) {
+	OP* newop;
+	OP* kid;
+	OPCODE type = o->op_type;
+	o = modkids(ck_fun(o), type);
+	kid = cUNOPo->op_first;
+	newop = kUNOP->op_first->op_sibling;
+	if (newop &&
+	    (newop->op_sibling ||
+	     !(PL_opargs[newop->op_type] & OA_RETSCALAR) ||
+	     newop->op_type == OP_PADAV || newop->op_type == OP_PADHV ||
+	     newop->op_type == OP_RV2AV || newop->op_type == OP_RV2HV)) {
+
+	    return o;
+	}
+	op_free(kUNOP->op_first);
+	kUNOP->op_first = newop;
+    }
+    o->op_ppaddr = PL_ppaddr[++o->op_type];
+    return ck_fun(o);
+}

@@ -1,11 +1,8 @@
-void
-Perl_sv_clean_objs(pTHX)
+static void
+do_report_used(pTHX_ SV *sv)
 {
-    PL_in_clean_objs = TRUE;
-    visit(do_clean_objs, SVf_ROK, SVf_ROK);
-#ifndef DISABLE_DESTRUCTOR_KLUDGE
-    /* some barnacles may yet remain, clinging to typeglobs */
-    visit(do_clean_named_objs, SVt_PVGV, SVTYPEMASK);
-#endif
-    PL_in_clean_objs = FALSE;
+    if (SvTYPE(sv) != SVTYPEMASK) {
+	PerlIO_printf(Perl_debug_log, "****\n");
+	sv_dump(sv);
+    }
 }

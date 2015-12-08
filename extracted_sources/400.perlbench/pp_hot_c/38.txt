@@ -1,0 +1,155 @@
+PP(pp_leavesublv)
+{
+    dSP;
+    SV **mark;
+    SV **newsp;
+    PMOP *newpm;
+    I32 gimme;
+    register PERL_CONTEXT *cx;
+    SV *sv;
+
+    POPBLOCK(cx,newpm);
+    cxstack_ix++; /* temporarily protect top context */
+
+    TAINT_NOT;
+
+    if (cx->blk_sub.lval & OPpENTERSUB_INARGS) {
+	/* We are an argument to a function or grep().
+	 * This kind of lvalueness was legal before lvalue
+	 * subroutines too, so be backward compatible:
+	 * cannot report errors.  */
+
+	/* Scalar context *is* possible, on the LHS of -> only,
+	 * as in f()->meth().  But this is not an lvalue. */
+	if (gimme == G_SCALAR)
+	    goto temporise;
+	if (gimme == G_ARRAY) {
+	    if (!CvLVALUE(cx->blk_sub.cv))
+		goto temporise_array;
+	    EXTEND_MORTAL(SP - newsp);
+	    for (mark = newsp + 1; mark <= SP; mark++) {
+		if (SvTEMP(*mark))
+		    /* empty */ ;
+		else if (SvFLAGS(*mark) & (SVs_PADTMP | SVf_READONLY))
+		    *mark = sv_mortalcopy(*mark);
+		else {
+		    /* Can be a localized value subject to deletion. */
+		    PL_tmps_stack[++PL_tmps_ix] = *mark;
+		    (void)SvREFCNT_inc(*mark);
+		}
+	    }
+	}
+    }
+    else if (cx->blk_sub.lval) {     /* Leave it as it is if we can. */
+	/* Here we go for robustness, not for speed, so we change all
+	 * the refcounts so the caller gets a live guy. Cannot set
+	 * TEMP, so sv_2mortal is out of question. */
+	if (!CvLVALUE(cx->blk_sub.cv)) {
+	    LEAVE;
+	    cxstack_ix--;
+	    POPSUB(cx,sv);
+	    PL_curpm = newpm;
+	    LEAVESUB(sv);
+	    DIE(aTHX_ "Can't modify non-lvalue subroutine call");
+	}
+	if (gimme == G_SCALAR) {
+	    MARK = newsp + 1;
+	    EXTEND_MORTAL(1);
+	    if (MARK == SP) {
+		if (SvFLAGS(TOPs) & (SVs_TEMP | SVs_PADTMP | SVf_READONLY)) {
+		    LEAVE;
+		    cxstack_ix--;
+		    POPSUB(cx,sv);
+		    PL_curpm = newpm;
+		    LEAVESUB(sv);
+		    DIE(aTHX_ "Can't return %s from lvalue subroutine",
+			SvREADONLY(TOPs) ? (TOPs == &PL_sv_undef) ? "undef"
+			: "a readonly value" : "a temporary");
+		}
+		else {                  /* Can be a localized value
+					 * subject to deletion. */
+		    PL_tmps_stack[++PL_tmps_ix] = *mark;
+		    (void)SvREFCNT_inc(*mark);
+		}
+	    }
+	    else {			/* Should not happen? */
+		LEAVE;
+		cxstack_ix--;
+		POPSUB(cx,sv);
+		PL_curpm = newpm;
+		LEAVESUB(sv);
+		DIE(aTHX_ "%s returned from lvalue subroutine in scalar context",
+		    (MARK > SP ? "Empty array" : "Array"));
+	    }
+	    SP = MARK;
+	}
+	else if (gimme == G_ARRAY) {
+	    EXTEND_MORTAL(SP - newsp);
+	    for (mark = newsp + 1; mark <= SP; mark++) {
+		if (*mark != &PL_sv_undef
+		    && SvFLAGS(*mark) & (SVs_TEMP | SVs_PADTMP | SVf_READONLY)) {
+		    /* Might be flattened array after $#array =  */
+		    PUTBACK;
+		    LEAVE;
+		    cxstack_ix--;
+		    POPSUB(cx,sv);
+		    PL_curpm = newpm;
+		    LEAVESUB(sv);
+		    DIE(aTHX_ "Can't return a %s from lvalue subroutine",
+			SvREADONLY(TOPs) ? "readonly value" : "temporary");
+		}
+		else {
+		    /* Can be a localized value subject to deletion. */
+		    PL_tmps_stack[++PL_tmps_ix] = *mark;
+		    (void)SvREFCNT_inc(*mark);
+		}
+	    }
+	}
+    }
+    else {
+	if (gimme == G_SCALAR) {
+	  temporise:
+	    MARK = newsp + 1;
+	    if (MARK <= SP) {
+		if (cx->blk_sub.cv && CvDEPTH(cx->blk_sub.cv) > 1) {
+		    if (SvTEMP(TOPs)) {
+			*MARK = SvREFCNT_inc(TOPs);
+			FREETMPS;
+			sv_2mortal(*MARK);
+		    }
+		    else {
+			sv = SvREFCNT_inc(TOPs); /* FREETMPS could clobber it */
+			FREETMPS;
+			*MARK = sv_mortalcopy(sv);
+			SvREFCNT_dec(sv);
+		    }
+		}
+		else
+		    *MARK = SvTEMP(TOPs) ? TOPs : sv_mortalcopy(TOPs);
+	    }
+	    else {
+		MEXTEND(MARK, 0);
+		*MARK = &PL_sv_undef;
+	    }
+	    SP = MARK;
+	}
+	else if (gimme == G_ARRAY) {
+	  temporise_array:
+	    for (MARK = newsp + 1; MARK <= SP; MARK++) {
+		if (!SvTEMP(*MARK)) {
+		    *MARK = sv_mortalcopy(*MARK);
+		    TAINT_NOT;  /* Each item is independent */
+		}
+	    }
+	}
+    }
+    PUTBACK;
+
+    LEAVE;
+    cxstack_ix--;
+    POPSUB(cx,sv);	/* Stack values are safe: release CV and @_ ... */
+    PL_curpm = newpm;	/* ... and pop $1 et al */
+
+    LEAVESUB(sv);
+    return pop_return();
+}

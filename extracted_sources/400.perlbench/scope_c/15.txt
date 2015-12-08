@@ -1,8 +1,9 @@
-void
-Perl_save_int(pTHX_ int *intp)
+SV*
+Perl_save_svref(pTHX_ SV **sptr)
 {
     SSCHECK(3);
-    SSPUSHINT(*intp);
-    SSPUSHPTR(intp);
-    SSPUSHINT(SAVEt_INT);
+    SSPUSHPTR(sptr);
+    SSPUSHPTR(SvREFCNT_inc(*sptr));
+    SSPUSHINT(SAVEt_SVREF);
+    return save_scalar_at(sptr);
 }

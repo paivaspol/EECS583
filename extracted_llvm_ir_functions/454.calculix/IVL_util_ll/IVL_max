@@ -1,0 +1,50 @@
+define i32 @IVL_max(%struct._IVL* %ivl) #0 {
+entry:
+  %i = alloca i32, align 4
+  %size = alloca i32, align 4
+  %ent = alloca i32*, align 8
+  %cmp = icmp eq %struct._IVL* %ivl, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %nlist1 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
+  %0 = load i32* %nlist1, align 4, !tbaa !3
+  %cmp2 = icmp slt i32 %0, 1
+  br i1 %cmp2, label %if.then, label %for.body
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([41 x i8]* @.str2, i64 0, i64 0), %struct._IVL* %ivl) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+for.body:                                         ; preds = %lor.lhs.false, %for.inc
+  %first.025 = phi i32 [ %first.1, %for.inc ], [ 1, %lor.lhs.false ]
+  %ilist.024 = phi i32 [ %inc, %for.inc ], [ 0, %lor.lhs.false ]
+  %maxval.023 = phi i32 [ %maxval.1, %for.inc ], [ -1, %lor.lhs.false ]
+  call void @IVL_listAndSize(%struct._IVL* %ivl, i32 %ilist.024, i32* %size, i32** %ent) #4
+  %2 = load i32* %size, align 4, !tbaa !3
+  %cmp4 = icmp sgt i32 %2, 0
+  br i1 %cmp4, label %if.then5, label %for.inc
+
+if.then5:                                         ; preds = %for.body
+  %3 = load i32** %ent, align 8, !tbaa !0
+  %call6 = call i32 @IVmax(i32 %2, i32* %3, i32* %i) #4
+  %cmp7 = icmp eq i32 %first.025, 1
+  br i1 %cmp7, label %for.inc, label %if.else
+
+if.else:                                          ; preds = %if.then5
+  %cmp9 = icmp slt i32 %maxval.023, %call6
+  %call6.maxval.0 = select i1 %cmp9, i32 %call6, i32 %maxval.023
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.else, %if.then5, %for.body
+  %maxval.1 = phi i32 [ %maxval.023, %for.body ], [ %call6, %if.then5 ], [ %call6.maxval.0, %if.else ]
+  %first.1 = phi i32 [ %first.025, %for.body ], [ 0, %if.then5 ], [ %first.025, %if.else ]
+  %inc = add nsw i32 %ilist.024, 1
+  %exitcond = icmp eq i32 %inc, %0
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  ret i32 %maxval.1
+}

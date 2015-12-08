@@ -1,106 +1,101 @@
-static basic_block
-force_nonfallthru_and_redirect (e, target)
+bool
+redirect_edge_and_branch (e, target)
      edge e;
      basic_block target;
 {
-  basic_block jump_block, new_bb = NULL;
-  rtx note;
-  edge new_edge;
+  rtx tmp;
+  rtx old_label = e->dest->head;
+  basic_block src = e->src;
+  rtx insn = src->end;
 
-  if (e->flags & EDGE_ABNORMAL)
-    abort ();
-  else if (!(e->flags & EDGE_FALLTHRU))
-    abort ();
-  else if (e->src == ENTRY_BLOCK_PTR)
+  if (e->flags & (EDGE_ABNORMAL_CALL | EDGE_EH))
+    return false;
+
+  if (try_redirect_by_replacing_jump (e, target))
+    return true;
+
+  /* Do this fast path late, as we want above code to simplify for cases
+     where called on single edge leaving basic block containing nontrivial
+     jump insn.  */
+  else if (e->dest == target)
+    return false;
+
+  /* We can only redirect non-fallthru edges of jump insn.  */
+  if (e->flags & EDGE_FALLTHRU)
+    return false;
+  else if (GET_CODE (insn) != JUMP_INSN)
+    return false;
+
+  /* Recognize a tablejump and adjust all matching cases.  */
+  if ((tmp = JUMP_LABEL (insn)) != NULL_RTX
+      && (tmp = NEXT_INSN (tmp)) != NULL_RTX
+      && GET_CODE (tmp) == JUMP_INSN
+      && (GET_CODE (PATTERN (tmp)) == ADDR_VEC
+	  || GET_CODE (PATTERN (tmp)) == ADDR_DIFF_VEC))
     {
-      /* We can't redirect the entry block.  Create an empty block at the
-         start of the function which we use to add the new jump.  */
-      edge *pe1;
-      basic_block bb = create_basic_block (0, e->dest->head, NULL);
+      rtvec vec;
+      int j;
+      rtx new_label = block_label (target);
 
-      /* Change the existing edge's source to be the new block, and add
-	 a new edge from the entry block to the new block.  */
-      e->src = bb;
-      bb->count = e->count;
-      bb->frequency = EDGE_FREQUENCY (e);
-      bb->loop_depth = 0;
-      for (pe1 = &ENTRY_BLOCK_PTR->succ; *pe1; pe1 = &(*pe1)->succ_next)
-	if (*pe1 == e)
-	  {
-	    *pe1 = e->succ_next;
-	    break;
-	  }
-      e->succ_next = 0;
-      bb->succ = e;
-      make_single_succ_edge (ENTRY_BLOCK_PTR, bb, EDGE_FALLTHRU);
-    }
-
-  if (e->src->succ->succ_next)
-    {
-      /* Create the new structures.  */
-
-      /* Position the new block correctly relative to loop notes.  */
-      note = last_loop_beg_note (e->src->end);
-      note = NEXT_INSN (note);
-
-      /* ... and ADDR_VECs.  */
-      if (note != NULL
-	  && GET_CODE (note) == CODE_LABEL
-	  && NEXT_INSN (note)
-	  && GET_CODE (NEXT_INSN (note)) == JUMP_INSN
-	  && (GET_CODE (PATTERN (NEXT_INSN (note))) == ADDR_DIFF_VEC
-	      || GET_CODE (PATTERN (NEXT_INSN (note))) == ADDR_VEC))
-	note = NEXT_INSN (NEXT_INSN (note));
-
-      jump_block = create_basic_block (e->src->index + 1, note, NULL);
-      jump_block->count = e->count;
-      jump_block->frequency = EDGE_FREQUENCY (e);
-      jump_block->loop_depth = target->loop_depth;
-
-      if (target->global_live_at_start)
-	{
-	  jump_block->global_live_at_start
-	    = OBSTACK_ALLOC_REG_SET (&flow_obstack);
-	  jump_block->global_live_at_end
-	    = OBSTACK_ALLOC_REG_SET (&flow_obstack);
-	  COPY_REG_SET (jump_block->global_live_at_start,
-			target->global_live_at_start);
-	  COPY_REG_SET (jump_block->global_live_at_end,
-			target->global_live_at_start);
-	}
-
-      /* Wire edge in.  */
-      new_edge = make_edge (e->src, jump_block, EDGE_FALLTHRU);
-      new_edge->probability = e->probability;
-      new_edge->count = e->count;
-
-      /* Redirect old edge.  */
-      redirect_edge_pred (e, jump_block);
-      e->probability = REG_BR_PROB_BASE;
-
-      new_bb = jump_block;
-    }
-  else
-    jump_block = e->src;
-
-  e->flags &= ~EDGE_FALLTHRU;
-  if (target == EXIT_BLOCK_PTR)
-    {
-      if (HAVE_return)
-	emit_jump_insn_after (gen_return (), jump_block->end);
+      if (target == EXIT_BLOCK_PTR)
+	return false;
+      if (GET_CODE (PATTERN (tmp)) == ADDR_VEC)
+	vec = XVEC (PATTERN (tmp), 0);
       else
-	abort ();
+	vec = XVEC (PATTERN (tmp), 1);
+
+      for (j = GET_NUM_ELEM (vec) - 1; j >= 0; --j)
+	if (XEXP (RTVEC_ELT (vec, j), 0) == old_label)
+	  {
+	    RTVEC_ELT (vec, j) = gen_rtx_LABEL_REF (Pmode, new_label);
+	    --LABEL_NUSES (old_label);
+	    ++LABEL_NUSES (new_label);
+	  }
+
+      /* Handle casesi dispatch insns */
+      if ((tmp = single_set (insn)) != NULL
+	  && SET_DEST (tmp) == pc_rtx
+	  && GET_CODE (SET_SRC (tmp)) == IF_THEN_ELSE
+	  && GET_CODE (XEXP (SET_SRC (tmp), 2)) == LABEL_REF
+	  && XEXP (XEXP (SET_SRC (tmp), 2), 0) == old_label)
+	{
+	  XEXP (SET_SRC (tmp), 2) = gen_rtx_LABEL_REF (VOIDmode,
+						       new_label);
+	  --LABEL_NUSES (old_label);
+	  ++LABEL_NUSES (new_label);
+	}
     }
   else
     {
-      rtx label = block_label (target);
-      emit_jump_insn_after (gen_jump (label), jump_block->end);
-      JUMP_LABEL (jump_block->end) = label;
-      LABEL_NUSES (label)++;
+      /* ?? We may play the games with moving the named labels from
+	 one basic block to the other in case only one computed_jump is
+	 available.  */
+      if (computed_jump_p (insn)
+	  /* A return instruction can't be redirected.  */
+	  || returnjump_p (insn))
+	return false;
+
+      /* If the insn doesn't go where we think, we're confused.  */
+      if (JUMP_LABEL (insn) != old_label)
+	abort ();
+
+      /* If the substitution doesn't succeed, die.  This can happen
+	 if the back end emitted unrecognizable instructions or if
+	 target is exit block on some arches.  */
+      if (!redirect_jump (insn, block_label (target), 0))
+	{
+	  if (target == EXIT_BLOCK_PTR)
+	    return false;
+	  abort ();
+	}
     }
 
-  emit_barrier_after (jump_block->end);
-  redirect_edge_succ_nodup (e, target);
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file, "Edge %i->%i redirected to %i\n",
+	     e->src->index, e->dest->index, target->index);
 
-  return new_bb;
+  if (e->dest != target)
+    redirect_edge_succ_nodup (e, target);
+
+  return true;
 }

@@ -1,0 +1,33 @@
+define i32 @get_mem_FME() #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %width = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 13
+  %1 = load i32* %width, align 4, !tbaa !4
+  %shr = ashr i32 %1, 4
+  %add = add nsw i32 %shr, 1
+  %conv = sext i32 %add to i64
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 4) #5
+  %2 = bitcast i8* %call to i32*
+  store i32* %2, i32** @flag_intra, align 8, !tbaa !3
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([24 x i8]* @.str1, i64 0, i64 0)) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %3 = load %struct.InputParameters** @input, align 8, !tbaa !3
+  %search_range = getelementptr inbounds %struct.InputParameters* %3, i64 0, i32 8
+  %4 = load i32* %search_range, align 4, !tbaa !4
+  %mul = shl nsw i32 %4, 1
+  %add218 = or i32 %mul, 1
+  %call6 = tail call i32 @get_mem2Dint(i32*** @McostState, i32 %add218, i32 %add218) #5
+  %call8 = tail call i32 @get_mem_mincost(i32****** @all_mincost) #4
+  %add9 = add nsw i32 %call8, %call6
+  %call10 = tail call i32 @get_mem_bwmincost(i32****** @all_bwmincost) #4
+  %add11 = add nsw i32 %add9, %call10
+  %call12 = tail call i32 @get_mem2D(i8*** @SearchState, i32 7, i32 7) #5
+  %add13 = add nsw i32 %add11, %call12
+  ret i32 %add13
+}

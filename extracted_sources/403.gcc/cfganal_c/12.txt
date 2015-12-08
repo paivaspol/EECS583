@@ -1,11 +1,19 @@
 void
-remove_fake_edges ()
+flow_edge_list_print (str, edge_list, num_edges, file)
+     const char *str;
+     const edge *edge_list;
+     int num_edges;
+     FILE *file;
 {
-  int x;
+  int i;
 
-  for (x = 0; x < n_basic_blocks; x++)
-    remove_fake_successors (BASIC_BLOCK (x));
+  if (! edge_list)
+    return;
 
-  /* We've handled all successors except the entry block's.  */
-  remove_fake_successors (ENTRY_BLOCK_PTR);
+  fprintf (file, "%s { ", str);
+  for (i = 0; i < num_edges; i++)
+    fprintf (file, "%d->%d ", edge_list[i]->src->index,
+	     edge_list[i]->dest->index);
+
+  fputs ("}\n", file);
 }

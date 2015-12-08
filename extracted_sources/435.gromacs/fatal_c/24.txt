@@ -1,0 +1,17 @@
+void doexceptions(void)
+{
+#include <sigfpe.h>
+#include <signal.h>
+  int hs[] = { SIGILL, SIGFPE, SIGTRAP, SIGEMT, SIGSYS };
+  
+  int onoff,en_mask,abort_action,i;
+  
+  onoff   = _DEBUG;
+  en_mask = _EN_UNDERFL | _EN_OVERFL | _EN_DIVZERO | 
+    _EN_INVALID | _EN_INT_OVERFL;
+  abort_action = _ABORT_ON_ERROR;
+  handle_sigfpes(onoff,en_mask,user_routine,abort_action,abort_routine);
+  
+  for(i=0; (i<asize(hs)); i++)
+    signal(hs[i],handle_signals);
+}

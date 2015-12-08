@@ -1,0 +1,46 @@
+define internal i32 @utf16rev_textfilter(i32 %idx, %struct.sv* %sv, i32 %maxlen) #0 {
+entry:
+  %newlen = alloca i32, align 4
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %0, i64 8
+  %1 = bitcast i8* %xpv_cur to i64*
+  %2 = load i64* %1, align 8, !tbaa !4
+  %add = add nsw i32 %idx, 1
+  %call = call i32 @Perl_filter_read(i32 %add, %struct.sv* %sv, i32 %maxlen) #7
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %3 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur2 = getelementptr inbounds i8* %3, i64 8
+  %4 = bitcast i8* %xpv_cur2 to i64*
+  %5 = load i64* %4, align 8, !tbaa !4
+  %mul = mul i64 %5, 3
+  %div = lshr i64 %mul, 1
+  %add3 = add i64 %div, 1
+  %call5 = call i8* @Perl_safesysmalloc(i64 %add3) #6
+  %6 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %6 to i8**
+  %7 = load i8** %xpv_pv, align 8, !tbaa !0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call5, i8* %7, i64 %2, i32 1, i1 false)
+  %8 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv9 = bitcast i8* %8 to i8**
+  %9 = load i8** %xpv_pv9, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds i8* %9, i64 %2
+  %add.ptr10 = getelementptr inbounds i8* %call5, i64 %2
+  %xpv_cur12 = getelementptr inbounds i8* %8, i64 8
+  %10 = bitcast i8* %xpv_cur12 to i64*
+  %11 = load i64* %10, align 8, !tbaa !4
+  %sub = sub i64 %11, %2
+  %conv = trunc i64 %sub to i32
+  %call13 = call i8* @Perl_utf16_to_utf8(i8* %add.ptr, i8* %add.ptr10, i32 %conv, i32* %newlen) #6
+  %12 = load i32* %newlen, align 4, !tbaa !3
+  %conv14 = sext i32 %12 to i64
+  %add15 = add i64 %conv14, %2
+  call void @Perl_sv_usepvn(%struct.sv* %sv, i8* %call5, i64 %add15) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret i32 %call
+}

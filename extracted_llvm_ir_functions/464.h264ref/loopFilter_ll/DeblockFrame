@@ -1,0 +1,18 @@
+define void @DeblockFrame(%struct.ImageParameters* nocapture %img, i16** nocapture %imgY, i16*** %imgUV) #0 {
+entry:
+  %PicSizeInMbs = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 110
+  %0 = load i32* %PicSizeInMbs, align 4, !tbaa !0
+  %cmp4 = icmp eq i32 %0, 0
+  br i1 %cmp4, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %i.05 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  tail call void @DeblockMb(%struct.ImageParameters* %img, i16** %imgY, i16*** %imgUV, i32 %i.05) #3
+  %inc = add i32 %i.05, 1
+  %1 = load i32* %PicSizeInMbs, align 4, !tbaa !0
+  %cmp = icmp ult i32 %inc, %1
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

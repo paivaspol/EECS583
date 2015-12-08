@@ -1,40 +1,5 @@
-void
-Perl_gp_free(pTHX_ GV *gv)
+GV *
+Perl_gv_fetchmethod(pTHX_ HV *stash, const char *name)
 {
-    GP* gp;
-
-    if (!gv || !(gp = GvGP(gv)))
-	return;
-    if (gp->gp_refcnt == 0) {
-	if (ckWARN_d(WARN_INTERNAL))
-	    Perl_warner(aTHX_ packWARN(WARN_INTERNAL),
-			"Attempt to free unreferenced glob pointers"
-                        pTHX__FORMAT pTHX__VALUE);
-        return;
-    }
-    if (gp->gp_cv) {
-	/* Deleting the name of a subroutine invalidates method cache */
-	PL_sub_generation++;
-    }
-    if (--gp->gp_refcnt > 0) {
-	if (gp->gp_egv == gv)
-	    gp->gp_egv = 0;
-        return;
-    }
-
-    if (gp->gp_sv) SvREFCNT_dec(gp->gp_sv);
-    if (gp->gp_av) SvREFCNT_dec(gp->gp_av);
-    if (gp->gp_hv) {
-	 if (PL_stashcache && HvNAME(gp->gp_hv))
-	      hv_delete(PL_stashcache,
-			HvNAME(gp->gp_hv), strlen(HvNAME(gp->gp_hv)),
-			G_DISCARD);
-	 SvREFCNT_dec(gp->gp_hv);
-    }
-    if (gp->gp_io)   SvREFCNT_dec(gp->gp_io);
-    if (gp->gp_cv)   SvREFCNT_dec(gp->gp_cv);
-    if (gp->gp_form) SvREFCNT_dec(gp->gp_form);
-
-    Safefree(gp);
-    GvGP(gv) = 0;
+    return gv_fetchmethod_autoload(stash, name, TRUE);
 }

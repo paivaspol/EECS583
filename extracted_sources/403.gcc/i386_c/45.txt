@@ -1,11 +1,32 @@
-int
-constant_call_address_operand (op, mode)
+static int
+local_symbolic_operand (op, mode)
      rtx op;
      enum machine_mode mode ATTRIBUTE_UNUSED;
 {
+  if (GET_CODE (op) == LABEL_REF)
+    return 1;
+
   if (GET_CODE (op) == CONST
       && GET_CODE (XEXP (op, 0)) == PLUS
       && GET_CODE (XEXP (XEXP (op, 0), 1)) == CONST_INT)
     op = XEXP (XEXP (op, 0), 0);
-  return GET_CODE (op) == SYMBOL_REF;
+
+  if (GET_CODE (op) != SYMBOL_REF)
+    return 0;
+
+  /* These we've been told are local by varasm and encode_section_info
+     respectively.  */
+  if (CONSTANT_POOL_ADDRESS_P (op) || SYMBOL_REF_FLAG (op))
+    return 1;
+
+  /* There is, however, a not insubstantial body of code in the rest of
+     the compiler that assumes it can just stick the results of 
+     ASM_GENERATE_INTERNAL_LABEL in a symbol_ref and have done.  */
+  /* ??? This is a hack.  Should update the body of the compiler to
+     always create a DECL an invoke ENCODE_SECTION_INFO.  */
+  if (strncmp (XSTR (op, 0), internal_label_prefix,
+	       internal_label_prefix_len) == 0)
+    return 1;
+
+  return 0;
 }

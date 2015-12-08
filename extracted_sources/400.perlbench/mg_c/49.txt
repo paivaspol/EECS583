@@ -1,7 +1,7 @@
 int
-Perl_magic_setbm(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_gettaint(pTHX_ SV *sv, MAGIC *mg)
 {
-    sv_unmagic(sv, PERL_MAGIC_bm);
-    SvVALID_off(sv);
+    TAINT_IF((mg->mg_len & 1) ||
+	     ((mg->mg_len & 2) && mg->mg_obj == sv));	/* kludge */
     return 0;
 }

@@ -1,5 +1,13 @@
-static bool_t
-xdrstdio_setpos (XDR *xdrs, unsigned int pos)
+bool_t
+xdr_u_char (XDR *xdrs, unsigned char *cp)
 {
-  return fseek ((FILE *) xdrs->x_private, (long) pos, 0) < 0 ? FALSE : TRUE;
+  unsigned int u;
+
+  u = (*cp);
+  if (!xdr_u_int (xdrs, &u))
+    {
+      return FALSE;
+    }
+  *cp = u;
+  return TRUE;
 }

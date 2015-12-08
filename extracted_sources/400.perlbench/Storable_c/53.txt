@@ -1,22 +1,36 @@
-static SV *retrieve_utf8str(pTHX_ stcxt_t *cxt, char *cname)
+static SV *retrieve_lscalar(pTHX_ stcxt_t *cxt, char *cname)
 {
-    SV *sv;
+	I32 len;
+	SV *sv;
 
-    TRACEME(("retrieve_utf8str"));
+	RLEN(len);
+	TRACEME(("retrieve_lscalar (#%d), len = %"IVdf, cxt->tagnum, (IV) len));
 
-    sv = retrieve_scalar(aTHX_ cxt, cname);
-    if (sv) {
-#ifdef HAS_UTF8_SCALARS
-        SvUTF8_on(sv);
-#else
-        if (cxt->use_bytes < 0)
-            cxt->use_bytes
-                = (SvTRUE(get_sv("Storable::drop_utf8", TRUE))
-                   ? 1 : 0);
-        if (cxt->use_bytes == 0)
-            UTF8_CROAK();
-#endif
-    }
+	/*
+	 * Allocate an empty scalar of the suitable length.
+	 */
 
-    return sv;
+	sv = NEWSV(10002, len);
+	SEEN(sv, cname, 0);	/* Associate this new scalar with tag "tagnum" */
+
+	/*
+	 * WARNING: duplicates parts of sv_setpv and breaks SV data encapsulation.
+	 *
+	 * Now, for efficiency reasons, read data directly inside the SV buffer,
+	 * and perform the SV final settings directly by duplicating the final
+	 * work done by sv_setpv. Since we're going to allocate lots of scalars
+	 * this way, it's worth the hassle and risk.
+	 */
+
+	SAFEREAD(SvPVX(sv), len, sv);
+	SvCUR_set(sv, len);				/* Record C string length */
+	*SvEND(sv) = '\0';				/* Ensure it's null terminated anyway */
+	(void) SvPOK_only(sv);			/* Validate string pointer */
+	if (cxt->s_tainted)				/* Is input source tainted? */
+		SvTAINT(sv);				/* External data cannot be trusted */
+
+	TRACEME(("large scalar len %"IVdf" '%s'", (IV) len, SvPVX(sv)));
+	TRACEME(("ok (retrieve_lscalar at 0x%"UVxf")", PTR2UV(sv)));
+
+	return sv;
 }

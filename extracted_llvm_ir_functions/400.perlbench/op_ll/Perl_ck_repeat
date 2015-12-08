@@ -1,0 +1,26 @@
+define %struct.op* @Perl_ck_repeat(%struct.op* %o) #0 {
+entry:
+  %0 = getelementptr inbounds %struct.op* %o, i64 1, i32 0
+  %1 = load %struct.op** %0, align 8, !tbaa !3
+  %op_flags = getelementptr inbounds %struct.op* %1, i64 0, i32 6
+  %2 = load i8* %op_flags, align 1, !tbaa !1
+  %and = and i8 %2, 8
+  %tobool = icmp eq i8 %and, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %op_private = getelementptr inbounds %struct.op* %o, i64 0, i32 7
+  %3 = load i8* %op_private, align 1, !tbaa !1
+  %or = or i8 %3, 64
+  store i8 %or, i8* %op_private, align 1, !tbaa !1
+  %call = tail call %struct.op* @Perl_force_list(%struct.op* %1) #8
+  store %struct.op* %call, %struct.op** %0, align 8, !tbaa !3
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %call5 = tail call %struct.op* @Perl_scalar(%struct.op* %o) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret %struct.op* %o
+}

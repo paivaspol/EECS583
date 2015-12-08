@@ -1,17 +1,18 @@
 void
-PerlIO_releaseFILE(PerlIO *p, FILE *f)
+PerlIOBase_flush_linebuf(pTHX)
 {
-    PerlIOl *l;
-    while ((l = *p)) {
-	if (l->tab == &PerlIO_stdio) {
-	    PerlIOStdio *s = PerlIOSelf(&l, PerlIOStdio);
-	    if (s->stdio == f) {
-		dTHX;
-		PerlIO_pop(aTHX_ p);
-		return;
-	    }
+    PerlIO **table = &PL_perlio;
+    PerlIO *f;
+    while ((f = *table)) {
+	int i;
+	table = (PerlIO **) (f++);
+	for (i = 1; i < PERLIO_TABLE_SIZE; i++) {
+	    if (*f
+		&& (PerlIOBase(f)->
+		    flags & (PERLIO_F_LINEBUF | PERLIO_F_CANWRITE))
+		== (PERLIO_F_LINEBUF | PERLIO_F_CANWRITE))
+		PerlIO_flush(f);
+	    f++;
 	}
-	p = PerlIONext(p);
     }
-    return;
 }

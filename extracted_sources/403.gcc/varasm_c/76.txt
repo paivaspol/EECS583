@@ -1,14 +1,30 @@
-static struct constant_descriptor *
-record_constant_rtx (mode, x)
-     enum machine_mode mode;
-     rtx x;
+void
+free_varasm_status (f)
+     struct function *f;
 {
-  struct constant_descriptor *ptr;
+  struct varasm_status *p;
+  int i;
 
-  ptr = ((struct constant_descriptor *)
-	 xcalloc (1, (offsetof (struct constant_descriptor, u)
-		      + sizeof (struct rtx_const))));
-  decode_rtx_const (mode, x, (struct rtx_const *) ptr->u.contents);
+  p = f->varasm;
 
-  return ptr;
+  /* Clear out the hash tables.  */
+  for (i = 0; i < MAX_RTX_HASH_TABLE; ++i)
+    {
+      struct constant_descriptor *cd;
+
+      cd = p->x_const_rtx_hash_table[i];
+      while (cd)
+	{
+	  struct constant_descriptor *next = cd->next;
+
+	  free (cd);
+	  cd = next;
+	}
+    }
+
+  free (p->x_const_rtx_hash_table);
+  free (p->x_const_rtx_sym_hash_table);
+  free (p);
+
+  f->varasm = NULL;
 }

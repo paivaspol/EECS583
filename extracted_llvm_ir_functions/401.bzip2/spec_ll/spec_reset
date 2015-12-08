@@ -1,0 +1,14 @@
+define i32 @spec_reset(i32 %fd) #0 {
+entry:
+  %idxprom = sext i32 %fd to i64
+  %buf = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 3
+  %0 = load i8** %buf, align 8, !tbaa !4
+  %len = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 1
+  %1 = load i32* %len, align 4, !tbaa !3
+  %conv = sext i32 %1 to i64
+  tail call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 %conv, i32 1, i1 false)
+  store i32 0, i32* %len, align 4, !tbaa !3
+  %pos = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 2
+  store i32 0, i32* %pos, align 8, !tbaa !3
+  ret i32 0
+}

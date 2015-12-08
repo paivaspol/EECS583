@@ -1,0 +1,85 @@
+define %struct.sv* @Perl_newSVsv(%struct.sv* %old) #0 {
+entry:
+  %tobool = icmp eq %struct.sv* %old, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %sv_flags = getelementptr inbounds %struct.sv* %old, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 255
+  %cmp = icmp eq i32 %and, 255
+  br i1 %cmp, label %if.then1, label %if.end13
+
+if.then1:                                         ; preds = %if.end
+  %1 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings = getelementptr inbounds %struct.cop* %1, i64 0, i32 14
+  %2 = load %struct.sv** %cop_warnings, align 8, !tbaa !0
+  %cmp2 = icmp eq %struct.sv* %2, null
+  br i1 %cmp2, label %if.then11, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.then1
+  %3 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings3 = getelementptr inbounds %struct.cop* %3, i64 0, i32 14
+  %4 = load %struct.sv** %cop_warnings3, align 8, !tbaa !0
+  %cmp4 = icmp eq %struct.sv* %4, inttoptr (i64 16 to %struct.sv*)
+  br i1 %cmp4, label %if.then11, label %lor.lhs.false5
+
+lor.lhs.false5:                                   ; preds = %lor.lhs.false
+  %5 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings6 = getelementptr inbounds %struct.cop* %5, i64 0, i32 14
+  %6 = load %struct.sv** %cop_warnings6, align 8, !tbaa !0
+  %cmp7 = icmp eq %struct.sv* %6, inttoptr (i64 32 to %struct.sv*)
+  br i1 %cmp7, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %lor.lhs.false5
+  %7 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings8 = getelementptr inbounds %struct.cop* %7, i64 0, i32 14
+  %8 = load %struct.sv** %cop_warnings8, align 8, !tbaa !0
+  %sv_any = getelementptr inbounds %struct.sv* %8, i64 0, i32 0
+  %9 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %9 to i8**
+  %10 = load i8** %xpv_pv, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8* %10, i64 6
+  %11 = load i8* %arrayidx, align 1, !tbaa !1
+  %and9 = and i8 %11, 1
+  %tobool10 = icmp eq i8 %and9, 0
+  br i1 %tobool10, label %return, label %if.then11
+
+if.then11:                                        ; preds = %land.lhs.true, %lor.lhs.false, %if.then1
+  tail call void (i32, i8*, ...)* @Perl_warner(i32 24, i8* getelementptr inbounds ([40 x i8]* @.str49, i64 0, i64 0)) #8
+  br label %return
+
+if.end13:                                         ; preds = %if.end
+  %12 = load %struct.sv** @PL_sv_root, align 8, !tbaa !0
+  %tobool14 = icmp eq %struct.sv* %12, null
+  br i1 %tobool14, label %if.else, label %if.then15
+
+if.then15:                                        ; preds = %if.end13
+  %sv_any16 = getelementptr inbounds %struct.sv* %12, i64 0, i32 0
+  %13 = load i8** %sv_any16, align 8, !tbaa !0
+  %14 = bitcast i8* %13 to %struct.sv*
+  store %struct.sv* %14, %struct.sv** @PL_sv_root, align 8, !tbaa !0
+  %15 = load i32* @PL_sv_count, align 4, !tbaa !3
+  %inc = add nsw i32 %15, 1
+  store i32 %inc, i32* @PL_sv_count, align 4, !tbaa !3
+  br label %if.end17
+
+if.else:                                          ; preds = %if.end13
+  %call = tail call fastcc %struct.sv* @S_more_sv() #7
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.else, %if.then15
+  %sv.0 = phi %struct.sv* [ %12, %if.then15 ], [ %call, %if.else ]
+  %sv_any18 = getelementptr inbounds %struct.sv* %sv.0, i64 0, i32 0
+  store i8* null, i8** %sv_any18, align 8, !tbaa !0
+  %sv_refcnt = getelementptr inbounds %struct.sv* %sv.0, i64 0, i32 1
+  store i32 1, i32* %sv_refcnt, align 4, !tbaa !3
+  %sv_flags19 = getelementptr inbounds %struct.sv* %sv.0, i64 0, i32 2
+  store i32 0, i32* %sv_flags19, align 4, !tbaa !3
+  tail call void @Perl_sv_setsv_flags(%struct.sv* %sv.0, %struct.sv* %old, i32 18) #7
+  br label %return
+
+return:                                           ; preds = %if.then11, %lor.lhs.false5, %land.lhs.true, %entry, %if.end17
+  %retval.0 = phi %struct.sv* [ %sv.0, %if.end17 ], [ null, %entry ], [ null, %land.lhs.true ], [ null, %lor.lhs.false5 ], [ null, %if.then11 ]
+  ret %struct.sv* %retval.0
+}

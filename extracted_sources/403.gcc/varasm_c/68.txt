@@ -1,47 +1,5 @@
-static void
-output_constant_def_contents (exp, reloc, labelno)
-     tree exp;
-     int reloc;
-     int labelno;
+void
+defer_addressed_constants ()
 {
-  int align;
-
-  /* Align the location counter as required by EXP's data type.  */
-  align = TYPE_ALIGN (TREE_TYPE (exp));
-#ifdef CONSTANT_ALIGNMENT
-  align = CONSTANT_ALIGNMENT (exp, align);
-#endif
-
-  if (IN_NAMED_SECTION (exp))
-    named_section (exp, NULL, reloc);
-  else
-    {
-      /* First switch to text section, except for writable strings.  */
-#ifdef SELECT_SECTION
-      SELECT_SECTION (exp, reloc, align);
-#else
-      if (((TREE_CODE (exp) == STRING_CST) && flag_writable_strings)
-	  || (flag_pic && reloc))
-	data_section ();
-      else
-	readonly_data_section ();
-#endif
-    }
-
-  if (align > BITS_PER_UNIT)
-    {
-      ASM_OUTPUT_ALIGN (asm_out_file, floor_log2 (align / BITS_PER_UNIT));
-    }
-
-  /* Output the label itself.  */
-  ASM_OUTPUT_INTERNAL_LABEL (asm_out_file, "LC", labelno);
-
-  /* Output the value of EXP.  */
-  output_constant (exp,
-		   (TREE_CODE (exp) == STRING_CST
-		    ? MAX (TREE_STRING_LENGTH (exp),
-			   int_size_in_bytes (TREE_TYPE (exp)))
-		    : int_size_in_bytes (TREE_TYPE (exp))),
-		   align);
-
+  defer_addressed_constants_flag++;
 }

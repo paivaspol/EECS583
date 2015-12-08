@@ -1,0 +1,89 @@
+PP(pp_enteriter)
+{
+    dSP; dMARK;
+    register PERL_CONTEXT *cx;
+    I32 gimme = GIMME_V;
+    SV **svp;
+    U32 cxtype = CXt_LOOP;
+#ifdef USE_ITHREADS
+    void *iterdata;
+#endif
+
+    ENTER;
+    SAVETMPS;
+
+#ifdef USE_5005THREADS
+    if (PL_op->op_flags & OPf_SPECIAL) {
+	svp = &THREADSV(PL_op->op_targ);	/* per-thread variable */
+	SAVEGENERICSV(*svp);
+	*svp = NEWSV(0,0);
+    }
+    else
+#endif /* USE_5005THREADS */
+    if (PL_op->op_targ) {
+#ifndef USE_ITHREADS
+	svp = &PAD_SVl(PL_op->op_targ);		/* "my" variable */
+	SAVESPTR(*svp);
+#else
+	SAVEPADSV(PL_op->op_targ);
+	iterdata = INT2PTR(void*, PL_op->op_targ);
+	cxtype |= CXp_PADVAR;
+#endif
+    }
+    else {
+	GV *gv = (GV*)POPs;
+	svp = &GvSV(gv);			/* symbol table variable */
+	SAVEGENERICSV(*svp);
+	*svp = NEWSV(0,0);
+#ifdef USE_ITHREADS
+	iterdata = (void*)gv;
+#endif
+    }
+
+    ENTER;
+
+    PUSHBLOCK(cx, cxtype, SP);
+#ifdef USE_ITHREADS
+    PUSHLOOP(cx, iterdata, MARK);
+#else
+    PUSHLOOP(cx, svp, MARK);
+#endif
+    if (PL_op->op_flags & OPf_STACKED) {
+	cx->blk_loop.iterary = (AV*)SvREFCNT_inc(POPs);
+	if (SvTYPE(cx->blk_loop.iterary) != SVt_PVAV) {
+	    dPOPss;
+	    SV *right = (SV*)cx->blk_loop.iterary;
+	    if (RANGE_IS_NUMERIC(sv,right)) {
+		if ((SvOK(sv) && SvNV(sv) < IV_MIN) ||
+		    (SvOK(right) && SvNV(right) >= IV_MAX))
+		    DIE(aTHX_ "Range iterator outside integer range");
+		cx->blk_loop.iterix = SvIV(sv);
+		cx->blk_loop.itermax = SvIV(right);
+	    }
+	    else {
+		STRLEN n_a;
+		cx->blk_loop.iterlval = newSVsv(sv);
+		(void) SvPV_force(cx->blk_loop.iterlval,n_a);
+		(void) SvPV(right,n_a);
+	    }
+	}
+	else if (PL_op->op_private & OPpITER_REVERSED) {
+	    cx->blk_loop.itermax = -1;
+	    cx->blk_loop.iterix = AvFILL(cx->blk_loop.iterary);
+
+	}
+    }
+    else {
+	cx->blk_loop.iterary = PL_curstack;
+	AvFILLp(PL_curstack) = SP - PL_stack_base;
+	if (PL_op->op_private & OPpITER_REVERSED) {
+	    cx->blk_loop.itermax = MARK - PL_stack_base;
+	    cx->blk_loop.iterix = cx->blk_oldsp;
+	}
+	else {
+	    cx->blk_loop.iterix = MARK - PL_stack_base;
+	}
+    }
+
+    RETURN;
+}

@@ -1,14 +1,11 @@
 int
-Perl_magic_setcollxfrm(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_setdefelem(pTHX_ SV *sv, MAGIC *mg)
 {
-    /*
-     * RenE<eacute> Descartes said "I think not."
-     * and vanished with a faint plop.
-     */
-    if (mg->mg_ptr) {
-	Safefree(mg->mg_ptr);
-	mg->mg_ptr = NULL;
-	mg->mg_len = -1;
+    if (LvTARGLEN(sv))
+	vivify_defelem(sv);
+    if (LvTARG(sv)) {
+	sv_setsv(LvTARG(sv), sv);
+	SvSETMAGIC(LvTARG(sv));
     }
     return 0;
 }

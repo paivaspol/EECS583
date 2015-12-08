@@ -1,0 +1,22 @@
+define i32 @PopIntStack(%struct.intstack_s* nocapture %stack, i32* nocapture %ret_data) #0 {
+entry:
+  %nxt = getelementptr inbounds %struct.intstack_s* %stack, i64 0, i32 1
+  %0 = load %struct.intstack_s** %nxt, align 8, !tbaa !0
+  %cmp = icmp eq %struct.intstack_s* %0, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %nxt2 = getelementptr inbounds %struct.intstack_s* %0, i64 0, i32 1
+  %1 = load %struct.intstack_s** %nxt2, align 8, !tbaa !0
+  store %struct.intstack_s* %1, %struct.intstack_s** %nxt, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.intstack_s* %0, i64 0, i32 0
+  %2 = load i32* %data, align 4, !tbaa !3
+  store i32 %2, i32* %ret_data, align 4, !tbaa !3
+  %3 = bitcast %struct.intstack_s* %0 to i8*
+  tail call void @free(i8* %3) #3
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0
+}

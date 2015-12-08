@@ -1,0 +1,27 @@
+define i32 @Perl_wait4pid(i32 %pid, i32* %statusp, i32 %flags) #0 {
+entry:
+  %tobool = icmp eq i32 %pid, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call i32 @waitpid(i32 %pid, i32* %statusp, i32 %flags) #8
+  %cmp = icmp slt i32 %call, 0
+  br i1 %cmp, label %land.lhs.true, label %return
+
+land.lhs.true:                                    ; preds = %if.end
+  %call1 = tail call i32* @__errno_location() #8
+  %0 = load i32* %call1, align 4, !tbaa !3
+  %cmp2 = icmp eq i32 %0, 4
+  %1 = load i32* @PL_sig_pending, align 4, !tbaa !3
+  %tobool4 = icmp ne i32 %1, 0
+  %or.cond = and i1 %cmp2, %tobool4
+  br i1 %or.cond, label %if.then5, label %return
+
+if.then5:                                         ; preds = %land.lhs.true
+  tail call void @Perl_despatch_signals() #8
+  br label %return
+
+return:                                           ; preds = %if.end, %land.lhs.true, %if.then5, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %call, %if.then5 ], [ %call, %land.lhs.true ], [ %call, %if.end ]
+  ret i32 %retval.0
+}

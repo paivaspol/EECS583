@@ -1,20 +1,33 @@
-void
-cpp_finish (pfile)
+static void
+output_deps (pfile)
      cpp_reader *pfile;
 {
-  /* cpplex.c leaves the final buffer on the stack.  This it so that
-     it returns an unending stream of CPP_EOFs to the client.  If we
-     popped the buffer, we'd dereference a NULL buffer pointer and
-     segfault.  It's nice to allow the client to do worry-free excess
-     cpp_get_token calls.  */
-  while (pfile->buffer)
-    _cpp_pop_buffer (pfile);
+  /* Stream on which to print the dependency information.  */
+  FILE *deps_stream = 0;
+  const char *const deps_mode =
+    CPP_OPTION (pfile, print_deps_append) ? "a" : "w";
 
-  /* Don't write the deps file if preprocessing has failed.  */
-  if (CPP_OPTION (pfile, print_deps) && pfile->errors == 0)
-    output_deps (pfile);
+  if (CPP_OPTION (pfile, deps_file)[0] == '\0')
+    deps_stream = stdout;
+  else
+    {
+      deps_stream = fopen (CPP_OPTION (pfile, deps_file), deps_mode);
+      if (deps_stream == 0)
+	{
+	  cpp_notice_from_errno (pfile, CPP_OPTION (pfile, deps_file));
+	  return;
+	}
+    }
 
-  /* Report on headers that could use multiple include guards.  */
-  if (CPP_OPTION (pfile, print_include_names))
-    _cpp_report_missing_guards (pfile);
+  deps_write (pfile->deps, deps_stream, 72);
+
+  if (CPP_OPTION (pfile, deps_phony_targets))
+    deps_phony_targets (pfile->deps, deps_stream);
+
+  /* Don't close stdout.  */
+  if (deps_stream != stdout)
+    {
+      if (ferror (deps_stream) || fclose (deps_stream) != 0)
+	cpp_fatal (pfile, "I/O error on output");
+    }
 }

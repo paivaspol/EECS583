@@ -1,32 +1,33 @@
-static int
-add_action_record (ar_hash, filter, next)
-     htab_t ar_hash;
-     int filter, next;
+void
+expand_builtin_eh_return (stackadj_tree, handler_tree)
+    tree stackadj_tree, handler_tree;
 {
-  struct action_record **slot, *new, tmp;
+  rtx stackadj, handler;
 
-  tmp.filter = filter;
-  tmp.next = next;
-  slot = (struct action_record **) htab_find_slot (ar_hash, &tmp, INSERT);
+  stackadj = expand_expr (stackadj_tree, cfun->eh->ehr_stackadj, VOIDmode, 0);
+  handler = expand_expr (handler_tree, cfun->eh->ehr_handler, VOIDmode, 0);
 
-  if ((new = *slot) == NULL)
+#ifdef POINTERS_EXTEND_UNSIGNED
+  if (GET_MODE (stackadj) != Pmode)
+    stackadj = convert_memory_address (Pmode, stackadj);
+
+  if (GET_MODE (handler) != Pmode)
+    handler = convert_memory_address (Pmode, handler);
+#endif
+
+  if (! cfun->eh->ehr_label)
     {
-      new = (struct action_record *) xmalloc (sizeof (*new));
-      new->offset = VARRAY_ACTIVE_SIZE (cfun->eh->action_record_data) + 1;
-      new->filter = filter;
-      new->next = next;
-      *slot = new;
-
-      /* The filter value goes in untouched.  The link to the next
-	 record is a "self-relative" byte offset, or zero to indicate
-	 that there is no next record.  So convert the absolute 1 based
-	 indices we've been carrying around into a displacement.  */
-
-      push_sleb128 (&cfun->eh->action_record_data, filter);
-      if (next)
-	next -= VARRAY_ACTIVE_SIZE (cfun->eh->action_record_data) + 1;
-      push_sleb128 (&cfun->eh->action_record_data, next);
+      cfun->eh->ehr_stackadj = copy_to_reg (stackadj);
+      cfun->eh->ehr_handler = copy_to_reg (handler);
+      cfun->eh->ehr_label = gen_label_rtx ();
+    }
+  else
+    {
+      if (stackadj != cfun->eh->ehr_stackadj)
+	emit_move_insn (cfun->eh->ehr_stackadj, stackadj);
+      if (handler != cfun->eh->ehr_handler)
+	emit_move_insn (cfun->eh->ehr_handler, handler);
     }
 
-  return new->offset;
+  emit_jump (cfun->eh->ehr_label);
 }

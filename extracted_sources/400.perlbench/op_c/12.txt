@@ -1,25 +1,20 @@
-void
-Perl_package(pTHX_ OP *o)
+STATIC void
+S_cop_free(pTHX_ COP* cop)
 {
-    SV *sv;
-
-    save_hptr(&PL_curstash);
-    save_item(PL_curstname);
-    if (o) {
+    Safefree(cop->cop_label);   /* FIXME: treaddead ??? */
+    CopFILE_free(cop);
+    CopSTASH_free(cop);
+    if (! specialWARN(cop->cop_warnings))
+	SvREFCNT_dec(cop->cop_warnings);
+    if (! specialCopIO(cop->cop_io)) {
+#ifdef USE_ITHREADS
+#if 0
 	STRLEN len;
-	char *name;
-	sv = cSVOPo->op_sv;
-	name = SvPV(sv, len);
-	PL_curstash = gv_stashpvn(name,len,TRUE);
-	sv_setpvn(PL_curstname, name, len);
-	op_free(o);
+        char *s = SvPV(cop->cop_io,len);
+	Perl_warn(aTHX_ "io='%.*s'",(int) len,s); /* ??? --jhi */
+#endif
+#else
+	SvREFCNT_dec(cop->cop_io);
+#endif
     }
-    else {
-	deprecate("\"package\" with no arguments");
-	sv_setpv(PL_curstname,"<none>");
-	PL_curstash = Nullhv;
-    }
-    PL_hints |= HINT_BLOCK_SCOPE;
-    PL_copline = NOLINE;
-    PL_expect = XSTATE;
 }

@@ -1,65 +1,18 @@
-void
-init_cumulative_args (cum, fntype, libname)
-     CUMULATIVE_ARGS *cum;	/* Argument info to initialize */
-     tree fntype;		/* tree ptr for function decl */
-     rtx libname;		/* SYMBOL_REF of library name or 0 */
+bool
+ix86_function_arg_regno_p (regno)
+     int regno;
 {
-  static CUMULATIVE_ARGS zero_cum;
-  tree param, next_param;
-
-  if (TARGET_DEBUG_ARG)
-    {
-      fprintf (stderr, "\ninit_cumulative_args (");
-      if (fntype)
-	fprintf (stderr, "fntype code = %s, ret code = %s",
-		 tree_code_name[(int) TREE_CODE (fntype)],
-		 tree_code_name[(int) TREE_CODE (TREE_TYPE (fntype))]);
-      else
-	fprintf (stderr, "no fntype");
-
-      if (libname)
-	fprintf (stderr, ", libname = %s", XSTR (libname, 0));
-    }
-
-  *cum = zero_cum;
-
-  /* Set up the number of registers to use for passing arguments.  */
-  cum->nregs = ix86_regparm;
-  cum->sse_nregs = SSE_REGPARM_MAX;
-  if (fntype && !TARGET_64BIT)
-    {
-      tree attr = lookup_attribute ("regparm", TYPE_ATTRIBUTES (fntype));
-
-      if (attr)
-	cum->nregs = TREE_INT_CST_LOW (TREE_VALUE (TREE_VALUE (attr)));
-    }
-  cum->maybe_vaarg = false;
-
-  /* Determine if this function has variable arguments.  This is
-     indicated by the last argument being 'void_type_mode' if there
-     are no variable arguments.  If there are variable arguments, then
-     we won't pass anything in registers */
-
-  if (cum->nregs)
-    {
-      for (param = (fntype) ? TYPE_ARG_TYPES (fntype) : 0;
-	   param != 0; param = next_param)
-	{
-	  next_param = TREE_CHAIN (param);
-	  if (next_param == 0 && TREE_VALUE (param) != void_type_node)
-	    {
-	      if (!TARGET_64BIT)
-		cum->nregs = 0;
-	      cum->maybe_vaarg = true;
-	    }
-	}
-    }
-  if ((!fntype && !libname)
-      || (fntype && !TYPE_ARG_TYPES (fntype)))
-    cum->maybe_vaarg = 1;
-
-  if (TARGET_DEBUG_ARG)
-    fprintf (stderr, ", nregs=%d )\n", cum->nregs);
-
-  return;
+  int i;
+  if (!TARGET_64BIT)
+    return (regno < REGPARM_MAX
+	    || (TARGET_SSE && SSE_REGNO_P (regno) && !fixed_regs[regno]));
+  if (SSE_REGNO_P (regno) && TARGET_SSE)
+    return true;
+  /* RAX is used as hidden argument to va_arg functions.  */
+  if (!regno)
+    return true;
+  for (i = 0; i < REGPARM_MAX; i++)
+    if (regno == x86_64_int_parameter_registers[i])
+      return true;
+  return false;
 }

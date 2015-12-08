@@ -1,0 +1,19 @@
+SV *
+Perl_newSVsv(pTHX_ register SV *old)
+{
+    register SV *sv;
+
+    if (!old)
+	return Nullsv;
+    if (SvTYPE(old) == SVTYPEMASK) {
+        if (ckWARN_d(WARN_INTERNAL))
+	    Perl_warner(aTHX_ packWARN(WARN_INTERNAL), "semi-panic: attempt to dup freed string");
+	return Nullsv;
+    }
+    new_SV(sv);
+    /* SV_GMAGIC is the default for sv_setv()
+       SV_NOSTEAL prevents TEMP buffers being, well, stolen, and saves games
+       with SvTEMP_off and SvTEMP_on round a call to sv_setsv.  */
+    sv_setsv_flags(sv, old, SV_GMAGIC | SV_NOSTEAL);
+    return sv;
+}

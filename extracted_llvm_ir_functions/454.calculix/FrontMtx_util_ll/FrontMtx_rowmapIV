@@ -1,0 +1,50 @@
+define %struct._IV* @FrontMtx_rowmapIV(%struct._FrontMtx* %frontmtx) #0 {
+entry:
+  %nrowJ = alloca i32, align 4
+  %rowindJ = alloca i32*, align 8
+  %call = call i32 @FrontMtx_neqns(%struct._FrontMtx* %frontmtx) #5
+  %call1 = call i32 @FrontMtx_nfront(%struct._FrontMtx* %frontmtx) #5
+  %call2 = call %struct._IV* @IV_new() #5
+  call void @IV_init(%struct._IV* %call2, i32 %call, i32* null) #5
+  %call3 = call i32* @IV_entries(%struct._IV* %call2) #5
+  call void @IVfill(i32 %call, i32* %call3, i32 -1) #5
+  %cmp33 = icmp sgt i32 %call1, 0
+  br i1 %cmp33, label %for.body, label %for.end17
+
+for.body:                                         ; preds = %entry, %for.inc15
+  %J.034 = phi i32 [ %inc16, %for.inc15 ], [ 0, %entry ]
+  %call4 = call i32 @FrontMtx_frontSize(%struct._FrontMtx* %frontmtx, i32 %J.034) #5
+  %cmp5 = icmp sgt i32 %call4, 0
+  br i1 %cmp5, label %if.then, label %for.inc15
+
+if.then:                                          ; preds = %for.body
+  call void @FrontMtx_rowIndices(%struct._FrontMtx* %frontmtx, i32 %J.034, i32* %nrowJ, i32** %rowindJ) #5
+  %0 = load i32* %nrowJ, align 4, !tbaa !0
+  %cmp6 = icmp sgt i32 %0, 0
+  br i1 %cmp6, label %land.lhs.true, label %for.inc15
+
+land.lhs.true:                                    ; preds = %if.then
+  %1 = load i32** %rowindJ, align 8, !tbaa !3
+  %cmp7 = icmp eq i32* %1, null
+  br i1 %cmp7, label %for.inc15, label %for.body11
+
+for.body11:                                       ; preds = %land.lhs.true, %for.body11
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body11 ], [ 0, %land.lhs.true ]
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv
+  %2 = load i32* %arrayidx, align 4, !tbaa !0
+  %idxprom12 = sext i32 %2 to i64
+  %arrayidx13 = getelementptr inbounds i32* %call3, i64 %idxprom12
+  store i32 %J.034, i32* %arrayidx13, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %call4
+  br i1 %exitcond, label %for.inc15, label %for.body11
+
+for.inc15:                                        ; preds = %for.body11, %land.lhs.true, %for.body, %if.then
+  %inc16 = add nsw i32 %J.034, 1
+  %exitcond35 = icmp eq i32 %inc16, %call1
+  br i1 %exitcond35, label %for.end17, label %for.body
+
+for.end17:                                        ; preds = %for.inc15, %entry
+  ret %struct._IV* %call2
+}

@@ -1,0 +1,123 @@
+define internal fastcc void @clean_store_context(%struct.stcxt* nocapture %cxt) #1 {
+entry:
+  %hseen = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 2
+  %0 = load %struct.hv** %hseen, align 8, !tbaa !0
+  %tobool = icmp eq %struct.hv* %0, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @Perl_hv_iterinit(%struct.hv* %0) #7
+  %1 = load %struct.hv** %hseen, align 8, !tbaa !0
+  %call380 = tail call %struct.he* @Perl_hv_iternext(%struct.hv* %1) #7
+  %tobool481 = icmp eq %struct.he* %call380, null
+  br i1 %tobool481, label %if.end, label %while.body
+
+while.body:                                       ; preds = %if.then, %while.body
+  %call382 = phi %struct.he* [ %call3, %while.body ], [ %call380, %if.then ]
+  %hent_val = getelementptr inbounds %struct.he* %call382, i64 0, i32 2
+  store %struct.sv* @PL_sv_undef, %struct.sv** %hent_val, align 8, !tbaa !0
+  %2 = load %struct.hv** %hseen, align 8, !tbaa !0
+  %call3 = tail call %struct.he* @Perl_hv_iternext(%struct.hv* %2) #7
+  %tobool4 = icmp eq %struct.he* %call3, null
+  br i1 %tobool4, label %if.end, label %while.body
+
+if.end:                                           ; preds = %if.then, %while.body, %entry
+  %hclass = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 6
+  %3 = load %struct.hv** %hclass, align 8, !tbaa !0
+  %tobool5 = icmp eq %struct.hv* %3, null
+  br i1 %tobool5, label %if.end16, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  %call8 = tail call i32 @Perl_hv_iterinit(%struct.hv* %3) #7
+  %4 = load %struct.hv** %hclass, align 8, !tbaa !0
+  %call1177 = tail call %struct.he* @Perl_hv_iternext(%struct.hv* %4) #7
+  %tobool1278 = icmp eq %struct.he* %call1177, null
+  br i1 %tobool1278, label %if.end16, label %while.body13
+
+while.body13:                                     ; preds = %if.then6, %while.body13
+  %call1179 = phi %struct.he* [ %call11, %while.body13 ], [ %call1177, %if.then6 ]
+  %hent_val14 = getelementptr inbounds %struct.he* %call1179, i64 0, i32 2
+  store %struct.sv* @PL_sv_undef, %struct.sv** %hent_val14, align 8, !tbaa !0
+  %5 = load %struct.hv** %hclass, align 8, !tbaa !0
+  %call11 = tail call %struct.he* @Perl_hv_iternext(%struct.hv* %5) #7
+  %tobool12 = icmp eq %struct.he* %call11, null
+  br i1 %tobool12, label %if.end16, label %while.body13
+
+if.end16:                                         ; preds = %if.then6, %while.body13, %if.end
+  %6 = load %struct.hv** %hseen, align 8, !tbaa !0
+  %tobool18 = icmp eq %struct.hv* %6, null
+  br i1 %tobool18, label %if.end23, label %if.then19
+
+if.then19:                                        ; preds = %if.end16
+  store %struct.hv* null, %struct.hv** %hseen, align 8, !tbaa !0
+  tail call void @Perl_hv_undef(%struct.hv* %6) #7
+  %7 = bitcast %struct.hv* %6 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %7) #7
+  br label %if.end23
+
+if.end23:                                         ; preds = %if.end16, %if.then19
+  %8 = load %struct.hv** %hclass, align 8, !tbaa !0
+  %tobool25 = icmp eq %struct.hv* %8, null
+  br i1 %tobool25, label %if.end30, label %if.then26
+
+if.then26:                                        ; preds = %if.end23
+  store %struct.hv* null, %struct.hv** %hclass, align 8, !tbaa !0
+  tail call void @Perl_hv_undef(%struct.hv* %8) #7
+  %9 = bitcast %struct.hv* %8 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %9) #7
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.end23, %if.then26
+  %hook = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 8
+  %10 = load %struct.hv** %hook, align 8, !tbaa !0
+  %tobool31 = icmp eq %struct.hv* %10, null
+  br i1 %tobool31, label %if.end36, label %if.then32
+
+if.then32:                                        ; preds = %if.end30
+  store %struct.hv* null, %struct.hv** %hook, align 8, !tbaa !0
+  tail call void @Perl_hv_undef(%struct.hv* %10) #7
+  %11 = bitcast %struct.hv* %10 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %11) #7
+  br label %if.end36
+
+if.end36:                                         ; preds = %if.end30, %if.then32
+  %hook_seen = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 3
+  %12 = load %struct.av** %hook_seen, align 8, !tbaa !0
+  %tobool37 = icmp eq %struct.av* %12, null
+  br i1 %tobool37, label %if.end42, label %if.then38
+
+if.then38:                                        ; preds = %if.end36
+  store %struct.av* null, %struct.av** %hook_seen, align 8, !tbaa !0
+  tail call void @Perl_av_undef(%struct.av* %12) #7
+  %13 = bitcast %struct.av* %12 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %13) #7
+  br label %if.end42
+
+if.end42:                                         ; preds = %if.end36, %if.then38
+  %forgive_me = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 13
+  store i32 -1, i32* %forgive_me, align 4, !tbaa !3
+  %deparse = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 14
+  store i32 -1, i32* %deparse, align 4, !tbaa !3
+  %eval = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 15
+  %14 = load %struct.sv** %eval, align 8, !tbaa !0
+  %tobool43 = icmp eq %struct.sv* %14, null
+  br i1 %tobool43, label %if.end46, label %if.then44
+
+if.then44:                                        ; preds = %if.end42
+  tail call void @Perl_sv_free(%struct.sv* %14) #7
+  br label %if.end46
+
+if.end46:                                         ; preds = %if.end42, %if.then44
+  store %struct.sv* null, %struct.sv** %eval, align 8, !tbaa !0
+  %canonical = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 16
+  store i32 -1, i32* %canonical, align 4, !tbaa !3
+  %entry1.i = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 0
+  store i32 0, i32* %entry1.i, align 4, !tbaa !3
+  %s_dirty.i = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 18
+  store i32 0, i32* %s_dirty.i, align 4, !tbaa !3
+  %optype.i = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 1
+  %15 = load i32* %optype.i, align 4, !tbaa !3
+  %and.i = and i32 %15, -4
+  store i32 %and.i, i32* %optype.i, align 4, !tbaa !3
+  ret void
+}

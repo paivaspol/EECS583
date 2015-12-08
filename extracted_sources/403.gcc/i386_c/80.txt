@@ -1,25 +1,5 @@
 void
-load_pic_register ()
+ix86_setup_frame_addresses ()
 {
-  rtx gotsym, pclab;
-
-  if (TARGET_64BIT)
-    abort ();
-
-  gotsym = gen_rtx_SYMBOL_REF (Pmode, "_GLOBAL_OFFSET_TABLE_");
-
-  if (TARGET_DEEP_BRANCH_PREDICTION)
-    {
-      if (! pic_label_name[0])
-	ASM_GENERATE_INTERNAL_LABEL (pic_label_name, "LPR", 0);
-      pclab = gen_rtx_MEM (QImode, gen_rtx_SYMBOL_REF (Pmode, pic_label_name));
-    }
-  else
-    {
-      pclab = gen_rtx_LABEL_REF (VOIDmode, gen_label_rtx ());
-    }
-
-  emit_insn (gen_prologue_get_pc (pic_offset_table_rtx, pclab));
-
-  emit_insn (gen_prologue_set_got (pic_offset_table_rtx, gotsym, pclab));
+  cfun->machine->accesses_prev_frame = 1;
 }

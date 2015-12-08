@@ -1,5 +1,13 @@
-static unsigned int
-xdrstdio_getpos (XDR *xdrs)
+bool_t
+xdr_char (XDR *xdrs, char *cp)
 {
-  return (unsigned int) ftell ((FILE *) xdrs->x_private);
+  int i;
+
+  i = (*cp);
+  if (!xdr_int (xdrs, &i))
+    {
+      return FALSE;
+    }
+  *cp = i;
+  return TRUE;
 }

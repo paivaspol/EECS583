@@ -1,16 +1,74 @@
-int
-Perl_magic_freeovrld(pTHX_ SV *sv, MAGIC *mg)
+GV *
+Perl_gv_fetchmethod_autoload(pTHX_ HV *stash, const char *name, I32 autoload)
 {
-    AMT *amtp = (AMT*)mg->mg_ptr;
-    if (amtp && AMT_AMAGIC(amtp)) {
-	int i;
-	for (i = 1; i < NofAMmeth; i++) {
-	    CV *cv = amtp->table[i];
-	    if (cv != Nullcv) {
-		SvREFCNT_dec((SV *) cv);
-		amtp->table[i] = Nullcv;
+    register const char *nend;
+    const char *nsplit = 0;
+    GV* gv;
+    HV* ostash = stash;
+
+    if (stash && SvTYPE(stash) < SVt_PVHV)
+	stash = Nullhv;
+
+    for (nend = name; *nend; nend++) {
+	if (*nend == '\'')
+	    nsplit = nend;
+	else if (*nend == ':' && *(nend + 1) == ':')
+	    nsplit = ++nend;
+    }
+    if (nsplit) {
+	const char *origname = name;
+	name = nsplit + 1;
+	if (*nsplit == ':')
+	    --nsplit;
+	if ((nsplit - origname) == 5 && strnEQ(origname, "SUPER", 5)) {
+	    /* ->SUPER::method should really be looked up in original stash */
+	    SV *tmpstr = sv_2mortal(Perl_newSVpvf(aTHX_ "%s::SUPER",
+						  CopSTASHPV(PL_curcop)));
+	    /* __PACKAGE__::SUPER stash should be autovivified */
+	    stash = gv_stashpvn(SvPVX(tmpstr), SvCUR(tmpstr), TRUE);
+	    DEBUG_o( Perl_deb(aTHX_ "Treating %s as %s::%s\n",
+			 origname, HvNAME(stash), name) );
+	}
+	else {
+            /* don't autovifify if ->NoSuchStash::method */
+            stash = gv_stashpvn(origname, nsplit - origname, FALSE);
+
+	    /* however, explicit calls to Pkg::SUPER::method may
+	       happen, and may require autovivification to work */
+	    if (!stash && (nsplit - origname) >= 7 &&
+		strnEQ(nsplit - 7, "::SUPER", 7) &&
+		gv_stashpvn(origname, nsplit - origname - 7, FALSE))
+	      stash = gv_stashpvn(origname, nsplit - origname, TRUE);
+	}
+	ostash = stash;
+    }
+
+    gv = gv_fetchmeth(stash, name, nend - name, 0);
+    if (!gv) {
+	if (strEQ(name,"import") || strEQ(name,"unimport"))
+	    gv = (GV*)&PL_sv_yes;
+	else if (autoload)
+	    gv = gv_autoload4(ostash, name, nend - name, TRUE);
+    }
+    else if (autoload) {
+	CV* cv = GvCV(gv);
+	if (!CvROOT(cv) && !CvXSUB(cv)) {
+	    GV* stubgv;
+	    GV* autogv;
+
+	    if (CvANON(cv))
+		stubgv = gv;
+	    else {
+		stubgv = CvGV(cv);
+		if (GvCV(stubgv) != cv)		/* orphaned import */
+		    stubgv = gv;
 	    }
+	    autogv = gv_autoload4(GvSTASH(stubgv),
+				  GvNAME(stubgv), GvNAMELEN(stubgv), TRUE);
+	    if (autogv)
+		gv = autogv;
 	}
     }
- return 0;
+
+    return gv;
 }

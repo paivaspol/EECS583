@@ -1,40 +1,23 @@
-int
-Perl_PerlIO_flush(pTHX_ PerlIO *f)
+void
+PerlIO_clone(pTHX_ PerlInterpreter *proto, CLONE_PARAMS *param)
 {
-    if (f) {
-	if (*f) {
-	    PerlIO_funcs *tab = PerlIOBase(f)->tab;
-
-	    if (tab && tab->Flush)
-		return (*tab->Flush) (aTHX_ f);
-	    else
-		 return 0; /* If no Flush defined, silently succeed. */
-	}
-	else {
-	    PerlIO_debug("Cannot flush f=%p\n", (void*)f);
-	    SETERRNO(EBADF, SS_IVCHAN);
-	    return -1;
-	}
-    }
-    else {
-	/*
-	 * Is it good API design to do flush-all on NULL, a potentially
-	 * errorneous input? Maybe some magical value (PerlIO*
-	 * PERLIO_FLUSH_ALL = (PerlIO*)-1;)? Yes, stdio does similar
-	 * things on fflush(NULL), but should we be bound by their design
-	 * decisions? --jhi
-	 */
-	PerlIO **table = &PL_perlio;
-	int code = 0;
-	while ((f = *table)) {
+#ifdef USE_ITHREADS
+    PerlIO **table = &proto->Iperlio;
+    PerlIO *f;
+    PL_perlio = NULL;
+    PL_known_layers = PerlIO_clone_list(aTHX_ proto->Iknown_layers, param);
+    PL_def_layerlist = PerlIO_clone_list(aTHX_ proto->Idef_layerlist, param);
+    PerlIO_allocate(aTHX); /* root slot is never used */
+    PerlIO_debug("Clone %p from %p\n",aTHX,proto);
+    while ((f = *table)) {
 	    int i;
 	    table = (PerlIO **) (f++);
 	    for (i = 1; i < PERLIO_TABLE_SIZE; i++) {
-		if (*f && PerlIO_flush(f) != 0)
-		    code = -1;
+		if (*f) {
+		    (void) fp_dup(f, 0, param);
+		}
 		f++;
 	    }
 	}
-	return code;
-    }
+#endif
 }

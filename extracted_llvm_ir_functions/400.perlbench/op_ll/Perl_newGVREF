@@ -1,0 +1,21 @@
+define %struct.op* @Perl_newGVREF(i32 %type, %struct.op* %o) #0 {
+entry:
+  %0 = and i32 %type, -3
+  %1 = icmp eq i32 %0, 152
+  %cmp3 = icmp eq i32 %type, 150
+  %or.cond6 = or i1 %1, %cmp3
+  br i1 %or.cond6, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.op* @Perl_newUNOP(i32 0, i32 0, %struct.op* %o) #8
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call4 = tail call %struct.op* @Perl_newUNOP(i32 14, i32 16, %struct.op* %o) #8
+  %call5 = tail call %struct.op* @Perl_ref(%struct.op* %call4, i32 %type) #8
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then
+  %retval.0 = phi %struct.op* [ %call, %if.then ], [ %call5, %if.end ]
+  ret %struct.op* %retval.0
+}

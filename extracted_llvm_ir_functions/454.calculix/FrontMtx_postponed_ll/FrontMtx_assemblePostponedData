@@ -1,0 +1,107 @@
+define %struct._Chv* @FrontMtx_assemblePostponedData(%struct._FrontMtx* nocapture %frontmtx, %struct._Chv* %frontJ, %struct._ChvList* %chvlist, %struct._ChvManager* %chvmanager, i32* nocapture %pndelay) #0 {
+entry:
+  %id = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 0
+  %0 = load i32* %id, align 4, !tbaa !0
+  %call = tail call %struct._Chv* @ChvList_getList(%struct._ChvList* %chvlist, i32 %0) #2
+  %cmp = icmp eq %struct._Chv* %call, null
+  br i1 %cmp, label %if.then, label %for.body
+
+if.then:                                          ; preds = %entry
+  store i32 0, i32* %pndelay, align 4, !tbaa !0
+  br label %return
+
+for.body:                                         ; preds = %entry, %if.end14
+  %child.083 = phi %struct._Chv* [ %1, %if.end14 ], [ %call, %entry ]
+  %firstchild.082 = phi %struct._Chv* [ %firstchild.1, %if.end14 ], [ null, %entry ]
+  %next = getelementptr inbounds %struct._Chv* %child.083, i64 0, i32 10
+  %1 = load %struct._Chv** %next, align 8, !tbaa !3
+  %cmp376 = icmp eq %struct._Chv* %firstchild.082, null
+  br i1 %cmp376, label %if.end14, label %for.body4.lr.ph
+
+for.body4.lr.ph:                                  ; preds = %for.body
+  %id6 = getelementptr inbounds %struct._Chv* %child.083, i64 0, i32 0
+  %2 = load i32* %id6, align 4, !tbaa !0
+  br label %for.body4
+
+for.body4:                                        ; preds = %for.body4.lr.ph, %if.end9
+  %prev.078 = phi %struct._Chv* [ null, %for.body4.lr.ph ], [ %child2.077, %if.end9 ]
+  %child2.077 = phi %struct._Chv* [ %firstchild.082, %for.body4.lr.ph ], [ %4, %if.end9 ]
+  %id5 = getelementptr inbounds %struct._Chv* %child2.077, i64 0, i32 0
+  %3 = load i32* %id5, align 4, !tbaa !0
+  %cmp7 = icmp sgt i32 %3, %2
+  br i1 %cmp7, label %for.end, label %if.end9
+
+if.end9:                                          ; preds = %for.body4
+  %next10 = getelementptr inbounds %struct._Chv* %child2.077, i64 0, i32 10
+  %4 = load %struct._Chv** %next10, align 8, !tbaa !3
+  %cmp3 = icmp eq %struct._Chv* %4, null
+  br i1 %cmp3, label %for.end, label %for.body4
+
+for.end:                                          ; preds = %if.end9, %for.body4
+  %prev.0.lcssa = phi %struct._Chv* [ %prev.078, %for.body4 ], [ %child2.077, %if.end9 ]
+  %child2.0.lcssa = phi %struct._Chv* [ %child2.077, %for.body4 ], [ null, %if.end9 ]
+  %cmp11 = icmp eq %struct._Chv* %prev.0.lcssa, null
+  br i1 %cmp11, label %if.end14, label %if.else
+
+if.else:                                          ; preds = %for.end
+  %next13 = getelementptr inbounds %struct._Chv* %prev.0.lcssa, i64 0, i32 10
+  store %struct._Chv* %child.083, %struct._Chv** %next13, align 8, !tbaa !3
+  br label %if.end14
+
+if.end14:                                         ; preds = %for.body, %for.end, %if.else
+  %child2.0.lcssa88 = phi %struct._Chv* [ %child2.0.lcssa, %if.else ], [ %child2.0.lcssa, %for.end ], [ null, %for.body ]
+  %firstchild.1 = phi %struct._Chv* [ %firstchild.082, %if.else ], [ %child.083, %for.end ], [ %child.083, %for.body ]
+  store %struct._Chv* %child2.0.lcssa88, %struct._Chv** %next, align 8, !tbaa !3
+  %cmp1 = icmp eq %struct._Chv* %1, null
+  br i1 %cmp1, label %for.end17, label %for.body
+
+for.end17:                                        ; preds = %if.end14
+  %nD = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 1
+  %5 = load i32* %nD, align 4, !tbaa !0
+  %cmp1973 = icmp eq %struct._Chv* %firstchild.1, null
+  br i1 %cmp1973, label %for.end24, label %for.body20
+
+for.body20:                                       ; preds = %for.end17, %for.body20
+  %nDnew.075 = phi i32 [ %add, %for.body20 ], [ %5, %for.end17 ]
+  %child.174 = phi %struct._Chv* [ %7, %for.body20 ], [ %firstchild.1, %for.end17 ]
+  %nD21 = getelementptr inbounds %struct._Chv* %child.174, i64 0, i32 1
+  %6 = load i32* %nD21, align 4, !tbaa !0
+  %add = add nsw i32 %6, %nDnew.075
+  %next23 = getelementptr inbounds %struct._Chv* %child.174, i64 0, i32 10
+  %7 = load %struct._Chv** %next23, align 8, !tbaa !3
+  %cmp19 = icmp eq %struct._Chv* %7, null
+  br i1 %cmp19, label %for.end24, label %for.body20
+
+for.end24:                                        ; preds = %for.body20, %for.end17
+  %nDnew.0.lcssa = phi i32 [ %5, %for.end17 ], [ %add, %for.body20 ]
+  %nL = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 2
+  %8 = load i32* %nL, align 4, !tbaa !0
+  %nU = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 3
+  %9 = load i32* %nU, align 4, !tbaa !0
+  %type = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 4
+  %10 = load i32* %type, align 4, !tbaa !0
+  %symflag = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 5
+  %11 = load i32* %symflag, align 4, !tbaa !0
+  %call25 = tail call i32 @Chv_nbytesNeeded(i32 %nDnew.0.lcssa, i32 %8, i32 %9, i32 %10, i32 %11) #2
+  %call26 = tail call %struct._Chv* @ChvManager_newObjectOfSizeNbytes(%struct._ChvManager* %chvmanager, i32 %call25) #2
+  %12 = load i32* %id, align 4, !tbaa !0
+  %13 = load i32* %nL, align 4, !tbaa !0
+  %14 = load i32* %nU, align 4, !tbaa !0
+  %15 = load i32* %type, align 4, !tbaa !0
+  %16 = load i32* %symflag, align 4, !tbaa !0
+  tail call void @Chv_init(%struct._Chv* %call26, i32 %12, i32 %nDnew.0.lcssa, i32 %13, i32 %14, i32 %15, i32 %16) #2
+  %call32 = tail call i32 @Chv_assemblePostponedData(%struct._Chv* %call26, %struct._Chv* %frontJ, %struct._Chv* %firstchild.1) #2
+  store i32 %call32, i32* %pndelay, align 4, !tbaa !0
+  tail call void @ChvManager_releaseListOfObjects(%struct._ChvManager* %chvmanager, %struct._Chv* %firstchild.1) #2
+  %17 = load i32* %nU, align 4, !tbaa !0
+  %cmp34 = icmp eq i32 %17, 0
+  br i1 %cmp34, label %if.then35, label %return
+
+if.then35:                                        ; preds = %for.end24
+  store i32 0, i32* %pndelay, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %for.end24, %if.then35, %if.then
+  %retval.0 = phi %struct._Chv* [ %frontJ, %if.then ], [ %call26, %if.then35 ], [ %call26, %for.end24 ]
+  ret %struct._Chv* %retval.0
+}

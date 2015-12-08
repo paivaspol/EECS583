@@ -1,0 +1,37 @@
+define %struct.op* @Perl_block_end(i32 %floor, %struct.op* %seq) #0 {
+entry:
+  %0 = load i32* @PL_hints, align 4, !tbaa !0
+  %and = and i32 %0, 256
+  %call = tail call %struct.op* @Perl_scalarseq(%struct.op* %seq) #8
+  %1 = load i32* @PL_yynerrs, align 4, !tbaa !0
+  %tobool = icmp eq i32 %1, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %2 = load i32* @PL_savestack_ix, align 4, !tbaa !0
+  %cmp = icmp sgt i32 %2, %floor
+  br i1 %cmp, label %if.then2, label %if.end3
+
+if.then2:                                         ; preds = %if.end
+  tail call void @Perl_leave_scope(i32 %floor) #7
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.then2, %if.end
+  %3 = load i32* @PL_hints, align 4, !tbaa !0
+  %conv = trunc i32 %3 to i8
+  store i8 %conv, i8* getelementptr inbounds (%struct.cop* @PL_compiling, i64 0, i32 7), align 1, !tbaa !1
+  %tobool5 = icmp eq i32 %and, 0
+  br i1 %tobool5, label %if.end7, label %if.then6
+
+if.then6:                                         ; preds = %if.end3
+  %or = or i32 %3, 256
+  store i32 %or, i32* @PL_hints, align 4, !tbaa !0
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end3, %if.then6
+  tail call void @Perl_pad_leavemy() #7
+  br label %return
+
+return:                                           ; preds = %entry, %if.end7
+  ret %struct.op* %call
+}

@@ -1,16 +1,10 @@
-static void
-unset_cvowner(pTHX_ void *cvarg)
+PP(pp_gvsv)
 {
-    register CV* cv = (CV *) cvarg;
-
-    DEBUG_S((PerlIO_printf(Perl_debug_log, "%p unsetting CvOWNER of %p:%s\n",
-			   thr, cv, SvPEEK((SV*)cv))));
-    MUTEX_LOCK(CvMUTEXP(cv));
-    DEBUG_S(if (CvDEPTH(cv) != 0)
-		PerlIO_printf(Perl_debug_log, "depth %ld != 0\n",
-                             CvDEPTH(cv)));
-    assert(thr == CvOWNER(cv));
-    CvOWNER(cv) = 0;
-    MUTEX_UNLOCK(CvMUTEXP(cv));
-    SvREFCNT_dec(cv);
+    dSP;
+    EXTEND(SP,1);
+    if (PL_op->op_private & OPpLVAL_INTRO)
+	PUSHs(save_scalar(cGVOP_gv));
+    else
+	PUSHs(GvSV(cGVOP_gv));
+    RETURN;
 }

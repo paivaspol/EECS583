@@ -1,11 +1,20 @@
-int search_str(int nstr,char **str,char *key)
+bool get_header(char line[],char *header)
 {
-  int i;
+  char temp[STRLEN],*dum;
 
-  /* Linear search */
-  for(i=0; (i<nstr); i++)
-    if (strcasecmp(str[i],key)==0)
-      return i;
+  strcpy(temp,line);
+  dum=strchr(temp,'[');
+  if (dum==NULL)
+    return FALSE;
+  dum[0]=' ';
+  dum=strchr(temp,']');
+  if (dum==NULL) {
+    fatal_error(0,"header is not terminated on line:\n'%s'\n",line); 
+    return FALSE;
+  }
+  dum[0]='\0';
+  if (sscanf(temp,"%s%*s",header) != 1)
+    return FALSE;
 
-  return -1;
+  return TRUE;
 }

@@ -1,19 +1,21 @@
-static void get_dih(t_xrama *xr,t_atoms *atoms)
+static void add_xr(t_xrama *xr,int ff[5],t_atoms *atoms)
 {
-  int found,ff[NPP];
-  int i,j;
+  char buf[12];
+  int i;
 
-  for(i=0; (i<atoms->nr); ) {
-    found=i;
-    for(j=0; (j<NPP); j++) {
-      if ((ff[j]=find_atom(pp_pat[j],atoms->atomname,found,atoms->nr)) == -1)
-	break;
-      found=ff[j]+1;
-    }
-    if (j != NPP)
-      break;
-    add_xr(xr,ff,atoms);
-    i=ff[0]+1;
-  }
-  fprintf(stderr,"Found %d phi-psi combinations\n",xr->npp);
+  srenew(xr->dih,xr->ndih+2);
+  for(i=0; (i<4); i++)
+    xr->dih[xr->ndih].ai[i]=ff[i];
+  for(i=0; (i<4); i++)
+    xr->dih[xr->ndih+1].ai[i]=ff[i+1];
+  xr->ndih+=2;
+
+  srenew(xr->pp,xr->npp+1);
+  xr->pp[xr->npp].iphi=xr->ndih-2;
+  xr->pp[xr->npp].ipsi=xr->ndih-1;
+  xr->pp[xr->npp].bShow=FALSE;
+  sprintf(buf,"%s-%d",*atoms->resname[atoms->atom[ff[1]].resnr],
+	  atoms->atom[ff[1]].resnr+1);
+  xr->pp[xr->npp].label=strdup(buf);
+  xr->npp++;
 }

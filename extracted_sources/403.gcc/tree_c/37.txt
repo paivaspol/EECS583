@@ -1,14 +1,29 @@
-void
-type_hash_add (hashcode, type)
-     unsigned int hashcode;
-     tree type;
+static int
+type_hash_eq (va, vb)
+     const void *va;
+     const void *vb;
 {
-  struct type_hash *h;
-  void **loc;
-
-  h = (struct type_hash *) ggc_alloc (sizeof (struct type_hash));
-  h->hash = hashcode;
-  h->type = type;
-  loc = htab_find_slot_with_hash (type_hash_table, h, hashcode, INSERT);
-  *(struct type_hash **) loc = h;
+  const struct type_hash *a = va, *b = vb;
+  if (a->hash == b->hash
+      && TREE_CODE (a->type) == TREE_CODE (b->type)
+      && TREE_TYPE (a->type) == TREE_TYPE (b->type)
+      && attribute_list_equal (TYPE_ATTRIBUTES (a->type),
+			       TYPE_ATTRIBUTES (b->type))
+      && TYPE_ALIGN (a->type) == TYPE_ALIGN (b->type)
+      && (TYPE_MAX_VALUE (a->type) == TYPE_MAX_VALUE (b->type)
+	  || tree_int_cst_equal (TYPE_MAX_VALUE (a->type),
+				 TYPE_MAX_VALUE (b->type)))
+      && (TYPE_MIN_VALUE (a->type) == TYPE_MIN_VALUE (b->type)
+	  || tree_int_cst_equal (TYPE_MIN_VALUE (a->type),
+				 TYPE_MIN_VALUE (b->type)))
+      /* Note that TYPE_DOMAIN is TYPE_ARG_TYPES for FUNCTION_TYPE.  */
+      && (TYPE_DOMAIN (a->type) == TYPE_DOMAIN (b->type)
+	  || (TYPE_DOMAIN (a->type)
+	      && TREE_CODE (TYPE_DOMAIN (a->type)) == TREE_LIST
+	      && TYPE_DOMAIN (b->type)
+	      && TREE_CODE (TYPE_DOMAIN (b->type)) == TREE_LIST
+	      && type_list_equal (TYPE_DOMAIN (a->type),
+				  TYPE_DOMAIN (b->type)))))
+    return 1;
+  return 0;
 }

@@ -1,18 +1,8 @@
 int
-preserve_subexpressions_p ()
+stmt_loop_nest_empty ()
 {
-  rtx insn;
-
-  if (flag_expensive_optimizations)
-    return 1;
-
-  if (optimize == 0 || cfun == 0 || cfun->stmt == 0 || loop_stack == 0)
-    return 0;
-
-  insn = get_last_insn_anywhere ();
-
-  return (insn
-	  && (INSN_UID (insn) - INSN_UID (loop_stack->data.loop.start_label)
-	      < n_non_fixed_regs * 3));
-
+  /* cfun->stmt can be NULL if we are building a call to get the
+     EH context for a setjmp/longjmp EH target and the current
+     function was a deferred inline function.  */
+  return (cfun->stmt == NULL || loop_stack == NULL);
 }

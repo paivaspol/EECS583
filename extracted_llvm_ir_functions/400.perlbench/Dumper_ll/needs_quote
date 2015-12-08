@@ -1,0 +1,76 @@
+define internal fastcc i32 @needs_quote(i8* nocapture %s) #5 {
+entry:
+  %.pre = load i8* %s, align 1, !tbaa !1
+  %phitmp = icmp eq i8 %.pre, 58
+  br label %TOP
+
+TOP:                                              ; preds = %lor.lhs.false53, %entry
+  %0 = phi i8 [ %.pre, %entry ], [ 58, %lor.lhs.false53 ]
+  %1 = phi i1 [ %phitmp, %entry ], [ true, %lor.lhs.false53 ]
+  %s.addr.0 = phi i8* [ %s, %entry ], [ %incdec.ptr2897, %lor.lhs.false53 ]
+  br i1 %1, label %if.then, label %if.end9
+
+if.then:                                          ; preds = %TOP
+  %incdec.ptr = getelementptr inbounds i8* %s.addr.0, i64 1
+  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %tobool = icmp eq i8 %2, 0
+  br i1 %tobool, label %return, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %incdec.ptr3 = getelementptr inbounds i8* %s.addr.0, i64 2
+  %cmp5 = icmp eq i8 %2, 58
+  br i1 %cmp5, label %if.then2.if.end9_crit_edge, label %return
+
+if.then2.if.end9_crit_edge:                       ; preds = %if.then2
+  %.pre101 = load i8* %incdec.ptr3, align 1, !tbaa !1
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.then2.if.end9_crit_edge, %TOP
+  %3 = phi i8 [ %.pre101, %if.then2.if.end9_crit_edge ], [ %0, %TOP ]
+  %s.addr.1 = phi i8* [ %incdec.ptr3, %if.then2.if.end9_crit_edge ], [ %s.addr.0, %TOP ]
+  %.off = add i8 %3, -65
+  %4 = icmp ult i8 %.off, 26
+  br i1 %4, label %while.cond.preheader, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end9
+  %.off87 = add i8 %3, -97
+  %5 = icmp ult i8 %.off87, 26
+  %cmp25 = icmp eq i8 %3, 95
+  %or.cond86 = or i1 %5, %cmp25
+  br i1 %or.cond86, label %while.cond.preheader, label %return
+
+while.cond.preheader:                             ; preds = %if.end9, %lor.lhs.false
+  %incdec.ptr2895 = getelementptr inbounds i8* %s.addr.1, i64 1
+  %6 = load i8* %incdec.ptr2895, align 1, !tbaa !1
+  %tobool2996 = icmp eq i8 %6, 0
+  br i1 %tobool2996, label %return, label %while.body
+
+while.body:                                       ; preds = %while.cond.preheader, %while.cond.backedge
+  %7 = phi i8 [ %11, %while.cond.backedge ], [ %6, %while.cond.preheader ]
+  %incdec.ptr2897 = phi i8* [ %incdec.ptr28, %while.cond.backedge ], [ %incdec.ptr2895, %while.cond.preheader ]
+  %.off88 = add i8 %7, -65
+  %8 = icmp ult i8 %.off88, 26
+  %.off89 = add i8 %7, -97
+  %9 = icmp ult i8 %.off89, 26
+  %or.cond = or i1 %8, %9
+  %.off90 = add i8 %7, -48
+  %10 = icmp ult i8 %.off90, 10
+  %or.cond93 = or i1 %or.cond, %10
+  br i1 %or.cond93, label %while.cond.backedge, label %lor.lhs.false53
+
+while.cond.backedge:                              ; preds = %while.body, %lor.lhs.false53
+  %incdec.ptr28 = getelementptr inbounds i8* %incdec.ptr2897, i64 1
+  %11 = load i8* %incdec.ptr28, align 1, !tbaa !1
+  %tobool29 = icmp eq i8 %11, 0
+  br i1 %tobool29, label %return, label %while.body
+
+lor.lhs.false53:                                  ; preds = %while.body
+  switch i8 %7, label %return [
+    i8 95, label %while.cond.backedge
+    i8 58, label %TOP
+  ]
+
+return:                                           ; preds = %lor.lhs.false, %if.then, %if.then2, %lor.lhs.false53, %while.cond.backedge, %while.cond.preheader
+  %retval.0 = phi i32 [ 1, %lor.lhs.false53 ], [ 0, %while.cond.backedge ], [ 0, %while.cond.preheader ], [ 1, %if.then2 ], [ 1, %if.then ], [ 1, %lor.lhs.false ]
+  ret i32 %retval.0
+}

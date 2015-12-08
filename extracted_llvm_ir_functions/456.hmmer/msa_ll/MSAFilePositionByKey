@@ -1,0 +1,26 @@
+define i32 @MSAFilePositionByKey(%struct.msafile_struct* nocapture %afp, i8* %key) #0 {
+entry:
+  %fh = alloca i32, align 4
+  %offset = alloca %struct.ssioffset_s, align 8
+  %ssi = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 5
+  %0 = load %struct.ssifile_s** %ssi, align 8, !tbaa !0
+  %cmp = icmp eq %struct.ssifile_s* %0, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = call i32 @SSIGetOffsetByName(%struct.ssifile_s* %0, i8* %key, i32* %fh, %struct.ssioffset_s* %offset) #6
+  %cmp2 = icmp eq i32 %call, 0
+  br i1 %cmp2, label %if.end4, label %return
+
+if.end4:                                          ; preds = %if.end
+  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0
+  %1 = load %struct._IO_FILE** %f, align 8, !tbaa !0
+  %call5 = call i32 @SSISetFilePosition(%struct._IO_FILE* %1, %struct.ssioffset_s* %offset) #6
+  %cmp6 = icmp eq i32 %call5, 0
+  %. = zext i1 %cmp6 to i32
+  br label %return
+
+return:                                           ; preds = %if.end4, %if.end, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 0, %if.end ], [ %., %if.end4 ]
+  ret i32 %retval.0
+}

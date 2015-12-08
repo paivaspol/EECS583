@@ -1,0 +1,151 @@
+define i64 @Perl_allocmy(i8* %name) #0 {
+entry:
+  %0 = load i32* @PL_in_my, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, 137
+  br i1 %cmp, label %if.end89, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %arrayidx = getelementptr inbounds i8* %name, i64 1
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %.off = add i8 %1, -65
+  %2 = icmp ult i8 %.off, 26
+  %.off159 = add i8 %1, -97
+  %3 = icmp ult i8 %.off159, 26
+  %or.cond = or i1 %2, %3
+  br i1 %or.cond, label %if.end89, label %lor.lhs.false17
+
+lor.lhs.false17:                                  ; preds = %lor.lhs.false
+  %4 = load i32* @PL_hints, align 4, !tbaa !0
+  %and = and i32 %4, 8388608
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %lor.lhs.false28, label %land.lhs.true18
+
+land.lhs.true18:                                  ; preds = %lor.lhs.false17
+  %.off160 = add i8 %1, 64
+  %5 = icmp ult i8 %.off160, 62
+  br i1 %5, label %if.end89, label %lor.lhs.false28
+
+lor.lhs.false28:                                  ; preds = %lor.lhs.false17, %land.lhs.true18
+  %cmp31 = icmp eq i8 %1, 95
+  br i1 %cmp31, label %land.lhs.true33, label %if.then
+
+land.lhs.true33:                                  ; preds = %lor.lhs.false28
+  %call = tail call i64 @strlen(i8* %name) #7
+  %conv34 = trunc i64 %call to i32
+  %cmp35 = icmp sgt i32 %conv34, 2
+  br i1 %cmp35, label %if.end89, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true33, %lor.lhs.false28
+  %notlhs = icmp sgt i8 %1, 32
+  %notrhs = icmp ne i8 %1, 127
+  %or.cond156.not = and i1 %notrhs, %notlhs
+  %cmp49 = icmp eq i8 %1, 32
+  %or.cond158 = or i1 %or.cond156.not, %cmp49
+  br i1 %or.cond158, label %lor.lhs.false51, label %if.then56
+
+lor.lhs.false51:                                  ; preds = %if.then
+  %conv53 = sext i8 %1 to i32
+  %memchr = tail call i8* @memchr(i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0), i32 %conv53, i64 5)
+  %tobool55 = icmp eq i8* %memchr, null
+  br i1 %tobool55, label %if.end86, label %if.then56
+
+if.then56:                                        ; preds = %if.then, %lor.lhs.false51
+  %call57 = tail call i8* @strchr(i8* %name, i32 0) #7
+  %sub.ptr.lhs.cast = ptrtoint i8* %call57 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %name to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp58 = icmp sgt i64 %sub.ptr.sub, 200
+  br i1 %cmp58, label %if.then60, label %if.else
+
+if.then60:                                        ; preds = %if.then56
+  %add.ptr = getelementptr inbounds i8* %name, i64 200
+  %6 = bitcast i8* %add.ptr to i32*
+  store i32 3026478, i32* %6, align 1
+  %add.ptr62 = getelementptr inbounds i8* %name, i64 199
+  br label %for.cond.preheader
+
+if.else:                                          ; preds = %if.then56
+  %arrayidx63 = getelementptr inbounds i8* %call57, i64 1
+  store i8 0, i8* %arrayidx63, align 1, !tbaa !1
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.else, %if.then60
+  %p.0.ph = phi i8* [ %add.ptr62, %if.then60 ], [ %call57, %if.else ]
+  %sub.ptr.lhs.cast64163 = ptrtoint i8* %p.0.ph to i64
+  %sub.ptr.sub66164 = sub i64 %sub.ptr.lhs.cast64163, %sub.ptr.rhs.cast
+  %cmp67165 = icmp sgt i64 %sub.ptr.sub66164, 2
+  br i1 %cmp67165, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %p.0166 = phi i8* [ %add.ptr69, %for.body ], [ %p.0.ph, %for.cond.preheader ]
+  %add.ptr69 = getelementptr inbounds i8* %p.0166, i64 -1
+  %7 = load i8* %add.ptr69, align 1, !tbaa !1
+  store i8 %7, i8* %p.0166, align 1, !tbaa !1
+  %sub.ptr.lhs.cast64 = ptrtoint i8* %add.ptr69 to i64
+  %sub.ptr.sub66 = sub i64 %sub.ptr.lhs.cast64, %sub.ptr.rhs.cast
+  %cmp67 = icmp sgt i64 %sub.ptr.sub66, 2
+  br i1 %cmp67, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %8 = load i8* %arrayidx, align 1, !tbaa !1
+  %.off161 = add i8 %8, -97
+  %9 = icmp ult i8 %.off161, 26
+  %sub = add i8 %8, -32
+  %sub. = select i1 %9, i8 %sub, i8 %8
+  %xor = xor i8 %sub., 64
+  %arrayidx84 = getelementptr inbounds i8* %name, i64 2
+  store i8 %xor, i8* %arrayidx84, align 1, !tbaa !1
+  store i8 94, i8* %arrayidx, align 1, !tbaa !1
+  br label %if.end86
+
+if.end86:                                         ; preds = %lor.lhs.false51, %for.end
+  %call87 = tail call i8* (i8*, ...)* @Perl_form(i8* getelementptr inbounds ([28 x i8]* @.str2, i64 0, i64 0), i8* %name) #7
+  %call88 = tail call i32 @Perl_yyerror(i8* %call87) #7
+  %.pre = load i32* @PL_in_my, align 4, !tbaa !0
+  br label %if.end89
+
+if.end89:                                         ; preds = %land.lhs.true18, %lor.lhs.false, %if.end86, %land.lhs.true33, %entry
+  %10 = phi i32 [ %0, %land.lhs.true18 ], [ %0, %lor.lhs.false ], [ %.pre, %if.end86 ], [ %0, %land.lhs.true33 ], [ 137, %entry ]
+  %cmp90 = icmp eq i32 %10, 137
+  %conv92 = zext i1 %cmp90 to i8
+  %11 = load %struct.hv** @PL_curstash, align 8, !tbaa !3
+  %tobool93 = icmp ne %struct.hv* %11, null
+  %12 = load %struct.hv** @PL_defstash, align 8, !tbaa !3
+  %cond97 = select i1 %tobool93, %struct.hv* %11, %struct.hv* %12
+  tail call void @Perl_pad_check_dup(i8* %name, i8 signext %conv92, %struct.hv* %cond97) #7
+  %13 = load %struct.hv** @PL_in_my_stash, align 8, !tbaa !3
+  %tobool98 = icmp eq %struct.hv* %13, null
+  br i1 %tobool98, label %if.end109, label %land.lhs.true99
+
+land.lhs.true99:                                  ; preds = %if.end89
+  %14 = load i8* %name, align 1, !tbaa !1
+  %cmp101 = icmp eq i8 %14, 36
+  br i1 %cmp101, label %if.end109, label %if.then103
+
+if.then103:                                       ; preds = %land.lhs.true99
+  %15 = load i32* @PL_in_my, align 4, !tbaa !0
+  %cmp104 = icmp eq i32 %15, 137
+  %cond106 = select i1 %cmp104, i8* getelementptr inbounds ([4 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0)
+  %call107 = tail call i8* (i8*, ...)* @Perl_form(i8* getelementptr inbounds ([46 x i8]* @.str3, i64 0, i64 0), i8* %name, i8* %cond106) #7
+  %call108 = tail call i32 @Perl_yyerror(i8* %call107) #7
+  %.pre167 = load %struct.hv** @PL_in_my_stash, align 8, !tbaa !3
+  br label %if.end109
+
+if.end109:                                        ; preds = %land.lhs.true99, %if.end89, %if.then103
+  %16 = phi %struct.hv* [ %13, %land.lhs.true99 ], [ null, %if.end89 ], [ %.pre167, %if.then103 ]
+  %17 = load i32* @PL_in_my, align 4, !tbaa !0
+  %cmp110 = icmp eq i32 %17, 137
+  br i1 %cmp110, label %cond.true112, label %cond.end119
+
+cond.true112:                                     ; preds = %if.end109
+  %18 = load %struct.hv** @PL_curstash, align 8, !tbaa !3
+  %tobool113 = icmp ne %struct.hv* %18, null
+  %19 = load %struct.hv** @PL_defstash, align 8, !tbaa !3
+  %cond117 = select i1 %tobool113, %struct.hv* %18, %struct.hv* %19
+  br label %cond.end119
+
+cond.end119:                                      ; preds = %if.end109, %cond.true112
+  %cond120 = phi %struct.hv* [ %cond117, %cond.true112 ], [ null, %if.end109 ]
+  %call121 = tail call i64 @Perl_pad_add_name(i8* %name, %struct.hv* %16, %struct.hv* %cond120, i8 signext 0) #7
+  ret i64 %call121
+}

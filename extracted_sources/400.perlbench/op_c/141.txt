@@ -1,0 +1,27 @@
+OP *
+Perl_ck_shift(pTHX_ OP *o)
+{
+    I32 type = o->op_type;
+
+    if (!(o->op_flags & OPf_KIDS)) {
+	OP *argop;
+
+	op_free(o);
+#ifdef USE_5005THREADS
+	if (!CvUNIQUE(PL_compcv)) {
+	    argop = newOP(OP_PADAV, OPf_REF);
+	    argop->op_targ = 0;		/* PAD_SV(0) is @_ */
+	}
+	else {
+	    argop = newUNOP(OP_RV2AV, 0,
+		scalar(newGVOP(OP_GV, 0,
+		    gv_fetchpv("ARGV", TRUE, SVt_PVAV))));
+	}
+#else
+	argop = newUNOP(OP_RV2AV, 0,
+	    scalar(newGVOP(OP_GV, 0, CvUNIQUE(PL_compcv) ? PL_argvgv : PL_defgv)));
+#endif /* USE_5005THREADS */
+	return newUNOP(type, 0, scalar(argop));
+    }
+    return scalar(modkids(ck_fun(o), type));
+}

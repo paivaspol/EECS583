@@ -1,0 +1,60 @@
+define void @PerlIO_list_push(%struct.PerlIO_list_s* nocapture %Perl_list, %struct._PerlIO_funcs* %funcs, %struct.sv* %arg) #1 {
+entry:
+  %cur = getelementptr inbounds %struct.PerlIO_list_s* %Perl_list, i64 0, i32 1
+  %0 = load i64* %cur, align 8, !tbaa !4
+  %len = getelementptr inbounds %struct.PerlIO_list_s* %Perl_list, i64 0, i32 2
+  %1 = load i64* %len, align 8, !tbaa !4
+  %cmp = icmp slt i64 %0, %1
+  br i1 %cmp, label %entry.if.end10_crit_edge, label %if.then
+
+entry.if.end10_crit_edge:                         ; preds = %entry
+  %array12.phi.trans.insert = getelementptr inbounds %struct.PerlIO_list_s* %Perl_list, i64 0, i32 3
+  %.pre = load %struct.PerlIO_pair_t** %array12.phi.trans.insert, align 8, !tbaa !3
+  br label %if.end10
+
+if.then:                                          ; preds = %entry
+  %add = add nsw i64 %1, 8
+  store i64 %add, i64* %len, align 8, !tbaa !4
+  %array = getelementptr inbounds %struct.PerlIO_list_s* %Perl_list, i64 0, i32 3
+  %2 = load %struct.PerlIO_pair_t** %array, align 8, !tbaa !3
+  %tobool = icmp eq %struct.PerlIO_pair_t* %2, null
+  br i1 %tobool, label %if.else, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %3 = bitcast %struct.PerlIO_pair_t* %2 to i8*
+  %mul = shl i64 %add, 4
+  %call = tail call i8* @Perl_safesysrealloc(i8* %3, i64 %mul) #9
+  %4 = bitcast i8* %call to %struct.PerlIO_pair_t*
+  store %struct.PerlIO_pair_t* %4, %struct.PerlIO_pair_t** %array, align 8, !tbaa !3
+  br label %if.end10
+
+if.else:                                          ; preds = %if.then
+  %mul7 = shl i64 %add, 4
+  %call8 = tail call i8* @Perl_safesysmalloc(i64 %mul7) #9
+  %5 = bitcast i8* %call8 to %struct.PerlIO_pair_t*
+  store %struct.PerlIO_pair_t* %5, %struct.PerlIO_pair_t** %array, align 8, !tbaa !3
+  br label %if.end10
+
+if.end10:                                         ; preds = %entry.if.end10_crit_edge, %if.then2, %if.else
+  %6 = phi %struct.PerlIO_pair_t* [ %.pre, %entry.if.end10_crit_edge ], [ %4, %if.then2 ], [ %5, %if.else ]
+  %7 = load i64* %cur, align 8, !tbaa !4
+  %inc = add nsw i64 %7, 1
+  store i64 %inc, i64* %cur, align 8, !tbaa !4
+  %funcs13 = getelementptr inbounds %struct.PerlIO_pair_t* %6, i64 %7, i32 0
+  store %struct._PerlIO_funcs* %funcs, %struct._PerlIO_funcs** %funcs13, align 8, !tbaa !3
+  %arg14 = getelementptr inbounds %struct.PerlIO_pair_t* %6, i64 %7, i32 1
+  store %struct.sv* %arg, %struct.sv** %arg14, align 8, !tbaa !3
+  %tobool15 = icmp eq %struct.sv* %arg, null
+  br i1 %tobool15, label %if.end20, label %if.then16
+
+if.then16:                                        ; preds = %if.end10
+  store %struct.sv* %arg, %struct.sv** @PL_Sv, align 8, !tbaa !3
+  %sv_refcnt = getelementptr inbounds %struct.sv* %arg, i64 0, i32 1
+  %8 = load i32* %sv_refcnt, align 4, !tbaa !0
+  %inc18 = add i32 %8, 1
+  store i32 %inc18, i32* %sv_refcnt, align 4, !tbaa !0
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.end10, %if.then16
+  ret void
+}

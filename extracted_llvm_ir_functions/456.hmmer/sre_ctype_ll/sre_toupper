@@ -1,0 +1,19 @@
+define i32 @sre_toupper(i32 %c) #0 {
+entry:
+  %idxprom = sext i32 %c to i64
+  %call = tail call i16** @__ctype_b_loc() #3
+  %0 = load i16** %call, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i16* %0, i64 %idxprom
+  %1 = load i16* %arrayidx, align 2, !tbaa !3
+  %and = and i16 %1, 512
+  %tobool = icmp eq i16 %and, 0
+  br i1 %tobool, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @toupper(i32 %c) #4
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ %call1, %if.then ], [ %c, %entry ]
+  ret i32 %retval.0
+}

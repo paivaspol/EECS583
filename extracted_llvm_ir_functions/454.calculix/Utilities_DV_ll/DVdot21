@@ -1,0 +1,48 @@
+define void @DVdot21(i32 %n, double* %row0, double* %row1, double* %col0, double* %sums) #0 {
+entry:
+  %cmp = icmp eq double* %sums, null
+  %cmp1 = icmp eq double* %row0, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq double* %row1, null
+  %or.cond32 = or i1 %or.cond, %cmp3
+  %cmp5 = icmp eq double* %col0, null
+  %or.cond33 = or i1 %or.cond32, %cmp5
+  br i1 %or.cond33, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp634 = icmp sgt i32 %n, 0
+  br i1 %cmp634, label %for.body, label %for.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([53 x i8]* @.str46, i64 0, i64 0), i32 %n, double* %row0, double* %row1, double* %col0, double* %sums) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %s00.037 = phi double [ %add, %for.body ], [ 0.000000e+00, %for.cond.preheader ]
+  %s10.036 = phi double [ %add12, %for.body ], [ 0.000000e+00, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds double* %row0, i64 %indvars.iv
+  %1 = load double* %arrayidx, align 8, !tbaa !3
+  %arrayidx8 = getelementptr inbounds double* %row1, i64 %indvars.iv
+  %2 = load double* %arrayidx8, align 8, !tbaa !3
+  %arrayidx10 = getelementptr inbounds double* %col0, i64 %indvars.iv
+  %3 = load double* %arrayidx10, align 8, !tbaa !3
+  %mul = fmul double %1, %3
+  %add = fadd double %s00.037, %mul
+  %mul11 = fmul double %2, %3
+  %add12 = fadd double %s10.036, %mul11
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %s00.0.lcssa = phi double [ 0.000000e+00, %for.cond.preheader ], [ %add, %for.body ]
+  %s10.0.lcssa = phi double [ 0.000000e+00, %for.cond.preheader ], [ %add12, %for.body ]
+  store double %s00.0.lcssa, double* %sums, align 8, !tbaa !3
+  %arrayidx14 = getelementptr inbounds double* %sums, i64 1
+  store double %s10.0.lcssa, double* %arrayidx14, align 8, !tbaa !3
+  ret void
+}

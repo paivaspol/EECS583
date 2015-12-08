@@ -1,14 +1,7 @@
-void mdsplit_top(FILE *log,t_topology *top,t_commrec *cr,
-		 t_nsborder *nsb, bool *bParallelDummies,
-		 t_comm_dummies *dummycomm)
+static void split_idef(FILE *log,t_idef *idef,t_commrec *cr)
 {
-  if (cr->nnodes < 2)
-    return;
-
-  *bParallelDummies=setup_parallel_dummies(&(top->idef),cr,nsb,dummycomm);
+  int i;
   
-  split_idef(log,&top->idef,cr);
-#ifdef DEBUG
-  pr_idef(log,0,"After Split",&(top->idef));
-#endif
+  for(i=0; (i<F_NRE); i++)
+    split_ilist(log,&idef->il[i],cr);
 }

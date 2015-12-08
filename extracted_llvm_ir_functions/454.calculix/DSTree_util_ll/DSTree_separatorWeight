@@ -1,0 +1,82 @@
+define i32 @DSTree_separatorWeight(%struct._DSTree* %dstree, i32* %vwghts) #0 {
+entry:
+  %nvtx = alloca i32, align 4
+  %map = alloca i32*, align 8
+  %cmp = icmp eq %struct._DSTree* %dstree, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str3, i64 0, i64 0), %struct._DSTree* null) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %call1 = call %struct._Tree* @DSTree_tree(%struct._DSTree* %dstree) #4
+  %call2 = call %struct._IV* @DSTree_mapIV(%struct._DSTree* %dstree) #4
+  call void @IV_sizeAndEntries(%struct._IV* %call2, i32* %nvtx, i32** %map) #4
+  %fch3 = getelementptr inbounds %struct._Tree* %call1, i64 0, i32 3
+  %1 = load i32** %fch3, align 8, !tbaa !0
+  %cmp4 = icmp eq i32* %vwghts, null
+  %2 = load i32* %nvtx, align 4, !tbaa !3
+  %cmp1543 = icmp sgt i32 %2, 0
+  br i1 %cmp4, label %for.cond14.preheader, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.end
+  br i1 %cmp1543, label %for.body.lr.ph, label %if.end28
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %3 = load i32** %map, align 8, !tbaa !0
+  br label %for.body
+
+for.cond14.preheader:                             ; preds = %if.end
+  br i1 %cmp1543, label %for.body16.lr.ph, label %if.end28
+
+for.body16.lr.ph:                                 ; preds = %for.cond14.preheader
+  %4 = load i32** %map, align 8, !tbaa !0
+  br label %for.body16
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv51 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next52, %for.inc ]
+  %sepwght.049 = phi i32 [ 0, %for.body.lr.ph ], [ %sepwght.1, %for.inc ]
+  %arrayidx = getelementptr inbounds i32* %3, i64 %indvars.iv51
+  %5 = load i32* %arrayidx, align 4, !tbaa !3
+  %idxprom7 = sext i32 %5 to i64
+  %arrayidx8 = getelementptr inbounds i32* %1, i64 %idxprom7
+  %6 = load i32* %arrayidx8, align 4, !tbaa !3
+  %cmp9 = icmp eq i32 %6, -1
+  br i1 %cmp9, label %for.inc, label %if.then10
+
+if.then10:                                        ; preds = %for.body
+  %arrayidx12 = getelementptr inbounds i32* %vwghts, i64 %indvars.iv51
+  %7 = load i32* %arrayidx12, align 4, !tbaa !3
+  %add = add nsw i32 %7, %sepwght.049
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then10
+  %sepwght.1 = phi i32 [ %add, %if.then10 ], [ %sepwght.049, %for.body ]
+  %indvars.iv.next52 = add i64 %indvars.iv51, 1
+  %8 = trunc i64 %indvars.iv.next52 to i32
+  %cmp6 = icmp slt i32 %8, %2
+  br i1 %cmp6, label %for.body, label %if.end28
+
+for.body16:                                       ; preds = %for.body16.lr.ph, %for.body16
+  %indvars.iv = phi i64 [ 0, %for.body16.lr.ph ], [ %indvars.iv.next, %for.body16 ]
+  %sepwght.245 = phi i32 [ 0, %for.body16.lr.ph ], [ %sepwght.2.inc23, %for.body16 ]
+  %arrayidx18 = getelementptr inbounds i32* %4, i64 %indvars.iv
+  %9 = load i32* %arrayidx18, align 4, !tbaa !3
+  %idxprom19 = sext i32 %9 to i64
+  %arrayidx20 = getelementptr inbounds i32* %1, i64 %idxprom19
+  %10 = load i32* %arrayidx20, align 4, !tbaa !3
+  %not.cmp21 = icmp ne i32 %10, -1
+  %inc23 = zext i1 %not.cmp21 to i32
+  %sepwght.2.inc23 = add nsw i32 %inc23, %sepwght.245
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %11 = trunc i64 %indvars.iv.next to i32
+  %cmp15 = icmp slt i32 %11, %2
+  br i1 %cmp15, label %for.body16, label %if.end28
+
+if.end28:                                         ; preds = %for.cond.preheader, %for.inc, %for.cond14.preheader, %for.body16
+  %sepwght.4 = phi i32 [ 0, %for.cond14.preheader ], [ %sepwght.2.inc23, %for.body16 ], [ 0, %for.cond.preheader ], [ %sepwght.1, %for.inc ]
+  ret i32 %sepwght.4
+}

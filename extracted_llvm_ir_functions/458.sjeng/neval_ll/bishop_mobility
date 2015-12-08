@@ -1,0 +1,40 @@
+define internal fastcc i32 @bishop_mobility(i32 %square) #1 {
+entry:
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc9, %entry
+  %indvars.iv24 = phi i64 [ 0, %entry ], [ %indvars.iv.next25, %for.inc9 ]
+  %m.022 = phi i32 [ 0, %entry ], [ %m.1.lcssa, %for.inc9 ]
+  %arrayidx = getelementptr inbounds [4 x i32]* @bishop_mobility.dir, i64 0, i64 %indvars.iv24
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %add = add i32 %0, %square
+  %idxprom217 = sext i32 %add to i64
+  %arrayidx318 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom217
+  %1 = load i32* %arrayidx318, align 4, !tbaa !0
+  %cmp419 = icmp eq i32 %1, 13
+  br i1 %cmp419, label %for.body5.lr.ph, label %for.inc9
+
+for.body5.lr.ph:                                  ; preds = %for.body
+  %2 = sext i32 %0 to i64
+  br label %for.body5
+
+for.body5:                                        ; preds = %for.body5.lr.ph, %for.body5
+  %indvars.iv = phi i64 [ %idxprom217, %for.body5.lr.ph ], [ %indvars.iv.next, %for.body5 ]
+  %m.121 = phi i32 [ %m.022, %for.body5.lr.ph ], [ %inc, %for.body5 ]
+  %inc = add nsw i32 %m.121, 1
+  %indvars.iv.next = add i64 %indvars.iv, %2
+  %arrayidx3 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv.next
+  %3 = load i32* %arrayidx3, align 4, !tbaa !0
+  %cmp4 = icmp eq i32 %3, 13
+  br i1 %cmp4, label %for.body5, label %for.inc9
+
+for.inc9:                                         ; preds = %for.body5, %for.body
+  %m.1.lcssa = phi i32 [ %m.022, %for.body ], [ %inc, %for.body5 ]
+  %indvars.iv.next25 = add i64 %indvars.iv24, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next25 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.end11, label %for.body
+
+for.end11:                                        ; preds = %for.inc9
+  ret i32 %m.1.lcssa
+}

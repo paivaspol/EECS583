@@ -1,0 +1,42 @@
+PP(pp_chr)
+{
+    dSP; dTARGET;
+    char *tmps;
+    UV value = POPu;
+
+    (void)SvUPGRADE(TARG,SVt_PV);
+
+    if (value > 255 && !IN_BYTES) {
+	SvGROW(TARG, (STRLEN)UNISKIP(value)+1);
+	tmps = (char*)uvchr_to_utf8_flags((U8*)SvPVX(TARG), value, 0);
+	SvCUR_set(TARG, tmps - SvPVX(TARG));
+	*tmps = '\0';
+	(void)SvPOK_only(TARG);
+	SvUTF8_on(TARG);
+	XPUSHs(TARG);
+	RETURN;
+    }
+
+    SvGROW(TARG,2);
+    SvCUR_set(TARG, 1);
+    tmps = SvPVX(TARG);
+    *tmps++ = (char)value;
+    *tmps = '\0';
+    (void)SvPOK_only(TARG);
+    if (PL_encoding && !IN_BYTES) {
+        sv_recode_to_utf8(TARG, PL_encoding);
+	tmps = SvPVX(TARG);
+	if (SvCUR(TARG) == 0 || !is_utf8_string((U8*)tmps, SvCUR(TARG)) ||
+	    memEQ(tmps, "\xef\xbf\xbd\0", 4)) {
+	    SvGROW(TARG, 3);
+	    tmps = SvPVX(TARG);
+	    SvCUR_set(TARG, 2);
+	    *tmps++ = (U8)UTF8_EIGHT_BIT_HI(value);
+	    *tmps++ = (U8)UTF8_EIGHT_BIT_LO(value);
+	    *tmps = '\0';
+	    SvUTF8_on(TARG);
+	}
+    }
+    XPUSHs(TARG);
+    RETURN;
+}

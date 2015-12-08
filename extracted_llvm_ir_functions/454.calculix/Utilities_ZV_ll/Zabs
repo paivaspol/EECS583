@@ -1,0 +1,43 @@
+define double @Zabs(double %real, double %imag) #0 {
+entry:
+  %cmp = fcmp oeq double %real, 0.000000e+00
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call = tail call double @fabs(double %imag) #4
+  br label %if.end18
+
+if.else:                                          ; preds = %entry
+  %cmp1 = fcmp oeq double %imag, 0.000000e+00
+  br i1 %cmp1, label %if.then2, label %if.else4
+
+if.then2:                                         ; preds = %if.else
+  %call3 = tail call double @fabs(double %real) #4
+  br label %if.end18
+
+if.else4:                                         ; preds = %if.else
+  %cmp5 = fcmp ult double %real, %imag
+  br i1 %cmp5, label %if.else10, label %if.then6
+
+if.then6:                                         ; preds = %if.else4
+  %div = fdiv double %imag, %real
+  %call7 = tail call double @fabs(double %real) #4
+  %mul = fmul double %div, %div
+  %add = fadd double %mul, 1.000000e+00
+  %call8 = tail call double @sqrt(double %add) #5
+  %mul9 = fmul double %call7, %call8
+  br label %if.end18
+
+if.else10:                                        ; preds = %if.else4
+  %div11 = fdiv double %real, %imag
+  %call12 = tail call double @fabs(double %imag) #4
+  %mul13 = fmul double %div11, %div11
+  %add14 = fadd double %mul13, 1.000000e+00
+  %call15 = tail call double @sqrt(double %add14) #5
+  %mul16 = fmul double %call12, %call15
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.then2, %if.else10, %if.then6, %if.then
+  %abs.0 = phi double [ %call, %if.then ], [ %call3, %if.then2 ], [ %mul9, %if.then6 ], [ %mul16, %if.else10 ]
+  ret double %abs.0
+}

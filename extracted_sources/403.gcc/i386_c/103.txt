@@ -1,15 +1,28 @@
 void
-emit_i387_cw_initialization (normal, round_down)
-     rtx normal, round_down;
+split_di (operands, num, lo_half, hi_half)
+     rtx operands[];
+     int num;
+     rtx lo_half[], hi_half[];
 {
-  rtx reg = gen_reg_rtx (HImode);
+  while (num--)
+    {
+      rtx op = operands[num];
 
-  emit_insn (gen_x86_fnstcw_1 (normal));
-  emit_move_insn (reg, normal);
-  if (!TARGET_PARTIAL_REG_STALL && !optimize_size
-      && !TARGET_64BIT)
-    emit_insn (gen_movsi_insv_1 (reg, GEN_INT (0xc)));
-  else
-    emit_insn (gen_iorhi3 (reg, reg, GEN_INT (0xc00)));
-  emit_move_insn (round_down, reg);
+      /* simplify_subreg refuse to split volatile memory addresses,
+         but we still have to handle it.  */
+      if (GET_CODE (op) == MEM)
+	{
+	  lo_half[num] = adjust_address (op, SImode, 0);
+	  hi_half[num] = adjust_address (op, SImode, 4);
+	}
+      else
+	{
+	  lo_half[num] = simplify_gen_subreg (SImode, op,
+					      GET_MODE (op) == VOIDmode
+					      ? DImode : GET_MODE (op), 0);
+	  hi_half[num] = simplify_gen_subreg (SImode, op,
+					      GET_MODE (op) == VOIDmode
+					      ? DImode : GET_MODE (op), 4);
+	}
+    }
 }

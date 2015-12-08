@@ -1,0 +1,16 @@
+define %struct.sv* @Perl_hv_iternextsv(%struct.hv* %hv, i8** nocapture %key, i32* nocapture %retlen) #0 {
+entry:
+  %call = tail call %struct.he* @Perl_hv_iternext_flags(%struct.hv* %hv, i32 0) #5
+  %cmp = icmp eq %struct.he* %call, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call1 = tail call i8* @Perl_hv_iterkey(%struct.he* %call, i32* %retlen) #5
+  store i8* %call1, i8** %key, align 8, !tbaa !0
+  %call2 = tail call %struct.sv* @Perl_hv_iterval(%struct.hv* %hv, %struct.he* %call) #5
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi %struct.sv* [ %call2, %if.end ], [ null, %entry ]
+  ret %struct.sv* %retval.0
+}

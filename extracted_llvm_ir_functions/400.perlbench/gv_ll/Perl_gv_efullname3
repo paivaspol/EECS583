@@ -1,0 +1,13 @@
+define void @Perl_gv_efullname3(%struct.sv* %sv, %struct.gv* nocapture %gv, i8* %prefix) #0 {
+entry:
+  %sv_any.i = getelementptr inbounds %struct.gv* %gv, i64 0, i32 0
+  %0 = load %struct.xpvgv** %sv_any.i, align 8, !tbaa !3
+  %xgv_gp.i = getelementptr inbounds %struct.xpvgv* %0, i64 0, i32 7
+  %1 = load %struct.gp** %xgv_gp.i, align 8, !tbaa !3
+  %gp_egv.i = getelementptr inbounds %struct.gp* %1, i64 0, i32 6
+  %2 = load %struct.gv** %gp_egv.i, align 8, !tbaa !3
+  %tobool.i = icmp eq %struct.gv* %2, null
+  %gv..i = select i1 %tobool.i, %struct.gv* %gv, %struct.gv* %2
+  tail call void @Perl_gv_fullname4(%struct.sv* %sv, %struct.gv* %gv..i, i8* %prefix, i8 signext 1) #6
+  ret void
+}

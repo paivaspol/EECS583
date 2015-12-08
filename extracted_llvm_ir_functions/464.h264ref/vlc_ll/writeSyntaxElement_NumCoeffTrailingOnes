@@ -1,0 +1,94 @@
+define i32 @writeSyntaxElement_NumCoeffTrailingOnes(%struct.syntaxelement* nocapture %se, %struct.datapartition* nocapture %this_dataPart) #0 {
+entry:
+  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
+  %0 = load i32* %len, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, 3
+  br i1 %cmp, label %if.then, label %if.end23
+
+if.then:                                          ; preds = %entry
+  store i32 6, i32* %len, align 4, !tbaa !0
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
+  %1 = load i32* %value1, align 4, !tbaa !0
+  %cmp2 = icmp sgt i32 %1, 0
+  br i1 %cmp2, label %if.then3, label %if.else
+
+if.then3:                                         ; preds = %if.then
+  %sub = shl i32 %1, 2
+  %shl = add i32 %sub, -4
+  %value2 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2
+  %2 = load i32* %value2, align 4, !tbaa !0
+  %or = or i32 %2, %shl
+  %inf = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4
+  store i32 %or, i32* %inf, align 4, !tbaa !0
+  br label %if.end29.thread
+
+if.else:                                          ; preds = %if.then
+  %inf5 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4
+  store i32 3, i32* %inf5, align 4, !tbaa !0
+  br label %if.end29.thread
+
+if.end29.thread:                                  ; preds = %if.else, %if.then3
+  %.ph = phi i32 [ %or, %if.then3 ], [ 3, %if.else ]
+  %bitpattern.i52 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5
+  store i32 0, i32* %bitpattern.i52, align 4, !tbaa !0
+  br label %while.body.lr.ph.i
+
+if.end23:                                         ; preds = %entry
+  %value17 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
+  %3 = load i32* %value17, align 4, !tbaa !0
+  %idxprom = sext i32 %3 to i64
+  %value28 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2
+  %4 = load i32* %value28, align 4, !tbaa !0
+  %idxprom9 = sext i32 %4 to i64
+  %idxprom10 = sext i32 %0 to i64
+  %arrayidx12 = getelementptr inbounds [3 x [4 x [17 x i32]]]* @writeSyntaxElement_NumCoeffTrailingOnes.lentab, i64 0, i64 %idxprom10, i64 %idxprom9, i64 %idxprom
+  %5 = load i32* %arrayidx12, align 4, !tbaa !0
+  store i32 %5, i32* %len, align 4, !tbaa !0
+  %arrayidx21 = getelementptr inbounds [3 x [4 x [17 x i32]]]* @writeSyntaxElement_NumCoeffTrailingOnes.codtab, i64 0, i64 %idxprom10, i64 %idxprom9, i64 %idxprom
+  %6 = load i32* %arrayidx21, align 4, !tbaa !0
+  %inf22 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4
+  store i32 %6, i32* %inf22, align 4, !tbaa !0
+  %cmp25 = icmp eq i32 %5, 0
+  br i1 %cmp25, label %if.then26, label %if.end29
+
+if.then26:                                        ; preds = %if.end23
+  %value228 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2
+  %7 = load i32* %value228, align 4, !tbaa !0
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([59 x i8]* @.str, i64 0, i64 0), i32 %0, i32 %3, i32 %7) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end29:                                         ; preds = %if.end23
+  %bitpattern.i = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5
+  store i32 0, i32* %bitpattern.i, align 4, !tbaa !0
+  %cmp10.i = icmp sgt i32 %5, 0
+  br i1 %cmp10.i, label %while.body.lr.ph.i, label %symbol2vlc.exit
+
+while.body.lr.ph.i:                               ; preds = %if.end29.thread, %if.end29
+  %bitpattern.i54 = phi i32* [ %bitpattern.i52, %if.end29.thread ], [ %bitpattern.i, %if.end29 ]
+  %8 = phi i32 [ %.ph, %if.end29.thread ], [ %6, %if.end29 ]
+  %9 = phi i32 [ 6, %if.end29.thread ], [ %5, %if.end29 ]
+  br label %while.body.i
+
+while.body.i:                                     ; preds = %while.body.i, %while.body.lr.ph.i
+  %dec12.in.i = phi i32 [ %9, %while.body.lr.ph.i ], [ %dec12.i, %while.body.i ]
+  %storemerge11.i = phi i32 [ 0, %while.body.lr.ph.i ], [ %or.i, %while.body.i ]
+  %dec12.i = add nsw i32 %dec12.in.i, -1
+  %shl.i = shl i32 %storemerge11.i, 1
+  %shr8.i = lshr i32 %8, %dec12.i
+  %and.i = and i32 %shr8.i, 1
+  %or.i = or i32 %and.i, %shl.i
+  %cmp.i = icmp sgt i32 %dec12.i, 0
+  br i1 %cmp.i, label %while.body.i, label %while.cond.while.end_crit_edge.i
+
+while.cond.while.end_crit_edge.i:                 ; preds = %while.body.i
+  store i32 %or.i, i32* %bitpattern.i54, align 4, !tbaa !0
+  br label %symbol2vlc.exit
+
+symbol2vlc.exit:                                  ; preds = %if.end29, %while.cond.while.end_crit_edge.i
+  %bitstream = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0
+  %10 = load %struct.Bitstream** %bitstream, align 8, !tbaa !3
+  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %10) #4
+  %11 = load i32* %len, align 4, !tbaa !0
+  ret i32 %11
+}

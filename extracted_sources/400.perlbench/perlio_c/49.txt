@@ -1,20 +1,15 @@
 int
-PerlIO_vprintf(PerlIO *f, const char *fmt, va_list ap)
+PerlIO_has_cntptr(PerlIO *f)
 {
-    dTHX;
-    SV *sv = newSVpvn("", 0);
-    char *s;
-    STRLEN len;
-    SSize_t wrote;
-#ifdef NEED_VA_COPY
-    va_list apc;
-    Perl_va_copy(ap, apc);
-    sv_vcatpvf(sv, fmt, &apc);
-#else
-    sv_vcatpvf(sv, fmt, &ap);
-#endif
-    s = SvPV(sv, len);
-    wrote = PerlIO_write(f, s, len);
-    SvREFCNT_dec(sv);
-    return wrote;
+    if (PerlIOValid(f)) {
+	PerlIO_funcs *tab = PerlIOBase(f)->tab;
+
+	if (tab)
+	     return (tab->Get_ptr != NULL && tab->Get_cnt != NULL);
+	  SETERRNO(EINVAL, LIB_INVARG);
+    }
+    else
+	 SETERRNO(EBADF, SS_IVCHAN);
+
+    return 0;
 }

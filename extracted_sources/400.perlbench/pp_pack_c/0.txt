@@ -1,10 +1,26 @@
-void
-Perl_pack_cat(pTHX_ SV *cat, char *pat, register char *patend, register SV **beglist, SV **endlist, SV ***next_in_list, U32 flags)
+STATIC SV *
+S_mul128(pTHX_ SV *sv, U8 m)
 {
-    tempsym_t sym = { 0 };
-    sym.patptr = pat;
-    sym.patend = patend;
-    sym.flags  = FLAG_PACK;
+  STRLEN          len;
+  char           *s = SvPV(sv, len);
+  char           *t;
+  U32             i = 0;
 
-    (void)pack_rec( cat, &sym, beglist, endlist );
+  if (!strnEQ(s, "0000", 4)) {  /* need to grow sv */
+    SV             *tmpNew = newSVpvn("0000000000", 10);
+
+    sv_catsv(tmpNew, sv);
+    SvREFCNT_dec(sv);		/* free old sv */
+    sv = tmpNew;
+    s = SvPV(sv, len);
+  }
+  t = s + len - 1;
+  while (!*t)                   /* trailing '\0'? */
+    t--;
+  while (t > s) {
+    i = ((*t - '0') << 7) + m;
+    *(t--) = '0' + (char)(i % 10);
+    m = (char)(i / 10);
+  }
+  return (sv);
 }

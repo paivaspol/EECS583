@@ -1,0 +1,14 @@
+define i32 @get_moveXY(%struct.SGFProperty_t* nocapture %property, i32* nocapture %i, i32* nocapture %j, i32 %boardsize) #0 {
+entry:
+  %call = tail call i32 @get_moveX(%struct.SGFProperty_t* %property, i32 %boardsize) #7
+  store i32 %call, i32* %i, align 4, !tbaa !3
+  %call1 = tail call i32 @get_moveY(%struct.SGFProperty_t* %property, i32 %boardsize) #7
+  store i32 %call1, i32* %j, align 4, !tbaa !3
+  %0 = load i32* %i, align 4, !tbaa !3
+  %cmp = icmp eq i32 %0, -1
+  %cmp2 = icmp eq i32 %call1, -1
+  %or.cond = and i1 %cmp, %cmp2
+  %1 = zext i1 %or.cond to i32
+  %retval.0 = xor i32 %1, 1
+  ret i32 %retval.0
+}

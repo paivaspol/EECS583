@@ -1,15 +1,52 @@
-static rtx
-ix86_expand_aligntest (variable, value)
-     rtx variable;
-     int value;
+void
+ix86_split_ashldi (operands, scratch)
+     rtx *operands, scratch;
 {
-  rtx label = gen_label_rtx ();
-  rtx tmpcount = gen_reg_rtx (GET_MODE (variable));
-  if (GET_MODE (variable) == DImode)
-    emit_insn (gen_anddi3 (tmpcount, variable, GEN_INT (value)));
+  rtx low[2], high[2];
+  int count;
+
+  if (GET_CODE (operands[2]) == CONST_INT)
+    {
+      split_di (operands, 2, low, high);
+      count = INTVAL (operands[2]) & 63;
+
+      if (count >= 32)
+	{
+	  emit_move_insn (high[0], low[1]);
+	  emit_move_insn (low[0], const0_rtx);
+
+	  if (count > 32)
+	    emit_insn (gen_ashlsi3 (high[0], high[0], GEN_INT (count - 32)));
+	}
+      else
+	{
+	  if (!rtx_equal_p (operands[0], operands[1]))
+	    emit_move_insn (operands[0], operands[1]);
+	  emit_insn (gen_x86_shld_1 (high[0], low[0], GEN_INT (count)));
+	  emit_insn (gen_ashlsi3 (low[0], low[0], GEN_INT (count)));
+	}
+    }
   else
-    emit_insn (gen_andsi3 (tmpcount, variable, GEN_INT (value)));
-  emit_cmp_and_jump_insns (tmpcount, const0_rtx, EQ, 0, GET_MODE (variable),
-			   1, label);
-  return label;
+    {
+      if (!rtx_equal_p (operands[0], operands[1]))
+	emit_move_insn (operands[0], operands[1]);
+
+      split_di (operands, 1, low, high);
+
+      emit_insn (gen_x86_shld_1 (high[0], low[0], operands[2]));
+      emit_insn (gen_ashlsi3 (low[0], low[0], operands[2]));
+
+      if (TARGET_CMOVE && (! no_new_pseudos || scratch))
+	{
+	  if (! no_new_pseudos)
+	    scratch = force_reg (SImode, const0_rtx);
+	  else
+	    emit_move_insn (scratch, const0_rtx);
+
+	  emit_insn (gen_x86_shift_adj_1 (high[0], low[0], operands[2],
+					  scratch));
+	}
+      else
+	emit_insn (gen_x86_shift_adj_2 (high[0], low[0], operands[2]));
+    }
 }

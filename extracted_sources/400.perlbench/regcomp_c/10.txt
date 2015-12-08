@@ -1,0 +1,23 @@
+void
+Perl_reginitcolors(pTHX)
+{
+    int i = 0;
+    char *s = PerlEnv_getenv("PERL_RE_COLORS");
+	
+    if (s) {
+	PL_colors[0] = s = savepv(s);
+	while (++i < 6) {
+	    s = strchr(s, '\t');
+	    if (s) {
+		*s = '\0';
+		PL_colors[i] = ++s;
+	    }
+	    else
+		PL_colors[i] = s = "";
+	}
+    } else {
+	while (i < 6)
+	    PL_colors[i++] = "";
+    }
+    PL_colorset = 1;
+}

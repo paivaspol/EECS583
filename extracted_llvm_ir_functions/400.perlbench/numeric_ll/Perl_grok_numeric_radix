@@ -1,0 +1,20 @@
+define signext i8 @Perl_grok_numeric_radix(i8** nocapture %sp, i8* %send) #1 {
+entry:
+  %0 = load i8** %sp, align 8, !tbaa !4
+  %cmp = icmp ult i8* %0, %send
+  br i1 %cmp, label %land.lhs.true, label %return
+
+land.lhs.true:                                    ; preds = %entry
+  %1 = load i8* %0, align 1, !tbaa !1
+  %cmp1 = icmp eq i8 %1, 46
+  br i1 %cmp1, label %if.then, label %return
+
+if.then:                                          ; preds = %land.lhs.true
+  %incdec.ptr = getelementptr inbounds i8* %0, i64 1
+  store i8* %incdec.ptr, i8** %sp, align 8, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %entry, %land.lhs.true, %if.then
+  %retval.0 = phi i8 [ 1, %if.then ], [ 0, %land.lhs.true ], [ 0, %entry ]
+  ret i8 %retval.0
+}

@@ -1,16 +1,16 @@
 void
-default_pe_asm_named_section (name, flags)
-     const char *name;
-     unsigned int flags;
+init_varasm_once ()
 {
-  default_coff_asm_named_section (name, flags);
+  const_str_htab = htab_create (128, const_str_htab_hash, const_str_htab_eq,
+  				const_str_htab_del);
+  in_named_htab = htab_create (31, in_named_entry_hash,
+			       in_named_entry_eq, NULL);
 
-  if (flags & SECTION_LINKONCE)
-    {
-      /* Functions may have been compiled at various levels of
-         optimization so we can't use `same_size' here.
-         Instead, have the linker pick one.  */
-      fprintf (asm_out_file, "\t.linkonce %s\n",
-	       (flags & SECTION_CODE ? "discard" : "same_size"));
-    }
+  ggc_add_root (const_hash_table, MAX_HASH_TABLE, sizeof const_hash_table[0],
+		mark_const_hash_entry);
+  ggc_add_root (&const_str_htab, 1, sizeof const_str_htab,
+		mark_const_str_htab);
+  ggc_add_tree_root (&weak_decls, 1);
+
+  const_alias_set = new_alias_set ();
 }

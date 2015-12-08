@@ -1,0 +1,26 @@
+static basic_block
+flow_dfs_compute_reverse_execute (data)
+     depth_first_search_ds data;
+{
+  basic_block bb;
+  edge e;
+  int i;
+
+  while (data->sp > 0)
+    {
+      bb = data->stack[--data->sp];
+
+      /* Perform depth-first search on adjacent vertices.  */
+      for (e = bb->pred; e; e = e->pred_next)
+	if (!TEST_BIT (data->visited_blocks,
+		       e->src->index - (INVALID_BLOCK + 1)))
+	  flow_dfs_compute_reverse_add_bb (data, e->src);
+    }
+
+  /* Determine if there are unvisited basic blocks.  */
+  for (i = n_basic_blocks - (INVALID_BLOCK + 1); --i >= 0; )
+    if (!TEST_BIT (data->visited_blocks, i))
+      return BASIC_BLOCK (i + (INVALID_BLOCK + 1));
+
+  return NULL;
+}

@@ -1,0 +1,32 @@
+define i32 @symbol2vlc(%struct.syntaxelement* nocapture %sym) #0 {
+entry:
+  %len = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 3
+  %0 = load i32* %len, align 4, !tbaa !0
+  %bitpattern = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 5
+  store i32 0, i32* %bitpattern, align 4, !tbaa !0
+  %cmp10 = icmp sgt i32 %0, 0
+  br i1 %cmp10, label %while.body.lr.ph, label %while.end
+
+while.body.lr.ph:                                 ; preds = %entry
+  %inf = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 4
+  %1 = load i32* %inf, align 4, !tbaa !0
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %dec12.in = phi i32 [ %0, %while.body.lr.ph ], [ %dec12, %while.body ]
+  %storemerge11 = phi i32 [ 0, %while.body.lr.ph ], [ %or, %while.body ]
+  %dec12 = add nsw i32 %dec12.in, -1
+  %shl = shl i32 %storemerge11, 1
+  %shr8 = lshr i32 %1, %dec12
+  %and = and i32 %shr8, 1
+  %or = or i32 %and, %shl
+  %cmp = icmp sgt i32 %dec12, 0
+  br i1 %cmp, label %while.body, label %while.cond.while.end_crit_edge
+
+while.cond.while.end_crit_edge:                   ; preds = %while.body
+  store i32 %or, i32* %bitpattern, align 4, !tbaa !0
+  br label %while.end
+
+while.end:                                        ; preds = %while.cond.while.end_crit_edge, %entry
+  ret i32 0
+}

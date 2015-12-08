@@ -1,20 +1,5 @@
-static void
-PerlIOUnix_setfd(pTHX_ PerlIO *f, int fd, int imode)
+int
+Perl_PerlIO_fileno(pTHX_ PerlIO *f)
 {
-    PerlIOUnix *s = PerlIOSelf(f, PerlIOUnix);
-#if defined(WIN32)
-    Stat_t st;
-    if (PerlLIO_fstat(fd, &st) == 0) {
-	if (!S_ISREG(st.st_mode)) {
-	    PerlIO_debug("%d is not regular file\n",fd);
-    	    PerlIOBase(f)->flags |= PERLIO_F_NOTREG;
-	}
-	else {
-	    PerlIO_debug("%d _is_ a regular file\n",fd);
-	}
-    }
-#endif
-    s->fd = fd;
-    s->oflags = imode;
-    PerlIOUnix_refcnt_inc(fd);
+     Perl_PerlIO_or_Base(f, Fileno, fileno, -1, (aTHX_ f));
 }

@@ -1,0 +1,199 @@
+UV
+Perl_utf8n_to_uvuni(pTHX_ U8 *s, STRLEN curlen, STRLEN *retlen, U32 flags)
+{
+    U8 *s0 = s;
+    UV uv = *s, ouv = 0;
+    STRLEN len = 1;
+    bool dowarn = ckWARN_d(WARN_UTF8);
+    UV startbyte = *s;
+    STRLEN expectlen = 0;
+    U32 warning = 0;
+
+/* This list is a superset of the UTF8_ALLOW_XXX. */
+
+#define UTF8_WARN_EMPTY				 1
+#define UTF8_WARN_CONTINUATION			 2
+#define UTF8_WARN_NON_CONTINUATION	 	 3
+#define UTF8_WARN_FE_FF				 4
+#define UTF8_WARN_SHORT				 5
+#define UTF8_WARN_OVERFLOW			 6
+#define UTF8_WARN_SURROGATE			 7
+#define UTF8_WARN_LONG				 8
+#define UTF8_WARN_FFFF				 9 /* Also FFFE. */
+
+    if (curlen == 0 &&
+	!(flags & UTF8_ALLOW_EMPTY)) {
+	warning = UTF8_WARN_EMPTY;
+	goto malformed;
+    }
+
+    if (UTF8_IS_INVARIANT(uv)) {
+	if (retlen)
+	    *retlen = 1;
+	return (UV) (NATIVE_TO_UTF(*s));
+    }
+
+    if (UTF8_IS_CONTINUATION(uv) &&
+	!(flags & UTF8_ALLOW_CONTINUATION)) {
+	warning = UTF8_WARN_CONTINUATION;
+	goto malformed;
+    }
+
+    if (UTF8_IS_START(uv) && curlen > 1 && !UTF8_IS_CONTINUATION(s[1]) &&
+	!(flags & UTF8_ALLOW_NON_CONTINUATION)) {
+	warning = UTF8_WARN_NON_CONTINUATION;
+	goto malformed;
+    }
+
+#ifdef EBCDIC
+    uv = NATIVE_TO_UTF(uv);
+#else
+    if ((uv == 0xfe || uv == 0xff) &&
+	!(flags & UTF8_ALLOW_FE_FF)) {
+	warning = UTF8_WARN_FE_FF;
+	goto malformed;
+    }
+#endif
+
+    if      (!(uv & 0x20))	{ len =  2; uv &= 0x1f; }
+    else if (!(uv & 0x10))	{ len =  3; uv &= 0x0f; }
+    else if (!(uv & 0x08))	{ len =  4; uv &= 0x07; }
+    else if (!(uv & 0x04))	{ len =  5; uv &= 0x03; }
+#ifdef EBCDIC
+    else if (!(uv & 0x02))	{ len =  6; uv &= 0x01; }
+    else			{ len =  7; uv &= 0x01; }
+#else
+    else if (!(uv & 0x02))	{ len =  6; uv &= 0x01; }
+    else if (!(uv & 0x01))	{ len =  7; uv = 0; }
+    else			{ len = 13; uv = 0; } /* whoa! */
+#endif
+
+    if (retlen)
+	*retlen = len;
+
+    expectlen = len;
+
+    if ((curlen < expectlen) &&
+	!(flags & UTF8_ALLOW_SHORT)) {
+	warning = UTF8_WARN_SHORT;
+	goto malformed;
+    }
+
+    len--;
+    s++;
+    ouv = uv;
+
+    while (len--) {
+	if (!UTF8_IS_CONTINUATION(*s) &&
+	    !(flags & UTF8_ALLOW_NON_CONTINUATION)) {
+	    s--;
+	    warning = UTF8_WARN_NON_CONTINUATION;
+	    goto malformed;
+	}
+	else
+	    uv = UTF8_ACCUMULATE(uv, *s);
+	if (!(uv > ouv)) {
+	    /* These cannot be allowed. */
+	    if (uv == ouv) {
+		if (expectlen != 13 && !(flags & UTF8_ALLOW_LONG)) {
+		    warning = UTF8_WARN_LONG;
+		    goto malformed;
+		}
+	    }
+	    else { /* uv < ouv */
+		/* This cannot be allowed. */
+		warning = UTF8_WARN_OVERFLOW;
+		goto malformed;
+	    }
+	}
+	s++;
+	ouv = uv;
+    }
+
+    if (UNICODE_IS_SURROGATE(uv) &&
+	!(flags & UTF8_ALLOW_SURROGATE)) {
+	warning = UTF8_WARN_SURROGATE;
+	goto malformed;
+    } else if ((expectlen > (STRLEN)UNISKIP(uv)) &&
+	       !(flags & UTF8_ALLOW_LONG)) {
+	warning = UTF8_WARN_LONG;
+	goto malformed;
+    } else if (UNICODE_IS_ILLEGAL(uv) &&
+	       !(flags & UTF8_ALLOW_FFFF)) {
+	warning = UTF8_WARN_FFFF;
+	goto malformed;
+    }
+
+    return uv;
+
+malformed:
+
+    if (flags & UTF8_CHECK_ONLY) {
+	if (retlen)
+	    *retlen = -1;
+	return 0;
+    }
+
+    if (dowarn) {
+	SV* sv = sv_2mortal(newSVpv("Malformed UTF-8 character ", 0));
+
+	switch (warning) {
+	case 0: /* Intentionally empty. */ break;
+	case UTF8_WARN_EMPTY:
+	    Perl_sv_catpv(aTHX_ sv, "(empty string)");
+	    break;
+	case UTF8_WARN_CONTINUATION:
+	    Perl_sv_catpvf(aTHX_ sv, "(unexpected continuation byte 0x%02"UVxf", with no preceding start byte)", uv);
+	    break;
+	case UTF8_WARN_NON_CONTINUATION:
+	    if (s == s0)
+	        Perl_sv_catpvf(aTHX_ sv, "(unexpected non-continuation byte 0x%02"UVxf", immediately after start byte 0x%02"UVxf")",
+                           (UV)s[1], startbyte);
+	    else
+	        Perl_sv_catpvf(aTHX_ sv, "(unexpected non-continuation byte 0x%02"UVxf", %d byte%s after start byte 0x%02"UVxf", expected %d bytes)",
+                           (UV)s[1], s - s0, s - s0 > 1 ? "s" : "", startbyte, expectlen);
+	      
+	    break;
+	case UTF8_WARN_FE_FF:
+	    Perl_sv_catpvf(aTHX_ sv, "(byte 0x%02"UVxf")", uv);
+	    break;
+	case UTF8_WARN_SHORT:
+	    Perl_sv_catpvf(aTHX_ sv, "(%d byte%s, need %d, after start byte 0x%02"UVxf")",
+                           curlen, curlen == 1 ? "" : "s", expectlen, startbyte);
+	    expectlen = curlen;		/* distance for caller to skip */
+	    break;
+	case UTF8_WARN_OVERFLOW:
+	    Perl_sv_catpvf(aTHX_ sv, "(overflow at 0x%"UVxf", byte 0x%02x, after start byte 0x%02"UVxf")",
+                           ouv, *s, startbyte);
+	    break;
+	case UTF8_WARN_SURROGATE:
+	    Perl_sv_catpvf(aTHX_ sv, "(UTF-16 surrogate 0x%04"UVxf")", uv);
+	    break;
+	case UTF8_WARN_LONG:
+	    Perl_sv_catpvf(aTHX_ sv, "(%d byte%s, need %d, after start byte 0x%02"UVxf")",
+			   expectlen, expectlen == 1 ? "": "s", UNISKIP(uv), startbyte);
+	    break;
+	case UTF8_WARN_FFFF:
+	    Perl_sv_catpvf(aTHX_ sv, "(character 0x%04"UVxf")", uv);
+	    break;
+	default:
+	    Perl_sv_catpv(aTHX_ sv, "(unknown reason)");
+	    break;
+	}
+	
+	if (warning) {
+	    char *s = SvPVX(sv);
+
+	    if (PL_op)
+		Perl_warner(aTHX_ packWARN(WARN_UTF8),
+			    "%s in %s", s,  OP_DESC(PL_op));
+	    else
+		Perl_warner(aTHX_ packWARN(WARN_UTF8), "%s", s);
+	}
+    }
+
+    if (retlen)
+	*retlen = expectlen ? expectlen : len;
+
+    return 0;
+}

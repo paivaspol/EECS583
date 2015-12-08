@@ -1,33 +1,39 @@
-static void
-output_deps (pfile)
+bool
+_cpp_push_next_buffer (pfile)
      cpp_reader *pfile;
 {
-  /* Stream on which to print the dependency information.  */
-  FILE *deps_stream = 0;
-  const char *const deps_mode =
-    CPP_OPTION (pfile, print_deps_append) ? "a" : "w";
+  bool pushed = false;
 
-  if (CPP_OPTION (pfile, deps_file)[0] == '\0')
-    deps_stream = stdout;
-  else
+  /* This is't pretty; we'd rather not be relying on this as a boolean
+     for reverting the line map.  Further, we only free the chains in
+     this conditional, so an early call to cpp_finish / cpp_destroy
+     will leak that memory.  */
+  if (CPP_OPTION (pfile, pending)
+      && CPP_OPTION (pfile, pending)->imacros_head == NULL)
     {
-      deps_stream = fopen (CPP_OPTION (pfile, deps_file), deps_mode);
-      if (deps_stream == 0)
+      while (!pushed)
 	{
-	  cpp_notice_from_errno (pfile, CPP_OPTION (pfile, deps_file));
-	  return;
+	  struct pending_option *p = CPP_OPTION (pfile, pending)->include_head;
+
+	  if (p == NULL)
+	    break;
+	  if (! CPP_OPTION (pfile, preprocessed))
+	    pushed = push_include (pfile, p);
+	  CPP_OPTION (pfile, pending)->include_head = p->next;
+	  free (p);
+	}
+
+      if (!pushed)
+	{
+	  free (CPP_OPTION (pfile, pending));
+	  CPP_OPTION (pfile, pending) = NULL;
+
+	  /* Restore the line map for the main file.  */
+	  if (! CPP_OPTION (pfile, preprocessed))
+	    _cpp_do_file_change (pfile, LC_RENAME,
+				 pfile->line_maps.maps[0].to_file, 1, 0);
 	}
     }
 
-  deps_write (pfile->deps, deps_stream, 72);
-
-  if (CPP_OPTION (pfile, deps_phony_targets))
-    deps_phony_targets (pfile->deps, deps_stream);
-
-  /* Don't close stdout.  */
-  if (deps_stream != stdout)
-    {
-      if (ferror (deps_stream) || fclose (deps_stream) != 0)
-	cpp_fatal (pfile, "I/O error on output");
-    }
+  return pushed;
 }

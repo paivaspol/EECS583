@@ -1,0 +1,15 @@
+define %struct.sv* @Perl_pad_sv(i64 %po) #0 {
+entry:
+  %tobool = icmp eq i64 %po, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([17 x i8]* @.str9, i64 0, i64 0)) #3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %0 = load %struct.sv*** @PL_curpad, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.sv** %0, i64 %po
+  %1 = load %struct.sv** %arrayidx, align 8, !tbaa !3
+  ret %struct.sv* %1
+}

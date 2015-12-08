@@ -1,0 +1,25 @@
+define void @PerlIOBuf_set_ptrcnt(%struct._PerlIO** %f, i8* %ptr, i64 %cnt) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %buf = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %buf to i8**
+  %2 = load i8** %1, align 8, !tbaa !3
+  %tobool = icmp eq i8* %2, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @Perl_PerlIO_get_base(%struct._PerlIO** %f) #10
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %ptr1 = getelementptr inbounds %struct._PerlIO* %0, i64 1, i32 2
+  %3 = bitcast i32* %ptr1 to i8**
+  store i8* %ptr, i8** %3, align 8, !tbaa !3
+  %call2 = tail call i32 @Perl_PerlIO_get_cnt(%struct._PerlIO** %f) #10
+  %4 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %flags = getelementptr inbounds %struct._PerlIO* %4, i64 0, i32 2
+  %5 = load i32* %flags, align 4, !tbaa !0
+  %or = or i32 %5, 262144
+  store i32 %or, i32* %flags, align 4, !tbaa !0
+  ret void
+}

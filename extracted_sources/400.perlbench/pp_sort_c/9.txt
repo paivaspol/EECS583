@@ -1,44 +1,24 @@
-static I32
-sortcv_stacked(pTHX_ SV *a, SV *b)
+void
+Perl_sortsv(pTHX_ SV **array, size_t nmemb, SVCOMPARE_t cmp)
 {
-    I32 oldsaveix = PL_savestack_ix;
-    I32 oldscopeix = PL_scopestack_ix;
-    I32 result;
-    AV *av;
+    void (*sortsvp)(pTHX_ SV **array, size_t nmemb, SVCOMPARE_t cmp, U32 flags)
+      = S_mergesortsv;
+    SV *hintsv;
+    I32 hints;
 
-#ifdef USE_5005THREADS
-    av = (AV*)PAD_SVl(0);
-#else
-    av = GvAV(PL_defgv);
-#endif
-
-    if (AvMAX(av) < 1) {
-	SV** ary = AvALLOC(av);
-	if (AvARRAY(av) != ary) {
-	    AvMAX(av) += AvARRAY(av) - AvALLOC(av);
-	    SvPVX(av) = (char*)ary;
-	}
-	if (AvMAX(av) < 1) {
-	    AvMAX(av) = 1;
-	    Renew(ary,2,SV*);
-	    SvPVX(av) = (char*)ary;
-	}
+    /*  Sun's Compiler (cc: WorkShop Compilers 4.2 30 Oct 1996 C 4.2) used 
+	to miscompile this function under optimization -O.  If you get test 
+	errors related to picking the correct sort() function, try recompiling 
+	this file without optimiziation.  -- A.D.  4/2002.
+    */
+    hints = SORTHINTS(hintsv);
+    if (hints & HINT_SORT_QUICKSORT) {
+	sortsvp = S_qsortsv;
     }
-    AvFILLp(av) = 1;
-
-    AvARRAY(av)[0] = a;
-    AvARRAY(av)[1] = b;
-    PL_stack_sp = PL_stack_base;
-    PL_op = PL_sortcop;
-    CALLRUNOPS(aTHX);
-    if (PL_stack_sp != PL_stack_base + 1)
-	Perl_croak(aTHX_ "Sort subroutine didn't return single value");
-    if (!SvNIOKp(*PL_stack_sp))
-	Perl_croak(aTHX_ "Sort subroutine didn't return a numeric value");
-    result = SvIV(*PL_stack_sp);
-    while (PL_scopestack_ix > oldscopeix) {
-	LEAVE;
+    else {
+	/* The default as of 5.8.0 is mergesort */
+	sortsvp = S_mergesortsv;
     }
-    leave_scope(oldsaveix);
-    return result;
+
+    sortsvp(aTHX_ array, nmemb, cmp, 0);
 }

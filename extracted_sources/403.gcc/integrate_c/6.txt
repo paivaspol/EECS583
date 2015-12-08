@@ -1,14 +1,19 @@
-static int
-compare_blocks (v1, v2)
-     const PTR v1;
-     const PTR v2;
+static void
+process_reg_param (map, loc, copy)
+     struct inline_remap *map;
+     rtx loc, copy;
 {
-  tree b1 = *((const tree *) v1);
-  tree b2 = *((const tree *) v2);
-  char *p1 = (char *) BLOCK_ABSTRACT_ORIGIN (b1);
-  char *p2 = (char *) BLOCK_ABSTRACT_ORIGIN (b2);
-
-  if (p1 == p2)
-    return 0;
-  return p1 < p2 ? -1 : 1;
+  if ((GET_CODE (copy) != REG && GET_CODE (copy) != SUBREG)
+      || (GET_CODE (copy) == REG && REG_USERVAR_P (loc)
+	  && ! REG_USERVAR_P (copy))
+      || (GET_CODE (copy) == REG
+	  && REGNO (copy) < FIRST_PSEUDO_REGISTER))
+    {
+      rtx temp = copy_to_mode_reg (GET_MODE (loc), copy);
+      REG_USERVAR_P (temp) = REG_USERVAR_P (loc);
+      if (CONSTANT_P (copy) || FIXED_BASE_PLUS_P (copy))
+	SET_CONST_EQUIV_DATA (map, temp, copy, CONST_AGE_PARM);
+      copy = temp;
+    }
+  map->reg_map[REGNO (loc)] = copy;
 }

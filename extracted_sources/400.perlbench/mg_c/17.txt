@@ -1,8 +1,20 @@
-void
-Perl_raise_signal(pTHX_ int sig)
+int
+Perl_magic_set_all_env(pTHX_ SV *sv, MAGIC *mg)
 {
-    /* Set a flag to say this signal is pending */
-    PL_psig_pend[sig]++;
-    /* And one to say _a_ signal is pending */
-    PL_sig_pending = 1;
+#if defined(VMS)
+    Perl_die(aTHX_ "Can't make list assignment to %%ENV on this system");
+#else
+    if (PL_localizing) {
+	HE* entry;
+	STRLEN n_a;
+	magic_clear_all_env(sv,mg);
+	hv_iterinit((HV*)sv);
+	while ((entry = hv_iternext((HV*)sv))) {
+	    I32 keylen;
+	    my_setenv(hv_iterkey(entry, &keylen),
+		      SvPV(hv_iterval((HV*)sv, entry), n_a));
+	}
+    }
+#endif
+    return 0;
 }

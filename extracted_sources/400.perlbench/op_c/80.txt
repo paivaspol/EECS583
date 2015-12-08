@@ -1,0 +1,54 @@
+OP *
+Perl_newCONDOP(pTHX_ I32 flags, OP *first, OP *trueop, OP *falseop)
+{
+    LOGOP *logop;
+    OP *start;
+    OP *o;
+
+    if (!falseop)
+	return newLOGOP(OP_AND, 0, first, trueop);
+    if (!trueop)
+	return newLOGOP(OP_OR, 0, first, falseop);
+
+    scalarboolean(first);
+    if (first->op_type == OP_CONST) {
+        if (first->op_private & OPpCONST_BARE &&
+           first->op_private & OPpCONST_STRICT) {
+           no_bareword_allowed(first);
+       }
+	if (SvTRUE(((SVOP*)first)->op_sv)) {
+	    op_free(first);
+	    op_free(falseop);
+	    return trueop;
+	}
+	else {
+	    op_free(first);
+	    op_free(trueop);
+	    return falseop;
+	}
+    }
+    NewOp(1101, logop, 1, LOGOP);
+    logop->op_type = OP_COND_EXPR;
+    logop->op_ppaddr = PL_ppaddr[OP_COND_EXPR];
+    logop->op_first = first;
+    logop->op_flags = flags | OPf_KIDS;
+    logop->op_private = (U8)(1 | (flags >> 8));
+    logop->op_other = LINKLIST(trueop);
+    logop->op_next = LINKLIST(falseop);
+
+    CHECKOP(OP_COND_EXPR, /* that's logop->op_type */
+	    logop);
+
+    /* establish postfix order */
+    start = LINKLIST(first);
+    first->op_next = (OP*)logop;
+
+    first->op_sibling = trueop;
+    trueop->op_sibling = falseop;
+    o = newUNOP(OP_NULL, 0, (OP*)logop);
+
+    trueop->op_next = falseop->op_next = o;
+
+    o->op_next = start;
+    return o;
+}

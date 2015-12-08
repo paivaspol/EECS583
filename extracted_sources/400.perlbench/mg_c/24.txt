@@ -1,8 +1,15 @@
-int
-Perl_magic_setnkeys(pTHX_ SV *sv, MAGIC *mg)
+void
+Perl_despatch_signals(pTHX)
 {
-    if (LvTARG(sv)) {
-	hv_ksplit((HV*)LvTARG(sv), SvIV(sv));
+    int sig;
+    PL_sig_pending = 0;
+    for (sig = 1; sig < SIG_SIZE; sig++) {
+	if (PL_psig_pend[sig]) {
+	    PERL_BLOCKSIG_ADD(set, sig);
+ 	    PL_psig_pend[sig] = 0;
+	    PERL_BLOCKSIG_BLOCK(set);
+	    (*PL_sighandlerp)(sig);
+	    PERL_BLOCKSIG_UNBLOCK(set);
+	}
     }
-    return 0;
 }

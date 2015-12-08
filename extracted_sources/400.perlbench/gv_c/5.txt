@@ -1,5 +1,15 @@
-void
-Perl_gv_fullname(pTHX_ SV *sv, GV *gv)
+STATIC void
+S_gv_init_sv(pTHX_ GV *gv, I32 sv_type)
 {
-    gv_fullname3(sv, gv, sv == (SV*)gv ? "*" : "");
+    switch (sv_type) {
+    case SVt_PVIO:
+	(void)GvIOn(gv);
+	break;
+    case SVt_PVAV:
+	(void)GvAVn(gv);
+	break;
+    case SVt_PVHV:
+	(void)GvHVn(gv);
+	break;
+    }
 }

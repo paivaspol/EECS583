@@ -1,30 +1,9 @@
-static enum rtx_code
-ix86_fp_compare_code_to_integer (code)
-     enum rtx_code code;
+int
+ix86_use_fcomi_compare (code)
+     enum rtx_code code ATTRIBUTE_UNUSED;
 {
-  switch (code)
-    {
-    case GT:
-      return GTU;
-    case GE:
-      return GEU;
-    case ORDERED:
-    case UNORDERED:
-      return code;
-      break;
-    case UNEQ:
-      return EQ;
-      break;
-    case UNLT:
-      return LTU;
-      break;
-    case UNLE:
-      return LEU;
-      break;
-    case LTGT:
-      return NE;
-      break;
-    default:
-      return UNKNOWN;
-    }
+  enum rtx_code swapped_code = swap_condition (code);
+  return ((ix86_fp_comparison_cost (code) == ix86_fp_comparison_fcomi_cost (code))
+	  || (ix86_fp_comparison_cost (swapped_code)
+	      == ix86_fp_comparison_fcomi_cost (swapped_code)));
 }

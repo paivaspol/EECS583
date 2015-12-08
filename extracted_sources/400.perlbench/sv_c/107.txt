@@ -1,0 +1,71 @@
+I32
+Perl_sv_cmp(pTHX_ register SV *sv1, register SV *sv2)
+{
+    STRLEN cur1, cur2;
+    char *pv1, *pv2, *tpv = Nullch;
+    I32  cmp;
+    SV *svrecode = Nullsv;
+
+    if (!sv1) {
+	pv1 = "";
+	cur1 = 0;
+    }
+    else
+	pv1 = SvPV(sv1, cur1);
+
+    if (!sv2) {
+	pv2 = "";
+	cur2 = 0;
+    }
+    else
+	pv2 = SvPV(sv2, cur2);
+
+    if (cur1 && cur2 && SvUTF8(sv1) != SvUTF8(sv2) && !IN_BYTES) {
+        /* Differing utf8ness.
+	 * Do not UTF8size the comparands as a side-effect. */
+	if (SvUTF8(sv1)) {
+	    if (PL_encoding) {
+		 svrecode = newSVpvn(pv2, cur2);
+		 sv_recode_to_utf8(svrecode, PL_encoding);
+		 pv2 = SvPV(svrecode, cur2);
+	    }
+	    else {
+		 pv2 = tpv = (char*)bytes_to_utf8((U8*)pv2, &cur2);
+	    }
+	}
+	else {
+	    if (PL_encoding) {
+		 svrecode = newSVpvn(pv1, cur1);
+		 sv_recode_to_utf8(svrecode, PL_encoding);
+		 pv1 = SvPV(svrecode, cur1);
+	    }
+	    else {
+		 pv1 = tpv = (char*)bytes_to_utf8((U8*)pv1, &cur1);
+	    }
+	}
+    }
+
+    if (!cur1) {
+	cmp = cur2 ? -1 : 0;
+    } else if (!cur2) {
+	cmp = 1;
+    } else {
+	I32 retval = memcmp((void*)pv1, (void*)pv2, cur1 < cur2 ? cur1 : cur2);
+
+	if (retval) {
+	    cmp = retval < 0 ? -1 : 1;
+	} else if (cur1 == cur2) {
+	    cmp = 0;
+        } else {
+	    cmp = cur1 < cur2 ? -1 : 1;
+	}
+    }
+
+    if (svrecode)
+	 SvREFCNT_dec(svrecode);
+
+    if (tpv)
+	Safefree(tpv);
+
+    return cmp;
+}

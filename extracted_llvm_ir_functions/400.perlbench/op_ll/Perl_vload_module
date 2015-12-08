@@ -1,0 +1,140 @@
+define void @Perl_vload_module(i32 %flags, %struct.sv* %name, %struct.sv* %ver, [1 x %struct.__va_list_tag]* nocapture %args) #0 {
+entry:
+  %call = tail call %struct.op* @Perl_newSVOP(i32 5, i32 0, %struct.sv* %name) #8
+  %op_private = getelementptr inbounds %struct.op* %call, i64 0, i32 7
+  %0 = load i8* %op_private, align 1, !tbaa !1
+  %or = or i8 %0, 64
+  store i8 %or, i8* %op_private, align 1, !tbaa !1
+  %tobool = icmp eq %struct.sv* %ver, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call2 = tail call %struct.op* @Perl_newSVOP(i32 5, i32 0, %struct.sv* %ver) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %veop.0 = phi %struct.op* [ %call2, %if.then ], [ null, %entry ]
+  %and = and i32 %flags, 2
+  %tobool3 = icmp eq i32 %and, 0
+  br i1 %tobool3, label %if.else7, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %call.i = tail call %struct.op* @Perl_newOP(i32 1, i32 0) #7
+  %tobool.i = icmp eq %struct.op* %call.i, null
+  br i1 %tobool.i, label %if.end40, label %if.then.i
+
+if.then.i:                                        ; preds = %if.then4
+  %op_flags.i = getelementptr inbounds %struct.op* %call.i, i64 0, i32 6
+  %1 = load i8* %op_flags.i, align 1, !tbaa !1
+  %or.i = or i8 %1, 8
+  store i8 %or.i, i8* %op_flags.i, align 1, !tbaa !1
+  br label %if.end40
+
+if.else7:                                         ; preds = %if.end
+  %and8 = and i32 %flags, 4
+  %tobool9 = icmp eq i32 %and8, 0
+  %gp_offset_p13 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 0
+  %gp_offset14 = load i32* %gp_offset_p13, align 4
+  %fits_in_gp15 = icmp ult i32 %gp_offset14, 41
+  br i1 %tobool9, label %if.else11, label %if.then10
+
+if.then10:                                        ; preds = %if.else7
+  br i1 %fits_in_gp15, label %vaarg.in_reg, label %vaarg.in_mem
+
+vaarg.in_reg:                                     ; preds = %if.then10
+  %2 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 3
+  %reg_save_area = load i8** %2, align 8
+  %3 = sext i32 %gp_offset14 to i64
+  %4 = getelementptr i8* %reg_save_area, i64 %3
+  %5 = add i32 %gp_offset14, 8
+  store i32 %5, i32* %gp_offset_p13, align 4
+  br label %vaarg.end
+
+vaarg.in_mem:                                     ; preds = %if.then10
+  %overflow_arg_area_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 2
+  %overflow_arg_area = load i8** %overflow_arg_area_p, align 8
+  %overflow_arg_area.next = getelementptr i8* %overflow_arg_area, i64 8
+  store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p, align 8
+  br label %vaarg.end
+
+vaarg.end:                                        ; preds = %vaarg.in_mem, %vaarg.in_reg
+  %vaarg.addr.in = phi i8* [ %4, %vaarg.in_reg ], [ %overflow_arg_area, %vaarg.in_mem ]
+  %vaarg.addr = bitcast i8* %vaarg.addr.in to %struct.op**
+  %6 = load %struct.op** %vaarg.addr, align 8
+  br label %if.end40
+
+if.else11:                                        ; preds = %if.else7
+  br i1 %fits_in_gp15, label %vaarg.in_reg16, label %vaarg.in_mem18
+
+vaarg.in_reg16:                                   ; preds = %if.else11
+  %7 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 3
+  %reg_save_area17 = load i8** %7, align 8
+  %8 = sext i32 %gp_offset14 to i64
+  %9 = getelementptr i8* %reg_save_area17, i64 %8
+  %10 = add i32 %gp_offset14, 8
+  store i32 %10, i32* %gp_offset_p13, align 4
+  br label %while.cond.preheader
+
+vaarg.in_mem18:                                   ; preds = %if.else11
+  %overflow_arg_area_p19 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 2
+  %overflow_arg_area20 = load i8** %overflow_arg_area_p19, align 8
+  %overflow_arg_area.next21 = getelementptr i8* %overflow_arg_area20, i64 8
+  store i8* %overflow_arg_area.next21, i8** %overflow_arg_area_p19, align 8
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %vaarg.in_mem18, %vaarg.in_reg16
+  %sv.0.in.in.ph = phi i8* [ %9, %vaarg.in_reg16 ], [ %overflow_arg_area20, %vaarg.in_mem18 ]
+  %sv.0.in52 = bitcast i8* %sv.0.in.in.ph to %struct.sv**
+  %sv.053 = load %struct.sv** %sv.0.in52, align 8
+  %tobool2454 = icmp eq %struct.sv* %sv.053, null
+  br i1 %tobool2454, label %if.end40, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %while.cond.preheader
+  %11 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 3
+  %overflow_arg_area_p34 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 2
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
+  %sv.056 = phi %struct.sv* [ %sv.053, %while.body.lr.ph ], [ %sv.0, %while.cond.backedge ]
+  %imop.055 = phi %struct.op* [ null, %while.body.lr.ph ], [ %call26, %while.cond.backedge ]
+  %call25 = tail call %struct.op* @Perl_newSVOP(i32 5, i32 0, %struct.sv* %sv.056) #8
+  %call26 = tail call %struct.op* @Perl_append_elem(i32 141, %struct.op* %imop.055, %struct.op* %call25) #8
+  %gp_offset29 = load i32* %gp_offset_p13, align 4
+  %fits_in_gp30 = icmp ult i32 %gp_offset29, 41
+  br i1 %fits_in_gp30, label %vaarg.in_reg31, label %vaarg.in_mem33
+
+vaarg.in_reg31:                                   ; preds = %while.body
+  %reg_save_area32 = load i8** %11, align 8
+  %12 = sext i32 %gp_offset29 to i64
+  %13 = getelementptr i8* %reg_save_area32, i64 %12
+  %14 = add i32 %gp_offset29, 8
+  store i32 %14, i32* %gp_offset_p13, align 4
+  br label %while.cond.backedge
+
+vaarg.in_mem33:                                   ; preds = %while.body
+  %overflow_arg_area35 = load i8** %overflow_arg_area_p34, align 8
+  %overflow_arg_area.next36 = getelementptr i8* %overflow_arg_area35, i64 8
+  store i8* %overflow_arg_area.next36, i8** %overflow_arg_area_p34, align 8
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %vaarg.in_mem33, %vaarg.in_reg31
+  %sv.0.in.in.be = phi i8* [ %13, %vaarg.in_reg31 ], [ %overflow_arg_area35, %vaarg.in_mem33 ]
+  %sv.0.in = bitcast i8* %sv.0.in.in.be to %struct.sv**
+  %sv.0 = load %struct.sv** %sv.0.in, align 8
+  %tobool24 = icmp eq %struct.sv* %sv.0, null
+  br i1 %tobool24, label %if.end40, label %while.body
+
+if.end40:                                         ; preds = %while.cond.preheader, %while.cond.backedge, %if.then.i, %if.then4, %vaarg.end
+  %imop.1 = phi %struct.op* [ %6, %vaarg.end ], [ null, %if.then4 ], [ %call.i, %if.then.i ], [ null, %while.cond.preheader ], [ %call26, %while.cond.backedge ]
+  %15 = load i32* @PL_copline, align 4, !tbaa !0
+  %16 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %17 = load i32* @PL_expect, align 4, !tbaa !0
+  %and41 = and i32 %flags, 1
+  %18 = xor i32 %and41, 1
+  %call43 = tail call i32 @Perl_start_subparse(i32 0, i32 0) #7
+  tail call void @Perl_utilize(i32 %18, i32 %call43, %struct.op* %veop.0, %struct.op* %call, %struct.op* %imop.1) #8
+  store i32 %17, i32* @PL_expect, align 4, !tbaa !0
+  store i32 %15, i32* @PL_copline, align 4, !tbaa !0
+  store volatile %struct.cop* %16, %struct.cop** @PL_curcop, align 8, !tbaa !3
+  ret void
+}

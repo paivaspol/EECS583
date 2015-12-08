@@ -1,25 +1,52 @@
 void
-Perl_pad_swipe(pTHX_ PADOFFSET po, bool refadjust)
+Perl_pad_check_dup(pTHX_ char *name, bool is_our, HV *ourstash)
 {
-    ASSERT_CURPAD_LEGAL("pad_swipe");
-    if (!PL_curpad)
-	return;
-    if (AvARRAY(PL_comppad) != PL_curpad)
-	Perl_croak(aTHX_ "panic: pad_swipe curpad");
-    if (!po)
-	Perl_croak(aTHX_ "panic: pad_swipe po");
+    SV		**svp, *sv;
+    PADOFFSET	top, off;
 
-    DEBUG_X(PerlIO_printf(Perl_debug_log,
-		"Pad 0x%"UVxf"[0x%"UVxf"] swipe:   %ld\n",
-		PTR2UV(PL_comppad), PTR2UV(PL_curpad), (long)po));
+    ASSERT_CURPAD_ACTIVE("pad_check_dup");
+    if (!ckWARN(WARN_MISC) || AvFILLp(PL_comppad_name) < 0)
+	return; /* nothing to check */
 
-    if (PL_curpad[po])
-	SvPADTMP_off(PL_curpad[po]);
-    if (refadjust)
-	SvREFCNT_dec(PL_curpad[po]);
-
-    PL_curpad[po] = NEWSV(1107,0);
-    SvPADTMP_on(PL_curpad[po]);
-    if ((I32)po < PL_padix)
-	PL_padix = po - 1;
+    svp = AvARRAY(PL_comppad_name);
+    top = AvFILLp(PL_comppad_name);
+    /* check the current scope */
+    /* XXX DAPM - why the (I32) cast - shouldn't we ensure they're the same
+     * type ? */
+    for (off = top; (I32)off > PL_comppad_name_floor; off--) {
+	if ((sv = svp[off])
+	    && sv != &PL_sv_undef
+	    && !SvFAKE(sv)
+	    && (SvIVX(sv) == PAD_MAX || SvIVX(sv) == 0)
+	    && (!is_our
+		|| ((SvFLAGS(sv) & SVpad_OUR) && GvSTASH(sv) == ourstash))
+	    && strEQ(name, SvPVX(sv)))
+	{
+	    Perl_warner(aTHX_ packWARN(WARN_MISC),
+		"\"%s\" variable %s masks earlier declaration in same %s",
+		(is_our ? "our" : "my"),
+		name,
+		(SvIVX(sv) == PAD_MAX ? "scope" : "statement"));
+	    --off;
+	    break;
+	}
+    }
+    /* check the rest of the pad */
+    if (is_our) {
+	do {
+	    if ((sv = svp[off])
+		&& sv != &PL_sv_undef
+		&& !SvFAKE(sv)
+		&& (SvIVX(sv) == PAD_MAX || SvIVX(sv) == 0)
+		&& ((SvFLAGS(sv) & SVpad_OUR) && GvSTASH(sv) == ourstash)
+		&& strEQ(name, SvPVX(sv)))
+	    {
+		Perl_warner(aTHX_ packWARN(WARN_MISC),
+		    "\"our\" variable %s redeclared", name);
+		Perl_warner(aTHX_ packWARN(WARN_MISC),
+		    "\t(Did you mean \"local\" instead of \"our\"?)\n");
+		break;
+	    }
+	} while ( off-- > 0 );
+    }
 }

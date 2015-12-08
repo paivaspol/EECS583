@@ -1,0 +1,70 @@
+define internal fastcc i32 @S_visit(void (%struct.sv*)* nocapture %f, i32 %flags, i32 %mask) #0 {
+entry:
+  %0 = load %struct.sv** @PL_sv_arenaroot, align 8, !tbaa !0
+  %tobool34 = icmp eq %struct.sv* %0, null
+  br i1 %tobool34, label %for.end11, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc10
+  %visited.036 = phi i32 [ %visited.1.ph28, %for.inc10 ], [ 0, %entry ]
+  %sva.035 = phi %struct.sv* [ %5, %for.inc10 ], [ %0, %entry ]
+  %sv_refcnt = getelementptr inbounds %struct.sv* %sva.035, i64 0, i32 1
+  %1 = load i32* %sv_refcnt, align 4, !tbaa !3
+  %idxprom = zext i32 %1 to i64
+  %arrayidx = getelementptr inbounds %struct.sv* %sva.035, i64 %idxprom
+  %cmp2430 = icmp ugt i32 %1, 1
+  br i1 %cmp2430, label %for.body2.lr.ph.lr.ph, label %for.inc10
+
+for.body2.lr.ph.lr.ph:                            ; preds = %for.body
+  %sv.02329 = getelementptr inbounds %struct.sv* %sva.035, i64 1
+  br label %for.body2.lr.ph
+
+for.body2.lr.ph:                                  ; preds = %for.body2.lr.ph.lr.ph, %if.then
+  %sv.02333 = phi %struct.sv* [ %sv.02329, %for.body2.lr.ph.lr.ph ], [ %sv.023, %if.then ]
+  %visited.1.ph32 = phi i32 [ %visited.036, %for.body2.lr.ph.lr.ph ], [ %inc, %if.then ]
+  %sva.0.pn.ph31 = phi %struct.sv* [ %sva.035, %for.body2.lr.ph.lr.ph ], [ %sv.026, %if.then ]
+  br label %for.body2
+
+for.body2:                                        ; preds = %for.body2.lr.ph, %for.cond1.backedge
+  %sv.026 = phi %struct.sv* [ %sv.02333, %for.body2.lr.ph ], [ %sv.0, %for.cond1.backedge ]
+  %sva.0.pn25 = phi %struct.sv* [ %sva.0.pn.ph31, %for.body2.lr.ph ], [ %sv.026, %for.cond1.backedge ]
+  %sv_flags = getelementptr inbounds %struct.sv* %sva.0.pn25, i64 1, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, 255
+  %cmp3 = icmp eq i32 %and, 255
+  br i1 %cmp3, label %for.cond1.backedge, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body2
+  %and5 = and i32 %2, %mask
+  %cmp6 = icmp eq i32 %and5, %flags
+  br i1 %cmp6, label %land.lhs.true7, label %for.cond1.backedge
+
+land.lhs.true7:                                   ; preds = %land.lhs.true
+  %sv_refcnt8 = getelementptr inbounds %struct.sv* %sva.0.pn25, i64 1, i32 1
+  %3 = load i32* %sv_refcnt8, align 4, !tbaa !3
+  %tobool9 = icmp eq i32 %3, 0
+  br i1 %tobool9, label %for.cond1.backedge, label %if.then
+
+for.cond1.backedge:                               ; preds = %land.lhs.true7, %for.body2, %land.lhs.true
+  %sv.0 = getelementptr inbounds %struct.sv* %sv.026, i64 1
+  %cmp = icmp ult %struct.sv* %sv.0, %arrayidx
+  br i1 %cmp, label %for.body2, label %for.inc10
+
+if.then:                                          ; preds = %land.lhs.true7
+  tail call void %f(%struct.sv* %sv.026) #8
+  %inc = add nsw i32 %visited.1.ph32, 1
+  %sv.023 = getelementptr inbounds %struct.sv* %sv.026, i64 1
+  %cmp24 = icmp ult %struct.sv* %sv.023, %arrayidx
+  br i1 %cmp24, label %for.body2.lr.ph, label %for.inc10
+
+for.inc10:                                        ; preds = %for.body, %if.then, %for.cond1.backedge
+  %visited.1.ph28 = phi i32 [ %visited.1.ph32, %for.cond1.backedge ], [ %visited.036, %for.body ], [ %inc, %if.then ]
+  %sv_any = getelementptr inbounds %struct.sv* %sva.035, i64 0, i32 0
+  %4 = load i8** %sv_any, align 8, !tbaa !0
+  %5 = bitcast i8* %4 to %struct.sv*
+  %tobool = icmp eq i8* %4, null
+  br i1 %tobool, label %for.end11, label %for.body
+
+for.end11:                                        ; preds = %for.inc10, %entry
+  %visited.0.lcssa = phi i32 [ 0, %entry ], [ %visited.1.ph28, %for.inc10 ]
+  ret i32 %visited.0.lcssa
+}

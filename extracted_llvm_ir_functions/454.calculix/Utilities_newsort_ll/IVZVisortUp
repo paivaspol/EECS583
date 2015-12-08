@@ -1,0 +1,57 @@
+define void @IVZVisortUp(i32 %n, i32* nocapture %ivec, double* nocapture %zvec) #1 {
+entry:
+  %cmp83 = icmp sgt i32 %n, 1
+  br i1 %cmp83, label %land.rhs.lr.ph, label %for.end48
+
+land.rhs.lr.ph:                                   ; preds = %for.inc47, %entry
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc47 ], [ 1, %entry ]
+  %arrayidx4.phi.trans.insert = getelementptr inbounds i32* %ivec, i64 %indvars.iv
+  %.pre = load i32* %arrayidx4.phi.trans.insert, align 4, !tbaa !0
+  br label %land.rhs
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.body6
+  %indvars.iv85 = phi i64 [ %indvars.iv, %land.rhs.lr.ph ], [ %indvars.iv.next86, %for.body6 ]
+  %indvars.iv.next86 = add i64 %indvars.iv85, -1
+  %arrayidx = getelementptr inbounds i32* %ivec, i64 %indvars.iv.next86
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp5 = icmp sgt i32 %0, %.pre
+  br i1 %cmp5, label %for.body6, label %for.inc47
+
+for.body6:                                        ; preds = %land.rhs
+  %arrayidx4 = getelementptr inbounds i32* %ivec, i64 %indvars.iv85
+  store i32 %.pre, i32* %arrayidx, align 4, !tbaa !0
+  store i32 %0, i32* %arrayidx4, align 4, !tbaa !0
+  %1 = trunc i64 %indvars.iv.next86 to i32
+  %mul = shl nsw i32 %1, 1
+  %idxprom18 = sext i32 %mul to i64
+  %arrayidx19 = getelementptr inbounds double* %zvec, i64 %idxprom18
+  %2 = load double* %arrayidx19, align 8, !tbaa !3
+  %3 = trunc i64 %indvars.iv85 to i32
+  %mul20 = shl nsw i32 %3, 1
+  %idxprom21 = sext i32 %mul20 to i64
+  %arrayidx22 = getelementptr inbounds double* %zvec, i64 %idxprom21
+  %4 = load double* %arrayidx22, align 8, !tbaa !3
+  store double %4, double* %arrayidx19, align 8, !tbaa !3
+  store double %2, double* %arrayidx22, align 8, !tbaa !3
+  %add79 = or i32 %mul, 1
+  %idxprom32 = sext i32 %add79 to i64
+  %arrayidx33 = getelementptr inbounds double* %zvec, i64 %idxprom32
+  %5 = load double* %arrayidx33, align 8, !tbaa !3
+  %add3580 = or i32 %mul20, 1
+  %idxprom36 = sext i32 %add3580 to i64
+  %arrayidx37 = getelementptr inbounds double* %zvec, i64 %idxprom36
+  %6 = load double* %arrayidx37, align 8, !tbaa !3
+  store double %6, double* %arrayidx33, align 8, !tbaa !3
+  store double %5, double* %arrayidx37, align 8, !tbaa !3
+  %cmp2 = icmp sgt i32 %1, 0
+  br i1 %cmp2, label %land.rhs, label %for.inc47
+
+for.inc47:                                        ; preds = %for.body6, %land.rhs
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end48, label %land.rhs.lr.ph
+
+for.end48:                                        ; preds = %for.inc47, %entry
+  ret void
+}

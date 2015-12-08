@@ -1,6 +1,9 @@
-void
-Perl_sv_setiv_mg(pTHX_ register SV *sv, IV i)
+I32
+Perl_sv_clean_all(pTHX)
 {
-    sv_setiv(sv,i);
-    SvSETMAGIC(sv);
+    I32 cleaned;
+    PL_in_clean_all = TRUE;
+    cleaned = visit(do_clean_all, 0,0);
+    PL_in_clean_all = FALSE;
+    return cleaned;
 }

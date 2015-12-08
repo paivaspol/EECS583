@@ -1,0 +1,66 @@
+define i32 @seqencode(i8* nocapture %codeseq, i8* nocapture %str) #1 {
+entry:
+  %0 = load i8* %str, align 1, !tbaa !0
+  %cmp35 = icmp eq i8 %0, 0
+  br i1 %cmp35, label %return, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %entry
+  %call = tail call i16** @__ctype_b_loc() #5
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.else
+  %conv38.in = phi i8 [ %0, %while.body.lr.ph ], [ %7, %if.else ]
+  %ptr.037 = phi i8* [ %codeseq, %while.body.lr.ph ], [ %incdec.ptr, %if.else ]
+  %str.addr.036 = phi i8* [ %str, %while.body.lr.ph ], [ %incdec.ptr21, %if.else ]
+  %idxprom = sext i8 %conv38.in to i64
+  %1 = load i16** %call, align 8, !tbaa !2
+  %arrayidx = getelementptr inbounds i16* %1, i64 %idxprom
+  %2 = load i16* %arrayidx, align 2, !tbaa !3
+  %and = and i16 %2, 512
+  %tobool = icmp eq i16 %and, 0
+  br i1 %tobool, label %for.cond.preheader, label %if.then
+
+if.then:                                          ; preds = %while.body
+  %conv38 = sext i8 %conv38.in to i32
+  %call5 = tail call i32 @toupper(i32 %conv38) #6
+  %conv6 = trunc i32 %call5 to i8
+  store i8 %conv6, i8* %str.addr.036, align 1, !tbaa !0
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %while.body, %if.then
+  %3 = phi i8 [ %conv38.in, %while.body ], [ %conv6, %if.then ]
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond, %for.cond.preheader
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %for.cond.preheader ]
+  %idx.0 = phi i32 [ %inc, %for.cond ], [ 0, %for.cond.preheader ]
+  %sym = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 0
+  %4 = load i8* %sym, align 1, !tbaa !0
+  %cmp11 = icmp ne i8 %3, %4
+  %5 = trunc i64 %indvars.iv to i32
+  %cmp13 = icmp slt i32 %5, 18
+  %or.cond = and i1 %cmp11, %cmp13
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %idx.0, 1
+  br i1 %or.cond, label %for.cond, label %for.end
+
+for.end:                                          ; preds = %for.cond
+  %cmp15 = icmp sgt i32 %idx.0, 17
+  br i1 %cmp15, label %return, label %if.else
+
+if.else:                                          ; preds = %for.end
+  %code = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 2
+  %6 = load i8* %code, align 1, !tbaa !0
+  store i8 %6, i8* %ptr.037, align 1, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i8* %ptr.037, i64 1
+  %incdec.ptr21 = getelementptr inbounds i8* %str.addr.036, i64 1
+  %7 = load i8* %incdec.ptr21, align 1, !tbaa !0
+  %cmp = icmp eq i8 %7, 0
+  br i1 %cmp, label %return, label %while.body
+
+return:                                           ; preds = %if.else, %for.end, %entry
+  %ptr.0.lcssa = phi i8* [ %codeseq, %entry ], [ %ptr.037, %for.end ], [ %incdec.ptr, %if.else ]
+  %retval.0 = phi i32 [ 1, %entry ], [ 0, %for.end ], [ 1, %if.else ]
+  store i8 0, i8* %ptr.0.lcssa, align 1, !tbaa !0
+  ret i32 %retval.0
+}

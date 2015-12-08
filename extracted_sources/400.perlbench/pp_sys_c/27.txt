@@ -1,0 +1,29 @@
+PP(pp_sysopen)
+{
+    dSP;
+    GV *gv;
+    SV *sv;
+    char *tmps;
+    STRLEN len;
+    int mode, perm;
+
+    if (MAXARG > 3)
+	perm = POPi;
+    else
+	perm = 0666;
+    mode = POPi;
+    sv = POPs;
+    gv = (GV *)POPs;
+
+    /* Need TIEHANDLE method ? */
+
+    tmps = SvPV(sv, len);
+    if (do_open(gv, tmps, len, TRUE, mode, perm, Nullfp)) {
+	IoLINES(GvIOp(gv)) = 0;
+	PUSHs(&PL_sv_yes);
+    }
+    else {
+	PUSHs(&PL_sv_undef);
+    }
+    RETURN;
+}

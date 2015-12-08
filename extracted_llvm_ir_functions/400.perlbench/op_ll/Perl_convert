@@ -1,0 +1,90 @@
+define %struct.op* @Perl_convert(i32 %type, i32 %flags, %struct.op* %o) #0 {
+entry:
+  %tobool = icmp eq %struct.op* %o, null
+  br i1 %tobool, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %op_type = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %0 = load i16* %op_type, align 2, !tbaa !4
+  %cmp = icmp eq i16 %0, 141
+  br i1 %cmp, label %if.else, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %call = tail call %struct.op* @Perl_newLISTOP(i32 141, i32 0, %struct.op* %o, %struct.op* null) #8
+  br label %if.end
+
+if.else:                                          ; preds = %lor.lhs.false
+  %op_flags = getelementptr inbounds %struct.op* %o, i64 0, i32 6
+  %1 = load i8* %op_flags, align 1, !tbaa !1
+  %and = and i8 %1, -4
+  store i8 %and, i8* %op_flags, align 1, !tbaa !1
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %o.addr.0 = phi %struct.op* [ %call, %if.then ], [ %o, %if.else ]
+  %idxprom = sext i32 %type to i64
+  %arrayidx = getelementptr inbounds [0 x i32]* @PL_opargs, i64 0, i64 %idxprom
+  %2 = load i32* %arrayidx, align 4, !tbaa !0
+  %and4 = and i32 %2, 1
+  %tobool5 = icmp eq i32 %and4, 0
+  br i1 %tobool5, label %if.then6, label %if.end7
+
+if.then6:                                         ; preds = %if.end
+  %3 = getelementptr inbounds %struct.op* %o.addr.0, i64 1, i32 0
+  %4 = load %struct.op** %3, align 8, !tbaa !3
+  tail call void @Perl_op_null(%struct.op* %4) #8
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end, %if.then6
+  %conv8 = trunc i32 %type to i16
+  %op_type9 = getelementptr inbounds %struct.op* %o.addr.0, i64 0, i32 4
+  store i16 %conv8, i16* %op_type9, align 2, !tbaa !4
+  %arrayidx11 = getelementptr inbounds [0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 %idxprom
+  %5 = load %struct.op* ()** %arrayidx11, align 8, !tbaa !3
+  %op_ppaddr = getelementptr inbounds %struct.op* %o.addr.0, i64 0, i32 2
+  store %struct.op* ()* %5, %struct.op* ()** %op_ppaddr, align 8, !tbaa !3
+  %op_flags12 = getelementptr inbounds %struct.op* %o.addr.0, i64 0, i32 6
+  %6 = load i8* %op_flags12, align 1, !tbaa !1
+  %conv13 = zext i8 %6 to i32
+  %or = or i32 %conv13, %flags
+  %conv14 = trunc i32 %or to i8
+  store i8 %conv14, i8* %op_flags12, align 1, !tbaa !1
+  %7 = load i8** @PL_op_mask, align 8, !tbaa !3
+  %tobool15 = icmp eq i8* %7, null
+  br i1 %tobool15, label %cond.false, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end7
+  %arrayidx17 = getelementptr inbounds i8* %7, i64 %idxprom
+  %8 = load i8* %arrayidx17, align 1, !tbaa !1
+  %tobool19 = icmp eq i8 %8, 0
+  br i1 %tobool19, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %land.lhs.true
+  tail call void @Perl_op_free(%struct.op* %o.addr.0) #8
+  %arrayidx21 = getelementptr inbounds [0 x i8*]* @PL_op_desc, i64 0, i64 %idxprom
+  %9 = load i8** %arrayidx21, align 8, !tbaa !3
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([31 x i8]* @.str33, i64 0, i64 0), i8* %9) #7
+  br label %cond.end
+
+cond.false:                                       ; preds = %land.lhs.true, %if.end7
+  %arrayidx23 = getelementptr inbounds [0 x %struct.op* (%struct.op*)*]* @PL_check, i64 0, i64 %idxprom
+  %10 = load %struct.op* (%struct.op*)** %arrayidx23, align 8, !tbaa !3
+  %call24 = tail call %struct.op* %10(%struct.op* %o.addr.0) #7
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi %struct.op* [ null, %cond.true ], [ %call24, %cond.false ]
+  %op_type25 = getelementptr inbounds %struct.op* %cond, i64 0, i32 4
+  %11 = load i16* %op_type25, align 2, !tbaa !4
+  %conv26 = zext i16 %11 to i32
+  %cmp27 = icmp eq i32 %conv26, %type
+  br i1 %cmp27, label %if.end30, label %return
+
+if.end30:                                         ; preds = %cond.end
+  %call31 = tail call %struct.op* @Perl_fold_constants(%struct.op* %cond) #8
+  br label %return
+
+return:                                           ; preds = %cond.end, %if.end30
+  %retval.0 = phi %struct.op* [ %call31, %if.end30 ], [ %cond, %cond.end ]
+  ret %struct.op* %retval.0
+}

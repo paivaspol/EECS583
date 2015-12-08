@@ -1,0 +1,1451 @@
+define i32 @updateQuantizationParameter(i32 %topfield) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %BasicUnit = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 139
+  %1 = load i32* %BasicUnit, align 4, !tbaa !3
+  %Frame_Total_Number_MB = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 136
+  %2 = load i32* %Frame_Total_Number_MB, align 4, !tbaa !3
+  %cmp = icmp eq i32 %1, %2
+  br i1 %cmp, label %if.then, label %if.else314
+
+if.then:                                          ; preds = %entry
+  %tobool = icmp eq i32 %topfield, 0
+  br i1 %tobool, label %lor.lhs.false, label %if.then2
+
+lor.lhs.false:                                    ; preds = %if.then
+  %FieldControl = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %3 = load i32* %FieldControl, align 4, !tbaa !3
+  %cmp1 = icmp eq i32 %3, 0
+  br i1 %cmp1, label %if.then2, label %if.else296
+
+if.then2:                                         ; preds = %if.then, %lor.lhs.false
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %4 = load i32* %type, align 4, !tbaa !3
+  switch i32 %4, label %if.else175 [
+    i32 2, label %if.then4
+    i32 1, label %if.then7
+    i32 0, label %land.lhs.true
+  ]
+
+if.then4:                                         ; preds = %if.then2
+  %5 = load i32* @MyInitialQp, align 4, !tbaa !3
+  store i32 %5, i32* @m_Qc, align 4, !tbaa !3
+  br label %return
+
+if.then7:                                         ; preds = %if.then2
+  %6 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %successive_Bframe = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 34
+  %7 = load i32* %successive_Bframe, align 4, !tbaa !3
+  %cmp8 = icmp eq i32 %7, 1
+  br i1 %cmp8, label %if.then9, label %if.else34
+
+if.then9:                                         ; preds = %if.then7
+  %PicInterlace = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 91
+  %8 = load i32* %PicInterlace, align 4, !tbaa !3
+  %cmp10 = icmp eq i32 %8, 2
+  br i1 %cmp10, label %if.then13, label %lor.lhs.false11
+
+lor.lhs.false11:                                  ; preds = %if.then9
+  %MbInterlace = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 92
+  %9 = load i32* %MbInterlace, align 4, !tbaa !3
+  %tobool12 = icmp eq i32 %9, 0
+  br i1 %tobool12, label %if.end21, label %if.then13
+
+if.then13:                                        ; preds = %lor.lhs.false11, %if.then9
+  %FieldControl14 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %10 = load i32* %FieldControl14, align 4, !tbaa !3
+  %cmp15 = icmp eq i32 %10, 0
+  br i1 %cmp15, label %if.then16, label %if.end21
+
+if.then16:                                        ; preds = %if.then13
+  %FieldFrame = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 135
+  %11 = load i32* %FieldFrame, align 4, !tbaa !3
+  %cmp17 = icmp eq i32 %11, 1
+  %12 = load i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %12, i32* @PreviousQp1, align 4, !tbaa !3
+  br i1 %cmp17, label %if.then18, label %if.else19
+
+if.then18:                                        ; preds = %if.then16
+  %13 = load i32* @FrameQPBuffer, align 4, !tbaa !3
+  store i32 %13, i32* @PreviousQp2, align 4, !tbaa !3
+  br label %if.end21
+
+if.else19:                                        ; preds = %if.then16
+  %14 = load i32* @FieldQPBuffer, align 4, !tbaa !3
+  store i32 %14, i32* @PreviousQp2, align 4, !tbaa !3
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then13, %lor.lhs.false11, %if.else19, %if.then18
+  %15 = load i32* @PreviousQp1, align 4, !tbaa !3
+  %16 = load i32* @PreviousQp2, align 4, !tbaa !3
+  %cmp22 = icmp eq i32 %15, %16
+  br i1 %cmp22, label %if.then23, label %if.else24
+
+if.then23:                                        ; preds = %if.end21
+  %add = add nsw i32 %15, 2
+  br label %if.end27
+
+if.else24:                                        ; preds = %if.end21
+  %add25 = add nsw i32 %16, %15
+  %div = sdiv i32 %add25, 2
+  %add26 = add nsw i32 %div, 1
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.else24, %if.then23
+  %storemerge1102 = phi i32 [ %add26, %if.else24 ], [ %add, %if.then23 ]
+  %17 = load i32* @RC_MAX_QUANT, align 4, !tbaa !3
+  %cmp28 = icmp slt i32 %storemerge1102, %17
+  %cond = select i1 %cmp28, i32 %storemerge1102, i32 %17
+  store i32 %cond, i32* @m_Qc, align 4, !tbaa !3
+  %18 = load i32* @RC_MIN_QUANT, align 4, !tbaa !3
+  %cmp29 = icmp slt i32 %18, %cond
+  %cond33 = select i1 %cmp29, i32 %cond, i32 %18
+  br label %if.end160
+
+if.else34:                                        ; preds = %if.then7
+  %19 = load i32* @NumberofBFrames, align 4, !tbaa !3
+  %add35 = add nsw i32 %19, 1
+  %rem = srem i32 %add35, %7
+  %cmp37 = icmp eq i32 %rem, 0
+  %.rem = select i1 %cmp37, i32 %7, i32 %rem
+  %cmp41 = icmp eq i32 %.rem, 1
+  br i1 %cmp41, label %if.then42, label %if.end59
+
+if.then42:                                        ; preds = %if.else34
+  %PicInterlace43 = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 91
+  %20 = load i32* %PicInterlace43, align 4, !tbaa !3
+  %cmp44 = icmp eq i32 %20, 2
+  br i1 %cmp44, label %if.then48, label %lor.lhs.false45
+
+lor.lhs.false45:                                  ; preds = %if.then42
+  %MbInterlace46 = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 92
+  %21 = load i32* %MbInterlace46, align 4, !tbaa !3
+  %tobool47 = icmp eq i32 %21, 0
+  br i1 %tobool47, label %if.end59, label %if.then48
+
+if.then48:                                        ; preds = %lor.lhs.false45, %if.then42
+  %FieldControl49 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %22 = load i32* %FieldControl49, align 4, !tbaa !3
+  %cmp50 = icmp eq i32 %22, 0
+  br i1 %cmp50, label %if.then51, label %if.end59
+
+if.then51:                                        ; preds = %if.then48
+  %FieldFrame52 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 135
+  %23 = load i32* %FieldFrame52, align 4, !tbaa !3
+  %cmp53 = icmp eq i32 %23, 1
+  %24 = load i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %24, i32* @PreviousQp1, align 4, !tbaa !3
+  br i1 %cmp53, label %if.then54, label %if.else55
+
+if.then54:                                        ; preds = %if.then51
+  %25 = load i32* @FrameQPBuffer, align 4, !tbaa !3
+  store i32 %25, i32* @PreviousQp2, align 4, !tbaa !3
+  br label %if.end59
+
+if.else55:                                        ; preds = %if.then51
+  %26 = load i32* @FieldQPBuffer, align 4, !tbaa !3
+  store i32 %26, i32* @PreviousQp2, align 4, !tbaa !3
+  br label %if.end59
+
+if.end59:                                         ; preds = %if.then48, %lor.lhs.false45, %if.else34, %if.then54, %if.else55
+  %27 = load i32* @PreviousQp2, align 4, !tbaa !3
+  %28 = load i32* @PreviousQp1, align 4, !tbaa !3
+  %sub = sub nsw i32 %27, %28
+  %29 = load i32* %successive_Bframe, align 4, !tbaa !3
+  %mul = mul nsw i32 %29, -2
+  %sub61 = add nsw i32 %mul, -3
+  %cmp62 = icmp sgt i32 %sub, %sub61
+  br i1 %cmp62, label %if.else64, label %if.end96
+
+if.else64:                                        ; preds = %if.end59
+  %sub68 = add nsw i32 %mul, -2
+  %cmp69 = icmp eq i32 %sub, %sub68
+  br i1 %cmp69, label %if.end96, label %if.else71
+
+if.else71:                                        ; preds = %if.else64
+  %sub75 = add nsw i32 %mul, -1
+  %cmp76 = icmp eq i32 %sub, %sub75
+  br i1 %cmp76, label %if.end96, label %if.else78
+
+if.else78:                                        ; preds = %if.else71
+  %cmp82 = icmp eq i32 %sub, %mul
+  br i1 %cmp82, label %if.end96, label %if.else84
+
+if.else84:                                        ; preds = %if.else78
+  %add881100 = or i32 %mul, 1
+  %cmp89 = icmp eq i32 %sub, %add881100
+  %. = select i1 %cmp89, i32 1, i32 2
+  br label %if.end96
+
+if.end96:                                         ; preds = %if.else84, %if.else78, %if.else71, %if.else64, %if.end59
+  %StepSize.0 = phi i32 [ -3, %if.end59 ], [ -2, %if.else64 ], [ -1, %if.else71 ], [ 0, %if.else78 ], [ %., %if.else84 ]
+  %add97 = add nsw i32 %28, %StepSize.0
+  store i32 %add97, i32* @m_Qc, align 4, !tbaa !3
+  %sub98 = add nsw i32 %.rem, -1
+  %mul99 = shl nsw i32 %sub98, 1
+  %mul101 = mul nsw i32 %sub98, -2
+  %mul104 = mul nsw i32 %sub, %sub98
+  %30 = load i32* %successive_Bframe, align 4, !tbaa !3
+  %sub106 = add nsw i32 %30, -1
+  %div107 = sdiv i32 %mul104, %sub106
+  %cmp108 = icmp slt i32 %mul101, %div107
+  %div107.mul101 = select i1 %cmp108, i32 %div107, i32 %mul101
+  %cmp121 = icmp slt i32 %mul99, %div107.mul101
+  %mul99.div107.mul101 = select i1 %cmp121, i32 %mul99, i32 %div107.mul101
+  %add149 = add nsw i32 %mul99.div107.mul101, %add97
+  %31 = load i32* @RC_MAX_QUANT, align 4, !tbaa !3
+  %cmp150 = icmp slt i32 %add149, %31
+  %cond154 = select i1 %cmp150, i32 %add149, i32 %31
+  store i32 %cond154, i32* @m_Qc, align 4, !tbaa !3
+  %32 = load i32* @RC_MIN_QUANT, align 4, !tbaa !3
+  %cmp155 = icmp slt i32 %32, %cond154
+  %cond159 = select i1 %cmp155, i32 %cond154, i32 %32
+  br label %if.end160
+
+if.end160:                                        ; preds = %if.end96, %if.end27
+  %storemerge1101 = phi i32 [ %cond159, %if.end96 ], [ %cond33, %if.end27 ]
+  store i32 %storemerge1101, i32* @m_Qc, align 4, !tbaa !3
+  br label %return
+
+land.lhs.true:                                    ; preds = %if.then2
+  %NumberofPPicture = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 130
+  %33 = load i32* %NumberofPPicture, align 4, !tbaa !3
+  %cmp164 = icmp eq i32 %33, 0
+  br i1 %cmp164, label %if.then165, label %if.else175
+
+if.then165:                                       ; preds = %land.lhs.true
+  %34 = load i32* @MyInitialQp, align 4, !tbaa !3
+  store i32 %34, i32* @m_Qc, align 4, !tbaa !3
+  %FieldControl166 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %35 = load i32* %FieldControl166, align 4, !tbaa !3
+  %cmp167 = icmp eq i32 %35, 0
+  br i1 %cmp167, label %if.then168, label %return
+
+if.then168:                                       ; preds = %if.then165
+  %36 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !0
+  %frame_mbs_only_flag = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %36, i64 0, i32 25
+  %37 = load i32* %frame_mbs_only_flag, align 4, !tbaa !1
+  %tobool169 = icmp eq i32 %37, 0
+  br i1 %tobool169, label %if.else172, label %if.then170
+
+if.then170:                                       ; preds = %if.then168
+  %TotalQpforPPicture = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 129
+  %38 = load i32* %TotalQpforPPicture, align 4, !tbaa !3
+  %add171 = add nsw i32 %38, %34
+  store i32 %add171, i32* %TotalQpforPPicture, align 4, !tbaa !3
+  %39 = load i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %39, i32* @PreviousQp1, align 4, !tbaa !3
+  %40 = load i32* @m_Qc, align 4, !tbaa !3
+  store i32 %40, i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %40, i32* @Pm_Qp, align 4, !tbaa !3
+  br label %return
+
+if.else172:                                       ; preds = %if.then168
+  store i32 %34, i32* @FrameQPBuffer, align 4, !tbaa !3
+  br label %return
+
+if.else175:                                       ; preds = %if.then2, %land.lhs.true
+  %41 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %PicInterlace176 = getelementptr inbounds %struct.InputParameters* %41, i64 0, i32 91
+  %42 = load i32* %PicInterlace176, align 4, !tbaa !3
+  %cmp177 = icmp eq i32 %42, 2
+  br i1 %cmp177, label %land.lhs.true181, label %lor.lhs.false178
+
+lor.lhs.false178:                                 ; preds = %if.else175
+  %MbInterlace179 = getelementptr inbounds %struct.InputParameters* %41, i64 0, i32 92
+  %43 = load i32* %MbInterlace179, align 4, !tbaa !3
+  %tobool180 = icmp eq i32 %43, 0
+  br i1 %tobool180, label %if.end194, label %land.lhs.true181
+
+land.lhs.true181:                                 ; preds = %lor.lhs.false178, %if.else175
+  %FieldControl182 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %44 = load i32* %FieldControl182, align 4, !tbaa !3
+  %cmp183 = icmp eq i32 %44, 0
+  br i1 %cmp183, label %if.then184, label %if.end194
+
+if.then184:                                       ; preds = %land.lhs.true181
+  %FieldFrame185 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 135
+  %45 = load i32* %FieldFrame185, align 4, !tbaa !3
+  %cmp186 = icmp eq i32 %45, 1
+  br i1 %cmp186, label %if.then187, label %if.else190
+
+if.then187:                                       ; preds = %if.then184
+  %46 = load i32* @FrameQPBuffer, align 4, !tbaa !3
+  %TotalQpforPPicture188 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 129
+  %47 = load i32* %TotalQpforPPicture188, align 4, !tbaa !3
+  %add189 = add nsw i32 %47, %46
+  store i32 %add189, i32* %TotalQpforPPicture188, align 4, !tbaa !3
+  %48 = load i32* @FrameQPBuffer, align 4, !tbaa !3
+  store i32 %48, i32* @Pm_Qp, align 4, !tbaa !3
+  br label %if.end194
+
+if.else190:                                       ; preds = %if.then184
+  %49 = load i32* @FieldQPBuffer, align 4, !tbaa !3
+  %TotalQpforPPicture191 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 129
+  %50 = load i32* %TotalQpforPPicture191, align 4, !tbaa !3
+  %add192 = add nsw i32 %50, %49
+  store i32 %add192, i32* %TotalQpforPPicture191, align 4, !tbaa !3
+  %51 = load i32* @FieldQPBuffer, align 4, !tbaa !3
+  store i32 %51, i32* @Pm_Qp, align 4, !tbaa !3
+  br label %if.end194
+
+if.end194:                                        ; preds = %land.lhs.true181, %lor.lhs.false178, %if.then187, %if.else190
+  %52 = load double* @Pm_X1, align 8, !tbaa !4
+  store double %52, double* @m_X1, align 8, !tbaa !4
+  %53 = load double* @Pm_X2, align 8, !tbaa !4
+  store double %53, double* @m_X2, align 8, !tbaa !4
+  %54 = load i32* @PPreHeader, align 4, !tbaa !3
+  store i32 %54, i32* @m_Hp, align 4, !tbaa !3
+  %55 = load i32* @Pm_Qp, align 4, !tbaa !3
+  store i32 %55, i32* @m_Qp, align 4, !tbaa !3
+  %56 = load i32* @PDuantQp, align 4, !tbaa !3
+  store i32 %56, i32* @DuantQp, align 4, !tbaa !3
+  %57 = load double* @PMADPictureC1, align 8, !tbaa !4
+  store double %57, double* @MADPictureC1, align 8, !tbaa !4
+  %58 = load double* @PMADPictureC2, align 8, !tbaa !4
+  store double %58, double* @MADPictureC2, align 8, !tbaa !4
+  %59 = load double* getelementptr inbounds ([21 x double]* @PPictureMAD, i64 0, i64 0), align 16, !tbaa !4
+  store double %59, double* @PreviousPictureMAD, align 8, !tbaa !4
+  %mul195 = fmul double %57, %59
+  %add196 = fadd double %58, %mul195
+  store double %add196, double* @CurrentFrameMAD, align 8, !tbaa !4
+  %60 = load i64* @T, align 8, !tbaa !6
+  %cmp197 = icmp slt i64 %60, 0
+  br i1 %cmp197, label %if.then198, label %if.else205
+
+if.then198:                                       ; preds = %if.end194
+  %add199 = add nsw i32 %56, %55
+  store i32 %add199, i32* @m_Qc, align 4, !tbaa !3
+  %61 = load i32* @RC_MAX_QUANT, align 4, !tbaa !3
+  %cmp200 = icmp slt i32 %add199, %61
+  %cond204 = select i1 %cmp200, i32 %add199, i32 %61
+  br label %if.end283
+
+if.else205:                                       ; preds = %if.end194
+  %conv1097 = zext i32 %54 to i64
+  %sub206 = sub nsw i64 %60, %conv1097
+  %conv207 = trunc i64 %sub206 to i32
+  %62 = load double* @bit_rate, align 8, !tbaa !4
+  %63 = load double* @MINVALUE, align 8, !tbaa !4
+  %64 = load double* @frame_rate, align 8, !tbaa !4
+  %mul208 = fmul double %63, %64
+  %div209 = fdiv double %62, %mul208
+  %conv210 = fptosi double %div209 to i32
+  %cmp211 = icmp slt i32 %conv207, %conv210
+  %conv210.conv207 = select i1 %cmp211, i32 %conv210, i32 %conv207
+  %mul220 = fmul double %add196, %52
+  %mul221 = fmul double %add196, %mul220
+  %mul222 = fmul double %52, %mul221
+  %mul223 = fmul double %53, 4.000000e+00
+  %mul224 = fmul double %add196, %mul223
+  %conv225 = sitofp i32 %conv210.conv207 to double
+  %mul226 = fmul double %mul224, %conv225
+  %add227 = fadd double %mul222, %mul226
+  %cmp228 = fcmp oeq double %53, 0.000000e+00
+  %cmp231 = fcmp olt double %add227, 0.000000e+00
+  %or.cond = or i1 %cmp228, %cmp231
+  br i1 %or.cond, label %if.then238, label %lor.lhs.false233
+
+lor.lhs.false233:                                 ; preds = %if.else205
+  %call = tail call double @sqrt(double %add227) #7
+  %65 = load double* @m_X1, align 8, !tbaa !4
+  %66 = load double* @CurrentFrameMAD, align 8, !tbaa !4
+  %mul234 = fmul double %65, %66
+  %sub235 = fsub double %call, %mul234
+  %cmp236 = fcmp ugt double %sub235, 0.000000e+00
+  br i1 %cmp236, label %if.else244, label %if.then238
+
+if.then238:                                       ; preds = %lor.lhs.false233, %if.else205
+  %67 = phi double [ %66, %lor.lhs.false233 ], [ %add196, %if.else205 ]
+  %68 = phi double [ %65, %lor.lhs.false233 ], [ %52, %if.else205 ]
+  %mul239 = fmul double %68, %67
+  %div241 = fdiv double %mul239, %conv225
+  br label %if.end253
+
+if.else244:                                       ; preds = %lor.lhs.false233
+  %69 = load double* @m_X2, align 8, !tbaa !4
+  %mul245 = fmul double %69, 2.000000e+00
+  %mul246 = fmul double %66, %mul245
+  %call247 = tail call double @sqrt(double %add227) #7
+  %70 = load double* @m_X1, align 8, !tbaa !4
+  %71 = load double* @CurrentFrameMAD, align 8, !tbaa !4
+  %mul248 = fmul double %70, %71
+  %sub249 = fsub double %call247, %mul248
+  %div250 = fdiv double %mul246, %sub249
+  br label %if.end253
+
+if.end253:                                        ; preds = %if.else244, %if.then238
+  %storemerge1098.in.in = phi double [ %div250, %if.else244 ], [ %div241, %if.then238 ]
+  %storemerge1098.in = fptrunc double %storemerge1098.in.in to float
+  %storemerge1098 = fpext float %storemerge1098.in to double
+  store double %storemerge1098, double* @m_Qstep, align 8, !tbaa !4
+  %call254 = tail call i32 @Qstep2QP(double %storemerge1098) #9
+  %72 = load i32* @m_Qp, align 4, !tbaa !3
+  %73 = load i32* @DuantQp, align 4, !tbaa !3
+  %add255 = add nsw i32 %73, %72
+  %cmp256 = icmp slt i32 %add255, %call254
+  %add255.call254 = select i1 %cmp256, i32 %add255, i32 %call254
+  %74 = load i32* @RC_MAX_QUANT, align 4, !tbaa !3
+  %cmp263 = icmp slt i32 %add255.call254, %74
+  %cond268 = select i1 %cmp263, i32 %add255.call254, i32 %74
+  %sub269 = sub nsw i32 %72, %73
+  %cmp270 = icmp slt i32 %sub269, %cond268
+  %cond276 = select i1 %cmp270, i32 %cond268, i32 %sub269
+  store i32 %cond276, i32* @m_Qc, align 4, !tbaa !3
+  %75 = load i32* @RC_MIN_QUANT, align 4, !tbaa !3
+  %cmp277 = icmp slt i32 %75, %cond276
+  %cond282 = select i1 %cmp277, i32 %cond276, i32 %75
+  %.pre = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  br label %if.end283
+
+if.end283:                                        ; preds = %if.end253, %if.then198
+  %76 = phi %struct.ImageParameters* [ %.pre, %if.end253 ], [ %0, %if.then198 ]
+  %storemerge1099 = phi i32 [ %cond282, %if.end253 ], [ %cond204, %if.then198 ]
+  store i32 %storemerge1099, i32* @m_Qc, align 4, !tbaa !3
+  %FieldControl284 = getelementptr inbounds %struct.ImageParameters* %76, i64 0, i32 134
+  %77 = load i32* %FieldControl284, align 4, !tbaa !3
+  %cmp285 = icmp eq i32 %77, 0
+  br i1 %cmp285, label %if.then287, label %return
+
+if.then287:                                       ; preds = %if.end283
+  %78 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !0
+  %frame_mbs_only_flag288 = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %78, i64 0, i32 25
+  %79 = load i32* %frame_mbs_only_flag288, align 4, !tbaa !1
+  %tobool289 = icmp eq i32 %79, 0
+  br i1 %tobool289, label %if.else293, label %if.then290
+
+if.then290:                                       ; preds = %if.then287
+  %TotalQpforPPicture291 = getelementptr inbounds %struct.ImageParameters* %76, i64 0, i32 129
+  %80 = load i32* %TotalQpforPPicture291, align 4, !tbaa !3
+  %add292 = add nsw i32 %80, %storemerge1099
+  store i32 %add292, i32* %TotalQpforPPicture291, align 4, !tbaa !3
+  %81 = load i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %81, i32* @PreviousQp1, align 4, !tbaa !3
+  %82 = load i32* @m_Qc, align 4, !tbaa !3
+  store i32 %82, i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %82, i32* @Pm_Qp, align 4, !tbaa !3
+  br label %return
+
+if.else293:                                       ; preds = %if.then287
+  store i32 %storemerge1099, i32* @FrameQPBuffer, align 4, !tbaa !3
+  br label %return
+
+if.else296:                                       ; preds = %lor.lhs.false
+  %type297 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %83 = load i32* %type297, align 4, !tbaa !3
+  %cmp298 = icmp eq i32 %83, 0
+  br i1 %cmp298, label %land.lhs.true300, label %if.end313
+
+land.lhs.true300:                                 ; preds = %if.else296
+  %IFLAG = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 137
+  %84 = load i32* %IFLAG, align 4, !tbaa !3
+  %cmp301 = icmp eq i32 %84, 0
+  br i1 %cmp301, label %if.then303, label %if.end313
+
+if.then303:                                       ; preds = %land.lhs.true300
+  %85 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %PicInterlace304 = getelementptr inbounds %struct.InputParameters* %85, i64 0, i32 91
+  %86 = load i32* %PicInterlace304, align 4, !tbaa !3
+  %cmp305 = icmp eq i32 %86, 1
+  %87 = load i32* @m_Qc, align 4, !tbaa !3
+  br i1 %cmp305, label %if.then307, label %if.else311
+
+if.then307:                                       ; preds = %if.then303
+  %TotalQpforPPicture308 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 129
+  %88 = load i32* %TotalQpforPPicture308, align 4, !tbaa !3
+  %add309 = add nsw i32 %88, %87
+  store i32 %add309, i32* %TotalQpforPPicture308, align 4, !tbaa !3
+  %89 = load i32* @PreviousQp2, align 4, !tbaa !3
+  %add310 = add nsw i32 %89, 1
+  store i32 %add310, i32* @PreviousQp1, align 4, !tbaa !3
+  %90 = load i32* @m_Qc, align 4, !tbaa !3
+  store i32 %90, i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %90, i32* @Pm_Qp, align 4, !tbaa !3
+  br label %if.end313
+
+if.else311:                                       ; preds = %if.then303
+  store i32 %87, i32* @FieldQPBuffer, align 4, !tbaa !3
+  br label %if.end313
+
+if.end313:                                        ; preds = %land.lhs.true300, %if.else296, %if.then307, %if.else311
+  %91 = load i32* @m_Qc, align 4, !tbaa !3
+  br label %return
+
+if.else314:                                       ; preds = %entry
+  %type315 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %92 = load i32* %type315, align 4, !tbaa !3
+  switch i32 %92, label %if.end1036 [
+    i32 2, label %if.then318
+    i32 0, label %land.lhs.true323
+    i32 1, label %if.then336
+  ]
+
+if.then318:                                       ; preds = %if.else314
+  %93 = load i32* @MyInitialQp, align 4, !tbaa !3
+  store i32 %93, i32* @m_Qc, align 4, !tbaa !3
+  br label %return
+
+land.lhs.true323:                                 ; preds = %if.else314
+  %IFLAG324 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 137
+  %94 = load i32* %IFLAG324, align 4, !tbaa !3
+  %cmp325 = icmp eq i32 %94, 1
+  br i1 %cmp325, label %land.lhs.true327, label %if.then537
+
+land.lhs.true327:                                 ; preds = %land.lhs.true323
+  %FieldControl328 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %95 = load i32* %FieldControl328, align 4, !tbaa !3
+  %cmp329 = icmp eq i32 %95, 1
+  br i1 %cmp329, label %if.then331, label %if.else332
+
+if.then331:                                       ; preds = %land.lhs.true327
+  %96 = load i32* @MyInitialQp, align 4, !tbaa !3
+  store i32 %96, i32* @m_Qc, align 4, !tbaa !3
+  br label %return
+
+if.else332:                                       ; preds = %land.lhs.true327
+  switch i32 %92, label %if.end1036 [
+    i32 1, label %if.then336
+    i32 0, label %if.then537
+  ]
+
+if.then336:                                       ; preds = %if.else314, %if.else332
+  %tobool337 = icmp eq i32 %topfield, 0
+  br i1 %tobool337, label %lor.lhs.false338, label %if.then342
+
+lor.lhs.false338:                                 ; preds = %if.then336
+  %FieldControl339 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %97 = load i32* %FieldControl339, align 4, !tbaa !3
+  %cmp340 = icmp eq i32 %97, 0
+  br i1 %cmp340, label %if.then342, label %if.else532
+
+if.then342:                                       ; preds = %if.then336, %lor.lhs.false338
+  %98 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %successive_Bframe343 = getelementptr inbounds %struct.InputParameters* %98, i64 0, i32 34
+  %99 = load i32* %successive_Bframe343, align 4, !tbaa !3
+  %cmp344 = icmp eq i32 %99, 1
+  br i1 %cmp344, label %if.then346, label %if.else387
+
+if.then346:                                       ; preds = %if.then342
+  %PicInterlace347 = getelementptr inbounds %struct.InputParameters* %98, i64 0, i32 91
+  %100 = load i32* %PicInterlace347, align 4, !tbaa !3
+  %cmp348 = icmp eq i32 %100, 2
+  br i1 %cmp348, label %if.then353, label %lor.lhs.false350
+
+lor.lhs.false350:                                 ; preds = %if.then346
+  %MbInterlace351 = getelementptr inbounds %struct.InputParameters* %98, i64 0, i32 92
+  %101 = load i32* %MbInterlace351, align 4, !tbaa !3
+  %tobool352 = icmp eq i32 %101, 0
+  br i1 %tobool352, label %if.end365, label %if.then353
+
+if.then353:                                       ; preds = %lor.lhs.false350, %if.then346
+  %FieldControl354 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %102 = load i32* %FieldControl354, align 4, !tbaa !3
+  %cmp355 = icmp eq i32 %102, 0
+  br i1 %cmp355, label %if.then357, label %if.end365
+
+if.then357:                                       ; preds = %if.then353
+  %FieldFrame358 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 135
+  %103 = load i32* %FieldFrame358, align 4, !tbaa !3
+  %cmp359 = icmp eq i32 %103, 1
+  %104 = load i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %104, i32* @PreviousQp1, align 4, !tbaa !3
+  br i1 %cmp359, label %if.then361, label %if.else362
+
+if.then361:                                       ; preds = %if.then357
+  %105 = load i32* @FrameQPBuffer, align 4, !tbaa !3
+  store i32 %105, i32* @PreviousQp2, align 4, !tbaa !3
+  br label %if.end365
+
+if.else362:                                       ; preds = %if.then357
+  %106 = load i32* @FieldQPBuffer, align 4, !tbaa !3
+  store i32 %106, i32* @PreviousQp2, align 4, !tbaa !3
+  br label %if.end365
+
+if.end365:                                        ; preds = %if.then353, %lor.lhs.false350, %if.else362, %if.then361
+  %107 = load i32* @PreviousQp1, align 4, !tbaa !3
+  %108 = load i32* @PreviousQp2, align 4, !tbaa !3
+  %cmp366 = icmp eq i32 %107, %108
+  br i1 %cmp366, label %if.then368, label %if.else370
+
+if.then368:                                       ; preds = %if.end365
+  %add369 = add nsw i32 %107, 2
+  br label %if.end374
+
+if.else370:                                       ; preds = %if.end365
+  %add371 = add nsw i32 %108, %107
+  %div372 = sdiv i32 %add371, 2
+  %add373 = add nsw i32 %div372, 1
+  br label %if.end374
+
+if.end374:                                        ; preds = %if.else370, %if.then368
+  %storemerge1096 = phi i32 [ %add373, %if.else370 ], [ %add369, %if.then368 ]
+  %109 = load i32* @RC_MAX_QUANT, align 4, !tbaa !3
+  %cmp375 = icmp slt i32 %storemerge1096, %109
+  %cond380 = select i1 %cmp375, i32 %storemerge1096, i32 %109
+  store i32 %cond380, i32* @m_Qc, align 4, !tbaa !3
+  %110 = load i32* @RC_MIN_QUANT, align 4, !tbaa !3
+  %cmp381 = icmp slt i32 %110, %cond380
+  %cond386 = select i1 %cmp381, i32 %cond380, i32 %110
+  br label %if.end531
+
+if.else387:                                       ; preds = %if.then342
+  %111 = load i32* @NumberofBFrames, align 4, !tbaa !3
+  %add388 = add nsw i32 %111, 1
+  %rem390 = srem i32 %add388, %99
+  %cmp391 = icmp eq i32 %rem390, 0
+  %.rem390 = select i1 %cmp391, i32 %99, i32 %rem390
+  %cmp396 = icmp eq i32 %.rem390, 1
+  br i1 %cmp396, label %if.then398, label %if.end418
+
+if.then398:                                       ; preds = %if.else387
+  %PicInterlace399 = getelementptr inbounds %struct.InputParameters* %98, i64 0, i32 91
+  %112 = load i32* %PicInterlace399, align 4, !tbaa !3
+  %cmp400 = icmp eq i32 %112, 2
+  br i1 %cmp400, label %if.then405, label %lor.lhs.false402
+
+lor.lhs.false402:                                 ; preds = %if.then398
+  %MbInterlace403 = getelementptr inbounds %struct.InputParameters* %98, i64 0, i32 92
+  %113 = load i32* %MbInterlace403, align 4, !tbaa !3
+  %tobool404 = icmp eq i32 %113, 0
+  br i1 %tobool404, label %if.end418, label %if.then405
+
+if.then405:                                       ; preds = %lor.lhs.false402, %if.then398
+  %FieldControl406 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %114 = load i32* %FieldControl406, align 4, !tbaa !3
+  %cmp407 = icmp eq i32 %114, 0
+  br i1 %cmp407, label %if.then409, label %if.end418
+
+if.then409:                                       ; preds = %if.then405
+  %FieldFrame410 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 135
+  %115 = load i32* %FieldFrame410, align 4, !tbaa !3
+  %cmp411 = icmp eq i32 %115, 1
+  %116 = load i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %116, i32* @PreviousQp1, align 4, !tbaa !3
+  br i1 %cmp411, label %if.then413, label %if.else414
+
+if.then413:                                       ; preds = %if.then409
+  %117 = load i32* @FrameQPBuffer, align 4, !tbaa !3
+  store i32 %117, i32* @PreviousQp2, align 4, !tbaa !3
+  br label %if.end418
+
+if.else414:                                       ; preds = %if.then409
+  %118 = load i32* @FieldQPBuffer, align 4, !tbaa !3
+  store i32 %118, i32* @PreviousQp2, align 4, !tbaa !3
+  br label %if.end418
+
+if.end418:                                        ; preds = %if.then405, %lor.lhs.false402, %if.else387, %if.then413, %if.else414
+  %119 = load i32* @PreviousQp2, align 4, !tbaa !3
+  %120 = load i32* @PreviousQp1, align 4, !tbaa !3
+  %sub419 = sub nsw i32 %119, %120
+  %121 = load i32* %successive_Bframe343, align 4, !tbaa !3
+  %mul421 = mul nsw i32 %121, -2
+  %sub422 = add nsw i32 %mul421, -3
+  %cmp423 = icmp sgt i32 %sub419, %sub422
+  br i1 %cmp423, label %if.else426, label %if.end462
+
+if.else426:                                       ; preds = %if.end418
+  %sub430 = add nsw i32 %mul421, -2
+  %cmp431 = icmp eq i32 %sub419, %sub430
+  br i1 %cmp431, label %if.end462, label %if.else434
+
+if.else434:                                       ; preds = %if.else426
+  %sub438 = add nsw i32 %mul421, -1
+  %cmp439 = icmp eq i32 %sub419, %sub438
+  br i1 %cmp439, label %if.end462, label %if.else442
+
+if.else442:                                       ; preds = %if.else434
+  %cmp446 = icmp eq i32 %sub419, %mul421
+  br i1 %cmp446, label %if.end462, label %if.else449
+
+if.else449:                                       ; preds = %if.else442
+  %add4531094 = or i32 %mul421, 1
+  %cmp454 = icmp eq i32 %sub419, %add4531094
+  %.1103 = select i1 %cmp454, i32 1, i32 2
+  br label %if.end462
+
+if.end462:                                        ; preds = %if.else449, %if.else442, %if.else434, %if.else426, %if.end418
+  %StepSize.1 = phi i32 [ -3, %if.end418 ], [ -2, %if.else426 ], [ -1, %if.else434 ], [ 0, %if.else442 ], [ %.1103, %if.else449 ]
+  %add463 = add nsw i32 %120, %StepSize.1
+  store i32 %add463, i32* @m_Qc, align 4, !tbaa !3
+  %sub464 = add nsw i32 %.rem390, -1
+  %mul465 = shl nsw i32 %sub464, 1
+  %mul467 = mul nsw i32 %sub464, -2
+  %mul470 = mul nsw i32 %sub419, %sub464
+  %122 = load i32* %successive_Bframe343, align 4, !tbaa !3
+  %sub472 = add nsw i32 %122, -1
+  %div473 = sdiv i32 %mul470, %sub472
+  %cmp474 = icmp slt i32 %mul467, %div473
+  %div473.mul467 = select i1 %cmp474, i32 %div473, i32 %mul467
+  %cmp488 = icmp slt i32 %mul465, %div473.mul467
+  %mul465.div473.mul467 = select i1 %cmp488, i32 %mul465, i32 %div473.mul467
+  %add518 = add nsw i32 %mul465.div473.mul467, %add463
+  %123 = load i32* @RC_MAX_QUANT, align 4, !tbaa !3
+  %cmp519 = icmp slt i32 %add518, %123
+  %cond524 = select i1 %cmp519, i32 %add518, i32 %123
+  store i32 %cond524, i32* @m_Qc, align 4, !tbaa !3
+  %124 = load i32* @RC_MIN_QUANT, align 4, !tbaa !3
+  %cmp525 = icmp slt i32 %124, %cond524
+  %cond530 = select i1 %cmp525, i32 %cond524, i32 %124
+  br label %if.end531
+
+if.end531:                                        ; preds = %if.end462, %if.end374
+  %storemerge1095 = phi i32 [ %cond530, %if.end462 ], [ %cond386, %if.end374 ]
+  store i32 %storemerge1095, i32* @m_Qc, align 4, !tbaa !3
+  br label %return
+
+if.else532:                                       ; preds = %lor.lhs.false338
+  %125 = load i32* @m_Qc, align 4, !tbaa !3
+  br label %return
+
+if.then537:                                       ; preds = %land.lhs.true323, %if.else332
+  %NumberofGOP = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 128
+  %126 = load i32* %NumberofGOP, align 4, !tbaa !3
+  %cmp538 = icmp eq i32 %126, 1
+  br i1 %cmp538, label %land.lhs.true540, label %if.else590
+
+land.lhs.true540:                                 ; preds = %if.then537
+  %NumberofPPicture541 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 130
+  %127 = load i32* %NumberofPPicture541, align 4, !tbaa !3
+  %cmp542 = icmp eq i32 %127, 0
+  br i1 %cmp542, label %if.then544, label %if.else590
+
+if.then544:                                       ; preds = %land.lhs.true540
+  %FieldControl545 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %128 = load i32* %FieldControl545, align 4, !tbaa !3
+  switch i32 %128, label %if.end1036 [
+    i32 0, label %if.then556
+    i32 1, label %land.lhs.true552
+  ]
+
+land.lhs.true552:                                 ; preds = %if.then544
+  %IFLAG553 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 137
+  %129 = load i32* %IFLAG553, align 4, !tbaa !3
+  %cmp554 = icmp eq i32 %129, 0
+  br i1 %cmp554, label %if.then556, label %if.end1036
+
+if.then556:                                       ; preds = %if.then544, %land.lhs.true552
+  %130 = load i32* @MyInitialQp, align 4, !tbaa !3
+  store i32 %130, i32* @m_Qc, align 4, !tbaa !3
+  %NumberofBasicUnitHeaderBits = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 121
+  store i32 0, i32* %NumberofBasicUnitHeaderBits, align 4, !tbaa !3
+  %NumberofBasicUnitTextureBits = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 122
+  store i32 0, i32* %NumberofBasicUnitTextureBits, align 4, !tbaa !3
+  %131 = load i32* @NumberofBasicUnit, align 4, !tbaa !3
+  %dec = add nsw i32 %131, -1
+  store i32 %dec, i32* @NumberofBasicUnit, align 4, !tbaa !3
+  %132 = or i32 %dec, %topfield
+  %133 = icmp eq i32 %132, 0
+  br i1 %133, label %if.then561, label %if.end587
+
+if.then561:                                       ; preds = %if.then556
+  %134 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !0
+  %frame_mbs_only_flag562 = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %134, i64 0, i32 25
+  %135 = load i32* %frame_mbs_only_flag562, align 4, !tbaa !1
+  %tobool563 = icmp eq i32 %135, 0
+  br i1 %tobool563, label %lor.lhs.false564, label %if.then568
+
+lor.lhs.false564:                                 ; preds = %if.then561
+  %136 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %PicInterlace565 = getelementptr inbounds %struct.InputParameters* %136, i64 0, i32 91
+  %137 = load i32* %PicInterlace565, align 4, !tbaa !3
+  switch i32 %137, label %lor.lhs.false575 [
+    i32 1, label %if.then568
+    i32 2, label %if.then578
+  ]
+
+if.then568:                                       ; preds = %lor.lhs.false564, %if.then561
+  %138 = load i32* @m_Qc, align 4, !tbaa !3
+  %TotalQpforPPicture569 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 129
+  %139 = load i32* %TotalQpforPPicture569, align 4, !tbaa !3
+  %add570 = add nsw i32 %139, %138
+  store i32 %add570, i32* %TotalQpforPPicture569, align 4, !tbaa !3
+  %140 = load i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %140, i32* @PreviousQp1, align 4, !tbaa !3
+  %141 = load i32* @m_Qc, align 4, !tbaa !3
+  store i32 %141, i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %141, i32* @PAveFrameQP, align 4, !tbaa !3
+  %142 = load i32* @PAveHeaderBits2, align 4, !tbaa !3
+  store i32 %142, i32* @PAveHeaderBits3, align 4, !tbaa !3
+  br label %if.end587
+
+lor.lhs.false575:                                 ; preds = %lor.lhs.false564
+  %MbInterlace576 = getelementptr inbounds %struct.InputParameters* %136, i64 0, i32 92
+  %143 = load i32* %MbInterlace576, align 4, !tbaa !3
+  %tobool577 = icmp eq i32 %143, 0
+  br i1 %tobool577, label %if.end587, label %if.then578
+
+if.then578:                                       ; preds = %lor.lhs.false564, %lor.lhs.false575
+  %144 = load i32* %FieldControl545, align 4, !tbaa !3
+  %cmp580 = icmp eq i32 %144, 0
+  %145 = load i32* @m_Qc, align 4, !tbaa !3
+  br i1 %cmp580, label %if.then582, label %if.else583
+
+if.then582:                                       ; preds = %if.then578
+  store i32 %145, i32* @FrameQPBuffer, align 4, !tbaa !3
+  %146 = load i32* @PAveHeaderBits2, align 4, !tbaa !3
+  store i32 %146, i32* @FrameAveHeaderBits, align 4, !tbaa !3
+  br label %if.end587
+
+if.else583:                                       ; preds = %if.then578
+  store i32 %145, i32* @FieldQPBuffer, align 4, !tbaa !3
+  %147 = load i32* @PAveHeaderBits2, align 4, !tbaa !3
+  store i32 %147, i32* @FieldAveHeaderBits, align 4, !tbaa !3
+  br label %if.end587
+
+if.end587:                                        ; preds = %lor.lhs.false575, %if.then556, %if.then568, %if.then582, %if.else583
+  %148 = load i32* @m_Qc, align 4, !tbaa !3
+  store i32 %148, i32* @Pm_Qp, align 4, !tbaa !3
+  %149 = load i32* @TotalFrameQP, align 4, !tbaa !3
+  %add588 = add nsw i32 %149, %148
+  store i32 %add588, i32* @TotalFrameQP, align 4, !tbaa !3
+  br label %return
+
+if.else590:                                       ; preds = %land.lhs.true540, %if.then537
+  %150 = load double* @Pm_X1, align 8, !tbaa !4
+  store double %150, double* @m_X1, align 8, !tbaa !4
+  %151 = load double* @Pm_X2, align 8, !tbaa !4
+  store double %151, double* @m_X2, align 8, !tbaa !4
+  %152 = load i32* @PPreHeader, align 4, !tbaa !3
+  store i32 %152, i32* @m_Hp, align 4, !tbaa !3
+  %153 = load i32* @Pm_Qp, align 4, !tbaa !3
+  store i32 %153, i32* @m_Qp, align 4, !tbaa !3
+  %154 = load i32* @PDuantQp, align 4, !tbaa !3
+  store i32 %154, i32* @DuantQp, align 4, !tbaa !3
+  %155 = load double* @PMADPictureC1, align 8, !tbaa !4
+  store double %155, double* @MADPictureC1, align 8, !tbaa !4
+  %156 = load double* @PMADPictureC2, align 8, !tbaa !4
+  store double %156, double* @MADPictureC2, align 8, !tbaa !4
+  %FieldControl591 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %157 = load i32* %FieldControl591, align 4, !tbaa !3
+  %cmp592 = icmp eq i32 %157, 0
+  %158 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
+  br i1 %cmp592, label %if.end597, label %if.else595
+
+if.else595:                                       ; preds = %if.else590
+  %div596 = sdiv i32 %158, 2
+  br label %if.end597
+
+if.end597:                                        ; preds = %if.else590, %if.else595
+  %SumofBasicUnit.0 = phi i32 [ %div596, %if.else595 ], [ %158, %if.else590 ]
+  %159 = load i32* @NumberofBasicUnit, align 4, !tbaa !3
+  %cmp598 = icmp eq i32 %159, %SumofBasicUnit.0
+  br i1 %cmp598, label %if.then600, label %if.else652
+
+if.then600:                                       ; preds = %if.end597
+  %160 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %PicInterlace601 = getelementptr inbounds %struct.InputParameters* %160, i64 0, i32 91
+  %161 = load i32* %PicInterlace601, align 4, !tbaa !3
+  %cmp602 = icmp eq i32 %161, 2
+  br i1 %cmp602, label %land.lhs.true607, label %lor.lhs.false604
+
+lor.lhs.false604:                                 ; preds = %if.then600
+  %MbInterlace605 = getelementptr inbounds %struct.InputParameters* %160, i64 0, i32 92
+  %162 = load i32* %MbInterlace605, align 4, !tbaa !3
+  %tobool606 = icmp eq i32 %162, 0
+  %cmp592.not = xor i1 %cmp592, true
+  %brmerge = or i1 %tobool606, %cmp592.not
+  br i1 %brmerge, label %if.end632, label %if.then611
+
+land.lhs.true607:                                 ; preds = %if.then600
+  br i1 %cmp592, label %if.then611, label %if.end632
+
+if.then611:                                       ; preds = %lor.lhs.false604, %land.lhs.true607
+  %FieldFrame612 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 135
+  %163 = load i32* %FieldFrame612, align 4, !tbaa !3
+  %cmp613 = icmp eq i32 %163, 1
+  %NumberofPPicture616 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 130
+  %164 = load i32* %NumberofPPicture616, align 4, !tbaa !3
+  %cmp617 = icmp sgt i32 %164, 0
+  br i1 %cmp613, label %if.then615, label %if.else623
+
+if.then615:                                       ; preds = %if.then611
+  br i1 %cmp617, label %if.then619, label %if.end622
+
+if.then619:                                       ; preds = %if.then615
+  %165 = load i32* @FrameQPBuffer, align 4, !tbaa !3
+  %TotalQpforPPicture620 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 129
+  %166 = load i32* %TotalQpforPPicture620, align 4, !tbaa !3
+  %add621 = add nsw i32 %166, %165
+  store i32 %add621, i32* %TotalQpforPPicture620, align 4, !tbaa !3
+  br label %if.end622
+
+if.end622:                                        ; preds = %if.then619, %if.then615
+  %167 = load i32* @FrameQPBuffer, align 4, !tbaa !3
+  store i32 %167, i32* @PAveFrameQP, align 4, !tbaa !3
+  %168 = load i32* @FrameAveHeaderBits, align 4, !tbaa !3
+  store i32 %168, i32* @PAveHeaderBits3, align 4, !tbaa !3
+  br label %if.end632
+
+if.else623:                                       ; preds = %if.then611
+  br i1 %cmp617, label %if.then627, label %if.end630
+
+if.then627:                                       ; preds = %if.else623
+  %169 = load i32* @FieldQPBuffer, align 4, !tbaa !3
+  %TotalQpforPPicture628 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 129
+  %170 = load i32* %TotalQpforPPicture628, align 4, !tbaa !3
+  %add629 = add nsw i32 %170, %169
+  store i32 %add629, i32* %TotalQpforPPicture628, align 4, !tbaa !3
+  br label %if.end630
+
+if.end630:                                        ; preds = %if.then627, %if.else623
+  %171 = load i32* @FieldQPBuffer, align 4, !tbaa !3
+  store i32 %171, i32* @PAveFrameQP, align 4, !tbaa !3
+  %172 = load i32* @FieldAveHeaderBits, align 4, !tbaa !3
+  store i32 %172, i32* @PAveHeaderBits3, align 4, !tbaa !3
+  br label %if.end632
+
+if.end632:                                        ; preds = %lor.lhs.false604, %land.lhs.true607, %if.end622, %if.end630
+  %173 = load i64* @T, align 8, !tbaa !6
+  %cmp633 = icmp slt i64 %173, 1
+  %174 = load i32* @PAveFrameQP, align 4, !tbaa !3
+  br i1 %cmp633, label %if.then635, label %if.else648
+
+if.then635:                                       ; preds = %if.end632
+  %add636 = add nsw i32 %174, 2
+  %175 = load i32* @RC_MAX_QUANT, align 4, !tbaa !3
+  %cmp637 = icmp sgt i32 %add636, %175
+  %.add636 = select i1 %cmp637, i32 %175, i32 %add636
+  store i32 %.add636, i32* @m_Qc, align 4, !tbaa !3
+  %tobool641 = icmp eq i32 %topfield, 0
+  br i1 %tobool641, label %lor.lhs.false642, label %if.then646
+
+lor.lhs.false642:                                 ; preds = %if.then635
+  %176 = load i32* %FieldControl591, align 4, !tbaa !3
+  %cmp644 = icmp eq i32 %176, 0
+  br i1 %cmp644, label %if.then646, label %if.end649
+
+if.then646:                                       ; preds = %if.then635, %lor.lhs.false642
+  store i32 1, i32* @GOPOverdue, align 4, !tbaa !1
+  br label %if.end649
+
+if.else648:                                       ; preds = %if.end632
+  store i32 %174, i32* @m_Qc, align 4, !tbaa !3
+  br label %if.end649
+
+if.end649:                                        ; preds = %lor.lhs.false642, %if.then646, %if.else648
+  %177 = phi i32 [ %.add636, %if.then646 ], [ %174, %if.else648 ], [ %.add636, %lor.lhs.false642 ]
+  %178 = load i32* @TotalFrameQP, align 4, !tbaa !3
+  %add650 = add nsw i32 %178, %177
+  store i32 %add650, i32* @TotalFrameQP, align 4, !tbaa !3
+  %179 = load i32* @NumberofBasicUnit, align 4, !tbaa !3
+  %dec651 = add nsw i32 %179, -1
+  store i32 %dec651, i32* @NumberofBasicUnit, align 4, !tbaa !3
+  store i32 %174, i32* @Pm_Qp, align 4, !tbaa !3
+  br label %return
+
+if.else652:                                       ; preds = %if.end597
+  %NumberofBasicUnitHeaderBits653 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 121
+  %180 = load i32* %NumberofBasicUnitHeaderBits653, align 4, !tbaa !3
+  %NumberofBasicUnitTextureBits654 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 122
+  %181 = load i32* %NumberofBasicUnitTextureBits654, align 4, !tbaa !3
+  %add655 = add nsw i32 %181, %180
+  store i32 %add655, i32* @TotalBasicUnitBits, align 4, !tbaa !3
+  %conv656 = sext i32 %add655 to i64
+  %182 = load i64* @T, align 8, !tbaa !6
+  %sub657 = sub nsw i64 %182, %conv656
+  store i64 %sub657, i64* @T, align 8, !tbaa !6
+  store i32 0, i32* %NumberofBasicUnitHeaderBits653, align 4, !tbaa !3
+  store i32 0, i32* %NumberofBasicUnitTextureBits654, align 4, !tbaa !3
+  %cmp660 = icmp slt i64 %sub657, 0
+  br i1 %cmp660, label %if.then662, label %if.else786
+
+if.then662:                                       ; preds = %if.else652
+  %183 = load i32* @GOPOverdue, align 4, !tbaa !1
+  %cmp663 = icmp eq i32 %183, 1
+  %184 = load i32* @m_Qp, align 4, !tbaa !3
+  %185 = load i32* @DDquant, align 4, !tbaa !3
+  %.pn = select i1 %cmp663, i32 2, i32 %185
+  %storemerge1091 = add nsw i32 %.pn, %184
+  %186 = load i32* @RC_MAX_QUANT, align 4, !tbaa !3
+  %cmp670 = icmp slt i32 %storemerge1091, %186
+  %cond675 = select i1 %cmp670, i32 %storemerge1091, i32 %186
+  store i32 %cond675, i32* @m_Qc, align 4, !tbaa !3
+  %187 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %basicunit = getelementptr inbounds %struct.InputParameters* %187, i64 0, i32 130
+  %188 = load i32* %basicunit, align 4, !tbaa !3
+  %189 = load i32* @MBPerRow, align 4, !tbaa !3
+  %cmp676 = icmp slt i32 %188, %189
+  %190 = load i32* @PAveFrameQP, align 4, !tbaa !3
+  br i1 %cmp676, label %if.else687, label %if.then678
+
+if.then678:                                       ; preds = %if.then662
+  %add679 = add nsw i32 %190, 6
+  %cmp680 = icmp slt i32 %cond675, %add679
+  %cond675.add679 = select i1 %cmp680, i32 %cond675, i32 %add679
+  br label %if.end696
+
+if.else687:                                       ; preds = %if.then662
+  %add688 = add nsw i32 %190, 3
+  %cmp689 = icmp slt i32 %cond675, %add688
+  %cond675.add688 = select i1 %cmp689, i32 %cond675, i32 %add688
+  br label %if.end696
+
+if.end696:                                        ; preds = %if.else687, %if.then678
+  %storemerge1092 = phi i32 [ %cond675.add688, %if.else687 ], [ %cond675.add679, %if.then678 ]
+  store i32 %storemerge1092, i32* @m_Qc, align 4, !tbaa !3
+  %191 = load i32* @TotalFrameQP, align 4, !tbaa !3
+  %add697 = add nsw i32 %191, %storemerge1092
+  store i32 %add697, i32* @TotalFrameQP, align 4, !tbaa !3
+  %192 = load i32* @NumberofBasicUnit, align 4, !tbaa !3
+  %dec698 = add nsw i32 %192, -1
+  store i32 %dec698, i32* @NumberofBasicUnit, align 4, !tbaa !3
+  %cmp699 = icmp eq i32 %dec698, 0
+  br i1 %cmp699, label %if.then701, label %if.end780
+
+if.then701:                                       ; preds = %if.end696
+  %tobool702 = icmp eq i32 %topfield, 0
+  br i1 %tobool702, label %if.then707, label %lor.lhs.false703
+
+lor.lhs.false703:                                 ; preds = %if.then701
+  %193 = load i32* %FieldControl591, align 4, !tbaa !3
+  %cmp705 = icmp eq i32 %193, 0
+  br i1 %cmp705, label %if.then707, label %if.end780
+
+if.then707:                                       ; preds = %if.then701, %lor.lhs.false703
+  %194 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !0
+  %frame_mbs_only_flag708 = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %194, i64 0, i32 25
+  %195 = load i32* %frame_mbs_only_flag708, align 4, !tbaa !1
+  %tobool709 = icmp eq i32 %195, 0
+  br i1 %tobool709, label %lor.lhs.false710, label %if.then714
+
+lor.lhs.false710:                                 ; preds = %if.then707
+  %PicInterlace711 = getelementptr inbounds %struct.InputParameters* %187, i64 0, i32 91
+  %196 = load i32* %PicInterlace711, align 4, !tbaa !3
+  switch i32 %196, label %lor.lhs.false755 [
+    i32 1, label %if.then714
+    i32 2, label %if.then758
+  ]
+
+if.then714:                                       ; preds = %lor.lhs.false710, %if.then707
+  %conv715 = sitofp i32 %add697 to double
+  %197 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
+  %conv717 = sitofp i32 %197 to double
+  %div718 = fdiv double %conv715, %conv717
+  %add719 = fadd double %div718, 5.000000e-01
+  %conv720 = fptosi double %add719 to i32
+  %NumberofPPicture721 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 130
+  %198 = load i32* %NumberofPPicture721, align 4, !tbaa !3
+  %intra_period = getelementptr inbounds %struct.InputParameters* %187, i64 0, i32 31
+  %199 = load i32* %intra_period, align 4, !tbaa !3
+  %sub722 = add nsw i32 %199, -2
+  %cmp723 = icmp eq i32 %198, %sub722
+  br i1 %cmp723, label %if.then725, label %if.end726
+
+if.then725:                                       ; preds = %if.then714
+  store i32 %conv720, i32* @QPLastPFrame, align 4, !tbaa !3
+  br label %if.end726
+
+if.end726:                                        ; preds = %if.then725, %if.then714
+  %TotalQpforPPicture727 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 129
+  %200 = load i32* %TotalQpforPPicture727, align 4, !tbaa !3
+  %add728 = add nsw i32 %200, %conv720
+  store i32 %add728, i32* %TotalQpforPPicture727, align 4, !tbaa !3
+  %201 = load i32* @GOPOverdue, align 4, !tbaa !1
+  %cmp729 = icmp eq i32 %201, 1
+  br i1 %cmp729, label %if.then731, label %if.else733
+
+if.then731:                                       ; preds = %if.end726
+  %202 = load i32* @PreviousQp2, align 4, !tbaa !3
+  %add732 = add nsw i32 %202, 1
+  store i32 %add732, i32* @PreviousQp1, align 4, !tbaa !3
+  store i32 %conv720, i32* @PreviousQp2, align 4, !tbaa !3
+  br label %if.end750
+
+if.else733:                                       ; preds = %if.end726
+  %203 = load i32* %NumberofPPicture721, align 4, !tbaa !3
+  %cmp735 = icmp eq i32 %203, 0
+  br i1 %cmp735, label %land.lhs.true737, label %if.else742
+
+land.lhs.true737:                                 ; preds = %if.else733
+  %204 = load i32* %NumberofGOP, align 4, !tbaa !3
+  %cmp739 = icmp sgt i32 %204, 1
+  br i1 %cmp739, label %if.then741, label %if.end750
+
+if.then741:                                       ; preds = %land.lhs.true737
+  %205 = load i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %205, i32* @PreviousQp1, align 4, !tbaa !3
+  store i32 %conv720, i32* @PreviousQp2, align 4, !tbaa !3
+  br label %if.end750
+
+if.else742:                                       ; preds = %if.else733
+  %cmp744 = icmp sgt i32 %203, 0
+  br i1 %cmp744, label %if.then746, label %if.end750
+
+if.then746:                                       ; preds = %if.else742
+  %206 = load i32* @PreviousQp2, align 4, !tbaa !3
+  %add747 = add nsw i32 %206, 1
+  store i32 %add747, i32* @PreviousQp1, align 4, !tbaa !3
+  store i32 %conv720, i32* @PreviousQp2, align 4, !tbaa !3
+  br label %if.end750
+
+if.end750:                                        ; preds = %land.lhs.true737, %if.then741, %if.then746, %if.else742, %if.then731
+  store i32 %conv720, i32* @PAveFrameQP, align 4, !tbaa !3
+  %207 = load i32* @PAveHeaderBits2, align 4, !tbaa !3
+  store i32 %207, i32* @PAveHeaderBits3, align 4, !tbaa !3
+  %.pre1116 = load i32* @m_Qc, align 4, !tbaa !3
+  br label %if.end780
+
+lor.lhs.false755:                                 ; preds = %lor.lhs.false710
+  %MbInterlace756 = getelementptr inbounds %struct.InputParameters* %187, i64 0, i32 92
+  %208 = load i32* %MbInterlace756, align 4, !tbaa !3
+  %tobool757 = icmp eq i32 %208, 0
+  br i1 %tobool757, label %if.end780, label %if.then758
+
+if.then758:                                       ; preds = %lor.lhs.false755, %lor.lhs.false710
+  %209 = load i32* %FieldControl591, align 4, !tbaa !3
+  %cmp760 = icmp eq i32 %209, 0
+  %conv763 = sitofp i32 %add697 to double
+  %210 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
+  %conv765 = sitofp i32 %210 to double
+  %div766 = fdiv double %conv763, %conv765
+  %add767 = fadd double %div766, 5.000000e-01
+  %conv768 = fptosi double %add767 to i32
+  br i1 %cmp760, label %if.then762, label %if.else769
+
+if.then762:                                       ; preds = %if.then758
+  store i32 %conv768, i32* @FrameQPBuffer, align 4, !tbaa !3
+  %211 = load i32* @PAveHeaderBits2, align 4, !tbaa !3
+  store i32 %211, i32* @FrameAveHeaderBits, align 4, !tbaa !3
+  br label %if.end780
+
+if.else769:                                       ; preds = %if.then758
+  store i32 %conv768, i32* @FieldQPBuffer, align 4, !tbaa !3
+  %212 = load i32* @PAveHeaderBits2, align 4, !tbaa !3
+  store i32 %212, i32* @FieldAveHeaderBits, align 4, !tbaa !3
+  br label %if.end780
+
+if.end780:                                        ; preds = %lor.lhs.false755, %lor.lhs.false703, %if.else769, %if.then762, %if.end750, %if.end696
+  %213 = phi i32 [ %storemerge1092, %lor.lhs.false755 ], [ %storemerge1092, %lor.lhs.false703 ], [ %storemerge1092, %if.else769 ], [ %storemerge1092, %if.then762 ], [ %.pre1116, %if.end750 ], [ %storemerge1092, %if.end696 ]
+  %214 = phi i32 [ %183, %lor.lhs.false755 ], [ %183, %lor.lhs.false703 ], [ %183, %if.else769 ], [ %183, %if.then762 ], [ %201, %if.end750 ], [ %183, %if.end696 ]
+  %cmp781 = icmp eq i32 %214, 1
+  %PAveFrameQP.m_Qc = select i1 %cmp781, i32* @PAveFrameQP, i32* @m_Qc
+  %storemerge1093 = load i32* %PAveFrameQP.m_Qc, align 4
+  store i32 %storemerge1093, i32* @Pm_Qp, align 4, !tbaa !3
+  br label %return
+
+if.else786:                                       ; preds = %if.else652
+  %215 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %PicInterlace787 = getelementptr inbounds %struct.InputParameters* %215, i64 0, i32 91
+  %216 = load i32* %PicInterlace787, align 4, !tbaa !3
+  %cmp788 = icmp eq i32 %216, 2
+  br i1 %cmp788, label %land.lhs.true793, label %lor.lhs.false790
+
+lor.lhs.false790:                                 ; preds = %if.else786
+  %MbInterlace791 = getelementptr inbounds %struct.InputParameters* %215, i64 0, i32 92
+  %217 = load i32* %MbInterlace791, align 4, !tbaa !3
+  %tobool792 = icmp eq i32 %217, 0
+  br i1 %tobool792, label %if.else812, label %land.lhs.true793
+
+land.lhs.true793:                                 ; preds = %lor.lhs.false790, %if.else786
+  %218 = load i32* %FieldControl591, align 4, !tbaa !3
+  %cmp795 = icmp eq i32 %218, 1
+  br i1 %cmp795, label %if.then797, label %if.else812
+
+if.then797:                                       ; preds = %land.lhs.true793
+  %219 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
+  %220 = load i32* @NumberofBasicUnit, align 4, !tbaa !3
+  %sub798 = sub nsw i32 %219, %220
+  %idxprom = sext i32 %sub798 to i64
+  %221 = load double** @FCBUPFMAD, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds double* %221, i64 %idxprom
+  %222 = load double* %arrayidx, align 8, !tbaa !4
+  %mul799 = fmul double %155, %222
+  %add800 = fadd double %mul799, %156
+  store double %add800, double* @CurrentFrameMAD, align 8, !tbaa !4
+  store double 0.000000e+00, double* @TotalBUMAD, align 8, !tbaa !4
+  %cmp8031107 = icmp sgt i32 %220, 0
+  br i1 %cmp8031107, label %for.body.lr.ph, label %if.end833
+
+for.body.lr.ph:                                   ; preds = %if.then797
+  %223 = sext i32 %219 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %224 = phi double [ 0.000000e+00, %for.body.lr.ph ], [ %add810, %for.body ]
+  %indvars.iv = phi i64 [ %223, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %arrayidx806 = getelementptr inbounds double* %221, i64 %indvars.iv.next
+  %225 = load double* %arrayidx806, align 8, !tbaa !4
+  %mul807 = fmul double %155, %225
+  %add808 = fadd double %mul807, %156
+  store double %add808, double* @CurrentBUMAD, align 8, !tbaa !4
+  %mul809 = fmul double %add808, %add808
+  %add810 = fadd double %224, %mul809
+  store double %add810, double* @TotalBUMAD, align 8, !tbaa !4
+  %226 = trunc i64 %indvars.iv.next to i32
+  %cmp803 = icmp sgt i32 %226, %sub798
+  br i1 %cmp803, label %for.body, label %if.end833
+
+if.else812:                                       ; preds = %lor.lhs.false790, %land.lhs.true793
+  %227 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
+  %228 = load i32* @NumberofBasicUnit, align 4, !tbaa !3
+  %sub813 = sub nsw i32 %227, %228
+  %idxprom814 = sext i32 %sub813 to i64
+  %229 = load double** @BUPFMAD, align 8, !tbaa !0
+  %arrayidx815 = getelementptr inbounds double* %229, i64 %idxprom814
+  %230 = load double* %arrayidx815, align 8, !tbaa !4
+  %mul816 = fmul double %155, %230
+  %add817 = fadd double %mul816, %156
+  store double %add817, double* @CurrentFrameMAD, align 8, !tbaa !4
+  store double 0.000000e+00, double* @TotalBUMAD, align 8, !tbaa !4
+  %cmp8211112 = icmp sgt i32 %228, 0
+  br i1 %cmp8211112, label %for.body823.lr.ph, label %if.end833
+
+for.body823.lr.ph:                                ; preds = %if.else812
+  %231 = sext i32 %227 to i64
+  br label %for.body823
+
+for.body823:                                      ; preds = %for.body823.lr.ph, %for.body823
+  %232 = phi double [ 0.000000e+00, %for.body823.lr.ph ], [ %add829, %for.body823 ]
+  %indvars.iv1114 = phi i64 [ %231, %for.body823.lr.ph ], [ %indvars.iv.next1115, %for.body823 ]
+  %indvars.iv.next1115 = add i64 %indvars.iv1114, -1
+  %arrayidx825 = getelementptr inbounds double* %229, i64 %indvars.iv.next1115
+  %233 = load double* %arrayidx825, align 8, !tbaa !4
+  %mul826 = fmul double %155, %233
+  %add827 = fadd double %mul826, %156
+  store double %add827, double* @CurrentBUMAD, align 8, !tbaa !4
+  %mul828 = fmul double %add827, %add827
+  %add829 = fadd double %232, %mul828
+  store double %add829, double* @TotalBUMAD, align 8, !tbaa !4
+  %234 = trunc i64 %indvars.iv.next1115 to i32
+  %cmp821 = icmp sgt i32 %234, %sub813
+  br i1 %cmp821, label %for.body823, label %if.end833
+
+if.end833:                                        ; preds = %if.else812, %for.body823, %if.then797, %for.body
+  %235 = phi i32 [ %219, %for.body ], [ %219, %if.then797 ], [ %227, %for.body823 ], [ %227, %if.else812 ]
+  %236 = phi double [ %add810, %for.body ], [ 0.000000e+00, %if.then797 ], [ %add829, %for.body823 ], [ 0.000000e+00, %if.else812 ]
+  %237 = phi double [ %add800, %for.body ], [ %add800, %if.then797 ], [ %add817, %for.body823 ], [ %add817, %if.else812 ]
+  %conv834 = sitofp i64 %sub657 to double
+  %mul835 = fmul double %conv834, %237
+  %mul836 = fmul double %237, %mul835
+  %div837 = fdiv double %mul836, %236
+  %conv838 = fptosi double %div837 to i32
+  %238 = load i32* @PAveHeaderBits2, align 4, !tbaa !3
+  %sub839 = sub nsw i32 %conv838, %238
+  %239 = load double* @bit_rate, align 8, !tbaa !4
+  %240 = load double* @MINVALUE, align 8, !tbaa !4
+  %241 = load double* @frame_rate, align 8, !tbaa !4
+  %mul840 = fmul double %240, %241
+  %conv841 = sitofp i32 %235 to double
+  %mul842 = fmul double %mul840, %conv841
+  %div843 = fdiv double %239, %mul842
+  %conv844 = fptosi double %div843 to i32
+  %cmp845 = icmp slt i32 %sub839, %conv844
+  %conv844.sub839 = select i1 %cmp845, i32 %conv844, i32 %sub839
+  %mul856 = fmul double %237, %150
+  %mul857 = fmul double %237, %mul856
+  %mul858 = fmul double %150, %mul857
+  %mul859 = fmul double %151, 4.000000e+00
+  %mul860 = fmul double %237, %mul859
+  %conv861 = sitofp i32 %conv844.sub839 to double
+  %mul862 = fmul double %mul860, %conv861
+  %add863 = fadd double %mul858, %mul862
+  %cmp864 = fcmp oeq double %151, 0.000000e+00
+  %cmp867 = fcmp olt double %add863, 0.000000e+00
+  %or.cond1104 = or i1 %cmp864, %cmp867
+  br i1 %or.cond1104, label %if.then875, label %lor.lhs.false869
+
+lor.lhs.false869:                                 ; preds = %if.end833
+  %call870 = tail call double @sqrt(double %add863) #7
+  %242 = load double* @m_X1, align 8, !tbaa !4
+  %243 = load double* @CurrentFrameMAD, align 8, !tbaa !4
+  %mul871 = fmul double %242, %243
+  %sub872 = fsub double %call870, %mul871
+  %cmp873 = fcmp ugt double %sub872, 0.000000e+00
+  br i1 %cmp873, label %if.else881, label %if.then875
+
+if.then875:                                       ; preds = %lor.lhs.false869, %if.end833
+  %244 = phi double [ %243, %lor.lhs.false869 ], [ %237, %if.end833 ]
+  %245 = phi double [ %242, %lor.lhs.false869 ], [ %150, %if.end833 ]
+  %mul876 = fmul double %245, %244
+  %div878 = fdiv double %mul876, %conv861
+  br label %if.end890
+
+if.else881:                                       ; preds = %lor.lhs.false869
+  %246 = load double* @m_X2, align 8, !tbaa !4
+  %mul882 = fmul double %246, 2.000000e+00
+  %mul883 = fmul double %243, %mul882
+  %call884 = tail call double @sqrt(double %add863) #7
+  %247 = load double* @m_X1, align 8, !tbaa !4
+  %248 = load double* @CurrentFrameMAD, align 8, !tbaa !4
+  %mul885 = fmul double %247, %248
+  %sub886 = fsub double %call884, %mul885
+  %div887 = fdiv double %mul883, %sub886
+  br label %if.end890
+
+if.end890:                                        ; preds = %if.else881, %if.then875
+  %storemerge.in.in = phi double [ %div887, %if.else881 ], [ %div878, %if.then875 ]
+  %storemerge.in = fptrunc double %storemerge.in.in to float
+  %storemerge = fpext float %storemerge.in to double
+  store double %storemerge, double* @m_Qstep, align 8, !tbaa !4
+  %call891 = tail call i32 @Qstep2QP(double %storemerge) #9
+  %249 = load i32* @m_Qp, align 4, !tbaa !3
+  %250 = load i32* @DDquant, align 4, !tbaa !3
+  %add892 = add nsw i32 %250, %249
+  %cmp893 = icmp slt i32 %add892, %call891
+  %add892.call891 = select i1 %cmp893, i32 %add892, i32 %call891
+  store i32 %add892.call891, i32* @m_Qc, align 4, !tbaa !3
+  %251 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %basicunit900 = getelementptr inbounds %struct.InputParameters* %251, i64 0, i32 130
+  %252 = load i32* %basicunit900, align 4, !tbaa !3
+  %253 = load i32* @MBPerRow, align 4, !tbaa !3
+  %cmp901 = icmp slt i32 %252, %253
+  %254 = load i32* @PAveFrameQP, align 4, !tbaa !3
+  br i1 %cmp901, label %if.else912, label %if.then903
+
+if.then903:                                       ; preds = %if.end890
+  %add904 = add nsw i32 %254, 6
+  %cmp905 = icmp slt i32 %add904, %add892.call891
+  %add904.add892.call891 = select i1 %cmp905, i32 %add904, i32 %add892.call891
+  br label %if.end921
+
+if.else912:                                       ; preds = %if.end890
+  %add913 = add nsw i32 %254, 3
+  %cmp914 = icmp slt i32 %add913, %add892.call891
+  %add913.add892.call891 = select i1 %cmp914, i32 %add913, i32 %add892.call891
+  br label %if.end921
+
+if.end921:                                        ; preds = %if.else912, %if.then903
+  %storemerge1089 = phi i32 [ %add913.add892.call891, %if.else912 ], [ %add904.add892.call891, %if.then903 ]
+  %255 = load i32* @RC_MAX_QUANT, align 4, !tbaa !3
+  %cmp922 = icmp slt i32 %storemerge1089, %255
+  %cond927 = select i1 %cmp922, i32 %storemerge1089, i32 %255
+  %sub928 = sub nsw i32 %249, %250
+  %cmp929 = icmp slt i32 %sub928, %cond927
+  %cond927.sub928 = select i1 %cmp929, i32 %cond927, i32 %sub928
+  store i32 %cond927.sub928, i32* @m_Qc, align 4, !tbaa !3
+  %256 = load i32* %basicunit900, align 4, !tbaa !3
+  %cmp937 = icmp slt i32 %256, %253
+  br i1 %cmp937, label %if.else948, label %if.then939
+
+if.then939:                                       ; preds = %if.end921
+  %sub940 = add nsw i32 %254, -6
+  %cmp941 = icmp slt i32 %sub940, %cond927.sub928
+  %cond927.sub928.sub940 = select i1 %cmp941, i32 %cond927.sub928, i32 %sub940
+  br label %if.end957
+
+if.else948:                                       ; preds = %if.end921
+  %sub949 = add nsw i32 %254, -3
+  %cmp950 = icmp slt i32 %sub949, %cond927.sub928
+  %cond927.sub928.sub949 = select i1 %cmp950, i32 %cond927.sub928, i32 %sub949
+  br label %if.end957
+
+if.end957:                                        ; preds = %if.else948, %if.then939
+  %storemerge1090 = phi i32 [ %cond927.sub928.sub949, %if.else948 ], [ %cond927.sub928.sub940, %if.then939 ]
+  %257 = load i32* @RC_MIN_QUANT, align 4, !tbaa !3
+  %cmp958 = icmp slt i32 %257, %storemerge1090
+  %cond963 = select i1 %cmp958, i32 %storemerge1090, i32 %257
+  store i32 %cond963, i32* @m_Qc, align 4, !tbaa !3
+  %258 = load i32* @TotalFrameQP, align 4, !tbaa !3
+  %add964 = add nsw i32 %cond963, %258
+  store i32 %add964, i32* @TotalFrameQP, align 4, !tbaa !3
+  store i32 %cond963, i32* @Pm_Qp, align 4, !tbaa !3
+  %259 = load i32* @NumberofBasicUnit, align 4, !tbaa !3
+  %dec965 = add nsw i32 %259, -1
+  store i32 %dec965, i32* @NumberofBasicUnit, align 4, !tbaa !3
+  %cmp966 = icmp eq i32 %dec965, 0
+  br i1 %cmp966, label %land.lhs.true968, label %return
+
+land.lhs.true968:                                 ; preds = %if.end957
+  %260 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %type969 = getelementptr inbounds %struct.ImageParameters* %260, i64 0, i32 6
+  %261 = load i32* %type969, align 4, !tbaa !3
+  %cmp970 = icmp eq i32 %261, 0
+  br i1 %cmp970, label %if.then972, label %return
+
+if.then972:                                       ; preds = %land.lhs.true968
+  %tobool973 = icmp eq i32 %topfield, 0
+  br i1 %tobool973, label %if.then978, label %lor.lhs.false974
+
+lor.lhs.false974:                                 ; preds = %if.then972
+  %FieldControl975 = getelementptr inbounds %struct.ImageParameters* %260, i64 0, i32 134
+  %262 = load i32* %FieldControl975, align 4, !tbaa !3
+  %cmp976 = icmp eq i32 %262, 0
+  br i1 %cmp976, label %if.then978, label %return
+
+if.then978:                                       ; preds = %if.then972, %lor.lhs.false974
+  %263 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !0
+  %frame_mbs_only_flag979 = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %263, i64 0, i32 25
+  %264 = load i32* %frame_mbs_only_flag979, align 4, !tbaa !1
+  %tobool980 = icmp eq i32 %264, 0
+  br i1 %tobool980, label %lor.lhs.false981, label %if.then985
+
+lor.lhs.false981:                                 ; preds = %if.then978
+  %PicInterlace982 = getelementptr inbounds %struct.InputParameters* %251, i64 0, i32 91
+  %265 = load i32* %PicInterlace982, align 4, !tbaa !3
+  switch i32 %265, label %lor.lhs.false1005 [
+    i32 1, label %if.then985
+    i32 2, label %if.then1008
+  ]
+
+if.then985:                                       ; preds = %lor.lhs.false981, %if.then978
+  %conv986 = sitofp i32 %add964 to double
+  %266 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
+  %conv988 = sitofp i32 %266 to double
+  %div989 = fdiv double %conv986, %conv988
+  %add990 = fadd double %div989, 5.000000e-01
+  %conv991 = fptosi double %add990 to i32
+  %NumberofPPicture992 = getelementptr inbounds %struct.ImageParameters* %260, i64 0, i32 130
+  %267 = load i32* %NumberofPPicture992, align 4, !tbaa !3
+  %intra_period993 = getelementptr inbounds %struct.InputParameters* %251, i64 0, i32 31
+  %268 = load i32* %intra_period993, align 4, !tbaa !3
+  %sub994 = add nsw i32 %268, -2
+  %cmp995 = icmp eq i32 %267, %sub994
+  br i1 %cmp995, label %if.then997, label %if.end998
+
+if.then997:                                       ; preds = %if.then985
+  store i32 %conv991, i32* @QPLastPFrame, align 4, !tbaa !3
+  br label %if.end998
+
+if.end998:                                        ; preds = %if.then997, %if.then985
+  %TotalQpforPPicture999 = getelementptr inbounds %struct.ImageParameters* %260, i64 0, i32 129
+  %269 = load i32* %TotalQpforPPicture999, align 4, !tbaa !3
+  %add1000 = add nsw i32 %269, %conv991
+  store i32 %add1000, i32* %TotalQpforPPicture999, align 4, !tbaa !3
+  %270 = load i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %270, i32* @PreviousQp1, align 4, !tbaa !3
+  store i32 %conv991, i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %conv991, i32* @PAveFrameQP, align 4, !tbaa !3
+  %271 = load i32* @PAveHeaderBits2, align 4, !tbaa !3
+  store i32 %271, i32* @PAveHeaderBits3, align 4, !tbaa !3
+  %.pre1117 = load i32* @m_Qc, align 4, !tbaa !3
+  br label %return
+
+lor.lhs.false1005:                                ; preds = %lor.lhs.false981
+  %MbInterlace1006 = getelementptr inbounds %struct.InputParameters* %251, i64 0, i32 92
+  %272 = load i32* %MbInterlace1006, align 4, !tbaa !3
+  %tobool1007 = icmp eq i32 %272, 0
+  br i1 %tobool1007, label %return, label %if.then1008
+
+if.then1008:                                      ; preds = %lor.lhs.false1005, %lor.lhs.false981
+  %FieldControl1009 = getelementptr inbounds %struct.ImageParameters* %260, i64 0, i32 134
+  %273 = load i32* %FieldControl1009, align 4, !tbaa !3
+  %cmp1010 = icmp eq i32 %273, 0
+  %conv1013 = sitofp i32 %add964 to double
+  %274 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
+  %conv1015 = sitofp i32 %274 to double
+  %div1016 = fdiv double %conv1013, %conv1015
+  %add1017 = fadd double %div1016, 5.000000e-01
+  %conv1018 = fptosi double %add1017 to i32
+  br i1 %cmp1010, label %if.then1012, label %if.else1019
+
+if.then1012:                                      ; preds = %if.then1008
+  store i32 %conv1018, i32* @FrameQPBuffer, align 4, !tbaa !3
+  %275 = load i32* @PAveHeaderBits2, align 4, !tbaa !3
+  store i32 %275, i32* @FrameAveHeaderBits, align 4, !tbaa !3
+  br label %return
+
+if.else1019:                                      ; preds = %if.then1008
+  store i32 %conv1018, i32* @FieldQPBuffer, align 4, !tbaa !3
+  %276 = load i32* @PAveHeaderBits2, align 4, !tbaa !3
+  store i32 %276, i32* @FieldAveHeaderBits, align 4, !tbaa !3
+  br label %return
+
+if.end1036:                                       ; preds = %if.else314, %if.then544, %if.else332, %land.lhs.true552
+  %277 = load i32* @m_Qc, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.end957, %land.lhs.true968, %if.end998, %if.then1012, %if.else1019, %lor.lhs.false974, %lor.lhs.false1005, %if.end283, %if.else293, %if.then290, %if.then165, %if.else172, %if.then170, %if.end1036, %if.end780, %if.end649, %if.end587, %if.else532, %if.end531, %if.then331, %if.then318, %if.end313, %if.end160, %if.then4
+  %retval.0 = phi i32 [ %5, %if.then4 ], [ %storemerge1101, %if.end160 ], [ %91, %if.end313 ], [ %93, %if.then318 ], [ %96, %if.then331 ], [ %storemerge1095, %if.end531 ], [ %125, %if.else532 ], [ %148, %if.end587 ], [ %277, %if.end1036 ], [ %177, %if.end649 ], [ %213, %if.end780 ], [ %40, %if.then170 ], [ %34, %if.else172 ], [ %34, %if.then165 ], [ %82, %if.then290 ], [ %storemerge1099, %if.else293 ], [ %storemerge1099, %if.end283 ], [ %cond963, %lor.lhs.false1005 ], [ %cond963, %lor.lhs.false974 ], [ %cond963, %if.else1019 ], [ %cond963, %if.then1012 ], [ %.pre1117, %if.end998 ], [ %cond963, %land.lhs.true968 ], [ %cond963, %if.end957 ]
+  ret i32 %retval.0
+}

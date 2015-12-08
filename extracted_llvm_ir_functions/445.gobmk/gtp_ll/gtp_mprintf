@@ -1,0 +1,261 @@
+define void @gtp_mprintf(i8* nocapture %fmt, ...) #0 {
+entry:
+  %i.addr.i = alloca i32, align 4
+  %j.addr.i = alloca i32, align 4
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %gp_offset_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 0
+  %0 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 3
+  %overflow_arg_area_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 2
+  %fp_offset_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 1
+  %1 = bitcast i32* %i.addr.i to i8*
+  %2 = bitcast i32* %j.addr.i to i8*
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.inc, %entry
+  %fmt.addr.0 = phi i8* [ %fmt, %entry ], [ %incdec.ptr99, %for.inc ]
+  %3 = load i8* %fmt.addr.0, align 1, !tbaa !0
+  switch i8 %3, label %if.else95 [
+    i8 0, label %for.end
+    i8 37, label %if.then
+  ]
+
+if.then:                                          ; preds = %for.cond
+  %incdec.ptr = getelementptr inbounds i8* %fmt.addr.0, i64 1
+  %4 = load i8* %incdec.ptr, align 1, !tbaa !0
+  %conv3 = sext i8 %4 to i32
+  switch i32 %conv3, label %sw.default [
+    i32 99, label %sw.bb
+    i32 100, label %sw.bb5
+    i32 102, label %sw.bb19
+    i32 115, label %sw.bb30
+    i32 109, label %sw.bb44
+    i32 67, label %sw.bb69
+  ]
+
+sw.bb:                                            ; preds = %if.then
+  %gp_offset = load i32* %gp_offset_p, align 16
+  %fits_in_gp = icmp ult i32 %gp_offset, 41
+  br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem
+
+vaarg.in_reg:                                     ; preds = %sw.bb
+  %reg_save_area = load i8** %0, align 16
+  %5 = sext i32 %gp_offset to i64
+  %6 = getelementptr i8* %reg_save_area, i64 %5
+  %7 = add i32 %gp_offset, 8
+  store i32 %7, i32* %gp_offset_p, align 16
+  br label %vaarg.end
+
+vaarg.in_mem:                                     ; preds = %sw.bb
+  %overflow_arg_area = load i8** %overflow_arg_area_p, align 8
+  %overflow_arg_area.next = getelementptr i8* %overflow_arg_area, i64 8
+  store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p, align 8
+  br label %vaarg.end
+
+vaarg.end:                                        ; preds = %vaarg.in_mem, %vaarg.in_reg
+  %vaarg.addr.in = phi i8* [ %6, %vaarg.in_reg ], [ %overflow_arg_area, %vaarg.in_mem ]
+  %vaarg.addr = bitcast i8* %vaarg.addr.in to i32*
+  %8 = load i32* %vaarg.addr, align 4
+  %9 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call = call i32 @_IO_putc(i32 %8, %struct._IO_FILE* %9) #4
+  br label %for.inc
+
+sw.bb5:                                           ; preds = %if.then
+  %gp_offset8 = load i32* %gp_offset_p, align 16
+  %fits_in_gp9 = icmp ult i32 %gp_offset8, 41
+  br i1 %fits_in_gp9, label %vaarg.in_reg10, label %vaarg.in_mem12
+
+vaarg.in_reg10:                                   ; preds = %sw.bb5
+  %reg_save_area11 = load i8** %0, align 16
+  %10 = sext i32 %gp_offset8 to i64
+  %11 = getelementptr i8* %reg_save_area11, i64 %10
+  %12 = add i32 %gp_offset8, 8
+  store i32 %12, i32* %gp_offset_p, align 16
+  br label %vaarg.end16
+
+vaarg.in_mem12:                                   ; preds = %sw.bb5
+  %overflow_arg_area14 = load i8** %overflow_arg_area_p, align 8
+  %overflow_arg_area.next15 = getelementptr i8* %overflow_arg_area14, i64 8
+  store i8* %overflow_arg_area.next15, i8** %overflow_arg_area_p, align 8
+  br label %vaarg.end16
+
+vaarg.end16:                                      ; preds = %vaarg.in_mem12, %vaarg.in_reg10
+  %vaarg.addr17.in = phi i8* [ %11, %vaarg.in_reg10 ], [ %overflow_arg_area14, %vaarg.in_mem12 ]
+  %vaarg.addr17 = bitcast i8* %vaarg.addr17.in to i32*
+  %13 = load i32* %vaarg.addr17, align 4
+  %14 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call18 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %14, i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i32 %13) #4
+  br label %for.inc
+
+sw.bb19:                                          ; preds = %if.then
+  %fp_offset = load i32* %fp_offset_p, align 4
+  %fits_in_fp = icmp ult i32 %fp_offset, 161
+  br i1 %fits_in_fp, label %vaarg.in_reg21, label %vaarg.in_mem23
+
+vaarg.in_reg21:                                   ; preds = %sw.bb19
+  %reg_save_area22 = load i8** %0, align 16
+  %15 = sext i32 %fp_offset to i64
+  %16 = getelementptr i8* %reg_save_area22, i64 %15
+  %17 = add i32 %fp_offset, 16
+  store i32 %17, i32* %fp_offset_p, align 4
+  br label %vaarg.end27
+
+vaarg.in_mem23:                                   ; preds = %sw.bb19
+  %overflow_arg_area25 = load i8** %overflow_arg_area_p, align 8
+  %overflow_arg_area.next26 = getelementptr i8* %overflow_arg_area25, i64 8
+  store i8* %overflow_arg_area.next26, i8** %overflow_arg_area_p, align 8
+  br label %vaarg.end27
+
+vaarg.end27:                                      ; preds = %vaarg.in_mem23, %vaarg.in_reg21
+  %vaarg.addr28.in = phi i8* [ %16, %vaarg.in_reg21 ], [ %overflow_arg_area25, %vaarg.in_mem23 ]
+  %vaarg.addr28 = bitcast i8* %vaarg.addr28.in to double*
+  %18 = load double* %vaarg.addr28, align 8
+  %19 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call29 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %19, i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), double %18) #4
+  br label %for.inc
+
+sw.bb30:                                          ; preds = %if.then
+  %gp_offset33 = load i32* %gp_offset_p, align 16
+  %fits_in_gp34 = icmp ult i32 %gp_offset33, 41
+  br i1 %fits_in_gp34, label %vaarg.in_reg35, label %vaarg.in_mem37
+
+vaarg.in_reg35:                                   ; preds = %sw.bb30
+  %reg_save_area36 = load i8** %0, align 16
+  %20 = sext i32 %gp_offset33 to i64
+  %21 = getelementptr i8* %reg_save_area36, i64 %20
+  %22 = add i32 %gp_offset33, 8
+  store i32 %22, i32* %gp_offset_p, align 16
+  br label %vaarg.end41
+
+vaarg.in_mem37:                                   ; preds = %sw.bb30
+  %overflow_arg_area39 = load i8** %overflow_arg_area_p, align 8
+  %overflow_arg_area.next40 = getelementptr i8* %overflow_arg_area39, i64 8
+  store i8* %overflow_arg_area.next40, i8** %overflow_arg_area_p, align 8
+  br label %vaarg.end41
+
+vaarg.end41:                                      ; preds = %vaarg.in_mem37, %vaarg.in_reg35
+  %vaarg.addr42.in = phi i8* [ %21, %vaarg.in_reg35 ], [ %overflow_arg_area39, %vaarg.in_mem37 ]
+  %vaarg.addr42 = bitcast i8* %vaarg.addr42.in to i8**
+  %23 = load i8** %vaarg.addr42, align 8
+  %24 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call43 = call i32 @fputs(i8* %23, %struct._IO_FILE* %24) #4
+  br label %for.inc
+
+sw.bb44:                                          ; preds = %if.then
+  %gp_offset47 = load i32* %gp_offset_p, align 16
+  %fits_in_gp48 = icmp ult i32 %gp_offset47, 41
+  br i1 %fits_in_gp48, label %vaarg.end55, label %vaarg.end55.thread
+
+vaarg.end55.thread:                               ; preds = %sw.bb44
+  %overflow_arg_area53 = load i8** %overflow_arg_area_p, align 8
+  %overflow_arg_area.next54 = getelementptr i8* %overflow_arg_area53, i64 8
+  store i8* %overflow_arg_area.next54, i8** %overflow_arg_area_p, align 8
+  %vaarg.addr56107 = bitcast i8* %overflow_arg_area53 to i32*
+  %25 = load i32* %vaarg.addr56107, align 4
+  br label %vaarg.in_mem63
+
+vaarg.end55:                                      ; preds = %sw.bb44
+  %reg_save_area50 = load i8** %0, align 16
+  %26 = sext i32 %gp_offset47 to i64
+  %27 = getelementptr i8* %reg_save_area50, i64 %26
+  %28 = add i32 %gp_offset47, 8
+  store i32 %28, i32* %gp_offset_p, align 16
+  %vaarg.addr56 = bitcast i8* %27 to i32*
+  %29 = load i32* %vaarg.addr56, align 4
+  %fits_in_gp60 = icmp ult i32 %28, 41
+  br i1 %fits_in_gp60, label %vaarg.in_reg61, label %vaarg.in_mem63
+
+vaarg.in_reg61:                                   ; preds = %vaarg.end55
+  %reg_save_area62 = load i8** %0, align 16
+  %30 = sext i32 %28 to i64
+  %31 = getelementptr i8* %reg_save_area62, i64 %30
+  %32 = add i32 %gp_offset47, 16
+  store i32 %32, i32* %gp_offset_p, align 16
+  br label %vaarg.end67
+
+vaarg.in_mem63:                                   ; preds = %vaarg.end55.thread, %vaarg.end55
+  %33 = phi i32 [ %25, %vaarg.end55.thread ], [ %29, %vaarg.end55 ]
+  %overflow_arg_area65 = load i8** %overflow_arg_area_p, align 8
+  %overflow_arg_area.next66 = getelementptr i8* %overflow_arg_area65, i64 8
+  store i8* %overflow_arg_area.next66, i8** %overflow_arg_area_p, align 8
+  br label %vaarg.end67
+
+vaarg.end67:                                      ; preds = %vaarg.in_mem63, %vaarg.in_reg61
+  %34 = phi i32 [ %29, %vaarg.in_reg61 ], [ %33, %vaarg.in_mem63 ]
+  %vaarg.addr68.in = phi i8* [ %31, %vaarg.in_reg61 ], [ %overflow_arg_area65, %vaarg.in_mem63 ]
+  %vaarg.addr68 = bitcast i8* %vaarg.addr68.in to i32*
+  %35 = load i32* %vaarg.addr68, align 4
+  call void @llvm.lifetime.start(i64 4, i8* %1) #1
+  call void @llvm.lifetime.start(i64 4, i8* %2) #1
+  store i32 %34, i32* %i.addr.i, align 4, !tbaa !2
+  store i32 %35, i32* %j.addr.i, align 4, !tbaa !2
+  call void @gtp_print_vertices(i32 1, i32* %i.addr.i, i32* %j.addr.i) #4
+  call void @llvm.lifetime.end(i64 4, i8* %1) #1
+  call void @llvm.lifetime.end(i64 4, i8* %2) #1
+  br label %for.inc
+
+sw.bb69:                                          ; preds = %if.then
+  %gp_offset72 = load i32* %gp_offset_p, align 16
+  %fits_in_gp73 = icmp ult i32 %gp_offset72, 41
+  br i1 %fits_in_gp73, label %vaarg.in_reg74, label %vaarg.in_mem76
+
+vaarg.in_reg74:                                   ; preds = %sw.bb69
+  %reg_save_area75 = load i8** %0, align 16
+  %36 = sext i32 %gp_offset72 to i64
+  %37 = getelementptr i8* %reg_save_area75, i64 %36
+  %38 = add i32 %gp_offset72, 8
+  store i32 %38, i32* %gp_offset_p, align 16
+  br label %vaarg.end80
+
+vaarg.in_mem76:                                   ; preds = %sw.bb69
+  %overflow_arg_area78 = load i8** %overflow_arg_area_p, align 8
+  %overflow_arg_area.next79 = getelementptr i8* %overflow_arg_area78, i64 8
+  store i8* %overflow_arg_area.next79, i8** %overflow_arg_area_p, align 8
+  br label %vaarg.end80
+
+vaarg.end80:                                      ; preds = %vaarg.in_mem76, %vaarg.in_reg74
+  %vaarg.addr81.in = phi i8* [ %37, %vaarg.in_reg74 ], [ %overflow_arg_area78, %vaarg.in_mem76 ]
+  %vaarg.addr81 = bitcast i8* %vaarg.addr81.in to i32*
+  %39 = load i32* %vaarg.addr81, align 4
+  %cmp82 = icmp eq i32 %39, 1
+  br i1 %cmp82, label %if.then84, label %if.else
+
+if.then84:                                        ; preds = %vaarg.end80
+  %40 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %41 = call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %40)
+  br label %for.inc
+
+if.else:                                          ; preds = %vaarg.end80
+  %cmp86 = icmp eq i32 %39, 2
+  %42 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  br i1 %cmp86, label %if.then88, label %if.else90
+
+if.then88:                                        ; preds = %if.else
+  %43 = call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str6, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %42)
+  br label %for.inc
+
+if.else90:                                        ; preds = %if.else
+  %44 = call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str7, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %42)
+  br label %for.inc
+
+sw.default:                                       ; preds = %if.then
+  %45 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call94 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %45, i8* getelementptr inbounds ([33 x i8]* @.str8, i64 0, i64 0), i32 %conv3) #4
+  br label %for.inc
+
+if.else95:                                        ; preds = %for.cond
+  %conv = sext i8 %3 to i32
+  %46 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %call97 = call i32 @_IO_putc(i32 %conv, %struct._IO_FILE* %46) #4
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.else95, %if.then84, %if.else90, %if.then88, %sw.default, %vaarg.end67, %vaarg.end41, %vaarg.end27, %vaarg.end16, %vaarg.end
+  %fmt.addr.1 = phi i8* [ %incdec.ptr, %sw.default ], [ %incdec.ptr, %if.then84 ], [ %incdec.ptr, %if.then88 ], [ %incdec.ptr, %if.else90 ], [ %incdec.ptr, %vaarg.end67 ], [ %incdec.ptr, %vaarg.end41 ], [ %incdec.ptr, %vaarg.end27 ], [ %incdec.ptr, %vaarg.end16 ], [ %incdec.ptr, %vaarg.end ], [ %fmt.addr.0, %if.else95 ]
+  %incdec.ptr99 = getelementptr inbounds i8* %fmt.addr.1, i64 1
+  br label %for.cond
+
+for.end:                                          ; preds = %for.cond
+  call void @llvm.va_end(i8* %arraydecay1)
+  ret void
+}

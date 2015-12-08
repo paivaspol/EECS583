@@ -1,0 +1,94 @@
+define internal fastcc i8* @bzopen_or_bzdopen(i8* %path, i8* %mode, i32 %open_mode) #4 {
+entry:
+  %bzerr = alloca i32, align 4
+  %mode2 = alloca [10 x i8], align 1
+  %0 = getelementptr inbounds [10 x i8]* %mode2, i64 0, i64 0
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 10, i32 1, i1 false)
+  %cmp = icmp eq i8* %mode, null
+  br i1 %cmp, label %cleanup, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %entry
+  %1 = load i8* %mode, align 1, !tbaa !1
+  %tobool6 = icmp eq i8 %1, 0
+  br i1 %tobool6, label %while.end, label %while.body
+
+while.body:                                       ; preds = %while.cond.preheader, %sw.epilog
+  %2 = phi i8 [ %5, %sw.epilog ], [ %1, %while.cond.preheader ]
+  %mode.addr.09 = phi i8* [ %incdec.ptr, %sw.epilog ], [ %mode, %while.cond.preheader ]
+  %blockSize100k.08 = phi i32 [ %blockSize100k.1, %sw.epilog ], [ 9, %while.cond.preheader ]
+  %writing.07 = phi i32 [ %writing.1, %sw.epilog ], [ 0, %while.cond.preheader ]
+  %conv = sext i8 %2 to i32
+  switch i32 %conv, label %sw.default [
+    i32 114, label %sw.epilog
+    i32 119, label %sw.bb1
+    i32 115, label %sw.bb2
+  ]
+
+sw.bb1:                                           ; preds = %while.body
+  br label %sw.epilog
+
+sw.bb2:                                           ; preds = %while.body
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %while.body
+  %idxprom = sext i8 %2 to i64
+  %call = call i16** @__ctype_b_loc() #14
+  %3 = load i16** %call, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i16* %3, i64 %idxprom
+  %4 = load i16* %arrayidx, align 2, !tbaa !4
+  %and = and i16 %4, 2048
+  %tobool5 = icmp eq i16 %and, 0
+  %sub = add nsw i32 %conv, -48
+  %blockSize100k.0.sub = select i1 %tobool5, i32 %blockSize100k.08, i32 %sub
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %sw.default, %while.body, %sw.bb2, %sw.bb1
+  %writing.1 = phi i32 [ %writing.07, %sw.bb2 ], [ 1, %sw.bb1 ], [ 0, %while.body ], [ %writing.07, %sw.default ]
+  %blockSize100k.1 = phi i32 [ %blockSize100k.08, %sw.bb2 ], [ %blockSize100k.08, %sw.bb1 ], [ %blockSize100k.08, %while.body ], [ %blockSize100k.0.sub, %sw.default ]
+  %incdec.ptr = getelementptr inbounds i8* %mode.addr.09, i64 1
+  %5 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %tobool = icmp eq i8 %5, 0
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %sw.epilog, %while.cond.preheader
+  %blockSize100k.0.lcssa = phi i32 [ 9, %while.cond.preheader ], [ %blockSize100k.1, %sw.epilog ]
+  %writing.0.lcssa = phi i32 [ 0, %while.cond.preheader ], [ %writing.1, %sw.epilog ]
+  %tobool9 = icmp ne i32 %writing.0.lcssa, 0
+  %strlen = call i64 @strlen(i8* %0)
+  %endptr = getelementptr [10 x i8]* %mode2, i64 0, i64 %strlen
+  %6 = bitcast i8* %endptr to i16*
+  %7 = select i1 %tobool9, i16 119, i16 114
+  store i16 %7, i16* %6, align 1
+  %strlen1 = call i64 @strlen(i8* %0)
+  %endptr2 = getelementptr [10 x i8]* %mode2, i64 0, i64 %strlen1
+  %8 = bitcast i8* %endptr2 to i16*
+  store i16 98, i16* %8, align 1
+  %cmp13 = icmp eq i32 %open_mode, 0
+  br i1 %cmp13, label %if.then15, label %cleanup
+
+if.then15:                                        ; preds = %while.end
+  %cmp16 = icmp eq i8* %path, null
+  br i1 %cmp16, label %if.end26, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.then15
+  %strcmpload = load i8* %path, align 1
+  %cmp19.not = icmp ne i8 %strcmpload, 0
+  %tobool9.not = xor i1 %tobool9, true
+  %brmerge = or i1 %cmp19.not, %tobool9.not
+  br i1 %brmerge, label %cleanup, label %if.then32
+
+if.end26:                                         ; preds = %if.then15
+  br i1 %tobool9, label %if.then32, label %cleanup
+
+if.then32:                                        ; preds = %lor.lhs.false, %if.end26
+  %cmp33 = icmp slt i32 %blockSize100k.0.lcssa, 1
+  %.blockSize100k.0 = select i1 %cmp33, i32 1, i32 %blockSize100k.0.lcssa
+  %cmp37 = icmp sgt i32 %.blockSize100k.0, 9
+  %blockSize100k.3 = select i1 %cmp37, i32 9, i32 %.blockSize100k.0
+  %call41 = call i8* @BZ2_bzWriteOpen(i32* %bzerr, i32 1, i32 %blockSize100k.3, i32 0, i32 30) #13
+  br label %cleanup
+
+cleanup:                                          ; preds = %lor.lhs.false, %if.end26, %while.end, %if.then32, %entry
+  %retval.0 = phi i8* [ null, %entry ], [ null, %if.end26 ], [ %call41, %if.then32 ], [ null, %lor.lhs.false ], [ null, %while.end ]
+  ret i8* %retval.0
+}

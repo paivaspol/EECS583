@@ -1,0 +1,210 @@
+define internal fastcc void @qst(i8* %base, i8* %max) #0 {
+entry:
+  %sub.ptr.lhs.cast = ptrtoint i8* %max to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %base to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %conv = trunc i64 %sub.ptr.sub to i32
+  br label %do.body
+
+do.body:                                          ; preds = %do.cond104, %entry
+  %max.addr.0 = phi i8* [ %max, %entry ], [ %max.addr.1, %do.cond104 ]
+  %lo.0 = phi i32 [ %conv, %entry ], [ %lo.1, %do.cond104 ]
+  %base.addr.0 = phi i8* [ %base, %entry ], [ %base.addr.1, %do.cond104 ]
+  %0 = load i32* @qsz, align 4, !tbaa !0
+  %div = sdiv i32 %lo.0, %0
+  %shr = ashr i32 %div, 1
+  %mul = mul nsw i32 %shr, %0
+  %idx.ext = sext i32 %mul to i64
+  %add.ptr = getelementptr inbounds i8* %base.addr.0, i64 %idx.ext
+  %1 = load i32* @mthresh, align 4, !tbaa !0
+  %cmp = icmp slt i32 %lo.0, %1
+  br i1 %cmp, label %if.end31, label %if.then
+
+if.then:                                          ; preds = %do.body
+  %2 = load i32 (...)** @qcmp, align 8, !tbaa !3
+  %callee.knr.cast = bitcast i32 (...)* %2 to i32 (i8*, i8*, ...)*
+  %call = tail call i32 (i8*, i8*, ...)* %callee.knr.cast(i8* %base.addr.0, i8* %add.ptr) #2
+  %cmp4 = icmp sgt i32 %call, 0
+  %cond = select i1 %cmp4, i8* %base.addr.0, i8* %add.ptr
+  %3 = load i32 (...)** @qcmp, align 8, !tbaa !3
+  %4 = load i32* @qsz, align 4, !tbaa !0
+  %idx.ext6 = sext i32 %4 to i64
+  %idx.neg = sub i64 0, %idx.ext6
+  %add.ptr7 = getelementptr inbounds i8* %max.addr.0, i64 %idx.neg
+  %callee.knr.cast8 = bitcast i32 (...)* %3 to i32 (i8*, i8*, ...)*
+  %call9 = tail call i32 (i8*, i8*, ...)* %callee.knr.cast8(i8* %cond, i8* %add.ptr7) #2
+  %cmp10 = icmp sgt i32 %call9, 0
+  br i1 %cmp10, label %if.then12, label %if.end24
+
+if.then12:                                        ; preds = %if.then
+  %cmp13 = icmp eq i8* %cond, %base.addr.0
+  %cond18 = select i1 %cmp13, i8* %add.ptr, i8* %base.addr.0
+  %5 = load i32 (...)** @qcmp, align 8, !tbaa !3
+  %callee.knr.cast19 = bitcast i32 (...)* %5 to i32 (i8*, i8*, ...)*
+  %call20 = tail call i32 (i8*, i8*, ...)* %callee.knr.cast19(i8* %cond18, i8* %add.ptr7) #2
+  %cmp21 = icmp slt i32 %call20, 0
+  %add.ptr7.cond18 = select i1 %cmp21, i8* %add.ptr7, i8* %cond18
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.then12, %if.then
+  %j.0 = phi i8* [ %cond, %if.then ], [ %add.ptr7.cond18, %if.then12 ]
+  %cmp25 = icmp eq i8* %j.0, %add.ptr
+  br i1 %cmp25, label %if.end31, label %if.then27
+
+if.then27:                                        ; preds = %if.end24
+  %6 = load i32* @qsz, align 4, !tbaa !0
+  br label %do.body28
+
+do.body28:                                        ; preds = %do.body28, %if.then27
+  %i.0 = phi i8* [ %add.ptr, %if.then27 ], [ %incdec.ptr, %do.body28 ]
+  %j.1 = phi i8* [ %j.0, %if.then27 ], [ %incdec.ptr29, %do.body28 ]
+  %ii.0 = phi i32 [ %6, %if.then27 ], [ %dec, %do.body28 ]
+  %7 = load i8* %i.0, align 1, !tbaa !1
+  %8 = load i8* %j.1, align 1, !tbaa !1
+  %incdec.ptr = getelementptr inbounds i8* %i.0, i64 1
+  store i8 %8, i8* %i.0, align 1, !tbaa !1
+  %incdec.ptr29 = getelementptr inbounds i8* %j.1, i64 1
+  store i8 %7, i8* %j.1, align 1, !tbaa !1
+  %dec = add nsw i32 %ii.0, -1
+  %tobool = icmp eq i32 %dec, 0
+  br i1 %tobool, label %if.end31, label %do.body28
+
+if.end31:                                         ; preds = %do.body28, %if.end24, %do.body
+  %9 = load i32* @qsz, align 4, !tbaa !0
+  %idx.ext32 = sext i32 %9 to i64
+  %idx.neg33 = sub i64 0, %idx.ext32
+  %add.ptr34 = getelementptr inbounds i8* %max.addr.0, i64 %idx.neg33
+  br label %while.cond.outer
+
+while.cond.outer:                                 ; preds = %do.body74, %if.end31
+  %i.1.ph = phi i8* [ %base.addr.0, %if.end31 ], [ %tmp.0, %do.body74 ]
+  %j.2.ph = phi i8* [ %add.ptr34, %if.end31 ], [ %j.4, %do.body74 ]
+  %mid.0.ph = phi i8* [ %add.ptr, %if.end31 ], [ %mid.1, %do.body74 ]
+  %cmp35170 = icmp ult i8* %i.1.ph, %mid.0.ph
+  br i1 %cmp35170, label %land.rhs, label %while.cond43.preheader
+
+land.rhs:                                         ; preds = %while.cond.outer, %while.body
+  %i.1171 = phi i8* [ %add.ptr42, %while.body ], [ %i.1.ph, %while.cond.outer ]
+  %10 = load i32 (...)** @qcmp, align 8, !tbaa !3
+  %callee.knr.cast37 = bitcast i32 (...)* %10 to i32 (i8*, i8*, ...)*
+  %call38 = tail call i32 (i8*, i8*, ...)* %callee.knr.cast37(i8* %i.1171, i8* %mid.0.ph) #2
+  %cmp39 = icmp slt i32 %call38, 1
+  br i1 %cmp39, label %while.body, label %while.cond43.preheader
+
+while.cond43.preheader:                           ; preds = %while.body, %land.rhs, %while.cond.outer
+  %i.1.lcssa = phi i8* [ %i.1.ph, %while.cond.outer ], [ %i.1171, %land.rhs ], [ %add.ptr42, %while.body ]
+  %cmp44167 = icmp ugt i8* %j.2.ph, %mid.0.ph
+  br i1 %cmp44167, label %while.body46, label %while.cond43.preheader.while.end65_crit_edge
+
+while.cond43.preheader.while.end65_crit_edge:     ; preds = %while.cond43.preheader
+  %.pre = load i32* @qsz, align 4, !tbaa !0
+  br label %while.end65
+
+while.body:                                       ; preds = %land.rhs
+  %11 = load i32* @qsz, align 4, !tbaa !0
+  %idx.ext41 = sext i32 %11 to i64
+  %add.ptr42 = getelementptr inbounds i8* %i.1171, i64 %idx.ext41
+  %cmp35 = icmp ult i8* %add.ptr42, %mid.0.ph
+  br i1 %cmp35, label %land.rhs, label %while.cond43.preheader
+
+while.body46:                                     ; preds = %while.cond43.preheader, %if.then51
+  %j.3168 = phi i8* [ %add.ptr54, %if.then51 ], [ %j.2.ph, %while.cond43.preheader ]
+  %12 = load i32 (...)** @qcmp, align 8, !tbaa !3
+  %callee.knr.cast47 = bitcast i32 (...)* %12 to i32 (i8*, i8*, ...)*
+  %call48 = tail call i32 (i8*, i8*, ...)* %callee.knr.cast47(i8* %mid.0.ph, i8* %j.3168) #2
+  %cmp49 = icmp slt i32 %call48, 1
+  %13 = load i32* @qsz, align 4, !tbaa !0
+  %idx.ext52 = sext i32 %13 to i64
+  br i1 %cmp49, label %if.then51, label %if.end55
+
+if.then51:                                        ; preds = %while.body46
+  %idx.neg53 = sub i64 0, %idx.ext52
+  %add.ptr54 = getelementptr inbounds i8* %j.3168, i64 %idx.neg53
+  %cmp44 = icmp ugt i8* %add.ptr54, %mid.0.ph
+  br i1 %cmp44, label %while.body46, label %while.end65
+
+if.end55:                                         ; preds = %while.body46
+  %add.ptr57 = getelementptr inbounds i8* %i.1.lcssa, i64 %idx.ext52
+  %cmp58 = icmp eq i8* %i.1.lcssa, %mid.0.ph
+  br i1 %cmp58, label %swap, label %if.else
+
+if.else:                                          ; preds = %if.end55
+  %idx.neg62 = sub i64 0, %idx.ext52
+  %add.ptr63 = getelementptr inbounds i8* %j.3168, i64 %idx.neg62
+  br label %swap
+
+while.end65:                                      ; preds = %if.then51, %while.cond43.preheader.while.end65_crit_edge
+  %14 = phi i32 [ %.pre, %while.cond43.preheader.while.end65_crit_edge ], [ %13, %if.then51 ]
+  %j.3.lcssa = phi i8* [ %j.2.ph, %while.cond43.preheader.while.end65_crit_edge ], [ %add.ptr54, %if.then51 ]
+  %cmp66 = icmp eq i8* %i.1.lcssa, %mid.0.ph
+  %idx.ext81 = sext i32 %14 to i64
+  br i1 %cmp66, label %for.end, label %if.else69
+
+if.else69:                                        ; preds = %while.end65
+  %idx.neg71 = sub i64 0, %idx.ext81
+  %add.ptr72 = getelementptr inbounds i8* %j.3.lcssa, i64 %idx.neg71
+  br label %swap
+
+swap:                                             ; preds = %if.end55, %if.else, %if.else69
+  %15 = phi i32 [ %13, %if.else ], [ %14, %if.else69 ], [ %13, %if.end55 ]
+  %j.4 = phi i8* [ %add.ptr63, %if.else ], [ %add.ptr72, %if.else69 ], [ %j.3168, %if.end55 ]
+  %jj.0 = phi i8* [ %j.3168, %if.else ], [ %mid.0.ph, %if.else69 ], [ %j.3168, %if.end55 ]
+  %mid.1 = phi i8* [ %mid.0.ph, %if.else ], [ %i.1.lcssa, %if.else69 ], [ %j.3168, %if.end55 ]
+  %tmp.0 = phi i8* [ %add.ptr57, %if.else ], [ %i.1.lcssa, %if.else69 ], [ %add.ptr57, %if.end55 ]
+  br label %do.body74
+
+do.body74:                                        ; preds = %do.body74, %swap
+  %i.2 = phi i8* [ %i.1.lcssa, %swap ], [ %incdec.ptr75, %do.body74 ]
+  %jj.1 = phi i8* [ %jj.0, %swap ], [ %incdec.ptr76, %do.body74 ]
+  %ii.1 = phi i32 [ %15, %swap ], [ %dec78, %do.body74 ]
+  %16 = load i8* %i.2, align 1, !tbaa !1
+  %17 = load i8* %jj.1, align 1, !tbaa !1
+  %incdec.ptr75 = getelementptr inbounds i8* %i.2, i64 1
+  store i8 %17, i8* %i.2, align 1, !tbaa !1
+  %incdec.ptr76 = getelementptr inbounds i8* %jj.1, i64 1
+  store i8 %16, i8* %jj.1, align 1, !tbaa !1
+  %dec78 = add nsw i32 %ii.1, -1
+  %tobool79 = icmp eq i32 %dec78, 0
+  br i1 %tobool79, label %while.cond.outer, label %do.body74
+
+for.end:                                          ; preds = %while.end65
+  %add.ptr82 = getelementptr inbounds i8* %mid.0.ph, i64 %idx.ext81
+  %sub.ptr.lhs.cast83 = ptrtoint i8* %mid.0.ph to i64
+  %sub.ptr.rhs.cast84 = ptrtoint i8* %base.addr.0 to i64
+  %sub.ptr.sub85 = sub i64 %sub.ptr.lhs.cast83, %sub.ptr.rhs.cast84
+  %conv86 = trunc i64 %sub.ptr.sub85 to i32
+  %sub.ptr.lhs.cast87 = ptrtoint i8* %max.addr.0 to i64
+  %sub.ptr.rhs.cast88 = ptrtoint i8* %add.ptr82 to i64
+  %sub.ptr.sub89 = sub i64 %sub.ptr.lhs.cast87, %sub.ptr.rhs.cast88
+  %conv90 = trunc i64 %sub.ptr.sub89 to i32
+  %cmp91 = icmp sgt i32 %conv86, %conv90
+  %18 = load i32* @thresh, align 4, !tbaa !0
+  br i1 %cmp91, label %if.else98, label %if.then93
+
+if.then93:                                        ; preds = %for.end
+  %cmp94 = icmp slt i32 %conv86, %18
+  br i1 %cmp94, label %do.cond104, label %if.then96
+
+if.then96:                                        ; preds = %if.then93
+  tail call fastcc void @qst(i8* %base.addr.0, i8* %mid.0.ph) #1
+  br label %do.cond104
+
+if.else98:                                        ; preds = %for.end
+  %cmp99 = icmp slt i32 %conv90, %18
+  br i1 %cmp99, label %do.cond104, label %if.then101
+
+if.then101:                                       ; preds = %if.else98
+  tail call fastcc void @qst(i8* %add.ptr82, i8* %max.addr.0) #1
+  br label %do.cond104
+
+do.cond104:                                       ; preds = %if.then101, %if.else98, %if.then96, %if.then93
+  %max.addr.1 = phi i8* [ %max.addr.0, %if.then93 ], [ %max.addr.0, %if.then96 ], [ %mid.0.ph, %if.else98 ], [ %mid.0.ph, %if.then101 ]
+  %lo.1 = phi i32 [ %conv90, %if.then93 ], [ %conv90, %if.then96 ], [ %conv86, %if.else98 ], [ %conv86, %if.then101 ]
+  %base.addr.1 = phi i8* [ %add.ptr82, %if.then93 ], [ %add.ptr82, %if.then96 ], [ %base.addr.0, %if.else98 ], [ %base.addr.0, %if.then101 ]
+  %19 = load i32* @thresh, align 4, !tbaa !0
+  %cmp105 = icmp slt i32 %lo.1, %19
+  br i1 %cmp105, label %do.end107, label %do.body
+
+do.end107:                                        ; preds = %do.cond104
+  ret void
+}

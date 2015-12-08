@@ -1,0 +1,51 @@
+define void @fill_frame_num_gap(%struct.ImageParameters* nocapture %img) #1 {
+entry:
+  %0 = load i32* @log2_max_frame_num_minus4, align 4, !tbaa !3
+  %add = add i32 %0, 4
+  %shl = shl nuw i32 1, %add
+  %nal_reference_idc = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 113
+  %1 = load i32* %nal_reference_idc, align 4, !tbaa !3
+  store i32 1, i32* %nal_reference_idc, align 4, !tbaa !3
+  %pre_frame_num = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 146
+  %2 = load i32* %pre_frame_num, align 4, !tbaa !3
+  %frame_num = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 105
+  %3 = load i32* %frame_num, align 4, !tbaa !3
+  %add2.pn22 = add nsw i32 %2, 1
+  %UnusedShortTermFrameNum.023 = srem i32 %add2.pn22, %shl
+  %cmp24 = icmp eq i32 %3, %UnusedShortTermFrameNum.023
+  br i1 %cmp24, label %while.end, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %entry
+  %width = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 13
+  %height = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 15
+  %width_cr = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 14
+  %height_cr = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 16
+  %adaptive_ref_pic_buffering_flag = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 114
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %UnusedShortTermFrameNum.025 = phi i32 [ %UnusedShortTermFrameNum.023, %while.body.lr.ph ], [ %UnusedShortTermFrameNum.0, %while.body ]
+  %4 = load i32* %width, align 4, !tbaa !3
+  %5 = load i32* %height, align 4, !tbaa !3
+  %6 = load i32* %width_cr, align 4, !tbaa !3
+  %7 = load i32* %height_cr, align 4, !tbaa !3
+  %call = tail call %struct.storable_picture* @alloc_storable_picture(i32 0, i32 %4, i32 %5, i32 %6, i32 %7) #7
+  %coded_frame = getelementptr inbounds %struct.storable_picture* %call, i64 0, i32 23
+  store i32 1, i32* %coded_frame, align 4, !tbaa !3
+  %pic_num = getelementptr inbounds %struct.storable_picture* %call, i64 0, i32 11
+  store i32 %UnusedShortTermFrameNum.025, i32* %pic_num, align 4, !tbaa !3
+  %non_existing = getelementptr inbounds %struct.storable_picture* %call, i64 0, i32 17
+  store i32 1, i32* %non_existing, align 4, !tbaa !3
+  %is_output = getelementptr inbounds %struct.storable_picture* %call, i64 0, i32 16
+  store i32 1, i32* %is_output, align 4, !tbaa !3
+  store i32 0, i32* %adaptive_ref_pic_buffering_flag, align 4, !tbaa !3
+  tail call void @store_picture_in_dpb(%struct.storable_picture* %call) #7
+  %add2.pn = add nsw i32 %UnusedShortTermFrameNum.025, 1
+  %UnusedShortTermFrameNum.0 = srem i32 %add2.pn, %shl
+  %cmp = icmp eq i32 %3, %UnusedShortTermFrameNum.0
+  br i1 %cmp, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  store i32 %1, i32* %nal_reference_idc, align 4, !tbaa !3
+  ret void
+}

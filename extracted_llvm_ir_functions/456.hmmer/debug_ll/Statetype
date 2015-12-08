@@ -1,0 +1,16 @@
+define i8* @Statetype(i8 signext %st) #0 {
+entry:
+  %conv = sext i8 %st to i32
+  %switch.tableidx = add i32 %conv, -1
+  %0 = icmp ult i32 %switch.tableidx, 10
+  br i1 %0, label %switch.lookup, label %return
+
+switch.lookup:                                    ; preds = %entry
+  %1 = sext i32 %switch.tableidx to i64
+  %switch.gep = getelementptr inbounds [10 x i8*]* @switch.table, i64 0, i64 %1
+  %switch.load = load i8** %switch.gep, align 8
+  ret i8* %switch.load
+
+return:                                           ; preds = %entry
+  ret i8* getelementptr inbounds ([6 x i8]* @.str10, i64 0, i64 0)
+}

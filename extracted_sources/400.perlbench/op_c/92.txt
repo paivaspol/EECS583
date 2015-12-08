@@ -1,0 +1,350 @@
+CV *
+Perl_newATTRSUB(pTHX_ I32 floor, OP *o, OP *proto, OP *attrs, OP *block)
+{
+    STRLEN n_a;
+    char *name;
+    char *aname;
+    GV *gv;
+    char *ps;
+    register CV *cv=0;
+    SV *const_sv;
+
+    name = o ? SvPVx(cSVOPo->op_sv, n_a) : Nullch;
+
+    if (proto) {
+	assert(proto->op_type == OP_CONST);
+	ps = SvPVx(((SVOP*)proto)->op_sv, n_a);
+    }
+    else
+	ps = Nullch;
+
+    if (!name && PERLDB_NAMEANON && CopLINE(PL_curcop)) {
+	SV *sv = sv_newmortal();
+	Perl_sv_setpvf(aTHX_ sv, "%s[%s:%"IVdf"]",
+		       PL_curstash ? "__ANON__" : "__ANON__::__ANON__",
+		       CopFILE(PL_curcop), (IV)CopLINE(PL_curcop));
+	aname = SvPVX(sv);
+    }
+    else
+	aname = Nullch;
+    gv = gv_fetchpv(name ? name : (aname ? aname : 
+		    (PL_curstash ? "__ANON__" : "__ANON__::__ANON__")),
+		    GV_ADDMULTI | ((block || attrs) ? 0 : GV_NOINIT),
+		    SVt_PVCV);
+
+    if (o)
+	SAVEFREEOP(o);
+    if (proto)
+	SAVEFREEOP(proto);
+    if (attrs)
+	SAVEFREEOP(attrs);
+
+    if (SvTYPE(gv) != SVt_PVGV) {	/* Maybe prototype now, and had at
+					   maximum a prototype before. */
+	if (SvTYPE(gv) > SVt_NULL) {
+	    if (!SvPOK((SV*)gv) && !(SvIOK((SV*)gv) && SvIVX((SV*)gv) == -1)
+		&& ckWARN_d(WARN_PROTOTYPE))
+	    {
+		Perl_warner(aTHX_ packWARN(WARN_PROTOTYPE), "Runaway prototype");
+	    }
+	    cv_ckproto((CV*)gv, NULL, ps);
+	}
+	if (ps)
+	    sv_setpv((SV*)gv, ps);
+	else
+	    sv_setiv((SV*)gv, -1);
+	SvREFCNT_dec(PL_compcv);
+	cv = PL_compcv = NULL;
+	PL_sub_generation++;
+	goto done;
+    }
+
+    cv = (!name || GvCVGEN(gv)) ? Nullcv : GvCV(gv);
+
+#ifdef GV_UNIQUE_CHECK
+    if (cv && GvUNIQUE(gv) && SvREADONLY(cv)) {
+        Perl_croak(aTHX_ "Can't define subroutine %s (GV is unique)", name);
+    }
+#endif
+
+    if (!block || !ps || *ps || attrs)
+	const_sv = Nullsv;
+    else
+	const_sv = op_const_sv(block, Nullcv);
+
+    if (cv) {
+        bool exists = CvROOT(cv) || CvXSUB(cv);
+
+#ifdef GV_UNIQUE_CHECK
+        if (exists && GvUNIQUE(gv)) {
+            Perl_croak(aTHX_ "Can't redefine unique subroutine %s", name);
+        }
+#endif
+
+        /* if the subroutine doesn't exist and wasn't pre-declared
+         * with a prototype, assume it will be AUTOLOADed,
+         * skipping the prototype check
+         */
+        if (exists || SvPOK(cv))
+	    cv_ckproto(cv, gv, ps);
+	/* already defined (or promised)? */
+	if (exists || GvASSUMECV(gv)) {
+	    if (!block && !attrs) {
+		if (CvFLAGS(PL_compcv)) {
+		    /* might have had built-in attrs applied */
+		    CvFLAGS(cv) |= (CvFLAGS(PL_compcv) & CVf_BUILTIN_ATTRS);
+		}
+		/* just a "sub foo;" when &foo is already defined */
+		SAVEFREESV(PL_compcv);
+		goto done;
+	    }
+	    /* ahem, death to those who redefine active sort subs */
+	    if (PL_curstackinfo->si_type == PERLSI_SORT && PL_sortcop == CvSTART(cv))
+		Perl_croak(aTHX_ "Can't redefine active sort subroutine %s", name);
+	    if (block) {
+		if (ckWARN(WARN_REDEFINE)
+		    || (CvCONST(cv)
+			&& (!const_sv || sv_cmp(cv_const_sv(cv), const_sv))))
+		{
+		    line_t oldline = CopLINE(PL_curcop);
+		    if (PL_copline != NOLINE)
+			CopLINE_set(PL_curcop, PL_copline);
+		    Perl_warner(aTHX_ packWARN(WARN_REDEFINE),
+			CvCONST(cv) ? "Constant subroutine %s redefined"
+				    : "Subroutine %s redefined", name);
+		    CopLINE_set(PL_curcop, oldline);
+		}
+		SvREFCNT_dec(cv);
+		cv = Nullcv;
+	    }
+	}
+    }
+    if (const_sv) {
+	SvREFCNT_inc(const_sv);
+	if (cv) {
+	    assert(!CvROOT(cv) && !CvCONST(cv));
+	    sv_setpv((SV*)cv, "");  /* prototype is "" */
+	    CvXSUBANY(cv).any_ptr = const_sv;
+	    CvXSUB(cv) = const_sv_xsub;
+	    CvCONST_on(cv);
+	}
+	else {
+	    GvCV(gv) = Nullcv;
+	    cv = newCONSTSUB(NULL, name, const_sv);
+	}
+	op_free(block);
+	SvREFCNT_dec(PL_compcv);
+	PL_compcv = NULL;
+	PL_sub_generation++;
+	goto done;
+    }
+    if (attrs) {
+	HV *stash;
+	SV *rcv;
+
+	/* Need to do a C<use attributes $stash_of_cv,\&cv,@attrs>
+	 * before we clobber PL_compcv.
+	 */
+	if (cv && !block) {
+	    rcv = (SV*)cv;
+	    /* Might have had built-in attributes applied -- propagate them. */
+	    CvFLAGS(cv) |= (CvFLAGS(PL_compcv) & CVf_BUILTIN_ATTRS);
+	    if (CvGV(cv) && GvSTASH(CvGV(cv)))
+		stash = GvSTASH(CvGV(cv));
+	    else if (CvSTASH(cv))
+		stash = CvSTASH(cv);
+	    else
+		stash = PL_curstash;
+	}
+	else {
+	    /* possibly about to re-define existing subr -- ignore old cv */
+	    rcv = (SV*)PL_compcv;
+	    if (name && GvSTASH(gv))
+		stash = GvSTASH(gv);
+	    else
+		stash = PL_curstash;
+	}
+	apply_attrs(stash, rcv, attrs, FALSE);
+    }
+    if (cv) {				/* must reuse cv if autoloaded */
+	if (!block) {
+	    /* got here with just attrs -- work done, so bug out */
+	    SAVEFREESV(PL_compcv);
+	    goto done;
+	}
+	/* transfer PL_compcv to cv */
+	cv_undef(cv);
+	CvFLAGS(cv) = CvFLAGS(PL_compcv);
+	if (!CvWEAKOUTSIDE(cv))
+	    SvREFCNT_dec(CvOUTSIDE(cv));
+	CvOUTSIDE(cv) = CvOUTSIDE(PL_compcv);
+	CvOUTSIDE_SEQ(cv) = CvOUTSIDE_SEQ(PL_compcv);
+	CvOUTSIDE(PL_compcv) = 0;
+	CvPADLIST(cv) = CvPADLIST(PL_compcv);
+	CvPADLIST(PL_compcv) = 0;
+	/* inner references to PL_compcv must be fixed up ... */
+	pad_fixup_inner_anons(CvPADLIST(cv), PL_compcv, cv);
+	/* ... before we throw it away */
+	SvREFCNT_dec(PL_compcv);
+	if (PERLDB_INTER)/* Advice debugger on the new sub. */
+	  ++PL_sub_generation;
+    }
+    else {
+	cv = PL_compcv;
+	if (name) {
+	    GvCV(gv) = cv;
+	    GvCVGEN(gv) = 0;
+	    PL_sub_generation++;
+	}
+    }
+    CvGV(cv) = gv;
+    CvFILE_set_from_cop(cv, PL_curcop);
+    CvSTASH(cv) = PL_curstash;
+#ifdef USE_5005THREADS
+    CvOWNER(cv) = 0;
+    if (!CvMUTEXP(cv)) {
+	New(666, CvMUTEXP(cv), 1, perl_mutex);
+	MUTEX_INIT(CvMUTEXP(cv));
+    }
+#endif /* USE_5005THREADS */
+
+    if (ps)
+	sv_setpv((SV*)cv, ps);
+
+    if (PL_error_count) {
+	op_free(block);
+	block = Nullop;
+	if (name) {
+	    char *s = strrchr(name, ':');
+	    s = s ? s+1 : name;
+	    if (strEQ(s, "BEGIN")) {
+		char *not_safe =
+		    "BEGIN not safe after errors--compilation aborted";
+		if (PL_in_eval & EVAL_KEEPERR)
+		    Perl_croak(aTHX_ not_safe);
+		else {
+		    /* force display of errors found but not reported */
+		    sv_catpv(ERRSV, not_safe);
+		    Perl_croak(aTHX_ "%"SVf, ERRSV);
+		}
+	    }
+	}
+    }
+    if (!block)
+	goto done;
+
+    if (CvLVALUE(cv)) {
+	CvROOT(cv) = newUNOP(OP_LEAVESUBLV, 0,
+			     mod(scalarseq(block), OP_LEAVESUBLV));
+    }
+    else {
+	/* This makes sub {}; work as expected.  */
+	if (block->op_type == OP_STUB) {
+	    op_free(block);
+	    block = newSTATEOP(0, Nullch, 0);
+	}
+	CvROOT(cv) = newUNOP(OP_LEAVESUB, 0, scalarseq(block));
+    }
+    CvROOT(cv)->op_private |= OPpREFCOUNTED;
+    OpREFCNT_set(CvROOT(cv), 1);
+    CvSTART(cv) = LINKLIST(CvROOT(cv));
+    CvROOT(cv)->op_next = 0;
+    CALL_PEEP(CvSTART(cv));
+
+    /* now that optimizer has done its work, adjust pad values */
+
+    pad_tidy(CvCLONE(cv) ? padtidy_SUBCLONE : padtidy_SUB);
+
+    if (CvCLONE(cv)) {
+	assert(!CvCONST(cv));
+	if (ps && !*ps && op_const_sv(block, cv))
+	    CvCONST_on(cv);
+    }
+
+    if (name || aname) {
+	char *s;
+	char *tname = (name ? name : aname);
+
+	if (PERLDB_SUBLINE && PL_curstash != PL_debstash) {
+	    SV *sv = NEWSV(0,0);
+	    SV *tmpstr = sv_newmortal();
+	    GV *db_postponed = gv_fetchpv("DB::postponed", GV_ADDMULTI, SVt_PVHV);
+	    CV *pcv;
+	    HV *hv;
+
+	    Perl_sv_setpvf(aTHX_ sv, "%s:%ld-%ld",
+			   CopFILE(PL_curcop),
+			   (long)PL_subline, (long)CopLINE(PL_curcop));
+	    gv_efullname3(tmpstr, gv, Nullch);
+	    hv_store(GvHV(PL_DBsub), SvPVX(tmpstr), SvCUR(tmpstr), sv, 0);
+	    hv = GvHVn(db_postponed);
+	    if (HvFILL(hv) > 0 && hv_exists(hv, SvPVX(tmpstr), SvCUR(tmpstr))
+		&& (pcv = GvCV(db_postponed)))
+	    {
+		dSP;
+		PUSHMARK(SP);
+		XPUSHs(tmpstr);
+		PUTBACK;
+		call_sv((SV*)pcv, G_DISCARD);
+	    }
+	}
+
+	if ((s = strrchr(tname,':')))
+	    s++;
+	else
+	    s = tname;
+
+	if (*s != 'B' && *s != 'E' && *s != 'C' && *s != 'I')
+	    goto done;
+
+	if (strEQ(s, "BEGIN")) {
+	    I32 oldscope = PL_scopestack_ix;
+	    ENTER;
+	    SAVECOPFILE(&PL_compiling);
+	    SAVECOPLINE(&PL_compiling);
+
+	    if (!PL_beginav)
+		PL_beginav = newAV();
+	    DEBUG_x( dump_sub(gv) );
+	    av_push(PL_beginav, (SV*)cv);
+	    GvCV(gv) = 0;		/* cv has been hijacked */
+	    call_list(oldscope, PL_beginav);
+
+	    PL_curcop = &PL_compiling;
+	    PL_compiling.op_private = (U8)(PL_hints & HINT_PRIVATE_MASK);
+	    LEAVE;
+	}
+	else if (strEQ(s, "END") && !PL_error_count) {
+	    if (!PL_endav)
+		PL_endav = newAV();
+	    DEBUG_x( dump_sub(gv) );
+	    av_unshift(PL_endav, 1);
+	    av_store(PL_endav, 0, (SV*)cv);
+	    GvCV(gv) = 0;		/* cv has been hijacked */
+	}
+	else if (strEQ(s, "CHECK") && !PL_error_count) {
+	    if (!PL_checkav)
+		PL_checkav = newAV();
+	    DEBUG_x( dump_sub(gv) );
+	    if (PL_main_start && ckWARN(WARN_VOID))
+		Perl_warner(aTHX_ packWARN(WARN_VOID), "Too late to run CHECK block");
+	    av_unshift(PL_checkav, 1);
+	    av_store(PL_checkav, 0, (SV*)cv);
+	    GvCV(gv) = 0;		/* cv has been hijacked */
+	}
+	else if (strEQ(s, "INIT") && !PL_error_count) {
+	    if (!PL_initav)
+		PL_initav = newAV();
+	    DEBUG_x( dump_sub(gv) );
+	    if (PL_main_start && ckWARN(WARN_VOID))
+		Perl_warner(aTHX_ packWARN(WARN_VOID), "Too late to run INIT block");
+	    av_push(PL_initav, (SV*)cv);
+	    GvCV(gv) = 0;		/* cv has been hijacked */
+	}
+    }
+
+  done:
+    PL_copline = NOLINE;
+    LEAVE_SCOPE(floor);
+    return cv;
+}

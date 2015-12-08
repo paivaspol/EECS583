@@ -1,8 +1,17 @@
-void
-PerlIO_init(pTHX)
+int
+PerlIO_apply_layera(pTHX_ PerlIO *f, const char *mode,
+		    PerlIO_list_t *layers, IV n, IV max)
 {
- /* Place holder for stdstreams call ??? */
-#ifdef USE_THREADS
- MUTEX_INIT(&PerlIO_mutex);
-#endif
+    int code = 0;
+    while (n < max) {
+	PerlIO_funcs *tab = PerlIO_layer_fetch(aTHX_ layers, n, NULL);
+	if (tab) {
+	    if (!PerlIO_push(aTHX_ f, tab, mode, PerlIOArg)) {
+		code = -1;
+		break;
+	    }
+	}
+	n++;
+    }
+    return code;
 }

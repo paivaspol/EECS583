@@ -1,63 +1,48 @@
-static void
-sjlj_assign_call_site_values (dispatch_label, lp_info)
-     rtx dispatch_label;
+static bool
+sjlj_find_directly_reachable_regions (lp_info)
      struct sjlj_lp_info *lp_info;
 {
-  htab_t ar_hash;
-  int i, index;
+  rtx insn;
+  bool found_one = false;
 
-  /* First task: build the action table.  */
+  for (insn = get_insns (); insn ; insn = NEXT_INSN (insn))
+    {
+      struct eh_region *region;
+      enum reachable_code rc;
+      tree type_thrown;
+      rtx note;
 
-  VARRAY_UCHAR_INIT (cfun->eh->action_record_data, 64, "action_record_data");
-  ar_hash = htab_create (31, action_record_hash, action_record_eq, free);
+      if (! INSN_P (insn))
+	continue;
 
-  for (i = cfun->eh->last_region_number; i > 0; --i)
-    if (lp_info[i].directly_reachable)
-      {
-	struct eh_region *r = cfun->eh->region_array[i];
-	r->landing_pad = dispatch_label;
-	lp_info[i].action_index = collect_one_action_chain (ar_hash, r);
-	if (lp_info[i].action_index != -1)
-	  cfun->uses_eh_lsda = 1;
-      }
+      note = find_reg_note (insn, REG_EH_REGION, NULL_RTX);
+      if (!note || INTVAL (XEXP (note, 0)) <= 0)
+	continue;
 
-  htab_delete (ar_hash);
+      region = cfun->eh->region_array[INTVAL (XEXP (note, 0))];
 
-  /* Next: assign dispatch values.  In dwarf2 terms, this would be the
-     landing pad label for the region.  For sjlj though, there is one
-     common landing pad from which we dispatch to the post-landing pads.
+      type_thrown = NULL_TREE;
+      if (region->type == ERT_THROW)
+	{
+	  type_thrown = region->u.throw.type;
+	  region = region->outer;
+	}
 
-     A region receives a dispatch index if it is directly reachable
-     and requires in-function processing.  Regions that share post-landing
-     pads may share dispatch indices.  */
-  /* ??? Post-landing pad sharing doesn't actually happen at the moment
-     (see build_post_landing_pads) so we don't bother checking for it.  */
+      /* Find the first containing region that might handle the exception.
+	 That's the landing pad to which we will transfer control.  */
+      rc = RNL_NOT_CAUGHT;
+      for (; region; region = region->outer)
+	{
+	  rc = reachable_next_level (region, type_thrown, 0);
+	  if (rc != RNL_NOT_CAUGHT)
+	    break;
+	}
+      if (rc == RNL_MAYBE_CAUGHT || rc == RNL_CAUGHT)
+	{
+	  lp_info[region->region_number].directly_reachable = 1;
+	  found_one = true;
+	}
+    }
 
-  index = 0;
-  for (i = cfun->eh->last_region_number; i > 0; --i)
-    if (lp_info[i].directly_reachable)
-      lp_info[i].dispatch_index = index++;
-
-  /* Finally: assign call-site values.  If dwarf2 terms, this would be
-     the region number assigned by convert_to_eh_region_ranges, but
-     handles no-action and must-not-throw differently.  */
-
-  call_site_base = 1;
-  for (i = cfun->eh->last_region_number; i > 0; --i)
-    if (lp_info[i].directly_reachable)
-      {
-	int action = lp_info[i].action_index;
-
-	/* Map must-not-throw to otherwise unused call-site index 0.  */
-	if (action == -2)
-	  index = 0;
-	/* Map no-action to otherwise unused call-site index -1.  */
-	else if (action == -1)
-	  index = -1;
-	/* Otherwise, look it up in the table.  */
-	else
-	  index = add_call_site (GEN_INT (lp_info[i].dispatch_index), action);
-
-	lp_info[i].call_site_index = index;
-      }
+  return found_one;
 }

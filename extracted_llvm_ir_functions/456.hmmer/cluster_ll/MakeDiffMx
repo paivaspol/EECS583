@@ -1,0 +1,41 @@
+define void @MakeDiffMx(i8** nocapture %aseqs, i32 %num, float*** nocapture %ret_dmx) #0 {
+entry:
+  %call = tail call float** @FMX2Alloc(i32 %num, i32 %num) #4
+  %cmp35 = icmp sgt i32 %num, 0
+  br i1 %cmp35, label %for.body3.lr.ph, label %for.end18
+
+for.body3.lr.ph:                                  ; preds = %for.inc16, %entry
+  %indvars.iv39 = phi i64 [ %indvars.iv.next40, %for.inc16 ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i8** %aseqs, i64 %indvars.iv39
+  %arrayidx14 = getelementptr inbounds float** %call, i64 %indvars.iv39
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3, %for.body3.lr.ph
+  %indvars.iv37 = phi i64 [ %indvars.iv39, %for.body3.lr.ph ], [ %indvars.iv.next38, %for.body3 ]
+  %0 = load i8** %arrayidx, align 8, !tbaa !0
+  %arrayidx5 = getelementptr inbounds i8** %aseqs, i64 %indvars.iv37
+  %1 = load i8** %arrayidx5, align 8, !tbaa !0
+  %call6 = tail call float @PairwiseIdentity(i8* %0, i8* %1) #4
+  %conv7 = fsub float 1.000000e+00, %call6
+  %arrayidx10 = getelementptr inbounds float** %call, i64 %indvars.iv37
+  %2 = load float** %arrayidx10, align 8, !tbaa !0
+  %arrayidx11 = getelementptr inbounds float* %2, i64 %indvars.iv39
+  store float %conv7, float* %arrayidx11, align 4, !tbaa !3
+  %3 = load float** %arrayidx14, align 8, !tbaa !0
+  %arrayidx15 = getelementptr inbounds float* %3, i64 %indvars.iv37
+  store float %conv7, float* %arrayidx15, align 4, !tbaa !3
+  %indvars.iv.next38 = add i64 %indvars.iv37, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next38 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %num
+  br i1 %exitcond, label %for.inc16, label %for.body3
+
+for.inc16:                                        ; preds = %for.body3
+  %indvars.iv.next40 = add i64 %indvars.iv39, 1
+  %lftr.wideiv41 = trunc i64 %indvars.iv.next40 to i32
+  %exitcond42 = icmp eq i32 %lftr.wideiv41, %num
+  br i1 %exitcond42, label %for.end18, label %for.body3.lr.ph
+
+for.end18:                                        ; preds = %for.inc16, %entry
+  store float** %call, float*** %ret_dmx, align 8, !tbaa !0
+  ret void
+}

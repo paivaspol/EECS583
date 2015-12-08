@@ -1,6 +1,9 @@
-static void
-restore_sigmask(pTHX_ SV *save_sv)
+int
+Perl_magic_getuvar(pTHX_ SV *sv, MAGIC *mg)
 {
-    sigset_t *ossetp = (sigset_t *) SvPV_nolen( save_sv );
-    (void)sigprocmask(SIG_SETMASK, ossetp, (sigset_t *)0);
+    struct ufuncs *uf = (struct ufuncs *)mg->mg_ptr;
+
+    if (uf && uf->uf_val)
+	(*uf->uf_val)(aTHX_ uf->uf_index, sv);
+    return 0;
 }

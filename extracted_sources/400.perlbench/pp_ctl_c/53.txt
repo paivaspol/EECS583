@@ -1,0 +1,27 @@
+CV*
+Perl_find_runcv(pTHX_ U32 *db_seqp)
+{
+    I32		 ix;
+    PERL_SI	 *si;
+    PERL_CONTEXT *cx;
+
+    if (db_seqp)
+	*db_seqp = PL_curcop->cop_seq;
+    for (si = PL_curstackinfo; si; si = si->si_prev) {
+	for (ix = si->si_cxix; ix >= 0; ix--) {
+	    cx = &(si->si_cxstack[ix]);
+	    if (CxTYPE(cx) == CXt_SUB || CxTYPE(cx) == CXt_FORMAT) {
+		CV *cv = cx->blk_sub.cv;
+		/* skip DB:: code */
+		if (db_seqp && PL_debstash && CvSTASH(cv) == PL_debstash) {
+		    *db_seqp = cx->blk_oldcop->cop_seq;
+		    continue;
+		}
+		return cv;
+	    }
+	    else if (CxTYPE(cx) == CXt_EVAL && !CxTRYBLOCK(cx))
+		return PL_compcv;
+	}
+    }
+    return PL_main_cv;
+}

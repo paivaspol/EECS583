@@ -1,0 +1,25 @@
+define signext i16 @htovs(i16 signext %n) #7 {
+entry:
+  %u = alloca %union.anon.4, align 2
+  %conv2 = sext i16 %n to i32
+  %c = bitcast %union.anon.4* %u to [2 x i8]*
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %s.08 = phi i32 [ 0, %entry ], [ %add, %for.body ]
+  %shr = ashr i32 %conv2, %s.08
+  %conv3 = trunc i32 %shr to i8
+  %arrayidx = getelementptr inbounds [2 x i8]* %c, i64 0, i64 %indvars.iv
+  store i8 %conv3, i8* %arrayidx, align 1, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %add = add nsw i32 %s.08, 8
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 2
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %value = getelementptr inbounds %union.anon.4* %u, i64 0, i32 0
+  %0 = load i16* %value, align 2, !tbaa !5
+  ret i16 %0
+}

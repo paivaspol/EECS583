@@ -1,0 +1,39 @@
+PP(pp_leaveloop)
+{
+    dSP;
+    register PERL_CONTEXT *cx;
+    I32 gimme;
+    SV **newsp;
+    PMOP *newpm;
+    SV **mark;
+
+    POPBLOCK(cx,newpm);
+    mark = newsp;
+    newsp = PL_stack_base + cx->blk_loop.resetsp;
+
+    TAINT_NOT;
+    if (gimme == G_VOID)
+	; /* do nothing */
+    else if (gimme == G_SCALAR) {
+	if (mark < SP)
+	    *++newsp = sv_mortalcopy(*SP);
+	else
+	    *++newsp = &PL_sv_undef;
+    }
+    else {
+	while (mark < SP) {
+	    *++newsp = sv_mortalcopy(*++mark);
+	    TAINT_NOT;		/* Each item is independent */
+	}
+    }
+    SP = newsp;
+    PUTBACK;
+
+    POPLOOP(cx);	/* Stack values are safe: release loop vars ... */
+    PL_curpm = newpm;	/* ... and pop $1 et al */
+
+    LEAVE;
+    LEAVE;
+
+    return NORMAL;
+}

@@ -1,0 +1,31 @@
+define void @IP_fprintf(%struct._IO_FILE* %fp, %struct._IP* %ip) #0 {
+entry:
+  %cmp = icmp eq %struct._IO_FILE* %fp, null
+  %cmp1 = icmp eq %struct._IP* %ip, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.end6, label %while.body
+
+while.body:                                       ; preds = %entry, %if.end
+  %i.016 = phi i32 [ %inc, %if.end ], [ 0, %entry ]
+  %ip.addr.015 = phi %struct._IP* [ %2, %if.end ], [ %ip, %entry ]
+  %rem13 = and i32 %i.016, 15
+  %cmp3 = icmp eq i32 %rem13, 0
+  br i1 %cmp3, label %if.then4, label %if.end
+
+if.then4:                                         ; preds = %while.body
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %fp)
+  br label %if.end
+
+if.end:                                           ; preds = %if.then4, %while.body
+  %val = getelementptr inbounds %struct._IP* %ip.addr.015, i64 0, i32 0
+  %1 = load i32* %val, align 4, !tbaa !0
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i32 %1) #4
+  %next = getelementptr inbounds %struct._IP* %ip.addr.015, i64 0, i32 1
+  %2 = load %struct._IP** %next, align 8, !tbaa !3
+  %inc = add nsw i32 %i.016, 1
+  %cmp2 = icmp eq %struct._IP* %2, null
+  br i1 %cmp2, label %if.end6, label %while.body
+
+if.end6:                                          ; preds = %if.end, %entry
+  ret void
+}

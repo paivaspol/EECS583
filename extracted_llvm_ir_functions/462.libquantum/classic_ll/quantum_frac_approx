@@ -1,0 +1,52 @@
+define void @quantum_frac_approx(i32* nocapture %a, i32* nocapture %b, i32 %width) #1 {
+entry:
+  %0 = load i32* %a, align 4, !tbaa !0
+  %conv = sitofp i32 %0 to float
+  %1 = load i32* %b, align 4, !tbaa !0
+  %conv1 = sitofp i32 %1 to float
+  %div = fdiv float %conv, %conv1
+  %shl = shl i32 1, %width
+  %mul23 = shl nsw i32 %shl, 1
+  %conv24 = sitofp i32 %mul23 to double
+  %div25 = fdiv double 1.000000e+00, %conv24
+  br label %do.body
+
+do.body:                                          ; preds = %if.end, %entry
+  %g.0 = phi float [ %div, %entry ], [ %conv10, %if.end ]
+  %num2.0 = phi i32 [ 0, %entry ], [ %num1.0, %if.end ]
+  %den2.0 = phi i32 [ 1, %entry ], [ %den1.0, %if.end ]
+  %num1.0 = phi i32 [ 1, %entry ], [ %add14, %if.end ]
+  %den1.0 = phi i32 [ 0, %entry ], [ %add11, %if.end ]
+  %num.0 = phi i32 [ 0, %entry ], [ %add14, %if.end ]
+  %conv2 = fpext float %g.0 to double
+  %add = fadd double %conv2, 5.000000e-06
+  %conv3 = fptosi double %add to i32
+  %mul = mul nsw i32 %den1.0, %conv3
+  %add11 = add nsw i32 %mul, %den2.0
+  %cmp = icmp sgt i32 %add11, %shl
+  br i1 %cmp, label %do.end, label %if.end
+
+if.end:                                           ; preds = %do.body
+  %conv4 = sitofp i32 %conv3 to double
+  %sub = fadd double %conv4, -5.000000e-06
+  %sub6 = fsub double %conv2, %sub
+  %conv7 = fptrunc double %sub6 to float
+  %conv10 = fdiv float 1.000000e+00, %conv7
+  %mul13 = mul nsw i32 %conv3, %num1.0
+  %add14 = add nsw i32 %mul13, %num2.0
+  %conv17 = sitofp i32 %add14 to float
+  %conv18 = sitofp i32 %add11 to float
+  %div19 = fdiv float %conv17, %conv18
+  %sub20 = fsub float %div19, %div
+  %call = tail call float @fabsf(float %sub20) #3
+  %conv21 = fpext float %call to double
+  %cmp26 = fcmp ogt double %conv21, %div25
+  br i1 %cmp26, label %do.body, label %do.end
+
+do.end:                                           ; preds = %do.body, %if.end
+  %num.1 = phi i32 [ %num.0, %do.body ], [ %add14, %if.end ]
+  %den.1 = phi i32 [ %den1.0, %do.body ], [ %add11, %if.end ]
+  store i32 %num.1, i32* %a, align 4, !tbaa !0
+  store i32 %den.1, i32* %b, align 4, !tbaa !0
+  ret void
+}

@@ -1,8 +1,23 @@
-void
-Perl_sv_setpvf_mg(pTHX_ SV *sv, const char* pat, ...)
+STATIC IV
+S_asIV(pTHX_ SV *sv)
 {
-    va_list args;
-    va_start(args, pat);
-    sv_vsetpvf_mg(sv, pat, &args);
-    va_end(args);
+    UV value;
+    int numtype = grok_number(SvPVX(sv), SvCUR(sv), &value);
+
+    if ((numtype & (IS_NUMBER_IN_UV | IS_NUMBER_NOT_INT))
+	== IS_NUMBER_IN_UV) {
+	/* It's definitely an integer */
+	if (numtype & IS_NUMBER_NEG) {
+	    if (value < (UV)IV_MIN)
+		return -(IV)value;
+	} else {
+	    if (value < (UV)IV_MAX)
+		return (IV)value;
+	}
+    }
+    if (!numtype) {
+	if (ckWARN(WARN_NUMERIC))
+	    not_a_number(sv);
+    }
+    return I_V(Atof(SvPVX(sv)));
 }

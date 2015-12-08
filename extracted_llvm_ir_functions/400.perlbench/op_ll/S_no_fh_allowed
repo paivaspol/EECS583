@@ -1,0 +1,23 @@
+define internal fastcc %struct.op* @S_no_fh_allowed(%struct.op* %o) #0 {
+entry:
+  %op_type = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %0 = load i16* %op_type, align 2, !tbaa !4
+  %cmp = icmp eq i16 %0, 351
+  br i1 %cmp, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %entry
+  %call = tail call i8* @Perl_custom_op_desc(%struct.op* %o) #8
+  br label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %idxprom = zext i16 %0 to i64
+  %arrayidx = getelementptr inbounds [0 x i8*]* @PL_op_desc, i64 0, i64 %idxprom
+  %1 = load i8** %arrayidx, align 8, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %call, %cond.true ], [ %1, %cond.false ]
+  %call3 = tail call i8* (i8*, ...)* @Perl_form(i8* getelementptr inbounds ([50 x i8]* @.str145, i64 0, i64 0), i8* %cond) #7
+  %call4 = tail call i32 @Perl_yyerror(i8* %call3) #7
+  ret %struct.op* %o
+}

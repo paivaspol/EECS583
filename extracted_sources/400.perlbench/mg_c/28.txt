@@ -1,16 +1,19 @@
 int
-Perl_magic_wipepack(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_getnkeys(pTHX_ SV *sv, MAGIC *mg)
 {
-    dSP;
+    HV *hv = (HV*)LvTARG(sv);
+    I32 i = 0;
 
-    ENTER;
-    PUSHSTACKi(PERLSI_MAGIC);
-    PUSHMARK(SP);
-    XPUSHs(SvTIED_obj(sv, mg));
-    PUTBACK;
-    call_method("CLEAR", G_SCALAR|G_DISCARD);
-    POPSTACK;
-    LEAVE;
+    if (hv) {
+         (void) hv_iterinit(hv);
+         if (! SvTIED_mg((SV*)hv, PERL_MAGIC_tied))
+	     i = HvKEYS(hv);
+         else {
+	     while (hv_iternext(hv))
+	         i++;
+         }
+    }
 
+    sv_setiv(sv, (IV)i);
     return 0;
 }

@@ -1,0 +1,99 @@
+define i32 @spec_load(i32 %num, i8* %filename, i32 %size) #0 {
+entry:
+  %call = tail call i32 (i8*, i32, ...)* @open(i8* %filename, i32 0) #8
+  %cmp = icmp slt i32 %call, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
+  %call1 = tail call i32* @__errno_location() #10
+  %1 = load i32* %call1, align 4, !tbaa !3
+  %call2 = tail call i8* @strerror(i32 %1) #8
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([24 x i8]* @.str5, i64 0, i64 0), i8* %filename, i8* %call2) #8
+  tail call void @exit(i32 0) #9
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %idxprom = sext i32 %num to i64
+  %len = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 1
+  store i32 0, i32* %len, align 4, !tbaa !3
+  %pos = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 2
+  store i32 0, i32* %pos, align 8, !tbaa !3
+  %cmp691 = icmp sgt i32 %size, 0
+  br i1 %cmp691, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %buf = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 3
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end20
+  %i.092 = phi i32 [ 0, %for.body.lr.ph ], [ %add24, %if.end20 ]
+  %2 = load i8** %buf, align 8, !tbaa !4
+  %idx.ext = sext i32 %i.092 to i64
+  %add.ptr = getelementptr inbounds i8* %2, i64 %idx.ext
+  %call9 = tail call i64 @read(i32 %call, i8* %add.ptr, i64 131072) #8
+  %conv = trunc i64 %call9 to i32
+  %cmp10 = icmp eq i32 %conv, 0
+  br i1 %cmp10, label %for.end, label %if.end13
+
+if.end13:                                         ; preds = %for.body
+  %cmp14 = icmp slt i32 %conv, 0
+  br i1 %cmp14, label %if.then16, label %if.end20
+
+if.then16:                                        ; preds = %if.end13
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
+  %call17 = tail call i32* @__errno_location() #10
+  %4 = load i32* %call17, align 4, !tbaa !3
+  %call18 = tail call i8* @strerror(i32 %4) #8
+  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([27 x i8]* @.str6, i64 0, i64 0), i8* %filename, i8* %call18) #8
+  tail call void @exit(i32 0) #9
+  unreachable
+
+if.end20:                                         ; preds = %if.end13
+  %5 = load i32* %len, align 4, !tbaa !3
+  %add = add nsw i32 %5, %conv
+  store i32 %add, i32* %len, align 4, !tbaa !3
+  %add24 = add nsw i32 %conv, %i.092
+  %cmp6 = icmp slt i32 %add24, %size
+  br i1 %cmp6, label %for.body, label %for.end
+
+for.end:                                          ; preds = %if.end20, %for.body, %if.end
+  %call25 = tail call i32 @close(i32 %call) #8
+  %6 = load i32* %len, align 4, !tbaa !3
+  %cmp2990 = icmp slt i32 %6, %size
+  br i1 %cmp2990, label %while.body.lr.ph, label %while.end
+
+while.body.lr.ph:                                 ; preds = %for.end
+  %buf51 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 3
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end48
+  %7 = phi i32 [ %6, %while.body.lr.ph ], [ %add64, %if.end48 ]
+  %sub = sub nsw i32 %size, %7
+  %cmp37 = icmp sgt i32 %sub, %7
+  %.sub = select i1 %cmp37, i32 %7, i32 %sub
+  %8 = load i32* @dbglvl, align 4, !tbaa !3
+  %cmp44 = icmp sgt i32 %8, 3
+  br i1 %cmp44, label %if.then46, label %if.end48
+
+if.then46:                                        ; preds = %while.body
+  %call47 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0), i32 %.sub) #8
+  %.pre = load i32* %len, align 4, !tbaa !3
+  br label %if.end48
+
+if.end48:                                         ; preds = %if.then46, %while.body
+  %9 = phi i32 [ %.pre, %if.then46 ], [ %7, %while.body ]
+  %10 = load i8** %buf51, align 8, !tbaa !4
+  %idx.ext55 = sext i32 %9 to i64
+  %add.ptr56 = getelementptr inbounds i8* %10, i64 %idx.ext55
+  %conv60 = sext i32 %.sub to i64
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr56, i8* %10, i64 %conv60, i32 1, i1 false)
+  %11 = load i32* %len, align 4, !tbaa !3
+  %add64 = add nsw i32 %11, %.sub
+  store i32 %add64, i32* %len, align 4, !tbaa !3
+  %cmp29 = icmp slt i32 %add64, %size
+  br i1 %cmp29, label %while.body, label %while.end
+
+while.end:                                        ; preds = %if.end48, %for.end
+  ret i32 0
+}

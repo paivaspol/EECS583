@@ -1,0 +1,34 @@
+define %struct.op* @Perl_pp_method() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv** %0, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %1, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, 524288
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end4, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %1, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !0
+  %xrv_rv = bitcast i8* %3 to %struct.sv**
+  %4 = load %struct.sv** %xrv_rv, align 8, !tbaa !0
+  %sv_flags1 = getelementptr inbounds %struct.sv* %4, i64 0, i32 2
+  %5 = load i32* %sv_flags1, align 4, !tbaa !3
+  %and2 = and i32 %5, 255
+  %cmp = icmp eq i32 %and2, 12
+  br i1 %cmp, label %return, label %if.end4
+
+if.end4:                                          ; preds = %entry, %if.then
+  %call = tail call fastcc %struct.sv* @S_method_common(%struct.sv* %1, i32* null) #9
+  br label %return
+
+return:                                           ; preds = %if.then, %if.end4
+  %storemerge = phi %struct.sv* [ %call, %if.end4 ], [ %4, %if.then ]
+  store %struct.sv* %storemerge, %struct.sv** %0, align 8, !tbaa !0
+  store %struct.sv** %0, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %.pn = load %struct.op** @PL_op, align 8
+  %retval.0.in = getelementptr inbounds %struct.op* %.pn, i64 0, i32 0
+  %retval.0 = load %struct.op** %retval.0.in, align 8
+  ret %struct.op* %retval.0
+}

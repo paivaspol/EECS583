@@ -1,0 +1,49 @@
+define void @XS_Storable_mstore(%struct.cv* nocapture %cv) #1 {
+entry:
+  %out.i = alloca %struct.sv*, align 8
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !3
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %add.ptr.idx = shl nsw i64 %idx.ext, 32
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %4 = and i64 %sub.ptr.sub3, 34359738360
+  %cmp = icmp eq i64 %4, 8
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([29 x i8]* @.str4, i64 0, i64 0)) #7
+  %.pre = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %5 = phi %struct.sv** [ %1, %entry ], [ %.pre, %if.then ]
+  %sext = add i64 %add.ptr.idx, 4294967296
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds %struct.sv** %5, i64 %idxprom
+  %6 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %7 = bitcast %struct.sv** %out.i to i8*
+  call void @llvm.lifetime.start(i64 8, i8* %7) #3
+  %call.i = call fastcc i32 @do_store(%struct._PerlIO** null, %struct.sv* %6, i32 0, i32 0, %struct.sv** %out.i) #7
+  %tobool.i = icmp eq i32 %call.i, 0
+  %8 = load %struct.sv** %out.i, align 8, !tbaa !0
+  %retval.0.i = select i1 %tobool.i, %struct.sv* @PL_sv_undef, %struct.sv* %8
+  call void @llvm.lifetime.end(i64 8, i8* %7) #3
+  %9 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %arrayidx10 = getelementptr inbounds %struct.sv** %9, i64 %idxprom
+  store %struct.sv* %retval.0.i, %struct.sv** %arrayidx10, align 8, !tbaa !0
+  %10 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %arrayidx13 = getelementptr inbounds %struct.sv** %10, i64 %idxprom
+  %11 = load %struct.sv** %arrayidx13, align 8, !tbaa !0
+  %call14 = call %struct.sv* @Perl_sv_2mortal(%struct.sv* %11) #7
+  %12 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %add.ptr16 = getelementptr inbounds %struct.sv** %12, i64 %idxprom
+  store %struct.sv** %add.ptr16, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  ret void
+}

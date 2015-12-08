@@ -1,0 +1,110 @@
+STATIC char *
+S_skipspace(pTHX_ register char *s)
+{
+    if (PL_lex_formbrack && PL_lex_brackets <= PL_lex_formbrack) {
+	while (s < PL_bufend && SPACE_OR_TAB(*s))
+	    s++;
+	return s;
+    }
+    for (;;) {
+	STRLEN prevlen;
+	SSize_t oldprevlen, oldoldprevlen;
+	SSize_t oldloplen = 0, oldunilen = 0;
+	while (s < PL_bufend && isSPACE(*s)) {
+	    if (*s++ == '\n' && PL_in_eval && !PL_rsfp)
+		incline(s);
+	}
+
+	/* comment */
+	if (s < PL_bufend && *s == '#') {
+	    while (s < PL_bufend && *s != '\n')
+		s++;
+	    if (s < PL_bufend) {
+		s++;
+		if (PL_in_eval && !PL_rsfp) {
+		    incline(s);
+		    continue;
+		}
+	    }
+	}
+
+	/* only continue to recharge the buffer if we're at the end
+	 * of the buffer, we're not reading from a source filter, and
+	 * we're in normal lexing mode
+	 */
+	if (s < PL_bufend || !PL_rsfp || PL_sublex_info.sub_inwhat ||
+		PL_lex_state == LEX_FORMLINE)
+	    return s;
+
+	/* try to recharge the buffer */
+	if ((s = filter_gets(PL_linestr, PL_rsfp,
+			     (prevlen = SvCUR(PL_linestr)))) == Nullch)
+	{
+	    /* end of file.  Add on the -p or -n magic */
+	    if (PL_minus_p) {
+		sv_setpv(PL_linestr,
+			 ";}continue{print or die qq(-p destination: $!\\n);}");
+		PL_minus_n = PL_minus_p = 0;
+	    }
+	    else if (PL_minus_n) {
+		sv_setpvn(PL_linestr, ";}", 2);
+		PL_minus_n = 0;
+	    }
+	    else
+		sv_setpvn(PL_linestr,";", 1);
+
+	    /* reset variables for next time we lex */
+	    PL_oldoldbufptr = PL_oldbufptr = PL_bufptr = s = PL_linestart
+		= SvPVX(PL_linestr);
+	    PL_bufend = SvPVX(PL_linestr) + SvCUR(PL_linestr);
+	    PL_last_lop = PL_last_uni = Nullch;
+
+	    /* Close the filehandle.  Could be from -P preprocessor,
+	     * STDIN, or a regular file.  If we were reading code from
+	     * STDIN (because the commandline held no -e or filename)
+	     * then we don't close it, we reset it so the code can
+	     * read from STDIN too.
+	     */
+
+	    if (PL_preprocess && !PL_in_eval)
+		(void)PerlProc_pclose(PL_rsfp);
+	    else if ((PerlIO*)PL_rsfp == PerlIO_stdin())
+		PerlIO_clearerr(PL_rsfp);
+	    else
+		(void)PerlIO_close(PL_rsfp);
+	    PL_rsfp = Nullfp;
+	    return s;
+	}
+
+	/* not at end of file, so we only read another line */
+	/* make corresponding updates to old pointers, for yyerror() */
+	oldprevlen = PL_oldbufptr - PL_bufend;
+	oldoldprevlen = PL_oldoldbufptr - PL_bufend;
+	if (PL_last_uni)
+	    oldunilen = PL_last_uni - PL_bufend;
+	if (PL_last_lop)
+	    oldloplen = PL_last_lop - PL_bufend;
+	PL_linestart = PL_bufptr = s + prevlen;
+	PL_bufend = s + SvCUR(PL_linestr);
+	s = PL_bufptr;
+	PL_oldbufptr = s + oldprevlen;
+	PL_oldoldbufptr = s + oldoldprevlen;
+	if (PL_last_uni)
+	    PL_last_uni = s + oldunilen;
+	if (PL_last_lop)
+	    PL_last_lop = s + oldloplen;
+	incline(s);
+
+	/* debugger active and we're not compiling the debugger code,
+	 * so store the line into the debugger's array of lines
+	 */
+	if (PERLDB_LINE && PL_curstash != PL_debstash) {
+	    SV *sv = NEWSV(85,0);
+
+	    sv_upgrade(sv, SVt_PVMG);
+	    sv_setpvn(sv,PL_bufptr,PL_bufend-PL_bufptr);
+            (void)SvIOK_on(sv);
+            SvIVX(sv) = 0;
+	    av_store(CopFILEAV(PL_curcop),(I32)CopLINE(PL_curcop),sv);
+	}
+    }

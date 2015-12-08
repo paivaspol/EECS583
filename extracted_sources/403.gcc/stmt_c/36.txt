@@ -1,11 +1,23 @@
 void
-expand_start_elseif (cond)
+expand_start_cond (cond, exitflag)
      tree cond;
+     int exitflag;
 {
-  if (cond_stack->data.cond.endif_label == 0)
-    cond_stack->data.cond.endif_label = gen_label_rtx ();
-  emit_jump (cond_stack->data.cond.endif_label);
-  emit_label (cond_stack->data.cond.next_label);
-  cond_stack->data.cond.next_label = gen_label_rtx ();
-  do_jump (cond, cond_stack->data.cond.next_label, NULL_RTX);
+  struct nesting *thiscond = ALLOC_NESTING ();
+
+  /* Make an entry on cond_stack for the cond we are entering.  */
+
+  thiscond->next = cond_stack;
+  thiscond->all = nesting_stack;
+  thiscond->depth = ++nesting_depth;
+  thiscond->data.cond.next_label = gen_label_rtx ();
+  /* Before we encounter an `else', we don't need a separate exit label
+     unless there are supposed to be exit statements
+     to exit this conditional.  */
+  thiscond->exit_label = exitflag ? gen_label_rtx () : 0;
+  thiscond->data.cond.endif_label = thiscond->exit_label;
+  cond_stack = thiscond;
+  nesting_stack = thiscond;
+
+  do_jump (cond, thiscond->data.cond.next_label, NULL_RTX);
 }

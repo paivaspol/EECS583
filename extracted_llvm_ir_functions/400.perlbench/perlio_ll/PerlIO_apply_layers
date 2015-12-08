@@ -1,0 +1,33 @@
+define i32 @PerlIO_apply_layers(%struct._PerlIO** %f, i8* %mode, i8* %names) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  %tobool1 = icmp eq i8* %names, null
+  %or.cond = or i1 %tobool, %tobool1
+  br i1 %or.cond, label %if.end5, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call.i = tail call i8* @Perl_safesysmalloc(i64 32) #9
+  %0 = bitcast i8* %call.i to %struct.PerlIO_list_s*
+  tail call void @llvm.memset.p0i8.i64(i8* %call.i, i8 0, i64 32, i32 1, i1 false) #2
+  %refcnt.i = bitcast i8* %call.i to i64*
+  store i64 1, i64* %refcnt.i, align 8, !tbaa !4
+  %call2 = tail call i32 @PerlIO_parse_layers(%struct.PerlIO_list_s* %0, i8* %names) #10
+  %cmp = icmp eq i32 %call2, 0
+  br i1 %cmp, label %if.then3, label %if.end
+
+if.then3:                                         ; preds = %if.then
+  %cur = getelementptr inbounds i8* %call.i, i64 8
+  %1 = bitcast i8* %cur to i64*
+  %2 = load i64* %1, align 8, !tbaa !4
+  %call4 = tail call i32 @PerlIO_apply_layera(%struct._PerlIO** %f, i8* %mode, %struct.PerlIO_list_s* %0, i64 0, i64 %2) #10
+  br label %if.end
+
+if.end:                                           ; preds = %if.then3, %if.then
+  %code.0 = phi i32 [ %call4, %if.then3 ], [ %call2, %if.then ]
+  tail call void @PerlIO_list_free(%struct.PerlIO_list_s* %0) #10
+  br label %if.end5
+
+if.end5:                                          ; preds = %entry, %if.end
+  %code.1 = phi i32 [ %code.0, %if.end ], [ 0, %entry ]
+  ret i32 %code.1
+}

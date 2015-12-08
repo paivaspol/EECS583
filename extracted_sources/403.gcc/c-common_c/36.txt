@@ -1,9 +1,13 @@
 int
-c_staticp (exp)
+c_unsafe_for_reeval (exp)
      tree exp;
 {
-  if (TREE_CODE (exp) == COMPOUND_LITERAL_EXPR
-      && TREE_STATIC (COMPOUND_LITERAL_EXPR_DECL (exp)))
-    return 1;
-  return 0;
+  /* Statement expressions may not be reevaluated, likewise compound
+     literals.  */
+  if (TREE_CODE (exp) == STMT_EXPR
+      || TREE_CODE (exp) == COMPOUND_LITERAL_EXPR)
+    return 2;
+
+  /* Walk all other expressions.  */
+  return -1;
 }

@@ -1,36 +1,17 @@
-int
-Perl_sv_unmagic(pTHX_ SV *sv, int type)
+STATIC void
+S_more_xpvhv(pTHX)
 {
-    MAGIC* mg;
-    MAGIC** mgp;
-    if (SvTYPE(sv) < SVt_PVMG || !SvMAGIC(sv))
-	return 0;
-    mgp = &SvMAGIC(sv);
-    for (mg = *mgp; mg; mg = *mgp) {
-	if (mg->mg_type == type) {
-	    MGVTBL* vtbl = mg->mg_virtual;
-	    *mgp = mg->mg_moremagic;
-	    if (vtbl && vtbl->svt_free)
-		CALL_FPTR(vtbl->svt_free)(aTHX_ sv, mg);
-	    if (mg->mg_ptr && mg->mg_type != PERL_MAGIC_regex_global) {
-		if (mg->mg_len > 0)
-		    Safefree(mg->mg_ptr);
-		else if (mg->mg_len == HEf_SVKEY)
-		    SvREFCNT_dec((SV*)mg->mg_ptr);
-		else if (mg->mg_type == PERL_MAGIC_utf8 && mg->mg_ptr)
-		    Safefree(mg->mg_ptr);
-            }
-	    if (mg->mg_flags & MGf_REFCOUNTED)
-		SvREFCNT_dec(mg->mg_obj);
-	    Safefree(mg);
-	}
-	else
-	    mgp = &mg->mg_moremagic;
-    }
-    if (!SvMAGIC(sv)) {
-	SvMAGICAL_off(sv);
-       SvFLAGS(sv) |= (SvFLAGS(sv) & (SVp_NOK|SVp_POK)) >> PRIVSHIFT;
-    }
+    register XPVHV* xpvhv;
+    register XPVHV* xpvhvend;
+    New(718, xpvhv, PERL_ARENA_SIZE/sizeof(XPVHV), XPVHV);
+    xpvhv->xhv_array = (char*)PL_xpvhv_arenaroot;
+    PL_xpvhv_arenaroot = xpvhv;
 
-    return 0;
+    xpvhvend = &xpvhv[PERL_ARENA_SIZE / sizeof(XPVHV) - 1];
+    PL_xpvhv_root = ++xpvhv;
+    while (xpvhv < xpvhvend) {
+	xpvhv->xhv_array = (char*)(xpvhv + 1);
+	xpvhv++;
+    }
+    xpvhv->xhv_array = 0;
 }

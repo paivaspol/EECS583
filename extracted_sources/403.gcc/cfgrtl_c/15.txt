@@ -1,24 +1,33 @@
-static bool
-back_edge_of_syntactic_loop_p (bb1, bb2)
-	basic_block bb1, bb2;
+void
+tidy_fallthru_edges ()
 {
-  rtx insn;
-  int count = 0;
+  int i;
 
-  if (bb1->index > bb2->index)
-    return false;
-  else if (bb1->index == bb2->index)
-    return true;
+  for (i = 1; i < n_basic_blocks; i++)
+    {
+      basic_block b = BASIC_BLOCK (i - 1);
+      basic_block c = BASIC_BLOCK (i);
+      edge s;
 
-  for (insn = bb1->end; insn != bb2->head && count >= 0;
-       insn = NEXT_INSN (insn))
-    if (GET_CODE (insn) == NOTE)
-      {
-	if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_BEG)
-	  count++;
-	else if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_END)
-	  count--;
-      }
+      /* We care about simple conditional or unconditional jumps with
+	 a single successor.
 
-  return count >= 0;
+	 If we had a conditional branch to the next instruction when
+	 find_basic_blocks was called, then there will only be one
+	 out edge for the block which ended with the conditional
+	 branch (since we do not create duplicate edges).
+
+	 Furthermore, the edge will be marked as a fallthru because we
+	 merge the flags for the duplicate edges.  So we do not want to
+	 check that the edge is not a FALLTHRU edge.  */
+
+      if ((s = b->succ) != NULL
+	  && ! (s->flags & EDGE_COMPLEX)
+	  && s->succ_next == NULL
+	  && s->dest == c
+	  /* If the jump insn has side effects, we can't tidy the edge.  */
+	  && (GET_CODE (b->end) != JUMP_INSN
+	      || onlyjump_p (b->end)))
+	tidy_fallthru_edge (s, b, c);
+    }
 }

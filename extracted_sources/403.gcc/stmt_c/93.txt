@@ -1,108 +1,42 @@
 static void
-balance_case_nodes (head, parent)
-     case_node_ptr *head;
-     case_node_ptr parent;
+group_case_nodes (head)
+     case_node_ptr head;
 {
-  case_node_ptr np;
+  case_node_ptr node = head;
 
-  np = *head;
-  if (np)
+  while (node)
     {
-      int cost = 0;
-      int i = 0;
-      int ranges = 0;
-      case_node_ptr *npp;
-      case_node_ptr left;
+      rtx lb = next_real_insn (label_rtx (node->code_label));
+      rtx lb2;
+      case_node_ptr np = node;
 
-      /* Count the number of entries on branch.  Also count the ranges.  */
-
-      while (np)
+      /* Try to group the successors of NODE with NODE.  */
+      while (((np = np->right) != 0)
+	     /* Do they jump to the same place?  */
+	     && ((lb2 = next_real_insn (label_rtx (np->code_label))) == lb
+		 || (lb != 0 && lb2 != 0
+		     && simplejump_p (lb)
+		     && simplejump_p (lb2)
+		     && rtx_equal_p (SET_SRC (PATTERN (lb)),
+				     SET_SRC (PATTERN (lb2)))))
+	     /* Are their ranges consecutive?  */
+	     && tree_int_cst_equal (np->low,
+				    fold (build (PLUS_EXPR,
+						 TREE_TYPE (node->high),
+						 node->high,
+						 integer_one_node)))
+	     /* An overflow is not consecutive.  */
+	     && tree_int_cst_lt (node->high,
+				 fold (build (PLUS_EXPR,
+					      TREE_TYPE (node->high),
+					      node->high,
+					      integer_one_node))))
 	{
-	  if (!tree_int_cst_equal (np->low, np->high))
-	    {
-	      ranges++;
-	      if (use_cost_table)
-		cost += COST_TABLE (TREE_INT_CST_LOW (np->high));
-	    }
-
-	  if (use_cost_table)
-	    cost += COST_TABLE (TREE_INT_CST_LOW (np->low));
-
-	  i++;
-	  np = np->right;
+	  node->high = np->high;
 	}
-
-      if (i > 2)
-	{
-	  /* Split this list if it is long enough for that to help.  */
-	  npp = head;
-	  left = *npp;
-	  if (use_cost_table)
-	    {
-	      /* Find the place in the list that bisects the list's total cost,
-		 Here I gets half the total cost.  */
-	      int n_moved = 0;
-	      i = (cost + 1) / 2;
-	      while (1)
-		{
-		  /* Skip nodes while their cost does not reach that amount.  */
-		  if (!tree_int_cst_equal ((*npp)->low, (*npp)->high))
-		    i -= COST_TABLE (TREE_INT_CST_LOW ((*npp)->high));
-		  i -= COST_TABLE (TREE_INT_CST_LOW ((*npp)->low));
-		  if (i <= 0)
-		    break;
-		  npp = &(*npp)->right;
-		  n_moved += 1;
-		}
-	      if (n_moved == 0)
-		{
-		  /* Leave this branch lopsided, but optimize left-hand
-		     side and fill in `parent' fields for right-hand side.  */
-		  np = *head;
-		  np->parent = parent;
-		  balance_case_nodes (&np->left, np);
-		  for (; np->right; np = np->right)
-		    np->right->parent = np;
-		  return;
-		}
-	    }
-	  /* If there are just three nodes, split at the middle one.  */
-	  else if (i == 3)
-	    npp = &(*npp)->right;
-	  else
-	    {
-	      /* Find the place in the list that bisects the list's total cost,
-		 where ranges count as 2.
-		 Here I gets half the total cost.  */
-	      i = (i + ranges + 1) / 2;
-	      while (1)
-		{
-		  /* Skip nodes while their cost does not reach that amount.  */
-		  if (!tree_int_cst_equal ((*npp)->low, (*npp)->high))
-		    i--;
-		  i--;
-		  if (i <= 0)
-		    break;
-		  npp = &(*npp)->right;
-		}
-	    }
-	  *head = np = *npp;
-	  *npp = 0;
-	  np->parent = parent;
-	  np->left = left;
-
-	  /* Optimize each of the two split parts.  */
-	  balance_case_nodes (&np->left, np);
-	  balance_case_nodes (&np->right, np);
-	}
-      else
-	{
-	  /* Else leave this branch as one level,
-	     but fill in `parent' fields.  */
-	  np = *head;
-	  np->parent = parent;
-	  for (; np->right; np = np->right)
-	    np->right->parent = np;
-	}
+      /* NP is the first node after NODE which can't be grouped with it.
+	 Delete the nodes in between, and move on to that node.  */
+      node->right = np;
+      node = np;
     }
 }

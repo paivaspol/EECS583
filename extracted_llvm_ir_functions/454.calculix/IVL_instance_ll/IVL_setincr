@@ -1,0 +1,18 @@
+define void @IVL_setincr(%struct._IVL* %ivl, i32 %incr) #0 {
+entry:
+  %cmp = icmp eq %struct._IVL* %ivl, null
+  %cmp1 = icmp slt i32 %incr, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str5, i64 0, i64 0), %struct._IVL* %ivl, i32 %incr) #3
+  tail call void @exit(i32 -1) #4
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %incr2 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 6
+  store i32 %incr, i32* %incr2, align 4, !tbaa !3
+  ret void
+}

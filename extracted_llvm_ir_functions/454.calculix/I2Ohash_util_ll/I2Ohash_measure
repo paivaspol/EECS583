@@ -1,0 +1,65 @@
+define double @I2Ohash_measure(%struct._I2Ohash* %hashtable) #0 {
+entry:
+  %cmp = icmp eq %struct._I2Ohash* %hashtable, null
+  br i1 %cmp, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %nlist = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0
+  %0 = load i32* %nlist, align 4, !tbaa !3
+  %cmp128 = icmp sgt i32 %0, 0
+  br i1 %cmp128, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %heads = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5
+  %1 = load %struct._I2OP*** %heads, align 8, !tbaa !0
+  br label %for.body
+
+if.then:                                          ; preds = %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([57 x i8]* @.str4, i64 0, i64 0), %struct._I2Ohash* null) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %measure.029 = phi double [ 0.000000e+00, %for.body.lr.ph ], [ %measure.1, %for.inc ]
+  %arrayidx = getelementptr inbounds %struct._I2OP** %1, i64 %indvars.iv
+  %3 = load %struct._I2OP** %arrayidx, align 8, !tbaa !0
+  %cmp2 = icmp eq %struct._I2OP* %3, null
+  br i1 %cmp2, label %for.inc, label %while.body
+
+while.body:                                       ; preds = %for.body, %while.body
+  %i2op.027 = phi %struct._I2OP* [ %4, %while.body ], [ %3, %for.body ]
+  %count.026 = phi i32 [ %inc, %while.body ], [ 0, %for.body ]
+  %inc = add nsw i32 %count.026, 1
+  %next = getelementptr inbounds %struct._I2OP* %i2op.027, i64 0, i32 3
+  %4 = load %struct._I2OP** %next, align 8, !tbaa !0
+  %cmp4 = icmp eq %struct._I2OP* %4, null
+  br i1 %cmp4, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body
+  %mul = mul nsw i32 %inc, %inc
+  %conv = sitofp i32 %mul to double
+  %add = fadd double %measure.029, %conv
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %while.end
+  %measure.1 = phi double [ %add, %while.end ], [ %measure.029, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %5 = trunc i64 %indvars.iv.next to i32
+  %cmp1 = icmp slt i32 %5, %0
+  br i1 %cmp1, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %measure.0.lcssa = phi double [ 0.000000e+00, %for.cond.preheader ], [ %measure.1, %for.inc ]
+  %call7 = tail call double @sqrt(double %measure.0.lcssa) #4
+  %6 = load i32* %nlist, align 4, !tbaa !3
+  %conv9 = sitofp i32 %6 to double
+  %call10 = tail call double @sqrt(double %conv9) #4
+  %nitem = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 2
+  %7 = load i32* %nitem, align 4, !tbaa !3
+  %conv11 = sitofp i32 %7 to double
+  %div = fdiv double %call10, %conv11
+  %mul12 = fmul double %call7, %div
+  ret double %mul12
+}

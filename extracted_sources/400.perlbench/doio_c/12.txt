@@ -1,0 +1,53 @@
+I32
+Perl_my_stat(pTHX)
+{
+    dSP;
+    IO *io;
+    GV* gv;
+
+    if (PL_op->op_flags & OPf_REF) {
+	EXTEND(SP,1);
+	gv = cGVOP_gv;
+      do_fstat:
+	io = GvIO(gv);
+	if (io && IoIFP(io)) {
+	    PL_statgv = gv;
+	    sv_setpv(PL_statname,"");
+	    PL_laststype = OP_STAT;
+	    return (PL_laststatval = PerlLIO_fstat(PerlIO_fileno(IoIFP(io)), &PL_statcache));
+	}
+	else {
+	    if (gv == PL_defgv)
+		return PL_laststatval;
+	    if (ckWARN2(WARN_UNOPENED,WARN_CLOSED))
+		report_evil_fh(gv, io, PL_op->op_type);
+	    PL_statgv = Nullgv;
+	    sv_setpv(PL_statname,"");
+	    return (PL_laststatval = -1);
+	}
+    }
+    else {
+	SV* sv = POPs;
+	char *s;
+	STRLEN len;
+	PUTBACK;
+	if (SvTYPE(sv) == SVt_PVGV) {
+	    gv = (GV*)sv;
+	    goto do_fstat;
+	}
+	else if (SvROK(sv) && SvTYPE(SvRV(sv)) == SVt_PVGV) {
+	    gv = (GV*)SvRV(sv);
+	    goto do_fstat;
+	}
+
+	s = SvPV(sv, len);
+	PL_statgv = Nullgv;
+	sv_setpvn(PL_statname, s, len);
+	s = SvPVX(PL_statname);		/* s now NUL-terminated */
+	PL_laststype = OP_STAT;
+	PL_laststatval = PerlLIO_stat(s, &PL_statcache);
+	if (PL_laststatval < 0 && ckWARN(WARN_NEWLINE) && strchr(s, '\n'))
+	    Perl_warner(aTHX_ packWARN(WARN_NEWLINE), PL_warn_nl, "stat");
+	return PL_laststatval;
+    }
+}

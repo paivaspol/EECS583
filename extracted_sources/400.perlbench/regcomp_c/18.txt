@@ -1,0 +1,33 @@
+STATIC regnode *			/* Location. */
+S_reganode(pTHX_ RExC_state_t *pRExC_state, U8 op, U32 arg)
+{
+    register regnode *ret;
+    register regnode *ptr;
+
+    ret = RExC_emit;
+    if (SIZE_ONLY) {
+	SIZE_ALIGN(RExC_size);
+	RExC_size += 2;
+	return(ret);
+    }
+
+    NODE_ALIGN_FILL(ret);
+    ptr = ret;
+    FILL_ADVANCE_NODE_ARG(ptr, op, arg);
+    if (RExC_offsets) {         /* MJD */
+	MJD_OFFSET_DEBUG(("%s(%d): (op %s) %s %u <- %u (max %u).\n", 
+              "reganode",
+	      __LINE__,
+	      reg_name[op],
+              RExC_emit - RExC_emit_start > RExC_offsets[0] ? 
+              "Overwriting end of array!\n" : "OK",
+              RExC_emit - RExC_emit_start,
+              RExC_parse - RExC_start,
+              RExC_offsets[0])); 
+	Set_Cur_Node_Offset;
+    }
+            
+    RExC_emit = ptr;
+
+    return(ret);
+}

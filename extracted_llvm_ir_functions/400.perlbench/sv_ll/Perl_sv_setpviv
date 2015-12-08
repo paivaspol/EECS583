@@ -1,0 +1,37 @@
+define void @Perl_sv_setpviv(%struct.sv* %sv, i64 %iv) #0 {
+entry:
+  %buf = alloca [22 x i8], align 16
+  %add.ptr.i = getelementptr inbounds [22 x i8]* %buf, i64 0, i64 22
+  %cmp.i = icmp sgt i64 %iv, -1
+  %sub.i = sub nsw i64 0, %iv
+  %iv.sub.i = select i1 %cmp.i, i64 %iv, i64 %sub.i
+  br label %do.body.i
+
+do.body.i:                                        ; preds = %do.body.i, %entry
+  %ptr.0.i = phi i8* [ %incdec.ptr.i, %do.body.i ], [ %add.ptr.i, %entry ]
+  %uv.addr.0.i = phi i64 [ %div.i, %do.body.i ], [ %iv.sub.i, %entry ]
+  %rem.i = urem i64 %uv.addr.0.i, 10
+  %conv.i = trunc i64 %rem.i to i8
+  %add17.i = or i8 %conv.i, 48
+  %incdec.ptr.i = getelementptr inbounds i8* %ptr.0.i, i64 -1
+  store i8 %add17.i, i8* %incdec.ptr.i, align 1, !tbaa !1
+  %div.i = udiv i64 %uv.addr.0.i, 10
+  %0 = icmp ugt i64 %uv.addr.0.i, 9
+  br i1 %0, label %do.body.i, label %do.end.i
+
+do.end.i:                                         ; preds = %do.body.i
+  br i1 %cmp.i, label %uiv_2buf.exit, label %if.then8.i
+
+if.then8.i:                                       ; preds = %do.end.i
+  %incdec.ptr9.i = getelementptr inbounds i8* %ptr.0.i, i64 -2
+  store i8 45, i8* %incdec.ptr9.i, align 1, !tbaa !1
+  br label %uiv_2buf.exit
+
+uiv_2buf.exit:                                    ; preds = %do.end.i, %if.then8.i
+  %ptr.1.i = phi i8* [ %incdec.ptr9.i, %if.then8.i ], [ %incdec.ptr.i, %do.end.i ]
+  %sub.ptr.lhs.cast = ptrtoint i8* %add.ptr.i to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %ptr.1.i to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  call void @Perl_sv_setpvn(%struct.sv* %sv, i8* %ptr.1.i, i64 %sub.ptr.sub) #7
+  ret void
+}

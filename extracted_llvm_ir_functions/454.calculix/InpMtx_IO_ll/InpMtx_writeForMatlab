@@ -1,0 +1,107 @@
+define i32 @InpMtx_writeForMatlab(%struct._InpMtx* %inpmtx, i8* %mtxname, %struct._IO_FILE* %fp) #0 {
+entry:
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null
+  %cmp1 = icmp eq i8* %mtxname, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond89 = or i1 %or.cond, %cmp3
+  br i1 %or.cond89, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([61 x i8]* @.str60, i64 0, i64 0), %struct._InpMtx* %inpmtx, i8* %mtxname, %struct._IO_FILE* %fp) #6
+  tail call void @exit(i32 -1) #9
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %coordType = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 0
+  %1 = load i32* %coordType, align 4, !tbaa !3
+  %storageMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1
+  %2 = load i32* %storageMode, align 4, !tbaa !3
+  %cmp4 = icmp ne i32 %1, 1
+  br i1 %cmp4, label %if.then5, label %if.end6
+
+if.then5:                                         ; preds = %if.end
+  tail call void @InpMtx_changeCoordType(%struct._InpMtx* %inpmtx, i32 1) #6
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.then5, %if.end
+  %nent = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4
+  %3 = load i32* %nent, align 4, !tbaa !3
+  %cmp7 = icmp sgt i32 %3, 0
+  br i1 %cmp7, label %if.then8, label %if.end49
+
+if.then8:                                         ; preds = %if.end6
+  %call9 = tail call i32* @InpMtx_ivec1(%struct._InpMtx* %inpmtx) #6
+  %call10 = tail call i32* @InpMtx_ivec2(%struct._InpMtx* %inpmtx) #6
+  %inputMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2
+  %4 = load i32* %inputMode, align 4, !tbaa !3
+  switch i32 %4, label %if.end49 [
+    i32 1, label %if.then12
+    i32 2, label %if.then24
+  ]
+
+if.then12:                                        ; preds = %if.then8
+  %call13 = tail call double* @InpMtx_dvec(%struct._InpMtx* %inpmtx) #6
+  %5 = load i32* %nent, align 4, !tbaa !3
+  %cmp1590 = icmp sgt i32 %5, 0
+  br i1 %cmp1590, label %for.body, label %if.end49
+
+for.body:                                         ; preds = %if.then12, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then12 ]
+  %arrayidx = getelementptr inbounds i32* %call9, i64 %indvars.iv
+  %6 = load i32* %arrayidx, align 4, !tbaa !3
+  %add = add nsw i32 %6, 1
+  %arrayidx17 = getelementptr inbounds i32* %call10, i64 %indvars.iv
+  %7 = load i32* %arrayidx17, align 4, !tbaa !3
+  %add18 = add nsw i32 %7, 1
+  %arrayidx20 = getelementptr inbounds double* %call13, i64 %indvars.iv
+  %8 = load double* %arrayidx20, align 8, !tbaa !4
+  %call21 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([24 x i8]* @.str61, i64 0, i64 0), i8* %mtxname, i32 %add, i32 %add18, double %8) #6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %9 = load i32* %nent, align 4, !tbaa !3
+  %10 = trunc i64 %indvars.iv.next to i32
+  %cmp15 = icmp slt i32 %10, %9
+  br i1 %cmp15, label %for.body, label %if.end49
+
+if.then24:                                        ; preds = %if.then8
+  %call26 = tail call double* @InpMtx_dvec(%struct._InpMtx* %inpmtx) #6
+  %11 = load i32* %nent, align 4, !tbaa !3
+  %cmp2993 = icmp sgt i32 %11, 0
+  br i1 %cmp2993, label %for.body30, label %if.end49
+
+for.body30:                                       ; preds = %if.then24, %for.body30
+  %indvars.iv95 = phi i64 [ %indvars.iv.next96, %for.body30 ], [ 0, %if.then24 ]
+  %arrayidx32 = getelementptr inbounds i32* %call9, i64 %indvars.iv95
+  %12 = load i32* %arrayidx32, align 4, !tbaa !3
+  %add33 = add nsw i32 %12, 1
+  %arrayidx35 = getelementptr inbounds i32* %call10, i64 %indvars.iv95
+  %13 = load i32* %arrayidx35, align 4, !tbaa !3
+  %add36 = add nsw i32 %13, 1
+  %14 = trunc i64 %indvars.iv95 to i32
+  %mul = shl nsw i32 %14, 1
+  %idxprom37 = sext i32 %mul to i64
+  %arrayidx38 = getelementptr inbounds double* %call26, i64 %idxprom37
+  %15 = load double* %arrayidx38, align 8, !tbaa !4
+  %add4088 = or i32 %mul, 1
+  %idxprom41 = sext i32 %add4088 to i64
+  %arrayidx42 = getelementptr inbounds double* %call26, i64 %idxprom41
+  %16 = load double* %arrayidx42, align 8, !tbaa !4
+  %call43 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([35 x i8]* @.str62, i64 0, i64 0), i8* %mtxname, i32 %add33, i32 %add36, double %15, double %16) #6
+  %indvars.iv.next96 = add i64 %indvars.iv95, 1
+  %17 = load i32* %nent, align 4, !tbaa !3
+  %18 = trunc i64 %indvars.iv.next96 to i32
+  %cmp29 = icmp slt i32 %18, %17
+  br i1 %cmp29, label %for.body30, label %if.end49
+
+if.end49:                                         ; preds = %if.then24, %for.body30, %if.then12, %for.body, %if.then8, %if.end6
+  br i1 %cmp4, label %if.then51, label %if.end52
+
+if.then51:                                        ; preds = %if.end49
+  tail call void @InpMtx_changeCoordType(%struct._InpMtx* %inpmtx, i32 %1) #6
+  br label %if.end52
+
+if.end52:                                         ; preds = %if.then51, %if.end49
+  tail call void @InpMtx_changeStorageMode(%struct._InpMtx* %inpmtx, i32 %2) #6
+  ret i32 1
+}

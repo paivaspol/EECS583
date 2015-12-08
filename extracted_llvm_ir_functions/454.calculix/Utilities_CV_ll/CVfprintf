@@ -1,0 +1,41 @@
+define void @CVfprintf(%struct._IO_FILE* %fp, i32 %size, i8* %y) #0 {
+entry:
+  %cmp = icmp ne %struct._IO_FILE* %fp, null
+  %cmp1 = icmp sgt i32 %size, 0
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end10
+
+if.then:                                          ; preds = %entry
+  %cmp2 = icmp eq i8* %y, null
+  br i1 %cmp2, label %if.then3, label %for.body
+
+if.then3:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str5, i64 0, i64 0), %struct._IO_FILE* %fp, i32 %size, i8* null) #6
+  tail call void @exit(i32 0) #7
+  unreachable
+
+for.body:                                         ; preds = %if.then, %if.end
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end ], [ 0, %if.then ]
+  %1 = trunc i64 %indvars.iv to i32
+  %rem = srem i32 %1, 80
+  %cmp5 = icmp eq i32 %rem, 0
+  br i1 %cmp5, label %if.then6, label %if.end
+
+if.then6:                                         ; preds = %for.body
+  %fputc21 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %fp)
+  br label %if.end
+
+if.end:                                           ; preds = %if.then6, %for.body
+  %arrayidx = getelementptr inbounds i8* %y, i64 %indvars.iv
+  %2 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = sext i8 %2 to i32
+  %fputc = tail call i32 @fputc(i32 %conv, %struct._IO_FILE* %fp)
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %size
+  br i1 %exitcond, label %if.end10, label %for.body
+
+if.end10:                                         ; preds = %if.end, %entry
+  ret void
+}

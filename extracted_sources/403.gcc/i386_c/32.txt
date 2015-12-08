@@ -1,11 +1,97 @@
-int
-x86_64_general_operand (op, mode)
-     rtx op;
+void
+ix86_setup_incoming_varargs (cum, mode, type, pretend_size, no_rtl)
+     CUMULATIVE_ARGS *cum;
      enum machine_mode mode;
+     tree type;
+     int *pretend_size ATTRIBUTE_UNUSED;
+     int no_rtl;
+
 {
+  CUMULATIVE_ARGS next_cum;
+  rtx save_area = NULL_RTX, mem;
+  rtx label;
+  rtx label_ref;
+  rtx tmp_reg;
+  rtx nsse_reg;
+  int set;
+  tree fntype;
+  int stdarg_p;
+  int i;
+
   if (!TARGET_64BIT)
-    return general_operand (op, mode);
-  if (nonimmediate_operand (op, mode))
-    return 1;
-  return x86_64_sign_extended_value (op);
+    return;
+
+  /* Indicate to allocate space on the stack for varargs save area.  */
+  ix86_save_varrargs_registers = 1;
+
+  fntype = TREE_TYPE (current_function_decl);
+  stdarg_p = (TYPE_ARG_TYPES (fntype) != 0
+	      && (TREE_VALUE (tree_last (TYPE_ARG_TYPES (fntype)))
+		  != void_type_node));
+
+  /* For varargs, we do not want to skip the dummy va_dcl argument.
+     For stdargs, we do want to skip the last named argument.  */
+  next_cum = *cum;
+  if (stdarg_p)
+    function_arg_advance (&next_cum, mode, type, 1);
+
+  if (!no_rtl)
+    save_area = frame_pointer_rtx;
+
+  set = get_varargs_alias_set ();
+
+  for (i = next_cum.regno; i < ix86_regparm; i++)
+    {
+      mem = gen_rtx_MEM (Pmode,
+			 plus_constant (save_area, i * UNITS_PER_WORD));
+      set_mem_alias_set (mem, set);
+      emit_move_insn (mem, gen_rtx_REG (Pmode,
+					x86_64_int_parameter_registers[i]));
+    }
+
+  if (next_cum.sse_nregs)
+    {
+      /* Now emit code to save SSE registers.  The AX parameter contains number
+	 of SSE parameter regsiters used to call this function.  We use
+	 sse_prologue_save insn template that produces computed jump across
+	 SSE saves.  We need some preparation work to get this working.  */
+
+      label = gen_label_rtx ();
+      label_ref = gen_rtx_LABEL_REF (Pmode, label);
+
+      /* Compute address to jump to :
+         label - 5*eax + nnamed_sse_arguments*5  */
+      tmp_reg = gen_reg_rtx (Pmode);
+      nsse_reg = gen_reg_rtx (Pmode);
+      emit_insn (gen_zero_extendqidi2 (nsse_reg, gen_rtx_REG (QImode, 0)));
+      emit_insn (gen_rtx_SET (VOIDmode, tmp_reg,
+			      gen_rtx_MULT (Pmode, nsse_reg,
+					    GEN_INT (4))));
+      if (next_cum.sse_regno)
+	emit_move_insn
+	  (nsse_reg,
+	   gen_rtx_CONST (DImode,
+			  gen_rtx_PLUS (DImode,
+					label_ref,
+					GEN_INT (next_cum.sse_regno * 4))));
+      else
+	emit_move_insn (nsse_reg, label_ref);
+      emit_insn (gen_subdi3 (nsse_reg, nsse_reg, tmp_reg));
+
+      /* Compute address of memory block we save into.  We always use pointer
+	 pointing 127 bytes after first byte to store - this is needed to keep
+	 instruction size limited by 4 bytes.  */
+      tmp_reg = gen_reg_rtx (Pmode);
+      emit_insn (gen_rtx_SET (VOIDmode, tmp_reg,
+			      plus_constant (save_area,
+					     8 * REGPARM_MAX + 127)));
+      mem = gen_rtx_MEM (BLKmode, plus_constant (tmp_reg, -127));
+      set_mem_alias_set (mem, set);
+      set_mem_align (mem, BITS_PER_WORD);
+
+      /* And finally do the dirty job!  */
+      emit_insn (gen_sse_prologue_save (mem, nsse_reg,
+					GEN_INT (next_cum.sse_regno), label));
+    }
+
 }

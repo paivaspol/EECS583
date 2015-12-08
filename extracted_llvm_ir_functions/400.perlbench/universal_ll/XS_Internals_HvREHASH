@@ -1,0 +1,66 @@
+define void @XS_Internals_HvREHASH(%struct.cv* nocapture %cv) #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !3
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !3
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !3
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !3
+  %3 = load i32* %2, align 4, !tbaa !0
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr.idx = shl nsw i64 %idx.ext, 32
+  %sext = add i64 %add.ptr.idx, 4294967296
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds %struct.sv** %1, i64 %idxprom
+  %4 = load %struct.sv** %arrayidx, align 8, !tbaa !3
+  %sv_flags = getelementptr inbounds %struct.sv* %4, i64 0, i32 2
+  %5 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %5, 524288
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end34, label %if.then
+
+if.then:                                          ; preds = %entry
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %6 = and i64 %sub.ptr.sub3, 34359738360
+  %cmp = icmp eq i64 %6, 8
+  br i1 %cmp, label %land.lhs.true, label %if.end34
+
+land.lhs.true:                                    ; preds = %if.then
+  %sv_any = getelementptr inbounds %struct.sv* %4, i64 0, i32 0
+  %7 = load i8** %sv_any, align 8, !tbaa !3
+  %xrv_rv = bitcast i8* %7 to %struct.sv**
+  %8 = load %struct.sv** %xrv_rv, align 8, !tbaa !3
+  %9 = getelementptr inbounds %struct.sv* %8, i64 0, i32 2
+  %10 = load i32* %9, align 4, !tbaa !0
+  %and12 = and i32 %10, 255
+  %cmp13 = icmp eq i32 %and12, 11
+  br i1 %cmp13, label %if.then15, label %if.end34
+
+if.then15:                                        ; preds = %land.lhs.true
+  %and17 = and i32 %10, 268435456
+  %tobool18 = icmp eq i32 %and17, 0
+  br i1 %tobool18, label %if.else, label %if.then19
+
+if.then19:                                        ; preds = %if.then15
+  store %struct.sv* @PL_sv_yes, %struct.sv** %arrayidx, align 8, !tbaa !3
+  %11 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !3
+  %add.ptr24 = getelementptr inbounds %struct.sv** %11, i64 %idxprom
+  store %struct.sv** %add.ptr24, %struct.sv*** @PL_stack_sp, align 8, !tbaa !3
+  br label %return
+
+if.else:                                          ; preds = %if.then15
+  store %struct.sv* @PL_sv_no, %struct.sv** %arrayidx, align 8, !tbaa !3
+  %12 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !3
+  %add.ptr31 = getelementptr inbounds %struct.sv** %12, i64 %idxprom
+  store %struct.sv** %add.ptr31, %struct.sv*** @PL_stack_sp, align 8, !tbaa !3
+  br label %return
+
+if.end34:                                         ; preds = %entry, %if.then, %land.lhs.true
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([29 x i8]* @.str50, i64 0, i64 0)) #4
+  br label %return
+
+return:                                           ; preds = %if.end34, %if.else, %if.then19
+  ret void
+}

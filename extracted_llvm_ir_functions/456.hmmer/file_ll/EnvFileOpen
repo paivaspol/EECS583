@@ -1,0 +1,65 @@
+define noalias %struct._IO_FILE* @EnvFileOpen(i8* %fname, i8* %env, i8** %ret_dir) #0 {
+entry:
+  %full = alloca [1024 x i8], align 16
+  %0 = getelementptr inbounds [1024 x i8]* %full, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 1024, i8* %0) #4
+  %cmp = icmp eq i8* %env, null
+  br i1 %cmp, label %cleanup, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = call i8* @getenv(i8* %env) #6
+  %call1 = call i8* @Strdup(i8* %call) #6
+  %cmp2 = icmp eq i8* %call1, null
+  br i1 %cmp2, label %cleanup, label %if.end4
+
+if.end4:                                          ; preds = %if.end
+  %call5 = call i8* @strtok(i8* %call1, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0)) #6
+  %cmp637 = icmp eq i8* %call5, null
+  br i1 %cmp637, label %while.end, label %while.body
+
+while.body:                                       ; preds = %if.end4, %if.end21
+  %s.038 = phi i8* [ %call22, %if.end21 ], [ %call5, %if.end4 ]
+  %call7 = call i64 @strlen(i8* %fname) #5
+  %conv = trunc i64 %call7 to i32
+  %call8 = call i64 @strlen(i8* %s.038) #5
+  %conv9 = trunc i64 %call8 to i32
+  %add = add i32 %conv, 2
+  %add10 = add i32 %add, %conv9
+  %cmp11 = icmp sgt i32 %add10, 1024
+  br i1 %cmp11, label %if.then13, label %if.end14
+
+if.then13:                                        ; preds = %while.body
+  call void @free(i8* %call1) #6
+  br label %cleanup
+
+if.end14:                                         ; preds = %while.body
+  %call15 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* %s.038, i32 47, i8* %fname) #6
+  %call17 = call %struct._IO_FILE* @fopen(i8* %0, i8* getelementptr inbounds ([2 x i8]* @.str4, i64 0, i64 0)) #6
+  %cmp18 = icmp eq %struct._IO_FILE* %call17, null
+  br i1 %cmp18, label %if.end21, label %while.end
+
+if.end21:                                         ; preds = %if.end14
+  %call22 = call i8* @strtok(i8* null, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0)) #6
+  %cmp6 = icmp eq i8* %call22, null
+  br i1 %cmp6, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.end21, %if.end14, %if.end4
+  %s.0.lcssa = phi i8* [ null, %if.end4 ], [ %s.038, %if.end14 ], [ null, %if.end21 ]
+  %fp.1 = phi %struct._IO_FILE* [ null, %if.end4 ], [ %call17, %if.end14 ], [ null, %if.end21 ]
+  %cmp23 = icmp eq i8** %ret_dir, null
+  br i1 %cmp23, label %if.end27, label %if.then25
+
+if.then25:                                        ; preds = %while.end
+  %call26 = call i8* @Strdup(i8* %s.0.lcssa) #6
+  store i8* %call26, i8** %ret_dir, align 8, !tbaa !2
+  br label %if.end27
+
+if.end27:                                         ; preds = %while.end, %if.then25
+  call void @free(i8* %call1) #6
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.end, %entry, %if.end27, %if.then13
+  %retval.0 = phi %struct._IO_FILE* [ null, %if.then13 ], [ %fp.1, %if.end27 ], [ null, %entry ], [ null, %if.end ]
+  call void @llvm.lifetime.end(i64 1024, i8* %0) #4
+  ret %struct._IO_FILE* %retval.0
+}

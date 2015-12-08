@@ -1,5 +1,6 @@
-void write_sto_conf(char *outfile, char *title,t_atoms *atoms, 
-		   rvec x[],rvec *v, matrix box)
+void write_sto_conf_indexed(char *outfile,char *title,t_atoms *atoms, 
+			    rvec x[],rvec *v,matrix box,
+			    atom_id nindex,atom_id index[])
 {
   FILE       *out;
   int        ftp;
@@ -8,7 +9,9 @@ void write_sto_conf(char *outfile, char *title,t_atoms *atoms,
   ftp=fn2ftp(outfile);
   switch (ftp) {
   case efGRO:
-    write_conf(outfile, title, atoms, x, v, box);
+    out=ffopen(outfile,"w");
+    write_hconf_indexed_p(out, title, atoms, nindex, index, 3, x, v, box);
+    fclose(out);
     break;
   case efG96:
     clear_trxframe(&fr,TRUE);
@@ -26,14 +29,14 @@ void write_sto_conf(char *outfile, char *title,t_atoms *atoms,
     fr.bBox = TRUE;
     copy_mat(box,fr.box);
     out=ffopen(outfile,"w");
-    write_g96_conf(out, &fr, -1, NULL);
+    write_g96_conf(out, &fr, nindex, index);
     fclose(out);
     break;
   case efPDB:
   case efBRK:
   case efENT:
     out=ffopen(outfile,"w");
-    write_pdbfile(out, title, atoms, x, box, 0, 0);
+    write_pdbfile_indexed(out, title, atoms, x, box, 0, -1, nindex, index);
     fclose(out);
     break;
   case efTPR:
@@ -42,6 +45,6 @@ void write_sto_conf(char *outfile, char *title,t_atoms *atoms,
     fatal_error(0,"Sorry, can not write a topology to %s",outfile);
     break;
   default:
-    fatal_error(0,"Not supported in write_sto_conf: %s",outfile);
+    fatal_error(0,"Not supported in write_sto_conf_indexed: %s",outfile);
   }
 }

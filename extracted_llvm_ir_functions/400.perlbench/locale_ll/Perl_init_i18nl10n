@@ -1,0 +1,17 @@
+define i32 @Perl_init_i18nl10n(i32 %printwarn) #1 {
+entry:
+  %p = alloca i8*, align 8
+  %call6 = call i8* @getenv(i8* getelementptr inbounds ([13 x i8]* @.str2, i64 0, i64 0)) #4
+  store i8* %call6, i8** %p, align 8, !tbaa !0
+  %tobool7 = icmp eq i8* %call6, null
+  br i1 %tobool7, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %call8 = call i32 @Perl_parse_unicode_opts(i8** %p) #4
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi i32 [ %call8, %cond.true ], [ 0, %entry ]
+  store i32 %cond, i32* @PL_unicode, align 4, !tbaa !3
+  ret i32 1
+}

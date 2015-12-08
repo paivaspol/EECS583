@@ -1,50 +1,32 @@
-void
-Perl_pad_push(pTHX_ PADLIST *padlist, int depth, int has_args)
+U32
+Perl_intro_my(pTHX)
 {
-    if (depth <= AvFILLp(padlist))
-	return;
+    SV **svp;
+    SV *sv;
+    I32 i;
 
-    {
-	SV** svp = AvARRAY(padlist);
-	AV *newpad = newAV();
-	SV **oldpad = AvARRAY(svp[depth-1]);
-	I32 ix = AvFILLp((AV*)svp[1]);
-	I32 names_fill = AvFILLp((AV*)svp[0]);
-	SV** names = AvARRAY(svp[0]);
-	SV* sv;
-	for ( ;ix > 0; ix--) {
-	    if (names_fill >= ix && names[ix] != &PL_sv_undef) {
-		char *name = SvPVX(names[ix]);
-		if ((SvFLAGS(names[ix]) & SVf_FAKE) || *name == '&') {
-		    /* outer lexical or anon code */
-		    av_store(newpad, ix, SvREFCNT_inc(oldpad[ix]));
-		}
-		else {		/* our own lexical */
-		    if (*name == '@')
-			av_store(newpad, ix, sv = (SV*)newAV());
-		    else if (*name == '%')
-			av_store(newpad, ix, sv = (SV*)newHV());
-		    else
-			av_store(newpad, ix, sv = NEWSV(0, 0));
-		    SvPADMY_on(sv);
-		}
-	    }
-	    else if (IS_PADGV(oldpad[ix]) || IS_PADCONST(oldpad[ix])) {
-		av_store(newpad, ix, sv = SvREFCNT_inc(oldpad[ix]));
-	    }
-	    else {
-		/* save temporaries on recursion? */
-		av_store(newpad, ix, sv = NEWSV(0, 0));
-		SvPADTMP_on(sv);
-	    }
+    ASSERT_CURPAD_ACTIVE("intro_my");
+    if (! PL_min_intro_pending)
+	return PL_cop_seqmax;
+
+    svp = AvARRAY(PL_comppad_name);
+    for (i = PL_min_intro_pending; i <= PL_max_intro_pending; i++) {
+	if ((sv = svp[i]) && sv != &PL_sv_undef
+		&& !SvFAKE(sv) && !SvIVX(sv))
+	{
+	    SvIVX(sv) = PAD_MAX;	/* Don't know scope end yet. */
+	    SvNVX(sv) = (NV)PL_cop_seqmax;
+	    DEBUG_Xv(PerlIO_printf(Perl_debug_log,
+		"Pad intromy: %ld \"%s\", (%lu,%lu)\n",
+		(long)i, SvPVX(sv),
+		(unsigned long)U_32(SvNVX(sv)), (unsigned long)SvIVX(sv))
+	    );
 	}
-	if (has_args) {
-	    AV* av = newAV();
-	    av_extend(av, 0);
-	    av_store(newpad, 0, (SV*)av);
-	    AvFLAGS(av) = AVf_REIFY;
-	}
-	av_store(padlist, depth, (SV*)newpad);
-	AvFILLp(padlist) = depth;
     }
+    PL_min_intro_pending = 0;
+    PL_comppad_name_fill = PL_max_intro_pending; /* Needn't search higher */
+    DEBUG_Xv(PerlIO_printf(Perl_debug_log,
+		"Pad intromy: seq -> %ld\n", (long)(PL_cop_seqmax+1)));
+
+    return PL_cop_seqmax++;
 }

@@ -1,0 +1,72 @@
+define void @sort_basket(i64 %min, i64 %max) #1 {
+entry:
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %if.end22, %entry
+  %min.tr = phi i64 [ %min, %entry ], [ %l.0.inc, %if.end22 ]
+  %add = add nsw i64 %min.tr, %max
+  %div = sdiv i64 %add, 2
+  %arrayidx = getelementptr inbounds [351 x %struct.basket*]* @perm, i64 0, i64 %div
+  %0 = load %struct.basket** %arrayidx, align 8, !tbaa !3
+  %abs_cost = getelementptr inbounds %struct.basket* %0, i64 0, i32 2
+  %1 = load i64* %abs_cost, align 8, !tbaa !4
+  br label %while.cond.outer
+
+while.cond.outer:                                 ; preds = %if.end, %tailrecurse
+  %r.0.ph = phi i64 [ %max, %tailrecurse ], [ %r.1.dec, %if.end ]
+  %l.0.ph = phi i64 [ %min.tr, %tailrecurse ], [ %l.0.inc, %if.end ]
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond, %while.cond.outer
+  %l.0 = phi i64 [ %inc, %while.cond ], [ %l.0.ph, %while.cond.outer ]
+  %arrayidx1 = getelementptr inbounds [351 x %struct.basket*]* @perm, i64 0, i64 %l.0
+  %2 = load %struct.basket** %arrayidx1, align 8, !tbaa !3
+  %abs_cost2 = getelementptr inbounds %struct.basket* %2, i64 0, i32 2
+  %3 = load i64* %abs_cost2, align 8, !tbaa !4
+  %cmp = icmp sgt i64 %3, %1
+  %inc = add nsw i64 %l.0, 1
+  br i1 %cmp, label %while.cond, label %while.cond3
+
+while.cond3:                                      ; preds = %while.cond, %while.cond3
+  %r.1 = phi i64 [ %dec, %while.cond3 ], [ %r.0.ph, %while.cond ]
+  %arrayidx4 = getelementptr inbounds [351 x %struct.basket*]* @perm, i64 0, i64 %r.1
+  %4 = load %struct.basket** %arrayidx4, align 8, !tbaa !3
+  %abs_cost5 = getelementptr inbounds %struct.basket* %4, i64 0, i32 2
+  %5 = load i64* %abs_cost5, align 8, !tbaa !4
+  %cmp6 = icmp sgt i64 %1, %5
+  %dec = add nsw i64 %r.1, -1
+  br i1 %cmp6, label %while.cond3, label %while.end8
+
+while.end8:                                       ; preds = %while.cond3
+  %cmp9 = icmp slt i64 %l.0, %r.1
+  br i1 %cmp9, label %if.then, label %if.end
+
+if.then:                                          ; preds = %while.end8
+  store %struct.basket* %4, %struct.basket** %arrayidx1, align 8, !tbaa !3
+  store %struct.basket* %2, %struct.basket** %arrayidx4, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %while.end8
+  %cmp14 = icmp sgt i64 %l.0, %r.1
+  %r.1.dec = select i1 %cmp14, i64 %r.1, i64 %dec
+  %l.0.inc = select i1 %cmp14, i64 %l.0, i64 %inc
+  %cmp19 = icmp sgt i64 %l.0.inc, %r.1.dec
+  br i1 %cmp19, label %do.end, label %while.cond.outer
+
+do.end:                                           ; preds = %if.end
+  %cmp20 = icmp sgt i64 %r.1.dec, %min.tr
+  br i1 %cmp20, label %if.then21, label %if.end22
+
+if.then21:                                        ; preds = %do.end
+  tail call void @sort_basket(i64 %min.tr, i64 %r.1.dec) #2
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.then21, %do.end
+  %cmp23 = icmp slt i64 %l.0.inc, %max
+  %cmp24 = icmp slt i64 %l.0.inc, 51
+  %or.cond = and i1 %cmp23, %cmp24
+  br i1 %or.cond, label %tailrecurse, label %if.end26
+
+if.end26:                                         ; preds = %if.end22
+  ret void
+}

@@ -1,7 +1,26 @@
 void
-Perl_sv_report_used(pTHX)
+Perl_sv_add_arena(pTHX_ char *ptr, U32 size, U32 flags)
 {
-#ifdef DEBUGGING
-    visit(do_report_used, 0, 0);
-#endif
+    SV* sva = (SV*)ptr;
+    register SV* sv;
+    register SV* svend;
+
+    /* The first SV in an arena isn't an SV. */
+    SvANY(sva) = (void *) PL_sv_arenaroot;		/* ptr to next arena */
+    SvREFCNT(sva) = size / sizeof(SV);		/* number of SV slots */
+    SvFLAGS(sva) = flags;			/* FAKE if not to be freed */
+
+    PL_sv_arenaroot = sva;
+    PL_sv_root = sva + 1;
+
+    svend = &sva[SvREFCNT(sva) - 1];
+    sv = sva + 1;
+    while (sv < svend) {
+	SvANY(sv) = (void *)(SV*)(sv + 1);
+	SvREFCNT(sv) = 0;
+	SvFLAGS(sv) = SVTYPEMASK;
+	sv++;
+    }
+    SvANY(sv) = 0;
+    SvFLAGS(sv) = SVTYPEMASK;
 }

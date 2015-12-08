@@ -1,19 +1,31 @@
-void
-Perl_cond_signal(pTHX_ perl_cond *cp)
+int
+dup2(int oldfd, int newfd)
 {
-    perl_os_thread t;
-    perl_cond cond = *cp;
+#if defined(HAS_FCNTL) && defined(F_DUPFD)
+    if (oldfd == newfd)
+	return oldfd;
+    PerlLIO_close(newfd);
+    return fcntl(oldfd, F_DUPFD, newfd);
+#else
+#define DUP2_MAX_FDS 256
+    int fdtmp[DUP2_MAX_FDS];
+    I32 fdx = 0;
+    int fd;
 
-    if (!cond)
-	return;
-    t = cond->thread;
-    /* Insert t in the runnable queue just ahead of us */
-    t->i.next_run = thr->i.next_run;
-    thr->i.next_run->i.prev_run = t;
-    t->i.prev_run = thr;
-    thr->i.next_run = t;
-    thr->i.wait_queue = 0;
-    /* Remove from the wait queue */
-    *cp = cond->next;
-    Safefree(cond);
+    if (oldfd == newfd)
+	return oldfd;
+    PerlLIO_close(newfd);
+    /* good enough for low fd's... */
+    while ((fd = PerlLIO_dup(oldfd)) != newfd && fd >= 0) {
+	if (fdx >= DUP2_MAX_FDS) {
+	    PerlLIO_close(fd);
+	    fd = -1;
+	    break;
+	}
+	fdtmp[fdx++] = fd;
+    }
+    while (fdx > 0)
+	PerlLIO_close(fdtmp[--fdx]);
+    return fd;
+#endif
 }

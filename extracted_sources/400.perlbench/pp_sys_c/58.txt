@@ -1,0 +1,26 @@
+PP(pp_fteexec)
+{
+    I32 result;
+    dSP;
+#ifdef PERL_EFF_ACCESS_X_OK
+    STRLEN n_a;
+    if ((PL_op->op_private & OPpFT_ACCESS) && SvPOK(TOPs)) {
+	result = PERL_EFF_ACCESS_X_OK(POPpx);
+	if (result == 0)
+	    RETPUSHYES;
+	if (result < 0)
+	    RETPUSHUNDEF;
+	RETPUSHNO;
+    }
+    else
+	result = my_stat();
+#else
+    result = my_stat();
+#endif
+    SPAGAIN;
+    if (result < 0)
+	RETPUSHUNDEF;
+    if (cando(S_IXUSR, 1, &PL_statcache))
+	RETPUSHYES;
+    RETPUSHNO;
+}

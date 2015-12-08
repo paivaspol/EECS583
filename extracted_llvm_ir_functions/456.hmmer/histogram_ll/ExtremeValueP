@@ -1,0 +1,31 @@
+define double @ExtremeValueP(float %x, float %mu, float %lambda) #0 {
+entry:
+  %sub = fsub float %x, %mu
+  %mul = fmul float %sub, %lambda
+  %conv = fpext float %mul to double
+  %cmp = fcmp ugt double %conv, 0xC00CAD875732FBD5
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %cmp8 = fcmp ult double %conv, 7.084000e+02
+  br i1 %cmp8, label %if.end11, label %return
+
+if.end11:                                         ; preds = %if.end
+  %conv12 = fpext float %lambda to double
+  %mul13 = fmul double %conv12, -1.000000e+00
+  %conv15 = fpext float %sub to double
+  %mul16 = fmul double %conv15, %mul13
+  %call17 = tail call double @exp(double %mul16) #4
+  %cmp18 = fcmp olt double %call17, 1.000000e-07
+  br i1 %cmp18, label %return, label %if.else
+
+if.else:                                          ; preds = %if.end11
+  %mul21 = fmul double %call17, -1.000000e+00
+  %call22 = tail call double @exp(double %mul21) #4
+  %sub23 = fsub double 1.000000e+00, %call22
+  br label %return
+
+return:                                           ; preds = %if.end11, %if.end, %entry, %if.else
+  %retval.0 = phi double [ %sub23, %if.else ], [ 1.000000e+00, %entry ], [ 0.000000e+00, %if.end ], [ %call17, %if.end11 ]
+  ret double %retval.0
+}

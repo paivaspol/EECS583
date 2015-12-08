@@ -1,0 +1,153 @@
+STATIC void
+S_hsplit(pTHX_ HV *hv)
+{
+    register XPVHV* xhv = (XPVHV*)SvANY(hv);
+    I32 oldsize = (I32) xhv->xhv_max+1; /* HvMAX(hv)+1 (sick) */
+    register I32 newsize = oldsize * 2;
+    register I32 i;
+    register char *a = xhv->xhv_array; /* HvARRAY(hv) */
+    register HE **aep;
+    register HE **bep;
+    register HE *entry;
+    register HE **oentry;
+    int longest_chain = 0;
+    int was_shared;
+
+    /*PerlIO_printf(PerlIO_stderr(), "hsplit called for %p which had %d\n",
+      hv, (int) oldsize);*/
+
+    if (HvPLACEHOLDERS(hv) && !SvREADONLY(hv)) {
+      /* Can make this clear any placeholders first for non-restricted hashes,
+	 even though Storable rebuilds restricted hashes by putting in all the
+	 placeholders (first) before turning on the readonly flag, because
+	 Storable always pre-splits the hash.  */
+      hv_clear_placeholders(hv);
+    }
+	       
+    PL_nomemok = TRUE;
+#if defined(STRANGE_MALLOC) || defined(MYMALLOC)
+    Renew(a, PERL_HV_ARRAY_ALLOC_BYTES(newsize), char);
+    if (!a) {
+      PL_nomemok = FALSE;
+      return;
+    }
+#else
+    New(2, a, PERL_HV_ARRAY_ALLOC_BYTES(newsize), char);
+    if (!a) {
+      PL_nomemok = FALSE;
+      return;
+    }
+    Copy(xhv->xhv_array /* HvARRAY(hv) */, a, oldsize * sizeof(HE*), char);
+    if (oldsize >= 64) {
+	offer_nice_chunk(xhv->xhv_array /* HvARRAY(hv) */,
+			PERL_HV_ARRAY_ALLOC_BYTES(oldsize));
+    }
+    else
+	Safefree(xhv->xhv_array /* HvARRAY(hv) */);
+#endif
+
+    PL_nomemok = FALSE;
+    Zero(&a[oldsize * sizeof(HE*)], (newsize-oldsize) * sizeof(HE*), char);	/* zero 2nd half*/
+    xhv->xhv_max = --newsize;	/* HvMAX(hv) = --newsize */
+    xhv->xhv_array = a;		/* HvARRAY(hv) = a */
+    aep = (HE**)a;
+
+    for (i=0; i<oldsize; i++,aep++) {
+	int left_length = 0;
+	int right_length = 0;
+
+	if (!*aep)				/* non-existent */
+	    continue;
+	bep = aep+oldsize;
+	for (oentry = aep, entry = *aep; entry; entry = *oentry) {
+	    if ((HeHASH(entry) & newsize) != (U32)i) {
+		*oentry = HeNEXT(entry);
+		HeNEXT(entry) = *bep;
+		if (!*bep)
+		    xhv->xhv_fill++; /* HvFILL(hv)++ */
+		*bep = entry;
+		right_length++;
+		continue;
+	    }
+	    else {
+		oentry = &HeNEXT(entry);
+		left_length++;
+	    }
+	}
+	if (!*aep)				/* everything moved */
+	    xhv->xhv_fill--; /* HvFILL(hv)-- */
+	/* I think we don't actually need to keep track of the longest length,
+	   merely flag if anything is too long. But for the moment while
+	   developing this code I'll track it.  */
+	if (left_length > longest_chain)
+	    longest_chain = left_length;
+	if (right_length > longest_chain)
+	    longest_chain = right_length;
+    }
+
+
+    /* Pick your policy for "hashing isn't working" here:  */
+    if (longest_chain <= HV_MAX_LENGTH_BEFORE_SPLIT /* split worked?  */
+	|| HvREHASH(hv)) {
+	return;
+    }
+
+    if (hv == PL_strtab) {
+	/* Urg. Someone is doing something nasty to the string table.
+	   Can't win.  */
+	return;
+    }
+
+    /* Awooga. Awooga. Pathological data.  */
+    /*PerlIO_printf(PerlIO_stderr(), "%p %d of %d with %d/%d buckets\n", hv,
+      longest_chain, HvTOTALKEYS(hv), HvFILL(hv),  1+HvMAX(hv));*/
+
+    ++newsize;
+    Newz(2, a, PERL_HV_ARRAY_ALLOC_BYTES(newsize), char);
+    was_shared = HvSHAREKEYS(hv);
+
+    xhv->xhv_fill = 0;
+    HvSHAREKEYS_off(hv);
+    HvREHASH_on(hv);
+
+    aep = (HE **) xhv->xhv_array;
+
+    for (i=0; i<newsize; i++,aep++) {
+	entry = *aep;
+	while (entry) {
+	    /* We're going to trash this HE's next pointer when we chain it
+	       into the new hash below, so store where we go next.  */
+	    HE *next = HeNEXT(entry);
+	    UV hash;
+
+	    /* Rehash it */
+	    PERL_HASH_INTERNAL(hash, HeKEY(entry), HeKLEN(entry));
+
+	    if (was_shared) {
+		/* Unshare it.  */
+		HEK *new_hek
+		    = save_hek_flags(HeKEY(entry), HeKLEN(entry),
+				     hash, HeKFLAGS(entry));
+		unshare_hek (HeKEY_hek(entry));
+		HeKEY_hek(entry) = new_hek;
+	    } else {
+		/* Not shared, so simply write the new hash in. */
+		HeHASH(entry) = hash;
+	    }
+	    /*PerlIO_printf(PerlIO_stderr(), "%d ", HeKFLAGS(entry));*/
+	    HEK_REHASH_on(HeKEY_hek(entry));
+	    /*PerlIO_printf(PerlIO_stderr(), "%d\n", HeKFLAGS(entry));*/
+
+	    /* Copy oentry to the correct new chain.  */
+	    bep = ((HE**)a) + (hash & (I32) xhv->xhv_max);
+	    if (!*bep)
+		    xhv->xhv_fill++; /* HvFILL(hv)++ */
+	    HeNEXT(entry) = *bep;
+	    *bep = entry;
+
+	    entry = next;
+	}
+    }
+    Safefree (xhv->xhv_array);
+    xhv->xhv_array = a;		/* HvARRAY(hv) = a */
+}

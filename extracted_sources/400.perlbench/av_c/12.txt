@@ -1,0 +1,38 @@
+SV *
+Perl_av_shift(pTHX_ register AV *av)
+{
+    SV *retval;
+    MAGIC* mg;
+
+    if (!av)
+	return &PL_sv_undef;
+    if (SvREADONLY(av))
+	Perl_croak(aTHX_ PL_no_modify);
+    if ((mg = SvTIED_mg((SV*)av, PERL_MAGIC_tied))) {
+	dSP;
+	PUSHSTACKi(PERLSI_MAGIC);
+	PUSHMARK(SP);
+	XPUSHs(SvTIED_obj((SV*)av, mg));
+	PUTBACK;
+	ENTER;
+	if (call_method("SHIFT", G_SCALAR)) {
+	    retval = newSVsv(*PL_stack_sp--);            
+	} else {    
+	    retval = &PL_sv_undef;
+	}     
+	LEAVE;
+	POPSTACK;
+	return retval;
+    }
+    if (AvFILL(av) < 0)
+      return &PL_sv_undef;
+    retval = *AvARRAY(av);
+    if (AvREAL(av))
+	*AvARRAY(av) = &PL_sv_undef;
+    SvPVX(av) = (char*)(AvARRAY(av) + 1);
+    AvMAX(av)--;
+    AvFILLp(av)--;
+    if (SvSMAGICAL(av))
+	mg_set((SV*)av);
+    return retval;
+}

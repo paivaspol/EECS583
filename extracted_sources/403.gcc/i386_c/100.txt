@@ -1,119 +1,88 @@
 void
-print_operand_address (file, addr)
+print_reg (x, code, file)
+     rtx x;
+     int code;
      FILE *file;
-     register rtx addr;
 {
-  struct ix86_address parts;
-  rtx base, index, disp;
-  int scale;
-
-  if (! ix86_decompose_address (addr, &parts))
+  if (REGNO (x) == ARG_POINTER_REGNUM
+      || REGNO (x) == FRAME_POINTER_REGNUM
+      || REGNO (x) == FLAGS_REG
+      || REGNO (x) == FPSR_REG)
     abort ();
 
-  base = parts.base;
-  index = parts.index;
-  disp = parts.disp;
-  scale = parts.scale;
+  if (ASSEMBLER_DIALECT == ASM_ATT  || USER_LABEL_PREFIX[0] == 0)
+    putc ('%', file);
 
-  if (!base && !index)
-    {
-      /* Displacement only requires special attention.  */
-
-      if (GET_CODE (disp) == CONST_INT)
-	{
-	  if (ASSEMBLER_DIALECT == ASM_INTEL)
-	    {
-	      if (USER_LABEL_PREFIX[0] == 0)
-		putc ('%', file);
-	      fputs ("ds:", file);
-	    }
-	  fprintf (file, HOST_WIDE_INT_PRINT_DEC, INTVAL (addr));
-	}
-      else if (flag_pic)
-	output_pic_addr_const (file, addr, 0);
-      else
-	output_addr_const (file, addr);
-
-      /* Use one byte shorter RIP relative addressing for 64bit mode.  */
-      if (GET_CODE (disp) != CONST_INT && TARGET_64BIT)
-	fputs ("(%rip)", file);
-    }
+  if (code == 'w' || MMX_REG_P (x))
+    code = 2;
+  else if (code == 'b')
+    code = 1;
+  else if (code == 'k')
+    code = 4;
+  else if (code == 'q')
+    code = 8;
+  else if (code == 'y')
+    code = 3;
+  else if (code == 'h')
+    code = 0;
   else
+    code = GET_MODE_SIZE (GET_MODE (x));
+
+  /* Irritatingly, AMD extended registers use different naming convention
+     from the normal registers.  */
+  if (REX_INT_REG_P (x))
     {
-      if (ASSEMBLER_DIALECT == ASM_ATT)
+      if (!TARGET_64BIT)
+	abort ();
+      switch (code)
 	{
-	  if (disp)
-	    {
-	      if (flag_pic)
-		output_pic_addr_const (file, disp, 0);
-	      else if (GET_CODE (disp) == LABEL_REF)
-		output_asm_label (disp);
-	      else
-		output_addr_const (file, disp);
-	    }
-
-	  putc ('(', file);
-	  if (base)
-	    PRINT_REG (base, 0, file);
-	  if (index)
-	    {
-	      putc (',', file);
-	      PRINT_REG (index, 0, file);
-	      if (scale != 1)
-		fprintf (file, ",%d", scale);
-	    }
-	  putc (')', file);
+	  case 0:
+	    error ("extended registers have no high halves");
+	    break;
+	  case 1:
+	    fprintf (file, "r%ib", REGNO (x) - FIRST_REX_INT_REG + 8);
+	    break;
+	  case 2:
+	    fprintf (file, "r%iw", REGNO (x) - FIRST_REX_INT_REG + 8);
+	    break;
+	  case 4:
+	    fprintf (file, "r%id", REGNO (x) - FIRST_REX_INT_REG + 8);
+	    break;
+	  case 8:
+	    fprintf (file, "r%i", REGNO (x) - FIRST_REX_INT_REG + 8);
+	    break;
+	  default:
+	    error ("unsupported operand size for extended register");
+	    break;
 	}
-      else
+      return;
+    }
+  switch (code)
+    {
+    case 3:
+      if (STACK_TOP_P (x))
 	{
-	  rtx offset = NULL_RTX;
-
-	  if (disp)
-	    {
-	      /* Pull out the offset of a symbol; print any symbol itself.  */
-	      if (GET_CODE (disp) == CONST
-		  && GET_CODE (XEXP (disp, 0)) == PLUS
-		  && GET_CODE (XEXP (XEXP (disp, 0), 1)) == CONST_INT)
-		{
-		  offset = XEXP (XEXP (disp, 0), 1);
-		  disp = gen_rtx_CONST (VOIDmode,
-					XEXP (XEXP (disp, 0), 0));
-		}
-
-	      if (flag_pic)
-		output_pic_addr_const (file, disp, 0);
-	      else if (GET_CODE (disp) == LABEL_REF)
-		output_asm_label (disp);
-	      else if (GET_CODE (disp) == CONST_INT)
-		offset = disp;
-	      else
-		output_addr_const (file, disp);
-	    }
-
-	  putc ('[', file);
-	  if (base)
-	    {
-	      PRINT_REG (base, 0, file);
-	      if (offset)
-		{
-		  if (INTVAL (offset) >= 0)
-		    putc ('+', file);
-		  fprintf (file, HOST_WIDE_INT_PRINT_DEC, INTVAL (offset));
-		}
-	    }
-	  else if (offset)
-	    fprintf (file, HOST_WIDE_INT_PRINT_DEC, INTVAL (offset));
-	  else
-	    putc ('0', file);
-
-	  if (index)
-	    {
-	      putc ('+', file);
-	      PRINT_REG (index, 0, file);
-	      if (scale != 1)
-		fprintf (file, "*%d", scale);
-	    }
-	  putc (']', file);
+	  fputs ("st(0)", file);
+	  break;
 	}
+      /* FALLTHRU */
+    case 8:
+    case 4:
+    case 12:
+      if (! ANY_FP_REG_P (x))
+	putc (code == 8 && TARGET_64BIT ? 'r' : 'e', file);
+      /* FALLTHRU */
+    case 16:
+    case 2:
+      fputs (hi_reg_name[REGNO (x)], file);
+      break;
+    case 1:
+      fputs (qi_reg_name[REGNO (x)], file);
+      break;
+    case 0:
+      fputs (qi_high_reg_name[REGNO (x)], file);
+      break;
+    default:
+      abort ();
     }
 }

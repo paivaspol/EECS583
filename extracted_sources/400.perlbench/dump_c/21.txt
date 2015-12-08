@@ -1,13 +1,15 @@
-void
-Perl_debprofdump(pTHX)
+STATIC CV*
+S_deb_curcv(pTHX_ I32 ix)
 {
-    unsigned i;
-    if (!PL_profiledata)
-	return;
-    for (i = 0; i < MAXO; i++) {
-	if (PL_profiledata[i])
-	    PerlIO_printf(Perl_debug_log,
-			  "%5lu %s\n", (unsigned long)PL_profiledata[i],
-                                       PL_op_name[i]);
-    }
+    PERL_CONTEXT *cx = &cxstack[ix];
+    if (CxTYPE(cx) == CXt_SUB || CxTYPE(cx) == CXt_FORMAT)
+        return cx->blk_sub.cv;
+    else if (CxTYPE(cx) == CXt_EVAL && !CxTRYBLOCK(cx))
+        return PL_compcv;
+    else if (ix == 0 && PL_curstackinfo->si_type == PERLSI_MAIN)
+        return PL_main_cv;
+    else if (ix <= 0)
+        return Nullcv;
+    else
+        return deb_curcv(ix - 1);
 }

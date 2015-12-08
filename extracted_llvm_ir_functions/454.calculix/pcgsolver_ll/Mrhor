@@ -1,0 +1,124 @@
+define void @Mrhor(double* nocapture %C, i32 %neq, i32* nocapture %ia, i32* nocapture %iz, double* nocapture %r, double* nocapture %rho) #0 {
+entry:
+  %0 = load double* %r, align 8, !tbaa !3
+  store double %0, double* %rho, align 8, !tbaa !3
+  %cmp110 = icmp sgt i32 %neq, 1
+  br i1 %cmp110, label %for.body.lr.ph, label %for.cond26.preheader
+
+for.body.lr.ph:                                   ; preds = %entry
+  %.pre = load i32* %iz, align 4, !tbaa !0
+  br label %for.body
+
+for.cond26.preheader:                             ; preds = %for.end, %entry
+  %i.1102 = add i32 %neq, -1
+  %cmp27103 = icmp sgt i32 %i.1102, 0
+  br i1 %cmp27103, label %for.body28.lr.ph, label %for.end60
+
+for.body28.lr.ph:                                 ; preds = %for.cond26.preheader
+  %1 = sext i32 %i.1102 to i64
+  br label %for.body28
+
+for.body:                                         ; preds = %for.end, %for.body.lr.ph
+  %2 = phi i32 [ %.pre, %for.body.lr.ph ], [ %3, %for.end ]
+  %indvars.iv118 = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next119, %for.end ]
+  %arrayidx4 = getelementptr inbounds i32* %iz, i64 %indvars.iv118
+  %3 = load i32* %arrayidx4, align 4, !tbaa !0
+  %j.0106 = add i32 %2, 1
+  %cmp6107 = icmp slt i32 %j.0106, %3
+  br i1 %cmp6107, label %for.body7.lr.ph, label %for.end
+
+for.body7.lr.ph:                                  ; preds = %for.body
+  %4 = sext i32 %j.0106 to i64
+  br label %for.body7
+
+for.body7:                                        ; preds = %for.body7, %for.body7.lr.ph
+  %indvars.iv115 = phi i64 [ %4, %for.body7.lr.ph ], [ %indvars.iv.next116, %for.body7 ]
+  %j.0109 = phi i32 [ %j.0106, %for.body7.lr.ph ], [ %j.0, %for.body7 ]
+  %s.0108 = phi double [ 0.000000e+00, %for.body7.lr.ph ], [ %add14, %for.body7 ]
+  %arrayidx9 = getelementptr inbounds double* %C, i64 %indvars.iv115
+  %5 = load double* %arrayidx9, align 8, !tbaa !3
+  %arrayidx11 = getelementptr inbounds i32* %ia, i64 %indvars.iv115
+  %6 = load i32* %arrayidx11, align 4, !tbaa !0
+  %idxprom12 = sext i32 %6 to i64
+  %arrayidx13 = getelementptr inbounds double* %rho, i64 %idxprom12
+  %7 = load double* %arrayidx13, align 8, !tbaa !3
+  %mul = fmul double %5, %7
+  %add14 = fadd double %s.0108, %mul
+  %j.0 = add nsw i32 %j.0109, 1
+  %indvars.iv.next116 = add i64 %indvars.iv115, 1
+  %exitcond = icmp eq i32 %j.0, %3
+  br i1 %exitcond, label %for.end, label %for.body7
+
+for.end:                                          ; preds = %for.body7, %for.body
+  %s.0.lcssa = phi double [ 0.000000e+00, %for.body ], [ %add14, %for.body7 ]
+  %arrayidx16 = getelementptr inbounds double* %r, i64 %indvars.iv118
+  %8 = load double* %arrayidx16, align 8, !tbaa !3
+  %sub17 = fsub double %8, %s.0.lcssa
+  %idxprom18 = sext i32 %3 to i64
+  %arrayidx19 = getelementptr inbounds double* %C, i64 %idxprom18
+  %9 = load double* %arrayidx19, align 8, !tbaa !3
+  %div = fdiv double %sub17, %9
+  %arrayidx21 = getelementptr inbounds double* %rho, i64 %indvars.iv118
+  store double %div, double* %arrayidx21, align 8, !tbaa !3
+  %indvars.iv.next119 = add i64 %indvars.iv118, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next119 to i32
+  %exitcond121 = icmp eq i32 %lftr.wideiv, %neq
+  br i1 %exitcond121, label %for.cond26.preheader, label %for.body
+
+for.cond26.loopexit:                              ; preds = %for.body45, %for.body28
+  %i.1 = add nsw i32 %i.1105, -1
+  %cmp27 = icmp sgt i32 %i.1, 0
+  %indvars.iv.next113 = add i64 %indvars.iv112, -1
+  %10 = trunc i64 %indvars.iv112 to i32
+  br i1 %cmp27, label %for.body28, label %for.end60
+
+for.body28:                                       ; preds = %for.body28.lr.ph, %for.cond26.loopexit
+  %indvars.iv112 = phi i64 [ %1, %for.body28.lr.ph ], [ %indvars.iv.next113, %for.cond26.loopexit ]
+  %i.1105 = phi i32 [ %i.1102, %for.body28.lr.ph ], [ %i.1, %for.cond26.loopexit ]
+  %i.1.in104 = phi i32 [ %neq, %for.body28.lr.ph ], [ %10, %for.cond26.loopexit ]
+  %arrayidx30 = getelementptr inbounds i32* %iz, i64 %indvars.iv112
+  %11 = load i32* %arrayidx30, align 4, !tbaa !0
+  %idxprom31 = sext i32 %11 to i64
+  %arrayidx32 = getelementptr inbounds double* %C, i64 %idxprom31
+  %12 = load double* %arrayidx32, align 8, !tbaa !3
+  %arrayidx34 = getelementptr inbounds double* %rho, i64 %indvars.iv112
+  %13 = load double* %arrayidx34, align 8, !tbaa !3
+  %div35 = fdiv double %13, %12
+  store double %div35, double* %arrayidx34, align 8, !tbaa !3
+  %sub36 = add nsw i32 %i.1.in104, -2
+  %idxprom37 = sext i32 %sub36 to i64
+  %arrayidx38 = getelementptr inbounds i32* %iz, i64 %idxprom37
+  %14 = load i32* %arrayidx38, align 4, !tbaa !0
+  %sub42 = add nsw i32 %11, -1
+  %cmp44100 = icmp slt i32 %14, %sub42
+  br i1 %cmp44100, label %for.body45.lr.ph, label %for.cond26.loopexit
+
+for.body45.lr.ph:                                 ; preds = %for.body28
+  %15 = sext i32 %14 to i64
+  br label %for.body45
+
+for.body45:                                       ; preds = %for.body45.for.body45_crit_edge, %for.body45.lr.ph
+  %16 = phi double [ %div35, %for.body45.lr.ph ], [ %.pre122, %for.body45.for.body45_crit_edge ]
+  %indvars.iv = phi i64 [ %15, %for.body45.lr.ph ], [ %indvars.iv.next, %for.body45.for.body45_crit_edge ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %arrayidx47 = getelementptr inbounds double* %C, i64 %indvars.iv.next
+  %17 = load double* %arrayidx47, align 8, !tbaa !3
+  %mul50 = fmul double %17, %16
+  %arrayidx52 = getelementptr inbounds i32* %ia, i64 %indvars.iv.next
+  %18 = load i32* %arrayidx52, align 4, !tbaa !0
+  %idxprom53 = sext i32 %18 to i64
+  %arrayidx54 = getelementptr inbounds double* %rho, i64 %idxprom53
+  %19 = load double* %arrayidx54, align 8, !tbaa !3
+  %sub55 = fsub double %19, %mul50
+  store double %sub55, double* %arrayidx54, align 8, !tbaa !3
+  %20 = trunc i64 %indvars.iv.next to i32
+  %cmp44 = icmp slt i32 %20, %sub42
+  br i1 %cmp44, label %for.body45.for.body45_crit_edge, label %for.cond26.loopexit
+
+for.body45.for.body45_crit_edge:                  ; preds = %for.body45
+  %.pre122 = load double* %arrayidx34, align 8, !tbaa !3
+  br label %for.body45
+
+for.end60:                                        ; preds = %for.cond26.loopexit, %for.cond26.preheader
+  ret void
+}

@@ -1,21 +1,20 @@
 int
-Perl_magic_killbackrefs(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_getsubstr(pTHX_ SV *sv, MAGIC *mg)
 {
-    AV *av = (AV*)mg->mg_obj;
-    SV **svp = AvARRAY(av);
-    I32 i = AvFILLp(av);
-    while (i >= 0) {
-	if (svp[i]) {
-	    if (!SvWEAKREF(svp[i]))
-		Perl_croak(aTHX_ "panic: magic_killbackrefs");
-	    /* XXX Should we check that it hasn't changed? */
-	    SvRV(svp[i]) = 0;
-	    SvOK_off(svp[i]);
-	    SvWEAKREF_off(svp[i]);
-	    svp[i] = Nullsv;
-	}
-	i--;
-    }
-    SvREFCNT_dec(av); /* remove extra count added by sv_add_backref() */
+    STRLEN len;
+    SV *lsv = LvTARG(sv);
+    char *tmps = SvPV(lsv,len);
+    I32 offs = LvTARGOFF(sv);
+    I32 rem = LvTARGLEN(sv);
+
+    if (SvUTF8(lsv))
+	sv_pos_u2b(lsv, &offs, &rem);
+    if (offs > (I32)len)
+	offs = len;
+    if (rem + offs > (I32)len)
+	rem = len - offs;
+    sv_setpvn(sv, tmps + offs, (STRLEN)rem);
+    if (SvUTF8(lsv))
+        SvUTF8_on(sv);
     return 0;
 }

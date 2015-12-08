@@ -1,0 +1,122 @@
+I32
+Perl_do_ipcctl(pTHX_ I32 optype, SV **mark, SV **sp)
+{
+    SV *astr;
+    char *a;
+    I32 id, n, cmd, infosize, getinfo;
+    I32 ret = -1;
+
+    id = SvIVx(*++mark);
+    n = (optype == OP_SEMCTL) ? SvIVx(*++mark) : 0;
+    cmd = SvIVx(*++mark);
+    astr = *++mark;
+    infosize = 0;
+    getinfo = (cmd == IPC_STAT);
+
+    switch (optype)
+    {
+#ifdef HAS_MSG
+    case OP_MSGCTL:
+	if (cmd == IPC_STAT || cmd == IPC_SET)
+	    infosize = sizeof(struct msqid_ds);
+	break;
+#endif
+#ifdef HAS_SHM
+    case OP_SHMCTL:
+	if (cmd == IPC_STAT || cmd == IPC_SET)
+	    infosize = sizeof(struct shmid_ds);
+	break;
+#endif
+#ifdef HAS_SEM
+    case OP_SEMCTL:
+#ifdef Semctl
+	if (cmd == IPC_STAT || cmd == IPC_SET)
+	    infosize = sizeof(struct semid_ds);
+	else if (cmd == GETALL || cmd == SETALL)
+	{
+	    struct semid_ds semds;
+	    union semun semun;
+#ifdef EXTRA_F_IN_SEMUN_BUF
+            semun.buff = &semds;
+#else
+            semun.buf = &semds;
+#endif
+	    getinfo = (cmd == GETALL);
+	    if (Semctl(id, 0, IPC_STAT, semun) == -1)
+		return -1;
+	    infosize = semds.sem_nsems * sizeof(short);
+		/* "short" is technically wrong but much more portable
+		   than guessing about u_?short(_t)? */
+	}
+#else
+	Perl_croak(aTHX_ "%s not implemented", PL_op_desc[optype]);
+#endif
+	break;
+#endif
+#if !defined(HAS_MSG) || !defined(HAS_SEM) || !defined(HAS_SHM)
+    default:
+	Perl_croak(aTHX_ "%s not implemented", PL_op_desc[optype]);
+#endif
+    }
+
+    if (infosize)
+    {
+	STRLEN len;
+	if (getinfo)
+	{
+	    SvPV_force(astr, len);
+	    a = SvGROW(astr, infosize+1);
+	}
+	else
+	{
+	    a = SvPV(astr, len);
+	    if (len != infosize)
+		Perl_croak(aTHX_ "Bad arg length for %s, is %lu, should be %ld",
+		      PL_op_desc[optype],
+		      (unsigned long)len,
+		      (long)infosize);
+	}
+    }
+    else
+    {
+	IV i = SvIV(astr);
+	a = INT2PTR(char *,i);		/* ouch */
+    }
+    SETERRNO(0,0);
+    switch (optype)
+    {
+#ifdef HAS_MSG
+    case OP_MSGCTL:
+	ret = msgctl(id, cmd, (struct msqid_ds *)a);
+	break;
+#endif
+#ifdef HAS_SEM
+    case OP_SEMCTL: {
+#ifdef Semctl
+            union semun unsemds;
+
+#ifdef EXTRA_F_IN_SEMUN_BUF
+            unsemds.buff = (struct semid_ds *)a;
+#else
+            unsemds.buf = (struct semid_ds *)a;
+#endif
+	    ret = Semctl(id, n, cmd, unsemds);
+#else
+	    Perl_croak(aTHX_ "%s not implemented", PL_op_desc[optype]);
+#endif
+        }
+	break;
+#endif
+#ifdef HAS_SHM
+    case OP_SHMCTL:
+	ret = shmctl(id, cmd, (struct shmid_ds *)a);
+	break;
+#endif
+    }
+    if (getinfo && ret >= 0) {
+	SvCUR_set(astr, infosize);
+	*SvEND(astr) = '\0';
+	SvSETMAGIC(astr);
+    }
+    return ret;
+}

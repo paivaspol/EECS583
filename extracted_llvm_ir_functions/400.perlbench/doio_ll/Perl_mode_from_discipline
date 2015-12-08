@@ -1,0 +1,156 @@
+define i32 @Perl_mode_from_discipline(%struct.sv* %discp) #0 {
+entry:
+  %len = alloca i64, align 8
+  %tobool = icmp eq %struct.sv* %discp, null
+  br i1 %tobool, label %if.end130, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sv_flags = getelementptr inbounds %struct.sv* %discp, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %0, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.then
+  %sv_any = getelementptr inbounds %struct.sv* %discp, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !3
+  %xpv_cur = getelementptr inbounds i8* %1, i64 8
+  %2 = bitcast i8* %xpv_cur to i64*
+  %3 = load i64* %2, align 8, !tbaa !5
+  store i64 %3, i64* %len, align 8, !tbaa !5
+  %xpv_pv = bitcast i8* %1 to i8**
+  %4 = load i8** %xpv_pv, align 8, !tbaa !3
+  br label %while.cond
+
+cond.false:                                       ; preds = %if.then
+  %call = call i8* @Perl_sv_2pv_flags(%struct.sv* %discp, i64* %len, i32 2) #8
+  br label %while.cond
+
+while.cond:                                       ; preds = %if.then96, %if.then47, %if.end126, %if.then119, %cond.true, %cond.false
+  %s.0 = phi i8* [ %4, %cond.true ], [ %call, %cond.false ], [ %end.0, %if.end126 ], [ %arrayidx64, %if.then96 ], [ %arrayidx16, %if.then47 ], [ %incdec.ptr, %if.then119 ]
+  %5 = load i8* %s.0, align 1, !tbaa !1
+  switch i8 %5, label %while.cond.fail_discipline_crit_edge [
+    i8 0, label %if.end130
+    i8 58, label %if.then5
+    i8 32, label %if.then119
+    i8 9, label %if.then119
+    i8 10, label %if.then119
+    i8 13, label %if.then119
+    i8 12, label %if.then119
+  ]
+
+while.cond.fail_discipline_crit_edge:             ; preds = %while.cond
+  %add.ptr121.pre = getelementptr inbounds i8* %s.0, i64 1
+  br label %fail_discipline
+
+if.then5:                                         ; preds = %while.cond
+  %arrayidx = getelementptr inbounds i8* %s.0, i64 1
+  %6 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv6 = sext i8 %6 to i32
+  switch i32 %conv6, label %fail_discipline [
+    i32 114, label %sw.bb
+    i32 99, label %if.then5.sw.bb48_crit_edge
+  ]
+
+if.then5.sw.bb48_crit_edge:                       ; preds = %if.then5
+  %arrayidx49.phi.trans.insert = getelementptr inbounds i8* %s.0, i64 2
+  %.pre168 = load i8* %arrayidx49.phi.trans.insert, align 1, !tbaa !1
+  br label %sw.bb48
+
+sw.bb:                                            ; preds = %if.then5
+  %arrayidx7 = getelementptr inbounds i8* %s.0, i64 2
+  %7 = load i8* %arrayidx7, align 1, !tbaa !1
+  %cmp9 = icmp eq i8 %7, 97
+  br i1 %cmp9, label %land.lhs.true, label %sw.bb48
+
+land.lhs.true:                                    ; preds = %sw.bb
+  %arrayidx11 = getelementptr inbounds i8* %s.0, i64 3
+  %8 = load i8* %arrayidx11, align 1, !tbaa !1
+  %cmp13 = icmp eq i8 %8, 119
+  br i1 %cmp13, label %land.lhs.true15, label %fail_discipline
+
+land.lhs.true15:                                  ; preds = %land.lhs.true
+  %arrayidx16 = getelementptr inbounds i8* %s.0, i64 4
+  %9 = load i8* %arrayidx16, align 1, !tbaa !1
+  switch i8 %9, label %fail_discipline [
+    i8 0, label %if.then47
+    i8 58, label %if.then47
+    i8 32, label %if.then47
+    i8 9, label %if.then47
+    i8 10, label %if.then47
+    i8 13, label %if.then47
+    i8 12, label %if.then47
+  ]
+
+if.then47:                                        ; preds = %land.lhs.true15, %land.lhs.true15, %land.lhs.true15, %land.lhs.true15, %land.lhs.true15, %land.lhs.true15, %land.lhs.true15
+  %10 = load i64* %len, align 8, !tbaa !5
+  %sub = add i64 %10, -4
+  store i64 %sub, i64* %len, align 8, !tbaa !5
+  br label %while.cond
+
+sw.bb48:                                          ; preds = %if.then5.sw.bb48_crit_edge, %sw.bb
+  %11 = phi i8 [ %.pre168, %if.then5.sw.bb48_crit_edge ], [ %7, %sw.bb ]
+  %cmp51 = icmp eq i8 %11, 114
+  br i1 %cmp51, label %land.lhs.true53, label %fail_discipline
+
+land.lhs.true53:                                  ; preds = %sw.bb48
+  %arrayidx54 = getelementptr inbounds i8* %s.0, i64 3
+  %12 = load i8* %arrayidx54, align 1, !tbaa !1
+  %cmp56 = icmp eq i8 %12, 108
+  br i1 %cmp56, label %land.lhs.true58, label %fail_discipline
+
+land.lhs.true58:                                  ; preds = %land.lhs.true53
+  %arrayidx59 = getelementptr inbounds i8* %s.0, i64 4
+  %13 = load i8* %arrayidx59, align 1, !tbaa !1
+  %cmp61 = icmp eq i8 %13, 102
+  br i1 %cmp61, label %land.lhs.true63, label %fail_discipline
+
+land.lhs.true63:                                  ; preds = %land.lhs.true58
+  %arrayidx64 = getelementptr inbounds i8* %s.0, i64 5
+  %14 = load i8* %arrayidx64, align 1, !tbaa !1
+  switch i8 %14, label %fail_discipline [
+    i8 0, label %if.then96
+    i8 58, label %if.then96
+    i8 32, label %if.then96
+    i8 9, label %if.then96
+    i8 10, label %if.then96
+    i8 13, label %if.then96
+    i8 12, label %if.then96
+  ]
+
+if.then96:                                        ; preds = %land.lhs.true63, %land.lhs.true63, %land.lhs.true63, %land.lhs.true63, %land.lhs.true63, %land.lhs.true63, %land.lhs.true63
+  %15 = load i64* %len, align 8, !tbaa !5
+  %sub98 = add i64 %15, -5
+  store i64 %sub98, i64* %len, align 8, !tbaa !5
+  br label %while.cond
+
+if.then119:                                       ; preds = %while.cond, %while.cond, %while.cond, %while.cond, %while.cond
+  %incdec.ptr = getelementptr inbounds i8* %s.0, i64 1
+  %16 = load i64* %len, align 8, !tbaa !5
+  %dec = add i64 %16, -1
+  store i64 %dec, i64* %len, align 8, !tbaa !5
+  br label %while.cond
+
+fail_discipline:                                  ; preds = %land.lhs.true, %land.lhs.true15, %while.cond.fail_discipline_crit_edge, %land.lhs.true63, %if.then5, %land.lhs.true58, %land.lhs.true53, %sw.bb48
+  %add.ptr121.pre-phi = phi i8* [ %add.ptr121.pre, %while.cond.fail_discipline_crit_edge ], [ %arrayidx, %land.lhs.true63 ], [ %arrayidx, %if.then5 ], [ %arrayidx, %land.lhs.true58 ], [ %arrayidx, %land.lhs.true53 ], [ %arrayidx, %sw.bb48 ], [ %arrayidx, %land.lhs.true15 ], [ %arrayidx, %land.lhs.true ]
+  %call122 = call i8* @strchr(i8* %add.ptr121.pre-phi, i32 58) #8
+  %tobool123 = icmp eq i8* %call122, null
+  %17 = load i64* %len, align 8, !tbaa !5
+  br i1 %tobool123, label %if.then124, label %if.end126
+
+if.then124:                                       ; preds = %fail_discipline
+  %add.ptr125 = getelementptr inbounds i8* %s.0, i64 %17
+  br label %if.end126
+
+if.end126:                                        ; preds = %fail_discipline, %if.then124
+  %end.0 = phi i8* [ %add.ptr125, %if.then124 ], [ %call122, %fail_discipline ]
+  %sub.ptr.lhs.cast = ptrtoint i8* %end.0 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %s.0 to i64
+  %sub.ptr.sub167 = sub i64 %sub.ptr.rhs.cast, %sub.ptr.lhs.cast
+  %sub127 = add i64 %sub.ptr.sub167, %17
+  store i64 %sub127, i64* %len, align 8, !tbaa !5
+  br label %while.cond
+
+if.end130:                                        ; preds = %while.cond, %entry
+  ret i32 0
+}

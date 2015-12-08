@@ -1,7 +1,26 @@
 int
-Perl_magic_setmglob(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_setsubstr(pTHX_ SV *sv, MAGIC *mg)
 {
-    mg->mg_len = -1;
-    SvSCREAM_off(sv);
+    STRLEN len;
+    char *tmps = SvPV(sv, len);
+    SV *lsv = LvTARG(sv);
+    I32 lvoff = LvTARGOFF(sv);
+    I32 lvlen = LvTARGLEN(sv);
+
+    if (DO_UTF8(sv)) {
+	sv_utf8_upgrade(lsv);
+ 	sv_pos_u2b(lsv, &lvoff, &lvlen);
+	sv_insert(lsv, lvoff, lvlen, tmps, len);
+	SvUTF8_on(lsv);
+    }
+    else if (lsv && SvUTF8(lsv)) {
+	sv_pos_u2b(lsv, &lvoff, &lvlen);
+	tmps = (char*)bytes_to_utf8((U8*)tmps, &len);
+	sv_insert(lsv, lvoff, lvlen, tmps, len);
+	Safefree(tmps);
+    }
+    else
+        sv_insert(lsv, lvoff, lvlen, tmps, len);
+
     return 0;
 }

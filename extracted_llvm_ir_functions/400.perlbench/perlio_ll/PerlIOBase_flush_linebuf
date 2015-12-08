@@ -1,0 +1,43 @@
+define void @PerlIOBase_flush_linebuf() #1 {
+entry:
+  %0 = load %struct._PerlIO*** @PL_perlio, align 8, !tbaa !3
+  %tobool12 = icmp eq %struct._PerlIO** %0, null
+  br i1 %tobool12, label %while.end, label %while.body
+
+while.cond.loopexit:                              ; preds = %if.end
+  %1 = load %struct._PerlIO** %3, align 8
+  %2 = getelementptr inbounds %struct._PerlIO* %1, i64 0, i32 0
+  %tobool = icmp eq %struct._PerlIO* %1, null
+  br i1 %tobool, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.cond.loopexit
+  %3 = phi %struct._PerlIO** [ %2, %while.cond.loopexit ], [ %0, %entry ]
+  br label %for.body
+
+for.body:                                         ; preds = %if.end, %while.body
+  %.pn = phi %struct._PerlIO** [ %3, %while.body ], [ %f.011, %if.end ]
+  %i.010 = phi i32 [ 1, %while.body ], [ %inc, %if.end ]
+  %f.011 = getelementptr inbounds %struct._PerlIO** %.pn, i64 1
+  %4 = load %struct._PerlIO** %f.011, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %4, null
+  br i1 %tobool1, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body
+  %flags = getelementptr inbounds %struct._PerlIO* %4, i64 0, i32 2
+  %5 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %5, 524800
+  %cmp2 = icmp eq i32 %and, 524800
+  br i1 %cmp2, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true
+  %call = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %f.011) #10
+  br label %if.end
+
+if.end:                                           ; preds = %for.body, %if.then, %land.lhs.true
+  %inc = add nsw i32 %i.010, 1
+  %exitcond = icmp eq i32 %inc, 64
+  br i1 %exitcond, label %while.cond.loopexit, label %for.body
+
+while.end:                                        ; preds = %while.cond.loopexit, %entry
+  ret void
+}

@@ -1,0 +1,22 @@
+STATIC bool
+S_is_handle_constructor(pTHX_ OP *o, I32 argnum)
+{
+    switch (o->op_type) {
+    case OP_PIPE_OP:
+    case OP_SOCKPAIR:
+	if (argnum == 2)
+	    return TRUE;
+	/* FALL THROUGH */
+    case OP_SYSOPEN:
+    case OP_OPEN:
+    case OP_SELECT:		/* XXX c.f. SelectSaver.pm */
+    case OP_SOCKET:
+    case OP_OPEN_DIR:
+    case OP_ACCEPT:
+	if (argnum == 1)
+	    return TRUE;
+	/* FALL THROUGH */
+    default:
+	return FALSE;
+    }
+}

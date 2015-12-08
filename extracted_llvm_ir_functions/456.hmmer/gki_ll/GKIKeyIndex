@@ -1,0 +1,34 @@
+define i32 @GKIKeyIndex(%struct.GKI* nocapture %hash, i8* nocapture %key) #2 {
+entry:
+  %call = tail call fastcc i32 @gki_hashvalue(%struct.GKI* %hash, i8* %key) #5
+  %idxprom = sext i32 %call to i64
+  %table = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 0
+  %0 = load %struct.gki_elem*** %table, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.gki_elem** %0, i64 %idxprom
+  %ptr.09 = load %struct.gki_elem** %arrayidx, align 8
+  %cmp10 = icmp eq %struct.gki_elem* %ptr.09, null
+  br i1 %cmp10, label %return, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %nxt = getelementptr inbounds %struct.gki_elem* %ptr.011, i64 0, i32 2
+  %ptr.0 = load %struct.gki_elem** %nxt, align 8
+  %cmp = icmp eq %struct.gki_elem* %ptr.0, null
+  br i1 %cmp, label %return, label %for.body
+
+for.body:                                         ; preds = %entry, %for.cond
+  %ptr.011 = phi %struct.gki_elem* [ %ptr.0, %for.cond ], [ %ptr.09, %entry ]
+  %key1 = getelementptr inbounds %struct.gki_elem* %ptr.011, i64 0, i32 0
+  %1 = load i8** %key1, align 8, !tbaa !3
+  %call2 = tail call i32 @strcmp(i8* %key, i8* %1) #7
+  %cmp3 = icmp eq i32 %call2, 0
+  br i1 %cmp3, label %if.then, label %for.cond
+
+if.then:                                          ; preds = %for.body
+  %idx = getelementptr inbounds %struct.gki_elem* %ptr.011, i64 0, i32 1
+  %2 = load i32* %idx, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %for.cond, %if.then
+  %retval.0 = phi i32 [ %2, %if.then ], [ -1, %for.cond ], [ -1, %entry ]
+  ret i32 %retval.0
+}

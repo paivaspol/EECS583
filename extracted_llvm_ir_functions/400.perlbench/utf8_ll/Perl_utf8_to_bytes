@@ -1,0 +1,64 @@
+define i8* @Perl_utf8_to_bytes(i8* %s, i64* nocapture %len) #0 {
+entry:
+  %ulen = alloca i64, align 8
+  %0 = load i64* %len, align 8, !tbaa !3
+  %add.ptr = getelementptr inbounds i8* %s, i64 %0
+  %cmp47 = icmp sgt i64 %0, 0
+  br i1 %cmp47, label %for.body, label %while.end
+
+while.cond.preheader:                             ; preds = %for.cond.backedge
+  br i1 %cmp47, label %while.body, label %while.end
+
+for.body:                                         ; preds = %entry, %for.cond.backedge
+  %s.addr.048 = phi i8* [ %s.addr.0.be, %for.cond.backedge ], [ %s, %entry ]
+  %incdec.ptr = getelementptr inbounds i8* %s.addr.048, i64 1
+  %1 = load i8* %s.addr.048, align 1, !tbaa !1
+  %cmp1 = icmp sgt i8 %1, -1
+  br i1 %cmp1, label %for.cond.backedge, label %land.lhs.true
+
+for.cond.backedge:                                ; preds = %for.body, %lor.lhs.false8
+  %s.addr.0.be = phi i8* [ %incdec.ptr, %for.body ], [ %incdec.ptr9, %lor.lhs.false8 ]
+  %cmp = icmp ult i8* %s.addr.0.be, %add.ptr
+  br i1 %cmp, label %for.body, label %while.cond.preheader
+
+land.lhs.true:                                    ; preds = %for.body
+  %and = and i8 %1, -4
+  %cmp4 = icmp eq i8 %and, -64
+  %cmp6 = icmp ult i8* %incdec.ptr, %add.ptr
+  %or.cond = and i1 %cmp4, %cmp6
+  br i1 %or.cond, label %lor.lhs.false8, label %return
+
+lor.lhs.false8:                                   ; preds = %land.lhs.true
+  %incdec.ptr9 = getelementptr inbounds i8* %s.addr.048, i64 2
+  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %3 = icmp slt i8 %2, 0
+  %cmp16 = icmp ult i8 %2, -64
+  %or.cond43 = and i1 %3, %cmp16
+  br i1 %or.cond43, label %for.cond.backedge, label %return
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %d.046 = phi i8* [ %incdec.ptr21, %while.body ], [ %s, %while.cond.preheader ]
+  %s.addr.145 = phi i8* [ %add.ptr22, %while.body ], [ %s, %while.cond.preheader ]
+  %call = call i64 @Perl_utf8_to_uvchr(i8* %s.addr.145, i64* %ulen) #6
+  %conv20 = trunc i64 %call to i8
+  %incdec.ptr21 = getelementptr inbounds i8* %d.046, i64 1
+  store i8 %conv20, i8* %d.046, align 1, !tbaa !1
+  %4 = load i64* %ulen, align 8, !tbaa !3
+  %add.ptr22 = getelementptr inbounds i8* %s.addr.145, i64 %4
+  %cmp18 = icmp ult i8* %add.ptr22, %add.ptr
+  br i1 %cmp18, label %while.body, label %while.end
+
+while.end:                                        ; preds = %entry, %while.body, %while.cond.preheader
+  %d.0.lcssa = phi i8* [ %s, %while.cond.preheader ], [ %incdec.ptr21, %while.body ], [ %s, %entry ]
+  store i8 0, i8* %d.0.lcssa, align 1, !tbaa !1
+  %sub.ptr.lhs.cast = ptrtoint i8* %d.0.lcssa to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %s to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %lor.lhs.false8, %while.end
+  %storemerge = phi i64 [ %sub.ptr.sub, %while.end ], [ -1, %lor.lhs.false8 ], [ -1, %land.lhs.true ]
+  %retval.0 = phi i8* [ %s, %while.end ], [ null, %lor.lhs.false8 ], [ null, %land.lhs.true ]
+  store i64 %storemerge, i64* %len, align 8, !tbaa !3
+  ret i8* %retval.0
+}

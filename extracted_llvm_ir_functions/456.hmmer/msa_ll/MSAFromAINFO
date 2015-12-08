@@ -1,0 +1,333 @@
+define %struct.msa_struct* @MSAFromAINFO(i8** nocapture %aseq, %struct.aliinfo_s* nocapture %ainfo) #0 {
+entry:
+  %nseq = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 2
+  %0 = load i32* %nseq, align 4, !tbaa !3
+  %alen = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 1
+  %1 = load i32* %alen, align 4, !tbaa !3
+  %call = tail call %struct.msa_struct* @MSAAlloc(i32 %0, i32 %1) #8
+  %2 = load i32* %nseq, align 4, !tbaa !3
+  %cmp315 = icmp sgt i32 %2, 0
+  br i1 %cmp315, label %for.body.lr.ph, label %for.end139
+
+for.body.lr.ph:                                   ; preds = %entry
+  %aseq2 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 0
+  %wgt = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 3
+  %wgt9 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 2
+  %sqinfo = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 6
+  %sqname = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 1
+  %alen16 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 3
+  %sqlen = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 42
+  %index = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 39
+  %sa = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 17
+  %nseqalloc96 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 40
+  %salen = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 44
+  %ss = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 16
+  %sslen = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 43
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc137
+  %indvars.iv319 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next320, %for.inc137 ]
+  %3 = load i8*** %aseq2, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8** %3, i64 %indvars.iv319
+  %4 = load i8** %arrayidx, align 8, !tbaa !0
+  %arrayidx4 = getelementptr inbounds i8** %aseq, i64 %indvars.iv319
+  %5 = load i8** %arrayidx4, align 8, !tbaa !0
+  %call5 = tail call i8* @strcpy(i8* %4, i8* %5) #6
+  %6 = load float** %wgt, align 8, !tbaa !0
+  %arrayidx7 = getelementptr inbounds float* %6, i64 %indvars.iv319
+  %7 = load float* %arrayidx7, align 4, !tbaa !4
+  %8 = load float** %wgt9, align 8, !tbaa !0
+  %arrayidx10 = getelementptr inbounds float* %8, i64 %indvars.iv319
+  store float %7, float* %arrayidx10, align 4, !tbaa !4
+  %9 = load %struct.seqinfo_s** %sqinfo, align 8, !tbaa !0
+  %arraydecay = getelementptr inbounds %struct.seqinfo_s* %9, i64 %indvars.iv319, i32 1, i64 0
+  %call13 = tail call i8* @sre_strdup(i8* %arraydecay, i32 -1) #6
+  %10 = load i8*** %sqname, align 8, !tbaa !0
+  %arrayidx15 = getelementptr inbounds i8** %10, i64 %indvars.iv319
+  store i8* %call13, i8** %arrayidx15, align 8, !tbaa !0
+  %11 = load i32* %alen16, align 4, !tbaa !3
+  %12 = load i32** %sqlen, align 8, !tbaa !0
+  %arrayidx18 = getelementptr inbounds i32* %12, i64 %indvars.iv319
+  store i32 %11, i32* %arrayidx18, align 4, !tbaa !3
+  %13 = load %struct.GKI** %index, align 8, !tbaa !0
+  %14 = load i8*** %sqname, align 8, !tbaa !0
+  %arrayidx21 = getelementptr inbounds i8** %14, i64 %indvars.iv319
+  %15 = load i8** %arrayidx21, align 8, !tbaa !0
+  %call22 = tail call i32 @GKIStoreKey(%struct.GKI* %13, i8* %15) #6
+  %16 = load %struct.seqinfo_s** %sqinfo, align 8, !tbaa !0
+  %flags = getelementptr inbounds %struct.seqinfo_s* %16, i64 %indvars.iv319, i32 0
+  %17 = load i32* %flags, align 4, !tbaa !3
+  %and = and i32 %17, 4
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %arraydecay29 = getelementptr inbounds %struct.seqinfo_s* %16, i64 %indvars.iv319, i32 3, i64 0
+  %18 = trunc i64 %indvars.iv319 to i32
+  tail call void @MSASetSeqAccession(%struct.msa_struct* %call, i32 %18, i8* %arraydecay29) #8
+  %.pre322 = load %struct.seqinfo_s** %sqinfo, align 8, !tbaa !0
+  %flags33.phi.trans.insert = getelementptr inbounds %struct.seqinfo_s* %.pre322, i64 %indvars.iv319, i32 0
+  %.pre323 = load i32* %flags33.phi.trans.insert, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %for.body, %if.then
+  %19 = phi i32 [ %17, %for.body ], [ %.pre323, %if.then ]
+  %20 = phi %struct.seqinfo_s* [ %16, %for.body ], [ %.pre322, %if.then ]
+  %and34 = and i32 %19, 8
+  %tobool35 = icmp eq i32 %and34, 0
+  br i1 %tobool35, label %if.end41, label %if.then36
+
+if.then36:                                        ; preds = %if.end
+  %arraydecay40 = getelementptr inbounds %struct.seqinfo_s* %20, i64 %indvars.iv319, i32 4, i64 0
+  %21 = trunc i64 %indvars.iv319 to i32
+  tail call void @MSASetSeqDescription(%struct.msa_struct* %call, i32 %21, i8* %arraydecay40) #8
+  %.pre324 = load %struct.seqinfo_s** %sqinfo, align 8, !tbaa !0
+  %flags45.phi.trans.insert = getelementptr inbounds %struct.seqinfo_s* %.pre324, i64 %indvars.iv319, i32 0
+  %.pre325 = load i32* %flags45.phi.trans.insert, align 4, !tbaa !3
+  br label %if.end41
+
+if.end41:                                         ; preds = %if.end, %if.then36
+  %22 = phi i32 [ %19, %if.end ], [ %.pre325, %if.then36 ]
+  %23 = phi %struct.seqinfo_s* [ %20, %if.end ], [ %.pre324, %if.then36 ]
+  %and46 = and i32 %22, 512
+  %tobool47 = icmp eq i32 %and46, 0
+  br i1 %tobool47, label %if.end85, label %if.then48
+
+if.then48:                                        ; preds = %if.end41
+  %24 = load i8*** %ss, align 8, !tbaa !0
+  %cmp49 = icmp eq i8** %24, null
+  br i1 %cmp49, label %if.then50, label %if.end68
+
+if.then50:                                        ; preds = %if.then48
+  %25 = load i32* %nseqalloc96, align 4, !tbaa !3
+  %conv = sext i32 %25 to i64
+  %mul = shl nsw i64 %conv, 3
+  %call51 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 1055, i64 %mul) #6
+  %26 = bitcast i8* %call51 to i8**
+  store i8** %26, i8*** %ss, align 8, !tbaa !0
+  %27 = load i32* %nseqalloc96, align 4, !tbaa !3
+  %conv54 = sext i32 %27 to i64
+  %mul55 = shl nsw i64 %conv54, 2
+  %call56 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 1056, i64 %mul55) #6
+  %28 = bitcast i8* %call56 to i32*
+  store i32* %28, i32** %sslen, align 8, !tbaa !0
+  %29 = load i32* %nseqalloc96, align 4, !tbaa !3
+  %cmp59311 = icmp sgt i32 %29, 0
+  br i1 %cmp59311, label %for.body61, label %if.end68.loopexit
+
+for.body61:                                       ; preds = %if.then50, %for.body61
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body61 ], [ 0, %if.then50 ]
+  %30 = load i8*** %ss, align 8, !tbaa !0
+  %arrayidx64 = getelementptr inbounds i8** %30, i64 %indvars.iv
+  store i8* null, i8** %arrayidx64, align 8, !tbaa !0
+  %31 = load i32** %sslen, align 8, !tbaa !0
+  %arrayidx67 = getelementptr inbounds i32* %31, i64 %indvars.iv
+  store i32 0, i32* %arrayidx67, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %32 = load i32* %nseqalloc96, align 4, !tbaa !3
+  %33 = trunc i64 %indvars.iv.next to i32
+  %cmp59 = icmp slt i32 %33, %32
+  br i1 %cmp59, label %for.body61, label %if.end68.loopexit
+
+if.end68.loopexit:                                ; preds = %for.body61, %if.then50
+  %.pre330 = load %struct.seqinfo_s** %sqinfo, align 8, !tbaa !0
+  %.pre331 = load i8*** %ss, align 8, !tbaa !0
+  br label %if.end68
+
+if.end68:                                         ; preds = %if.end68.loopexit, %if.then48
+  %34 = phi i8** [ %.pre331, %if.end68.loopexit ], [ %24, %if.then48 ]
+  %35 = phi %struct.seqinfo_s* [ %.pre330, %if.end68.loopexit ], [ %23, %if.then48 ]
+  %36 = load i8*** %aseq2, align 8, !tbaa !0
+  %arrayidx71 = getelementptr inbounds i8** %36, i64 %indvars.iv319
+  %37 = load i8** %arrayidx71, align 8, !tbaa !0
+  %38 = load i32* %alen16, align 4, !tbaa !3
+  %ss76 = getelementptr inbounds %struct.seqinfo_s* %35, i64 %indvars.iv319, i32 10
+  %39 = load i8** %ss76, align 8, !tbaa !0
+  %arrayidx79 = getelementptr inbounds i8** %34, i64 %indvars.iv319
+  %call80 = tail call i32 @MakeAlignedString(i8* %37, i32 %38, i8* %39, i8** %arrayidx79) #6
+  %40 = load i32* %alen16, align 4, !tbaa !3
+  %41 = load i32** %sslen, align 8, !tbaa !0
+  %arrayidx84 = getelementptr inbounds i32* %41, i64 %indvars.iv319
+  store i32 %40, i32* %arrayidx84, align 4, !tbaa !3
+  %.pre326 = load %struct.seqinfo_s** %sqinfo, align 8, !tbaa !0
+  %flags89.phi.trans.insert = getelementptr inbounds %struct.seqinfo_s* %.pre326, i64 %indvars.iv319, i32 0
+  %.pre327 = load i32* %flags89.phi.trans.insert, align 4, !tbaa !3
+  br label %if.end85
+
+if.end85:                                         ; preds = %if.end41, %if.end68
+  %42 = phi i32 [ %22, %if.end41 ], [ %.pre327, %if.end68 ]
+  %43 = phi %struct.seqinfo_s* [ %23, %if.end41 ], [ %.pre326, %if.end68 ]
+  %and90 = and i32 %42, 1024
+  %tobool91 = icmp eq i32 %and90, 0
+  br i1 %tobool91, label %for.inc137, label %if.then92
+
+if.then92:                                        ; preds = %if.end85
+  %44 = load i8*** %sa, align 8, !tbaa !0
+  %cmp93 = icmp eq i8** %44, null
+  br i1 %cmp93, label %if.then95, label %if.end119
+
+if.then95:                                        ; preds = %if.then92
+  %45 = load i32* %nseqalloc96, align 4, !tbaa !3
+  %conv97 = sext i32 %45 to i64
+  %mul98 = shl nsw i64 %conv97, 3
+  %call99 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 1068, i64 %mul98) #6
+  %46 = bitcast i8* %call99 to i8**
+  store i8** %46, i8*** %sa, align 8, !tbaa !0
+  %47 = load i32* %nseqalloc96, align 4, !tbaa !3
+  %conv102 = sext i32 %47 to i64
+  %mul103 = shl nsw i64 %conv102, 2
+  %call104 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 1069, i64 %mul103) #6
+  %48 = bitcast i8* %call104 to i32*
+  store i32* %48, i32** %salen, align 8, !tbaa !0
+  %49 = load i32* %nseqalloc96, align 4, !tbaa !3
+  %cmp107313 = icmp sgt i32 %49, 0
+  br i1 %cmp107313, label %for.body109, label %if.end119.loopexit
+
+for.body109:                                      ; preds = %if.then95, %for.body109
+  %indvars.iv317 = phi i64 [ %indvars.iv.next318, %for.body109 ], [ 0, %if.then95 ]
+  %50 = load i8*** %sa, align 8, !tbaa !0
+  %arrayidx112 = getelementptr inbounds i8** %50, i64 %indvars.iv317
+  store i8* null, i8** %arrayidx112, align 8, !tbaa !0
+  %51 = load i32** %salen, align 8, !tbaa !0
+  %arrayidx115 = getelementptr inbounds i32* %51, i64 %indvars.iv317
+  store i32 0, i32* %arrayidx115, align 4, !tbaa !3
+  %indvars.iv.next318 = add i64 %indvars.iv317, 1
+  %52 = load i32* %nseqalloc96, align 4, !tbaa !3
+  %53 = trunc i64 %indvars.iv.next318 to i32
+  %cmp107 = icmp slt i32 %53, %52
+  br i1 %cmp107, label %for.body109, label %if.end119.loopexit
+
+if.end119.loopexit:                               ; preds = %for.body109, %if.then95
+  %.pre328 = load %struct.seqinfo_s** %sqinfo, align 8, !tbaa !0
+  %.pre329 = load i8*** %sa, align 8, !tbaa !0
+  br label %if.end119
+
+if.end119:                                        ; preds = %if.end119.loopexit, %if.then92
+  %54 = phi i8** [ %.pre329, %if.end119.loopexit ], [ %44, %if.then92 ]
+  %55 = phi %struct.seqinfo_s* [ %.pre328, %if.end119.loopexit ], [ %43, %if.then92 ]
+  %56 = load i8*** %aseq2, align 8, !tbaa !0
+  %arrayidx122 = getelementptr inbounds i8** %56, i64 %indvars.iv319
+  %57 = load i8** %arrayidx122, align 8, !tbaa !0
+  %58 = load i32* %alen16, align 4, !tbaa !3
+  %sa127 = getelementptr inbounds %struct.seqinfo_s* %55, i64 %indvars.iv319, i32 11
+  %59 = load i8** %sa127, align 8, !tbaa !0
+  %arrayidx130 = getelementptr inbounds i8** %54, i64 %indvars.iv319
+  %call131 = tail call i32 @MakeAlignedString(i8* %57, i32 %58, i8* %59, i8** %arrayidx130) #6
+  %60 = load i32* %alen16, align 4, !tbaa !3
+  %61 = load i32** %salen, align 8, !tbaa !0
+  %arrayidx135 = getelementptr inbounds i32* %61, i64 %indvars.iv319
+  store i32 %60, i32* %arrayidx135, align 4, !tbaa !3
+  br label %for.inc137
+
+for.inc137:                                       ; preds = %if.end85, %if.end119
+  %indvars.iv.next320 = add i64 %indvars.iv319, 1
+  %62 = load i32* %nseq, align 4, !tbaa !3
+  %63 = trunc i64 %indvars.iv.next320 to i32
+  %cmp = icmp slt i32 %63, %62
+  br i1 %cmp, label %for.body, label %for.end139
+
+for.end139:                                       ; preds = %for.inc137, %entry
+  %name140 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 7
+  %64 = load i8** %name140, align 8, !tbaa !0
+  %call141 = tail call i8* @sre_strdup(i8* %64, i32 -1) #6
+  %name142 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 7
+  store i8* %call141, i8** %name142, align 8, !tbaa !0
+  %desc143 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 8
+  %65 = load i8** %desc143, align 8, !tbaa !0
+  %call144 = tail call i8* @sre_strdup(i8* %65, i32 -1) #6
+  %desc145 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 8
+  store i8* %call144, i8** %desc145, align 8, !tbaa !0
+  %acc146 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 9
+  %66 = load i8** %acc146, align 8, !tbaa !0
+  %call147 = tail call i8* @sre_strdup(i8* %66, i32 -1) #6
+  %acc148 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 9
+  store i8* %call147, i8** %acc148, align 8, !tbaa !0
+  %au = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 10
+  %67 = load i8** %au, align 8, !tbaa !0
+  %call149 = tail call i8* @sre_strdup(i8* %67, i32 -1) #6
+  %au150 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 10
+  store i8* %call149, i8** %au150, align 8, !tbaa !0
+  %cs = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 4
+  %68 = load i8** %cs, align 8, !tbaa !0
+  %call151 = tail call i8* @sre_strdup(i8* %68, i32 -1) #6
+  %ss_cons = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 11
+  store i8* %call151, i8** %ss_cons, align 8, !tbaa !0
+  %rf = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 5
+  %69 = load i8** %rf, align 8, !tbaa !0
+  %call152 = tail call i8* @sre_strdup(i8* %69, i32 -1) #6
+  %rf153 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 13
+  store i8* %call152, i8** %rf153, align 8, !tbaa !0
+  %flags154 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 0
+  %70 = load i32* %flags154, align 4, !tbaa !3
+  %and155 = and i32 %70, 1
+  %tobool156 = icmp eq i32 %and155, 0
+  br i1 %tobool156, label %if.end164, label %if.then157
+
+if.then157:                                       ; preds = %for.end139
+  %tc1 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 11
+  %71 = load float* %tc1, align 4, !tbaa !4
+  %arrayidx158 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 18, i64 0
+  store float %71, float* %arrayidx158, align 4, !tbaa !4
+  %arrayidx159 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 19, i64 0
+  store i32 1, i32* %arrayidx159, align 4, !tbaa !3
+  %tc2 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 12
+  %72 = load float* %tc2, align 4, !tbaa !4
+  %arrayidx161 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 18, i64 1
+  store float %72, float* %arrayidx161, align 4, !tbaa !4
+  %arrayidx163 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 19, i64 1
+  store i32 1, i32* %arrayidx163, align 4, !tbaa !3
+  %.pre = load i32* %flags154, align 4, !tbaa !3
+  br label %if.end164
+
+if.end164:                                        ; preds = %for.end139, %if.then157
+  %73 = phi i32 [ %70, %for.end139 ], [ %.pre, %if.then157 ]
+  %and166 = and i32 %73, 2
+  %tobool167 = icmp eq i32 %and166, 0
+  br i1 %tobool167, label %if.end177, label %if.then168
+
+if.then168:                                       ; preds = %if.end164
+  %nc1 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 13
+  %74 = load float* %nc1, align 4, !tbaa !4
+  %arrayidx170 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 18, i64 4
+  store float %74, float* %arrayidx170, align 4, !tbaa !4
+  %arrayidx172 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 19, i64 4
+  store i32 1, i32* %arrayidx172, align 4, !tbaa !3
+  %nc2 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 14
+  %75 = load float* %nc2, align 4, !tbaa !4
+  %arrayidx174 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 18, i64 5
+  store float %75, float* %arrayidx174, align 4, !tbaa !4
+  %arrayidx176 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 19, i64 5
+  store i32 1, i32* %arrayidx176, align 4, !tbaa !3
+  %.pre321 = load i32* %flags154, align 4, !tbaa !3
+  br label %if.end177
+
+if.end177:                                        ; preds = %if.end164, %if.then168
+  %76 = phi i32 [ %73, %if.end164 ], [ %.pre321, %if.then168 ]
+  %and179 = and i32 %76, 4
+  %tobool180 = icmp eq i32 %and179, 0
+  br i1 %tobool180, label %if.end190, label %if.then181
+
+if.then181:                                       ; preds = %if.end177
+  %ga1 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 15
+  %77 = load float* %ga1, align 4, !tbaa !4
+  %arrayidx183 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 18, i64 2
+  store float %77, float* %arrayidx183, align 4, !tbaa !4
+  %arrayidx185 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 19, i64 2
+  store i32 1, i32* %arrayidx185, align 4, !tbaa !3
+  %ga2 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 16
+  %78 = load float* %ga2, align 4, !tbaa !4
+  %arrayidx187 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 18, i64 3
+  store float %78, float* %arrayidx187, align 4, !tbaa !4
+  %arrayidx189 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 19, i64 3
+  store i32 1, i32* %arrayidx189, align 4, !tbaa !3
+  br label %if.end190
+
+if.end190:                                        ; preds = %if.end177, %if.then181
+  %79 = load i32* %nseq, align 4, !tbaa !3
+  %nseq192 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 4
+  store i32 %79, i32* %nseq192, align 4, !tbaa !3
+  %80 = load i32* %alen, align 4, !tbaa !3
+  %alen194 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 3
+  store i32 %80, i32* %alen194, align 4, !tbaa !3
+  ret %struct.msa_struct* %call
+}

@@ -1,20 +1,9 @@
 int
-cmpsi_operand (op, mode)
+arith_or_logical_operator (op, mode)
       rtx op;
       enum machine_mode mode;
 {
-  if (nonimmediate_operand (op, mode))
-    return 1;
-
-  if (GET_CODE (op) == AND
-      && GET_MODE (op) == SImode
-      && GET_CODE (XEXP (op, 0)) == ZERO_EXTRACT
-      && GET_CODE (XEXP (XEXP (op, 0), 1)) == CONST_INT
-      && GET_CODE (XEXP (XEXP (op, 0), 2)) == CONST_INT
-      && INTVAL (XEXP (XEXP (op, 0), 1)) == 8
-      && INTVAL (XEXP (XEXP (op, 0), 2)) == 8
-      && GET_CODE (XEXP (op, 1)) == CONST_INT)
-    return 1;
-
-  return 0;
+  return ((mode == VOIDmode || GET_MODE (op) == mode)
+          && (GET_RTX_CLASS (GET_CODE (op)) == 'c'
+              || GET_RTX_CLASS (GET_CODE (op)) == '2'));
 }

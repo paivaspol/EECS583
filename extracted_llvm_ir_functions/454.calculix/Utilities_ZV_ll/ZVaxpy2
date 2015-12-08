@@ -1,0 +1,61 @@
+define void @ZVaxpy2(i32 %size, double* nocapture %z, double %areal, double %aimag, double* %x, double %breal, double %bimag, double* %y) #0 {
+entry:
+  %cmp = icmp slt i32 %size, 0
+  %cmp1 = icmp eq double* %y, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq double* %x, null
+  %or.cond59 = or i1 %or.cond, %cmp3
+  br i1 %or.cond59, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp460 = icmp sgt i32 %size, 0
+  br i1 %cmp460, label %for.body, label %for.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str7, i64 0, i64 0), i32 %size, double* %y, double %areal, double %aimag, double* %x) #5
+  tail call void @exit(i32 -1) #7
+  unreachable
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %ii.061 = phi i32 [ %inc, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv
+  %1 = load double* %arrayidx, align 8, !tbaa !0
+  %2 = or i64 %indvars.iv, 1
+  %arrayidx6 = getelementptr inbounds double* %x, i64 %2
+  %3 = load double* %arrayidx6, align 8, !tbaa !0
+  %arrayidx8 = getelementptr inbounds double* %y, i64 %indvars.iv
+  %4 = load double* %arrayidx8, align 8, !tbaa !0
+  %arrayidx11 = getelementptr inbounds double* %y, i64 %2
+  %5 = load double* %arrayidx11, align 8, !tbaa !0
+  %mul = fmul double %1, %areal
+  %mul12 = fmul double %3, %aimag
+  %sub = fsub double %mul, %mul12
+  %mul13 = fmul double %4, %breal
+  %add14 = fadd double %sub, %mul13
+  %mul15 = fmul double %5, %bimag
+  %sub16 = fsub double %add14, %mul15
+  %arrayidx18 = getelementptr inbounds double* %z, i64 %indvars.iv
+  %6 = load double* %arrayidx18, align 8, !tbaa !0
+  %add19 = fadd double %6, %sub16
+  store double %add19, double* %arrayidx18, align 8, !tbaa !0
+  %mul20 = fmul double %3, %areal
+  %mul21 = fmul double %1, %aimag
+  %add22 = fadd double %mul21, %mul20
+  %mul23 = fmul double %5, %breal
+  %add24 = fadd double %add22, %mul23
+  %mul25 = fmul double %4, %bimag
+  %add26 = fadd double %mul25, %add24
+  %arrayidx29 = getelementptr inbounds double* %z, i64 %2
+  %7 = load double* %arrayidx29, align 8, !tbaa !0
+  %add30 = fadd double %7, %add26
+  store double %add30, double* %arrayidx29, align 8, !tbaa !0
+  %inc = add nsw i32 %ii.061, 1
+  %indvars.iv.next = add i64 %indvars.iv, 2
+  %exitcond = icmp eq i32 %inc, %size
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  ret void
+}

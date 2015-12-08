@@ -1,0 +1,46 @@
+void
+Perl_av_fill(pTHX_ register AV *av, I32 fill)
+{
+    MAGIC *mg;
+    if (!av)
+	Perl_croak(aTHX_ "panic: null array");
+    if (fill < 0)
+	fill = -1;
+    if ((mg = SvTIED_mg((SV*)av, PERL_MAGIC_tied))) {
+	dSP;            
+	ENTER;
+	SAVETMPS;
+	PUSHSTACKi(PERLSI_MAGIC);
+	PUSHMARK(SP);
+	EXTEND(SP,2);
+	PUSHs(SvTIED_obj((SV*)av, mg));
+	PUSHs(sv_2mortal(newSViv(fill+1)));
+	PUTBACK;
+	call_method("STORESIZE", G_SCALAR|G_DISCARD);
+	POPSTACK;
+	FREETMPS;
+	LEAVE;
+	return;
+    }
+    if (fill <= AvMAX(av)) {
+	I32 key = AvFILLp(av);
+	SV** ary = AvARRAY(av);
+
+	if (AvREAL(av)) {
+	    while (key > fill) {
+		SvREFCNT_dec(ary[key]);
+		ary[key--] = &PL_sv_undef;
+	    }
+	}
+	else {
+	    while (key < fill)
+		ary[++key] = &PL_sv_undef;
+	}
+	    
+	AvFILLp(av) = fill;
+	if (SvSMAGICAL(av))
+	    mg_set((SV*)av);
+    }
+    else
+	(void)av_store(av,fill,&PL_sv_undef);
+}

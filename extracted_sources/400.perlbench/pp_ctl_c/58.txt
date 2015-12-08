@@ -1,0 +1,91 @@
+PP(pp_entereval)
+{
+    dSP;
+    register PERL_CONTEXT *cx;
+    dPOPss;
+    I32 gimme = GIMME_V, was = PL_sub_generation;
+    char tbuf[TYPE_DIGITS(long) + 12];
+    char *tmpbuf = tbuf;
+    char *safestr;
+    STRLEN len;
+    OP *ret;
+    CV* runcv;
+    U32 seq;
+
+    if (!SvPV(sv,len))
+	RETPUSHUNDEF;
+    TAINT_PROPER("eval");
+
+    ENTER;
+    lex_start(sv);
+    SAVETMPS;
+
+    /* switch to eval mode */
+
+    if (PERLDB_NAMEEVAL && CopLINE(PL_curcop)) {
+	SV *sv = sv_newmortal();
+	Perl_sv_setpvf(aTHX_ sv, "_<(eval %lu)[%s:%"IVdf"]",
+		       (unsigned long)++PL_evalseq,
+		       CopFILE(PL_curcop), (IV)CopLINE(PL_curcop));
+	tmpbuf = SvPVX(sv);
+    }
+    else
+	sprintf(tmpbuf, "_<(eval %lu)", (unsigned long)++PL_evalseq);
+    SAVECOPFILE_FREE(&PL_compiling);
+    CopFILE_set(&PL_compiling, tmpbuf+2);
+    SAVECOPLINE(&PL_compiling);
+    CopLINE_set(&PL_compiling, 1);
+    /* XXX For C<eval "...">s within BEGIN {} blocks, this ends up
+       deleting the eval's FILEGV from the stash before gv_check() runs
+       (i.e. before run-time proper). To work around the coredump that
+       ensues, we always turn GvMULTI_on for any globals that were
+       introduced within evals. See force_ident(). GSAR 96-10-12 */
+    safestr = savepv(tmpbuf);
+    SAVEDELETE(PL_defstash, safestr, strlen(safestr));
+    SAVEHINTS();
+    PL_hints = PL_op->op_targ;
+    SAVESPTR(PL_compiling.cop_warnings);
+    if (specialWARN(PL_curcop->cop_warnings))
+        PL_compiling.cop_warnings = PL_curcop->cop_warnings;
+    else {
+        PL_compiling.cop_warnings = newSVsv(PL_curcop->cop_warnings);
+        SAVEFREESV(PL_compiling.cop_warnings);
+    }
+    SAVESPTR(PL_compiling.cop_io);
+    if (specialCopIO(PL_curcop->cop_io))
+        PL_compiling.cop_io = PL_curcop->cop_io;
+    else {
+        PL_compiling.cop_io = newSVsv(PL_curcop->cop_io);
+        SAVEFREESV(PL_compiling.cop_io);
+    }
+    /* special case: an eval '' executed within the DB package gets lexically
+     * placed in the first non-DB CV rather than the current CV - this
+     * allows the debugger to execute code, find lexicals etc, in the
+     * scope of the code being debugged. Passing &seq gets find_runcv
+     * to do the dirty work for us */
+    runcv = find_runcv(&seq);
+
+    push_return(PL_op->op_next);
+    PUSHBLOCK(cx, (CXt_EVAL|CXp_REAL), SP);
+    PUSHEVAL(cx, 0, Nullgv);
+
+    /* prepare to compile string */
+
+    if (PERLDB_LINE && PL_curstash != PL_debstash)
+	save_lines(CopFILEAV(&PL_compiling), PL_linestr);
+    PUTBACK;
+#ifdef USE_5005THREADS
+    MUTEX_LOCK(&PL_eval_mutex);
+    if (PL_eval_owner && PL_eval_owner != thr)
+	while (PL_eval_owner)
+	    COND_WAIT(&PL_eval_cond, &PL_eval_mutex);
+    PL_eval_owner = thr;
+    MUTEX_UNLOCK(&PL_eval_mutex);
+#endif /* USE_5005THREADS */
+    ret = doeval(gimme, NULL, runcv, seq);
+    if (PERLDB_INTER && was != (I32)PL_sub_generation /* Some subs defined here. */
+	&& ret != PL_op->op_next) {	/* Successive compilation. */
+	strcpy(safestr, "_<(eval )");	/* Anything fake and short. */
+    }
+    return DOCATCH(ret);
+}

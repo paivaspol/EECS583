@@ -1,24 +1,19 @@
-static int search_ff(int thisff[NPP],int ndih,int **ff)
+static void get_dih(t_xrama *xr,t_atoms *atoms)
 {
-  int  j,k;
-  bool bFound=FALSE;
-  
-  for(j=0; (j<ndih); j++) {
-    bFound=TRUE;
-    for(k=1; (k<=3); k++)
-      bFound = bFound && (thisff[k]==ff[j][k]);
-    if (bFound) {
-      if (thisff[0] == -1) 
-	ff[j][4]=thisff[4];
-      else
-	ff[j][0]=thisff[0];
-      break;
+  int found,ff[NPP];
+  int i,j;
+
+  for(i=0; (i<atoms->nr); ) {
+    found=i;
+    for(j=0; (j<NPP); j++) {
+      if ((ff[j]=find_atom(pp_pat[j],atoms->atomname,found,atoms->nr)) == -1)
+	break;
+      found=ff[j]+1;
     }
+    if (j != NPP)
+      break;
+    add_xr(xr,ff,atoms);
+    i=ff[0]+1;
   }
-  if (!bFound) {
-    for(k=0; (k<5); k++)
-      ff[ndih][k]=thisff[k];
-    ndih++;
-  }
-  return ndih;
+  fprintf(stderr,"Found %d phi-psi combinations\n",xr->npp);
 }

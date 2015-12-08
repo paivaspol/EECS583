@@ -1,25 +1,30 @@
-void
-Perl_set_numeric_radix(pTHX)
+STATIC char *
+S_stdize_locale(pTHX_ char *locs)
 {
-#ifdef USE_LOCALE_NUMERIC
-# ifdef HAS_LOCALECONV
-    struct lconv* lc;
+    char *s;
+    bool okay = TRUE;
 
-    lc = localeconv();
-    if (lc && lc->decimal_point) {
-	if (lc->decimal_point[0] == '.' && lc->decimal_point[1] == 0) {
-	    SvREFCNT_dec(PL_numeric_radix_sv);
-	    PL_numeric_radix_sv = Nullsv;
-	}
-	else {
-	    if (PL_numeric_radix_sv)
-		sv_setpv(PL_numeric_radix_sv, lc->decimal_point);
-	    else
-		PL_numeric_radix_sv = newSVpv(lc->decimal_point, 0);
+    if ((s = strchr(locs, '='))) {
+	char *t;
+
+	okay = FALSE;
+	if ((t = strchr(s, '.'))) {
+	    char *u;
+
+	    if ((u = strchr(t, '\n'))) {
+
+		if (u[1] == 0) {
+		    STRLEN len = u - s;
+		    Move(s + 1, locs, len, char);
+		    locs[len] = 0;
+		    okay = TRUE;
+		}
+	    }
 	}
     }
-    else
-	PL_numeric_radix_sv = Nullsv;
-# endif /* HAS_LOCALECONV */
-#endif /* USE_LOCALE_NUMERIC */
+
+    if (!okay)
+	Perl_croak(aTHX_ "Can't fix broken locale name \"%s\"", locs);
+
+    return locs;
 }

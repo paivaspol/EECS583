@@ -1,5 +1,34 @@
-static void
-clear_re(pTHX_ void *r)
+STATIC void
+S_cl_and(pTHX_ struct regnode_charclass_class *cl,
+	 struct regnode_charclass_class *and_with)
 {
-    ReREFCNT_dec((regexp *)r);
+    if (!(and_with->flags & ANYOF_CLASS)
+	&& !(cl->flags & ANYOF_CLASS)
+	&& (and_with->flags & ANYOF_LOCALE) == (cl->flags & ANYOF_LOCALE)
+	&& !(and_with->flags & ANYOF_FOLD)
+	&& !(cl->flags & ANYOF_FOLD)) {
+	int i;
+
+	if (and_with->flags & ANYOF_INVERT)
+	    for (i = 0; i < ANYOF_BITMAP_SIZE; i++)
+		cl->bitmap[i] &= ~and_with->bitmap[i];
+	else
+	    for (i = 0; i < ANYOF_BITMAP_SIZE; i++)
+		cl->bitmap[i] &= and_with->bitmap[i];
+    } /* XXXX: logic is complicated otherwise, leave it along for a moment. */
+    if (!(and_with->flags & ANYOF_EOS))
+	cl->flags &= ~ANYOF_EOS;
+
+    if (cl->flags & ANYOF_UNICODE_ALL && and_with->flags & ANYOF_UNICODE &&
+	!(and_with->flags & ANYOF_INVERT)) {
+	cl->flags &= ~ANYOF_UNICODE_ALL;
+	cl->flags |= ANYOF_UNICODE;
+	ARG_SET(cl, ARG(and_with));
+    }
+    if (!(and_with->flags & ANYOF_UNICODE_ALL) &&
+	!(and_with->flags & ANYOF_INVERT))
+	cl->flags &= ~ANYOF_UNICODE_ALL;
+    if (!(and_with->flags & (ANYOF_UNICODE|ANYOF_UNICODE_ALL)) &&
+	!(and_with->flags & ANYOF_INVERT))
+	cl->flags &= ~ANYOF_UNICODE;
 }

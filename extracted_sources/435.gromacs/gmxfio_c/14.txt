@@ -1,121 +1,57 @@
-static bool do_xdr(void *item,int nitem,int eio,
-		   char *desc,char *srcfile,int line)
+static bool do_binread(void *item,int nitem,int eio,
+		       char *desc,char *srcfile,int line)
 {
-  unsigned char *ucptr;
-  int    res=0;
-  float  fvec[DIM];
-  double dvec[DIM];
-  int    j,m,*iptr,idum;
-  real   *ptr;
-  unsigned short us;
-  double d=0;
-  float  f=0;
+  size_t size=0,rsize;
+  int    ssize;
   
   check_nitem();
   switch (eio) {
   case eioREAL:
-    if (curfio->bDouble) {
-      if (item && !curfio->bRead) d = *((real *)item);
-      res = xdr_double(curfio->xdr,&d);
-      if (item) *((real *)item) = d;
-    }
-    else {
-      if (item && !curfio->bRead) f = *((real *)item);
-      res = xdr_float(curfio->xdr,&f);
-      if (item) *((real *)item) = f;
-    }
+    if (curfio->bDouble)
+      size = sizeof(double);
+    else
+      size = sizeof(float);
     break;
   case eioINT:
-    if (item && !curfio->bRead) idum = *(int *)item;
-    res = xdr_int(curfio->xdr,&idum);
-    if (item) *(int *)item = idum;
+    size = sizeof(int);
     break;
   case eioNUCHAR:
-    ucptr = (unsigned char *)item;
-    res   = 1;
-    for(j=0; (j<nitem) && res; j++) {
-      res = xdr_u_char(curfio->xdr,&(ucptr[j]));
-    }
-    
+    size = sizeof(unsigned char);
     break;
   case eioUSHORT:
-    if (item && !curfio->bRead) us = *(unsigned short *)item;
-    res = xdr_u_short(curfio->xdr,(unsigned short *)&us);
-    if (item) *(unsigned short *)item = us;
+    size = sizeof(unsigned short);
     break;
   case eioRVEC:
-    if (curfio->bDouble) {
-      if (item && !curfio->bRead)
-	for(m=0; (m<DIM); m++) 
-	  dvec[m] = ((real *)item)[m];
-      res=xdr_vector(curfio->xdr,(char *)dvec,DIM,(unsigned int)sizeof(double),
-		     (xdrproc_t)xdr_double);
-      if (item)
-	for(m=0; (m<DIM); m++) 
-	  ((real *)item)[m] = dvec[m];
-    }
-    else {
-      if (item && !curfio->bRead)
-	for(m=0; (m<DIM); m++) 
-	  fvec[m] = ((real *)item)[m];
-      res=xdr_vector(curfio->xdr,(char *)fvec,DIM,(unsigned int)sizeof(float),
-		     (xdrproc_t)xdr_float);
-      if (item)
-	for(m=0; (m<DIM); m++) 
-	  ((real *)item)[m] = fvec[m];
-    }
-    break;
   case eioNRVEC:
-    ptr = NULL;
-    res = 1;
-    for(j=0; (j<nitem) && res; j++) {
-      if (item)
-	ptr = ((rvec *)item)[j];
-      res = do_xdr(ptr,1,eioRVEC,desc,srcfile,line);
-    }
+    if (curfio->bDouble)
+      size = sizeof(double)*DIM;
+    else
+      size = sizeof(float)*DIM;
     break;
   case eioIVEC:
-    iptr = (int *)item;
-    res  = 1;
-    for(m=0; (m<DIM) && res; m++) {
-      if (item && !curfio->bRead) idum = iptr[m];
-      res = xdr_int(curfio->xdr,&idum);
-      if (item) iptr[m] = idum;
-    }
+    size = sizeof(ivec);
     break;
-  case eioSTRING: {
-    char *cptr;
-    int  slen;
-    
-    if (item) {
-      if (!curfio->bRead) 
-	slen = strlen((char *)item)+1;
-      else
-	slen = 0;
-    }
-    else
-      slen = 0;
-    
-    if (xdr_int(curfio->xdr,&slen) <= 0)
-      fatal_error(0,"wrong string length %d for string %s"
-		  " (source %s, line %d)",slen,desc,srcfile,line);
-    if (!item && curfio->bRead)
-      snew(cptr,slen);
-    else
-      cptr=(char *)item;
-    if (cptr) 
-      res = xdr_string(curfio->xdr,&cptr,slen);
-    else
-      res = 1;
-    if (!item && curfio->bRead)
-      sfree(cptr);
+  case eioSTRING:
+    do_binread(&ssize,1,eioINT,desc,srcfile,line);
+    size = ssize;
     break;
-  }
   default:
     FE();
   }
-  if ((res == 0) && (curfio->bDebug))
-    fprintf(stderr,"Error in xdr I/O %s %s to file %s (source %s, line %d)\n",
+  if (item)
+    rsize = fread(item,size,nitem,curfio->fp);
+  else {
+    /* Skip over it if we have a NULL pointer here */
+#ifdef HAVE_FSEEKO
+    fseeko(curfio->fp,(off_t)(size*nitem),SEEK_CUR);
+#else
+    fseek(curfio->fp,(off_t)(size*nitem),SEEK_CUR);
+#endif    
+    rsize = nitem;
+  }
+  if ((rsize != nitem) && (curfio->bDebug))
+    fprintf(stderr,"Error reading %s %s from file %s (source %s, line %d)\n",
 	    eioNames[eio],desc,curfio->fn,srcfile,line);
-  return (res != 0);
+	    
+  return (rsize == nitem);
 }

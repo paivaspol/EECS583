@@ -1,10 +1,15 @@
 int
-PerlIO_printf(PerlIO *f, const char *fmt, ...)
+PerlIO_canset_cnt(PerlIO *f)
 {
-    va_list ap;
-    int result;
-    va_start(ap, fmt);
-    result = PerlIO_vprintf(f, fmt, ap);
-    va_end(ap);
-    return result;
+    if (PerlIOValid(f)) {
+	  PerlIO_funcs *tab = PerlIOBase(f)->tab;
+
+	  if (tab)
+	       return (tab->Set_ptrcnt != NULL);
+	  SETERRNO(EINVAL, LIB_INVARG);
+    }
+    else
+	 SETERRNO(EBADF, SS_IVCHAN);
+
+    return 0;
 }

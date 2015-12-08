@@ -1,0 +1,18 @@
+define void @Perl_dump_all() #0 {
+entry:
+  %call = tail call %struct._PerlIO** @Perl_PerlIO_stderr() #3
+  tail call void @Perl_PerlIO_setlinebuf(%struct._PerlIO** %call) #3
+  %0 = load %struct.op** @PL_main_root, align 8, !tbaa !3
+  %tobool = icmp eq %struct.op* %0, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call.i = tail call %struct._PerlIO** @Perl_PerlIO_stderr() #3
+  tail call void @Perl_do_op_dump(i32 0, %struct._PerlIO** %call.i, %struct.op* %0) #3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %1 = load %struct.hv** @PL_defstash, align 8, !tbaa !3
+  tail call void @Perl_dump_packsubs(%struct.hv* %1) #4
+  ret void
+}

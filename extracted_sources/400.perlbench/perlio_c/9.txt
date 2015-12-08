@@ -1,25 +1,17 @@
-static const char *
-PerlIO_context_layers(pTHX_ const char *mode)
+void
+PerlIO_cleantable(pTHX_ PerlIO **tablep)
 {
-    const char *type = NULL;
-    /*
-     * Need to supply default layer info from open.pm
-     */
-    if (PL_curcop) {
-	SV *layers = PL_curcop->cop_io;
-	if (layers) {
-	    STRLEN len;
-	    type = SvPV(layers, len);
-	    if (type && mode[0] != 'r') {
-		/*
-		 * Skip to write part
-		 */
-		const char *s = strchr(type, 0);
-		if (s && (STRLEN)(s - type) < len) {
-		    type = s + 1;
-		}
+    PerlIO *table = *tablep;
+    if (table) {
+	int i;
+	PerlIO_cleantable(aTHX_(PerlIO **) & (table[0]));
+	for (i = PERLIO_TABLE_SIZE - 1; i > 0; i--) {
+	    PerlIO *f = table + i;
+	    if (*f) {
+		PerlIO_close(f);
 	    }
 	}
+	Safefree(table);
+	*tablep = NULL;
     }
-    return type;
 }

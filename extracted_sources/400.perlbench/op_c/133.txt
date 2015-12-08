@@ -1,0 +1,21 @@
+OP *
+Perl_ck_method(pTHX_ OP *o)
+{
+    OP *kid = cUNOPo->op_first;
+    if (kid->op_type == OP_CONST) {
+	SV* sv = kSVOP->op_sv;
+	if (!(strchr(SvPVX(sv), ':') || strchr(SvPVX(sv), '\''))) {
+	    OP *cmop;
+	    if (!SvREADONLY(sv) || !SvFAKE(sv)) {
+		sv = newSVpvn_share(SvPVX(sv), SvCUR(sv), 0);
+	    }
+	    else {
+		kSVOP->op_sv = Nullsv;
+	    }
+	    cmop = newSVOP(OP_METHOD_NAMED, 0, sv);
+	    op_free(o);
+	    return cmop;
+	}
+    }
+    return o;
+}

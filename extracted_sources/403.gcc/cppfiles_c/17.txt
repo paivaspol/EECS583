@@ -1,47 +1,18 @@
-static struct search_path *
-search_from (pfile, type)
+int
+_cpp_compare_file_date (pfile, header)
      cpp_reader *pfile;
-     enum include_type type;
+     const cpp_token *header;
 {
-  cpp_buffer *buffer = pfile->buffer;
-  unsigned int dlen;
+  struct include_file *inc = find_include_file (pfile, header, 0);
+  
+  if (inc == NULL || inc == NO_INCLUDE_PATH)
+    return -1;
 
-  /* Command line uses the cwd, and does not cache the result.  */
-  if (type == IT_CMDLINE)
-    goto use_cwd;
-
-  /* Ignore the current file's directory if -I- was given.  */
-  if (CPP_OPTION (pfile, ignore_srcdir))
-    return CPP_OPTION (pfile, quote_include);
-
-  if (! buffer->search_cached)
+  if (inc->fd > 0)
     {
-      buffer->search_cached = 1;
-
-      dlen = lbasename (buffer->inc->name) - buffer->inc->name;
-
-      if (dlen)
-	{
-	  /* We don't guarantee NAME is null-terminated.  This saves
-	     allocating and freeing memory.  Drop a trailing '/'.  */
-	  buffer->dir.name = buffer->inc->name;
-	  if (dlen > 1)
-	    dlen--;
-	}
-      else
-	{
-	use_cwd:
-	  buffer->dir.name = ".";
-	  dlen = 1;
-	}
-
-      if (dlen > pfile->max_include_len)
-	pfile->max_include_len = dlen;
-
-      buffer->dir.len = dlen;
-      buffer->dir.next = CPP_OPTION (pfile, quote_include);
-      buffer->dir.sysp = pfile->map->sysp;
+      close (inc->fd);
+      inc->fd = -1;
     }
-
-  return &buffer->dir;
+    
+  return inc->st.st_mtime > pfile->buffer->inc->st.st_mtime;
 }

@@ -1,0 +1,29 @@
+define %struct.op* @Perl_pp_stringify() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_targ = getelementptr inbounds %struct.op* %1, i64 0, i32 3
+  %2 = load i64* %op_targ, align 8, !tbaa !4
+  %3 = load %struct.sv*** @PL_curpad, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.sv** %3, i64 %2
+  %4 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %5 = load %struct.sv** %0, align 8, !tbaa !0
+  tail call void @Perl_sv_copypv(%struct.sv* %4, %struct.sv* %5) #8
+  %sv_flags = getelementptr inbounds %struct.sv* %4, i64 0, i32 2
+  %6 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %6, 16384
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @Perl_mg_set(%struct.sv* %4) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  store %struct.sv* %4, %struct.sv** %0, align 8, !tbaa !0
+  store %struct.sv** %0, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %7 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %7, i64 0, i32 0
+  %8 = load %struct.op** %op_next, align 8, !tbaa !0
+  ret %struct.op* %8
+}

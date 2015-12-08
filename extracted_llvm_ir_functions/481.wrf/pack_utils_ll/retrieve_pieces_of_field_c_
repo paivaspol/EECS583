@@ -1,0 +1,110 @@
+define i32 @retrieve_pieces_of_field_c_(i8* nocapture %buf, i32* nocapture %varname, i32* nocapture %insize, i32* nocapture %outsize, i32* nocapture %retval1) #0 {
+entry:
+  %0 = load i32* @fld, align 4, !tbaa !0
+  %1 = load i32* @numflds, align 4, !tbaa !0
+  %cmp = icmp slt i32 %0, %1
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %0 to i64
+  %arrayidx = getelementptr inbounds [2000 x i32]* @fld_curs, i64 0, i64 %idxprom
+  %2 = load i32* %arrayidx, align 4, !tbaa !0
+  %3 = load i32* %insize, align 4, !tbaa !0
+  %cmp2 = icmp sgt i32 %2, %3
+  br i1 %cmp2, label %if.then3, label %if.end
+
+if.then3:                                         ; preds = %if.then
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([44 x i8]* @.str3, i64 0, i64 0), i32 %0, i32 %2, i32 %3) #4
+  %.pre = load i32* @fld, align 4, !tbaa !0
+  %idxprom6.phi.trans.insert = sext i32 %.pre to i64
+  %arrayidx7.phi.trans.insert = getelementptr inbounds [2000 x i32]* @fld_curs, i64 0, i64 %idxprom6.phi.trans.insert
+  %.pre74 = load i32* %arrayidx7.phi.trans.insert, align 4, !tbaa !0
+  %.pre75 = load i32* %insize, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then3, %if.then
+  %5 = phi i32 [ %.pre75, %if.then3 ], [ %3, %if.then ]
+  %6 = phi i32 [ %.pre74, %if.then3 ], [ %2, %if.then ]
+  %cmp8 = icmp sgt i32 %6, %5
+  %. = select i1 %cmp8, i32 %5, i32 %6
+  store i32 %., i32* %outsize, align 4, !tbaa !0
+  %7 = load i32* @fld, align 4, !tbaa !0
+  %idxprom11 = sext i32 %7 to i64
+  %arraydecay = getelementptr inbounds [2000 x [256 x i8]]* @fld_name, i64 0, i64 %idxprom11, i64 0
+  %call13 = tail call i64 @strlen(i8* %arraydecay) #5
+  %conv = trunc i64 %call13 to i32
+  store i32 %conv, i32* %varname, align 4, !tbaa !0
+  %cmp1669 = icmp slt i32 %conv, 1
+  br i1 %cmp1669, label %for.cond25.preheader, label %for.body
+
+for.cond25.preheader:                             ; preds = %for.body, %if.end
+  %8 = load i32* %outsize, align 4, !tbaa !0
+  %cmp2667 = icmp sgt i32 %8, 0
+  br i1 %cmp2667, label %for.body28, label %for.end37
+
+for.body:                                         ; preds = %if.end, %for.body
+  %indvars.iv71 = phi i64 [ %indvars.iv.next72, %for.body ], [ 1, %if.end ]
+  %9 = add nsw i64 %indvars.iv71, -1
+  %10 = load i32* @fld, align 4, !tbaa !0
+  %idxprom19 = sext i32 %10 to i64
+  %arrayidx21 = getelementptr inbounds [2000 x [256 x i8]]* @fld_name, i64 0, i64 %idxprom19, i64 %9
+  %11 = load i8* %arrayidx21, align 1, !tbaa !1
+  %conv22 = sext i8 %11 to i32
+  %arrayidx24 = getelementptr inbounds i32* %varname, i64 %indvars.iv71
+  store i32 %conv22, i32* %arrayidx24, align 4, !tbaa !0
+  %indvars.iv.next72 = add i64 %indvars.iv71, 1
+  %12 = load i32* %varname, align 4, !tbaa !0
+  %13 = trunc i64 %indvars.iv71 to i32
+  %cmp16 = icmp slt i32 %13, %12
+  br i1 %cmp16, label %for.body, label %for.cond25.preheader
+
+for.body28:                                       ; preds = %for.cond25.preheader, %for.body28
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body28 ], [ 0, %for.cond25.preheader ]
+  %14 = load i32* @fld, align 4, !tbaa !0
+  %idxprom30 = sext i32 %14 to i64
+  %arrayidx31 = getelementptr inbounds [2000 x i8*]* @fld_cache, i64 0, i64 %idxprom30
+  %15 = load i8** %arrayidx31, align 8, !tbaa !3
+  %arrayidx32 = getelementptr inbounds i8* %15, i64 %indvars.iv
+  %16 = load i8* %arrayidx32, align 1, !tbaa !1
+  %arrayidx34 = getelementptr inbounds i8* %buf, i64 %indvars.iv
+  store i8 %16, i8* %arrayidx34, align 1, !tbaa !1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %17 = load i32* %outsize, align 4, !tbaa !0
+  %18 = trunc i64 %indvars.iv.next to i32
+  %cmp26 = icmp slt i32 %18, %17
+  br i1 %cmp26, label %for.body28, label %for.end37
+
+for.end37:                                        ; preds = %for.body28, %for.cond25.preheader
+  %19 = load i32* @fld, align 4, !tbaa !0
+  %idxprom38 = sext i32 %19 to i64
+  %arrayidx39 = getelementptr inbounds [2000 x i8*]* @fld_cache, i64 0, i64 %idxprom38
+  %20 = load i8** %arrayidx39, align 8, !tbaa !3
+  %cmp40 = icmp eq i8* %20, null
+  br i1 %cmp40, label %if.end45, label %if.then42
+
+if.then42:                                        ; preds = %for.end37
+  tail call void @free(i8* %20) #4
+  %.pre76 = load i32* @fld, align 4, !tbaa !0
+  br label %if.end45
+
+if.end45:                                         ; preds = %for.end37, %if.then42
+  %21 = phi i32 [ %19, %for.end37 ], [ %.pre76, %if.then42 ]
+  %idxprom46 = sext i32 %21 to i64
+  %arrayidx47 = getelementptr inbounds [2000 x i8*]* @fld_cache, i64 0, i64 %idxprom46
+  store i8* null, i8** %arrayidx47, align 8, !tbaa !3
+  %arrayidx49 = getelementptr inbounds [2000 x i32]* @fld_bufsize, i64 0, i64 %idxprom46
+  store i32 0, i32* %arrayidx49, align 4, !tbaa !0
+  %inc50 = add nsw i32 %21, 1
+  store i32 %inc50, i32* @fld, align 4, !tbaa !0
+  br label %if.end51
+
+if.else:                                          ; preds = %entry
+  store i32 0, i32* @numflds, align 4, !tbaa !0
+  br label %if.end51
+
+if.end51:                                         ; preds = %if.else, %if.end45
+  %storemerge = phi i32 [ -1, %if.else ], [ 0, %if.end45 ]
+  store i32 %storemerge, i32* %retval1, align 4, !tbaa !0
+  ret i32 0
+}

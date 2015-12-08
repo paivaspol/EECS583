@@ -1,0 +1,23 @@
+define i64 @PerlIOBuf_bufsiz(%struct._PerlIO** %f) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %buf = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %buf to i8**
+  %2 = load i8** %1, align 8, !tbaa !3
+  %tobool = icmp eq i8* %2, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @Perl_PerlIO_get_base(%struct._PerlIO** %f) #10
+  %.pre = load i8** %1, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %3 = phi i8* [ %2, %entry ], [ %.pre, %if.then ]
+  %end = getelementptr inbounds %struct._PerlIO* %0, i64 1, i32 1
+  %4 = load %struct._PerlIO_funcs** %end, align 8
+  %sub.ptr.lhs.cast = ptrtoint %struct._PerlIO_funcs* %4 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %3 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  ret i64 %sub.ptr.sub
+}

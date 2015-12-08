@@ -1,0 +1,93 @@
+define i8* @Perl_sv_reftype(%struct.sv* nocapture %sv, i32 %ob) #4 {
+entry:
+  %tobool = icmp eq i32 %ob, 0
+  %sv_flags4.phi.trans.insert = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %.pre = load i32* %sv_flags4.phi.trans.insert, align 4, !tbaa !3
+  br i1 %tobool, label %if.else, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %and = and i32 %.pre, 4096
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %if.else, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !0
+  %xmg_stash = getelementptr inbounds i8* %0, i64 48
+  %1 = bitcast i8* %xmg_stash to %struct.hv**
+  %2 = load %struct.hv** %1, align 8, !tbaa !0
+  %sv_any2 = getelementptr inbounds %struct.hv* %2, i64 0, i32 0
+  %3 = load %struct.xpvhv** %sv_any2, align 8, !tbaa !0
+  %xhv_name = getelementptr inbounds %struct.xpvhv* %3, i64 0, i32 10
+  %4 = load i8** %xhv_name, align 8, !tbaa !0
+  %tobool3 = icmp ne i8* %4, null
+  %cond = select i1 %tobool3, i8* %4, i8* getelementptr inbounds ([9 x i8]* @.str25, i64 0, i64 0)
+  br label %return
+
+if.else:                                          ; preds = %entry, %land.lhs.true
+  %and5 = and i32 %.pre, 255
+  switch i32 %and5, label %sw.default [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb
+    i32 3, label %sw.bb
+    i32 4, label %sw.bb
+    i32 5, label %sw.bb
+    i32 6, label %sw.bb
+    i32 7, label %sw.bb
+    i32 8, label %sw.bb
+    i32 9, label %sw.bb11
+    i32 10, label %return
+    i32 11, label %sw.bb28
+    i32 12, label %sw.bb29
+    i32 13, label %sw.bb30
+    i32 14, label %sw.bb31
+    i32 15, label %sw.bb32
+  ]
+
+sw.bb:                                            ; preds = %if.else, %if.else, %if.else, %if.else, %if.else, %if.else, %if.else, %if.else, %if.else
+  %and7 = and i32 %.pre, 524288
+  %tobool8 = icmp eq i32 %and7, 0
+  %. = select i1 %tobool8, i8* getelementptr inbounds ([7 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str14, i64 0, i64 0)
+  br label %return
+
+sw.bb11:                                          ; preds = %if.else
+  %and13 = and i32 %.pre, 524288
+  %tobool14 = icmp eq i32 %and13, 0
+  br i1 %tobool14, label %cond.false16, label %return
+
+cond.false16:                                     ; preds = %sw.bb11
+  %sv_any17 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %5 = load i8** %sv_any17, align 8, !tbaa !0
+  %6 = getelementptr inbounds i8* %5, i64 80
+  %7 = load i8* %6, align 1, !tbaa !1
+  %cmp = icmp eq i8 %7, 116
+  br i1 %cmp, label %return, label %lor.rhs
+
+lor.rhs:                                          ; preds = %cond.false16
+  %cmp22 = icmp eq i8 %7, 84
+  %phitmp = select i1 %cmp22, i8* getelementptr inbounds ([7 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str16, i64 0, i64 0)
+  br label %return
+
+sw.bb28:                                          ; preds = %if.else
+  br label %return
+
+sw.bb29:                                          ; preds = %if.else
+  br label %return
+
+sw.bb30:                                          ; preds = %if.else
+  br label %return
+
+sw.bb31:                                          ; preds = %if.else
+  br label %return
+
+sw.bb32:                                          ; preds = %if.else
+  br label %return
+
+sw.default:                                       ; preds = %if.else
+  br label %return
+
+return:                                           ; preds = %if.else, %sw.bb11, %lor.rhs, %cond.false16, %sw.bb, %sw.default, %sw.bb32, %sw.bb31, %sw.bb30, %sw.bb29, %sw.bb28, %if.then
+  %retval.0 = phi i8* [ %cond, %if.then ], [ getelementptr inbounds ([8 x i8]* @.str23, i64 0, i64 0), %sw.default ], [ getelementptr inbounds ([3 x i8]* @.str22, i64 0, i64 0), %sw.bb32 ], [ getelementptr inbounds ([7 x i8]* @.str21, i64 0, i64 0), %sw.bb31 ], [ getelementptr inbounds ([5 x i8]* @.str20, i64 0, i64 0), %sw.bb30 ], [ getelementptr inbounds ([5 x i8]* @.str19, i64 0, i64 0), %sw.bb29 ], [ getelementptr inbounds ([5 x i8]* @.str18, i64 0, i64 0), %sw.bb28 ], [ %., %sw.bb ], [ getelementptr inbounds ([4 x i8]* @.str14, i64 0, i64 0), %sw.bb11 ], [ getelementptr inbounds ([7 x i8]* @.str15, i64 0, i64 0), %cond.false16 ], [ %phitmp, %lor.rhs ], [ getelementptr inbounds ([6 x i8]* @.str17, i64 0, i64 0), %if.else ]
+  ret i8* %retval.0
+}

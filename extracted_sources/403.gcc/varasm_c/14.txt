@@ -1,19 +1,15 @@
-static void
-asm_output_aligned_bss (file, decl, name, size, align)
-     FILE *file;
-     tree decl ATTRIBUTE_UNUSED;
-     const char *name;
-     int size, align;
+void
+bss_section ()
 {
-  ASM_GLOBALIZE_LABEL (file, name);
-  bss_section ();
-  ASM_OUTPUT_ALIGN (file, floor_log2 (align / BITS_PER_UNIT));
-#ifdef ASM_DECLARE_OBJECT_NAME
-  last_assemble_variable_decl = decl;
-  ASM_DECLARE_OBJECT_NAME (file, name, decl);
-#else
-  /* Standard thing is just output label for the object.  */
-  ASM_OUTPUT_LABEL (file, name);
-#endif /* ASM_DECLARE_OBJECT_NAME */
-  ASM_OUTPUT_SKIP (file, size ? size : 1);
+  if (in_section != in_bss)
+    {
+#ifdef SHARED_BSS_SECTION_ASM_OP
+      if (flag_shared_data)
+	fprintf (asm_out_file, "%s\n", SHARED_BSS_SECTION_ASM_OP);
+      else
+#endif
+	fprintf (asm_out_file, "%s\n", BSS_SECTION_ASM_OP);
+
+      in_section = in_bss;
+    }
 }

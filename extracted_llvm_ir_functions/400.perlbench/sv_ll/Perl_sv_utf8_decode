@@ -1,0 +1,57 @@
+define signext i8 @Perl_sv_utf8_decode(%struct.sv* %sv) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 67108864
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call signext i8 @Perl_sv_utf8_downgrade(%struct.sv* %sv, i8 signext 1) #7
+  %tobool1 = icmp eq i8 %call, 0
+  br i1 %tobool1, label %return, label %if.end
+
+if.end:                                           ; preds = %if.then
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %1 to i8**
+  %2 = load i8** %xpv_pv, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %1, i64 8
+  %3 = bitcast i8* %xpv_cur to i64*
+  %4 = load i64* %3, align 8, !tbaa !5
+  %add = add i64 %4, 1
+  %call4 = tail call signext i8 @Perl_is_utf8_string(i8* %2, i64 %add) #8
+  %tobool5 = icmp eq i8 %call4, 0
+  br i1 %tobool5, label %return, label %if.end7
+
+if.end7:                                          ; preds = %if.end
+  %5 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv9 = bitcast i8* %5 to i8**
+  %6 = load i8** %xpv_pv9, align 8, !tbaa !0
+  %xpv_cur11 = getelementptr inbounds i8* %5, i64 8
+  %7 = bitcast i8* %xpv_cur11 to i64*
+  %8 = load i64* %7, align 8, !tbaa !5
+  %add.ptr = getelementptr inbounds i8* %6, i64 %8
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.body, %if.end7
+  %c.0 = phi i8* [ %2, %if.end7 ], [ %incdec.ptr, %while.body ]
+  %cmp = icmp ult i8* %c.0, %add.ptr
+  br i1 %cmp, label %while.body, label %return
+
+while.body:                                       ; preds = %while.cond
+  %incdec.ptr = getelementptr inbounds i8* %c.0, i64 1
+  %9 = load i8* %c.0, align 1, !tbaa !1
+  %cmp12 = icmp sgt i8 %9, -1
+  br i1 %cmp12, label %while.cond, label %if.then14
+
+if.then14:                                        ; preds = %while.body
+  %10 = load i32* %sv_flags, align 4, !tbaa !3
+  %or = or i32 %10, 536870912
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %while.cond, %if.then14, %entry, %if.end, %if.then
+  %retval.0 = phi i8 [ 0, %if.then ], [ 0, %if.end ], [ 1, %entry ], [ 1, %if.then14 ], [ 1, %while.cond ]
+  ret i8 %retval.0
+}

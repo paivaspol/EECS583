@@ -1,21 +1,29 @@
-int
-Perl_mg_copy(pTHX_ SV *sv, SV *nsv, const char *key, I32 klen)
+U32
+Perl_mg_length(pTHX_ SV *sv)
 {
-    int count = 0;
     MAGIC* mg;
+    STRLEN len;
+
     for (mg = SvMAGIC(sv); mg; mg = mg->mg_moremagic) {
 	MGVTBL* vtbl = mg->mg_virtual;
-	if ((mg->mg_flags & MGf_COPY) && vtbl->svt_copy){
-	    count += CALL_FPTR(vtbl->svt_copy)(aTHX_ sv, mg, nsv, key, klen);
-	}
-	else if (isUPPER(mg->mg_type)) {
-	    sv_magic(nsv,
-		     mg->mg_type == PERL_MAGIC_tied ? SvTIED_obj(sv, mg) :
-		     (mg->mg_type == PERL_MAGIC_regdata && mg->mg_obj)
-							? sv : mg->mg_obj,
-		     toLOWER(mg->mg_type), key, klen);
-	    count++;
+	if (vtbl && vtbl->svt_len) {
+            I32 mgs_ix;
+
+	    mgs_ix = SSNEW(sizeof(MGS));
+	    save_magic(mgs_ix, sv);
+	    /* omit MGf_GSKIP -- not changed here */
+	    len = CALL_FPTR(vtbl->svt_len)(aTHX_ sv, mg);
+	    restore_magic(aTHX_ INT2PTR(void*, (IV)mgs_ix));
+	    return len;
 	}
     }
-    return count;
+
+    if (DO_UTF8(sv))
+    {
+        U8 *s = (U8*)SvPV(sv, len);
+        len = Perl_utf8_length(aTHX_ s, s + len);
+    }
+    else
+        (void)SvPV(sv, len);
+    return len;
 }

@@ -1,0 +1,73 @@
+define internal fastcc %struct.regnode* @S_reganode(%struct.RExC_state_t* nocapture %pRExC_state, i8 zeroext %op, i32 %arg) #0 {
+entry:
+  %emit = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %0 = load %struct.regnode** %emit, align 8, !tbaa !0
+  %cmp = icmp eq %struct.regnode* %0, @PL_regdummy
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %size = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 12
+  %1 = load i32* %size, align 4, !tbaa !3
+  %add = add nsw i32 %1, 2
+  store i32 %add, i32* %size, align 4, !tbaa !3
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %flags = getelementptr inbounds %struct.regnode* %0, i64 0, i32 0
+  store i8 -34, i8* %flags, align 1, !tbaa !1
+  %arg1 = getelementptr inbounds %struct.regnode* %0, i64 1
+  %2 = bitcast %struct.regnode* %arg1 to i32*
+  store i32 %arg, i32* %2, align 4, !tbaa !3
+  %type = getelementptr inbounds %struct.regnode* %0, i64 0, i32 1
+  store i8 %op, i8* %type, align 1, !tbaa !1
+  %next_off = getelementptr inbounds %struct.regnode* %0, i64 0, i32 2
+  store i16 0, i16* %next_off, align 2, !tbaa !4
+  %add.ptr = getelementptr inbounds %struct.regnode* %0, i64 2
+  %rx = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %3 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %offsets = getelementptr inbounds %struct.regexp* %3, i64 0, i32 7
+  %4 = load i32** %offsets, align 8, !tbaa !0
+  %tobool = icmp eq i32* %4, null
+  br i1 %tobool, label %if.end28, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %5 = load %struct.regnode** %emit, align 8, !tbaa !0
+  %cmp4 = icmp eq %struct.regnode* %5, @PL_regdummy
+  br i1 %cmp4, label %if.end28, label %if.then5
+
+if.then5:                                         ; preds = %if.then2
+  %emit_start = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 7
+  %6 = load %struct.regnode** %emit_start, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint %struct.regnode* %5 to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.regnode* %6 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp7 = icmp slt i64 %sub.ptr.sub, 0
+  br i1 %cmp7, label %if.then8, label %if.else
+
+if.then8:                                         ; preds = %if.then5
+  %sub.ptr.div = ashr exact i64 %sub.ptr.sub, 2
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str21, i64 0, i64 0), i64 %sub.ptr.div) #8
+  br label %if.end28
+
+if.else:                                          ; preds = %if.then5
+  %parse = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 5
+  %7 = load i8** %parse, align 8, !tbaa !0
+  %start = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 3
+  %8 = load i8** %start, align 8, !tbaa !0
+  %sub.ptr.lhs.cast15 = ptrtoint i8* %7 to i64
+  %sub.ptr.rhs.cast16 = ptrtoint i8* %8 to i64
+  %sub.ptr.sub17 = sub i64 %sub.ptr.lhs.cast15, %sub.ptr.rhs.cast16
+  %conv = trunc i64 %sub.ptr.sub17 to i32
+  %mul = ashr exact i64 %sub.ptr.sub, 1
+  %sub = add nsw i64 %mul, -1
+  %arrayidx = getelementptr inbounds i32* %4, i64 %sub
+  store i32 %conv, i32* %arrayidx, align 4, !tbaa !3
+  br label %if.end28
+
+if.end28:                                         ; preds = %if.end, %if.then2, %if.else, %if.then8
+  store %struct.regnode* %add.ptr, %struct.regnode** %emit, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end28, %if.then
+  ret %struct.regnode* %0
+}

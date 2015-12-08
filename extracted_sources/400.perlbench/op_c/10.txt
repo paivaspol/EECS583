@@ -1,44 +1,47 @@
 void
-Perl_newPROG(pTHX_ OP *o)
+Perl_op_free(pTHX_ OP *o)
 {
-    if (PL_in_eval) {
-	if (PL_eval_root)
-		return;
-	PL_eval_root = newUNOP(OP_LEAVEEVAL,
-			       ((PL_in_eval & EVAL_KEEPERR)
-				? OPf_SPECIAL : 0), o);
-	PL_eval_start = linklist(PL_eval_root);
-	PL_eval_root->op_private |= OPpREFCOUNTED;
-	OpREFCNT_set(PL_eval_root, 1);
-	PL_eval_root->op_next = 0;
-	CALL_PEEP(PL_eval_start);
-    }
-    else {
-	if (o->op_type == OP_STUB) {
-	    PL_comppad_name = 0;
-	    PL_compcv = 0;
-	    FreeOp(o);
-	    return;
-	}
-	PL_main_root = scope(sawparens(scalarvoid(o)));
-	PL_curcop = &PL_compiling;
-	PL_main_start = LINKLIST(PL_main_root);
-	PL_main_root->op_private |= OPpREFCOUNTED;
-	OpREFCNT_set(PL_main_root, 1);
-	PL_main_root->op_next = 0;
-	CALL_PEEP(PL_main_start);
-	PL_compcv = 0;
+    register OP *kid, *nextkid;
+    OPCODE type;
+    PADOFFSET refcnt;
 
-	/* Register with debugger */
-	if (PERLDB_INTER) {
-	    CV *cv = get_cv("DB::postponed", FALSE);
-	    if (cv) {
-		dSP;
-		PUSHMARK(SP);
-		XPUSHs((SV*)CopFILEGV(&PL_compiling));
-		PUTBACK;
-		call_sv((SV*)cv, G_DISCARD);
-	    }
+    if (!o || o->op_seq == (U16)-1)
+	return;
+
+    if (o->op_private & OPpREFCOUNTED) {
+	switch (o->op_type) {
+	case OP_LEAVESUB:
+	case OP_LEAVESUBLV:
+	case OP_LEAVEEVAL:
+	case OP_LEAVE:
+	case OP_SCOPE:
+	case OP_LEAVEWRITE:
+	    OP_REFCNT_LOCK;
+	    refcnt = OpREFCNT_dec(o);
+	    OP_REFCNT_UNLOCK;
+	    if (refcnt)
+		return;
+	    break;
+	default:
+	    break;
 	}
     }
+
+    if (o->op_flags & OPf_KIDS) {
+	for (kid = cUNOPo->op_first; kid; kid = nextkid) {
+	    nextkid = kid->op_sibling; /* Get before next freeing kid */
+	    op_free(kid);
+	}
+    }
+    type = o->op_type;
+    if (type == OP_NULL)
+	type = (OPCODE)o->op_targ;
+
+    /* COP* is not cleared by op_clear() so that we may track line
+     * numbers etc even after null() */
+    if (type == OP_NEXTSTATE || type == OP_SETSTATE || type == OP_DBSTATE)
+	cop_free((COP*)o);
+
+    op_clear(o);
+    FreeOp(o);
 }

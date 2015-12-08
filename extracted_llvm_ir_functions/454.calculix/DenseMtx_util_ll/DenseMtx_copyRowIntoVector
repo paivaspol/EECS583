@@ -1,0 +1,110 @@
+define void @DenseMtx_copyRowIntoVector(%struct._DenseMtx* %mtx, i32 %irow, double* %vec) #0 {
+entry:
+  %nrow = alloca i32, align 4
+  %ncol = alloca i32, align 4
+  %colind = alloca i32*, align 8
+  %rowind = alloca i32*, align 8
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null
+  %cmp1 = icmp slt i32 %irow, 0
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq double* %vec, null
+  %or.cond76 = or i1 %or.cond, %cmp3
+  br i1 %or.cond76, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %1 = call i64 @fwrite(i8* getelementptr inbounds ([58 x i8]* @.str13, i64 0, i64 0), i64 57, i64 1, %struct._IO_FILE* %0)
+  call void @exit(i32 -1) #7
+  unreachable
+
+if.end:                                           ; preds = %entry
+  call void @DenseMtx_rowIndices(%struct._DenseMtx* %mtx, i32* %nrow, i32** %rowind) #6
+  %2 = load i32* %nrow, align 4, !tbaa !3
+  %cmp4 = icmp sgt i32 %2, %irow
+  br i1 %cmp4, label %if.end7, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call6 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([69 x i8]* @.str14, i64 0, i64 0), i32 %irow, i32 %2) #6
+  call void @exit(i32 -1) #7
+  unreachable
+
+if.end7:                                          ; preds = %if.end
+  call void @DenseMtx_columnIndices(%struct._DenseMtx* %mtx, i32* %ncol, i32** %colind) #6
+  %call8 = call i32 @DenseMtx_rowIncrement(%struct._DenseMtx* %mtx) #6
+  %call9 = call i32 @DenseMtx_columnIncrement(%struct._DenseMtx* %mtx) #6
+  %call10 = call double* @DenseMtx_entries(%struct._DenseMtx* %mtx) #6
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0
+  %4 = load i32* %type, align 4, !tbaa !3
+  switch i32 %4, label %if.end44 [
+    i32 1, label %if.then12
+    i32 2, label %if.then19
+  ]
+
+if.then12:                                        ; preds = %if.end7
+  %5 = load i32* %ncol, align 4, !tbaa !3
+  %cmp1377 = icmp sgt i32 %5, 0
+  br i1 %cmp1377, label %for.body.lr.ph, label %if.end44
+
+for.body.lr.ph:                                   ; preds = %if.then12
+  %mul = mul nsw i32 %call8, %irow
+  %6 = sext i32 %mul to i64
+  %7 = sext i32 %call9 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv86 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next87, %for.body ]
+  %indvars.iv = phi i64 [ %6, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %jj.079 = phi i32 [ 0, %for.body.lr.ph ], [ %inc16, %for.body ]
+  %arrayidx = getelementptr inbounds double* %call10, i64 %indvars.iv
+  %8 = load double* %arrayidx, align 8, !tbaa !4
+  %arrayidx15 = getelementptr inbounds double* %vec, i64 %indvars.iv86
+  store double %8, double* %arrayidx15, align 8, !tbaa !4
+  %inc16 = add nsw i32 %jj.079, 1
+  %indvars.iv.next87 = add i64 %indvars.iv86, 1
+  %indvars.iv.next = add i64 %indvars.iv, %7
+  %cmp13 = icmp slt i32 %inc16, %5
+  br i1 %cmp13, label %for.body, label %if.end44
+
+if.then19:                                        ; preds = %if.end7
+  %9 = load i32* %ncol, align 4, !tbaa !3
+  %cmp2282 = icmp sgt i32 %9, 0
+  br i1 %cmp2282, label %for.body23.lr.ph, label %if.end44
+
+for.body23.lr.ph:                                 ; preds = %if.then19
+  %mul20 = mul nsw i32 %call8, %irow
+  %10 = sext i32 %mul20 to i64
+  %11 = sext i32 %call9 to i64
+  br label %for.body23
+
+for.body23:                                       ; preds = %for.body23.lr.ph, %for.body23
+  %indvars.iv90 = phi i64 [ 0, %for.body23.lr.ph ], [ %indvars.iv.next91, %for.body23 ]
+  %indvars.iv88 = phi i64 [ %10, %for.body23.lr.ph ], [ %indvars.iv.next89, %for.body23 ]
+  %jj.184 = phi i32 [ 0, %for.body23.lr.ph ], [ %inc40, %for.body23 ]
+  %12 = trunc i64 %indvars.iv88 to i32
+  %mul24 = shl nsw i32 %12, 1
+  %idxprom25 = sext i32 %mul24 to i64
+  %arrayidx26 = getelementptr inbounds double* %call10, i64 %idxprom25
+  %13 = load double* %arrayidx26, align 8, !tbaa !4
+  %14 = trunc i64 %indvars.iv90 to i32
+  %mul27 = shl nsw i32 %14, 1
+  %idxprom28 = sext i32 %mul27 to i64
+  %arrayidx29 = getelementptr inbounds double* %vec, i64 %idxprom28
+  store double %13, double* %arrayidx29, align 8, !tbaa !4
+  %add3174 = or i32 %mul24, 1
+  %idxprom32 = sext i32 %add3174 to i64
+  %arrayidx33 = getelementptr inbounds double* %call10, i64 %idxprom32
+  %15 = load double* %arrayidx33, align 8, !tbaa !4
+  %add3575 = or i32 %mul27, 1
+  %idxprom36 = sext i32 %add3575 to i64
+  %arrayidx37 = getelementptr inbounds double* %vec, i64 %idxprom36
+  store double %15, double* %arrayidx37, align 8, !tbaa !4
+  %inc40 = add nsw i32 %jj.184, 1
+  %indvars.iv.next91 = add i64 %indvars.iv90, 1
+  %indvars.iv.next89 = add i64 %indvars.iv88, %11
+  %cmp22 = icmp slt i32 %inc40, %9
+  br i1 %cmp22, label %for.body23, label %if.end44
+
+if.end44:                                         ; preds = %if.then19, %for.body23, %if.then12, %for.body, %if.end7
+  ret void
+}

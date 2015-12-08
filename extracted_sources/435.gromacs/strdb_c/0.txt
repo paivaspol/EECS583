@@ -1,30 +1,33 @@
-int get_strings(char *db,char ***strings)
+bool get_a_line(FILE *fp,char line[],int n)
 {
-  FILE *in;
-  char **ptr;
-  char buf[256];
-  int  i,nstr;
-
-  in=libopen(db);
+  static char *line0=NULL;
+  static int nalloc=0;
+  char *dum;
   
-  set_warning_line(db,1);
-  if (fscanf(in,"%d",&nstr) != 1) {
-    sprintf(warn_buf,"File %s is empty",db);
-    warning(NULL);
-    fclose(in);
-    return 0;
+  if (n>nalloc) {
+    nalloc=n;
+    srenew(line0,nalloc+1);
   }
-  snew(ptr,nstr);
-  for(i=0; (i<nstr); i++) {
-    fscanf(in,"%s",buf);
-#ifdef DEBUG
-    fprintf(stderr,"Have read: %s\n",buf);
-#endif
-    ptr[i] = strdup(buf);
-  }
-  fclose(in);
+  do {
+    if (!fgets(line0,n+1,fp)) {
+      return FALSE;
+    }
+    dum=strchr(line0,'\n');
+    if (dum) 
+      dum[0]='\0';
+    else if (strlen(line0)==n) {
+      fprintf(stderr,"Warning: line length exceeds buffer length (%d), data might be corrupted\n",n);
+      line0[n-1] ='\0';
+    } else
+      fprintf(stderr,"Warning: file does not end with a newline, last line:\n%s\n",
+	      line0);
+    dum=strchr(line0,';');
+    if (dum) 
+      dum[0]='\0';
+    strcpy(line,line0);
+    dum=line0;
+    ltrim(dum);
+  } while (dum[0] == '\0'); 
 
-  *strings=ptr;
-  
-  return nstr;
+  return TRUE;
 }

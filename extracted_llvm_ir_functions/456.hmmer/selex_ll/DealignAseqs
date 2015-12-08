@@ -1,0 +1,64 @@
+define i32 @DealignAseqs(i8** nocapture %aseqs, i32 %num, i8*** nocapture %ret_rseqs) #0 {
+entry:
+  %conv = sext i32 %num to i64
+  %mul = shl nsw i64 %conv, 3
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 738, i64 %mul) #6
+  %0 = bitcast i8* %call to i8**
+  %cmp104 = icmp sgt i32 %num, 0
+  br i1 %cmp104, label %for.body, label %for.end71
+
+for.body:                                         ; preds = %entry, %for.end
+  %indvars.iv106 = phi i64 [ %indvars.iv.next107, %for.end ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i8** %aseqs, i64 %indvars.iv106
+  %1 = load i8** %arrayidx, align 8, !tbaa !0
+  %call2 = tail call i64 @strlen(i8* %1) #7
+  %add = shl i64 %call2, 32
+  %sext = add i64 %add, 4294967296
+  %conv4 = ashr exact i64 %sext, 32
+  %call6 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 744, i64 %conv4) #6
+  %arrayidx8 = getelementptr inbounds i8** %0, i64 %indvars.iv106
+  store i8* %call6, i8** %arrayidx8, align 8, !tbaa !0
+  br label %for.cond9
+
+for.cond9:                                        ; preds = %for.inc, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.body ]
+  %depos.0 = phi i32 [ %depos.1, %for.inc ], [ 0, %for.body ]
+  %2 = load i8** %arrayidx, align 8, !tbaa !0
+  %arrayidx13 = getelementptr inbounds i8* %2, i64 %indvars.iv
+  %3 = load i8* %arrayidx13, align 1, !tbaa !1
+  switch i8 %3, label %if.then [
+    i8 0, label %for.end
+    i8 32, label %for.inc
+    i8 46, label %for.inc
+    i8 95, label %for.inc
+    i8 45, label %for.inc
+    i8 126, label %for.inc
+  ]
+
+if.then:                                          ; preds = %for.cond9
+  %idxprom60 = sext i32 %depos.0 to i64
+  %4 = load i8** %arrayidx8, align 8, !tbaa !0
+  %arrayidx63 = getelementptr inbounds i8* %4, i64 %idxprom60
+  store i8 %3, i8* %arrayidx63, align 1, !tbaa !1
+  %inc = add nsw i32 %depos.0, 1
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.cond9, %for.cond9, %for.cond9, %for.cond9, %for.cond9, %if.then
+  %depos.1 = phi i32 [ %inc, %if.then ], [ %depos.0, %for.cond9 ], [ %depos.0, %for.cond9 ], [ %depos.0, %for.cond9 ], [ %depos.0, %for.cond9 ], [ %depos.0, %for.cond9 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br label %for.cond9
+
+for.end:                                          ; preds = %for.cond9
+  %idxprom65 = sext i32 %depos.0 to i64
+  %5 = load i8** %arrayidx8, align 8, !tbaa !0
+  %arrayidx68 = getelementptr inbounds i8* %5, i64 %idxprom65
+  store i8 0, i8* %arrayidx68, align 1, !tbaa !1
+  %indvars.iv.next107 = add i64 %indvars.iv106, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next107 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %num
+  br i1 %exitcond, label %for.end71, label %for.body
+
+for.end71:                                        ; preds = %for.end, %entry
+  store i8** %0, i8*** %ret_rseqs, align 8, !tbaa !0
+  ret i32 1
+}

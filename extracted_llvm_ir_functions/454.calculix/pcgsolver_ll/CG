@@ -1,0 +1,186 @@
+define void @CG(double* nocapture %A, double* nocapture %x, double* nocapture %b, i32 %neq, i32 %len, i32* nocapture %ia, i32* nocapture %iz, double* nocapture %eps, i32* nocapture %niter, double* nocapture %r, double* nocapture %p, double* nocapture %z) #0 {
+entry:
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([60 x i8]* @str6, i64 0, i64 0))
+  %cmp184 = icmp sgt i32 %neq, 0
+  br i1 %cmp184, label %for.body, label %return
+
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv201 = phi i64 [ %indvars.iv.next202, %for.inc ], [ 0, %entry ]
+  %qam.0187 = phi double [ %qam.1, %for.inc ], [ 0.000000e+00, %entry ]
+  %iam.0185 = phi i32 [ %iam.1, %for.inc ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv201
+  store double 0.000000e+00, double* %arrayidx, align 8, !tbaa !3
+  %arrayidx2 = getelementptr inbounds double* %b, i64 %indvars.iv201
+  %0 = load double* %arrayidx2, align 8, !tbaa !3
+  %arrayidx4 = getelementptr inbounds double* %r, i64 %indvars.iv201
+  store double %0, double* %arrayidx4, align 8, !tbaa !3
+  %sub = fsub double -0.000000e+00, %0
+  %arrayidx8 = getelementptr inbounds double* %p, i64 %indvars.iv201
+  store double %sub, double* %arrayidx8, align 8, !tbaa !3
+  %1 = load double* %arrayidx4, align 8, !tbaa !3
+  %call11 = tail call double @fabs(double %1) #7
+  %cmp12 = fcmp ogt double %call11, 1.000000e-20
+  br i1 %cmp12, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body
+  %add = fadd double %qam.0187, %call11
+  %inc = add nsw i32 %iam.0185, 1
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %iam.1 = phi i32 [ %inc, %if.then ], [ %iam.0185, %for.body ]
+  %qam.1 = phi double [ %add, %if.then ], [ %qam.0187, %for.body ]
+  %indvars.iv.next202 = add i64 %indvars.iv201, 1
+  %lftr.wideiv203 = trunc i64 %indvars.iv.next202 to i32
+  %exitcond204 = icmp eq i32 %lftr.wideiv203, %neq
+  br i1 %exitcond204, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  %cmp14 = icmp sgt i32 %iam.1, 0
+  br i1 %cmp14, label %if.then15, label %return
+
+if.then15:                                        ; preds = %for.end
+  %2 = load i32* %niter, align 4, !tbaa !0
+  %cmp18176 = icmp slt i32 %2, 1
+  br i1 %cmp18176, label %for.end83, label %for.body20.lr.ph
+
+for.body20.lr.ph:                                 ; preds = %if.then15
+  %conv = sitofp i32 %neq to double
+  %div = fdiv double %qam.1, %conv
+  %mul = fmul double %div, 5.000000e-03
+  br label %for.body20
+
+for.body20:                                       ; preds = %for.end79, %for.body20.lr.ph
+  %ram.0180 = phi double [ 0.000000e+00, %for.body20.lr.ph ], [ %ram.1.lcssa, %for.end79 ]
+  %ncg.0179 = phi i32 [ 0, %for.body20.lr.ph ], [ %inc82, %for.end79 ]
+  %k.0178 = phi i32 [ 1, %for.body20.lr.ph ], [ %inc81, %for.end79 ]
+  %add.i169177 = phi double [ 0.000000e+00, %for.body20.lr.ph ], [ %add.i170, %for.end79 ]
+  br i1 %cmp184, label %for.body.i, label %InnerProduct.exit
+
+for.body.i:                                       ; preds = %for.body20, %for.body.i
+  %3 = phi double [ %add.i, %for.body.i ], [ 0.000000e+00, %for.body20 ]
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %for.body20 ]
+  %arrayidx.i = getelementptr inbounds double* %r, i64 %indvars.iv.i
+  %4 = load double* %arrayidx.i, align 8, !tbaa !3
+  %mul.i = fmul double %4, %4
+  %add.i = fadd double %3, %mul.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %neq
+  br i1 %exitcond, label %InnerProduct.exit, label %for.body.i
+
+InnerProduct.exit:                                ; preds = %for.body.i, %for.body20
+  %add.i170 = phi double [ 0.000000e+00, %for.body20 ], [ %add.i, %for.body.i ]
+  %call21 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([36 x i8]* @.str3, i64 0, i64 0), i32 %ncg.0179, double %ram.0180, double %mul) #5
+  %cmp22 = icmp ne i32 %k.0178, 1
+  %cmp22.not = xor i1 %cmp22, true
+  %cmp25 = fcmp ugt double %ram.0180, %mul
+  %or.cond = or i1 %cmp25, %cmp22.not
+  br i1 %or.cond, label %if.end28, label %for.end83split
+
+if.end28:                                         ; preds = %InnerProduct.exit
+  br i1 %cmp22, label %if.then31, label %if.end48
+
+if.then31:                                        ; preds = %if.end28
+  %div32 = fdiv double %add.i170, %add.i169177
+  br i1 %cmp184, label %for.body36, label %if.end48.thread
+
+if.end48.thread:                                  ; preds = %if.then31
+  tail call void @MatVecProduct(double* %A, double* %p, i32 %neq, i32* %ia, i32* %iz, double* %z) #6
+  br label %for.end79
+
+for.body36:                                       ; preds = %if.then31, %for.body36
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body36 ], [ 0, %if.then31 ]
+  %arrayidx38 = getelementptr inbounds double* %p, i64 %indvars.iv
+  %5 = load double* %arrayidx38, align 8, !tbaa !3
+  %mul39 = fmul double %div32, %5
+  %arrayidx41 = getelementptr inbounds double* %r, i64 %indvars.iv
+  %6 = load double* %arrayidx41, align 8, !tbaa !3
+  %sub42 = fsub double %mul39, %6
+  store double %sub42, double* %arrayidx38, align 8, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv190 = trunc i64 %indvars.iv.next to i32
+  %exitcond191 = icmp eq i32 %lftr.wideiv190, %neq
+  br i1 %exitcond191, label %if.end48, label %for.body36
+
+if.end48:                                         ; preds = %for.body36, %if.end28
+  tail call void @MatVecProduct(double* %A, double* %p, i32 %neq, i32* %ia, i32* %iz, double* %z) #6
+  br i1 %cmp184, label %for.body.i162, label %for.end79
+
+for.body.i162:                                    ; preds = %if.end48, %for.body.i162
+  %7 = phi double [ %add.i158, %for.body.i162 ], [ 0.000000e+00, %if.end48 ]
+  %indvars.iv.i154 = phi i64 [ %indvars.iv.next.i159, %for.body.i162 ], [ 0, %if.end48 ]
+  %arrayidx.i155 = getelementptr inbounds double* %p, i64 %indvars.iv.i154
+  %8 = load double* %arrayidx.i155, align 8, !tbaa !3
+  %arrayidx2.i156 = getelementptr inbounds double* %z, i64 %indvars.iv.i154
+  %9 = load double* %arrayidx2.i156, align 8, !tbaa !3
+  %mul.i157 = fmul double %8, %9
+  %add.i158 = fadd double %7, %mul.i157
+  %indvars.iv.next.i159 = add i64 %indvars.iv.i154, 1
+  %lftr.wideiv192 = trunc i64 %indvars.iv.next.i159 to i32
+  %exitcond193 = icmp eq i32 %lftr.wideiv192, %neq
+  br i1 %exitcond193, label %InnerProduct.exit163, label %for.body.i162
+
+InnerProduct.exit163:                             ; preds = %for.body.i162
+  %div49 = fdiv double %add.i170, %add.i158
+  br i1 %cmp184, label %for.body53, label %for.end79
+
+for.body53:                                       ; preds = %InnerProduct.exit163, %for.body53
+  %indvars.iv194 = phi i64 [ %indvars.iv.next195, %for.body53 ], [ 0, %InnerProduct.exit163 ]
+  %ram.1175 = phi double [ %ram.2, %for.body53 ], [ 0.000000e+00, %InnerProduct.exit163 ]
+  %arrayidx55 = getelementptr inbounds double* %x, i64 %indvars.iv194
+  %10 = load double* %arrayidx55, align 8, !tbaa !3
+  %arrayidx57 = getelementptr inbounds double* %p, i64 %indvars.iv194
+  %11 = load double* %arrayidx57, align 8, !tbaa !3
+  %mul58 = fmul double %div49, %11
+  %add59 = fadd double %10, %mul58
+  store double %add59, double* %arrayidx55, align 8, !tbaa !3
+  %arrayidx63 = getelementptr inbounds double* %r, i64 %indvars.iv194
+  %12 = load double* %arrayidx63, align 8, !tbaa !3
+  %arrayidx65 = getelementptr inbounds double* %z, i64 %indvars.iv194
+  %13 = load double* %arrayidx65, align 8, !tbaa !3
+  %mul66 = fmul double %div49, %13
+  %add67 = fadd double %12, %mul66
+  store double %add67, double* %arrayidx63, align 8, !tbaa !3
+  %call72 = tail call double @fabs(double %add67) #7
+  %cmp73 = fcmp ogt double %call72, %ram.1175
+  %ram.2 = select i1 %cmp73, double %call72, double %ram.1175
+  %indvars.iv.next195 = add i64 %indvars.iv194, 1
+  %lftr.wideiv196 = trunc i64 %indvars.iv.next195 to i32
+  %exitcond197 = icmp eq i32 %lftr.wideiv196, %neq
+  br i1 %exitcond197, label %for.end79, label %for.body53
+
+for.end79:                                        ; preds = %if.end48, %if.end48.thread, %for.body53, %InnerProduct.exit163
+  %ram.1.lcssa = phi double [ 0.000000e+00, %InnerProduct.exit163 ], [ %ram.2, %for.body53 ], [ 0.000000e+00, %if.end48.thread ], [ 0.000000e+00, %if.end48 ]
+  %inc81 = add nsw i32 %k.0178, 1
+  %inc82 = add nsw i32 %ncg.0179, 1
+  %14 = load i32* %niter, align 4, !tbaa !0
+  %cmp18 = icmp slt i32 %k.0178, %14
+  br i1 %cmp18, label %for.body20, label %for.end83
+
+for.end83split:                                   ; preds = %InnerProduct.exit
+  %.pre = load i32* %niter, align 4, !tbaa !0
+  br label %for.end83
+
+for.end83:                                        ; preds = %for.end79, %for.end83split, %if.then15
+  %15 = phi i32 [ %2, %if.then15 ], [ %.pre, %for.end83split ], [ %14, %for.end79 ]
+  %ncg.0.lcssa = phi i32 [ 0, %if.then15 ], [ %ncg.0179, %for.end83split ], [ %inc82, %for.end79 ]
+  %k.0.lcssa = phi i32 [ 1, %if.then15 ], [ %k.0178, %for.end83split ], [ %inc81, %for.end79 ]
+  %add.i168 = phi double [ 0.000000e+00, %if.then15 ], [ %add.i170, %for.end83split ], [ %add.i170, %for.end79 ]
+  %cmp84 = icmp eq i32 %k.0.lcssa, %15
+  br i1 %cmp84, label %if.then86, label %if.end88
+
+if.then86:                                        ; preds = %for.end83
+  %call87 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([31 x i8]* @.str4, i64 0, i64 0)) #5
+  tail call void (...)* @stop_() #5
+  br label %if.end88
+
+if.end88:                                         ; preds = %if.then86, %for.end83
+  store double %add.i168, double* %eps, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %entry, %for.end, %if.end88
+  %storemerge = phi i32 [ %ncg.0.lcssa, %if.end88 ], [ 0, %for.end ], [ 0, %entry ]
+  store i32 %storemerge, i32* %niter, align 4, !tbaa !0
+  ret void
+}

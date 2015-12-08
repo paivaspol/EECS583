@@ -1,0 +1,52 @@
+define internal fastcc %struct.sv* @S_incpush_if_exists(%struct.sv* %dir) #0 {
+entry:
+  %tmpstatbuf = alloca %struct.stat, align 8
+  %0 = bitcast %struct.stat* %tmpstatbuf to i8*
+  call void @llvm.lifetime.start(i64 144, i8* %0) #2
+  %sv_any = getelementptr inbounds %struct.sv* %dir, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %1 to i8**
+  %2 = load i8** %xpv_pv, align 8, !tbaa !0
+  %call = call i32 @stat(i8* %2, %struct.stat* %tmpstatbuf) #7
+  %cmp = icmp sgt i32 %call, -1
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %st_mode = getelementptr inbounds %struct.stat* %tmpstatbuf, i64 0, i32 3
+  %3 = load i32* %st_mode, align 8, !tbaa !3
+  %and = and i32 %3, 61440
+  %cmp1 = icmp eq i32 %and, 16384
+  br i1 %cmp1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true
+  %4 = load %struct.gv** @PL_incgv, align 8, !tbaa !0
+  %sv_any2 = getelementptr inbounds %struct.gv* %4, i64 0, i32 0
+  %5 = load %struct.xpvgv** %sv_any2, align 8, !tbaa !0
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %5, i64 0, i32 7
+  %6 = load %struct.gp** %xgv_gp, align 8, !tbaa !0
+  %gp_av = getelementptr inbounds %struct.gp* %6, i64 0, i32 4
+  %7 = load %struct.av** %gp_av, align 8, !tbaa !0
+  %tobool = icmp eq %struct.av* %7, null
+  br i1 %tobool, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %if.then
+  %call6 = call %struct.gv* @Perl_gv_AVadd(%struct.gv* %4) #7
+  %sv_any7 = getelementptr inbounds %struct.gv* %call6, i64 0, i32 0
+  %8 = load %struct.xpvgv** %sv_any7, align 8, !tbaa !0
+  %xgv_gp8 = getelementptr inbounds %struct.xpvgv* %8, i64 0, i32 7
+  %9 = load %struct.gp** %xgv_gp8, align 8, !tbaa !0
+  %gp_av9 = getelementptr inbounds %struct.gp* %9, i64 0, i32 4
+  %10 = load %struct.av** %gp_av9, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then, %cond.false
+  %cond = phi %struct.av* [ %10, %cond.false ], [ %7, %if.then ]
+  call void @Perl_av_push(%struct.av* %cond, %struct.sv* %dir) #7
+  %call10 = call %struct.sv* @Perl_newSV(i64 0) #7
+  br label %if.end
+
+if.end:                                           ; preds = %cond.end, %land.lhs.true, %entry
+  %dir.addr.0 = phi %struct.sv* [ %call10, %cond.end ], [ %dir, %land.lhs.true ], [ %dir, %entry ]
+  call void @llvm.lifetime.end(i64 144, i8* %0) #2
+  ret %struct.sv* %dir.addr.0
+}

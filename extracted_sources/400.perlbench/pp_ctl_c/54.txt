@@ -1,0 +1,152 @@
+STATIC OP *
+S_doeval(pTHX_ int gimme, OP** startop, CV* outside, U32 seq)
+{
+    dSP;
+    OP *saveop = PL_op;
+
+    PL_in_eval = ((saveop && saveop->op_type == OP_REQUIRE)
+		  ? (EVAL_INREQUIRE | (PL_in_eval & EVAL_INEVAL))
+		  : EVAL_INEVAL);
+
+    PUSHMARK(SP);
+
+    SAVESPTR(PL_compcv);
+    PL_compcv = (CV*)NEWSV(1104,0);
+    sv_upgrade((SV *)PL_compcv, SVt_PVCV);
+    CvEVAL_on(PL_compcv);
+    assert(CxTYPE(&cxstack[cxstack_ix]) == CXt_EVAL);
+    cxstack[cxstack_ix].blk_eval.cv = PL_compcv;
+
+#ifdef USE_5005THREADS
+    CvOWNER(PL_compcv) = 0;
+    New(666, CvMUTEXP(PL_compcv), 1, perl_mutex);
+    MUTEX_INIT(CvMUTEXP(PL_compcv));
+#endif /* USE_5005THREADS */
+
+    CvOUTSIDE_SEQ(PL_compcv) = seq;
+    CvOUTSIDE(PL_compcv) = (CV*)SvREFCNT_inc(outside);
+
+    /* set up a scratch pad */
+
+    CvPADLIST(PL_compcv) = pad_new(padnew_SAVE);
+
+
+    SAVEMORTALIZESV(PL_compcv);	/* must remain until end of current statement */
+
+    /* make sure we compile in the right package */
+
+    if (CopSTASH_ne(PL_curcop, PL_curstash)) {
+	SAVESPTR(PL_curstash);
+	PL_curstash = CopSTASH(PL_curcop);
+    }
+    SAVESPTR(PL_beginav);
+    PL_beginav = newAV();
+    SAVEFREESV(PL_beginav);
+    SAVEI32(PL_error_count);
+
+    /* try to compile it */
+
+    PL_eval_root = Nullop;
+    PL_error_count = 0;
+    PL_curcop = &PL_compiling;
+    PL_curcop->cop_arybase = 0;
+    if (saveop && saveop->op_flags & OPf_SPECIAL)
+	PL_in_eval |= EVAL_KEEPERR;
+    else
+	sv_setpv(ERRSV,"");
+    if (yyparse() || PL_error_count || !PL_eval_root) {
+	SV **newsp;			/* Used by POPBLOCK. */
+	PERL_CONTEXT *cx;
+	I32 optype = 0;			/* Might be reset by POPEVAL. */
+	STRLEN n_a;
+	
+	PL_op = saveop;
+	if (PL_eval_root) {
+	    op_free(PL_eval_root);
+	    PL_eval_root = Nullop;
+	}
+	SP = PL_stack_base + POPMARK;		/* pop original mark */
+	if (!startop) {
+	    POPBLOCK(cx,PL_curpm);
+	    POPEVAL(cx);
+	    pop_return();
+	}
+	lex_end();
+	LEAVE;
+	if (optype == OP_REQUIRE) {
+	    char* msg = SvPVx(ERRSV, n_a);
+	    DIE(aTHX_ "%sCompilation failed in require",
+		*msg ? msg : "Unknown error\n");
+	}
+	else if (startop) {
+	    char* msg = SvPVx(ERRSV, n_a);
+
+	    POPBLOCK(cx,PL_curpm);
+	    POPEVAL(cx);
+	    Perl_croak(aTHX_ "%sCompilation failed in regexp",
+		       (*msg ? msg : "Unknown error\n"));
+	}
+	else {
+	    char* msg = SvPVx(ERRSV, n_a);
+	    if (!*msg) {
+	        sv_setpv(ERRSV, "Compilation error");
+	    }
+	}
+#ifdef USE_5005THREADS
+	MUTEX_LOCK(&PL_eval_mutex);
+	PL_eval_owner = 0;
+	COND_SIGNAL(&PL_eval_cond);
+	MUTEX_UNLOCK(&PL_eval_mutex);
+#endif /* USE_5005THREADS */
+	RETPUSHUNDEF;
+    }
+    CopLINE_set(&PL_compiling, 0);
+    if (startop) {
+	*startop = PL_eval_root;
+    } else
+	SAVEFREEOP(PL_eval_root);
+
+    /* Set the context for this new optree.
+     * If the last op is an OP_REQUIRE, force scalar context.
+     * Otherwise, propagate the context from the eval(). */
+    if (PL_eval_root->op_type == OP_LEAVEEVAL
+	    && cUNOPx(PL_eval_root)->op_first->op_type == OP_LINESEQ
+	    && cLISTOPx(cUNOPx(PL_eval_root)->op_first)->op_last->op_type
+	    == OP_REQUIRE)
+	scalar(PL_eval_root);
+    else if (gimme & G_VOID)
+	scalarvoid(PL_eval_root);
+    else if (gimme & G_ARRAY)
+	list(PL_eval_root);
+    else
+	scalar(PL_eval_root);
+
+    DEBUG_x(dump_eval());
+
+    /* Register with debugger: */
+    if (PERLDB_INTER && saveop->op_type == OP_REQUIRE) {
+	CV *cv = get_cv("DB::postponed", FALSE);
+	if (cv) {
+	    dSP;
+	    PUSHMARK(SP);
+	    XPUSHs((SV*)CopFILEGV(&PL_compiling));
+	    PUTBACK;
+	    call_sv((SV*)cv, G_DISCARD);
+	}
+    }
+
+    /* compiled okay, so do it */
+
+    CvDEPTH(PL_compcv) = 1;
+    SP = PL_stack_base + POPMARK;		/* pop original mark */
+    PL_op = saveop;			/* The caller may need it. */
+    PL_lex_state = LEX_NOTPARSING;	/* $^S needs this. */
+#ifdef USE_5005THREADS
+    MUTEX_LOCK(&PL_eval_mutex);
+    PL_eval_owner = 0;
+    COND_SIGNAL(&PL_eval_cond);
+    MUTEX_UNLOCK(&PL_eval_mutex);
+#endif /* USE_5005THREADS */
+
+    RETURNOP(PL_eval_start);
+}

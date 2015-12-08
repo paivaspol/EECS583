@@ -1,0 +1,68 @@
+define void @GSIAddKeyToIndex(%struct.gsiindex_s* nocapture %g, i8* nocapture %key, i32 %filenum, i64 %offset) #0 {
+entry:
+  %call = tail call i64 @strlen(i8* %key) #7
+  %cmp = icmp ugt i64 %call, 31
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([26 x i8]* @.str4, i64 0, i64 0)) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %cmp1 = icmp sgt i32 %filenum, 65535
+  br i1 %cmp1, label %if.then2, label %if.end3
+
+if.then2:                                         ; preds = %if.end
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([28 x i8]* @.str5, i64 0, i64 0)) #6
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.then2, %if.end
+  %cmp4 = icmp sgt i64 %offset, 4294967295
+  br i1 %cmp4, label %if.then5, label %if.end6
+
+if.then5:                                         ; preds = %if.end3
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([28 x i8]* @.str6, i64 0, i64 0)) #6
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.then5, %if.end3
+  %nkeys = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 4
+  %0 = load i32* %nkeys, align 4, !tbaa !3
+  %idxprom = sext i32 %0 to i64
+  %elems = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 3
+  %1 = load %struct.gsikey_s** %elems, align 8, !tbaa !0
+  %arraydecay = getelementptr inbounds %struct.gsikey_s* %1, i64 %idxprom, i32 0, i64 0
+  %call8 = tail call i8* @strncpy(i8* %arraydecay, i8* %key, i64 31) #6
+  %2 = load i32* %nkeys, align 4, !tbaa !3
+  %idxprom10 = sext i32 %2 to i64
+  %3 = load %struct.gsikey_s** %elems, align 8, !tbaa !0
+  %arrayidx14 = getelementptr inbounds %struct.gsikey_s* %3, i64 %idxprom10, i32 0, i64 31
+  store i8 0, i8* %arrayidx14, align 1, !tbaa !1
+  %conv = trunc i32 %filenum to i16
+  %4 = load i32* %nkeys, align 4, !tbaa !3
+  %idxprom16 = sext i32 %4 to i64
+  %5 = load %struct.gsikey_s** %elems, align 8, !tbaa !0
+  %filenum19 = getelementptr inbounds %struct.gsikey_s* %5, i64 %idxprom16, i32 1
+  store i16 %conv, i16* %filenum19, align 2, !tbaa !4
+  %conv20 = trunc i64 %offset to i32
+  %offset25 = getelementptr inbounds %struct.gsikey_s* %5, i64 %idxprom16, i32 2
+  store i32 %conv20, i32* %offset25, align 4, !tbaa !3
+  %6 = load i32* %nkeys, align 4, !tbaa !3
+  %inc = add nsw i32 %6, 1
+  store i32 %inc, i32* %nkeys, align 4, !tbaa !3
+  %rem = srem i32 %inc, 100
+  %cmp28 = icmp eq i32 %rem, 0
+  br i1 %cmp28, label %if.then30, label %if.end36
+
+if.then30:                                        ; preds = %if.end6
+  %7 = getelementptr inbounds %struct.gsikey_s* %5, i64 0, i32 0, i64 0
+  %add = add nsw i32 %6, 101
+  %conv33 = sext i32 %add to i64
+  %mul = mul i64 %conv33, 40
+  %call34 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 247, i8* %7, i64 %mul) #6
+  %8 = bitcast i8* %call34 to %struct.gsikey_s*
+  store %struct.gsikey_s* %8, %struct.gsikey_s** %elems, align 8, !tbaa !0
+  br label %if.end36
+
+if.end36:                                         ; preds = %if.then30, %if.end6
+  ret void
+}

@@ -1,0 +1,63 @@
+define %struct.op* @Perl_pp_preinc() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv** %0, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %1, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, 254
+  %cmp = icmp ugt i32 %and, 9
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.op* (i8*, ...)* @Perl_die(i8* getelementptr inbounds ([0 x i8]* @PL_no_modify, i64 0, i64 0)) #8
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %3 = and i32 %2, -2138636288
+  %4 = icmp eq i32 %3, 65536
+  br i1 %4, label %land.lhs.true14, label %if.else
+
+land.lhs.true14:                                  ; preds = %if.end
+  %sv_any = getelementptr inbounds %struct.sv* %1, i64 0, i32 0
+  %5 = load i8** %sv_any, align 8, !tbaa !0
+  %xiv_iv = getelementptr inbounds i8* %5, i64 24
+  %6 = bitcast i8* %xiv_iv to i64*
+  %7 = load i64* %6, align 8, !tbaa !4
+  %cmp15 = icmp eq i64 %7, 9223372036854775807
+  br i1 %cmp15, label %if.else, label %if.then16
+
+if.then16:                                        ; preds = %land.lhs.true14
+  %inc = add nsw i64 %7, 1
+  store i64 %inc, i64* %6, align 8, !tbaa !4
+  %and20 = and i32 %2, -100663297
+  store i32 %and20, i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end21
+
+if.else:                                          ; preds = %land.lhs.true14, %if.end
+  tail call void @Perl_sv_inc(%struct.sv* %1) #8
+  %.pre = load %struct.sv** %0, align 8, !tbaa !0
+  %sv_flags22.phi.trans.insert = getelementptr inbounds %struct.sv* %.pre, i64 0, i32 2
+  %.pre40 = load i32* %sv_flags22.phi.trans.insert, align 4, !tbaa !3
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.else, %if.then16
+  %8 = phi i32 [ %.pre40, %if.else ], [ %and20, %if.then16 ]
+  %9 = phi %struct.sv* [ %.pre, %if.else ], [ %1, %if.then16 ]
+  %and23 = and i32 %8, 16384
+  %tobool24 = icmp eq i32 %and23, 0
+  br i1 %tobool24, label %if.end27, label %if.then25
+
+if.then25:                                        ; preds = %if.end21
+  %call26 = tail call i32 @Perl_mg_set(%struct.sv* %9) #8
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.end21, %if.then25
+  %10 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %10, i64 0, i32 0
+  %11 = load %struct.op** %op_next, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end27, %if.then
+  %retval.0 = phi %struct.op* [ %call, %if.then ], [ %11, %if.end27 ]
+  ret %struct.op* %retval.0
+}

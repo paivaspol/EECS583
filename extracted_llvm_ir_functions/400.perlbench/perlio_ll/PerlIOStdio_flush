@@ -1,0 +1,21 @@
+define i64 @PerlIOStdio_flush(%struct._PerlIO** nocapture %f) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %1 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %1, 512
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %stdio1 = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %2 = bitcast %struct._PerlIO* %stdio1 to %struct._IO_FILE**
+  %3 = load %struct._IO_FILE** %2, align 8, !tbaa !3
+  %call = tail call i32 @fflush(%struct._IO_FILE* %3) #9
+  %conv = sext i32 %call to i64
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i64 [ %conv, %if.then ], [ 0, %entry ]
+  ret i64 %retval.0
+}

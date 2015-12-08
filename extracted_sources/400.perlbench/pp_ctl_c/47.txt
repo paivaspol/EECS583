@@ -1,0 +1,19 @@
+PP(pp_cswitch)
+{
+    dSP;
+    register I32 match;
+
+    if (PL_multiline)
+	PL_op = PL_op->op_next;			/* can't assume anything */
+    else {
+	STRLEN n_a;
+	match = *(SvPVx(GvSV(cCOP->cop_gv), n_a)) & 255;
+	match -= cCOP->uop.scop.scop_offset;
+	if (match < 0)
+	    match = 0;
+	else if (match > cCOP->uop.scop.scop_max)
+	    match = cCOP->uop.scop.scop_max;
+	PL_op = cCOP->uop.scop.scop_next[match];
+    }
+    RETURNOP(PL_op);
+}

@@ -1,47 +1,30 @@
-void
-Perl_vwarn(pTHX_ const char* pat, va_list *args)
+STATIC COP*
+S_closest_cop(pTHX_ COP *cop, OP *o)
 {
-    char *message;
-    HV *stash;
-    GV *gv;
-    CV *cv;
-    SV *msv;
-    STRLEN msglen;
-    I32 utf8 = 0;
+    /* Look for PL_op starting from o.  cop is the last COP we've seen. */
 
-    msv = vmess(pat, args);
-    utf8 = SvUTF8(msv);
-    message = SvPV(msv, msglen);
+    if (!o || o == PL_op) return cop;
 
-    if (PL_warnhook) {
-	/* sv_2cv might call Perl_warn() */
-	SV *oldwarnhook = PL_warnhook;
-	ENTER;
-	SAVESPTR(PL_warnhook);
-	PL_warnhook = Nullsv;
-	cv = sv_2cv(oldwarnhook, &stash, &gv, 0);
-	LEAVE;
-	if (cv && !CvDEPTH(cv) && (CvROOT(cv) || CvXSUB(cv))) {
-	    dSP;
-	    SV *msg;
+    if (o->op_flags & OPf_KIDS) {
+	OP *kid;
+	for (kid = cUNOPo->op_first; kid; kid = kid->op_sibling)
+	{
+	    COP *new_cop;
 
-	    ENTER;
-	    save_re_context();
-	    msg = newSVpvn(message, msglen);
-	    SvFLAGS(msg) |= utf8;
-	    SvREADONLY_on(msg);
-	    SAVEFREESV(msg);
+	    /* If the OP_NEXTSTATE has been optimised away we can still use it
+	     * the get the file and line number. */
 
-	    PUSHSTACKi(PERLSI_WARNHOOK);
-	    PUSHMARK(SP);
-	    XPUSHs(msg);
-	    PUTBACK;
-	    call_sv((SV*)cv, G_DISCARD);
-	    POPSTACK;
-	    LEAVE;
-	    return;
+	    if (kid->op_type == OP_NULL && kid->op_targ == OP_NEXTSTATE)
+		cop = (COP *)kid;
+
+	    /* Keep searching, and return when we've found something. */
+
+	    new_cop = closest_cop(cop, kid);
+	    if (new_cop) return new_cop;
 	}
     }
 
-    write_to_stderr(message, msglen);
+    /* Nothing found. */
+
+    return 0;
 }

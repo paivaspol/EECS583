@@ -1,25 +1,41 @@
-static void
-c_init_attributes ()
+void
+c_common_post_options ()
 {
-  /* Fill in the built_in_attributes array.  */
-#define DEF_ATTR_NULL_TREE(ENUM)		\
-  built_in_attributes[(int) ENUM] = NULL_TREE;
-#define DEF_ATTR_INT(ENUM, VALUE)					     \
-  built_in_attributes[(int) ENUM] = build_int_2 (VALUE, VALUE < 0 ? -1 : 0);
-#define DEF_ATTR_IDENT(ENUM, STRING)				\
-  built_in_attributes[(int) ENUM] = get_identifier (STRING);
-#define DEF_ATTR_TREE_LIST(ENUM, PURPOSE, VALUE, CHAIN)	\
-  built_in_attributes[(int) ENUM]			\
-    = tree_cons (built_in_attributes[(int) PURPOSE],	\
-		 built_in_attributes[(int) VALUE],	\
-		 built_in_attributes[(int) CHAIN]);
-#define DEF_FN_ATTR(NAME, ATTRS, PREDICATE) /* No initialization needed.  */
-#include "builtin-attrs.def"
-#undef DEF_ATTR_NULL_TREE
-#undef DEF_ATTR_INT
-#undef DEF_ATTR_IDENT
-#undef DEF_ATTR_TREE_LIST
-#undef DEF_FN_ATTR
-  ggc_add_tree_root (built_in_attributes, (int) ATTR_LAST);
-  c_attrs_initialized = true;
+  cpp_post_options (parse_in);
+
+  flag_inline_trees = 1;
+
+  /* Use tree inlining if possible.  Function instrumentation is only
+     done in the RTL level, so we disable tree inlining.  */
+  if (! flag_instrument_function_entry_exit)
+    {
+      if (!flag_no_inline)
+	flag_no_inline = 1;
+      if (flag_inline_functions)
+	{
+	  flag_inline_trees = 2;
+	  flag_inline_functions = 0;
+	}
+    }
+
+  /* If still "unspecified", make it match -fbounded-pointers.  */
+  if (flag_bounds_check == -1)
+    flag_bounds_check = flag_bounded_pointers;
+
+  /* Special format checking options don't work without -Wformat; warn if
+     they are used.  */
+  if (warn_format_y2k && !warn_format)
+    warning ("-Wformat-y2k ignored without -Wformat");
+  if (warn_format_extra_args && !warn_format)
+    warning ("-Wformat-extra-args ignored without -Wformat");
+  if (warn_format_nonliteral && !warn_format)
+    warning ("-Wformat-nonliteral ignored without -Wformat");
+  if (warn_format_security && !warn_format)
+    warning ("-Wformat-security ignored without -Wformat");
+  if (warn_missing_format_attribute && !warn_format)
+    warning ("-Wmissing-format-attribute ignored without -Wformat");
+
+  /* If an error has occurred in cpplib, note it so we fail
+     immediately.  */
+  errorcount += cpp_errors (parse_in);
 }

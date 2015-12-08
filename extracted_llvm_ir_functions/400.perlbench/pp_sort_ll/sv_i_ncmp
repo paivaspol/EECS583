@@ -1,0 +1,54 @@
+define internal i32 @sv_i_ncmp(%struct.sv* %a, %struct.sv* %b) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.sv* %a, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 65536
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %a, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xiv_iv = getelementptr inbounds i8* %1, i64 24
+  %2 = bitcast i8* %xiv_iv to i64*
+  %3 = load i64* %2, align 8, !tbaa !4
+  br label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %call = tail call i64 @Perl_sv_2iv(%struct.sv* %a) #4
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i64 [ %3, %cond.true ], [ %call, %cond.false ]
+  %sv_flags1 = getelementptr inbounds %struct.sv* %b, i64 0, i32 2
+  %4 = load i32* %sv_flags1, align 4, !tbaa !3
+  %and2 = and i32 %4, 65536
+  %tobool3 = icmp eq i32 %and2, 0
+  br i1 %tobool3, label %cond.false7, label %cond.true4
+
+cond.true4:                                       ; preds = %cond.end
+  %sv_any5 = getelementptr inbounds %struct.sv* %b, i64 0, i32 0
+  %5 = load i8** %sv_any5, align 8, !tbaa !0
+  %xiv_iv6 = getelementptr inbounds i8* %5, i64 24
+  %6 = bitcast i8* %xiv_iv6 to i64*
+  %7 = load i64* %6, align 8, !tbaa !4
+  br label %cond.end9
+
+cond.false7:                                      ; preds = %cond.end
+  %call8 = tail call i64 @Perl_sv_2iv(%struct.sv* %b) #4
+  br label %cond.end9
+
+cond.end9:                                        ; preds = %cond.false7, %cond.true4
+  %cond10 = phi i64 [ %7, %cond.true4 ], [ %call8, %cond.false7 ]
+  %cmp = icmp slt i64 %cond, %cond10
+  br i1 %cmp, label %cond.end15, label %cond.false12
+
+cond.false12:                                     ; preds = %cond.end9
+  %cmp13 = icmp sgt i64 %cond, %cond10
+  %cond14 = zext i1 %cmp13 to i32
+  br label %cond.end15
+
+cond.end15:                                       ; preds = %cond.end9, %cond.false12
+  %cond16 = phi i32 [ %cond14, %cond.false12 ], [ -1, %cond.end9 ]
+  ret i32 %cond16
+}

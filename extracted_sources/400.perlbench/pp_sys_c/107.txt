@@ -1,0 +1,31 @@
+PP(pp_setpgrp)
+{
+#ifdef HAS_SETPGRP
+    dSP; dTARGET;
+    Pid_t pgrp;
+    Pid_t pid;
+    if (MAXARG < 2) {
+	pgrp = 0;
+	pid = 0;
+    }
+    else {
+	pgrp = POPi;
+	pid = TOPi;
+    }
+
+    TAINT_PROPER("setpgrp");
+#ifdef BSD_SETPGRP
+    SETi( BSD_SETPGRP(pid, pgrp) >= 0 );
+#else
+    if ((pgrp != 0 && pgrp != PerlProc_getpid())
+	|| (pid != 0 && pid != PerlProc_getpid()))
+    {
+	DIE(aTHX_ "setpgrp can't take arguments");
+    }
+    SETi( setpgrp() >= 0 );
+#endif /* USE_BSDPGRP */
+    RETURN;
+#else
+    DIE(aTHX_ PL_no_func, "setpgrp()");
+#endif
+}

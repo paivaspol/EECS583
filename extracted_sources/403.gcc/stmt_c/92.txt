@@ -1,42 +1,56 @@
-static void
-group_case_nodes (head)
-     case_node_ptr head;
+static int
+estimate_case_costs (node)
+     case_node_ptr node;
 {
-  case_node_ptr node = head;
+  tree min_ascii = integer_minus_one_node;
+  tree max_ascii = convert (TREE_TYPE (node->high), build_int_2 (127, 0));
+  case_node_ptr n;
+  int i;
 
-  while (node)
+  /* If we haven't already made the cost table, make it now.  Note that the
+     lower bound of the table is -1, not zero.  */
+
+  if (! cost_table_initialized)
     {
-      rtx lb = next_real_insn (label_rtx (node->code_label));
-      rtx lb2;
-      case_node_ptr np = node;
+      cost_table_initialized = 1;
 
-      /* Try to group the successors of NODE with NODE.  */
-      while (((np = np->right) != 0)
-	     /* Do they jump to the same place?  */
-	     && ((lb2 = next_real_insn (label_rtx (np->code_label))) == lb
-		 || (lb != 0 && lb2 != 0
-		     && simplejump_p (lb)
-		     && simplejump_p (lb2)
-		     && rtx_equal_p (SET_SRC (PATTERN (lb)),
-				     SET_SRC (PATTERN (lb2)))))
-	     /* Are their ranges consecutive?  */
-	     && tree_int_cst_equal (np->low,
-				    fold (build (PLUS_EXPR,
-						 TREE_TYPE (node->high),
-						 node->high,
-						 integer_one_node)))
-	     /* An overflow is not consecutive.  */
-	     && tree_int_cst_lt (node->high,
-				 fold (build (PLUS_EXPR,
-					      TREE_TYPE (node->high),
-					      node->high,
-					      integer_one_node))))
+      for (i = 0; i < 128; i++)
 	{
-	  node->high = np->high;
+	  if (ISALNUM (i))
+	    COST_TABLE (i) = 16;
+	  else if (ISPUNCT (i))
+	    COST_TABLE (i) = 8;
+	  else if (ISCNTRL (i))
+	    COST_TABLE (i) = -1;
 	}
-      /* NP is the first node after NODE which can't be grouped with it.
-	 Delete the nodes in between, and move on to that node.  */
-      node->right = np;
-      node = np;
+
+      COST_TABLE (' ') = 8;
+      COST_TABLE ('\t') = 4;
+      COST_TABLE ('\0') = 4;
+      COST_TABLE ('\n') = 2;
+      COST_TABLE ('\f') = 1;
+      COST_TABLE ('\v') = 1;
+      COST_TABLE ('\b') = 1;
     }
+
+  /* See if all the case expressions look like text.  It is text if the
+     constant is >= -1 and the highest constant is <= 127.  Do all comparisons
+     as signed arithmetic since we don't want to ever access cost_table with a
+     value less than -1.  Also check that none of the constants in a range
+     are strange control characters.  */
+
+  for (n = node; n; n = n->right)
+    {
+      if ((INT_CST_LT (n->low, min_ascii)) || INT_CST_LT (max_ascii, n->high))
+	return 0;
+
+      for (i = (HOST_WIDE_INT) TREE_INT_CST_LOW (n->low);
+	   i <= (HOST_WIDE_INT) TREE_INT_CST_LOW (n->high); i++)
+	if (COST_TABLE (i) < 0)
+	  return 0;
+    }
+
+  /* All interesting values are within the range of interesting
+     ASCII characters.  */
+  return 1;
 }

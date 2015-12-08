@@ -1,9 +1,18 @@
-static int
-action_record_eq (pentry, pdata)
-     const PTR pentry;
-     const PTR pdata;
+bool
+nothrow_function_p ()
 {
-  const struct action_record *entry = (const struct action_record *) pentry;
-  const struct action_record *data = (const struct action_record *) pdata;
-  return entry->filter == data->filter && entry->next == data->next;
+  rtx insn;
+
+  if (! flag_exceptions)
+    return true;
+
+  for (insn = get_insns (); insn; insn = NEXT_INSN (insn))
+    if (can_throw_external (insn))
+      return false;
+  for (insn = current_function_epilogue_delay_list; insn;
+       insn = XEXP (insn, 1))
+    if (can_throw_external (insn))
+      return false;
+
+  return true;
 }

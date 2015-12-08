@@ -1,0 +1,102 @@
+define void @XS_Digest__MD5_addfile(%struct.cv* nocapture %cv) #0 {
+entry:
+  %buffer = alloca [4096 x i8], align 16
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !3
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %add.ptr.idx = shl nsw i64 %idx.ext, 32
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %4 = and i64 %sub.ptr.sub3, 34359738360
+  %cmp = icmp eq i64 %4, 16
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([38 x i8]* @.str4, i64 0, i64 0)) #4
+  %.pre = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %5 = phi %struct.sv** [ %1, %entry ], [ %.pre, %if.then ]
+  %sext = add i64 %add.ptr.idx, 4294967296
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds %struct.sv** %5, i64 %idxprom
+  %6 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %sext60 = add i64 %add.ptr.idx, 8589934592
+  %idxprom9 = ashr exact i64 %sext60, 32
+  %arrayidx10 = getelementptr inbounds %struct.sv** %5, i64 %idxprom9
+  %7 = load %struct.sv** %arrayidx10, align 8, !tbaa !0
+  %call = call %struct.io* @Perl_sv_2io(%struct.sv* %7) #4
+  %sv_any = getelementptr inbounds %struct.io* %call, i64 0, i32 0
+  %8 = load %struct.xpvio** %sv_any, align 8, !tbaa !0
+  %xio_ifp = getelementptr inbounds %struct.xpvio* %8, i64 0, i32 7
+  %9 = load %struct._PerlIO*** %xio_ifp, align 8, !tbaa !0
+  %call11 = call fastcc %struct.MD5_CTX* @get_md5_ctx(%struct.sv* %6) #5
+  %bytes_low = getelementptr inbounds %struct.MD5_CTX* %call11, i64 0, i32 5
+  %10 = load i32* %bytes_low, align 4, !tbaa !3
+  %and = and i32 %10, 63
+  %conv12 = zext i32 %and to i64
+  %11 = getelementptr inbounds [4096 x i8]* %buffer, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %11) #2
+  %tobool = icmp eq %struct._PerlIO** %9, null
+  br i1 %tobool, label %if.else40, label %if.then13
+
+if.then13:                                        ; preds = %if.end
+  %tobool14 = icmp eq i32 %and, 0
+  br i1 %tobool14, label %while.cond.preheader, label %if.then15
+
+if.then15:                                        ; preds = %if.then13
+  %sub = sub i64 64, %conv12
+  %call16 = call i64 @Perl_PerlIO_read(%struct._PerlIO** %9, i8* %11, i64 %sub) #4
+  %conv17 = trunc i64 %call16 to i32
+  %cmp18 = icmp sgt i32 %conv17, 0
+  br i1 %cmp18, label %if.then20, label %cleanup
+
+if.then20:                                        ; preds = %if.then15
+  %sext62 = shl i64 %call16, 32
+  %conv22 = ashr exact i64 %sext62, 32
+  call fastcc void @MD5Update(%struct.MD5_CTX* %call11, i8* %11, i64 %conv22) #5
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.then20, %if.then13
+  %call3063 = call i64 @Perl_PerlIO_read(%struct._PerlIO** %9, i8* %11, i64 4096) #4
+  %conv3164 = trunc i64 %call3063 to i32
+  %cmp3265 = icmp sgt i32 %conv3164, 0
+  br i1 %cmp3265, label %while.body, label %while.end
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %call3066 = phi i64 [ %call30, %while.body ], [ %call3063, %while.cond.preheader ]
+  %sext61 = shl i64 %call3066, 32
+  %conv35 = ashr exact i64 %sext61, 32
+  call fastcc void @MD5Update(%struct.MD5_CTX* %call11, i8* %11, i64 %conv35) #5
+  %call30 = call i64 @Perl_PerlIO_read(%struct._PerlIO** %9, i8* %11, i64 4096) #4
+  %conv31 = trunc i64 %call30 to i32
+  %cmp32 = icmp sgt i32 %conv31, 0
+  br i1 %cmp32, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  %call36 = call i32 @Perl_PerlIO_error(%struct._PerlIO** %9) #4
+  %tobool37 = icmp eq i32 %call36, 0
+  br i1 %tobool37, label %cleanup, label %if.then38
+
+if.then38:                                        ; preds = %while.end
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([31 x i8]* @.str5, i64 0, i64 0)) #4
+  br label %cleanup
+
+if.else40:                                        ; preds = %if.end
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([21 x i8]* @.str6, i64 0, i64 0)) #4
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.else40, %if.then38, %while.end, %if.then15
+  %.pn = load %struct.sv*** @PL_stack_base, align 8
+  %storemerge = getelementptr inbounds %struct.sv** %.pn, i64 %idxprom
+  store %struct.sv** %storemerge, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  call void @llvm.lifetime.end(i64 4096, i8* %11) #2
+  ret void
+}

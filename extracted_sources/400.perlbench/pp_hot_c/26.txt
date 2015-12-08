@@ -1,0 +1,40 @@
+STATIC void
+S_do_oddball(pTHX_ HV *hash, SV **relem, SV **firstrelem)
+{
+    if (*relem) {
+	SV *tmpstr;
+	if (ckWARN(WARN_MISC)) {
+	    if (relem == firstrelem &&
+		SvROK(*relem) &&
+		(SvTYPE(SvRV(*relem)) == SVt_PVAV ||
+		 SvTYPE(SvRV(*relem)) == SVt_PVHV))
+	    {
+		Perl_warner(aTHX_ packWARN(WARN_MISC),
+			    "Reference found where even-sized list expected");
+	    }
+	    else
+		Perl_warner(aTHX_ packWARN(WARN_MISC),
+			    "Odd number of elements in hash assignment");
+	}
+	if (SvTYPE(hash) == SVt_PVAV) {
+	    /* pseudohash */
+	    tmpstr = sv_newmortal();
+	    if (avhv_store_ent((AV*)hash,*relem,tmpstr,0))
+		(void)SvREFCNT_inc(tmpstr);
+	    if (SvMAGICAL(hash) && SvSMAGICAL(tmpstr))
+		mg_set(tmpstr);
+	}
+	else {
+	    HE *didstore;
+	    tmpstr = NEWSV(29,0);
+	    didstore = hv_store_ent(hash,*relem,tmpstr,0);
+	    if (SvMAGICAL(hash)) {
+		if (SvSMAGICAL(tmpstr))
+		    mg_set(tmpstr);
+		if (!didstore)
+		    sv_2mortal(tmpstr);
+	    }
+	}
+	TAINT_NOT;
+    }
+}

@@ -1,0 +1,27 @@
+IV
+PerlIOMmap_flush(pTHX_ PerlIO *f)
+{
+    PerlIOMmap *m = PerlIOSelf(f, PerlIOMmap);
+    PerlIOBuf *b = &m->base;
+    IV code = PerlIOBuf_flush(aTHX_ f);
+    /*
+     * Now we are "synced" at PerlIOBuf level
+     */
+    if (b->buf) {
+	if (m->len) {
+	    /*
+	     * Unmap the buffer
+	     */
+	    if (PerlIOMmap_unmap(aTHX_ f) != 0)
+		code = -1;
+	}
+	else {
+	    /*
+	     * We seem to have a PerlIOBuf buffer which was not mapped
+	     * remember it in case we need one later
+	     */
+	    m->bbuf = b->buf;
+	}
+    }
+    return code;
+}

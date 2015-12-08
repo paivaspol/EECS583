@@ -1,0 +1,32 @@
+define i32 @ETree_writeStats(%struct._ETree* %etree, %struct._IO_FILE* %fp) #0 {
+entry:
+  %cmp = icmp eq %struct._ETree* %etree, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str32, i64 0, i64 0), %struct._ETree* %etree, %struct._IO_FILE* %fp) #5
+  tail call void @exit(i32 -1) #8
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %nfront = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
+  %1 = load i32* %nfront, align 4, !tbaa !3
+  %nvtx = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 1
+  %2 = load i32* %nvtx, align 4, !tbaa !3
+  %call2 = tail call i32 @ETree_sizeOf(%struct._ETree* %etree) #5
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([63 x i8]* @.str33, i64 0, i64 0), i32 %1, i32 %2, i32 %call2) #5
+  %cmp4 = icmp slt i32 %call3, 0
+  br i1 %cmp4, label %if.then5, label %return
+
+if.then5:                                         ; preds = %if.end
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([72 x i8]* @.str34, i64 0, i64 0), %struct._ETree* %etree, %struct._IO_FILE* %fp, i32 %call3) #5
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then5
+  %retval.0 = phi i32 [ 0, %if.then5 ], [ 1, %if.end ]
+  ret i32 %retval.0
+}

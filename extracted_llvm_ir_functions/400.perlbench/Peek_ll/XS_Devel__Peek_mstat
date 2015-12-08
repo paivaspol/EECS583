@@ -1,0 +1,60 @@
+define void @XS_Devel__Peek_mstat(%struct.cv* nocapture %cv) #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !3
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %sub.ptr.div433 = lshr exact i64 %sub.ptr.sub3, 3
+  %conv5 = trunc i64 %sub.ptr.div433 to i32
+  %4 = icmp ugt i32 %conv5, 1
+  br i1 %4, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([54 x i8]* @.str8, i64 0, i64 0)) #2
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %cmp9 = icmp slt i32 %conv5, 1
+  %add = shl nsw i64 %idx.ext, 32
+  %sext34.pre = add i64 %add, 4294967296
+  %idx.ext24.pre = ashr exact i64 %sext34.pre, 32
+  br i1 %cmp9, label %if.end21, label %if.else
+
+if.else:                                          ; preds = %if.end
+  %5 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.sv** %5, i64 %idx.ext24.pre
+  %6 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %6, i64 0, i32 2
+  %7 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %7, 262144
+  %cmp13 = icmp eq i32 %and, 0
+  br i1 %cmp13, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.else
+  %sv_any = getelementptr inbounds %struct.sv* %6, i64 0, i32 0
+  %8 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %8 to i8**
+  %9 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %if.end21
+
+cond.false:                                       ; preds = %if.else
+  %call = tail call i8* @Perl_sv_2pv_nolen(%struct.sv* %6) #2
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.end, %cond.true, %cond.false
+  %str.0 = phi i8* [ %9, %cond.true ], [ %call, %cond.false ], [ getelementptr inbounds ([21 x i8]* @.str9, i64 0, i64 0), %if.end ]
+  %call22 = tail call %struct._PerlIO** @Perl_PerlIO_stderr() #2
+  %call23 = tail call i32 (%struct._PerlIO**, i8*, ...)* @PerlIO_printf(%struct._PerlIO** %call22, i8* getelementptr inbounds ([45 x i8]* @.str10, i64 0, i64 0), i8* %str.0) #2
+  %10 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %add.ptr25.sum = add i64 %idx.ext24.pre, -1
+  %add.ptr26 = getelementptr inbounds %struct.sv** %10, i64 %add.ptr25.sum
+  store %struct.sv** %add.ptr26, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  ret void
+}

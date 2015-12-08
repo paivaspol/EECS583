@@ -1,15 +1,18 @@
-int
-redirect_jump_1 (jump, nlabel)
-     rtx jump, nlabel;
+static int
+redirect_exp (olabel, nlabel, insn)
+     rtx olabel, nlabel;
+     rtx insn;
 {
-  int ochanges = num_validated_changes ();
   rtx *loc;
 
-  if (GET_CODE (PATTERN (jump)) == PARALLEL)
-    loc = &XVECEXP (PATTERN (jump), 0, 0);
+  if (GET_CODE (PATTERN (insn)) == PARALLEL)
+    loc = &XVECEXP (PATTERN (insn), 0, 0);
   else
-    loc = &PATTERN (jump);
+    loc = &PATTERN (insn);
 
-  redirect_exp_1 (loc, JUMP_LABEL (jump), nlabel, jump);
-  return num_validated_changes () > ochanges;
+  redirect_exp_1 (loc, olabel, nlabel, insn);
+  if (num_validated_changes () == 0)
+    return 0;
+
+  return apply_change_group ();
 }

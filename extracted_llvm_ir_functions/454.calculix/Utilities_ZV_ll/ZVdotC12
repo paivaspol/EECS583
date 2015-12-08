@@ -1,0 +1,61 @@
+define void @ZVdotC12(i32 %n, double* nocapture %y0, double* nocapture %x0, double* nocapture %x1, double* nocapture %sums) #0 {
+entry:
+  %cmp57 = icmp sgt i32 %n, 0
+  br i1 %cmp57, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv68 = phi i64 [ %indvars.iv.next69, %for.body ], [ 1, %entry ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %ii.062 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %i00.061 = phi double [ %add15, %for.body ], [ 0.000000e+00, %entry ]
+  %i01.060 = phi double [ %add23, %for.body ], [ 0.000000e+00, %entry ]
+  %r00.059 = phi double [ %add12, %for.body ], [ 0.000000e+00, %entry ]
+  %r01.058 = phi double [ %add19, %for.body ], [ 0.000000e+00, %entry ]
+  %arrayidx = getelementptr inbounds double* %y0, i64 %indvars.iv
+  %0 = load double* %arrayidx, align 8, !tbaa !0
+  %arrayidx2 = getelementptr inbounds double* %y0, i64 %indvars.iv68
+  %1 = load double* %arrayidx2, align 8, !tbaa !0
+  %arrayidx4 = getelementptr inbounds double* %x0, i64 %indvars.iv
+  %2 = load double* %arrayidx4, align 8, !tbaa !0
+  %arrayidx6 = getelementptr inbounds double* %x0, i64 %indvars.iv68
+  %3 = load double* %arrayidx6, align 8, !tbaa !0
+  %arrayidx8 = getelementptr inbounds double* %x1, i64 %indvars.iv
+  %4 = load double* %arrayidx8, align 8, !tbaa !0
+  %arrayidx10 = getelementptr inbounds double* %x1, i64 %indvars.iv68
+  %5 = load double* %arrayidx10, align 8, !tbaa !0
+  %mul = fmul double %0, %2
+  %mul11 = fmul double %1, %3
+  %add = fadd double %mul, %mul11
+  %add12 = fadd double %r00.059, %add
+  %mul13 = fmul double %0, %3
+  %mul14 = fmul double %1, %2
+  %sub = fsub double %mul13, %mul14
+  %add15 = fadd double %i00.061, %sub
+  %mul16 = fmul double %0, %4
+  %mul17 = fmul double %1, %5
+  %add18 = fadd double %mul16, %mul17
+  %add19 = fadd double %r01.058, %add18
+  %mul20 = fmul double %0, %5
+  %mul21 = fmul double %1, %4
+  %sub22 = fsub double %mul20, %mul21
+  %add23 = fadd double %i01.060, %sub22
+  %inc = add nsw i32 %ii.062, 1
+  %indvars.iv.next = add i64 %indvars.iv, 2
+  %indvars.iv.next69 = add i64 %indvars.iv68, 2
+  %exitcond = icmp eq i32 %inc, %n
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %i00.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add15, %for.body ]
+  %i01.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add23, %for.body ]
+  %r00.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add12, %for.body ]
+  %r01.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add19, %for.body ]
+  store double %r00.0.lcssa, double* %sums, align 8, !tbaa !0
+  %arrayidx27 = getelementptr inbounds double* %sums, i64 1
+  store double %i00.0.lcssa, double* %arrayidx27, align 8, !tbaa !0
+  %arrayidx28 = getelementptr inbounds double* %sums, i64 2
+  store double %r01.0.lcssa, double* %arrayidx28, align 8, !tbaa !0
+  %arrayidx29 = getelementptr inbounds double* %sums, i64 3
+  store double %i01.0.lcssa, double* %arrayidx29, align 8, !tbaa !0
+  ret void
+}

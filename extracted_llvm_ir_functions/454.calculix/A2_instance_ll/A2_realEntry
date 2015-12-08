@@ -1,0 +1,79 @@
+define void @A2_realEntry(%struct._A2* %mtx, i32 %irow, i32 %jcol, double* %pValue) #0 {
+entry:
+  %cmp = icmp eq %struct._A2* %mtx, null
+  %cmp1 = icmp eq double* %pValue, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str13, i64 0, i64 0), %struct._A2* %mtx, i32 %irow, i32 %jcol, double* %pValue) #3
+  tail call void @exit(i32 -1) #4
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0
+  %1 = load i32* %type, align 4, !tbaa !3
+  %cmp2 = icmp eq i32 %1, 1
+  br i1 %cmp2, label %if.end6, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([79 x i8]* @.str14, i64 0, i64 0), %struct._A2* %mtx, i32 %irow, i32 %jcol, double* %pValue, i32 %1) #3
+  tail call void @exit(i32 -1) #4
+  unreachable
+
+if.end6:                                          ; preds = %if.end
+  %entries = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 6
+  %3 = load double** %entries, align 8, !tbaa !0
+  %cmp7 = icmp eq double* %3, null
+  br i1 %cmp7, label %if.then8, label %if.end10
+
+if.then8:                                         ; preds = %if.end6
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call9 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([76 x i8]* @.str15, i64 0, i64 0), %struct._A2* %mtx, i32 %irow, i32 %jcol, double* %pValue) #3
+  tail call void @exit(i32 -1) #4
+  unreachable
+
+if.end10:                                         ; preds = %if.end6
+  %cmp11 = icmp sgt i32 %irow, -1
+  %n115.phi.trans.insert = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 1
+  %.pre = load i32* %n115.phi.trans.insert, align 4, !tbaa !3
+  %cmp13 = icmp sgt i32 %.pre, %irow
+  %or.cond65 = and i1 %cmp11, %cmp13
+  br i1 %or.cond65, label %if.end17, label %if.then14
+
+if.then14:                                        ; preds = %if.end10
+  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([75 x i8]* @.str16, i64 0, i64 0), %struct._A2* %mtx, i32 %irow, i32 %jcol, double* %pValue, i32 %irow, i32 %.pre) #3
+  tail call void @exit(i32 -1) #4
+  unreachable
+
+if.end17:                                         ; preds = %if.end10
+  %cmp18 = icmp sgt i32 %jcol, -1
+  %n222.phi.trans.insert = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2
+  %.pre64 = load i32* %n222.phi.trans.insert, align 4, !tbaa !3
+  %cmp20 = icmp sgt i32 %.pre64, %jcol
+  %or.cond66 = and i1 %cmp18, %cmp20
+  br i1 %or.cond66, label %if.end24, label %if.then21
+
+if.then21:                                        ; preds = %if.end17
+  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call23 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([75 x i8]* @.str17, i64 0, i64 0), %struct._A2* %mtx, i32 %irow, i32 %jcol, double* %pValue, i32 %jcol, i32 %.pre64) #3
+  tail call void @exit(i32 -1) #4
+  unreachable
+
+if.end24:                                         ; preds = %if.end17
+  %inc1 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 3
+  %7 = load i32* %inc1, align 4, !tbaa !3
+  %mul = mul nsw i32 %7, %irow
+  %inc2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4
+  %8 = load i32* %inc2, align 4, !tbaa !3
+  %mul25 = mul nsw i32 %8, %jcol
+  %add = add nsw i32 %mul25, %mul
+  %idxprom = sext i32 %add to i64
+  %arrayidx = getelementptr inbounds double* %3, i64 %idxprom
+  %9 = load double* %arrayidx, align 8, !tbaa !4
+  store double %9, double* %pValue, align 8, !tbaa !4
+  ret void
+}

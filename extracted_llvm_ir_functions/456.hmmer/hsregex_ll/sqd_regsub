@@ -1,0 +1,116 @@
+define void @sqd_regsub(%struct.sqd_regexp* %rp, i8* %source, i8* %dest) #0 {
+entry:
+  %cmp = icmp eq %struct.sqd_regexp* %rp, null
+  %cmp1 = icmp eq i8* %source, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq i8* %dest, null
+  %or.cond113 = or i1 %or.cond, %cmp3
+  br i1 %or.cond113, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @sqd_regerror(i8* getelementptr inbounds ([29 x i8]* @.str8, i64 0, i64 0)) #10
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %arraydecay = getelementptr inbounds %struct.sqd_regexp* %rp, i64 0, i32 6, i64 0
+  %0 = load i8* %arraydecay, align 1, !tbaa !1
+  %cmp4 = icmp eq i8 %0, -100
+  br i1 %cmp4, label %while.cond.outer, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  tail call void @sqd_regerror(i8* getelementptr inbounds ([15 x i8]* @.str9, i64 0, i64 0)) #10
+  unreachable
+
+while.cond:                                       ; preds = %land.lhs.true49, %if.else44, %while.cond.outer
+  %src.0 = phi i8* [ %src.0.ph, %while.cond.outer ], [ %src.1120, %if.else44 ], [ %src.1120, %land.lhs.true49 ]
+  %incdec.ptr = getelementptr inbounds i8* %src.0, i64 1
+  %1 = load i8* %src.0, align 1, !tbaa !1
+  switch i8 %1, label %if.end42 [
+    i8 0, label %return
+    i8 38, label %if.else44
+    i8 92, label %land.lhs.true
+  ]
+
+land.lhs.true:                                    ; preds = %while.cond
+  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %idxprom = sext i8 %2 to i64
+  %call = tail call i16** @__ctype_b_loc() #13
+  %3 = load i16** %call, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i16* %3, i64 %idxprom
+  %4 = load i16* %arrayidx, align 2, !tbaa !5
+  %and = and i16 %4, 2048
+  %tobool = icmp eq i16 %and, 0
+  br i1 %tobool, label %land.lhs.true32, label %if.end25
+
+if.end25:                                         ; preds = %land.lhs.true
+  %conv18 = sext i8 %2 to i32
+  %incdec.ptr21 = getelementptr inbounds i8* %src.0, i64 2
+  %sub = add nsw i32 %conv18, -48
+  %cmp26 = icmp slt i32 %sub, 0
+  br i1 %cmp26, label %if.end25.land.lhs.true32_crit_edge, label %if.else44
+
+if.end25.land.lhs.true32_crit_edge:               ; preds = %if.end25
+  %.pre = load i8* %incdec.ptr21, align 1, !tbaa !1
+  br label %land.lhs.true32
+
+land.lhs.true32:                                  ; preds = %if.end25.land.lhs.true32_crit_edge, %land.lhs.true
+  %5 = phi i8 [ %2, %land.lhs.true ], [ %.pre, %if.end25.land.lhs.true32_crit_edge ]
+  %src.1116122 = phi i8* [ %incdec.ptr, %land.lhs.true ], [ %incdec.ptr21, %if.end25.land.lhs.true32_crit_edge ]
+  switch i8 %5, label %if.end42 [
+    i8 92, label %if.then40
+    i8 38, label %if.then40
+  ]
+
+if.then40:                                        ; preds = %land.lhs.true32, %land.lhs.true32
+  %incdec.ptr41 = getelementptr inbounds i8* %src.1116122, i64 1
+  br label %if.end42
+
+if.end42:                                         ; preds = %while.cond, %land.lhs.true32, %if.then40
+  %c.0 = phi i8 [ %5, %if.then40 ], [ 92, %land.lhs.true32 ], [ %1, %while.cond ]
+  %src.2 = phi i8* [ %incdec.ptr41, %if.then40 ], [ %src.1116122, %land.lhs.true32 ], [ %incdec.ptr, %while.cond ]
+  %incdec.ptr43 = getelementptr inbounds i8* %dst.0.ph, i64 1
+  store i8 %c.0, i8* %dst.0.ph, align 1, !tbaa !1
+  br label %while.cond.outer
+
+while.cond.outer:                                 ; preds = %if.then63, %if.end42, %if.end
+  %dst.0.ph = phi i8* [ %dest, %if.end ], [ %incdec.ptr43, %if.end42 ], [ %add.ptr, %if.then63 ]
+  %src.0.ph = phi i8* [ %source, %if.end ], [ %src.2, %if.end42 ], [ %src.1120, %if.then63 ]
+  br label %while.cond
+
+if.else44:                                        ; preds = %while.cond, %if.end25
+  %src.1120 = phi i8* [ %incdec.ptr21, %if.end25 ], [ %incdec.ptr, %while.cond ]
+  %no.0119 = phi i32 [ %sub, %if.end25 ], [ 0, %while.cond ]
+  %idxprom45 = sext i32 %no.0119 to i64
+  %arrayidx46 = getelementptr inbounds %struct.sqd_regexp* %rp, i64 0, i32 0, i64 %idxprom45
+  %6 = load i8** %arrayidx46, align 8, !tbaa !0
+  %cmp47 = icmp eq i8* %6, null
+  br i1 %cmp47, label %while.cond, label %land.lhs.true49
+
+land.lhs.true49:                                  ; preds = %if.else44
+  %arrayidx51 = getelementptr inbounds %struct.sqd_regexp* %rp, i64 0, i32 1, i64 %idxprom45
+  %7 = load i8** %arrayidx51, align 8, !tbaa !0
+  %cmp52 = icmp ne i8* %7, null
+  %cmp61 = icmp ugt i8* %7, %6
+  %or.cond114 = and i1 %cmp52, %cmp61
+  br i1 %or.cond114, label %if.then63, label %while.cond
+
+if.then63:                                        ; preds = %land.lhs.true49
+  %sub.ptr.lhs.cast = ptrtoint i8* %7 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %6 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %call73 = tail call i8* @strncpy(i8* %dst.0.ph, i8* %6, i64 %sub.ptr.sub) #9
+  %add.ptr = getelementptr inbounds i8* %dst.0.ph, i64 %sub.ptr.sub
+  %add.ptr.sum = add i64 %sub.ptr.sub, -1
+  %add.ptr74 = getelementptr inbounds i8* %dst.0.ph, i64 %add.ptr.sum
+  %8 = load i8* %add.ptr74, align 1, !tbaa !1
+  %cmp76 = icmp eq i8 %8, 0
+  br i1 %cmp76, label %if.then78, label %while.cond.outer
+
+if.then78:                                        ; preds = %if.then63
+  tail call void @sqd_regerror(i8* getelementptr inbounds ([21 x i8]* @.str10, i64 0, i64 0)) #10
+  unreachable
+
+return:                                           ; preds = %while.cond
+  store i8 0, i8* %dst.0.ph, align 1, !tbaa !1
+  ret void
+}

@@ -1,47 +1,8 @@
-void
-Perl_op_free(pTHX_ OP *o)
+STATIC char*
+S_gv_ename(pTHX_ GV *gv)
 {
-    register OP *kid, *nextkid;
-    OPCODE type;
-    PADOFFSET refcnt;
-
-    if (!o || o->op_seq == (U16)-1)
-	return;
-
-    if (o->op_private & OPpREFCOUNTED) {
-	switch (o->op_type) {
-	case OP_LEAVESUB:
-	case OP_LEAVESUBLV:
-	case OP_LEAVEEVAL:
-	case OP_LEAVE:
-	case OP_SCOPE:
-	case OP_LEAVEWRITE:
-	    OP_REFCNT_LOCK;
-	    refcnt = OpREFCNT_dec(o);
-	    OP_REFCNT_UNLOCK;
-	    if (refcnt)
-		return;
-	    break;
-	default:
-	    break;
-	}
-    }
-
-    if (o->op_flags & OPf_KIDS) {
-	for (kid = cUNOPo->op_first; kid; kid = nextkid) {
-	    nextkid = kid->op_sibling; /* Get before next freeing kid */
-	    op_free(kid);
-	}
-    }
-    type = o->op_type;
-    if (type == OP_NULL)
-	type = (OPCODE)o->op_targ;
-
-    /* COP* is not cleared by op_clear() so that we may track line
-     * numbers etc even after null() */
-    if (type == OP_NEXTSTATE || type == OP_SETSTATE || type == OP_DBSTATE)
-	cop_free((COP*)o);
-
-    op_clear(o);
-    FreeOp(o);
+    STRLEN n_a;
+    SV* tmpsv = sv_newmortal();
+    gv_efullname3(tmpsv, gv, Nullch);
+    return SvPV(tmpsv,n_a);
 }

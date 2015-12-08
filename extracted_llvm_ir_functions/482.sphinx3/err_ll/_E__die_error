@@ -1,0 +1,16 @@
+define void @_E__die_error(i8* nocapture %fmt, ...) #3 {
+entry:
+  %pvar = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %pvar, i64 0, i64 0
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %pvar to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 @vfprintf(%struct._IO_FILE* %0, i8* %fmt, %struct.__va_list_tag* %arraydecay) #6
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call3 = call i32 @fflush(%struct._IO_FILE* %1) #6
+  call void @llvm.va_end(i8* %arraydecay1)
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call6 = call i32 @fflush(%struct._IO_FILE* %2) #6
+  call void @exit(i32 -1) #7
+  unreachable
+}

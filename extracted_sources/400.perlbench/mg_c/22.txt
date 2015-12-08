@@ -1,8 +1,8 @@
-int
-Perl_magic_setamagic(pTHX_ SV *sv, MAGIC *mg)
+void
+Perl_raise_signal(pTHX_ int sig)
 {
-    /* HV_badAMAGIC_on(Sv_STASH(sv)); */
-    PL_amagic_generation++;
-
-    return 0;
+    /* Set a flag to say this signal is pending */
+    PL_psig_pend[sig]++;
+    /* And one to say _a_ signal is pending */
+    PL_sig_pending = 1;
 }

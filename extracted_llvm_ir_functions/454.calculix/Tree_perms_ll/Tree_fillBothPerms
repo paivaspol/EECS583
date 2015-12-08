@@ -1,0 +1,43 @@
+define void @Tree_fillBothPerms(%struct._Tree* %tree, i32* %newToOld, i32* %oldToNew) #0 {
+entry:
+  %cmp = icmp eq %struct._Tree* %tree, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0
+  %0 = load i32* %n, align 4, !tbaa !0
+  %cmp1 = icmp slt i32 %0, 1
+  %cmp3 = icmp eq i32* %newToOld, null
+  %or.cond = or i1 %cmp1, %cmp3
+  %cmp5 = icmp eq i32* %oldToNew, null
+  %or.cond23 = or i1 %or.cond, %cmp5
+  br i1 %or.cond23, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([58 x i8]* @.str2, i64 0, i64 0), %struct._Tree* %tree, i32* %newToOld, i32* %oldToNew) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false
+  %call6 = tail call i32 @Tree_postOTfirst(%struct._Tree* %tree) #4
+  %cmp724 = icmp eq i32 %call6, -1
+  br i1 %cmp724, label %for.end, label %for.body
+
+for.body:                                         ; preds = %if.end, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.end ]
+  %v.026 = phi i32 [ %call10, %for.body ], [ %call6, %if.end ]
+  %arrayidx = getelementptr inbounds i32* %newToOld, i64 %indvars.iv
+  store i32 %v.026, i32* %arrayidx, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %idxprom8 = sext i32 %v.026 to i64
+  %arrayidx9 = getelementptr inbounds i32* %oldToNew, i64 %idxprom8
+  %2 = trunc i64 %indvars.iv to i32
+  store i32 %2, i32* %arrayidx9, align 4, !tbaa !0
+  %call10 = tail call i32 @Tree_postOTnext(%struct._Tree* %tree, i32 %v.026) #4
+  %cmp7 = icmp eq i32 %call10, -1
+  br i1 %cmp7, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %if.end
+  ret void
+}

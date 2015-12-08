@@ -1,0 +1,17 @@
+define %struct._Drand* @Drand_new() #0 {
+entry:
+  %call = tail call noalias i8* @malloc(i64 72) #3
+  %0 = bitcast i8* %call to %struct._Drand*
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 72, i32 21, i8* getelementptr inbounds ([79 x i8]* @.str1, i64 0, i64 0)) #3
+  tail call void @exit(i32 -1) #4
+  unreachable
+
+if.end:                                           ; preds = %entry
+  tail call void @Drand_setDefaultFields(%struct._Drand* %0) #5
+  ret %struct._Drand* %0
+}

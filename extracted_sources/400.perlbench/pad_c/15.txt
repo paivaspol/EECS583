@@ -1,0 +1,58 @@
+void
+Perl_pad_tidy(pTHX_ padtidy_type type)
+{
+    PADOFFSET ix;
+
+    ASSERT_CURPAD_ACTIVE("pad_tidy");
+    /* extend curpad to match namepad */
+    if (AvFILLp(PL_comppad_name) < AvFILLp(PL_comppad))
+	av_store(PL_comppad_name, AvFILLp(PL_comppad), Nullsv);
+
+    if (type == padtidy_SUBCLONE) {
+	SV **namep = AvARRAY(PL_comppad_name);
+	for (ix = AvFILLp(PL_comppad); ix > 0; ix--) {
+	    SV *namesv;
+
+	    if (SvIMMORTAL(PL_curpad[ix]) || IS_PADGV(PL_curpad[ix]) || IS_PADCONST(PL_curpad[ix]))
+		continue;
+	    /*
+	     * The only things that a clonable function needs in its
+	     * pad are references to outer lexicals and anonymous subs.
+	     * The rest are created anew during cloning.
+	     */
+	    if (!((namesv = namep[ix]) != Nullsv &&
+		  namesv != &PL_sv_undef &&
+		  (SvFAKE(namesv) ||
+		   *SvPVX(namesv) == '&')))
+	    {
+		SvREFCNT_dec(PL_curpad[ix]);
+		PL_curpad[ix] = Nullsv;
+	    }
+	}
+    }
+    else if (type == padtidy_SUB) {
+	/* XXX DAPM this same bit of code keeps appearing !!! Rationalise? */
+	AV *av = newAV();			/* Will be @_ */
+	av_extend(av, 0);
+	av_store(PL_comppad, 0, (SV*)av);
+	AvFLAGS(av) = AVf_REIFY;
+    }
+
+    /* XXX DAPM rationalise these two similar branches */
+
+    if (type == padtidy_SUB) {
+	for (ix = AvFILLp(PL_comppad); ix > 0; ix--) {
+	    if (SvIMMORTAL(PL_curpad[ix]) || IS_PADGV(PL_curpad[ix]) || IS_PADCONST(PL_curpad[ix]))
+		continue;
+	    if (!SvPADMY(PL_curpad[ix]))
+		SvPADTMP_on(PL_curpad[ix]);
+	}
+    }
+    else if (type == padtidy_FORMAT) {
+	for (ix = AvFILLp(PL_comppad); ix > 0; ix--) {
+	    if (!SvPADMY(PL_curpad[ix]) && !SvIMMORTAL(PL_curpad[ix]))
+		SvPADTMP_on(PL_curpad[ix]);
+	}
+    }
+    PL_curpad = AvARRAY(PL_comppad);
+}

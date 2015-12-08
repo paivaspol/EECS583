@@ -1,0 +1,46 @@
+define i32 @DV_writeToFormattedFile(%struct._DV* %dv, %struct._IO_FILE* %fp) #0 {
+entry:
+  %cmp = icmp eq %struct._DV* %dv, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  %size5.pre = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %0 = load i32* %size5.pre, align 4, !tbaa !3
+  %cmp4 = icmp slt i32 %0, 1
+  br i1 %cmp4, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry, %lor.lhs.false2
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([60 x i8]* @.str17, i64 0, i64 0), %struct._DV* %dv, %struct._IO_FILE* %fp) #5
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %3 = load i32* %size5.pre, align 4, !tbaa !3
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([16 x i8]* @.str18, i64 0, i64 0), i32 %3) #5
+  tail call void @exit(i32 -1) #8
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %call7 = tail call i32 @DV_size(%struct._DV* %dv) #5
+  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str19, i64 0, i64 0), i32 %call7) #5
+  %cmp9 = icmp slt i32 %call8, 0
+  br i1 %cmp9, label %if.then10, label %if.end12
+
+if.then10:                                        ; preds = %if.end
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call11 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([85 x i8]* @.str20, i64 0, i64 0), %struct._DV* %dv, %struct._IO_FILE* %fp, i32 %call8) #5
+  br label %return
+
+if.end12:                                         ; preds = %if.end
+  %cmp13 = icmp sgt i32 %call7, 0
+  br i1 %cmp13, label %if.then14, label %return
+
+if.then14:                                        ; preds = %if.end12
+  %call15 = tail call double* @DV_entries(%struct._DV* %dv) #5
+  tail call void @DVfprintf(%struct._IO_FILE* %fp, i32 %call7, double* %call15) #5
+  br label %return
+
+return:                                           ; preds = %if.end12, %if.then14, %if.then10
+  %retval.0 = phi i32 [ 0, %if.then10 ], [ 1, %if.then14 ], [ 1, %if.end12 ]
+  ret i32 %retval.0
+}

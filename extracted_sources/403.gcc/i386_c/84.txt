@@ -1,111 +1,29 @@
-static void
-ix86_compute_frame_layout (frame)
-     struct ix86_frame *frame;
+static int
+ix86_save_reg (regno, maybe_eh_return)
+     int regno;
+     int maybe_eh_return;
 {
-  HOST_WIDE_INT total_size;
-  int stack_alignment_needed = cfun->stack_alignment_needed / BITS_PER_UNIT;
-  int offset;
-  int preferred_alignment = cfun->preferred_stack_boundary / BITS_PER_UNIT;
-  HOST_WIDE_INT size = get_frame_size ();
+  if (regno == PIC_OFFSET_TABLE_REGNUM
+      && (current_function_uses_pic_offset_table
+	  || current_function_uses_const_pool
+	  || current_function_calls_eh_return))
+    return 1;
 
-  frame->nregs = ix86_nsaved_regs ();
-  total_size = size;
-
-  /* Skip return value and save base pointer.  */
-  offset = frame_pointer_needed ? UNITS_PER_WORD * 2 : UNITS_PER_WORD;
-
-  frame->hard_frame_pointer_offset = offset;
-
-  /* Do some sanity checking of stack_alignment_needed and
-     preferred_alignment, since i386 port is the only using those features
-     that may break easily.  */
-
-  if (size && !stack_alignment_needed)
-    abort ();
-  if (preferred_alignment < STACK_BOUNDARY / BITS_PER_UNIT)
-    abort ();
-  if (preferred_alignment > PREFERRED_STACK_BOUNDARY / BITS_PER_UNIT)
-    abort ();
-  if (stack_alignment_needed > PREFERRED_STACK_BOUNDARY / BITS_PER_UNIT)
-    abort ();
-
-  if (stack_alignment_needed < STACK_BOUNDARY / BITS_PER_UNIT)
-    stack_alignment_needed = STACK_BOUNDARY / BITS_PER_UNIT;
-
-  /* Register save area */
-  offset += frame->nregs * UNITS_PER_WORD;
-
-  /* Va-arg area */
-  if (ix86_save_varrargs_registers)
+  if (current_function_calls_eh_return && maybe_eh_return)
     {
-      offset += X86_64_VARARGS_SIZE;
-      frame->va_arg_size = X86_64_VARARGS_SIZE;
+      unsigned i;
+      for (i = 0; ; i++)
+	{
+	  unsigned test = EH_RETURN_DATA_REGNO (i);
+	  if (test == INVALID_REGNUM)
+	    break;
+	  if (test == (unsigned) regno)
+	    return 1;
+	}
     }
-  else
-    frame->va_arg_size = 0;
 
-  /* Align start of frame for local function.  */
-  frame->padding1 = ((offset + stack_alignment_needed - 1)
-		     & -stack_alignment_needed) - offset;
-
-  offset += frame->padding1;
-
-  /* Frame pointer points here.  */
-  frame->frame_pointer_offset = offset;
-
-  offset += size;
-
-  /* Add outgoing arguments area.  Can be skipped if we eliminated
-     all the function calls as dead code.  */
-  if (ACCUMULATE_OUTGOING_ARGS && !current_function_is_leaf)
-    {
-      offset += current_function_outgoing_args_size;
-      frame->outgoing_arguments_size = current_function_outgoing_args_size;
-    }
-  else
-    frame->outgoing_arguments_size = 0;
-
-  /* Align stack boundary.  Only needed if we're calling another function
-     or using alloca.  */
-  if (!current_function_is_leaf || current_function_calls_alloca)
-    frame->padding2 = ((offset + preferred_alignment - 1)
-		       & -preferred_alignment) - offset;
-  else
-    frame->padding2 = 0;
-
-  offset += frame->padding2;
-
-  /* We've reached end of stack frame.  */
-  frame->stack_pointer_offset = offset;
-
-  /* Size prologue needs to allocate.  */
-  frame->to_allocate =
-    (size + frame->padding1 + frame->padding2
-     + frame->outgoing_arguments_size + frame->va_arg_size);
-
-  if (TARGET_64BIT && TARGET_RED_ZONE && current_function_sp_is_unchanging
-      && current_function_is_leaf)
-    {
-      frame->red_zone_size = frame->to_allocate;
-      if (frame->red_zone_size > RED_ZONE_SIZE - RED_ZONE_RESERVE)
-	frame->red_zone_size = RED_ZONE_SIZE - RED_ZONE_RESERVE;
-    }
-  else
-    frame->red_zone_size = 0;
-  frame->to_allocate -= frame->red_zone_size;
-  frame->stack_pointer_offset -= frame->red_zone_size;
-#if 0
-  fprintf (stderr, "nregs: %i\n", frame->nregs);
-  fprintf (stderr, "size: %i\n", size);
-  fprintf (stderr, "alignment1: %i\n", stack_alignment_needed);
-  fprintf (stderr, "padding1: %i\n", frame->padding1);
-  fprintf (stderr, "va_arg: %i\n", frame->va_arg_size);
-  fprintf (stderr, "padding2: %i\n", frame->padding2);
-  fprintf (stderr, "to_allocate: %i\n", frame->to_allocate);
-  fprintf (stderr, "red_zone_size: %i\n", frame->red_zone_size);
-  fprintf (stderr, "frame_pointer_offset: %i\n", frame->frame_pointer_offset);
-  fprintf (stderr, "hard_frame_pointer_offset: %i\n",
-	   frame->hard_frame_pointer_offset);
-  fprintf (stderr, "stack_pointer_offset: %i\n", frame->stack_pointer_offset);
-#endif
+  return (regs_ever_live[regno]
+	  && !call_used_regs[regno]
+	  && !fixed_regs[regno]
+	  && (regno != HARD_FRAME_POINTER_REGNUM || !frame_pointer_needed));
 }

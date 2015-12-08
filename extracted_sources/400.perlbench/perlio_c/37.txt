@@ -1,5 +1,24 @@
-void
-PerlIOStdio_clearerr(pTHX_ PerlIO *f)
+static PerlIO_funcs *
+PerlIO_layer_from_ref(pTHX_ SV *sv)
 {
-    PerlSIO_clearerr(PerlIOSelf(f, PerlIOStdio)->stdio);
+    /*
+     * For any scalar type load the handler which is bundled with perl
+     */
+    if (SvTYPE(sv) < SVt_PVAV)
+	return PerlIO_find_layer(aTHX_ "scalar", 6, 1);
+
+    /*
+     * For other types allow if layer is known but don't try and load it
+     */
+    switch (SvTYPE(sv)) {
+    case SVt_PVAV:
+	return PerlIO_find_layer(aTHX_ "Array", 5, 0);
+    case SVt_PVHV:
+	return PerlIO_find_layer(aTHX_ "Hash", 4, 0);
+    case SVt_PVCV:
+	return PerlIO_find_layer(aTHX_ "Code", 4, 0);
+    case SVt_PVGV:
+	return PerlIO_find_layer(aTHX_ "Glob", 4, 0);
+    }
+    return NULL;
 }

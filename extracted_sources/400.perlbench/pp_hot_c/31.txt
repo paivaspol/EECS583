@@ -1,0 +1,20 @@
+PP(pp_enter)
+{
+    dSP;
+    register PERL_CONTEXT *cx;
+    I32 gimme = OP_GIMME(PL_op, -1);
+
+    if (gimme == -1) {
+	if (cxstack_ix >= 0)
+	    gimme = cxstack[cxstack_ix].blk_gimme;
+	else
+	    gimme = G_SCALAR;
+    }
+
+    ENTER;
+
+    SAVETMPS;
+    PUSHBLOCK(cx, CXt_BLOCK, SP);
+
+    RETURN;
+}

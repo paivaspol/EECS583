@@ -1,6 +1,13 @@
 void
-assemble_label (name)
-     const char *name;
+assemble_external_libcall (fun)
+     rtx fun ATTRIBUTE_UNUSED;
 {
-  ASM_OUTPUT_LABEL (asm_out_file, name);
+#ifdef ASM_OUTPUT_EXTERNAL_LIBCALL
+  /* Declare library function name external when first used, if nec.  */
+  if (! SYMBOL_REF_USED (fun))
+    {
+      SYMBOL_REF_USED (fun) = 1;
+      ASM_OUTPUT_EXTERNAL_LIBCALL (asm_out_file, fun);
+    }
+#endif
 }

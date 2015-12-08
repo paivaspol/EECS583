@@ -1,0 +1,47 @@
+I32
+Perl_sv_cmp_locale(pTHX_ register SV *sv1, register SV *sv2)
+{
+#ifdef USE_LOCALE_COLLATE
+
+    char *pv1, *pv2;
+    STRLEN len1, len2;
+    I32 retval;
+
+    if (PL_collation_standard)
+	goto raw_compare;
+
+    len1 = 0;
+    pv1 = sv1 ? sv_collxfrm(sv1, &len1) : (char *) NULL;
+    len2 = 0;
+    pv2 = sv2 ? sv_collxfrm(sv2, &len2) : (char *) NULL;
+
+    if (!pv1 || !len1) {
+	if (pv2 && len2)
+	    return -1;
+	else
+	    goto raw_compare;
+    }
+    else {
+	if (!pv2 || !len2)
+	    return 1;
+    }
+
+    retval = memcmp((void*)pv1, (void*)pv2, len1 < len2 ? len1 : len2);
+
+    if (retval)
+	return retval < 0 ? -1 : 1;
+
+    /*
+     * When the result of collation is equality, that doesn't mean
+     * that there are no differences -- some locales exclude some
+     * characters from consideration.  So to avoid false equalities,
+     * we use the raw string as a tiebreaker.
+     */
+
+  raw_compare:
+    /* FALL THROUGH */
+
+#endif /* USE_LOCALE_COLLATE */
+
+    return sv_cmp(sv1, sv2);
+}

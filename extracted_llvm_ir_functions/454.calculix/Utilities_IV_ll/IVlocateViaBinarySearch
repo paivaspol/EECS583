@@ -1,0 +1,56 @@
+define i32 @IVlocateViaBinarySearch(i32 %size, i32* %ivec, i32 %target) #5 {
+entry:
+  %cmp = icmp slt i32 %size, 1
+  %cmp1 = icmp eq i32* %ivec, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %sub = add nsw i32 %size, -1
+  %0 = load i32* %ivec, align 4, !tbaa !3
+  %cmp2 = icmp sgt i32 %0, %target
+  br i1 %cmp2, label %return, label %lor.lhs.false3
+
+lor.lhs.false3:                                   ; preds = %if.end
+  %idxprom4 = sext i32 %sub to i64
+  %arrayidx5 = getelementptr inbounds i32* %ivec, i64 %idxprom4
+  %1 = load i32* %arrayidx5, align 4, !tbaa !3
+  %cmp6 = icmp slt i32 %1, %target
+  br i1 %cmp6, label %return, label %if.else
+
+if.else:                                          ; preds = %lor.lhs.false3
+  %cmp10 = icmp eq i32 %0, %target
+  br i1 %cmp10, label %return, label %if.else12
+
+if.else12:                                        ; preds = %if.else
+  %cmp15 = icmp eq i32 %1, %target
+  br i1 %cmp15, label %return, label %while.cond.outer
+
+while.cond.outer:                                 ; preds = %if.else12, %if.else24
+  %left.0.ph = phi i32 [ %div, %if.else24 ], [ 0, %if.else12 ]
+  %right.0.ph = phi i32 [ %right.0, %if.else24 ], [ %sub, %if.else12 ]
+  %add = add nsw i32 %left.0.ph, 1
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.outer, %while.body
+  %right.0 = phi i32 [ %div, %while.body ], [ %right.0.ph, %while.cond.outer ]
+  %cmp18 = icmp sgt i32 %right.0, %add
+  br i1 %cmp18, label %while.body, label %return
+
+while.body:                                       ; preds = %while.cond
+  %add19 = add nsw i32 %right.0, %left.0.ph
+  %div = sdiv i32 %add19, 2
+  %idxprom20 = sext i32 %div to i64
+  %arrayidx21 = getelementptr inbounds i32* %ivec, i64 %idxprom20
+  %2 = load i32* %arrayidx21, align 4, !tbaa !3
+  %cmp22 = icmp sgt i32 %2, %target
+  br i1 %cmp22, label %while.cond, label %if.else24
+
+if.else24:                                        ; preds = %while.body
+  %cmp27 = icmp slt i32 %2, %target
+  br i1 %cmp27, label %while.cond.outer, label %return
+
+return:                                           ; preds = %while.cond, %if.else24, %if.else12, %if.else, %if.end, %lor.lhs.false3, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ -1, %lor.lhs.false3 ], [ -1, %if.end ], [ 0, %if.else ], [ %sub, %if.else12 ], [ -1, %while.cond ], [ %div, %if.else24 ]
+  ret i32 %retval.0
+}

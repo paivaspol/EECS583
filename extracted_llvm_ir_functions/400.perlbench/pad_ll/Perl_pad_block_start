@@ -1,0 +1,36 @@
+define void @Perl_pad_block_start(i32 %full) #0 {
+entry:
+  tail call void @Perl_save_I32(i32* @PL_comppad_name_floor) #3
+  %0 = load %struct.av** @PL_comppad_name, align 8, !tbaa !3
+  %sv_any = getelementptr inbounds %struct.av* %0, i64 0, i32 0
+  %1 = load %struct.xpvav** %sv_any, align 8, !tbaa !3
+  %xav_fill = getelementptr inbounds %struct.xpvav* %1, i64 0, i32 1
+  %2 = load i64* %xav_fill, align 8, !tbaa !4
+  %conv = trunc i64 %2 to i32
+  store i32 %conv, i32* @PL_comppad_name_floor, align 4, !tbaa !0
+  %tobool = icmp eq i32 %full, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  store i32 %conv, i32* @PL_comppad_name_fill, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %cmp = icmp slt i32 %conv, 0
+  br i1 %cmp, label %if.then2, label %if.end3
+
+if.then2:                                         ; preds = %if.end
+  store i32 0, i32* @PL_comppad_name_floor, align 4, !tbaa !0
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.then2, %if.end
+  tail call void @Perl_save_I32(i32* @PL_min_intro_pending) #3
+  tail call void @Perl_save_I32(i32* @PL_max_intro_pending) #3
+  store i32 0, i32* @PL_min_intro_pending, align 4, !tbaa !0
+  tail call void @Perl_save_I32(i32* @PL_comppad_name_fill) #3
+  tail call void @Perl_save_I32(i32* @PL_padix_floor) #3
+  %3 = load i32* @PL_padix, align 4, !tbaa !0
+  store i32 %3, i32* @PL_padix_floor, align 4, !tbaa !0
+  store i32 0, i32* @PL_pad_reset_pending, align 4, !tbaa !0
+  ret void
+}

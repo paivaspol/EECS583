@@ -1,0 +1,16 @@
+static int
+sjlj_size_of_call_site_table ()
+{
+  int n = cfun->eh->call_site_data_used;
+  int size = 0;
+  int i;
+
+  for (i = 0; i < n; ++i)
+    {
+      struct call_site_record *cs = &cfun->eh->call_site_data[i];
+      size += size_of_uleb128 (INTVAL (cs->landing_pad));
+      size += size_of_uleb128 (cs->action);
+    }
+
+  return size;
+}

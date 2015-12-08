@@ -1,0 +1,32 @@
+define i32 @Perl_ibcmp(i8* nocapture %s1, i8* nocapture %s2, i32 %len) #5 {
+entry:
+  %tobool13 = icmp eq i32 %len, 0
+  br i1 %tobool13, label %return, label %while.body
+
+while.body:                                       ; preds = %entry, %if.end
+  %dec16.in = phi i32 [ %dec16, %if.end ], [ %len, %entry ]
+  %b.015 = phi i8* [ %incdec.ptr7, %if.end ], [ %s2, %entry ]
+  %a.014 = phi i8* [ %incdec.ptr, %if.end ], [ %s1, %entry ]
+  %dec16 = add nsw i32 %dec16.in, -1
+  %0 = load i8* %a.014, align 1, !tbaa !0
+  %1 = load i8* %b.015, align 1, !tbaa !0
+  %cmp = icmp eq i8 %0, %1
+  br i1 %cmp, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %while.body
+  %idxprom = zext i8 %1 to i64
+  %arrayidx = getelementptr inbounds [0 x i8]* @PL_fold, i64 0, i64 %idxprom
+  %2 = load i8* %arrayidx, align 1, !tbaa !0
+  %cmp5 = icmp eq i8 %0, %2
+  br i1 %cmp5, label %if.end, label %return
+
+if.end:                                           ; preds = %land.lhs.true, %while.body
+  %incdec.ptr = getelementptr inbounds i8* %a.014, i64 1
+  %incdec.ptr7 = getelementptr inbounds i8* %b.015, i64 1
+  %tobool = icmp eq i32 %dec16, 0
+  br i1 %tobool, label %return, label %while.body
+
+return:                                           ; preds = %if.end, %land.lhs.true, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %land.lhs.true ], [ 0, %if.end ]
+  ret i32 %retval.0
+}

@@ -1,75 +1,33 @@
 int
-Perl_magic_setenv(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_regdatum_get(pTHX_ SV *sv, MAGIC *mg)
 {
-    register char *s;
-    char *ptr;
-    STRLEN len, klen;
+    register I32 paren;
+    register I32 s;
+    register I32 i;
+    register REGEXP *rx;
+    I32 t;
 
-    s = SvPV(sv,len);
-    ptr = MgPV(mg,klen);
-    my_setenv(ptr, s);
+    if (PL_curpm && (rx = PM_GETRE(PL_curpm))) {
+	paren = mg->mg_len;
+	if (paren < 0)
+	    return 0;
+	if (paren <= (I32)rx->nparens &&
+	    (s = rx->startp[paren]) != -1 &&
+	    (t = rx->endp[paren]) != -1)
+	    {
+		if (mg->mg_obj)		/* @+ */
+		    i = t;
+		else			/* @- */
+		    i = s;
 
-#ifdef DYNAMIC_ENV_FETCH
-     /* We just undefd an environment var.  Is a replacement */
-     /* waiting in the wings? */
-    if (!len) {
-	SV **valp;
-	if ((valp = hv_fetch(GvHVn(PL_envgv), ptr, klen, FALSE)))
-	    s = SvPV(*valp, len);
-    }
-#endif
-
-#if !defined(OS2) && !defined(AMIGAOS) && !defined(WIN32) && !defined(MSDOS)
-			    /* And you'll never guess what the dog had */
-			    /*   in its mouth... */
-    if (PL_tainting) {
-	MgTAINTEDDIR_off(mg);
-#ifdef VMS
-	if (s && klen == 8 && strEQ(ptr, "DCL$PATH")) {
-	    char pathbuf[256], eltbuf[256], *cp, *elt = s;
-	    Stat_t sbuf;
-	    int i = 0, j = 0;
-
-	    do {          /* DCL$PATH may be a search list */
-		while (1) {   /* as may dev portion of any element */
-		    if ( ((cp = strchr(elt,'[')) || (cp = strchr(elt,'<'))) ) {
-			if ( *(cp+1) == '.' || *(cp+1) == '-' ||
-			     cando_by_name(S_IWUSR,0,elt) ) {
-			    MgTAINTEDDIR_on(mg);
-			    return 0;
-			}
-		    }
-		    if ((cp = strchr(elt, ':')) != Nullch)
-			*cp = '\0';
-		    if (my_trnlnm(elt, eltbuf, j++))
-			elt = eltbuf;
-		    else
-			break;
+		if (i > 0 && RX_MATCH_UTF8(rx)) {
+		    char *b = rx->subbeg;
+		    if (b)
+		        i = Perl_utf8_length(aTHX_ (U8*)b, (U8*)(b+i));
 		}
-		j = 0;
-	    } while (my_trnlnm(s, pathbuf, i++) && (elt = pathbuf));
-	}
-#endif /* VMS */
-	if (s && klen == 4 && strEQ(ptr,"PATH")) {
-	    char *strend = s + len;
 
-	    while (s < strend) {
-		char tmpbuf[256];
-		Stat_t st;
-		I32 i;
-		s = delimcpy(tmpbuf, tmpbuf + sizeof tmpbuf,
-			     s, strend, ':', &i);
-		s++;
-		if (i >= sizeof tmpbuf   /* too long -- assume the worst */
-		      || *tmpbuf != '/'
-		      || (PerlLIO_stat(tmpbuf, &st) == 0 && (st.st_mode & 2)) ) {
-		    MgTAINTEDDIR_on(mg);
-		    return 0;
-		}
+		sv_setiv(sv, i);
 	    }
-	}
     }
-#endif /* neither OS2 nor AMIGAOS nor WIN32 nor MSDOS */
-
     return 0;
 }

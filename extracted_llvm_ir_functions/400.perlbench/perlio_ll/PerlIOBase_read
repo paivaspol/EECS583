@@ -1,0 +1,80 @@
+define i64 @PerlIOBase_read(%struct._PerlIO** %f, i8* %vbuf, i64 %count) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %1 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %1, 1024
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %if.then2, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.then
+  %cmp55 = icmp eq i64 %count, 0
+  br i1 %cmp55, label %while.end, label %while.body
+
+if.then2:                                         ; preds = %if.then
+  %or = or i32 %1, 2048
+  store i32 %or, i32* %flags, align 4, !tbaa !0
+  %call = tail call i32* @__errno_location() #9
+  store i32 9, i32* %call, align 4, !tbaa !0
+  br label %return
+
+while.body:                                       ; preds = %if.then23, %while.cond.preheader, %while.cond.backedge
+  %buf.057 = phi i8* [ %buf.1, %while.cond.backedge ], [ %vbuf, %while.cond.preheader ], [ %buf.1, %if.then23 ]
+  %count.addr.056 = phi i64 [ %count.addr.1, %while.cond.backedge ], [ %count, %while.cond.preheader ], [ %count.addr.1, %if.then23 ]
+  %call4 = tail call i32 @Perl_PerlIO_get_cnt(%struct._PerlIO** %f) #10
+  %conv = sext i32 %call4 to i64
+  %cmp5 = icmp sgt i32 %call4, 0
+  br i1 %cmp5, label %if.end10, label %if.end18
+
+if.end10:                                         ; preds = %while.body
+  %cmp8 = icmp slt i64 %count.addr.056, %conv
+  %cond = select i1 %cmp8, i64 %count.addr.056, i64 %conv
+  %cmp11 = icmp sgt i64 %cond, 0
+  br i1 %cmp11, label %if.then13, label %if.end18
+
+if.then13:                                        ; preds = %if.end10
+  %call14 = tail call i8* @Perl_PerlIO_get_ptr(%struct._PerlIO** %f) #10
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %buf.057, i8* %call14, i64 %cond, i32 1, i1 false)
+  %add.ptr = getelementptr inbounds i8* %call14, i64 %cond
+  %sub = sub nsw i64 %conv, %cond
+  %conv15 = trunc i64 %sub to i32
+  tail call void @Perl_PerlIO_set_ptrcnt(%struct._PerlIO** %f, i8* %add.ptr, i32 %conv15) #10
+  %sub16 = sub i64 %count.addr.056, %cond
+  %add.ptr17 = getelementptr inbounds i8* %buf.057, i64 %cond
+  br label %if.end18
+
+if.end18:                                         ; preds = %while.body, %if.then13, %if.end10
+  %count.addr.1 = phi i64 [ %sub16, %if.then13 ], [ %count.addr.056, %if.end10 ], [ %count.addr.056, %while.body ]
+  %buf.1 = phi i8* [ %add.ptr17, %if.then13 ], [ %buf.057, %if.end10 ], [ %buf.057, %while.body ]
+  %avail.0 = phi i64 [ %sub, %if.then13 ], [ %conv, %if.end10 ], [ %conv, %while.body ]
+  %cmp19 = icmp ne i64 %count.addr.1, 0
+  %cmp21 = icmp slt i64 %avail.0, 1
+  %or.cond = and i1 %cmp19, %cmp21
+  br i1 %or.cond, label %if.then23, label %while.cond.backedge
+
+if.then23:                                        ; preds = %if.end18
+  %call24 = tail call i32 @Perl_PerlIO_fill(%struct._PerlIO** %f) #10
+  %cmp25 = icmp ne i32 %call24, 0
+  %cmp = icmp eq i64 %count.addr.1, 0
+  %or.cond59 = or i1 %cmp25, %cmp
+  br i1 %or.cond59, label %while.end, label %while.body
+
+while.cond.backedge:                              ; preds = %if.end18
+  %cmp.old = icmp eq i64 %count.addr.1, 0
+  br i1 %cmp.old, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.then23, %while.cond.backedge, %while.cond.preheader
+  %buf.2 = phi i8* [ %vbuf, %while.cond.preheader ], [ %buf.1, %if.then23 ], [ %buf.1, %while.cond.backedge ]
+  %sub.ptr.lhs.cast = ptrtoint i8* %buf.2 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %vbuf to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  br label %return
+
+return:                                           ; preds = %entry, %while.end, %if.then2
+  %retval.0 = phi i64 [ %sub.ptr.sub, %while.end ], [ 0, %if.then2 ], [ 0, %entry ]
+  ret i64 %retval.0
+}

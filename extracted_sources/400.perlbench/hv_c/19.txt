@@ -1,0 +1,78 @@
+void
+Perl_hv_ksplit(pTHX_ HV *hv, IV newmax)
+{
+    register XPVHV* xhv = (XPVHV*)SvANY(hv);
+    I32 oldsize = (I32) xhv->xhv_max+1; /* HvMAX(hv)+1 (sick) */
+    register I32 newsize;
+    register I32 i;
+    register I32 j;
+    register char *a;
+    register HE **aep;
+    register HE *entry;
+    register HE **oentry;
+
+    newsize = (I32) newmax;			/* possible truncation here */
+    if (newsize != newmax || newmax <= oldsize)
+	return;
+    while ((newsize & (1 + ~newsize)) != newsize) {
+	newsize &= ~(newsize & (1 + ~newsize));	/* get proper power of 2 */
+    }
+    if (newsize < newmax)
+	newsize *= 2;
+    if (newsize < newmax)
+	return;					/* overflow detection */
+
+    a = xhv->xhv_array; /* HvARRAY(hv) */
+    if (a) {
+	PL_nomemok = TRUE;
+#if defined(STRANGE_MALLOC) || defined(MYMALLOC)
+	Renew(a, PERL_HV_ARRAY_ALLOC_BYTES(newsize), char);
+	if (!a) {
+	  PL_nomemok = FALSE;
+	  return;
+	}
+#else
+	New(2, a, PERL_HV_ARRAY_ALLOC_BYTES(newsize), char);
+	if (!a) {
+	  PL_nomemok = FALSE;
+	  return;
+	}
+	Copy(xhv->xhv_array /* HvARRAY(hv) */, a, oldsize * sizeof(HE*), char);
+	if (oldsize >= 64) {
+	    offer_nice_chunk(xhv->xhv_array /* HvARRAY(hv) */,
+			    PERL_HV_ARRAY_ALLOC_BYTES(oldsize));
+	}
+	else
+	    Safefree(xhv->xhv_array /* HvARRAY(hv) */);
+#endif
+	PL_nomemok = FALSE;
+	Zero(&a[oldsize * sizeof(HE*)], (newsize-oldsize) * sizeof(HE*), char); /* zero 2nd half*/
+    }
+    else {
+	Newz(0, a, PERL_HV_ARRAY_ALLOC_BYTES(newsize), char);
+    }
+    xhv->xhv_max = --newsize; 	/* HvMAX(hv) = --newsize */
+    xhv->xhv_array = a; 	/* HvARRAY(hv) = a */
+    if (!xhv->xhv_fill /* !HvFILL(hv) */)	/* skip rest if no entries */
+	return;
+
+    aep = (HE**)a;
+    for (i=0; i<oldsize; i++,aep++) {
+	if (!*aep)				/* non-existent */
+	    continue;
+	for (oentry = aep, entry = *aep; entry; entry = *oentry) {
+	    if ((j = (HeHASH(entry) & newsize)) != i) {
+		j -= i;
+		*oentry = HeNEXT(entry);
+		if (!(HeNEXT(entry) = aep[j]))
+		    xhv->xhv_fill++; /* HvFILL(hv)++ */
+		aep[j] = entry;
+		continue;
+	    }
+	    else
+		oentry = &HeNEXT(entry);
+	}
+	if (!*aep)				/* everything moved */
+	    xhv->xhv_fill--; /* HvFILL(hv)-- */
+    }
+}

@@ -1,6 +1,12 @@
-void
-Perl_sv_setpvn_mg(pTHX_ register SV *sv, register const char *ptr, register STRLEN len)
+STATIC XPV*
+S_new_xpv(pTHX)
 {
-    sv_setpvn(sv,ptr,len);
-    SvSETMAGIC(sv);
+    XPV* xpv;
+    LOCK_SV_MUTEX;
+    if (!PL_xpv_root)
+	more_xpv();
+    xpv = PL_xpv_root;
+    PL_xpv_root = (XPV*)xpv->xpv_pv;
+    UNLOCK_SV_MUTEX;
+    return xpv;
 }

@@ -1,33 +1,20 @@
 int
-Perl_magic_regdatum_get(pTHX_ SV *sv, MAGIC *mg)
+Perl_mg_clear(pTHX_ SV *sv)
 {
-    register I32 paren;
-    register I32 s;
-    register I32 i;
-    register REGEXP *rx;
-    I32 t;
+    I32 mgs_ix;
+    MAGIC* mg;
 
-    if (PL_curpm && (rx = PM_GETRE(PL_curpm))) {
-	paren = mg->mg_len;
-	if (paren < 0)
-	    return 0;
-	if (paren <= (I32)rx->nparens &&
-	    (s = rx->startp[paren]) != -1 &&
-	    (t = rx->endp[paren]) != -1)
-	    {
-		if (mg->mg_obj)		/* @+ */
-		    i = t;
-		else			/* @- */
-		    i = s;
+    mgs_ix = SSNEW(sizeof(MGS));
+    save_magic(mgs_ix, sv);
 
-		if (i > 0 && RX_MATCH_UTF8(rx)) {
-		    char *b = rx->subbeg;
-		    if (b)
-		        i = Perl_utf8_length(aTHX_ (U8*)b, (U8*)(b+i));
-		}
+    for (mg = SvMAGIC(sv); mg; mg = mg->mg_moremagic) {
+	MGVTBL* vtbl = mg->mg_virtual;
+	/* omit GSKIP -- never set here */
 
-		sv_setiv(sv, i);
-	    }
+	if (vtbl && vtbl->svt_clear)
+	    CALL_FPTR(vtbl->svt_clear)(aTHX_ sv, mg);
     }
+
+    restore_magic(aTHX_ INT2PTR(void*, (IV)mgs_ix));
     return 0;
 }

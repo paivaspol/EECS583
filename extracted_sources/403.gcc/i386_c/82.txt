@@ -1,29 +1,25 @@
-static int
-ix86_save_reg (regno, maybe_eh_return)
-     int regno;
-     int maybe_eh_return;
+void
+load_pic_register ()
 {
-  if (regno == PIC_OFFSET_TABLE_REGNUM
-      && (current_function_uses_pic_offset_table
-	  || current_function_uses_const_pool
-	  || current_function_calls_eh_return))
-    return 1;
+  rtx gotsym, pclab;
 
-  if (current_function_calls_eh_return && maybe_eh_return)
+  if (TARGET_64BIT)
+    abort ();
+
+  gotsym = gen_rtx_SYMBOL_REF (Pmode, "_GLOBAL_OFFSET_TABLE_");
+
+  if (TARGET_DEEP_BRANCH_PREDICTION)
     {
-      unsigned i;
-      for (i = 0; ; i++)
-	{
-	  unsigned test = EH_RETURN_DATA_REGNO (i);
-	  if (test == INVALID_REGNUM)
-	    break;
-	  if (test == (unsigned) regno)
-	    return 1;
-	}
+      if (! pic_label_name[0])
+	ASM_GENERATE_INTERNAL_LABEL (pic_label_name, "LPR", 0);
+      pclab = gen_rtx_MEM (QImode, gen_rtx_SYMBOL_REF (Pmode, pic_label_name));
+    }
+  else
+    {
+      pclab = gen_rtx_LABEL_REF (VOIDmode, gen_label_rtx ());
     }
 
-  return (regs_ever_live[regno]
-	  && !call_used_regs[regno]
-	  && !fixed_regs[regno]
-	  && (regno != HARD_FRAME_POINTER_REGNUM || !frame_pointer_needed));
+  emit_insn (gen_prologue_get_pc (pic_offset_table_rtx, pclab));
+
+  emit_insn (gen_prologue_set_got (pic_offset_table_rtx, gotsym, pclab));
 }

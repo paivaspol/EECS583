@@ -1,0 +1,14 @@
+PP(pp_semget)
+{
+#if defined(HAS_MSG) || defined(HAS_SEM) || defined(HAS_SHM)
+    dSP; dMARK; dTARGET;
+    int anum = do_ipcget(PL_op->op_type, MARK, SP);
+    SP = MARK;
+    if (anum == -1)
+	RETPUSHUNDEF;
+    PUSHi(anum);
+    RETURN;
+#else
+    DIE(aTHX_ "System V IPC is not implemented on this machine");
+#endif
+}

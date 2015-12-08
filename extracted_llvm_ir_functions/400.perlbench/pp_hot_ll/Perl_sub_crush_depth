@@ -1,0 +1,26 @@
+define void @Perl_sub_crush_depth(%struct.cv* nocapture %cv) #0 {
+entry:
+  %sv_any = getelementptr inbounds %struct.cv* %cv, i64 0, i32 0
+  %0 = load %struct.xpvcv** %sv_any, align 8, !tbaa !0
+  %xcv_flags = getelementptr inbounds %struct.xpvcv* %0, i64 0, i32 17
+  %1 = load i16* %xcv_flags, align 2, !tbaa !6
+  %and = and i16 %1, 4
+  %tobool = icmp eq i16 %and, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void (i32, i8*, ...)* @Perl_warner(i32 18, i8* getelementptr inbounds ([39 x i8]* @.str44, i64 0, i64 0)) #8
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %call = tail call %struct.sv* @Perl_sv_newmortal() #8
+  %2 = load %struct.xpvcv** %sv_any, align 8, !tbaa !0
+  %xcv_gv = getelementptr inbounds %struct.xpvcv* %2, i64 0, i32 12
+  %3 = load %struct.gv** %xcv_gv, align 8, !tbaa !0
+  tail call void @Perl_gv_efullname4(%struct.sv* %call, %struct.gv* %3, i8* null, i8 signext 1) #8
+  tail call void (i32, i8*, ...)* @Perl_warner(i32 18, i8* getelementptr inbounds ([34 x i8]* @.str45, i64 0, i64 0), %struct.sv* %call) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void
+}

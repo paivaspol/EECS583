@@ -1,0 +1,40 @@
+define void @DVaxpy(i32 %size, double* %y, double %alpha, double* %x) #0 {
+entry:
+  %cmp = icmp slt i32 %size, 0
+  %cmp1 = fcmp oeq double %alpha, 0.000000e+00
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %return, label %if.else
+
+if.else:                                          ; preds = %entry
+  %cmp2 = icmp eq double* %y, null
+  %cmp4 = icmp eq double* %x, null
+  %or.cond22 = or i1 %cmp2, %cmp4
+  br i1 %or.cond22, label %if.then5, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.else
+  %cmp723 = icmp sgt i32 %size, 0
+  br i1 %cmp723, label %for.body, label %return
+
+if.then5:                                         ; preds = %if.else
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([79 x i8]* @.str1, i64 0, i64 0), i32 %size, double* %y, double %alpha, double* %x) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv
+  %1 = load double* %arrayidx, align 8, !tbaa !3
+  %mul = fmul double %1, %alpha
+  %arrayidx9 = getelementptr inbounds double* %y, i64 %indvars.iv
+  %2 = load double* %arrayidx9, align 8, !tbaa !3
+  %add = fadd double %2, %mul
+  store double %add, double* %arrayidx9, align 8, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %size
+  br i1 %exitcond, label %return, label %for.body
+
+return:                                           ; preds = %for.cond.preheader, %for.body, %entry
+  ret void
+}

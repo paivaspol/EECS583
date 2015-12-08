@@ -1,0 +1,14 @@
+define i8* @Perl_sv_pvbyten_force(%struct.sv* %sv, i64* %lp) #0 {
+entry:
+  %call = tail call i8* @Perl_sv_pvn_force_flags(%struct.sv* %sv, i64* %lp, i32 2) #7
+  %call1 = tail call signext i8 @Perl_sv_utf8_downgrade(%struct.sv* %sv, i8 signext 0) #7
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %0, i64 8
+  %1 = bitcast i8* %xpv_cur to i64*
+  %2 = load i64* %1, align 8, !tbaa !5
+  store i64 %2, i64* %lp, align 8, !tbaa !5
+  %xpv_pv = bitcast i8* %0 to i8**
+  %3 = load i8** %xpv_pv, align 8, !tbaa !0
+  ret i8* %3
+}

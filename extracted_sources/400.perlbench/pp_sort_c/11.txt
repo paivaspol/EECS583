@@ -1,7 +1,228 @@
-static I32
-sv_ncmp(pTHX_ SV *a, SV *b)
+PP(pp_sort)
 {
-    NV nv1 = SvNV(a);
-    NV nv2 = SvNV(b);
-    return nv1 < nv2 ? -1 : nv1 > nv2 ? 1 : 0;
+    dSP; dMARK; dORIGMARK;
+    register SV **p1 = ORIGMARK+1, **p2;
+    register I32 max, i;
+    AV* av = Nullav;
+    HV *stash;
+    GV *gv;
+    CV *cv = 0;
+    I32 gimme = GIMME;
+    OP* nextop = PL_op->op_next;
+    I32 overloading = 0;
+    bool hasargs = FALSE;
+    I32 is_xsub = 0;
+    I32 sorting_av = 0;
+    U8 priv = PL_op->op_private;
+    U8 flags = PL_op->op_flags;
+    void (*sortsvp)(pTHX_ SV **array, size_t nmemb, SVCOMPARE_t cmp)
+      = Perl_sortsv;
+
+    if (gimme != G_ARRAY) {
+	SP = MARK;
+	RETPUSHUNDEF;
+    }
+
+    ENTER;
+    SAVEVPTR(PL_sortcop);
+    if (flags & OPf_STACKED) {
+	if (flags & OPf_SPECIAL) {
+	    OP *kid = cLISTOP->op_first->op_sibling;	/* pass pushmark */
+	    kid = kUNOP->op_first;			/* pass rv2gv */
+	    kid = kUNOP->op_first;			/* pass leave */
+	    PL_sortcop = kid->op_next;
+	    stash = CopSTASH(PL_curcop);
+	}
+	else {
+	    cv = sv_2cv(*++MARK, &stash, &gv, 0);
+	    if (cv && SvPOK(cv)) {
+		STRLEN n_a;
+		char *proto = SvPV((SV*)cv, n_a);
+		if (proto && strEQ(proto, "$$")) {
+		    hasargs = TRUE;
+		}
+	    }
+	    if (!(cv && CvROOT(cv))) {
+		if (cv && CvXSUB(cv)) {
+		    is_xsub = 1;
+		}
+		else if (gv) {
+		    SV *tmpstr = sv_newmortal();
+		    gv_efullname3(tmpstr, gv, Nullch);
+		    DIE(aTHX_ "Undefined sort subroutine \"%"SVf"\" called",
+			tmpstr);
+		}
+		else {
+		    DIE(aTHX_ "Undefined subroutine in sort");
+		}
+	    }
+
+	    if (is_xsub)
+		PL_sortcop = (OP*)cv;
+	    else {
+		PL_sortcop = CvSTART(cv);
+		SAVEVPTR(CvROOT(cv)->op_ppaddr);
+		CvROOT(cv)->op_ppaddr = PL_ppaddr[OP_NULL];
+
+		PAD_SET_CUR(CvPADLIST(cv), 1);
+            }
+	}
+    }
+    else {
+	PL_sortcop = Nullop;
+	stash = CopSTASH(PL_curcop);
+    }
+
+    /* optimiser converts "@a = sort @a" to "sort \@a";
+     * in case of tied @a, pessimise: push (@a) onto stack, then assign
+     * result back to @a at the end of this function */
+    if (priv & OPpSORT_INPLACE) {
+	assert( MARK+1 == SP && *SP && SvTYPE(*SP) == SVt_PVAV);
+	(void)POPMARK; /* remove mark associated with ex-OP_AASSIGN */
+	av = (AV*)(*SP);
+	max = AvFILL(av) + 1;
+	if (SvMAGICAL(av)) {
+	    MEXTEND(SP, max);
+	    p2 = SP;
+	    for (i=0; i < max; i++) {
+		SV **svp = av_fetch(av, i, FALSE);
+		*SP++ = (svp) ? *svp : Nullsv;
+	    }
+	}
+	else {
+	    p1 = p2 = AvARRAY(av);
+	    sorting_av = 1;
+	}
+    }
+    else {
+	p2 = MARK+1;
+	max = SP - MARK;
+   }
+
+    if (priv & OPpSORT_DESCEND) {
+	sortsvp = S_sortsv_desc;
+    }
+
+    /* shuffle stack down, removing optional initial cv (p1!=p2), plus any
+     * nulls; also stringify any args */
+    for (i=max; i > 0 ; i--) {
+	if ((*p1 = *p2++)) {			/* Weed out nulls. */
+	    SvTEMP_off(*p1);
+	    if (!PL_sortcop && !SvPOK(*p1)) {
+		STRLEN n_a;
+	        if (SvAMAGIC(*p1))
+	            overloading = 1;
+	        else
+		    (void)sv_2pv(*p1, &n_a);
+	    }
+	    p1++;
+	}
+	else
+	    max--;
+    }
+    if (sorting_av)
+	AvFILLp(av) = max-1;
+
+    if (max > 1) {
+	SV **start;
+	if (PL_sortcop) {
+	    PERL_CONTEXT *cx;
+	    SV** newsp;
+	    bool oldcatch = CATCH_GET;
+
+	    SAVETMPS;
+	    SAVEOP();
+
+	    CATCH_SET(TRUE);
+	    PUSHSTACKi(PERLSI_SORT);
+	    if (!hasargs && !is_xsub) {
+		if (PL_sortstash != stash || !PL_firstgv || !PL_secondgv) {
+		    SAVESPTR(PL_firstgv);
+		    SAVESPTR(PL_secondgv);
+		    PL_firstgv = gv_fetchpv("a", TRUE, SVt_PV);
+		    PL_secondgv = gv_fetchpv("b", TRUE, SVt_PV);
+		    PL_sortstash = stash;
+		}
+#ifdef USE_5005THREADS
+		sv_lock((SV *)PL_firstgv);
+		sv_lock((SV *)PL_secondgv);
+#endif
+		SAVESPTR(GvSV(PL_firstgv));
+		SAVESPTR(GvSV(PL_secondgv));
+	    }
+
+	    PUSHBLOCK(cx, CXt_NULL, PL_stack_base);
+	    if (!(flags & OPf_SPECIAL)) {
+		cx->cx_type = CXt_SUB;
+		cx->blk_gimme = G_SCALAR;
+		PUSHSUB(cx);
+	    }
+	    PL_sortcxix = cxstack_ix;
+
+	    if (hasargs && !is_xsub) {
+		/* This is mostly copied from pp_entersub */
+		AV *av = (AV*)PAD_SVl(0);
+
+#ifndef USE_5005THREADS
+		cx->blk_sub.savearray = GvAV(PL_defgv);
+		GvAV(PL_defgv) = (AV*)SvREFCNT_inc(av);
+#endif /* USE_5005THREADS */
+		CX_CURPAD_SAVE(cx->blk_sub);
+		cx->blk_sub.argarray = av;
+	    }
+	    
+	    start = p1 - max;
+	    sortsvp(aTHX_ start, max,
+		    is_xsub ? sortcv_xsub : hasargs ? sortcv_stacked : sortcv);
+
+	    POPBLOCK(cx,PL_curpm);
+	    PL_stack_sp = newsp;
+	    POPSTACK;
+	    CATCH_SET(oldcatch);
+	}
+	else {
+	    MEXTEND(SP, 20);	/* Can't afford stack realloc on signal. */
+	    start = sorting_av ? AvARRAY(av) : ORIGMARK+1;
+	    sortsvp(aTHX_ start, max,
+		    (priv & OPpSORT_NUMERIC)
+			? ( (priv & OPpSORT_INTEGER)
+			    ? ( overloading ? amagic_i_ncmp : sv_i_ncmp)
+			    : ( overloading ? amagic_ncmp : sv_ncmp))
+			: ( IN_LOCALE_RUNTIME
+			    ? ( overloading
+				? amagic_cmp_locale
+				: sv_cmp_locale_static)
+			    : ( overloading ? amagic_cmp : sv_cmp_static)));
+	}
+	if (priv & OPpSORT_REVERSE) {
+	    SV **q = start+max-1;
+	    while (start < q) {
+		SV *tmp = *start;
+		*start++ = *q;
+		*q-- = tmp;
+	    }
+	}
+    }
+    if (av && !sorting_av) {
+	/* simulate pp_aassign of tied AV */
+	SV *sv;
+	SV** base, **didstore;
+	for (base = ORIGMARK+1, i=0; i < max; i++) {
+	    sv = newSVsv(base[i]);
+	    base[i] = sv;
+	}
+	av_clear(av);
+	av_extend(av, max);
+	for (i=0; i < max; i++) {
+	    sv = base[i];
+	    didstore = av_store(av, i, sv);
+	    if (SvSMAGICAL(sv))
+		mg_set(sv);
+	    if (!didstore)
+		sv_2mortal(sv);
+	}
+    }
+    LEAVE;
+    PL_stack_sp = ORIGMARK + (sorting_av ? 0 : max);
+    return nextop;
 }

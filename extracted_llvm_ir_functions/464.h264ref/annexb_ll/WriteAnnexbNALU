@@ -1,0 +1,26 @@
+define i32 @WriteAnnexbNALU(%struct.NALU_t* nocapture %n) #0 {
+entry:
+  %startcodeprefix_len = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 0
+  %0 = load i32* %startcodeprefix_len, align 4, !tbaa !0
+  %cmp = icmp sgt i32 %0, 3
+  %add = select i1 %cmp, i32 32, i32 24
+  %forbidden_bit = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 5
+  %1 = load i32* %forbidden_bit, align 4, !tbaa !0
+  %shl = shl i32 %1, 7
+  %nal_reference_idc = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 4
+  %2 = load i32* %nal_reference_idc, align 4, !tbaa !0
+  %shl1 = shl i32 %2, 5
+  %or = or i32 %shl1, %shl
+  %nal_unit_type = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 3
+  %3 = load i32* %nal_unit_type, align 4, !tbaa !0
+  %or2 = or i32 %or, %3
+  %conv = trunc i32 %or2 to i8
+  %buf = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 6
+  %4 = load i8** %buf, align 8, !tbaa !3
+  store i8 %conv, i8* %4, align 1, !tbaa !1
+  %len = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 1
+  %5 = load i32* %len, align 4, !tbaa !0
+  %mul = shl i32 %5, 3
+  %add3 = add i32 %mul, %add
+  ret i32 %add3
+}

@@ -1,0 +1,34 @@
+define internal fastcc void @assembleAggregates(%struct._Chv* %frontJ, %struct._ChvList* %aggList, %struct._ChvManager* %chvmanager, double* nocapture %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
+entry:
+  %id = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 0
+  %0 = load i32* %id, align 4, !tbaa !3
+  %call = tail call %struct._Chv* @ChvList_getList(%struct._ChvList* %aggList, i32 %0) #5
+  %cmp11 = icmp eq %struct._Chv* %call, null
+  br i1 %cmp11, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %chv.012 = phi %struct._Chv* [ %1, %for.body ], [ %call, %entry ]
+  tail call void @Chv_assembleChv(%struct._Chv* %frontJ, %struct._Chv* %chv.012) #5
+  %next = getelementptr inbounds %struct._Chv* %chv.012, i64 0, i32 10
+  %1 = load %struct._Chv** %next, align 8, !tbaa !0
+  %cmp = icmp eq %struct._Chv* %1, null
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %arrayidx = getelementptr inbounds double* %cpus, i64 8
+  %2 = load double* %arrayidx, align 8, !tbaa !4
+  %add = fadd double %2, 0.000000e+00
+  store double %add, double* %arrayidx, align 8, !tbaa !4
+  tail call void @ChvManager_releaseListOfObjects(%struct._ChvManager* %chvmanager, %struct._Chv* %call) #5
+  %cmp1 = icmp sgt i32 %msglvl, 3
+  br i1 %cmp1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %for.end
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str30, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %msgFile)
+  tail call void @Chv_writeForHumanEye(%struct._Chv* %frontJ, %struct._IO_FILE* %msgFile) #5
+  %call3 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %for.end
+  ret void
+}

@@ -1,0 +1,423 @@
+define void @PrintASCIIHistogram(%struct._IO_FILE* nocapture %fp, %struct.histogram_s* %h) #0 {
+entry:
+  %buffer = alloca [81 x i8], align 16
+  %0 = getelementptr inbounds [81 x i8]* %buffer, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 81, i8* %0) #3
+  %lowscore = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 4
+  %1 = load i32* %lowscore, align 4, !tbaa !0
+  %min = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 1
+  %2 = load i32* %min, align 4, !tbaa !0
+  %sub = sub i32 %1, %2
+  %highscore = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 3
+  %3 = load i32* %highscore, align 4, !tbaa !0
+  %sub2419 = sub i32 %3, %2
+  %cmp420 = icmp sgt i32 %sub, %sub2419
+  br i1 %cmp420, label %for.end46, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %histogram = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0
+  %4 = load i32** %histogram, align 8, !tbaa !3
+  %5 = sext i32 %sub to i64
+  br label %for.body
+
+for.cond8.preheader:                              ; preds = %for.body
+  %cmp10415 = icmp sgt i32 %add.lowbound.0, %1
+  br i1 %cmp10415, label %for.body11.lr.ph, label %for.end26
+
+for.body11.lr.ph:                                 ; preds = %for.cond8.preheader
+  %histogram15 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0
+  %6 = load i32** %histogram15, align 8, !tbaa !3
+  %7 = sext i32 %add.lowbound.0 to i64
+  br label %for.body11
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv439 = phi i64 [ %indvars.iv.next440, %for.body ], [ %5, %for.body.lr.ph ]
+  %maxbar.0423 = phi i32 [ %.maxbar.0, %for.body ], [ 0, %for.body.lr.ph ]
+  %lowbound.0422 = phi i32 [ %add.lowbound.0, %for.body ], [ undef, %for.body.lr.ph ]
+  %arrayidx = getelementptr inbounds i32* %4, i64 %indvars.iv439
+  %8 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp3 = icmp sgt i32 %8, %maxbar.0423
+  %9 = trunc i64 %indvars.iv439 to i32
+  %add = add nsw i32 %2, %9
+  %add.lowbound.0 = select i1 %cmp3, i32 %add, i32 %lowbound.0422
+  %.maxbar.0 = select i1 %cmp3, i32 %8, i32 %maxbar.0423
+  %indvars.iv.next440 = add i64 %indvars.iv439, 1
+  %cmp = icmp slt i32 %9, %sub2419
+  br i1 %cmp, label %for.body, label %for.cond8.preheader
+
+for.body11:                                       ; preds = %for.body11.lr.ph, %for.inc25
+  %indvars.iv437 = phi i64 [ %7, %for.body11.lr.ph ], [ %indvars.iv.next438, %for.inc25 ]
+  %num.0417 = phi i32 [ 0, %for.body11.lr.ph ], [ %num.1, %for.inc25 ]
+  %lowbound.2416 = phi i32 [ %add.lowbound.0, %for.body11.lr.ph ], [ %dec, %for.inc25 ]
+  %10 = trunc i64 %indvars.iv437 to i32
+  %sub13 = sub nsw i32 %10, %2
+  %idxprom14 = sext i32 %sub13 to i64
+  %arrayidx16 = getelementptr inbounds i32* %6, i64 %idxprom14
+  %11 = load i32* %arrayidx16, align 4, !tbaa !0
+  %cmp17 = icmp sgt i32 %11, 0
+  br i1 %cmp17, label %for.inc25, label %if.end19
+
+if.end19:                                         ; preds = %for.body11
+  %inc20 = add nsw i32 %num.0417, 1
+  %cmp21 = icmp eq i32 %inc20, 3
+  br i1 %cmp21, label %if.then22, label %for.inc25
+
+if.then22:                                        ; preds = %if.end19
+  %add23 = add nsw i32 %lowbound.2416, 3
+  br label %for.end26
+
+for.inc25:                                        ; preds = %for.body11, %if.end19
+  %num.1 = phi i32 [ %inc20, %if.end19 ], [ 0, %for.body11 ]
+  %indvars.iv.next438 = add i64 %indvars.iv437, -1
+  %dec = add nsw i32 %lowbound.2416, -1
+  %12 = trunc i64 %indvars.iv.next438 to i32
+  %cmp10 = icmp sgt i32 %12, %1
+  br i1 %cmp10, label %for.body11, label %for.end26
+
+for.end26:                                        ; preds = %for.cond8.preheader, %for.inc25, %if.then22
+  %lowbound.3 = phi i32 [ %add23, %if.then22 ], [ %add.lowbound.0, %for.cond8.preheader ], [ %dec, %for.inc25 ]
+  %cmp29410 = icmp slt i32 %add.lowbound.0, %3
+  br i1 %cmp29410, label %for.body30.lr.ph, label %for.end46
+
+for.body30.lr.ph:                                 ; preds = %for.end26
+  %histogram34 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0
+  %13 = load i32** %histogram34, align 8, !tbaa !3
+  %14 = sext i32 %add.lowbound.0 to i64
+  br label %for.body30
+
+for.body30:                                       ; preds = %for.body30.lr.ph, %for.inc44
+  %indvars.iv434 = phi i64 [ %14, %for.body30.lr.ph ], [ %indvars.iv.next435, %for.inc44 ]
+  %num.2412 = phi i32 [ 0, %for.body30.lr.ph ], [ %num.3, %for.inc44 ]
+  %highbound.0411 = phi i32 [ %add.lowbound.0, %for.body30.lr.ph ], [ %inc45, %for.inc44 ]
+  %15 = trunc i64 %indvars.iv434 to i32
+  %sub32 = sub nsw i32 %15, %2
+  %idxprom33 = sext i32 %sub32 to i64
+  %arrayidx35 = getelementptr inbounds i32* %13, i64 %idxprom33
+  %16 = load i32* %arrayidx35, align 4, !tbaa !0
+  %cmp36 = icmp sgt i32 %16, 0
+  br i1 %cmp36, label %for.inc44, label %if.end38
+
+if.end38:                                         ; preds = %for.body30
+  %inc39 = add nsw i32 %num.2412, 1
+  %cmp40 = icmp eq i32 %inc39, 3
+  br i1 %cmp40, label %if.then41, label %for.inc44
+
+if.then41:                                        ; preds = %if.end38
+  %sub42 = add nsw i32 %highbound.0411, -3
+  br label %for.end46
+
+for.inc44:                                        ; preds = %for.body30, %if.end38
+  %num.3 = phi i32 [ %inc39, %if.end38 ], [ 0, %for.body30 ]
+  %indvars.iv.next435 = add i64 %indvars.iv434, 1
+  %inc45 = add nsw i32 %highbound.0411, 1
+  %17 = trunc i64 %indvars.iv.next435 to i32
+  %cmp29 = icmp slt i32 %17, %3
+  br i1 %cmp29, label %for.body30, label %for.end46
+
+for.end46:                                        ; preds = %entry, %for.end26, %for.inc44, %if.then41
+  %lowbound.3449 = phi i32 [ %lowbound.3, %if.then41 ], [ %lowbound.3, %for.end26 ], [ %lowbound.3, %for.inc44 ], [ undef, %entry ]
+  %maxbar.0.lcssa442447 = phi i32 [ %.maxbar.0, %if.then41 ], [ %.maxbar.0, %for.end26 ], [ %.maxbar.0, %for.inc44 ], [ 0, %entry ]
+  %highbound.1 = phi i32 [ %sub42, %if.then41 ], [ %add.lowbound.0, %for.end26 ], [ %inc45, %for.inc44 ], [ undef, %entry ]
+  %sub52403 = sub nsw i32 %lowbound.3449, %2
+  %cmp53404 = icmp sgt i32 %sub, %sub52403
+  br i1 %cmp53404, label %for.end61, label %for.body54.lr.ph
+
+for.body54.lr.ph:                                 ; preds = %for.end46
+  %histogram56 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0
+  %18 = load i32** %histogram56, align 8, !tbaa !3
+  %19 = sext i32 %sub to i64
+  br label %for.body54
+
+for.body54:                                       ; preds = %for.body54, %for.body54.lr.ph
+  %indvars.iv431 = phi i64 [ %indvars.iv.next432, %for.body54 ], [ %19, %for.body54.lr.ph ]
+  %lowcount.0406 = phi i32 [ %add58, %for.body54 ], [ 0, %for.body54.lr.ph ]
+  %arrayidx57 = getelementptr inbounds i32* %18, i64 %indvars.iv431
+  %20 = load i32* %arrayidx57, align 4, !tbaa !0
+  %add58 = add nsw i32 %20, %lowcount.0406
+  %indvars.iv.next432 = add i64 %indvars.iv431, 1
+  %21 = trunc i64 %indvars.iv431 to i32
+  %cmp53 = icmp slt i32 %21, %sub52403
+  br i1 %cmp53, label %for.body54, label %for.end61
+
+for.end61:                                        ; preds = %for.body54, %for.end46
+  %lowcount.0.lcssa = phi i32 [ 0, %for.end46 ], [ %add58, %for.body54 ]
+  %sub67399 = sub nsw i32 %highbound.1, %2
+  %cmp68400 = icmp slt i32 %sub2419, %sub67399
+  br i1 %cmp68400, label %for.end76, label %for.body69.lr.ph
+
+for.body69.lr.ph:                                 ; preds = %for.end61
+  %histogram71 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0
+  %22 = load i32** %histogram71, align 8, !tbaa !3
+  %23 = sext i32 %sub2419 to i64
+  br label %for.body69
+
+for.body69:                                       ; preds = %for.body69, %for.body69.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body69 ], [ %23, %for.body69.lr.ph ]
+  %highcount.0402 = phi i32 [ %add73, %for.body69 ], [ 0, %for.body69.lr.ph ]
+  %arrayidx72 = getelementptr inbounds i32* %22, i64 %indvars.iv
+  %24 = load i32* %arrayidx72, align 4, !tbaa !0
+  %add73 = add nsw i32 %24, %highcount.0402
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %25 = trunc i64 %indvars.iv to i32
+  %cmp68 = icmp sgt i32 %25, %sub67399
+  br i1 %cmp68, label %for.body69, label %for.end76
+
+for.end76:                                        ; preds = %for.body69, %for.end61
+  %highcount.0.lcssa = phi i32 [ 0, %for.end61 ], [ %add73, %for.body69 ]
+  %cmp77 = icmp sgt i32 %lowcount.0.lcssa, %maxbar.0.lcssa442447
+  %lowcount.0.maxbar.0 = select i1 %cmp77, i32 %lowcount.0.lcssa, i32 %maxbar.0.lcssa442447
+  %cmp80 = icmp sgt i32 %highcount.0.lcssa, %lowcount.0.maxbar.0
+  %maxbar.3 = select i1 %cmp80, i32 %highcount.0.lcssa, i32 %lowcount.0.maxbar.0
+  %sub83 = add nsw i32 %maxbar.3, -1
+  %div = sdiv i32 %sub83, 59
+  %add84 = add nsw i32 %div, 1
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([46 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i32 %add84) #4
+  %call85 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([13 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0)) #4
+  %arrayidx86 = getelementptr inbounds [81 x i8]* %buffer, i64 0, i64 80
+  store i8 0, i8* %arrayidx86, align 16, !tbaa !1
+  %arrayidx87 = getelementptr inbounds [81 x i8]* %buffer, i64 0, i64 79
+  store i8 10, i8* %arrayidx87, align 1, !tbaa !1
+  %26 = load i32* %lowscore, align 4, !tbaa !0
+  %27 = load i32* %highscore, align 4, !tbaa !0
+  %cmp91396 = icmp sgt i32 %26, %27
+  br i1 %cmp91396, label %for.end76.for.end224_crit_edge, label %for.body92.lr.ph
+
+for.end76.for.end224_crit_edge:                   ; preds = %for.end76
+  %fit_type225.pre = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 8
+  br label %for.end224
+
+for.body92.lr.ph:                                 ; preds = %for.end76
+  %cmp106 = icmp sgt i32 %lowcount.0.lcssa, 0
+  %sub108 = add nsw i32 %lowcount.0.lcssa, -1
+  %cmp134 = icmp sgt i32 %highcount.0.lcssa, 0
+  %sub136 = add nsw i32 %highcount.0.lcssa, -1
+  %fit_type = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 8
+  %histogram159 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0
+  %arrayidx171 = getelementptr inbounds [81 x i8]* %buffer, i64 0, i64 20
+  %expect200 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 7
+  br label %for.body92
+
+for.body92:                                       ; preds = %for.inc222.for.body92_crit_edge, %for.body92.lr.ph
+  %28 = phi i32 [ %27, %for.body92.lr.ph ], [ %57, %for.inc222.for.body92_crit_edge ]
+  %i.3397 = phi i32 [ %26, %for.body92.lr.ph ], [ %inc223, %for.inc222.for.body92_crit_edge ]
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 32, i64 79, i32 16, i1 false)
+  %29 = load i32* %min, align 4, !tbaa !0
+  %sub94 = sub nsw i32 %i.3397, %29
+  %cmp95 = icmp slt i32 %i.3397, %lowbound.3449
+  %cmp97 = icmp sgt i32 %i.3397, %highbound.1
+  %or.cond = or i1 %cmp95, %cmp97
+  br i1 %or.cond, label %for.inc222, label %if.else99
+
+if.else99:                                        ; preds = %for.body92
+  %cmp100 = icmp eq i32 %i.3397, %lowbound.3449
+  br i1 %cmp100, label %land.lhs.true, label %if.else126
+
+land.lhs.true:                                    ; preds = %if.else99
+  %30 = load i32* %lowscore, align 4, !tbaa !0
+  %cmp102 = icmp eq i32 %lowbound.3449, %30
+  br i1 %cmp102, label %if.else126, label %if.then103
+
+if.then103:                                       ; preds = %land.lhs.true
+  %add104 = add nsw i32 %lowbound.3449, 1
+  %call105 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str9, i64 0, i64 0), i32 %add104, i32 %lowcount.0.lcssa, i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0)) #4
+  br i1 %cmp106, label %if.then107, label %if.end123
+
+if.then107:                                       ; preds = %if.then103
+  %div109 = sdiv i32 %sub108, %add84
+  %add110 = add i32 %div109, 1
+  %cmp111 = icmp sgt i32 %div109, 59
+  br i1 %cmp111, label %if.then112, label %for.cond114.preheader
+
+if.then112:                                       ; preds = %if.then107
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([5 x i8]* @.str11, i64 0, i64 0)) #4
+  br label %for.cond114.preheader
+
+for.cond114.preheader:                            ; preds = %if.then112, %if.then107
+  %cmp115387 = icmp sgt i32 %div109, -1
+  br i1 %cmp115387, label %for.body116.lr.ph, label %if.end123
+
+for.body116.lr.ph:                                ; preds = %for.cond114.preheader
+  %31 = xor i32 %div109, -1
+  %32 = icmp sgt i32 %31, -1
+  %smax = select i1 %32, i32 %31, i32 -1
+  %33 = add i32 %add110, %smax
+  %34 = zext i32 %33 to i64
+  %35 = add i64 %34, 1
+  call void @llvm.memset.p0i8.i64(i8* %arrayidx171, i8 61, i64 %35, i32 4, i1 false)
+  br label %if.end123
+
+if.end123:                                        ; preds = %for.cond114.preheader, %for.body116.lr.ph, %if.then103
+  %call125 = call i32 @fputs(i8* %0, %struct._IO_FILE* %fp) #4
+  br label %for.inc222
+
+if.else126:                                       ; preds = %land.lhs.true, %if.else99
+  %cmp127 = icmp ne i32 %i.3397, %highbound.1
+  %cmp130 = icmp eq i32 %highbound.1, %28
+  %or.cond451 = or i1 %cmp127, %cmp130
+  br i1 %or.cond451, label %if.end154, label %if.then131
+
+if.then131:                                       ; preds = %if.else126
+  %call133 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str12, i64 0, i64 0), i32 %highbound.1, i32 %highcount.0.lcssa, i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0)) #4
+  br i1 %cmp134, label %if.then135, label %if.end148
+
+if.then135:                                       ; preds = %if.then131
+  %div137 = sdiv i32 %sub136, %add84
+  %cmp140390 = icmp sgt i32 %div137, -1
+  br i1 %cmp140390, label %for.body141.lr.ph, label %if.end148
+
+for.body141.lr.ph:                                ; preds = %if.then135
+  %add138 = add nsw i32 %div137, 1
+  %36 = xor i32 %div137, -1
+  %37 = icmp sgt i32 %36, -1
+  %smax428 = select i1 %37, i32 %36, i32 -1
+  %38 = add i32 %add138, %smax428
+  %39 = zext i32 %38 to i64
+  %40 = add i64 %39, 1
+  call void @llvm.memset.p0i8.i64(i8* %arrayidx171, i8 61, i64 %40, i32 4, i1 false)
+  br label %if.end148
+
+if.end148:                                        ; preds = %if.then135, %for.body141.lr.ph, %if.then131
+  %call150 = call i32 @fputs(i8* %0, %struct._IO_FILE* %fp) #4
+  br label %for.inc222
+
+if.end154:                                        ; preds = %if.else126
+  %41 = load i32* %fit_type, align 4, !tbaa !0
+  %cmp155 = icmp eq i32 %41, 0
+  %idxprom158 = sext i32 %sub94 to i64
+  %42 = load i32** %histogram159, align 8, !tbaa !3
+  %arrayidx160 = getelementptr inbounds i32* %42, i64 %idxprom158
+  %43 = load i32* %arrayidx160, align 4, !tbaa !0
+  br i1 %cmp155, label %if.else164, label %if.then156
+
+if.then156:                                       ; preds = %if.end154
+  %44 = load float** %expect200, align 8, !tbaa !3
+  %arrayidx162 = getelementptr inbounds float* %44, i64 %idxprom158
+  %45 = load float* %arrayidx162, align 4, !tbaa !4
+  %conv = fptosi float %45 to i32
+  %call163 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([13 x i8]* @.str13, i64 0, i64 0), i32 %i.3397, i32 %43, i32 %conv) #4
+  br label %if.end170
+
+if.else164:                                       ; preds = %if.end154
+  %call169 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([13 x i8]* @.str14, i64 0, i64 0), i32 %i.3397, i32 %43, i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0)) #4
+  br label %if.end170
+
+if.end170:                                        ; preds = %if.else164, %if.then156
+  store i8 32, i8* %arrayidx171, align 4, !tbaa !1
+  %46 = load i32** %histogram159, align 8, !tbaa !3
+  %arrayidx174 = getelementptr inbounds i32* %46, i64 %idxprom158
+  %47 = load i32* %arrayidx174, align 4, !tbaa !0
+  %cmp175 = icmp sgt i32 %47, 0
+  br i1 %cmp175, label %if.then177, label %if.end194
+
+if.then177:                                       ; preds = %if.end170
+  %sub181 = add nsw i32 %47, -1
+  %div182 = sdiv i32 %sub181, %add84
+  %cmp185393 = icmp sgt i32 %div182, -1
+  br i1 %cmp185393, label %for.body187.lr.ph, label %if.end194
+
+for.body187.lr.ph:                                ; preds = %if.then177
+  %add183 = add nsw i32 %div182, 1
+  %48 = xor i32 %div182, -1
+  %49 = icmp sgt i32 %48, -1
+  %smax430 = select i1 %49, i32 %48, i32 -1
+  %50 = add i32 %add183, %smax430
+  %51 = zext i32 %50 to i64
+  %52 = add i64 %51, 1
+  call void @llvm.memset.p0i8.i64(i8* %arrayidx171, i8 61, i64 %52, i32 4, i1 false)
+  br label %if.end194
+
+if.end194:                                        ; preds = %if.then177, %for.body187.lr.ph, %if.end170
+  %53 = load i32* %fit_type, align 4, !tbaa !0
+  %cmp196 = icmp eq i32 %53, 0
+  br i1 %cmp196, label %if.end219, label %land.lhs.true198
+
+land.lhs.true198:                                 ; preds = %if.end194
+  %54 = load float** %expect200, align 8, !tbaa !3
+  %arrayidx201 = getelementptr inbounds float* %54, i64 %idxprom158
+  %55 = load float* %arrayidx201, align 4, !tbaa !4
+  %conv202 = fptosi float %55 to i32
+  %cmp203 = icmp sgt i32 %conv202, 0
+  br i1 %cmp203, label %if.then205, label %if.end219
+
+if.then205:                                       ; preds = %land.lhs.true198
+  %sub209 = fadd float %55, -1.000000e+00
+  %conv210 = fptosi float %sub209 to i32
+  %div211 = sdiv i32 %conv210, %add84
+  %add212 = add nsw i32 %div211, 20
+  %cmp213 = icmp slt i32 %add212, 78
+  %56 = sext i32 %add212 to i64
+  %idxprom217 = select i1 %cmp213, i64 %56, i64 78
+  %arrayidx218 = getelementptr inbounds [81 x i8]* %buffer, i64 0, i64 %idxprom217
+  store i8 42, i8* %arrayidx218, align 1, !tbaa !1
+  br label %if.end219
+
+if.end219:                                        ; preds = %if.end194, %if.then205, %land.lhs.true198
+  %call221 = call i32 @fputs(i8* %0, %struct._IO_FILE* %fp) #4
+  br label %for.inc222
+
+for.inc222:                                       ; preds = %for.body92, %if.end219, %if.end148, %if.end123
+  %57 = load i32* %highscore, align 4, !tbaa !0
+  %cmp91 = icmp slt i32 %i.3397, %57
+  br i1 %cmp91, label %for.inc222.for.body92_crit_edge, label %for.end224
+
+for.inc222.for.body92_crit_edge:                  ; preds = %for.inc222
+  %inc223 = add nsw i32 %i.3397, 1
+  br label %for.body92
+
+for.end224:                                       ; preds = %for.inc222, %for.end76.for.end224_crit_edge
+  %fit_type225.pre-phi = phi i32* [ %fit_type225.pre, %for.end76.for.end224_crit_edge ], [ %fit_type, %for.inc222 ]
+  %58 = load i32* %fit_type225.pre-phi, align 4, !tbaa !0
+  switch i32 %58, label %sw.epilog [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb227
+    i32 2, label %sw.bb240
+  ]
+
+sw.bb:                                            ; preds = %for.end224
+  %call226 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([35 x i8]* @.str15, i64 0, i64 0)) #4
+  br label %sw.epilog
+
+sw.bb227:                                         ; preds = %for.end224
+  %call228 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([50 x i8]* @.str16, i64 0, i64 0)) #4
+  %arrayidx229 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 0
+  %59 = load float* %arrayidx229, align 4, !tbaa !4
+  %conv230 = fpext float %59 to double
+  %call231 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([27 x i8]* @.str17, i64 0, i64 0), double %conv230) #4
+  %arrayidx233 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 1
+  %60 = load float* %arrayidx233, align 4, !tbaa !4
+  %conv234 = fpext float %60 to double
+  %call235 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([27 x i8]* @.str18, i64 0, i64 0), double %conv234) #4
+  %chisq = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 10
+  %61 = load float* %chisq, align 4, !tbaa !4
+  %conv236 = fpext float %61 to double
+  %call237 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([27 x i8]* @.str19, i64 0, i64 0), double %conv236) #4
+  %chip = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 11
+  %62 = load float* %chip, align 4, !tbaa !4
+  %conv238 = fpext float %62 to double
+  %call239 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([27 x i8]* @.str20, i64 0, i64 0), double %conv238) #4
+  br label %sw.epilog
+
+sw.bb240:                                         ; preds = %for.end224
+  %call241 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([55 x i8]* @.str21, i64 0, i64 0)) #4
+  %arrayidx243 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 0
+  %63 = load float* %arrayidx243, align 4, !tbaa !4
+  %conv244 = fpext float %63 to double
+  %call245 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([27 x i8]* @.str22, i64 0, i64 0), double %conv244) #4
+  %arrayidx247 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 1
+  %64 = load float* %arrayidx247, align 4, !tbaa !4
+  %conv248 = fpext float %64 to double
+  %call249 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([27 x i8]* @.str23, i64 0, i64 0), double %conv248) #4
+  %chisq250 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 10
+  %65 = load float* %chisq250, align 4, !tbaa !4
+  %conv251 = fpext float %65 to double
+  %call252 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([27 x i8]* @.str19, i64 0, i64 0), double %conv251) #4
+  %chip253 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 11
+  %66 = load float* %chip253, align 4, !tbaa !4
+  %conv254 = fpext float %66 to double
+  %call255 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([27 x i8]* @.str20, i64 0, i64 0), double %conv254) #4
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %for.end224, %sw.bb240, %sw.bb227, %sw.bb
+  call void @llvm.lifetime.end(i64 81, i8* %0) #3
+  ret void
+}

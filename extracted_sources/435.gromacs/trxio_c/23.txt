@@ -1,6 +1,11 @@
-void rewind_trj(int status)
+bool read_next_x(int status,real *t, int natoms, rvec x[], matrix box)
 {
-  INITCOUNT;
+  bool bRet;
   
-  gmx_fio_rewind(status);
+  xframe[status].x = x;
+  bRet = read_next_frame(status,&xframe[status]);
+  *t = xframe[status].time;
+  copy_mat(xframe[status].box,box);
+  
+  return bRet;
 }

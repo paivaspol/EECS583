@@ -1,13 +1,17 @@
-static char * si_names[] = {
-    "UNKNOWN",
-    "UNDEF",
-    "MAIN",
-    "MAGIC",
-    "SORT",
-    "SIGNAL",
-    "OVERLOAD",
-    "DESTROY",
-    "WARNHOOK",
-    "DIEHOOK",
-    "REQUIRE"
-};
+I32
+Perl_debstackptrs(pTHX)
+{
+#ifdef DEBUGGING
+    PerlIO_printf(Perl_debug_log,
+		  "%8"UVxf" %8"UVxf" %8"IVdf" %8"IVdf" %8"IVdf"\n",
+		  PTR2UV(PL_curstack), PTR2UV(PL_stack_base),
+		  (IV)*PL_markstack_ptr, (IV)(PL_stack_sp-PL_stack_base),
+		  (IV)(PL_stack_max-PL_stack_base));
+    PerlIO_printf(Perl_debug_log,
+		  "%8"UVxf" %8"UVxf" %8"UVuf" %8"UVuf" %8"UVuf"\n",
+		  PTR2UV(PL_mainstack), PTR2UV(AvARRAY(PL_curstack)),
+		  PTR2UV(PL_mainstack), PTR2UV(AvFILLp(PL_curstack)),
+		  PTR2UV(AvMAX(PL_curstack)));
+#endif /* DEBUGGING */
+    return 0;
+}

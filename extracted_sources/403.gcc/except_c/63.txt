@@ -1,10 +1,10 @@
-static int
-ehl_eq (pentry, pdata)
+static hashval_t
+ehl_hash (pentry)
      const PTR pentry;
-     const PTR pdata;
 {
   struct ehl_map_entry *entry = (struct ehl_map_entry *) pentry;
-  struct ehl_map_entry *data = (struct ehl_map_entry *) pdata;
 
-  return entry->label == data->label;
+  /* 2^32 * ((sqrt(5) - 1) / 2) */
+  const hashval_t scaled_golden_ratio = 0x9e3779b9;
+  return CODE_LABEL_NUMBER (entry->label) * scaled_golden_ratio;
 }

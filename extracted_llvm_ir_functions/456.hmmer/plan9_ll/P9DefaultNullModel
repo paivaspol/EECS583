@@ -1,0 +1,45 @@
+define void @P9DefaultNullModel(float* nocapture %null) #0 {
+entry:
+  %0 = load i32* @Alphabet_type, align 4, !tbaa !3
+  switch i32 %0, label %if.else14 [
+    i32 3, label %for.cond.preheader
+    i32 2, label %for.cond6.preheader
+  ]
+
+for.cond6.preheader:                              ; preds = %entry
+  %1 = load i32* @Alphabet_size, align 4, !tbaa !3
+  %cmp726 = icmp sgt i32 %1, 0
+  br i1 %cmp726, label %for.body8, label %if.end15
+
+for.cond.preheader:                               ; preds = %entry
+  %2 = load i32* @Alphabet_size, align 4, !tbaa !3
+  %cmp123 = icmp sgt i32 %2, 0
+  br i1 %cmp123, label %for.body, label %if.end15
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds [0 x float]* @aafq, i64 0, i64 %indvars.iv
+  %3 = load float* %arrayidx, align 4, !tbaa !4
+  %arrayidx3 = getelementptr inbounds float* %null, i64 %indvars.iv
+  store float %3, float* %arrayidx3, align 4, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %4 = trunc i64 %indvars.iv.next to i32
+  %cmp1 = icmp slt i32 %4, %2
+  br i1 %cmp1, label %for.body, label %if.end15
+
+for.body8:                                        ; preds = %for.cond6.preheader, %for.body8
+  %indvars.iv29 = phi i64 [ %indvars.iv.next30, %for.body8 ], [ 0, %for.cond6.preheader ]
+  %arrayidx10 = getelementptr inbounds float* %null, i64 %indvars.iv29
+  store float 2.500000e-01, float* %arrayidx10, align 4, !tbaa !4
+  %indvars.iv.next30 = add i64 %indvars.iv29, 1
+  %5 = trunc i64 %indvars.iv.next30 to i32
+  %cmp7 = icmp slt i32 %5, %1
+  br i1 %cmp7, label %for.body8, label %if.end15
+
+if.else14:                                        ; preds = %entry
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0)) #3
+  br label %if.end15
+
+if.end15:                                         ; preds = %for.cond6.preheader, %for.body8, %for.cond.preheader, %for.body, %if.else14
+  ret void
+}

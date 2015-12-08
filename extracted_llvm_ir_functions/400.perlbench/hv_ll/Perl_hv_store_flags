@@ -1,0 +1,9 @@
+define %struct.sv** @Perl_hv_store_flags(%struct.hv* %hv, i8* %key, i32 %klen, %struct.sv* %val, i32 %hash, i32 %flags) #0 {
+entry:
+  %conv = sext i32 %klen to i64
+  %call = tail call fastcc %struct.he* @S_hv_fetch_common(%struct.hv* %hv, %struct.sv* null, i8* %key, i64 %conv, i32 %flags, i32 9, %struct.sv* %val, i32 %hash) #5
+  %tobool = icmp eq %struct.he* %call, null
+  %hent_val = getelementptr inbounds %struct.he* %call, i64 0, i32 2
+  %.hent_val = select i1 %tobool, %struct.sv** null, %struct.sv** %hent_val
+  ret %struct.sv** %.hent_val
+}

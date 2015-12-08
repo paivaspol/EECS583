@@ -1,14 +1,73 @@
-void
-warn_about_unused_variables (vars)
-     tree vars;
+static void
+expand_nl_goto_receivers (thisblock)
+     struct nesting *thisblock;
 {
-  tree decl;
+  tree link;
+  rtx afterward = gen_label_rtx ();
+  rtx insns, slot;
+  rtx label_list;
+  int any_invalid;
 
-  if (warn_unused_variable)
-    for (decl = vars; decl; decl = TREE_CHAIN (decl))
-      if (TREE_CODE (decl) == VAR_DECL
-	  && ! TREE_USED (decl)
-	  && ! DECL_IN_SYSTEM_HEADER (decl)
-	  && DECL_NAME (decl) && ! DECL_ARTIFICIAL (decl))
-	warning_with_decl (decl, "unused variable `%s'");
+  /* Record the handler address in the stack slot for that purpose,
+     during this block, saving and restoring the outer value.  */
+  if (thisblock->next != 0)
+    for (slot = nonlocal_goto_handler_slots; slot; slot = XEXP (slot, 1))
+      {
+	rtx save_receiver = gen_reg_rtx (Pmode);
+	emit_move_insn (XEXP (slot, 0), save_receiver);
+
+	start_sequence ();
+	emit_move_insn (save_receiver, XEXP (slot, 0));
+	insns = get_insns ();
+	end_sequence ();
+	emit_insns_before (insns, thisblock->data.block.first_insn);
+      }
+
+  /* Jump around the handlers; they run only when specially invoked.  */
+  emit_jump (afterward);
+
+  /* Make a separate handler for each label.  */
+  link = nonlocal_labels;
+  slot = nonlocal_goto_handler_slots;
+  label_list = NULL_RTX;
+  for (; link; link = TREE_CHAIN (link), slot = XEXP (slot, 1))
+    /* Skip any labels we shouldn't be able to jump to from here,
+       we generate one special handler for all of them below which just calls
+       abort.  */
+    if (! DECL_TOO_LATE (TREE_VALUE (link)))
+      {
+	rtx lab;
+	lab = expand_nl_handler_label (XEXP (slot, 0),
+				       thisblock->data.block.first_insn);
+	label_list = gen_rtx_EXPR_LIST (VOIDmode, lab, label_list);
+
+	expand_nl_goto_receiver ();
+
+	/* Jump to the "real" nonlocal label.  */
+	expand_goto (TREE_VALUE (link));
+      }
+
+  /* A second pass over all nonlocal labels; this time we handle those
+     we should not be able to jump to at this point.  */
+  link = nonlocal_labels;
+  slot = nonlocal_goto_handler_slots;
+  any_invalid = 0;
+  for (; link; link = TREE_CHAIN (link), slot = XEXP (slot, 1))
+    if (DECL_TOO_LATE (TREE_VALUE (link)))
+      {
+	rtx lab;
+	lab = expand_nl_handler_label (XEXP (slot, 0),
+				       thisblock->data.block.first_insn);
+	label_list = gen_rtx_EXPR_LIST (VOIDmode, lab, label_list);
+	any_invalid = 1;
+      }
+
+  if (any_invalid)
+    {
+      expand_nl_goto_receiver ();
+      expand_builtin_trap ();
+    }
+
+  nonlocal_goto_handler_labels = label_list;
+  emit_label (afterward);
 }

@@ -1,19 +1,14 @@
-void
-flow_edge_list_print (str, edge_list, num_edges, file)
-     const char *str;
-     const edge *edge_list;
-     int num_edges;
-     FILE *file;
+int
+find_edge_index (edge_list, pred, succ)
+     struct edge_list *edge_list;
+     basic_block pred, succ;
 {
-  int i;
+  int x;
 
-  if (! edge_list)
-    return;
+  for (x = 0; x < NUM_EDGES (edge_list); x++)
+    if (INDEX_EDGE_PRED_BB (edge_list, x) == pred
+	&& INDEX_EDGE_SUCC_BB (edge_list, x) == succ)
+      return x;
 
-  fprintf (file, "%s { ", str);
-  for (i = 0; i < num_edges; i++)
-    fprintf (file, "%d->%d ", edge_list[i]->src->index,
-	     edge_list[i]->dest->index);
-
-  fputs ("}\n", file);
+  return (EDGE_INDEX_NO_EDGE);
 }

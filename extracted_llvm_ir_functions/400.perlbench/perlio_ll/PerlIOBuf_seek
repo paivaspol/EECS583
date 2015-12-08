@@ -1,0 +1,32 @@
+define i64 @PerlIOBuf_seek(%struct._PerlIO** %f, i64 %offset, i32 %whence) #1 {
+entry:
+  %call = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %f) #10
+  %conv = sext i32 %call to i64
+  %cmp = icmp eq i32 %call, 0
+  br i1 %cmp, label %if.then, label %if.end9
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %1 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %1, -257
+  store i32 %and, i32* %flags, align 4, !tbaa !0
+  %next = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 0
+  %call2 = tail call i32 @Perl_PerlIO_seek(%struct._PerlIO** %next, i64 %offset, i32 %whence) #10
+  %conv3 = sext i32 %call2 to i64
+  %cmp4 = icmp eq i32 %call2, 0
+  br i1 %cmp4, label %if.then6, label %if.end9
+
+if.then6:                                         ; preds = %if.then
+  %2 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %next7 = getelementptr inbounds %struct._PerlIO* %2, i64 0, i32 0
+  %call8 = tail call i64 @Perl_PerlIO_tell(%struct._PerlIO** %next7) #10
+  %3 = getelementptr inbounds %struct._PerlIO* %0, i64 2, i32 0
+  %call8.c = inttoptr i64 %call8 to %struct._PerlIO*
+  store %struct._PerlIO* %call8.c, %struct._PerlIO** %3, align 8, !tbaa !4
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.then, %if.then6, %entry
+  %code.0 = phi i64 [ %conv3, %if.then6 ], [ %conv3, %if.then ], [ %conv, %entry ]
+  ret i64 %code.0
+}

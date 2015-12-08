@@ -1,0 +1,33 @@
+define i32 @IV_entry(%struct._IV* %iv, i32 %loc) #0 {
+entry:
+  %cmp = icmp eq %struct._IV* %iv, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str3, i64 0, i64 0), %struct._IV* null) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp slt i32 %loc, 0
+  br i1 %cmp1, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end
+  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
+  %1 = load i32* %size, align 4, !tbaa !3
+  %cmp2 = icmp sgt i32 %1, %loc
+  br i1 %cmp2, label %if.else, label %return
+
+if.else:                                          ; preds = %lor.lhs.false
+  %idxprom = sext i32 %loc to i64
+  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
+  %2 = load i32** %vec, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom
+  %3 = load i32* %arrayidx, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.end, %lor.lhs.false, %if.else
+  %retval.0 = phi i32 [ %3, %if.else ], [ -1, %lor.lhs.false ], [ -1, %if.end ]
+  ret i32 %retval.0
+}

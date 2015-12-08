@@ -1,0 +1,31 @@
+define noalias i8* @RandomSequence(i8* nocapture %alphabet, float* %p, i32 %n, i32 %len) #0 {
+entry:
+  %add = add nsw i32 %len, 1
+  %conv = sext i32 %add to i64
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), i32 199, i64 %conv) #10
+  %cmp13 = icmp sgt i32 %len, 0
+  br i1 %cmp13, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %call2 = tail call i32 @FChoose(float* %p, i32 %n) #8
+  %idxprom = sext i32 %call2 to i64
+  %arrayidx = getelementptr inbounds i8* %alphabet, i64 %idxprom
+  %0 = load i8* %arrayidx, align 1, !tbaa !1
+  %arrayidx4 = getelementptr inbounds i8* %call, i64 %indvars.iv
+  store i8 %0, i8* %arrayidx4, align 1, !tbaa !1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %len
+  br i1 %exitcond, label %for.cond.for.end_crit_edge, label %for.body
+
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %phitmp = sext i32 %len to i64
+  br label %for.end
+
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %entry
+  %x.0.lcssa = phi i64 [ %phitmp, %for.cond.for.end_crit_edge ], [ 0, %entry ]
+  %arrayidx6 = getelementptr inbounds i8* %call, i64 %x.0.lcssa
+  store i8 0, i8* %arrayidx6, align 1, !tbaa !1
+  ret i8* %call
+}

@@ -1,0 +1,60 @@
+STATIC OP *
+S_my_kid(pTHX_ OP *o, OP *attrs, OP **imopsp)
+{
+    OP *kid;
+    I32 type;
+
+    if (!o || PL_error_count)
+	return o;
+
+    type = o->op_type;
+    if (type == OP_LIST) {
+	for (kid = cLISTOPo->op_first; kid; kid = kid->op_sibling)
+	    my_kid(kid, attrs, imopsp);
+    } else if (type == OP_UNDEF) {
+	return o;
+    } else if (type == OP_RV2SV ||	/* "our" declaration */
+	       type == OP_RV2AV ||
+	       type == OP_RV2HV) { /* XXX does this let anything illegal in? */
+	if (cUNOPo->op_first->op_type != OP_GV) { /* MJD 20011224 */
+	    yyerror(Perl_form(aTHX_ "Can't declare %s in %s",
+			OP_DESC(o), PL_in_my == KEY_our ? "our" : "my"));
+	} else if (attrs) {
+	    GV *gv = cGVOPx_gv(cUNOPo->op_first);
+	    PL_in_my = FALSE;
+	    PL_in_my_stash = Nullhv;
+	    apply_attrs(GvSTASH(gv),
+			(type == OP_RV2SV ? GvSV(gv) :
+			 type == OP_RV2AV ? (SV*)GvAV(gv) :
+			 type == OP_RV2HV ? (SV*)GvHV(gv) : (SV*)gv),
+			attrs, FALSE);
+	}
+	o->op_private |= OPpOUR_INTRO;
+	return o;
+    }
+    else if (type != OP_PADSV &&
+	     type != OP_PADAV &&
+	     type != OP_PADHV &&
+	     type != OP_PUSHMARK)
+    {
+	yyerror(Perl_form(aTHX_ "Can't declare %s in \"%s\"",
+			  OP_DESC(o),
+			  PL_in_my == KEY_our ? "our" : "my"));
+	return o;
+    }
+    else if (attrs && type != OP_PUSHMARK) {
+	HV *stash;
+
+	PL_in_my = FALSE;
+	PL_in_my_stash = Nullhv;
+
+	/* check for C<my Dog $spot> when deciding package */
+	stash = PAD_COMPNAME_TYPE(o->op_targ);
+	if (!stash)
+	    stash = PL_curstash;
+	apply_attrs_my(stash, o, attrs, imopsp);
+    }
+    o->op_flags |= OPf_MOD;
+    o->op_private |= OPpLVAL_INTRO;
+    return o;
+}

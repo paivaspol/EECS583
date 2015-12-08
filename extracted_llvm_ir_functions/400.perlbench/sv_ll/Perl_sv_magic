@@ -1,0 +1,259 @@
+define void @Perl_sv_magic(%struct.sv* %sv, %struct.sv* %obj, i32 %how, i8* %name, i32 %namlen) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 8388608
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end11, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cmp = icmp eq %struct.cop* %1, @PL_compiling
+  br i1 %cmp, label %if.end11, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then
+  switch i32 %how, label %if.then10 [
+    i32 103, label %if.end11
+    i32 102, label %if.end11
+    i32 66, label %if.end11
+    i32 60, label %if.end11
+    i32 0, label %if.end11
+  ]
+
+if.then10:                                        ; preds = %land.lhs.true
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([0 x i8]* @PL_no_modify, i64 0, i64 0)) #8
+  br label %if.end11
+
+if.end11:                                         ; preds = %land.lhs.true, %land.lhs.true, %land.lhs.true, %land.lhs.true, %land.lhs.true, %if.then, %entry, %if.then10
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and13 = and i32 %2, 57344
+  %tobool14 = icmp eq i32 %and13, 0
+  br i1 %tobool14, label %lor.lhs.false, label %if.then20
+
+lor.lhs.false:                                    ; preds = %if.end11
+  switch i32 %how, label %sw.default [
+    i32 116, label %land.lhs.true16
+    i32 0, label %sw.epilog.thread
+    i32 65, label %sw.bb30
+    i32 97, label %sw.bb31
+    i32 99, label %sw.bb32
+    i32 66, label %sw.bb33
+    i32 68, label %sw.bb34
+    i32 100, label %sw.bb35
+    i32 69, label %sw.bb36
+    i32 102, label %sw.bb37
+    i32 101, label %sw.bb38
+    i32 103, label %sw.bb39
+    i32 73, label %sw.bb40
+    i32 105, label %sw.bb41
+    i32 107, label %sw.bb42
+    i32 76, label %sw.epilog
+    i32 108, label %sw.bb44
+    i32 80, label %sw.bb45
+    i32 112, label %sw.bb46
+    i32 113, label %sw.bb46
+    i32 114, label %sw.bb47
+    i32 83, label %sw.bb48
+    i32 115, label %sw.bb49
+    i32 85, label %sw.bb51
+    i32 118, label %sw.bb52
+    i32 86, label %sw.epilog
+    i32 119, label %sw.bb54
+    i32 120, label %sw.bb55
+    i32 121, label %sw.bb56
+    i32 42, label %sw.bb57
+    i32 35, label %sw.bb58
+    i32 46, label %sw.bb59
+    i32 60, label %sw.bb60
+    i32 126, label %sw.epilog
+  ]
+
+land.lhs.true16:                                  ; preds = %lor.lhs.false
+  %and18 = and i32 %2, 255
+  %cmp19 = icmp ugt i32 %and18, 6
+  br i1 %cmp19, label %if.then20, label %sw.epilog.thread90
+
+if.then20:                                        ; preds = %if.end11, %land.lhs.true16
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !0
+  %xmg_magic = getelementptr inbounds i8* %3, i64 40
+  %4 = bitcast i8* %xmg_magic to %struct.magic**
+  %5 = load %struct.magic** %4, align 8, !tbaa !0
+  %tobool21 = icmp eq %struct.magic* %5, null
+  br i1 %tobool21, label %if.end29, label %land.lhs.true22
+
+land.lhs.true22:                                  ; preds = %if.then20
+  %call = tail call %struct.magic* @Perl_mg_find(%struct.sv* %sv, i32 %how) #8
+  %tobool23 = icmp eq %struct.magic* %call, null
+  br i1 %tobool23, label %if.end29, label %if.then24
+
+if.then24:                                        ; preds = %land.lhs.true22
+  %cmp25 = icmp eq i32 %how, 116
+  br i1 %cmp25, label %if.then26, label %sw.epilog67
+
+if.then26:                                        ; preds = %if.then24
+  %mg_len = getelementptr inbounds %struct.magic* %call, i64 0, i32 7
+  %6 = load i32* %mg_len, align 4, !tbaa !3
+  %or = or i32 %6, 1
+  store i32 %or, i32* %mg_len, align 4, !tbaa !3
+  br label %sw.epilog67
+
+if.end29:                                         ; preds = %land.lhs.true22, %if.then20
+  switch i32 %how, label %sw.default [
+    i32 0, label %sw.epilog.thread
+    i32 65, label %sw.bb30
+    i32 97, label %sw.bb31
+    i32 99, label %sw.bb32
+    i32 66, label %sw.bb33
+    i32 68, label %sw.bb34
+    i32 100, label %sw.bb35
+    i32 69, label %sw.bb36
+    i32 102, label %sw.bb37
+    i32 101, label %sw.bb38
+    i32 103, label %sw.bb39
+    i32 73, label %sw.bb40
+    i32 105, label %sw.bb41
+    i32 107, label %sw.bb42
+    i32 76, label %sw.epilog
+    i32 108, label %sw.bb44
+    i32 80, label %sw.bb45
+    i32 112, label %sw.bb46
+    i32 113, label %sw.bb46
+    i32 114, label %sw.bb47
+    i32 83, label %sw.bb48
+    i32 115, label %sw.bb49
+    i32 116, label %sw.epilog.thread90
+    i32 85, label %sw.bb51
+    i32 118, label %sw.bb52
+    i32 86, label %sw.epilog
+    i32 119, label %sw.bb54
+    i32 120, label %sw.bb55
+    i32 121, label %sw.bb56
+    i32 42, label %sw.bb57
+    i32 35, label %sw.bb58
+    i32 46, label %sw.bb59
+    i32 60, label %sw.bb60
+    i32 126, label %sw.epilog
+  ]
+
+sw.bb30:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb31:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb32:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb33:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb34:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb35:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb36:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb37:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb38:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb39:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb40:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb41:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb42:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb44:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb45:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb46:                                          ; preds = %lor.lhs.false, %lor.lhs.false, %if.end29, %if.end29
+  br label %sw.epilog
+
+sw.bb47:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb48:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb49:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.epilog.thread90:                               ; preds = %if.end29, %land.lhs.true16
+  %call6191 = tail call %struct.magic* @Perl_sv_magicext(%struct.sv* %sv, %struct.sv* %obj, i32 %how, %struct.mgvtbl* @PL_vtbl_taint, i8* %name, i32 %namlen) #7
+  br label %sw.bb62
+
+sw.bb51:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb52:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb54:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb55:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb56:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb57:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb58:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb59:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.bb60:                                          ; preds = %lor.lhs.false, %if.end29
+  br label %sw.epilog.thread
+
+sw.default:                                       ; preds = %lor.lhs.false, %if.end29
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([43 x i8]* @.str36, i64 0, i64 0), i32 %how) #8
+  br label %sw.epilog
+
+sw.epilog.thread:                                 ; preds = %lor.lhs.false, %sw.bb60, %sw.bb59, %sw.bb58, %sw.bb57, %sw.bb56, %sw.bb55, %sw.bb54, %sw.bb52, %sw.bb51, %sw.bb49, %sw.bb48, %sw.bb47, %sw.bb45, %sw.bb44, %sw.bb42, %sw.bb41, %sw.bb40, %sw.bb39, %sw.bb38, %sw.bb37, %sw.bb36, %sw.bb35, %sw.bb34, %sw.bb33, %sw.bb32, %sw.bb31, %sw.bb30, %if.end29
+  %vtable.0.ph = phi %struct.mgvtbl* [ @PL_vtbl_backref, %sw.bb60 ], [ @PL_vtbl_pos, %sw.bb59 ], [ @PL_vtbl_arylen, %sw.bb58 ], [ @PL_vtbl_glob, %sw.bb57 ], [ @PL_vtbl_defelem, %sw.bb56 ], [ @PL_vtbl_substr, %sw.bb55 ], [ @PL_vtbl_utf8, %sw.bb54 ], [ @PL_vtbl_vec, %sw.bb52 ], [ @PL_vtbl_uvar, %sw.bb51 ], [ @PL_vtbl_sigelem, %sw.bb49 ], [ @PL_vtbl_sig, %sw.bb48 ], [ @PL_vtbl_regexp, %sw.bb47 ], [ @PL_vtbl_pack, %sw.bb45 ], [ @PL_vtbl_dbline, %sw.bb44 ], [ @PL_vtbl_nkeys, %sw.bb42 ], [ @PL_vtbl_isaelem, %sw.bb41 ], [ @PL_vtbl_isa, %sw.bb40 ], [ @PL_vtbl_mglob, %sw.bb39 ], [ @PL_vtbl_envelem, %sw.bb38 ], [ @PL_vtbl_fm, %sw.bb37 ], [ @PL_vtbl_env, %sw.bb36 ], [ @PL_vtbl_regdatum, %sw.bb35 ], [ @PL_vtbl_regdata, %sw.bb34 ], [ @PL_vtbl_bm, %sw.bb33 ], [ @PL_vtbl_ovrld, %sw.bb32 ], [ @PL_vtbl_amagicelem, %sw.bb31 ], [ @PL_vtbl_amagic, %sw.bb30 ], [ @PL_vtbl_sv, %if.end29 ], [ @PL_vtbl_sv, %lor.lhs.false ]
+  %call6189 = tail call %struct.magic* @Perl_sv_magicext(%struct.sv* %sv, %struct.sv* %obj, i32 %how, %struct.mgvtbl* %vtable.0.ph, i8* %name, i32 %namlen) #7
+  br label %sw.epilog67
+
+sw.epilog:                                        ; preds = %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %if.end29, %if.end29, %sw.default, %if.end29, %sw.bb46
+  %vtable.0 = phi %struct.mgvtbl* [ null, %sw.default ], [ null, %if.end29 ], [ @PL_vtbl_packelem, %sw.bb46 ], [ null, %if.end29 ], [ null, %if.end29 ], [ null, %lor.lhs.false ], [ null, %lor.lhs.false ], [ null, %lor.lhs.false ]
+  %call61 = tail call %struct.magic* @Perl_sv_magicext(%struct.sv* %sv, %struct.sv* %obj, i32 %how, %struct.mgvtbl* %vtable.0, i8* %name, i32 %namlen) #7
+  switch i32 %how, label %sw.epilog67 [
+    i32 116, label %sw.bb62
+    i32 126, label %sw.bb64
+    i32 76, label %sw.bb64
+  ]
+
+sw.bb62:                                          ; preds = %sw.epilog.thread90, %sw.epilog
+  %call6192 = phi %struct.magic* [ %call6191, %sw.epilog.thread90 ], [ %call61, %sw.epilog ]
+  %mg_len63 = getelementptr inbounds %struct.magic* %call6192, i64 0, i32 7
+  store i32 1, i32* %mg_len63, align 4, !tbaa !3
+  br label %sw.epilog67
+
+sw.bb64:                                          ; preds = %sw.epilog, %sw.epilog
+  %7 = load i32* %sv_flags, align 4, !tbaa !3
+  %or66 = or i32 %7, 32768
+  store i32 %or66, i32* %sv_flags, align 4, !tbaa !3
+  br label %sw.epilog67
+
+sw.epilog67:                                      ; preds = %sw.epilog.thread, %if.then24, %if.then26, %sw.epilog, %sw.bb64, %sw.bb62
+  ret void
+}

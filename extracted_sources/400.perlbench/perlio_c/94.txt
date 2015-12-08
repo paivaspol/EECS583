@@ -1,0 +1,13 @@
+IV
+PerlIOBuf_popped(pTHX_ PerlIO *f)
+{
+    IV code = PerlIOBase_popped(aTHX_ f);
+    PerlIOBuf *b = PerlIOSelf(f, PerlIOBuf);
+    if (b->buf && b->buf != (STDCHAR *) & b->oneword) {
+	Safefree(b->buf);
+    }
+    b->buf = NULL;
+    b->ptr = b->end = b->buf;
+    PerlIOBase(f)->flags &= ~(PERLIO_F_RDBUF | PERLIO_F_WRBUF);
+    return code;
+}

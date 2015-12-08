@@ -1,26 +1,5 @@
-static void
-do_mark_cloneable_stash(pTHX_ SV *sv)
+void
+Perl_sv_force_normal(pTHX_ register SV *sv)
 {
-    if (HvNAME((HV*)sv)) {
-	GV* cloner = gv_fetchmethod_autoload((HV*)sv, "CLONE_SKIP", 0);
-	SvFLAGS(sv) |= SVphv_CLONEABLE; /* clone objects by default */
-	if (cloner && GvCV(cloner)) {
-	    dSP;
-	    UV status;
-
-	    ENTER;
-	    SAVETMPS;
-	    PUSHMARK(SP);
-	    XPUSHs(sv_2mortal(newSVpv(HvNAME((HV*)sv), 0)));
-	    PUTBACK;
-	    call_sv((SV*)GvCV(cloner), G_SCALAR);
-	    SPAGAIN;
-	    status = POPu;
-	    PUTBACK;
-	    FREETMPS;
-	    LEAVE;
-	    if (status)
-		SvFLAGS(sv) &= ~SVphv_CLONEABLE;
-	}
-    }
+    sv_force_normal_flags(sv, 0);
 }

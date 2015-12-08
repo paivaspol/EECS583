@@ -1,0 +1,19 @@
+define void @alloc_ecache() #0 {
+entry:
+  %0 = load i32* @ECacheSize, align 4, !tbaa !0
+  %conv = sext i32 %0 to i64
+  %mul = mul i64 %conv, 12
+  %call = tail call noalias i8* @malloc(i64 %mul) #4
+  %1 = bitcast i8* %call to %struct.ECacheType*
+  store %struct.ECacheType* %1, %struct.ECacheType** @ECache, align 8, !tbaa !3
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([33 x i8]* @str, i64 0, i64 0))
+  tail call void @exit(i32 1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  ret void
+}

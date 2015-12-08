@@ -1,0 +1,24 @@
+PP(pp_bless)
+{
+    dSP;
+    HV *stash;
+
+    if (MAXARG == 1)
+	stash = CopSTASH(PL_curcop);
+    else {
+	SV *ssv = POPs;
+	STRLEN len;
+	char *ptr;
+
+	if (ssv && !SvGMAGICAL(ssv) && !SvAMAGIC(ssv) && SvROK(ssv))
+	    Perl_croak(aTHX_ "Attempt to bless into a reference");
+	ptr = SvPV(ssv,len);
+	if (ckWARN(WARN_MISC) && len == 0)
+	    Perl_warner(aTHX_ packWARN(WARN_MISC),
+		   "Explicit blessing to '' (assuming package main)");
+	stash = gv_stashpvn(ptr, len, TRUE);
+    }
+
+    (void)sv_bless(TOPs, stash);
+    RETURN;
+}

@@ -1,52 +1,69 @@
-static int
-lockf_emulate_flock(int fd, int operation)
+PP(pp_backtick)
 {
-    int i;
-    int save_errno;
-    Off_t pos;
+    dSP; dTARGET;
+    PerlIO *fp;
+    STRLEN n_a;
+    char *tmps = POPpx;
+    I32 gimme = GIMME_V;
+    char *mode = "r";
 
-    /* flock locks entire file so for lockf we need to do the same	*/
-    save_errno = errno;
-    pos = PerlLIO_lseek(fd, (Off_t)0, SEEK_CUR);    /* get pos to restore later */
-    if (pos > 0)	/* is seekable and needs to be repositioned	*/
-	if (PerlLIO_lseek(fd, (Off_t)0, SEEK_SET) < 0)
-	    pos = -1;	/* seek failed, so don't seek back afterwards	*/
-    errno = save_errno;
+    TAINT_PROPER("``");
+    if (PL_op->op_private & OPpOPEN_IN_RAW)
+	mode = "rb";
+    else if (PL_op->op_private & OPpOPEN_IN_CRLF)
+	mode = "rt";
+    fp = PerlProc_popen(tmps, mode);
+    if (fp) {
+	char *type = NULL;
+	if (PL_curcop->cop_io) {
+	    type = SvPV_nolen(PL_curcop->cop_io);
+	}
+	if (type && *type)
+	    PerlIO_apply_layers(aTHX_ fp,mode,type);
 
-    switch (operation) {
+	if (gimme == G_VOID) {
+	    char tmpbuf[256];
+	    while (PerlIO_read(fp, tmpbuf, sizeof tmpbuf) > 0)
+		/*SUPPRESS 530*/
+		;
+	}
+	else if (gimme == G_SCALAR) {
+	    ENTER;
+	    SAVESPTR(PL_rs);
+	    PL_rs = &PL_sv_undef;
+	    sv_setpv(TARG, "");	/* note that this preserves previous buffer */
+	    while (sv_gets(TARG, fp, SvCUR(TARG)) != Nullch)
+		/*SUPPRESS 530*/
+		;
+	    LEAVE;
+	    XPUSHs(TARG);
+	    SvTAINTED_on(TARG);
+	}
+	else {
+	    SV *sv;
 
-	/* LOCK_SH - get a shared lock */
-	case LOCK_SH:
-	/* LOCK_EX - get an exclusive lock */
-	case LOCK_EX:
-	    i = lockf (fd, F_LOCK, 0);
-	    break;
-
-	/* LOCK_SH|LOCK_NB - get a non-blocking shared lock */
-	case LOCK_SH|LOCK_NB:
-	/* LOCK_EX|LOCK_NB - get a non-blocking exclusive lock */
-	case LOCK_EX|LOCK_NB:
-	    i = lockf (fd, F_TLOCK, 0);
-	    if (i == -1)
-		if ((errno == EAGAIN) || (errno == EACCES))
-		    errno = EWOULDBLOCK;
-	    break;
-
-	/* LOCK_UN - unlock (non-blocking is a no-op) */
-	case LOCK_UN:
-	case LOCK_UN|LOCK_NB:
-	    i = lockf (fd, F_ULOCK, 0);
-	    break;
-
-	/* Default - can't decipher operation */
-	default:
-	    i = -1;
-	    errno = EINVAL;
-	    break;
+	    for (;;) {
+		sv = NEWSV(56, 79);
+		if (sv_gets(sv, fp, 0) == Nullch) {
+		    SvREFCNT_dec(sv);
+		    break;
+		}
+		XPUSHs(sv_2mortal(sv));
+		if (SvLEN(sv) - SvCUR(sv) > 20) {
+		    SvLEN_set(sv, SvCUR(sv)+1);
+		    Renew(SvPVX(sv), SvLEN(sv), char);
+		}
+		SvTAINTED_on(sv);
+	    }
+	}
+	STATUS_NATIVE_SET(PerlProc_pclose(fp));
+	TAINT;		/* "I believe that this is not gratuitous!" */
+    }
+    else {
+	STATUS_NATIVE_SET(-1);
+	if (gimme == G_SCALAR)
+	    RETPUSHUNDEF;
     }
 
-    if (pos > 0)      /* need to restore position of the handle	*/
-	PerlLIO_lseek(fd, pos, SEEK_SET);	/* ignore error here	*/
-
-    return (i);
+    RETURN;
 }

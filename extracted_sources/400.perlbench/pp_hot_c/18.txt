@@ -1,0 +1,161 @@
+PP(pp_add)
+{
+    dSP; dATARGET; bool useleft; tryAMAGICbin(add,opASSIGN);
+    useleft = USE_LEFT(TOPm1s);
+#ifdef PERL_PRESERVE_IVUV
+    /* We must see if we can perform the addition with integers if possible,
+       as the integer code detects overflow while the NV code doesn't.
+       If either argument hasn't had a numeric conversion yet attempt to get
+       the IV. It's important to do this now, rather than just assuming that
+       it's not IOK as a PV of "9223372036854775806" may not take well to NV
+       addition, and an SV which is NOK, NV=6.0 ought to be coerced to
+       integer in case the second argument is IV=9223372036854775806
+       We can (now) rely on sv_2iv to do the right thing, only setting the
+       public IOK flag if the value in the NV (or PV) slot is truly integer.
+
+       A side effect is that this also aggressively prefers integer maths over
+       fp maths for integer values.
+
+       How to detect overflow?
+
+       C 99 section 6.2.6.1 says
+
+       The range of nonnegative values of a signed integer type is a subrange
+       of the corresponding unsigned integer type, and the representation of
+       the same value in each type is the same. A computation involving
+       unsigned operands can never overflow, because a result that cannot be
+       represented by the resulting unsigned integer type is reduced modulo
+       the number that is one greater than the largest value that can be
+       represented by the resulting type.
+
+       (the 9th paragraph)
+
+       which I read as "unsigned ints wrap."
+
+       signed integer overflow seems to be classed as "exception condition"
+
+       If an exceptional condition occurs during the evaluation of an
+       expression (that is, if the result is not mathematically defined or not
+       in the range of representable values for its type), the behavior is
+       undefined.
+
+       (6.5, the 5th paragraph)
+
+       I had assumed that on 2s complement machines signed arithmetic would
+       wrap, hence coded pp_add and pp_subtract on the assumption that
+       everything perl builds on would be happy.  After much wailing and
+       gnashing of teeth it would seem that irix64 knows its ANSI spec well,
+       knows that it doesn't need to, and doesn't.  Bah.  Anyway, the all-
+       unsigned code below is actually shorter than the old code. :-)
+    */
+
+    SvIV_please(TOPs);
+    if (SvIOK(TOPs)) {
+	/* Unless the left argument is integer in range we are going to have to
+	   use NV maths. Hence only attempt to coerce the right argument if
+	   we know the left is integer.  */
+	register UV auv = 0;
+	bool auvok = FALSE;
+	bool a_valid = 0;
+
+	if (!useleft) {
+	    auv = 0;
+	    a_valid = auvok = 1;
+	    /* left operand is undef, treat as zero. + 0 is identity,
+	       Could SETi or SETu right now, but space optimise by not adding
+	       lots of code to speed up what is probably a rarish case.  */
+	} else {
+	    /* Left operand is defined, so is it IV? */
+	    SvIV_please(TOPm1s);
+	    if (SvIOK(TOPm1s)) {
+		if ((auvok = SvUOK(TOPm1s)))
+		    auv = SvUVX(TOPm1s);
+		else {
+		    register IV aiv = SvIVX(TOPm1s);
+		    if (aiv >= 0) {
+			auv = aiv;
+			auvok = 1;	/* Now acting as a sign flag.  */
+		    } else { /* 2s complement assumption for IV_MIN */
+			auv = (UV)-aiv;
+		    }
+		}
+		a_valid = 1;
+	    }
+	}
+	if (a_valid) {
+	    bool result_good = 0;
+	    UV result;
+	    register UV buv;
+	    bool buvok = SvUOK(TOPs);
+	
+	    if (buvok)
+		buv = SvUVX(TOPs);
+	    else {
+		register IV biv = SvIVX(TOPs);
+		if (biv >= 0) {
+		    buv = biv;
+		    buvok = 1;
+		} else
+		    buv = (UV)-biv;
+	    }
+	    /* ?uvok if value is >= 0. basically, flagged as UV if it's +ve,
+	       else "IV" now, independent of how it came in.
+	       if a, b represents positive, A, B negative, a maps to -A etc
+	       a + b =>  (a + b)
+	       A + b => -(a - b)
+	       a + B =>  (a - b)
+	       A + B => -(a + b)
+	       all UV maths. negate result if A negative.
+	       add if signs same, subtract if signs differ. */
+
+	    if (auvok ^ buvok) {
+		/* Signs differ.  */
+		if (auv >= buv) {
+		    result = auv - buv;
+		    /* Must get smaller */
+		    if (result <= auv)
+			result_good = 1;
+		} else {
+		    result = buv - auv;
+		    if (result <= buv) {
+			/* result really should be -(auv-buv). as its negation
+			   of true value, need to swap our result flag  */
+			auvok = !auvok;
+			result_good = 1;
+		    }
+		}
+	    } else {
+		/* Signs same */
+		result = auv + buv;
+		if (result >= auv)
+		    result_good = 1;
+	    }
+	    if (result_good) {
+		SP--;
+		if (auvok)
+		    SETu( result );
+		else {
+		    /* Negate result */
+		    if (result <= (UV)IV_MIN)
+			SETi( -(IV)result );
+		    else {
+			/* result valid, but out of range for IV.  */
+			SETn( -(NV)result );
+		    }
+		}
+		RETURN;
+	    } /* Overflow, drop through to NVs.  */
+	}
+    }
+#endif
+    {
+	dPOPnv;
+	if (!useleft) {
+	    /* left operand is undef, treat as zero. + 0.0 is identity. */
+	    SETn(value);
+	    RETURN;
+	}
+	SETn( value + TOPn );
+	RETURN;
+    }
+}

@@ -1,0 +1,106 @@
+define void @rc_alloc() #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %FrameSizeInMbs = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 111
+  %1 = load i32* %FrameSizeInMbs, align 4, !tbaa !3
+  %conv = zext i32 %1 to i64
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 8) #7
+  %2 = bitcast i8* %call to double*
+  %MADofMB = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 131
+  store double* %2, double** %MADofMB, align 8, !tbaa !0
+  %3 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %MADofMB1 = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 131
+  %4 = load double** %MADofMB1, align 8, !tbaa !0
+  %cmp = icmp eq double* %4, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str, i64 0, i64 0)) #7
+  %.pre = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %5 = phi %struct.ImageParameters* [ %.pre, %if.then ], [ %3, %entry ]
+  %FrameSizeInMbs3 = getelementptr inbounds %struct.ImageParameters* %5, i64 0, i32 111
+  %6 = load i32* %FrameSizeInMbs3, align 4, !tbaa !3
+  %7 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %basicunit = getelementptr inbounds %struct.InputParameters* %7, i64 0, i32 130
+  %8 = load i32* %basicunit, align 4, !tbaa !3
+  %div = udiv i32 %6, %8
+  %conv4 = zext i32 %div to i64
+  %call5 = tail call noalias i8* @calloc(i64 %conv4, i64 8) #7
+  %9 = bitcast i8* %call5 to double*
+  store double* %9, double** @BUPFMAD, align 8, !tbaa !0
+  %cmp6 = icmp eq i8* %call5, null
+  br i1 %cmp6, label %if.then8, label %if.end9
+
+if.then8:                                         ; preds = %if.end
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str1, i64 0, i64 0)) #7
+  %.pre37 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %.pre38 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.then8, %if.end
+  %10 = phi %struct.InputParameters* [ %.pre38, %if.then8 ], [ %7, %if.end ]
+  %11 = phi %struct.ImageParameters* [ %.pre37, %if.then8 ], [ %5, %if.end ]
+  %FrameSizeInMbs10 = getelementptr inbounds %struct.ImageParameters* %11, i64 0, i32 111
+  %12 = load i32* %FrameSizeInMbs10, align 4, !tbaa !3
+  %basicunit11 = getelementptr inbounds %struct.InputParameters* %10, i64 0, i32 130
+  %13 = load i32* %basicunit11, align 4, !tbaa !3
+  %div12 = udiv i32 %12, %13
+  %conv13 = zext i32 %div12 to i64
+  %call14 = tail call noalias i8* @calloc(i64 %conv13, i64 8) #7
+  %14 = bitcast i8* %call14 to double*
+  store double* %14, double** @BUCFMAD, align 8, !tbaa !0
+  %cmp15 = icmp eq i8* %call14, null
+  br i1 %cmp15, label %if.then17, label %if.end18
+
+if.then17:                                        ; preds = %if.end9
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str2, i64 0, i64 0)) #7
+  %.pre39 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %.pre40 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.then17, %if.end9
+  %15 = phi %struct.InputParameters* [ %.pre40, %if.then17 ], [ %10, %if.end9 ]
+  %16 = phi %struct.ImageParameters* [ %.pre39, %if.then17 ], [ %11, %if.end9 ]
+  %FrameSizeInMbs19 = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 111
+  %17 = load i32* %FrameSizeInMbs19, align 4, !tbaa !3
+  %basicunit20 = getelementptr inbounds %struct.InputParameters* %15, i64 0, i32 130
+  %18 = load i32* %basicunit20, align 4, !tbaa !3
+  %div21 = udiv i32 %17, %18
+  %conv22 = zext i32 %div21 to i64
+  %call23 = tail call noalias i8* @calloc(i64 %conv22, i64 8) #7
+  %19 = bitcast i8* %call23 to double*
+  store double* %19, double** @FCBUCFMAD, align 8, !tbaa !0
+  %cmp24 = icmp eq i8* %call23, null
+  br i1 %cmp24, label %if.then26, label %if.end27
+
+if.then26:                                        ; preds = %if.end18
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([25 x i8]* @.str3, i64 0, i64 0)) #7
+  %.pre41 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %.pre42 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.then26, %if.end18
+  %20 = phi %struct.InputParameters* [ %.pre42, %if.then26 ], [ %15, %if.end18 ]
+  %21 = phi %struct.ImageParameters* [ %.pre41, %if.then26 ], [ %16, %if.end18 ]
+  %FrameSizeInMbs28 = getelementptr inbounds %struct.ImageParameters* %21, i64 0, i32 111
+  %22 = load i32* %FrameSizeInMbs28, align 4, !tbaa !3
+  %basicunit29 = getelementptr inbounds %struct.InputParameters* %20, i64 0, i32 130
+  %23 = load i32* %basicunit29, align 4, !tbaa !3
+  %div30 = udiv i32 %22, %23
+  %conv31 = zext i32 %div30 to i64
+  %call32 = tail call noalias i8* @calloc(i64 %conv31, i64 8) #7
+  %24 = bitcast i8* %call32 to double*
+  store double* %24, double** @FCBUPFMAD, align 8, !tbaa !0
+  %cmp33 = icmp eq i8* %call32, null
+  br i1 %cmp33, label %if.then35, label %if.end36
+
+if.then35:                                        ; preds = %if.end27
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([25 x i8]* @.str4, i64 0, i64 0)) #7
+  br label %if.end36
+
+if.end36:                                         ; preds = %if.then35, %if.end27
+  ret void
+}

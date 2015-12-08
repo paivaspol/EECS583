@@ -1,0 +1,84 @@
+define i32 @PerlIOUnix_oflags(i8* nocapture %mode) #1 {
+entry:
+  %0 = load i8* %mode, align 1, !tbaa !1
+  switch i8 %0, label %if.end [
+    i8 73, label %if.then
+    i8 35, label %if.then
+  ]
+
+if.then:                                          ; preds = %entry, %entry
+  %incdec.ptr = getelementptr inbounds i8* %mode, i64 1
+  %.pre = load i8* %incdec.ptr, align 1, !tbaa !1
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %1 = phi i8 [ %.pre, %if.then ], [ %0, %entry ]
+  %mode.addr.0 = phi i8* [ %incdec.ptr, %if.then ], [ %mode, %entry ]
+  %conv5 = sext i8 %1 to i32
+  switch i32 %conv5, label %sw.epilog [
+    i32 114, label %sw.bb
+    i32 119, label %sw.bb13
+    i32 97, label %sw.bb22
+  ]
+
+sw.bb:                                            ; preds = %if.end
+  %incdec.ptr6 = getelementptr inbounds i8* %mode.addr.0, i64 1
+  %2 = load i8* %incdec.ptr6, align 1, !tbaa !1
+  %cmp8 = icmp eq i8 %2, 43
+  %incdec.ptr11 = getelementptr inbounds i8* %mode.addr.0, i64 2
+  %incdec.ptr11.incdec.ptr6 = select i1 %cmp8, i8* %incdec.ptr11, i8* %incdec.ptr6
+  %. = select i1 %cmp8, i32 2, i32 0
+  br label %sw.epilog
+
+sw.bb13:                                          ; preds = %if.end
+  %incdec.ptr14 = getelementptr inbounds i8* %mode.addr.0, i64 1
+  %3 = load i8* %incdec.ptr14, align 1, !tbaa !1
+  %cmp16 = icmp eq i8 %3, 43
+  %incdec.ptr19 = getelementptr inbounds i8* %mode.addr.0, i64 2
+  %incdec.ptr19.incdec.ptr14 = select i1 %cmp16, i8* %incdec.ptr19, i8* %incdec.ptr14
+  %.74 = select i1 %cmp16, i32 578, i32 577
+  br label %sw.epilog
+
+sw.bb22:                                          ; preds = %if.end
+  %incdec.ptr23 = getelementptr inbounds i8* %mode.addr.0, i64 1
+  %4 = load i8* %incdec.ptr23, align 1, !tbaa !1
+  %cmp25 = icmp eq i8 %4, 43
+  %incdec.ptr29 = getelementptr inbounds i8* %mode.addr.0, i64 2
+  %incdec.ptr29.incdec.ptr23 = select i1 %cmp25, i8* %incdec.ptr29, i8* %incdec.ptr23
+  %.75 = select i1 %cmp25, i32 1090, i32 1089
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %sw.bb22, %sw.bb13, %sw.bb, %if.end
+  %mode.addr.1 = phi i8* [ %mode.addr.0, %if.end ], [ %incdec.ptr11.incdec.ptr6, %sw.bb ], [ %incdec.ptr19.incdec.ptr14, %sw.bb13 ], [ %incdec.ptr29.incdec.ptr23, %sw.bb22 ]
+  %oflags.0 = phi i32 [ -1, %if.end ], [ %., %sw.bb ], [ %.74, %sw.bb13 ], [ %.75, %sw.bb22 ]
+  %5 = load i8* %mode.addr.1, align 1, !tbaa !1
+  switch i8 %5, label %if.end45 [
+    i8 98, label %if.then36
+    i8 116, label %if.then42
+  ]
+
+if.then36:                                        ; preds = %sw.epilog
+  %incdec.ptr37 = getelementptr inbounds i8* %mode.addr.1, i64 1
+  br label %if.end45
+
+if.then42:                                        ; preds = %sw.epilog
+  %incdec.ptr43 = getelementptr inbounds i8* %mode.addr.1, i64 1
+  br label %if.end45
+
+if.end45:                                         ; preds = %sw.epilog, %if.then42, %if.then36
+  %mode.addr.2 = phi i8* [ %incdec.ptr37, %if.then36 ], [ %incdec.ptr43, %if.then42 ], [ %mode.addr.1, %sw.epilog ]
+  %6 = load i8* %mode.addr.2, align 1, !tbaa !1
+  %tobool = icmp ne i8 %6, 0
+  %cmp48 = icmp eq i32 %oflags.0, -1
+  %or.cond = or i1 %tobool, %cmp48
+  br i1 %or.cond, label %if.then50, label %if.end51
+
+if.then50:                                        ; preds = %if.end45
+  %call = tail call i32* @__errno_location() #9
+  store i32 22, i32* %call, align 4, !tbaa !0
+  br label %if.end51
+
+if.end51:                                         ; preds = %if.end45, %if.then50
+  %oflags.2 = phi i32 [ -1, %if.then50 ], [ %oflags.0, %if.end45 ]
+  ret i32 %oflags.2
+}

@@ -1,5 +1,11 @@
 void
-schedule(void)
+Perl_atfork_unlock(void)
 {
-    thr = thr->i.next_run;
+#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
+    /* locks must be released in same order as in atfork_lock() */
+#  ifdef MYMALLOC
+    MUTEX_UNLOCK(&PL_malloc_mutex);
+#  endif
+    OP_REFCNT_UNLOCK;
+#endif
 }

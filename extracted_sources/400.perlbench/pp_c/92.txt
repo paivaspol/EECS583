@@ -1,0 +1,61 @@
+PP(pp_ucfirst)
+{
+    dSP;
+    SV *sv = TOPs;
+    register U8 *s;
+    STRLEN slen;
+
+    SvGETMAGIC(sv);
+    if (DO_UTF8(sv) &&
+	(s = (U8*)SvPV_nomg(sv, slen)) && slen &&
+	UTF8_IS_START(*s)) {
+	U8 tmpbuf[UTF8_MAXBYTES_CASE+1];
+	STRLEN ulen;
+	STRLEN tculen;
+
+	utf8_to_uvchr(s, &ulen);
+	toTITLE_utf8(s, tmpbuf, &tculen);
+	utf8_to_uvchr(tmpbuf, 0);
+
+	if (!SvPADTMP(sv) || SvREADONLY(sv)) {
+	    dTARGET;
+	    /* slen is the byte length of the whole SV.
+	     * ulen is the byte length of the original Unicode character
+	     * stored as UTF-8 at s.
+	     * tculen is the byte length of the freshly titlecased
+	     * Unicode character stored as UTF-8 at tmpbuf.
+	     * We first set the result to be the titlecased character,
+	     * and then append the rest of the SV data. */
+	    sv_setpvn(TARG, (char*)tmpbuf, tculen);
+	    if (slen > ulen)
+	        sv_catpvn(TARG, (char*)(s + ulen), slen - ulen);
+	    SvUTF8_on(TARG);
+	    SETs(TARG);
+	}
+	else {
+	    s = (U8*)SvPV_force_nomg(sv, slen);
+	    Copy(tmpbuf, s, tculen, U8);
+	}
+    }
+    else {
+	if (!SvPADTMP(sv) || SvREADONLY(sv)) {
+	    dTARGET;
+	    SvUTF8_off(TARG);				/* decontaminate */
+	    sv_setsv_nomg(TARG, sv);
+	    sv = TARG;
+	    SETs(sv);
+	}
+	s = (U8*)SvPV_force_nomg(sv, slen);
+	if (*s) {
+	    if (IN_LOCALE_RUNTIME) {
+		TAINT;
+		SvTAINTED_on(sv);
+		*s = toUPPER_LC(*s);
+	    }
+	    else
+		*s = toUPPER(*s);
+	}
+    }
+    SvSETMAGIC(sv);
+    RETURN;
+}

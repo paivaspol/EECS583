@@ -1,30 +1,75 @@
 int
-Perl_magic_getsig(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_setenv(pTHX_ SV *sv, MAGIC *mg)
 {
-    I32 i;
-    STRLEN n_a;
-    /* Are we fetching a signal entry? */
-    i = whichsig(MgPV(mg,n_a));
-    if (i > 0) {
-    	if(PL_psig_ptr[i])
-    	    sv_setsv(sv,PL_psig_ptr[i]);
-    	else {
-    	    Sighandler_t sigstate;
-    	    sigstate = rsignal_state(i);
-#ifdef FAKE_PERSISTENT_SIGNAL_HANDLERS
-    	    if (sig_handlers_initted && sig_ignoring[i]) sigstate = SIG_IGN;
-#endif
-#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
-    	    if (sig_handlers_initted && sig_defaulting[i]) sigstate = SIG_DFL;
-#endif
-    	    /* cache state so we don't fetch it again */
-    	    if(sigstate == SIG_IGN)
-    	    	sv_setpv(sv,"IGNORE");
-    	    else
-    	    	sv_setsv(sv,&PL_sv_undef);
-    	    PL_psig_ptr[i] = SvREFCNT_inc(sv);
-    	    SvTEMP_off(sv);
-    	}
+    register char *s;
+    char *ptr;
+    STRLEN len, klen;
+
+    s = SvPV(sv,len);
+    ptr = MgPV(mg,klen);
+    my_setenv(ptr, s);
+
+#ifdef DYNAMIC_ENV_FETCH
+     /* We just undefd an environment var.  Is a replacement */
+     /* waiting in the wings? */
+    if (!len) {
+	SV **valp;
+	if ((valp = hv_fetch(GvHVn(PL_envgv), ptr, klen, FALSE)))
+	    s = SvPV(*valp, len);
     }
+#endif
+
+#if !defined(OS2) && !defined(AMIGAOS) && !defined(WIN32) && !defined(MSDOS)
+			    /* And you'll never guess what the dog had */
+			    /*   in its mouth... */
+    if (PL_tainting) {
+	MgTAINTEDDIR_off(mg);
+#ifdef VMS
+	if (s && klen == 8 && strEQ(ptr, "DCL$PATH")) {
+	    char pathbuf[256], eltbuf[256], *cp, *elt = s;
+	    Stat_t sbuf;
+	    int i = 0, j = 0;
+
+	    do {          /* DCL$PATH may be a search list */
+		while (1) {   /* as may dev portion of any element */
+		    if ( ((cp = strchr(elt,'[')) || (cp = strchr(elt,'<'))) ) {
+			if ( *(cp+1) == '.' || *(cp+1) == '-' ||
+			     cando_by_name(S_IWUSR,0,elt) ) {
+			    MgTAINTEDDIR_on(mg);
+			    return 0;
+			}
+		    }
+		    if ((cp = strchr(elt, ':')) != Nullch)
+			*cp = '\0';
+		    if (my_trnlnm(elt, eltbuf, j++))
+			elt = eltbuf;
+		    else
+			break;
+		}
+		j = 0;
+	    } while (my_trnlnm(s, pathbuf, i++) && (elt = pathbuf));
+	}
+#endif /* VMS */
+	if (s && klen == 4 && strEQ(ptr,"PATH")) {
+	    char *strend = s + len;
+
+	    while (s < strend) {
+		char tmpbuf[256];
+		Stat_t st;
+		I32 i;
+		s = delimcpy(tmpbuf, tmpbuf + sizeof tmpbuf,
+			     s, strend, ':', &i);
+		s++;
+		if (i >= sizeof tmpbuf   /* too long -- assume the worst */
+		      || *tmpbuf != '/'
+		      || (PerlLIO_stat(tmpbuf, &st) == 0 && (st.st_mode & 2)) ) {
+		    MgTAINTEDDIR_on(mg);
+		    return 0;
+		}
+	    }
+	}
+    }
+#endif /* neither OS2 nor AMIGAOS nor WIN32 nor MSDOS */
+
     return 0;
 }

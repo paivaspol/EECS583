@@ -1,0 +1,184 @@
+define void @losers_pn_eval(%struct.node* nocapture %this) #0 {
+entry:
+  %moves = alloca [512 x %struct.move_s], align 16
+  %0 = bitcast [512 x %struct.move_s]* %moves to i8*
+  call void @llvm.lifetime.start(i64 12288, i8* %0) #2
+  %evaluated = getelementptr inbounds %struct.node* %this, i64 0, i32 3
+  store i8 1, i8* %evaluated, align 1, !tbaa !1
+  %1 = load i32* @piece_count, align 4, !tbaa !0
+  %cmp126 = icmp slt i32 %1, 1
+  br i1 %cmp126, label %if.then12, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 1, %entry ]
+  %bp.0130 = phi i32 [ %bp.2, %for.inc ], [ 0, %entry ]
+  %wp.0129 = phi i32 [ %wp.2, %for.inc ], [ 0, %entry ]
+  %a.0128 = phi i32 [ %a.1, %for.inc ], [ 1, %entry ]
+  %arrayidx = getelementptr inbounds [62 x i32]* @pieces, i64 0, i64 %indvars.iv
+  %2 = load i32* %arrayidx, align 4, !tbaa !0
+  %tobool = icmp eq i32 %2, 0
+  br i1 %tobool, label %for.inc, label %if.else
+
+if.else:                                          ; preds = %for.body
+  %inc = add nsw i32 %a.0128, 1
+  %idxprom1 = sext i32 %2 to i64
+  %arrayidx2 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom1
+  %3 = load i32* %arrayidx2, align 4, !tbaa !0
+  switch i32 %3, label %sw.epilog [
+    i32 1, label %sw.bb
+    i32 11, label %sw.bb
+    i32 7, label %sw.bb
+    i32 9, label %sw.bb
+    i32 3, label %sw.bb
+    i32 2, label %sw.bb4
+    i32 12, label %sw.bb4
+    i32 8, label %sw.bb4
+    i32 10, label %sw.bb4
+    i32 4, label %sw.bb4
+  ]
+
+sw.bb:                                            ; preds = %if.else, %if.else, %if.else, %if.else, %if.else
+  %inc3 = add nsw i32 %wp.0129, 1
+  br label %sw.epilog
+
+sw.bb4:                                           ; preds = %if.else, %if.else, %if.else, %if.else, %if.else
+  %inc5 = add nsw i32 %bp.0130, 1
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %if.else, %sw.bb4, %sw.bb
+  %wp.1 = phi i32 [ %wp.0129, %if.else ], [ %wp.0129, %sw.bb4 ], [ %inc3, %sw.bb ]
+  %bp.1 = phi i32 [ %bp.0130, %if.else ], [ %inc5, %sw.bb4 ], [ %bp.0130, %sw.bb ]
+  %tobool6 = icmp eq i32 %wp.1, 0
+  %tobool7 = icmp eq i32 %bp.1, 0
+  %or.cond = or i1 %tobool6, %tobool7
+  br i1 %or.cond, label %for.inc, label %for.end
+
+for.inc:                                          ; preds = %sw.epilog, %for.body
+  %a.1 = phi i32 [ %inc, %sw.epilog ], [ %a.0128, %for.body ]
+  %wp.2 = phi i32 [ %wp.1, %sw.epilog ], [ %wp.0129, %for.body ]
+  %bp.2 = phi i32 [ %bp.1, %sw.epilog ], [ %bp.0130, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %cmp = icmp sgt i32 %a.1, %1
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %sw.epilog
+  %wp.3 = phi i32 [ %wp.1, %sw.epilog ], [ %wp.2, %for.inc ]
+  %bp.3 = phi i32 [ %bp.1, %sw.epilog ], [ %bp.2, %for.inc ]
+  %tobool11 = icmp eq i32 %wp.3, 0
+  br i1 %tobool11, label %if.then12, label %if.else18
+
+if.then12:                                        ; preds = %entry, %for.end
+  %4 = load i32* @root_to_move, align 4, !tbaa !0
+  %tobool13 = icmp eq i32 %4, 0
+  %value16 = getelementptr inbounds %struct.node* %this, i64 0, i32 0
+  %. = zext i1 %tobool13 to i8
+  store i8 %., i8* %value16, align 1, !tbaa !1
+  br label %cleanup
+
+if.else18:                                        ; preds = %for.end
+  %tobool19 = icmp eq i32 %bp.3, 0
+  br i1 %tobool19, label %if.then20, label %if.end28
+
+if.then20:                                        ; preds = %if.else18
+  %5 = load i32* @root_to_move, align 4, !tbaa !0
+  %value23 = getelementptr inbounds %struct.node* %this, i64 0, i32 0
+  %not.tobool21 = icmp ne i32 %5, 0
+  %.112 = zext i1 %not.tobool21 to i8
+  store i8 %.112, i8* %value23, align 1, !tbaa !1
+  br label %cleanup
+
+if.end28:                                         ; preds = %if.else18
+  %6 = load i32* @white_to_move, align 4, !tbaa !0
+  %tobool29 = icmp eq i32 %6, 0
+  br i1 %tobool29, label %land.lhs.true33, label %land.lhs.true30
+
+land.lhs.true30:                                  ; preds = %if.end28
+  %7 = load i32* @wking_loc, align 4, !tbaa !0
+  %call = call i32 @is_attacked(i32 %7, i32 0) #6
+  %tobool31 = icmp eq i32 %call, 0
+  br i1 %tobool31, label %lor.lhs.false, label %if.then36
+
+lor.lhs.false:                                    ; preds = %land.lhs.true30
+  %.pr = load i32* @white_to_move, align 4, !tbaa !0
+  %tobool32 = icmp eq i32 %.pr, 0
+  br i1 %tobool32, label %land.lhs.true33, label %if.else82
+
+land.lhs.true33:                                  ; preds = %if.end28, %lor.lhs.false
+  %8 = load i32* @bking_loc, align 4, !tbaa !0
+  %call34 = call i32 @is_attacked(i32 %8, i32 1) #6
+  %tobool35 = icmp eq i32 %call34, 0
+  br i1 %tobool35, label %if.else82, label %if.then36
+
+if.then36:                                        ; preds = %land.lhs.true30, %land.lhs.true33
+  store i32 1, i32* @captures, align 4, !tbaa !1
+  %arrayidx37 = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0
+  call void @gen(%struct.move_s* %arrayidx37) #6
+  %9 = load i32* @numb_moves, align 4, !tbaa !0
+  store i32 0, i32* @captures, align 4, !tbaa !1
+  %cmp39124 = icmp sgt i32 %9, 0
+  br i1 %cmp39124, label %for.body40, label %if.then53
+
+for.cond38:                                       ; preds = %for.body40
+  %cmp39 = icmp slt i32 %inc50, %9
+  br i1 %cmp39, label %for.body40, label %if.then53
+
+for.body40:                                       ; preds = %if.then36, %for.cond38
+  %i.0125 = phi i32 [ %inc50, %for.cond38 ], [ 0, %if.then36 ]
+  call void @make(%struct.move_s* %arrayidx37, i32 %i.0125) #6
+  %call43 = call i32 @check_legal(%struct.move_s* %arrayidx37, i32 %i.0125, i32 1) #6
+  %tobool44 = icmp eq i32 %call43, 0
+  call void @unmake(%struct.move_s* %arrayidx37, i32 %i.0125) #6
+  %inc50 = add nsw i32 %i.0125, 1
+  br i1 %tobool44, label %for.cond38, label %if.else79
+
+if.then53:                                        ; preds = %for.cond38, %if.then36
+  store i32 0, i32* @captures, align 4, !tbaa !1
+  call void @gen(%struct.move_s* %arrayidx37) #6
+  %10 = load i32* @numb_moves, align 4, !tbaa !0
+  %cmp56121 = icmp sgt i32 %10, 0
+  br i1 %cmp56121, label %for.body57, label %if.then71
+
+for.cond55:                                       ; preds = %for.body57
+  %cmp56 = icmp slt i32 %inc67, %10
+  br i1 %cmp56, label %for.body57, label %if.then71
+
+for.body57:                                       ; preds = %if.then53, %for.cond55
+  %i.1122 = phi i32 [ %inc67, %for.cond55 ], [ 0, %if.then53 ]
+  call void @make(%struct.move_s* %arrayidx37, i32 %i.1122) #6
+  %call60 = call i32 @check_legal(%struct.move_s* %arrayidx37, i32 %i.1122, i32 1) #6
+  %tobool61 = icmp eq i32 %call60, 0
+  call void @unmake(%struct.move_s* %arrayidx37, i32 %i.1122) #6
+  %inc67 = add nsw i32 %i.1122, 1
+  br i1 %tobool61, label %for.cond55, label %if.else79
+
+if.then71:                                        ; preds = %for.cond55, %if.then53
+  %11 = load i32* @white_to_move, align 4, !tbaa !0
+  %not.tobool72 = icmp eq i32 %11, 0
+  %cond = zext i1 %not.tobool72 to i32
+  %12 = load i32* @root_to_move, align 4, !tbaa !0
+  %cmp73 = icmp eq i32 %cond, %12
+  %value75 = getelementptr inbounds %struct.node* %this, i64 0, i32 0
+  br i1 %cmp73, label %if.then74, label %if.else76
+
+if.then74:                                        ; preds = %if.then71
+  store i8 1, i8* %value75, align 1, !tbaa !1
+  br label %cleanup
+
+if.else76:                                        ; preds = %if.then71
+  store i8 0, i8* %value75, align 1, !tbaa !1
+  br label %cleanup
+
+if.else79:                                        ; preds = %for.body40, %for.body57
+  %value80 = getelementptr inbounds %struct.node* %this, i64 0, i32 0
+  store i8 2, i8* %value80, align 1, !tbaa !1
+  br label %cleanup
+
+if.else82:                                        ; preds = %land.lhs.true33, %lor.lhs.false
+  %value83 = getelementptr inbounds %struct.node* %this, i64 0, i32 0
+  store i8 2, i8* %value83, align 1, !tbaa !1
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.else82, %if.then74, %if.else76, %if.else79, %if.then20, %if.then12
+  call void @llvm.lifetime.end(i64 12288, i8* %0) #2
+  ret void
+}

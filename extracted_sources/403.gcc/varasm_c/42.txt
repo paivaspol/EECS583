@@ -1,26 +1,224 @@
 void
-assemble_external (decl)
-     tree decl ATTRIBUTE_UNUSED;
+assemble_variable (decl, top_level, at_end, dont_output_data)
+     tree decl;
+     int top_level ATTRIBUTE_UNUSED;
+     int at_end ATTRIBUTE_UNUSED;
+     int dont_output_data;
 {
-  /* Because most platforms do not define ASM_OUTPUT_EXTERNAL, the
-     main body of this code is only rarely exercised.  To provide some
-     testing, on all platforms, we make sure that the ASM_OUT_FILE is
-     open.  If it's not, we should not be calling this function.  */
-  if (!asm_out_file)
-    abort ();
+  const char *name;
+  unsigned int align;
+  int reloc = 0;
+  rtx decl_rtl;
 
-#ifdef ASM_OUTPUT_EXTERNAL
-  if (DECL_P (decl) && DECL_EXTERNAL (decl) && TREE_PUBLIC (decl))
+  last_assemble_variable_decl = 0;
+
+  /* Normally no need to say anything here for external references,
+     since assemble_external is called by the language-specific code
+     when a declaration is first seen.  */
+
+  if (DECL_EXTERNAL (decl))
+    return;
+
+  /* Output no assembler code for a function declaration.
+     Only definitions of functions output anything.  */
+
+  if (TREE_CODE (decl) == FUNCTION_DECL)
+    return;
+
+  /* Do nothing for global register variables.  */
+  if (DECL_RTL_SET_P (decl) && GET_CODE (DECL_RTL (decl)) == REG)
     {
-      rtx rtl = DECL_RTL (decl);
-
-      if (GET_CODE (rtl) == MEM && GET_CODE (XEXP (rtl, 0)) == SYMBOL_REF
-	  && ! SYMBOL_REF_USED (XEXP (rtl, 0)))
-	{
-	  /* Some systems do require some output.  */
-	  SYMBOL_REF_USED (XEXP (rtl, 0)) = 1;
-	  ASM_OUTPUT_EXTERNAL (asm_out_file, decl, XSTR (XEXP (rtl, 0), 0));
-	}
+      TREE_ASM_WRITTEN (decl) = 1;
+      return;
     }
+
+  /* If type was incomplete when the variable was declared,
+     see if it is complete now.  */
+
+  if (DECL_SIZE (decl) == 0)
+    layout_decl (decl, 0);
+
+  /* Still incomplete => don't allocate it; treat the tentative defn
+     (which is what it must have been) as an `extern' reference.  */
+
+  if (!dont_output_data && DECL_SIZE (decl) == 0)
+    {
+      error_with_file_and_line (DECL_SOURCE_FILE (decl),
+				DECL_SOURCE_LINE (decl),
+				"storage size of `%s' isn't known",
+				IDENTIFIER_POINTER (DECL_NAME (decl)));
+      TREE_ASM_WRITTEN (decl) = 1;
+      return;
+    }
+
+  /* The first declaration of a variable that comes through this function
+     decides whether it is global (in C, has external linkage)
+     or local (in C, has internal linkage).  So do nothing more
+     if this function has already run.  */
+
+  if (TREE_ASM_WRITTEN (decl))
+    return;
+
+  /* Make sure ENCODE_SECTION_INFO is invoked before we set ASM_WRITTEN.  */
+  decl_rtl = DECL_RTL (decl);
+
+  TREE_ASM_WRITTEN (decl) = 1;
+
+  /* Do no output if -fsyntax-only.  */
+  if (flag_syntax_only)
+    return;
+
+  app_disable ();
+
+  if (! dont_output_data
+      && ! host_integerp (DECL_SIZE_UNIT (decl), 1))
+    {
+      error_with_decl (decl, "size of variable `%s' is too large");
+      return;
+    }
+
+  name = XSTR (XEXP (decl_rtl, 0), 0);
+  if (TREE_PUBLIC (decl) && DECL_NAME (decl)
+      && ! first_global_object_name
+      && ! (DECL_COMMON (decl) && (DECL_INITIAL (decl) == 0
+				   || DECL_INITIAL (decl) == error_mark_node))
+      && ! DECL_WEAK (decl)
+      && ! DECL_ONE_ONLY (decl))
+    {
+      const char *p;
+      char *xname;
+
+      STRIP_NAME_ENCODING (p, name);
+      xname = permalloc (strlen (p) + 1);
+      strcpy (xname, p);
+      first_global_object_name = xname;
+    }
+
+  /* Compute the alignment of this data.  */
+
+  align = DECL_ALIGN (decl);
+
+  /* In the case for initialing an array whose length isn't specified,
+     where we have not yet been able to do the layout,
+     figure out the proper alignment now.  */
+  if (dont_output_data && DECL_SIZE (decl) == 0
+      && TREE_CODE (TREE_TYPE (decl)) == ARRAY_TYPE)
+    align = MAX (align, TYPE_ALIGN (TREE_TYPE (TREE_TYPE (decl))));
+
+  /* Some object file formats have a maximum alignment which they support.
+     In particular, a.out format supports a maximum alignment of 4.  */
+#ifndef MAX_OFILE_ALIGNMENT
+#define MAX_OFILE_ALIGNMENT BIGGEST_ALIGNMENT
 #endif
+  if (align > MAX_OFILE_ALIGNMENT)
+    {
+      warning_with_decl (decl,
+	"alignment of `%s' is greater than maximum object file alignment. Using %d",
+                    MAX_OFILE_ALIGNMENT/BITS_PER_UNIT);
+      align = MAX_OFILE_ALIGNMENT;
+    }
+
+  /* On some machines, it is good to increase alignment sometimes.  */
+  if (! DECL_USER_ALIGN (decl))
+    {
+#ifdef DATA_ALIGNMENT
+      align = DATA_ALIGNMENT (TREE_TYPE (decl), align);
+#endif
+#ifdef CONSTANT_ALIGNMENT
+      if (DECL_INITIAL (decl) != 0 && DECL_INITIAL (decl) != error_mark_node)
+        align = CONSTANT_ALIGNMENT (DECL_INITIAL (decl), align);
+#endif
+    }
+
+  /* Reset the alignment in case we have made it tighter, so we can benefit
+     from it in get_pointer_alignment.  */
+  DECL_ALIGN (decl) = align;
+  set_mem_align (decl_rtl, align);
+
+  /* Handle uninitialized definitions.  */
+
+  if ((DECL_INITIAL (decl) == 0 || DECL_INITIAL (decl) == error_mark_node)
+      /* If the target can't output uninitialized but not common global data
+	 in .bss, then we have to use .data.  */
+#if ! defined ASM_EMIT_BSS
+      && DECL_COMMON (decl)
+#endif
+      && DECL_SECTION_NAME (decl) == NULL_TREE
+      && ! dont_output_data)
+    {
+      unsigned HOST_WIDE_INT size = tree_low_cst (DECL_SIZE_UNIT (decl), 1);
+      unsigned HOST_WIDE_INT rounded = size;
+
+      /* Don't allocate zero bytes of common,
+	 since that means "undefined external" in the linker.  */
+      if (size == 0)
+	rounded = 1;
+
+      /* Round size up to multiple of BIGGEST_ALIGNMENT bits
+	 so that each uninitialized object starts on such a boundary.  */
+      rounded += (BIGGEST_ALIGNMENT / BITS_PER_UNIT) - 1;
+      rounded = (rounded / (BIGGEST_ALIGNMENT / BITS_PER_UNIT)
+		 * (BIGGEST_ALIGNMENT / BITS_PER_UNIT));
+
+/* Don't continue this line--convex cc version 4.1 would lose.  */
+#if !defined(ASM_OUTPUT_ALIGNED_COMMON) && !defined(ASM_OUTPUT_ALIGNED_DECL_COMMON) && !defined(ASM_OUTPUT_ALIGNED_BSS)
+      if ((unsigned HOST_WIDE_INT) DECL_ALIGN (decl) / BITS_PER_UNIT > rounded)
+         warning_with_decl
+           (decl, "requested alignment for %s is greater than implemented alignment of %d",rounded);
+#endif
+
+      asm_emit_uninitialised (decl, name, size, rounded);
+
+      return;
+    }
+
+  /* Handle initialized definitions.
+     Also handle uninitialized global definitions if -fno-common and the
+     target doesn't support ASM_OUTPUT_BSS.  */
+
+  /* First make the assembler name(s) global if appropriate.  */
+  if (TREE_PUBLIC (decl) && DECL_NAME (decl))
+    globalize_decl (decl);
+
+  /* Output any data that we will need to use the address of.  */
+  if (DECL_INITIAL (decl) == error_mark_node)
+    reloc = contains_pointers_p (TREE_TYPE (decl)) ? 3 : 0;
+  else if (DECL_INITIAL (decl))
+    reloc = output_addressed_constants (DECL_INITIAL (decl));
+
+  /* Switch to the appropriate section.  */
+  resolve_unique_section (decl, reloc, flag_data_sections);
+  variable_section (decl, reloc);
+
+  /* dbxout.c needs to know this.  */
+  if (in_text_section ())
+    DECL_IN_TEXT_SECTION (decl) = 1;
+
+  /* Output the alignment of this data.  */
+  if (align > BITS_PER_UNIT)
+    {
+      ASM_OUTPUT_ALIGN (asm_out_file,
+			floor_log2 (DECL_ALIGN (decl) / BITS_PER_UNIT));
+    }
+
+  /* Do any machine/system dependent processing of the object.  */
+#ifdef ASM_DECLARE_OBJECT_NAME
+  last_assemble_variable_decl = decl;
+  ASM_DECLARE_OBJECT_NAME (asm_out_file, name, decl);
+#else
+  /* Standard thing is just output label for the object.  */
+  ASM_OUTPUT_LABEL (asm_out_file, name);
+#endif /* ASM_DECLARE_OBJECT_NAME */
+
+  if (!dont_output_data)
+    {
+      if (DECL_INITIAL (decl) && DECL_INITIAL (decl) != error_mark_node)
+	/* Output the actual data.  */
+	output_constant (DECL_INITIAL (decl),
+			 tree_low_cst (DECL_SIZE_UNIT (decl), 1),
+			 align);
+      else
+	/* Leave space for it.  */
+	assemble_zeros (tree_low_cst (DECL_SIZE_UNIT (decl), 1));
+    }
 }

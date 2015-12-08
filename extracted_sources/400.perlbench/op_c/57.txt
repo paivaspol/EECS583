@@ -1,0 +1,17 @@
+OP *
+Perl_newOP(pTHX_ I32 type, I32 flags)
+{
+    OP *o;
+    NewOp(1101, o, 1, OP);
+    o->op_type = (OPCODE)type;
+    o->op_ppaddr = PL_ppaddr[type];
+    o->op_flags = (U8)flags;
+
+    o->op_next = o;
+    o->op_private = (U8)(0 | (flags >> 8));
+    if (PL_opargs[type] & OA_RETSCALAR)
+	scalar(o);
+    if (PL_opargs[type] & OA_TARGET)
+	o->op_targ = pad_alloc(type, SVs_PADTMP);
+    return CHECKOP(type, o);
+}

@@ -1,0 +1,24 @@
+define float @EVDrandom(float %mu, float %lambda) #0 {
+entry:
+  br label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  %call = tail call double @sre_random() #4
+  %conv5 = fptrunc double %call to float
+  %cmp = fcmp oeq float %conv5, 0.000000e+00
+  %cmp3 = fcmp oeq float %conv5, 1.000000e+00
+  %or.cond = or i1 %cmp, %cmp3
+  br i1 %or.cond, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body
+  %phitmp = fpext float %conv5 to double
+  %conv6 = fpext float %mu to double
+  %call8 = tail call double @log(double %phitmp) #4
+  %mul = fmul double %call8, -1.000000e+00
+  %call9 = tail call double @log(double %mul) #4
+  %conv10 = fpext float %lambda to double
+  %div = fdiv double %call9, %conv10
+  %sub = fsub double %conv6, %div
+  %conv11 = fptrunc double %sub to float
+  ret float %conv11
+}

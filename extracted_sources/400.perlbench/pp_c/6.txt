@@ -1,0 +1,71 @@
+PP(pp_rv2sv)
+{
+    GV *gv = Nullgv;
+    dSP; dTOPss;
+
+    if (SvROK(sv)) {
+      wasref:
+	tryAMAGICunDEREF(to_sv);
+
+	sv = SvRV(sv);
+	switch (SvTYPE(sv)) {
+	case SVt_PVAV:
+	case SVt_PVHV:
+	case SVt_PVCV:
+	    DIE(aTHX_ "Not a SCALAR reference");
+	}
+    }
+    else {
+	char *sym;
+	STRLEN len;
+	gv = (GV*)sv;
+
+	if (SvTYPE(gv) != SVt_PVGV) {
+	    if (SvGMAGICAL(sv)) {
+		mg_get(sv);
+		if (SvROK(sv))
+		    goto wasref;
+	    }
+	    if (!SvOK(sv)) {
+		if (PL_op->op_flags & OPf_REF ||
+		    PL_op->op_private & HINT_STRICT_REFS)
+		    DIE(aTHX_ PL_no_usym, "a SCALAR");
+		if (ckWARN(WARN_UNINITIALIZED))
+		    report_uninit();
+		RETSETUNDEF;
+	    }
+	    sym = SvPV(sv, len);
+	    if ((PL_op->op_flags & OPf_SPECIAL) &&
+		!(PL_op->op_flags & OPf_MOD))
+	    {
+		gv = (GV*)gv_fetchpv(sym, FALSE, SVt_PV);
+		if (!gv
+		    && (!is_gv_magical(sym,len,0)
+			|| !(gv = (GV*)gv_fetchpv(sym, TRUE, SVt_PV))))
+		{
+		    RETSETUNDEF;
+		}
+	    }
+	    else {
+		if (PL_op->op_private & HINT_STRICT_REFS)
+		    DIE(aTHX_ PL_no_symref, sym, "a SCALAR");
+		gv = (GV*)gv_fetchpv(sym, TRUE, SVt_PV);
+	    }
+	}
+	sv = GvSV(gv);
+    }
+    if (PL_op->op_flags & OPf_MOD) {
+	if (PL_op->op_private & OPpLVAL_INTRO) {
+	    if (cUNOP->op_first->op_type == OP_NULL)
+		sv = save_scalar((GV*)TOPs);
+	    else if (gv)
+		sv = save_scalar(gv);
+	    else
+		Perl_croak(aTHX_ PL_no_localize_ref);
+	}
+	else if (PL_op->op_private & OPpDEREF)
+	    vivify_ref(sv, PL_op->op_private & OPpDEREF);
+    }
+    SETs(sv);
+    RETURN;
+}

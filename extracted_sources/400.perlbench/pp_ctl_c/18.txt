@@ -1,0 +1,22 @@
+I32
+Perl_block_gimme(pTHX)
+{
+    I32 cxix;
+
+    cxix = dopoptosub(cxstack_ix);
+    if (cxix < 0)
+	return G_VOID;
+
+    switch (cxstack[cxix].blk_gimme) {
+    case G_VOID:
+	return G_VOID;
+    case G_SCALAR:
+	return G_SCALAR;
+    case G_ARRAY:
+	return G_ARRAY;
+    default:
+	Perl_croak(aTHX_ "panic: bad gimme: %d\n", cxstack[cxix].blk_gimme);
+	/* NOTREACHED */
+	return 0;
+    }
+}

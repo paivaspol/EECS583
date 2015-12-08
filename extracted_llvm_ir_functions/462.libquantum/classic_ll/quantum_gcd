@@ -1,0 +1,16 @@
+define i32 @quantum_gcd(i32 %u, i32 %v) #0 {
+entry:
+  %tobool3 = icmp eq i32 %v, 0
+  br i1 %tobool3, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  %u.addr.05 = phi i32 [ %v.addr.04, %while.body ], [ %u, %entry ]
+  %v.addr.04 = phi i32 [ %rem, %while.body ], [ %v, %entry ]
+  %rem = srem i32 %u.addr.05, %v.addr.04
+  %tobool = icmp eq i32 %rem, 0
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  %u.addr.0.lcssa = phi i32 [ %u, %entry ], [ %v.addr.04, %while.body ]
+  ret i32 %u.addr.0.lcssa
+}

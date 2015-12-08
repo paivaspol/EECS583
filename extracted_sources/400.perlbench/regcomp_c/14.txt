@@ -1,0 +1,26 @@
+STATIC void
+S_checkposixcc(pTHX_ RExC_state_t *pRExC_state)
+{
+    if (!SIZE_ONLY && POSIXCC(UCHARAT(RExC_parse))) {
+	char *s = RExC_parse;
+ 	char  c = *s++;
+
+	while(*s && isALNUM(*s))
+	    s++;
+	if (*s && c == *s && s[1] == ']') {
+	    if (ckWARN(WARN_REGEXP))
+		vWARN3(s+2,
+			"POSIX syntax [%c %c] belongs inside character classes",
+			c, c);
+
+	    /* [[=foo=]] and [[.foo.]] are still future. */
+	    if (POSIXCC_NOTYET(c)) {
+		/* adjust RExC_parse so the error shows after
+		   the class closes */
+		while (UCHARAT(RExC_parse) && UCHARAT(RExC_parse++) != ']')
+		    ;
+		Simple_vFAIL3("POSIX syntax [%c %c] is reserved for future extensions", c, c);
+	    }
+	}
+    }
+}

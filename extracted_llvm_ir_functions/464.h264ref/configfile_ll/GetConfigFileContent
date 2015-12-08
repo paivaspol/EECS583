@@ -1,0 +1,58 @@
+define noalias i8* @GetConfigFileContent(i8* %Filename) #2 {
+entry:
+  %call = tail call %struct._IO_FILE* @fopen(i8* %Filename, i8* getelementptr inbounds ([2 x i8]* @.str162, i64 0, i64 0)) #11
+  %cmp = icmp eq %struct._IO_FILE* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([35 x i8]* @.str163, i64 0, i64 0), i8* %Filename) #11
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call2 = tail call i32 @fseek(%struct._IO_FILE* %call, i64 0, i32 2) #11
+  %cmp3 = icmp eq i32 %call2, 0
+  br i1 %cmp3, label %if.end6, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %call5 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([39 x i8]* @.str164, i64 0, i64 0), i8* %Filename) #11
+  br label %return
+
+if.end6:                                          ; preds = %if.end
+  %call7 = tail call i64 @ftell(%struct._IO_FILE* %call) #11
+  %0 = icmp ugt i64 %call7, 60000
+  br i1 %0, label %if.then10, label %if.end12
+
+if.then10:                                        ; preds = %if.end6
+  %call11 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([71 x i8]* @.str165, i64 0, i64 0), i64 %call7, i8* %Filename) #11
+  br label %return
+
+if.end12:                                         ; preds = %if.end6
+  %call13 = tail call i32 @fseek(%struct._IO_FILE* %call, i64 0, i32 0) #11
+  %cmp14 = icmp eq i32 %call13, 0
+  br i1 %cmp14, label %if.end17, label %if.then15
+
+if.then15:                                        ; preds = %if.end12
+  %call16 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([39 x i8]* @.str164, i64 0, i64 0), i8* %Filename) #11
+  br label %return
+
+if.end17:                                         ; preds = %if.end12
+  %add = add nsw i64 %call7, 1
+  %call18 = tail call noalias i8* @malloc(i64 %add) #11
+  %cmp19 = icmp eq i8* %call18, null
+  br i1 %cmp19, label %if.then20, label %if.end21
+
+if.then20:                                        ; preds = %if.end17
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([26 x i8]* @.str166, i64 0, i64 0)) #11
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then20, %if.end17
+  %call22 = tail call i64 @fread(i8* %call18, i64 1, i64 %call7, %struct._IO_FILE* %call) #11
+  %arrayidx = getelementptr inbounds i8* %call18, i64 %call22
+  store i8 0, i8* %arrayidx, align 1, !tbaa !1
+  %call23 = tail call i32 @fclose(%struct._IO_FILE* %call) #11
+  br label %return
+
+return:                                           ; preds = %if.end21, %if.then15, %if.then10, %if.then4, %if.then
+  %retval.0 = phi i8* [ null, %if.then ], [ null, %if.then4 ], [ null, %if.then10 ], [ null, %if.then15 ], [ %call18, %if.end21 ]
+  ret i8* %retval.0
+}

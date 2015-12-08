@@ -1,0 +1,13 @@
+void get_pdb_coordnum(FILE *in,int *natoms)
+{
+  char line[STRLEN];
+   
+  *natoms=0;
+  while (fgets2(line,STRLEN,in)) {
+    if ( ( bTER && (strncmp(line,"TER",3) == 0)) ||
+	 (!bTER && (strncmp(line,"ENDMDL",6) == 0)) ) 
+      break;
+    if ((strncmp(line,"ATOM  ",6) == 0) || (strncmp(line,"HETATM",6) == 0))
+      (*natoms)++;
+  }
+}

@@ -1,0 +1,103 @@
+define void @Chv_setComplexEntry(%struct._Chv* %chv, i32 %irow, i32 %jcol, double %real, double %imag) #0 {
+entry:
+  %nD = alloca i32, align 4
+  %nL = alloca i32, align 4
+  %nU = alloca i32, align 4
+  %cmp = icmp eq %struct._Chv* %chv, null
+  %cmp1 = icmp slt i32 %irow, 0
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp slt i32 %jcol, 0
+  %or.cond106 = or i1 %or.cond, %cmp3
+  br i1 %or.cond106, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([65 x i8]* @.str37, i64 0, i64 0), %struct._Chv* %chv, i32 %irow, i32 %jcol, double %real, double %imag) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %1 = load i32* %type, align 4, !tbaa !3
+  %cmp4 = icmp eq i32 %1, 2
+  br i1 %cmp4, label %if.end8, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call7 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([88 x i8]* @.str38, i64 0, i64 0), %struct._Chv* %chv, i32 %irow, i32 %jcol, double %real, double %imag, i32 %1) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end8:                                          ; preds = %if.end
+  %symflag = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
+  %3 = load i32* %symflag, align 4, !tbaa !3
+  %switch = icmp ult i32 %3, 3
+  br i1 %switch, label %if.end19, label %if.then16
+
+if.then16:                                        ; preds = %if.end8
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call18 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([138 x i8]* @.str39, i64 0, i64 0), %struct._Chv* %chv, i32 %irow, i32 %jcol, double %real, double %imag, i32 %3) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end19:                                         ; preds = %if.end8
+  call void @Chv_dimensions(%struct._Chv* %chv, i32* %nD, i32* %nL, i32* %nU) #6
+  %5 = load i32* %nD, align 4, !tbaa !3
+  %6 = load i32* %nU, align 4, !tbaa !3
+  %add = add nsw i32 %6, %5
+  %7 = load i32* %symflag, align 4, !tbaa !3
+  %switch109 = icmp ult i32 %7, 2
+  br i1 %switch109, label %if.end27, label %if.else
+
+if.else:                                          ; preds = %if.end19
+  %8 = load i32* %nL, align 4, !tbaa !3
+  %add26 = add nsw i32 %8, %5
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.end19, %if.else
+  %nrow.0 = phi i32 [ %add26, %if.else ], [ %add, %if.end19 ]
+  %cmp28 = icmp sgt i32 %nrow.0, %irow
+  %cmp30 = icmp sgt i32 %add, %jcol
+  %or.cond107 = and i1 %cmp28, %cmp30
+  br i1 %or.cond107, label %if.end33, label %if.then31
+
+if.then31:                                        ; preds = %if.end27
+  %9 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call32 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %9, i8* getelementptr inbounds ([98 x i8]* @.str40, i64 0, i64 0), %struct._Chv* %chv, i32 %irow, i32 %jcol, double %real, double %imag, i32 %irow, i32 %jcol, i32 %nrow.0, i32 %add) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end33:                                         ; preds = %if.end27
+  %cmp34 = icmp sgt i32 %5, %irow
+  %cmp36 = icmp sgt i32 %5, %jcol
+  %or.cond108 = or i1 %cmp34, %cmp36
+  br i1 %or.cond108, label %if.then37, label %if.end53
+
+if.then37:                                        ; preds = %if.end33
+  %cmp38 = icmp sle i32 %irow, %jcol
+  %cond = select i1 %cmp38, i32 %irow, i32 %jcol
+  %sub = sub nsw i32 %jcol, %irow
+  %cmp39 = icmp slt i32 %sub, 0
+  br i1 %cmp39, label %land.lhs.true, label %if.end47
+
+land.lhs.true:                                    ; preds = %if.then37
+  %sub46 = sub nsw i32 0, %sub
+  %sub46.sub = select i1 %switch109, i32 %sub46, i32 %sub
+  br label %if.end47
+
+if.end47:                                         ; preds = %land.lhs.true, %if.then37
+  %off.0 = phi i32 [ %sub, %if.then37 ], [ %sub46.sub, %land.lhs.true ]
+  %call48 = call double* @Chv_diagLocation(%struct._Chv* %chv, i32 %cond) #6
+  %mul = shl nsw i32 %off.0, 1
+  %idxprom = sext i32 %mul to i64
+  %arrayidx = getelementptr inbounds double* %call48, i64 %idxprom
+  store double %real, double* %arrayidx, align 8, !tbaa !4
+  %add50105 = or i32 %mul, 1
+  %idxprom51 = sext i32 %add50105 to i64
+  %arrayidx52 = getelementptr inbounds double* %call48, i64 %idxprom51
+  store double %imag, double* %arrayidx52, align 8, !tbaa !4
+  br label %if.end53
+
+if.end53:                                         ; preds = %if.end33, %if.end47
+  ret void
+}

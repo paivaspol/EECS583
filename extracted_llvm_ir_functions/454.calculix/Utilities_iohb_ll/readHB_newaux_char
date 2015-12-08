@@ -1,0 +1,117 @@
+define i32 @readHB_newaux_char(i8* %filename, i8 signext %AuxType, i8** nocapture %b, i8** nocapture %Rhsfmt) #0 {
+entry:
+  %Ptrcrd = alloca i32, align 4
+  %Indcrd = alloca i32, align 4
+  %Valcrd = alloca i32, align 4
+  %Rhscrd = alloca i32, align 4
+  %Nrow = alloca i32, align 4
+  %Ncol = alloca i32, align 4
+  %Nnzero = alloca i32, align 4
+  %Nrhs = alloca i32, align 4
+  %Rhsperline = alloca i32, align 4
+  %Rhswidth = alloca i32, align 4
+  %Rhsprec = alloca i32, align 4
+  %Rhsflag = alloca i32, align 4
+  %Title = alloca [73 x i8], align 16
+  %Key = alloca [9 x i8], align 1
+  %Type = alloca [4 x i8], align 1
+  %Rhstype = alloca [4 x i8], align 1
+  %Ptrfmt = alloca [17 x i8], align 16
+  %Indfmt = alloca [17 x i8], align 16
+  %Valfmt = alloca [21 x i8], align 16
+  %0 = getelementptr inbounds [73 x i8]* %Title, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 73, i8* %0) #1
+  %call = call %struct._IO_FILE* @fopen(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0)) #8
+  %cmp = icmp eq %struct._IO_FILE* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call1 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([29 x i8]* @.str2, i64 0, i64 0), i8* %filename) #8
+  br label %cleanup
+
+if.end:                                           ; preds = %entry
+  %call2 = call noalias i8* @malloc(i64 21) #8
+  store i8* %call2, i8** %Rhsfmt, align 8, !tbaa !0
+  %cmp3 = icmp eq i8* %call2, null
+  br i1 %cmp3, label %if.then4, label %if.end5
+
+if.then4:                                         ; preds = %if.end
+  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([32 x i8]* @.str58, i64 0, i64 0)) #9
+  unreachable
+
+if.end5:                                          ; preds = %if.end
+  %arraydecay6 = getelementptr inbounds [9 x i8]* %Key, i64 0, i64 0
+  %arraydecay7 = getelementptr inbounds [4 x i8]* %Type, i64 0, i64 0
+  %arraydecay8 = getelementptr inbounds [17 x i8]* %Ptrfmt, i64 0, i64 0
+  %arraydecay9 = getelementptr inbounds [17 x i8]* %Indfmt, i64 0, i64 0
+  %arraydecay10 = getelementptr inbounds [21 x i8]* %Valfmt, i64 0, i64 0
+  %arraydecay11 = getelementptr inbounds [4 x i8]* %Rhstype, i64 0, i64 0
+  %call12 = call i32 @readHB_header(%struct._IO_FILE* %call, i8* %0, i8* %arraydecay6, i8* %arraydecay7, i32* %Nrow, i32* %Ncol, i32* %Nnzero, i32* %Nrhs, i8* %arraydecay8, i8* %arraydecay9, i8* %arraydecay10, i8* %call2, i32* %Ptrcrd, i32* %Indcrd, i32* %Valcrd, i32* %Rhscrd, i8* %arraydecay11) #9
+  %call13 = call i32 @fclose(%struct._IO_FILE* %call) #8
+  %2 = load i32* %Nrhs, align 4, !tbaa !3
+  %cmp14 = icmp eq i32 %2, 0
+  br i1 %cmp14, label %if.then15, label %if.else
+
+if.then15:                                        ; preds = %if.end5
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %4 = call i64 @fwrite(i8* getelementptr inbounds ([62 x i8]* @.str39, i64 0, i64 0), i64 61, i64 1, %struct._IO_FILE* %3)
+  br label %cleanup
+
+if.else:                                          ; preds = %if.end5
+  %5 = load i8** %Rhsfmt, align 8, !tbaa !0
+  call fastcc void @ParseRfmt(i8* %5, i32* %Rhsperline, i32* %Rhswidth, i32* %Rhsprec, i32* %Rhsflag) #9
+  %6 = load i8* %arraydecay7, align 1, !tbaa !1
+  %cmp18 = icmp eq i8 %6, 67
+  br i1 %cmp18, label %if.then20, label %if.else33
+
+if.then20:                                        ; preds = %if.else
+  %7 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call21 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([56 x i8]* @.str40, i64 0, i64 0), i8* %filename) #8
+  %8 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %9 = call i64 @fwrite(i8* getelementptr inbounds ([61 x i8]* @.str41, i64 0, i64 0), i64 60, i64 1, %struct._IO_FILE* %8)
+  %10 = load i32* %Nrow, align 4, !tbaa !3
+  %11 = load i32* %Nrhs, align 4, !tbaa !3
+  %mul = mul nsw i32 %11, %10
+  %12 = load i32* %Rhswidth, align 4, !tbaa !3
+  %mul23 = mul nsw i32 %mul, %12
+  %conv24 = sext i32 %mul23 to i64
+  %mul26 = shl nsw i64 %conv24, 1
+  %call27 = call noalias i8* @malloc(i64 %mul26) #8
+  store i8* %call27, i8** %b, align 8, !tbaa !0
+  %cmp28 = icmp eq i8* %call27, null
+  br i1 %cmp28, label %if.then30, label %if.end31
+
+if.then30:                                        ; preds = %if.then20
+  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([30 x i8]* @.str42, i64 0, i64 0)) #9
+  unreachable
+
+if.end31:                                         ; preds = %if.then20
+  %call32 = call i32 @readHB_aux_char(i8* %filename, i8 signext %AuxType, i8* %call27) #9
+  br label %cleanup
+
+if.else33:                                        ; preds = %if.else
+  %13 = load i32* %Nrow, align 4, !tbaa !3
+  %14 = load i32* %Nrhs, align 4, !tbaa !3
+  %mul34 = mul nsw i32 %14, %13
+  %15 = load i32* %Rhswidth, align 4, !tbaa !3
+  %mul35 = mul nsw i32 %mul34, %15
+  %conv36 = sext i32 %mul35 to i64
+  %call38 = call noalias i8* @malloc(i64 %conv36) #8
+  store i8* %call38, i8** %b, align 8, !tbaa !0
+  %cmp39 = icmp eq i8* %call38, null
+  br i1 %cmp39, label %if.then41, label %if.end42
+
+if.then41:                                        ; preds = %if.else33
+  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([30 x i8]* @.str42, i64 0, i64 0)) #9
+  unreachable
+
+if.end42:                                         ; preds = %if.else33
+  %call43 = call i32 @readHB_aux_char(i8* %filename, i8 signext %AuxType, i8* %call38) #9
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.end42, %if.end31, %if.then15, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then15 ], [ %call32, %if.end31 ], [ %call43, %if.end42 ]
+  call void @llvm.lifetime.end(i64 73, i8* %0) #1
+  ret i32 %retval.0
+}

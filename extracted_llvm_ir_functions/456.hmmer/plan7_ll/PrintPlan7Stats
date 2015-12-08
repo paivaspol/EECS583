@@ -1,0 +1,77 @@
+define void @PrintPlan7Stats(%struct._IO_FILE* nocapture %fp, %struct.plan7_s* %hmm, i8** nocapture %dsq, i32 %nseq, %struct.p7trace_s** nocapture %tr) #0 {
+entry:
+  tail call void @P7Logoddsify(%struct.plan7_s* %hmm, i32 1) #8
+  %0 = load i8** %dsq, align 8, !tbaa !4
+  %1 = load %struct.p7trace_s** %tr, align 8, !tbaa !4
+  %call = tail call float @P7TraceScore(%struct.plan7_s* %hmm, i8* %0, %struct.p7trace_s* %1) #7
+  %mul = fmul float %call, %call
+  %cmp70 = icmp sgt i32 %nseq, 1
+  br i1 %cmp70, label %for.body, label %for.end.if.end26_crit_edge
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %entry ]
+  %sqsum.075 = phi float [ %add7, %for.body ], [ %mul, %entry ]
+  %worst.074 = phi float [ %worst.1, %for.body ], [ %call, %entry ]
+  %best.073 = phi float [ %best.1, %for.body ], [ %call, %entry ]
+  %total.072 = phi float [ %add, %for.body ], [ %call, %entry ]
+  %arrayidx2 = getelementptr inbounds i8** %dsq, i64 %indvars.iv
+  %2 = load i8** %arrayidx2, align 8, !tbaa !4
+  %arrayidx4 = getelementptr inbounds %struct.p7trace_s** %tr, i64 %indvars.iv
+  %3 = load %struct.p7trace_s** %arrayidx4, align 8, !tbaa !4
+  %call5 = tail call float @P7TraceScore(%struct.plan7_s* %hmm, i8* %2, %struct.p7trace_s* %3) #7
+  %add = fadd float %total.072, %call5
+  %mul6 = fmul float %call5, %call5
+  %add7 = fadd float %sqsum.075, %mul6
+  %cmp8 = fcmp ogt float %call5, %best.073
+  %best.1 = select i1 %cmp8, float %call5, float %best.073
+  %cmp9 = fcmp olt float %call5, %worst.074
+  %worst.1 = select i1 %cmp9, float %call5, float %worst.074
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nseq
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  br i1 %cmp70, label %if.then13, label %for.end.if.end26_crit_edge
+
+for.end.if.end26_crit_edge:                       ; preds = %entry, %for.end
+  %total.0.lcssa84 = phi float [ %add, %for.end ], [ %call, %entry ]
+  %best.0.lcssa82 = phi float [ %best.1, %for.end ], [ %call, %entry ]
+  %worst.0.lcssa80 = phi float [ %worst.1, %for.end ], [ %call, %entry ]
+  %conv27.pre = sitofp i32 %nseq to float
+  br label %if.end26
+
+if.then13:                                        ; preds = %for.end
+  %mul14 = fmul float %add, %add
+  %conv = sitofp i32 %nseq to float
+  %div = fdiv float %mul14, %conv
+  %sub = fsub float %add7, %div
+  %conv15 = fpext float %sub to double
+  %conv17 = fpext float %conv to double
+  %sub18 = fadd double %conv17, -1.000000e+00
+  %div19 = fdiv double %conv15, %sub18
+  %conv20 = fptrunc double %div19 to float
+  %cmp21 = fcmp ogt float %conv20, 0.000000e+00
+  br i1 %cmp21, label %cond.true, label %if.end26
+
+cond.true:                                        ; preds = %if.then13
+  %phitmp68 = tail call float @sqrtf(float %conv20) #2
+  %phitmp69 = fpext float %phitmp68 to double
+  br label %if.end26
+
+if.end26:                                         ; preds = %for.end.if.end26_crit_edge, %cond.true, %if.then13
+  %total.0.lcssa83 = phi float [ %total.0.lcssa84, %for.end.if.end26_crit_edge ], [ %add, %cond.true ], [ %add, %if.then13 ]
+  %best.0.lcssa81 = phi float [ %best.0.lcssa82, %for.end.if.end26_crit_edge ], [ %best.1, %cond.true ], [ %best.1, %if.then13 ]
+  %worst.0.lcssa79 = phi float [ %worst.0.lcssa80, %for.end.if.end26_crit_edge ], [ %worst.1, %cond.true ], [ %worst.1, %if.then13 ]
+  %conv27.pre-phi = phi float [ %conv27.pre, %for.end.if.end26_crit_edge ], [ %conv, %cond.true ], [ %conv, %if.then13 ]
+  %stddev.0 = phi double [ 0.000000e+00, %for.end.if.end26_crit_edge ], [ %phitmp69, %cond.true ], [ 0.000000e+00, %if.then13 ]
+  %div28 = fdiv float %total.0.lcssa83, %conv27.pre-phi
+  %conv29 = fpext float %div28 to double
+  %call30 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str3, i64 0, i64 0), double %conv29) #7
+  %conv31 = fpext float %worst.0.lcssa79 to double
+  %call32 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str4, i64 0, i64 0), double %conv31) #7
+  %conv33 = fpext float %best.0.lcssa81 to double
+  %call34 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str5, i64 0, i64 0), double %conv33) #7
+  %call36 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([29 x i8]* @.str6, i64 0, i64 0), double %stddev.0) #7
+  ret void
+}

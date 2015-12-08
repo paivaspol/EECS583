@@ -1,69 +1,20 @@
-static I32
-run_user_filter(pTHX_ int idx, SV *buf_sv, int maxlen)
+void
+Perl_rxres_restore(pTHX_ void **rsp, REGEXP *rx)
 {
-    SV *datasv = FILTER_DATA(idx);
-    int filter_has_file = IoLINES(datasv);
-    GV *filter_child_proc = (GV *)IoFMT_GV(datasv);
-    SV *filter_state = (SV *)IoTOP_GV(datasv);
-    SV *filter_sub = (SV *)IoBOTTOM_GV(datasv);
-    int len = 0;
+    UV *p = (UV*)*rsp;
+    U32 i;
 
-    /* I was having segfault trouble under Linux 2.2.5 after a
-       parse error occured.  (Had to hack around it with a test
-       for PL_error_count == 0.)  Solaris doesn't segfault --
-       not sure where the trouble is yet.  XXX */
+    if (RX_MATCH_COPIED(rx))
+	Safefree(rx->subbeg);
+    RX_MATCH_COPIED_set(rx, *p);
+    *p++ = 0;
 
-    if (filter_has_file) {
-	len = FILTER_READ(idx+1, buf_sv, maxlen);
+    rx->nparens = *p++;
+
+    rx->subbeg = INT2PTR(char*,*p++);
+    rx->sublen = (I32)(*p++);
+    for (i = 0; i <= rx->nparens; ++i) {
+	rx->startp[i] = (I32)(*p++);
+	rx->endp[i] = (I32)(*p++);
     }
-
-    if (filter_sub && len >= 0) {
-	dSP;
-	int count;
-
-	ENTER;
-	SAVE_DEFSV;
-	SAVETMPS;
-	EXTEND(SP, 2);
-
-	DEFSV = buf_sv;
-	PUSHMARK(SP);
-	PUSHs(sv_2mortal(newSViv(maxlen)));
-	if (filter_state) {
-	    PUSHs(filter_state);
-	}
-	PUTBACK;
-	count = call_sv(filter_sub, G_SCALAR);
-	SPAGAIN;
-
-	if (count > 0) {
-	    SV *out = POPs;
-	    if (SvOK(out)) {
-		len = SvIV(out);
-	    }
-	}
-
-	PUTBACK;
-	FREETMPS;
-	LEAVE;
-    }
-
-    if (len <= 0) {
-	IoLINES(datasv) = 0;
-	if (filter_child_proc) {
-	    SvREFCNT_dec(filter_child_proc);
-	    IoFMT_GV(datasv) = Nullgv;
-	}
-	if (filter_state) {
-	    SvREFCNT_dec(filter_state);
-	    IoTOP_GV(datasv) = Nullgv;
-	}
-	if (filter_sub) {
-	    SvREFCNT_dec(filter_sub);
-	    IoBOTTOM_GV(datasv) = Nullgv;
-	}
-	filter_del(run_user_filter);
-    }
-
-    return len;
 }

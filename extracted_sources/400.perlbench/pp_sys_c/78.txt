@@ -1,0 +1,153 @@
+PP(pp_fttext)
+{
+    dSP;
+    I32 i;
+    I32 len;
+    I32 odd = 0;
+    STDCHAR tbuf[512];
+    register STDCHAR *s;
+    register IO *io;
+    register SV *sv;
+    GV *gv;
+    STRLEN n_a;
+    PerlIO *fp;
+
+    if (PL_op->op_flags & OPf_REF)
+	gv = cGVOP_gv;
+    else if (isGV(TOPs))
+	gv = (GV*)POPs;
+    else if (SvROK(TOPs) && isGV(SvRV(TOPs)))
+	gv = (GV*)SvRV(POPs);
+    else
+	gv = Nullgv;
+
+    if (gv) {
+	EXTEND(SP, 1);
+	if (gv == PL_defgv) {
+	    if (PL_statgv)
+		io = GvIO(PL_statgv);
+	    else {
+		sv = PL_statname;
+		goto really_filename;
+	    }
+	}
+	else {
+	    PL_statgv = gv;
+	    PL_laststatval = -1;
+	    sv_setpv(PL_statname, "");
+	    io = GvIO(PL_statgv);
+	}
+	if (io && IoIFP(io)) {
+	    if (! PerlIO_has_base(IoIFP(io)))
+		DIE(aTHX_ "-T and -B not implemented on filehandles");
+	    PL_laststatval = PerlLIO_fstat(PerlIO_fileno(IoIFP(io)), &PL_statcache);
+	    if (PL_laststatval < 0)
+		RETPUSHUNDEF;
+	    if (S_ISDIR(PL_statcache.st_mode)) { /* handle NFS glitch */
+		if (PL_op->op_type == OP_FTTEXT)
+		    RETPUSHNO;
+		else
+		    RETPUSHYES;
+            }
+	    if (PerlIO_get_cnt(IoIFP(io)) <= 0) {
+		i = PerlIO_getc(IoIFP(io));
+		if (i != EOF)
+		    (void)PerlIO_ungetc(IoIFP(io),i);
+	    }
+	    if (PerlIO_get_cnt(IoIFP(io)) <= 0)	/* null file is anything */
+		RETPUSHYES;
+	    len = PerlIO_get_bufsiz(IoIFP(io));
+	    s = (STDCHAR *) PerlIO_get_base(IoIFP(io));
+	    /* sfio can have large buffers - limit to 512 */
+	    if (len > 512)
+		len = 512;
+	}
+	else {
+	    if (ckWARN2(WARN_UNOPENED,WARN_CLOSED)) {
+		gv = cGVOP_gv;
+		report_evil_fh(gv, GvIO(gv), PL_op->op_type);
+	    }
+	    SETERRNO(EBADF,RMS_IFI);
+	    RETPUSHUNDEF;
+	}
+    }
+    else {
+	sv = POPs;
+      really_filename:
+	PL_statgv = Nullgv;
+	PL_laststype = OP_STAT;
+	sv_setpv(PL_statname, SvPV(sv, n_a));
+	if (!(fp = PerlIO_open(SvPVX(PL_statname), "r"))) {
+	    if (ckWARN(WARN_NEWLINE) && strchr(SvPV(PL_statname, n_a), '\n'))
+		Perl_warner(aTHX_ packWARN(WARN_NEWLINE), PL_warn_nl, "open");
+	    RETPUSHUNDEF;
+	}
+	PL_laststatval = PerlLIO_fstat(PerlIO_fileno(fp), &PL_statcache);
+	if (PL_laststatval < 0)	{
+	    (void)PerlIO_close(fp);
+	    RETPUSHUNDEF;
+	}
+	PerlIO_binmode(aTHX_ fp, '<', O_BINARY, Nullch);
+	len = PerlIO_read(fp, tbuf, sizeof(tbuf));
+	(void)PerlIO_close(fp);
+	if (len <= 0) {
+	    if (S_ISDIR(PL_statcache.st_mode) && PL_op->op_type == OP_FTTEXT)
+		RETPUSHNO;		/* special case NFS directories */
+	    RETPUSHYES;		/* null file is anything */
+	}
+	s = tbuf;
+    }
+
+    /* now scan s to look for textiness */
+    /*   XXX ASCII dependent code */
+
+#if defined(DOSISH) || defined(USEMYBINMODE)
+    /* ignore trailing ^Z on short files */
+    if (len && len < sizeof(tbuf) && tbuf[len-1] == 26)
+	--len;
+#endif
+
+    for (i = 0; i < len; i++, s++) {
+	if (!*s) {			/* null never allowed in text */
+	    odd += len;
+	    break;
+	}
+#ifdef EBCDIC
+        else if (!(isPRINT(*s) || isSPACE(*s)))
+            odd++;
+#else
+	else if (*s & 128) {
+#ifdef USE_LOCALE
+	    if (IN_LOCALE_RUNTIME && isALPHA_LC(*s))
+		continue;
+#endif
+	    /* utf8 characters don't count as odd */
+	    if (UTF8_IS_START(*s)) {
+		int ulen = UTF8SKIP(s);
+		if (ulen < len - i) {
+		    int j;
+		    for (j = 1; j < ulen; j++) {
+			if (!UTF8_IS_CONTINUATION(s[j]))
+			    goto not_utf8;
+		    }
+		    --ulen;	/* loop does extra increment */
+		    s += ulen;
+		    i += ulen;
+		    continue;
+		}
+	    }
+	  not_utf8:
+	    odd++;
+	}
+	else if (*s < 32 &&
+	  *s != '\n' && *s != '\r' && *s != '\b' &&
+	  *s != '\t' && *s != '\f' && *s != 27)
+	    odd++;
+#endif
+    }
+
+    if ((odd * 3 > len) == (PL_op->op_type == OP_FTTEXT)) /* allow 1/3 odd */
+	RETPUSHNO;
+    else
+	RETPUSHYES;
+}

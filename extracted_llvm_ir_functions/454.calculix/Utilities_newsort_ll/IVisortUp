@@ -1,0 +1,36 @@
+define void @IVisortUp(i32 %n, i32* nocapture %ivec) #1 {
+entry:
+  %cmp35 = icmp sgt i32 %n, 1
+  br i1 %cmp35, label %land.rhs.lr.ph, label %for.end18
+
+land.rhs.lr.ph:                                   ; preds = %for.inc17, %entry
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc17 ], [ 1, %entry ]
+  %arrayidx4.phi.trans.insert = getelementptr inbounds i32* %ivec, i64 %indvars.iv
+  %.pre = load i32* %arrayidx4.phi.trans.insert, align 4, !tbaa !0
+  br label %land.rhs
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.body6
+  %indvars.iv37 = phi i64 [ %indvars.iv, %land.rhs.lr.ph ], [ %indvars.iv.next38, %for.body6 ]
+  %indvars.iv.next38 = add i64 %indvars.iv37, -1
+  %arrayidx = getelementptr inbounds i32* %ivec, i64 %indvars.iv.next38
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp5 = icmp sgt i32 %0, %.pre
+  br i1 %cmp5, label %for.body6, label %for.inc17
+
+for.body6:                                        ; preds = %land.rhs
+  %arrayidx4 = getelementptr inbounds i32* %ivec, i64 %indvars.iv37
+  store i32 %.pre, i32* %arrayidx, align 4, !tbaa !0
+  store i32 %0, i32* %arrayidx4, align 4, !tbaa !0
+  %1 = trunc i64 %indvars.iv.next38 to i32
+  %cmp2 = icmp sgt i32 %1, 0
+  br i1 %cmp2, label %land.rhs, label %for.inc17
+
+for.inc17:                                        ; preds = %for.body6, %land.rhs
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end18, label %land.rhs.lr.ph
+
+for.end18:                                        ; preds = %for.inc17, %entry
+  ret void
+}

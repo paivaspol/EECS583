@@ -1,28 +1,15 @@
-static char *
-read_filename_string (ch, f)
-     int ch;
-     FILE *f;
+bool
+_cpp_read_file (pfile, fname)
+     cpp_reader *pfile;
+     const char *fname;
 {
-  char *alloc, *set;
-  int len;
+  struct include_file *f = open_file (pfile, fname);
 
-  len = 20;
-  set = alloc = xmalloc (len + 1);
-  if (! is_space(ch))
+  if (f == NULL)
     {
-      *set++ = ch;
-      while ((ch = getc (f)) != EOF && ! is_space(ch))
-	{
-	  if (set - alloc == len)
-	    {
-	      len *= 2;
-	      alloc = xrealloc (alloc, len + 1);
-	      set = alloc + len / 2;
-	    }
-	  *set++ = ch;
-	}
+      cpp_error_from_errno (pfile, fname);
+      return false;
     }
-  *set = '\0';
-  ungetc (ch, f);
-  return alloc;
+
+  return stack_include_file (pfile, f);
 }

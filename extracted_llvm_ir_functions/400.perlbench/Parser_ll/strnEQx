@@ -1,0 +1,47 @@
+define internal fastcc i32 @strnEQx(i8* nocapture %s1, i8* nocapture %s2, i64 %n, i32 %ignore_case) #4 {
+entry:
+  %tobool45 = icmp eq i64 %n, 0
+  br i1 %tobool45, label %return, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %entry
+  %tobool1 = icmp eq i32 %ignore_case, 0
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end31
+  %dec48.in = phi i64 [ %n, %while.body.lr.ph ], [ %dec48, %if.end31 ]
+  %s2.addr.047 = phi i8* [ %s2, %while.body.lr.ph ], [ %incdec.ptr32, %if.end31 ]
+  %s1.addr.046 = phi i8* [ %s1, %while.body.lr.ph ], [ %incdec.ptr, %if.end31 ]
+  %dec48 = add i64 %dec48.in, -1
+  %0 = load i8* %s1.addr.046, align 1, !tbaa !1
+  %conv = sext i8 %0 to i32
+  br i1 %tobool1, label %if.else, label %if.then
+
+if.then:                                          ; preds = %while.body
+  %.off = add i8 %0, -65
+  %1 = icmp ult i8 %.off, 26
+  %add = add nsw i32 %conv, 32
+  %add.conv = select i1 %1, i32 %add, i32 %conv
+  %2 = load i8* %s2.addr.047, align 1, !tbaa !1
+  %conv8 = sext i8 %2 to i32
+  %.off43 = add i8 %2, -65
+  %3 = icmp ult i8 %.off43, 26
+  %add17 = add nsw i32 %conv8, 32
+  %cond21 = select i1 %3, i32 %add17, i32 %conv8
+  %cmp22 = icmp eq i32 %add.conv, %cond21
+  br i1 %cmp22, label %if.end31, label %return
+
+if.else:                                          ; preds = %while.body
+  %4 = load i8* %s2.addr.047, align 1, !tbaa !1
+  %cmp27 = icmp eq i8 %0, %4
+  br i1 %cmp27, label %if.end31, label %return
+
+if.end31:                                         ; preds = %if.then, %if.else
+  %incdec.ptr = getelementptr inbounds i8* %s1.addr.046, i64 1
+  %incdec.ptr32 = getelementptr inbounds i8* %s2.addr.047, i64 1
+  %tobool = icmp eq i64 %dec48, 0
+  br i1 %tobool, label %return, label %while.body
+
+return:                                           ; preds = %if.end31, %if.else, %if.then, %entry
+  %retval.0 = phi i32 [ 1, %entry ], [ 0, %if.then ], [ 0, %if.else ], [ 1, %if.end31 ]
+  ret i32 %retval.0
+}

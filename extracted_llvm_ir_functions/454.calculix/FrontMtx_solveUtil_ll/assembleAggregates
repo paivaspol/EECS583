@@ -1,0 +1,173 @@
+define internal fastcc void @assembleAggregates(i32 %J, %struct._SubMtx* %BJ, %struct._SubMtxList* %aggList, %struct._SubMtxManager* %mtxmanager, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
+entry:
+  %entBJ = alloca double*, align 8
+  %entBJhat = alloca double*, align 8
+  %inc1 = alloca i32, align 4
+  %inc1hat = alloca i32, align 4
+  %inc2 = alloca i32, align 4
+  %inc2hat = alloca i32, align 4
+  %ncol = alloca i32, align 4
+  %ncolhat = alloca i32, align 4
+  %nrow = alloca i32, align 4
+  %nrowhat = alloca i32, align 4
+  %cmp = icmp eq %struct._SubMtx* %BJ, null
+  %cmp1 = icmp eq %struct._SubMtxList* %aggList, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([61 x i8]* @.str36, i64 0, i64 0), %struct._SubMtx* %BJ, %struct._SubMtxList* %aggList) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %rowid = getelementptr inbounds %struct._SubMtx* %BJ, i64 0, i32 2
+  %1 = load i32* %rowid, align 4, !tbaa !0
+  %call2 = call i32 @SubMtxList_isListNonempty(%struct._SubMtxList* %aggList, i32 %1) #5
+  %tobool = icmp eq i32 %call2, 0
+  br i1 %tobool, label %if.end63, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  %cmp4 = icmp sgt i32 %msglvl, 3
+  br i1 %cmp4, label %if.then5, label %if.end8
+
+if.then5:                                         ; preds = %if.then3
+  %2 = call i64 @fwrite(i8* getelementptr inbounds ([31 x i8]* @.str37, i64 0, i64 0), i64 30, i64 1, %struct._IO_FILE* %msgFile)
+  %call7 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.then5, %if.then3
+  call void @SubMtx_denseInfo(%struct._SubMtx* %BJ, i32* %nrow, i32* %ncol, i32* %inc1, i32* %inc2, double** %entBJ) #5
+  %cmp9 = icmp sgt i32 %msglvl, 2
+  br i1 %cmp9, label %if.then10, label %if.end14
+
+if.then10:                                        ; preds = %if.end8
+  %3 = load i32* %rowid, align 4, !tbaa !0
+  %colid = getelementptr inbounds %struct._SubMtx* %BJ, i64 0, i32 3
+  %4 = load i32* %colid, align 4, !tbaa !0
+  %5 = load i32* %nrow, align 4, !tbaa !0
+  %6 = load i32* %ncol, align 4, !tbaa !0
+  %7 = load i32* %inc1, align 4, !tbaa !0
+  %8 = load i32* %inc2, align 4, !tbaa !0
+  %9 = load double** %entBJ, align 8, !tbaa !3
+  %call12 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([58 x i8]* @.str38, i64 0, i64 0), i32 %3, i32 %4, i32 %5, i32 %6, i32 %7, i32 %8, double* %9) #5
+  %call13 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.then10, %if.end8
+  %call15 = call %struct._SubMtx* @SubMtxList_getList(%struct._SubMtxList* %aggList, i32 %J) #5
+  %cmp16101 = icmp eq %struct._SubMtx* %call15, null
+  br i1 %cmp16101, label %for.end, label %if.end20
+
+if.end20:                                         ; preds = %if.end14, %for.inc
+  %BJhat.0102 = phi %struct._SubMtx* [ %39, %for.inc ], [ %call15, %if.end14 ]
+  call void @SubMtx_denseInfo(%struct._SubMtx* %BJhat.0102, i32* %nrowhat, i32* %ncolhat, i32* %inc1hat, i32* %inc2hat, double** %entBJhat) #5
+  br i1 %cmp9, label %if.then22, label %if.end27
+
+if.then22:                                        ; preds = %if.end20
+  %rowid23 = getelementptr inbounds %struct._SubMtx* %BJhat.0102, i64 0, i32 2
+  %10 = load i32* %rowid23, align 4, !tbaa !0
+  %colid24 = getelementptr inbounds %struct._SubMtx* %BJhat.0102, i64 0, i32 3
+  %11 = load i32* %colid24, align 4, !tbaa !0
+  %12 = load i32* %nrowhat, align 4, !tbaa !0
+  %13 = load i32* %ncolhat, align 4, !tbaa !0
+  %14 = load i32* %inc1hat, align 4, !tbaa !0
+  %15 = load i32* %inc2hat, align 4, !tbaa !0
+  %16 = load double** %entBJhat, align 8, !tbaa !3
+  %call25 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([60 x i8]* @.str40, i64 0, i64 0), i32 %10, i32 %11, i32 %12, i32 %13, i32 %14, i32 %15, double* %16) #5
+  %call26 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.then22, %if.end20
+  %17 = load i32* %nrow, align 4, !tbaa !0
+  %18 = load i32* %nrowhat, align 4, !tbaa !0
+  %cmp28 = icmp eq i32 %17, %18
+  br i1 %cmp28, label %lor.lhs.false29, label %if.then37
+
+lor.lhs.false29:                                  ; preds = %if.end27
+  %19 = load i32* %ncol, align 4, !tbaa !0
+  %20 = load i32* %ncolhat, align 4, !tbaa !0
+  %cmp30 = icmp eq i32 %19, %20
+  br i1 %cmp30, label %lor.lhs.false31, label %if.then37
+
+lor.lhs.false31:                                  ; preds = %lor.lhs.false29
+  %21 = load i32* %inc1, align 4, !tbaa !0
+  %22 = load i32* %inc1hat, align 4, !tbaa !0
+  %cmp32 = icmp eq i32 %21, %22
+  br i1 %cmp32, label %lor.lhs.false33, label %if.then37
+
+lor.lhs.false33:                                  ; preds = %lor.lhs.false31
+  %23 = load i32* %inc2, align 4, !tbaa !0
+  %24 = load i32* %inc2hat, align 4, !tbaa !0
+  %cmp34 = icmp eq i32 %23, %24
+  br i1 %cmp34, label %lor.lhs.false35, label %if.then37
+
+lor.lhs.false35:                                  ; preds = %lor.lhs.false33
+  %25 = load double** %entBJhat, align 8, !tbaa !3
+  %cmp36 = icmp eq double* %25, null
+  br i1 %cmp36, label %if.then37, label %if.end39
+
+if.then37:                                        ; preds = %lor.lhs.false33, %lor.lhs.false31, %lor.lhs.false29, %if.end27, %lor.lhs.false35
+  %26 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %27 = call i64 @fwrite(i8* getelementptr inbounds ([14 x i8]* @.str41, i64 0, i64 0), i64 13, i64 1, %struct._IO_FILE* %26)
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end39:                                         ; preds = %lor.lhs.false35
+  br i1 %cmp4, label %if.then41, label %if.end47
+
+if.then41:                                        ; preds = %if.end39
+  %28 = call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str42, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %msgFile)
+  %call43 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %BJ, %struct._IO_FILE* %msgFile) #5
+  %29 = call i64 @fwrite(i8* getelementptr inbounds ([9 x i8]* @.str43, i64 0, i64 0), i64 8, i64 1, %struct._IO_FILE* %msgFile)
+  %call45 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %BJhat.0102, %struct._IO_FILE* %msgFile) #5
+  %call46 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end47
+
+if.end47:                                         ; preds = %if.then41, %if.end39
+  %type = getelementptr inbounds %struct._SubMtx* %BJhat.0102, i64 0, i32 0
+  %30 = load i32* %type, align 4, !tbaa !0
+  switch i32 %30, label %for.inc [
+    i32 1, label %if.then49
+    i32 2, label %if.then52
+  ]
+
+if.then49:                                        ; preds = %if.end47
+  %31 = load i32* %nrow, align 4, !tbaa !0
+  %32 = load i32* %ncol, align 4, !tbaa !0
+  %mul = mul nsw i32 %32, %31
+  %33 = load double** %entBJ, align 8, !tbaa !3
+  %34 = load double** %entBJhat, align 8, !tbaa !3
+  call void @DVadd(i32 %mul, double* %33, double* %34) #5
+  br label %for.inc
+
+if.then52:                                        ; preds = %if.end47
+  %35 = load i32* %nrow, align 4, !tbaa !0
+  %mul53 = shl i32 %35, 1
+  %36 = load i32* %ncol, align 4, !tbaa !0
+  %mul54 = mul nsw i32 %mul53, %36
+  %37 = load double** %entBJ, align 8, !tbaa !3
+  %38 = load double** %entBJhat, align 8, !tbaa !3
+  call void @DVadd(i32 %mul54, double* %37, double* %38) #5
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.end47, %if.then49, %if.then52
+  %next = getelementptr inbounds %struct._SubMtx* %BJhat.0102, i64 0, i32 9
+  %39 = load %struct._SubMtx** %next, align 8, !tbaa !3
+  %cmp16 = icmp eq %struct._SubMtx* %39, null
+  br i1 %cmp16, label %for.end, label %if.end20
+
+for.end:                                          ; preds = %for.inc, %if.end14
+  call void @SubMtxManager_releaseListOfObjects(%struct._SubMtxManager* %mtxmanager, %struct._SubMtx* %call15) #5
+  br i1 %cmp4, label %if.then58, label %if.end63
+
+if.then58:                                        ; preds = %for.end
+  %40 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str44, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %msgFile)
+  %call60 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %BJ, %struct._IO_FILE* %msgFile) #5
+  %call61 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end63
+
+if.end63:                                         ; preds = %if.end, %for.end, %if.then58
+  ret void
+}

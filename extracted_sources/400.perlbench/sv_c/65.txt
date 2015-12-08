@@ -1,9 +1,24 @@
-void
-Perl_sv_catpvf_nocontext(SV *sv, const char* pat, ...)
+static char *
+uiv_2buf(char *buf, IV iv, UV uv, int is_uv, char **peob)
 {
-    dTHX;
-    va_list args;
-    va_start(args, pat);
-    sv_vcatpvf(sv, pat, &args);
-    va_end(args);
+    char *ptr = buf + TYPE_CHARS(UV);
+    char *ebuf = ptr;
+    int sign;
+
+    if (is_uv)
+	sign = 0;
+    else if (iv >= 0) {
+	uv = iv;
+	sign = 0;
+    } else {
+	uv = -iv;
+	sign = 1;
+    }
+    do {
+	*--ptr = '0' + (char)(uv % 10);
+    } while (uv /= 10);
+    if (sign)
+	*--ptr = '-';
+    *peob = ebuf;
+    return ptr;
 }

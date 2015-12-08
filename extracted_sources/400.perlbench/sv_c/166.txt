@@ -1,0 +1,19 @@
+STATIC void
+S_more_pte(pTHX)
+{
+    register struct ptr_tbl_ent* pte;
+    register struct ptr_tbl_ent* pteend;
+    XPV *ptr;
+    New(54, ptr, PERL_ARENA_SIZE/sizeof(XPV), XPV);
+    ptr->xpv_pv = (char*)PL_pte_arenaroot;
+    PL_pte_arenaroot = ptr;
+
+    pte = (struct ptr_tbl_ent*)ptr;
+    pteend = &pte[PERL_ARENA_SIZE / sizeof(struct ptr_tbl_ent) - 1];
+    PL_pte_root = ++pte;
+    while (pte < pteend) {
+	pte->next = pte + 1;
+	pte++;
+    }
+    pte->next = 0;
+}

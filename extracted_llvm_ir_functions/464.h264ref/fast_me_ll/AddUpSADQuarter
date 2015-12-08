@@ -1,0 +1,234 @@
+define i32 @AddUpSADQuarter(i32 %pic_pix_x, i32 %pic_pix_y, i32 %blocksize_x, i32 %blocksize_y, i32 %cand_mv_x, i32 %cand_mv_y, %struct.storable_picture* nocapture %ref_picture, i16** nocapture %orig_pic, i32 %Mvmcost, i32 %min_mcost, i32 %useABT) #0 {
+entry:
+  %diff = alloca [16 x i32], align 16
+  %0 = bitcast [16 x i32]* %diff to i8*
+  call void @llvm.lifetime.start(i64 64, i8* %0) #3
+  %imgY_ups = getelementptr inbounds %struct.storable_picture* %ref_picture, i64 0, i32 28
+  %1 = load i16*** %imgY_ups, align 8, !tbaa !3
+  %size_x = getelementptr inbounds %struct.storable_picture* %ref_picture, i64 0, i32 18
+  %2 = load i32* %size_x, align 4, !tbaa !4
+  %size_y = getelementptr inbounds %struct.storable_picture* %ref_picture, i64 0, i32 19
+  %3 = load i32* %size_y, align 4, !tbaa !4
+  %cmp347 = icmp sgt i32 %blocksize_y, 0
+  br i1 %cmp347, label %for.body.lr.ph, label %for.end184
+
+for.body.lr.ph:                                   ; preds = %entry
+  %cmp3342 = icmp sgt i32 %blocksize_x, 0
+  %arraydecay = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 0
+  %incdec.ptr = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 1
+  %incdec.ptr19 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 2
+  %incdec.ptr28 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 3
+  %incdec.ptr37 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 4
+  %incdec.ptr48 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 5
+  %incdec.ptr57 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 6
+  %incdec.ptr66 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 7
+  %incdec.ptr75 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 8
+  %incdec.ptr86 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 9
+  %incdec.ptr95 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 10
+  %incdec.ptr104 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 11
+  %incdec.ptr113 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 12
+  %incdec.ptr124 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 13
+  %incdec.ptr133 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 14
+  %incdec.ptr142 = getelementptr inbounds [16 x i32]* %diff, i64 0, i64 15
+  %tobool151 = icmp eq i32 %useABT, 0
+  %4 = zext i32 %pic_pix_x to i64
+  %5 = zext i32 %pic_pix_y to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc182
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc182 ]
+  %mcost.0348 = phi i32 [ %Mvmcost, %for.body.lr.ph ], [ %mcost.3, %for.inc182 ]
+  %6 = add nsw i64 %indvars.iv, %5
+  %7 = trunc i64 %6 to i32
+  %shl = shl i32 %7, 2
+  %add1 = add nsw i32 %shl, %cand_mv_y
+  br i1 %cmp3342, label %for.body4.lr.ph, label %for.inc182
+
+for.body4.lr.ph:                                  ; preds = %for.body
+  %arrayidx = getelementptr inbounds i16** %orig_pic, i64 %indvars.iv
+  %8 = or i64 %indvars.iv, 1
+  %arrayidx40 = getelementptr inbounds i16** %orig_pic, i64 %8
+  %add41 = add nsw i32 %add1, 4
+  %9 = or i64 %indvars.iv, 2
+  %arrayidx78 = getelementptr inbounds i16** %orig_pic, i64 %9
+  %add79 = add nsw i32 %add1, 8
+  %10 = or i64 %indvars.iv, 3
+  %arrayidx116 = getelementptr inbounds i16** %orig_pic, i64 %10
+  %add117 = add nsw i32 %add1, 12
+  br label %for.body4
+
+for.body4:                                        ; preds = %for.body4.lr.ph, %for.inc179
+  %indvars.iv357 = phi i64 [ 0, %for.body4.lr.ph ], [ %indvars.iv.next358, %for.inc179 ]
+  %mcost.1343 = phi i32 [ %mcost.0348, %for.body4.lr.ph ], [ %mcost.2, %for.inc179 ]
+  %11 = add nsw i64 %indvars.iv357, %4
+  %12 = trunc i64 %11 to i32
+  %shl6 = shl i32 %12, 2
+  %add7 = add nsw i32 %shl6, %cand_mv_x
+  %13 = load i16** %arrayidx, align 8, !tbaa !3
+  %arrayidx9 = getelementptr inbounds i16* %13, i64 %indvars.iv357
+  %14 = load i16* %arrayidx9, align 2, !tbaa !5
+  %conv = zext i16 %14 to i32
+  %15 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call = call zeroext i16 %15(i16** %1, i32 %add1, i32 %add7, i32 %3, i32 %2) #5
+  %conv10 = zext i16 %call to i32
+  %sub = sub nsw i32 %conv, %conv10
+  store i32 %sub, i32* %arraydecay, align 16, !tbaa !4
+  %16 = or i64 %indvars.iv357, 1
+  %arrayidx13 = getelementptr inbounds i16* %13, i64 %16
+  %17 = load i16* %arrayidx13, align 2, !tbaa !5
+  %conv14 = zext i16 %17 to i32
+  %18 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %add15 = add nsw i32 %add7, 4
+  %call16 = call zeroext i16 %18(i16** %1, i32 %add1, i32 %add15, i32 %3, i32 %2) #5
+  %conv17 = zext i16 %call16 to i32
+  %sub18 = sub nsw i32 %conv14, %conv17
+  store i32 %sub18, i32* %incdec.ptr, align 4, !tbaa !4
+  %19 = or i64 %indvars.iv357, 2
+  %arrayidx22 = getelementptr inbounds i16* %13, i64 %19
+  %20 = load i16* %arrayidx22, align 2, !tbaa !5
+  %conv23 = zext i16 %20 to i32
+  %21 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %add24 = add nsw i32 %add7, 8
+  %call25 = call zeroext i16 %21(i16** %1, i32 %add1, i32 %add24, i32 %3, i32 %2) #5
+  %conv26 = zext i16 %call25 to i32
+  %sub27 = sub nsw i32 %conv23, %conv26
+  store i32 %sub27, i32* %incdec.ptr19, align 8, !tbaa !4
+  %22 = or i64 %indvars.iv357, 3
+  %arrayidx31 = getelementptr inbounds i16* %13, i64 %22
+  %23 = load i16* %arrayidx31, align 2, !tbaa !5
+  %conv32 = zext i16 %23 to i32
+  %24 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %add33 = add nsw i32 %add7, 12
+  %call34 = call zeroext i16 %24(i16** %1, i32 %add1, i32 %add33, i32 %3, i32 %2) #5
+  %conv35 = zext i16 %call34 to i32
+  %sub36 = sub nsw i32 %conv32, %conv35
+  store i32 %sub36, i32* %incdec.ptr28, align 4, !tbaa !4
+  %25 = load i16** %arrayidx40, align 8, !tbaa !3
+  %arrayidx43 = getelementptr inbounds i16* %25, i64 %indvars.iv357
+  %26 = load i16* %arrayidx43, align 2, !tbaa !5
+  %conv44 = zext i16 %26 to i32
+  %27 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call45 = call zeroext i16 %27(i16** %1, i32 %add41, i32 %add7, i32 %3, i32 %2) #5
+  %conv46 = zext i16 %call45 to i32
+  %sub47 = sub nsw i32 %conv44, %conv46
+  store i32 %sub47, i32* %incdec.ptr37, align 16, !tbaa !4
+  %arrayidx51 = getelementptr inbounds i16* %25, i64 %16
+  %28 = load i16* %arrayidx51, align 2, !tbaa !5
+  %conv52 = zext i16 %28 to i32
+  %29 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call54 = call zeroext i16 %29(i16** %1, i32 %add41, i32 %add15, i32 %3, i32 %2) #5
+  %conv55 = zext i16 %call54 to i32
+  %sub56 = sub nsw i32 %conv52, %conv55
+  store i32 %sub56, i32* %incdec.ptr48, align 4, !tbaa !4
+  %arrayidx60 = getelementptr inbounds i16* %25, i64 %19
+  %30 = load i16* %arrayidx60, align 2, !tbaa !5
+  %conv61 = zext i16 %30 to i32
+  %31 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call63 = call zeroext i16 %31(i16** %1, i32 %add41, i32 %add24, i32 %3, i32 %2) #5
+  %conv64 = zext i16 %call63 to i32
+  %sub65 = sub nsw i32 %conv61, %conv64
+  store i32 %sub65, i32* %incdec.ptr57, align 8, !tbaa !4
+  %arrayidx69 = getelementptr inbounds i16* %25, i64 %22
+  %32 = load i16* %arrayidx69, align 2, !tbaa !5
+  %conv70 = zext i16 %32 to i32
+  %33 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call72 = call zeroext i16 %33(i16** %1, i32 %add41, i32 %add33, i32 %3, i32 %2) #5
+  %conv73 = zext i16 %call72 to i32
+  %sub74 = sub nsw i32 %conv70, %conv73
+  store i32 %sub74, i32* %incdec.ptr66, align 4, !tbaa !4
+  %34 = load i16** %arrayidx78, align 8, !tbaa !3
+  %arrayidx81 = getelementptr inbounds i16* %34, i64 %indvars.iv357
+  %35 = load i16* %arrayidx81, align 2, !tbaa !5
+  %conv82 = zext i16 %35 to i32
+  %36 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call83 = call zeroext i16 %36(i16** %1, i32 %add79, i32 %add7, i32 %3, i32 %2) #5
+  %conv84 = zext i16 %call83 to i32
+  %sub85 = sub nsw i32 %conv82, %conv84
+  store i32 %sub85, i32* %incdec.ptr75, align 16, !tbaa !4
+  %arrayidx89 = getelementptr inbounds i16* %34, i64 %16
+  %37 = load i16* %arrayidx89, align 2, !tbaa !5
+  %conv90 = zext i16 %37 to i32
+  %38 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call92 = call zeroext i16 %38(i16** %1, i32 %add79, i32 %add15, i32 %3, i32 %2) #5
+  %conv93 = zext i16 %call92 to i32
+  %sub94 = sub nsw i32 %conv90, %conv93
+  store i32 %sub94, i32* %incdec.ptr86, align 4, !tbaa !4
+  %arrayidx98 = getelementptr inbounds i16* %34, i64 %19
+  %39 = load i16* %arrayidx98, align 2, !tbaa !5
+  %conv99 = zext i16 %39 to i32
+  %40 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call101 = call zeroext i16 %40(i16** %1, i32 %add79, i32 %add24, i32 %3, i32 %2) #5
+  %conv102 = zext i16 %call101 to i32
+  %sub103 = sub nsw i32 %conv99, %conv102
+  store i32 %sub103, i32* %incdec.ptr95, align 8, !tbaa !4
+  %arrayidx107 = getelementptr inbounds i16* %34, i64 %22
+  %41 = load i16* %arrayidx107, align 2, !tbaa !5
+  %conv108 = zext i16 %41 to i32
+  %42 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call110 = call zeroext i16 %42(i16** %1, i32 %add79, i32 %add33, i32 %3, i32 %2) #5
+  %conv111 = zext i16 %call110 to i32
+  %sub112 = sub nsw i32 %conv108, %conv111
+  store i32 %sub112, i32* %incdec.ptr104, align 4, !tbaa !4
+  %43 = load i16** %arrayidx116, align 8, !tbaa !3
+  %arrayidx119 = getelementptr inbounds i16* %43, i64 %indvars.iv357
+  %44 = load i16* %arrayidx119, align 2, !tbaa !5
+  %conv120 = zext i16 %44 to i32
+  %45 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call121 = call zeroext i16 %45(i16** %1, i32 %add117, i32 %add7, i32 %3, i32 %2) #5
+  %conv122 = zext i16 %call121 to i32
+  %sub123 = sub nsw i32 %conv120, %conv122
+  store i32 %sub123, i32* %incdec.ptr113, align 16, !tbaa !4
+  %arrayidx127 = getelementptr inbounds i16* %43, i64 %16
+  %46 = load i16* %arrayidx127, align 2, !tbaa !5
+  %conv128 = zext i16 %46 to i32
+  %47 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call130 = call zeroext i16 %47(i16** %1, i32 %add117, i32 %add15, i32 %3, i32 %2) #5
+  %conv131 = zext i16 %call130 to i32
+  %sub132 = sub nsw i32 %conv128, %conv131
+  store i32 %sub132, i32* %incdec.ptr124, align 4, !tbaa !4
+  %arrayidx136 = getelementptr inbounds i16* %43, i64 %19
+  %48 = load i16* %arrayidx136, align 2, !tbaa !5
+  %conv137 = zext i16 %48 to i32
+  %49 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call139 = call zeroext i16 %49(i16** %1, i32 %add117, i32 %add24, i32 %3, i32 %2) #5
+  %conv140 = zext i16 %call139 to i32
+  %sub141 = sub nsw i32 %conv137, %conv140
+  store i32 %sub141, i32* %incdec.ptr133, align 8, !tbaa !4
+  %arrayidx145 = getelementptr inbounds i16* %43, i64 %22
+  %50 = load i16* %arrayidx145, align 2, !tbaa !5
+  %conv146 = zext i16 %50 to i32
+  %51 = load i16 (i16**, i32, i32, i32, i32)** @PelY_14, align 8, !tbaa !3
+  %call148 = call zeroext i16 %51(i16** %1, i32 %add117, i32 %add33, i32 %3, i32 %2) #5
+  %conv149 = zext i16 %call148 to i32
+  %sub150 = sub nsw i32 %conv146, %conv149
+  store i32 %sub150, i32* %incdec.ptr142, align 4, !tbaa !4
+  br i1 %tobool151, label %if.then, label %for.inc179
+
+if.then:                                          ; preds = %for.body4
+  %52 = load %struct.InputParameters** @input, align 8, !tbaa !3
+  %hadamard = getelementptr inbounds %struct.InputParameters* %52, i64 0, i32 6
+  %53 = load i32* %hadamard, align 4, !tbaa !4
+  %call153 = call i32 @SATD(i32* %arraydecay, i32 %53) #5
+  %add154 = add nsw i32 %call153, %mcost.1343
+  %cmp155 = icmp sgt i32 %add154, %min_mcost
+  br i1 %cmp155, label %for.end184, label %for.inc179
+
+for.inc179:                                       ; preds = %for.body4, %if.then
+  %mcost.2 = phi i32 [ %add154, %if.then ], [ %mcost.1343, %for.body4 ]
+  %indvars.iv.next358 = add i64 %indvars.iv357, 4
+  %54 = trunc i64 %indvars.iv.next358 to i32
+  %cmp3 = icmp slt i32 %54, %blocksize_x
+  br i1 %cmp3, label %for.body4, label %for.inc182
+
+for.inc182:                                       ; preds = %for.inc179, %for.body
+  %mcost.3 = phi i32 [ %mcost.0348, %for.body ], [ %mcost.2, %for.inc179 ]
+  %indvars.iv.next = add i64 %indvars.iv, 4
+  %55 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %55, %blocksize_y
+  br i1 %cmp, label %for.body, label %for.end184
+
+for.end184:                                       ; preds = %if.then, %for.inc182, %entry
+  %mcost.0.lcssa = phi i32 [ %Mvmcost, %entry ], [ %mcost.3, %for.inc182 ], [ %add154, %if.then ]
+  call void @llvm.lifetime.end(i64 64, i8* %0) #3
+  ret i32 %mcost.0.lcssa
+}

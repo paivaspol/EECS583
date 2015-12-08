@@ -1,0 +1,15 @@
+define %struct.sv* @Perl_sv_newref(%struct.sv* %sv) #0 {
+entry:
+  %tobool = icmp eq %struct.sv* %sv, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sv_refcnt = getelementptr inbounds %struct.sv* %sv, i64 0, i32 1
+  %0 = load i32* %sv_refcnt, align 4, !tbaa !3
+  %inc = add i32 %0, 1
+  store i32 %inc, i32* %sv_refcnt, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret %struct.sv* %sv
+}

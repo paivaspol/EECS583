@@ -1,13 +1,12 @@
-void
-Perl_free_tied_hv_pool(pTHX)
+STATIC HE*
+S_new_he(pTHX)
 {
-    HE *ohe;
-    HE *he = PL_hv_fetch_ent_mh;
-    while (he) {
-	Safefree(HeKEY_hek(he));
-	ohe = he;
-	he = HeNEXT(he);
-	del_HE(ohe);
-    }
-    PL_hv_fetch_ent_mh = Nullhe;
+    HE* he;
+    LOCK_SV_MUTEX;
+    if (!PL_he_root)
+	more_he();
+    he = PL_he_root;
+    PL_he_root = HeNEXT(he);
+    UNLOCK_SV_MUTEX;
+    return he;
 }

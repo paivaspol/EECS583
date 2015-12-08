@@ -1,18 +1,15 @@
-void
-emit_initial_value_sets ()
+static void
+setup_initial_hard_reg_value_integration (inl_f, remap)
+     struct function *inl_f;
+     struct inline_remap *remap;
 {
-  struct initial_value_struct *ivs = cfun->hard_reg_initial_vals;
+  struct initial_value_struct *ivs = inl_f->hard_reg_initial_vals;
   int i;
-  rtx seq;
 
   if (ivs == 0)
     return;
 
-  start_sequence ();
-  for (i = 0; i < ivs->num_entries; i++)
-    emit_move_insn (ivs->entries[i].pseudo, ivs->entries[i].hard_reg);
-  seq = get_insns ();
-  end_sequence ();
-
-  emit_insns_after (seq, get_insns ());
+  for (i = 0; i < ivs->num_entries; i ++)
+    remap->reg_map[REGNO (ivs->entries[i].pseudo)]
+      = get_func_hard_reg_initial_val (cfun, ivs->entries[i].hard_reg);
 }

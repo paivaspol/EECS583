@@ -1,0 +1,23 @@
+STATIC char *
+S_group_end(pTHX_ register char *patptr, register char *patend, char ender)
+{
+    while (patptr < patend) {
+	char c = *patptr++;
+
+	if (isSPACE(c))
+	    continue;
+	else if (c == ender)
+	    return patptr-1;
+	else if (c == '#') {
+	    while (patptr < patend && *patptr != '\n')
+		patptr++;
+	    continue;
+	} else if (c == '(')
+	    patptr = group_end(patptr, patend, ')') + 1;
+	else if (c == '[')
+	    patptr = group_end(patptr, patend, ']') + 1;
+    }
+    Perl_croak(aTHX_ "No group ending character '%c' found in template",
+               ender);
+    return 0;
+}

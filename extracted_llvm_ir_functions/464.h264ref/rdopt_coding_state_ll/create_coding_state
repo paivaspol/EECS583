@@ -1,0 +1,87 @@
+define noalias %struct.CSobj* @create_coding_state() #0 {
+entry:
+  %call = tail call noalias i8* @calloc(i64 1, i64 352) #4
+  %0 = bitcast i8* %call to %struct.CSobj*
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([22 x i8]* @.str, i64 0, i64 0)) #4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %1 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %partition_mode = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 61
+  %2 = load i32* %partition_mode, align 4, !tbaa !3
+  %cmp1 = icmp eq i32 %2, 0
+  %cond = select i1 %cmp1, i32 1, i32 3
+  %no_part = bitcast i8* %call to i32*
+  store i32 %cond, i32* %no_part, align 4, !tbaa !3
+  %symbol_mode = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 59
+  %3 = load i32* %symbol_mode, align 4, !tbaa !3
+  %cmp2 = icmp eq i32 %3, 1
+  br i1 %cmp2, label %if.then3, label %if.else
+
+if.then3:                                         ; preds = %if.end
+  %conv42 = zext i32 %cond to i64
+  %call5 = tail call noalias i8* @calloc(i64 %conv42, i64 104) #4
+  %4 = bitcast i8* %call5 to %struct.EncodingEnvironment*
+  %encenv = getelementptr inbounds i8* %call, i64 8
+  %5 = bitcast i8* %encenv to %struct.EncodingEnvironment**
+  store %struct.EncodingEnvironment* %4, %struct.EncodingEnvironment** %5, align 8, !tbaa !0
+  %cmp6 = icmp eq i8* %call5, null
+  br i1 %cmp6, label %if.then8, label %if.end11
+
+if.then8:                                         ; preds = %if.then3
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([30 x i8]* @.str1, i64 0, i64 0)) #4
+  br label %if.end11
+
+if.else:                                          ; preds = %if.end
+  %encenv10 = getelementptr inbounds i8* %call, i64 8
+  %6 = bitcast i8* %encenv10 to %struct.EncodingEnvironment**
+  store %struct.EncodingEnvironment* null, %struct.EncodingEnvironment** %6, align 8, !tbaa !0
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.then3, %if.then8, %if.else
+  %conv1343 = zext i32 %cond to i64
+  %call14 = tail call noalias i8* @calloc(i64 %conv1343, i64 48) #4
+  %7 = bitcast i8* %call14 to %struct.Bitstream*
+  %bitstream = getelementptr inbounds i8* %call, i64 16
+  %8 = bitcast i8* %bitstream to %struct.Bitstream**
+  store %struct.Bitstream* %7, %struct.Bitstream** %8, align 8, !tbaa !0
+  %cmp15 = icmp eq i8* %call14, null
+  br i1 %cmp15, label %if.then17, label %if.end18
+
+if.then17:                                        ; preds = %if.end11
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([33 x i8]* @.str2, i64 0, i64 0)) #4
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.end11, %if.then17
+  %9 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %symbol_mode19 = getelementptr inbounds %struct.InputParameters* %9, i64 0, i32 59
+  %10 = load i32* %symbol_mode19, align 4, !tbaa !3
+  %symbol_mode20 = getelementptr inbounds i8* %call, i64 24
+  %11 = bitcast i8* %symbol_mode20 to i32*
+  store i32 %10, i32* %11, align 4, !tbaa !3
+  %cmp22 = icmp eq i32 %10, 1
+  br i1 %cmp22, label %if.then24, label %if.else27
+
+if.then24:                                        ; preds = %if.end18
+  %call25 = tail call %struct.MotionInfoContexts* @create_contexts_MotionInfo() #4
+  %mot_ctx = getelementptr inbounds i8* %call, i64 32
+  %12 = bitcast i8* %mot_ctx to %struct.MotionInfoContexts**
+  store %struct.MotionInfoContexts* %call25, %struct.MotionInfoContexts** %12, align 8, !tbaa !0
+  %call26 = tail call %struct.TextureInfoContexts* @create_contexts_TextureInfo() #4
+  %tex_ctx = getelementptr inbounds i8* %call, i64 40
+  %13 = bitcast i8* %tex_ctx to %struct.TextureInfoContexts**
+  store %struct.TextureInfoContexts* %call26, %struct.TextureInfoContexts** %13, align 8, !tbaa !0
+  br label %if.end30
+
+if.else27:                                        ; preds = %if.end18
+  %mot_ctx28 = getelementptr inbounds i8* %call, i64 32
+  call void @llvm.memset.p0i8.i64(i8* %mot_ctx28, i8 0, i64 16, i32 8, i1 false)
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.else27, %if.then24
+  ret %struct.CSobj* %0
+}

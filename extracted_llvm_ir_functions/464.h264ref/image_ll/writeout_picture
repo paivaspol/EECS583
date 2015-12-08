@@ -1,0 +1,172 @@
+define internal fastcc void @writeout_picture(%struct.Picture* %pic) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %currentPicture = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 49
+  store %struct.Picture* %pic, %struct.Picture** %currentPicture, align 8, !tbaa !0
+  %no_slices = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 0
+  %1 = load i32* %no_slices, align 4, !tbaa !3
+  %cmp3 = icmp sgt i32 %1, 0
+  br i1 %cmp3, label %for.body, label %for.end12
+
+for.body:                                         ; preds = %entry, %for.inc10
+  %2 = phi i32 [ %32, %for.inc10 ], [ %1, %entry ]
+  %indvars.iv7 = phi i64 [ %indvars.iv.next8, %for.inc10 ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 2, i64 %indvars.iv7
+  %3 = load %struct.Slice** %arrayidx, align 8, !tbaa !0
+  %max_part_nr = getelementptr inbounds %struct.Slice* %3, i64 0, i32 4
+  %4 = load i32* %max_part_nr, align 4, !tbaa !3
+  %cmp21 = icmp sgt i32 %4, 0
+  br i1 %cmp21, label %for.body3.lr.ph, label %for.inc10
+
+for.body3.lr.ph:                                  ; preds = %for.body
+  %partArr = getelementptr inbounds %struct.Slice* %3, i64 0, i32 6
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3.lr.ph, %writeUnit.exit
+  %indvars.iv = phi i64 [ 0, %for.body3.lr.ph ], [ %indvars.iv.next, %writeUnit.exit ]
+  %5 = load %struct.datapartition** %partArr, align 8, !tbaa !0
+  %bitstream = getelementptr inbounds %struct.datapartition* %5, i64 %indvars.iv, i32 0
+  %6 = load %struct.Bitstream** %bitstream, align 8, !tbaa !0
+  %7 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %width.i = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 13
+  %8 = load i32* %width.i, align 4, !tbaa !3
+  %height.i = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 15
+  %9 = load i32* %height.i, align 4, !tbaa !3
+  %mul.i = shl i32 %8, 2
+  %mul1.i = mul i32 %mul.i, %9
+  %call.i = tail call %struct.NALU_t* (i32, ...)* bitcast (%struct.NALU_t* (...)* @AllocNALU to %struct.NALU_t* (i32, ...)*)(i32 %mul1.i) #7
+  %10 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %current_mb_nr.i = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 3
+  %11 = load i32* %current_mb_nr.i, align 4, !tbaa !3
+  %cmp.i = icmp eq i32 %11, 0
+  %add.i = select i1 %cmp.i, i32 5, i32 4
+  %startcodeprefix_len.i = getelementptr inbounds %struct.NALU_t* %call.i, i64 0, i32 0
+  store i32 %add.i, i32* %startcodeprefix_len.i, align 4, !tbaa !3
+  %byte_pos.i = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 0
+  %12 = load i32* %byte_pos.i, align 4, !tbaa !3
+  %add2.i = add nsw i32 %12, 1
+  %len.i = getelementptr inbounds %struct.NALU_t* %call.i, i64 0, i32 1
+  store i32 %add2.i, i32* %len.i, align 4, !tbaa !3
+  %buf.i = getelementptr inbounds %struct.NALU_t* %call.i, i64 0, i32 6
+  %13 = load i8** %buf.i, align 8, !tbaa !0
+  %arrayidx.i = getelementptr inbounds i8* %13, i64 1
+  %streamBuffer.i = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 9
+  %14 = load i8** %streamBuffer.i, align 8, !tbaa !0
+  %conv.i = zext i32 %12 to i64
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arrayidx.i, i8* %14, i64 %conv.i, i32 1, i1 false) #1
+  %15 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %currentPicture.i = getelementptr inbounds %struct.ImageParameters* %15, i64 0, i32 49
+  %16 = load %struct.Picture** %currentPicture.i, align 8, !tbaa !0
+  %idr_flag.i = getelementptr inbounds %struct.Picture* %16, i64 0, i32 1
+  %17 = load i32* %idr_flag.i, align 4, !tbaa !3
+  %tobool.i = icmp eq i32 %17, 0
+  br i1 %tobool.i, label %if.else.i, label %if.then.i
+
+if.then.i:                                        ; preds = %for.body3
+  %nal_unit_type.i = getelementptr inbounds %struct.NALU_t* %call.i, i64 0, i32 3
+  store i32 5, i32* %nal_unit_type.i, align 4, !tbaa !3
+  %nal_reference_idc.i = getelementptr inbounds %struct.NALU_t* %call.i, i64 0, i32 4
+  store i32 3, i32* %nal_reference_idc.i, align 4, !tbaa !3
+  br label %writeUnit.exit
+
+if.else.i:                                        ; preds = %for.body3
+  %type.i = getelementptr inbounds %struct.ImageParameters* %15, i64 0, i32 6
+  %18 = load i32* %type.i, align 4, !tbaa !3
+  %cmp4.i = icmp eq i32 %18, 1
+  %19 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %partition_mode.i = getelementptr inbounds %struct.InputParameters* %19, i64 0, i32 61
+  %20 = load i32* %partition_mode.i, align 4, !tbaa !3
+  %cmp7.i = icmp eq i32 %20, 0
+  br i1 %cmp4.i, label %if.then6.i, label %if.else22.i
+
+if.then6.i:                                       ; preds = %if.else.i
+  br i1 %cmp7.i, label %if.then9.i, label %if.else11.i
+
+if.then9.i:                                       ; preds = %if.then6.i
+  %nal_unit_type10.i = getelementptr inbounds %struct.NALU_t* %call.i, i64 0, i32 3
+  store i32 1, i32* %nal_unit_type10.i, align 4, !tbaa !3
+  br label %if.end.i
+
+if.else11.i:                                      ; preds = %if.then6.i
+  %21 = add nsw i64 %indvars.iv, 2
+  %nal_unit_type13.i = getelementptr inbounds %struct.NALU_t* %call.i, i64 0, i32 3
+  %22 = trunc i64 %21 to i32
+  store i32 %22, i32* %nal_unit_type13.i, align 4, !tbaa !3
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.else11.i, %if.then9.i
+  %nal_reference_idc14.i = getelementptr inbounds %struct.ImageParameters* %15, i64 0, i32 113
+  %23 = load i32* %nal_reference_idc14.i, align 4, !tbaa !3
+  %cmp15.i = icmp eq i32 %23, 0
+  %nal_reference_idc18.i = getelementptr inbounds %struct.NALU_t* %call.i, i64 0, i32 4
+  br i1 %cmp15.i, label %if.else19.i, label %if.then17.i
+
+if.then17.i:                                      ; preds = %if.end.i
+  store i32 2, i32* %nal_reference_idc18.i, align 4, !tbaa !3
+  br label %writeUnit.exit
+
+if.else19.i:                                      ; preds = %if.end.i
+  store i32 0, i32* %nal_reference_idc18.i, align 4, !tbaa !3
+  br label %writeUnit.exit
+
+if.else22.i:                                      ; preds = %if.else.i
+  br i1 %cmp7.i, label %if.then26.i, label %if.else28.i
+
+if.then26.i:                                      ; preds = %if.else22.i
+  %nal_unit_type27.i = getelementptr inbounds %struct.NALU_t* %call.i, i64 0, i32 3
+  store i32 1, i32* %nal_unit_type27.i, align 4, !tbaa !3
+  br label %if.end31.i
+
+if.else28.i:                                      ; preds = %if.else22.i
+  %24 = add nsw i64 %indvars.iv, 2
+  %nal_unit_type30.i = getelementptr inbounds %struct.NALU_t* %call.i, i64 0, i32 3
+  %25 = trunc i64 %24 to i32
+  store i32 %25, i32* %nal_unit_type30.i, align 4, !tbaa !3
+  br label %if.end31.i
+
+if.end31.i:                                       ; preds = %if.else28.i, %if.then26.i
+  %nal_reference_idc32.i = getelementptr inbounds %struct.ImageParameters* %15, i64 0, i32 113
+  %26 = load i32* %nal_reference_idc32.i, align 4, !tbaa !3
+  %cmp33.i = icmp eq i32 %26, 0
+  %nal_reference_idc36.i = getelementptr inbounds %struct.NALU_t* %call.i, i64 0, i32 4
+  br i1 %cmp33.i, label %if.else37.i, label %if.then35.i
+
+if.then35.i:                                      ; preds = %if.end31.i
+  store i32 2, i32* %nal_reference_idc36.i, align 4, !tbaa !3
+  br label %writeUnit.exit
+
+if.else37.i:                                      ; preds = %if.end31.i
+  store i32 0, i32* %nal_reference_idc36.i, align 4, !tbaa !3
+  br label %writeUnit.exit
+
+writeUnit.exit:                                   ; preds = %if.then.i, %if.then17.i, %if.else19.i, %if.then35.i, %if.else37.i
+  %forbidden_bit.i = getelementptr inbounds %struct.NALU_t* %call.i, i64 0, i32 5
+  store i32 0, i32* %forbidden_bit.i, align 4, !tbaa !3
+  %27 = load i32 (%struct.NALU_t*)** @WriteNALU, align 8, !tbaa !0
+  %call42.i = tail call i32 %27(%struct.NALU_t* %call.i) #7
+  %28 = load %struct.StatParameters** @stats, align 8, !tbaa !0
+  %bit_ctr.i = getelementptr inbounds %struct.StatParameters* %28, i64 0, i32 4
+  %29 = load i32* %bit_ctr.i, align 4, !tbaa !3
+  %add43.i = add nsw i32 %29, %call42.i
+  store i32 %add43.i, i32* %bit_ctr.i, align 4, !tbaa !3
+  tail call void @FreeNALU(%struct.NALU_t* %call.i) #7
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %30 = load i32* %max_part_nr, align 4, !tbaa !3
+  %31 = trunc i64 %indvars.iv.next to i32
+  %cmp2 = icmp slt i32 %31, %30
+  br i1 %cmp2, label %for.body3, label %for.cond1.for.inc10_crit_edge
+
+for.cond1.for.inc10_crit_edge:                    ; preds = %writeUnit.exit
+  %.pre = load i32* %no_slices, align 4, !tbaa !3
+  br label %for.inc10
+
+for.inc10:                                        ; preds = %for.cond1.for.inc10_crit_edge, %for.body
+  %32 = phi i32 [ %.pre, %for.cond1.for.inc10_crit_edge ], [ %2, %for.body ]
+  %indvars.iv.next8 = add i64 %indvars.iv7, 1
+  %33 = trunc i64 %indvars.iv.next8 to i32
+  %cmp = icmp slt i32 %33, %32
+  br i1 %cmp, label %for.body, label %for.end12
+
+for.end12:                                        ; preds = %for.inc10, %entry
+  ret void
+}

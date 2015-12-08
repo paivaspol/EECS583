@@ -1,0 +1,57 @@
+define i32 @Perl_block_gimme() #0 {
+entry:
+  %0 = load %struct.stackinfo** @PL_curstackinfo, align 8, !tbaa !0
+  %si_cxix = getelementptr inbounds %struct.stackinfo* %0, i64 0, i32 2
+  %1 = load i32* %si_cxix, align 4, !tbaa !3
+  %si_cxstack.i = getelementptr inbounds %struct.stackinfo* %0, i64 0, i32 1
+  %2 = load %struct.context** %si_cxstack.i, align 8, !tbaa !0
+  %cmp4.i.i = icmp sgt i32 %1, -1
+  br i1 %cmp4.i.i, label %for.body.lr.ph.i.i, label %return
+
+for.body.lr.ph.i.i:                               ; preds = %entry
+  %3 = sext i32 %1 to i64
+  br label %for.body.i.i
+
+for.body.i.i:                                     ; preds = %for.inc.i.i, %for.body.lr.ph.i.i
+  %indvars.iv.i.i = phi i64 [ %3, %for.body.lr.ph.i.i ], [ %indvars.iv.next.i.i, %for.inc.i.i ]
+  %i.05.i.i = phi i32 [ %1, %for.body.lr.ph.i.i ], [ %dec.i.i, %for.inc.i.i ]
+  %cx_type.i.i = getelementptr inbounds %struct.context* %2, i64 %indvars.iv.i.i, i32 0
+  %4 = load i32* %cx_type.i.i, align 4, !tbaa !3
+  %and.i.i = and i32 %4, 255
+  switch i32 %and.i.i, label %for.inc.i.i [
+    i32 2, label %S_dopoptosub.exit
+    i32 1, label %S_dopoptosub.exit
+    i32 6, label %S_dopoptosub.exit
+  ]
+
+for.inc.i.i:                                      ; preds = %for.body.i.i
+  %indvars.iv.next.i.i = add i64 %indvars.iv.i.i, -1
+  %dec.i.i = add nsw i32 %i.05.i.i, -1
+  %5 = trunc i64 %indvars.iv.i.i to i32
+  %cmp.i.i = icmp sgt i32 %5, 0
+  br i1 %cmp.i.i, label %for.body.i.i, label %S_dopoptosub.exit
+
+S_dopoptosub.exit:                                ; preds = %for.body.i.i, %for.body.i.i, %for.body.i.i, %for.inc.i.i
+  %i.0.lcssa.i.i = phi i32 [ %i.05.i.i, %for.body.i.i ], [ %i.05.i.i, %for.body.i.i ], [ %i.05.i.i, %for.body.i.i ], [ %dec.i.i, %for.inc.i.i ]
+  %cmp = icmp slt i32 %i.0.lcssa.i.i, 0
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %S_dopoptosub.exit
+  %idxprom = sext i32 %i.0.lcssa.i.i to i64
+  %blku_gimme = getelementptr inbounds %struct.context* %2, i64 %idxprom, i32 1, i32 0, i32 6
+  %6 = load i8* %blku_gimme, align 1, !tbaa !1
+  %conv = zext i8 %6 to i32
+  switch i32 %conv, label %sw.default [
+    i32 128, label %return
+    i32 0, label %return
+    i32 1, label %return
+  ]
+
+sw.default:                                       ; preds = %if.end
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([22 x i8]* @.str14, i64 0, i64 0), i32 %conv) #7
+  br label %return
+
+return:                                           ; preds = %entry, %if.end, %if.end, %if.end, %S_dopoptosub.exit, %sw.default
+  %retval.0 = phi i32 [ 0, %sw.default ], [ 128, %S_dopoptosub.exit ], [ %conv, %if.end ], [ %conv, %if.end ], [ %conv, %if.end ], [ 128, %entry ]
+  ret i32 %retval.0
+}

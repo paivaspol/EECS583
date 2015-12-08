@@ -1,13 +1,26 @@
 int
-ix86_unary_operator_ok (code, mode, operands)
-     enum rtx_code code ATTRIBUTE_UNUSED;
+ix86_binary_operator_ok (code, mode, operands)
+     enum rtx_code code;
      enum machine_mode mode ATTRIBUTE_UNUSED;
-     rtx operands[2] ATTRIBUTE_UNUSED;
+     rtx operands[3];
 {
-  /* If one of operands is memory, source and destination must match.  */
-  if ((GET_CODE (operands[0]) == MEM
-       || GET_CODE (operands[1]) == MEM)
+  /* Both source operands cannot be in memory.  */
+  if (GET_CODE (operands[1]) == MEM && GET_CODE (operands[2]) == MEM)
+    return 0;
+  /* If the operation is not commutable, source 1 cannot be a constant.  */
+  if (CONSTANT_P (operands[1]) && GET_RTX_CLASS (code) != 'c')
+    return 0;
+  /* If the destination is memory, we must have a matching source operand.  */
+  if (GET_CODE (operands[0]) == MEM
+      && ! (rtx_equal_p (operands[0], operands[1])
+	    || (GET_RTX_CLASS (code) == 'c'
+		&& rtx_equal_p (operands[0], operands[2]))))
+    return 0;
+  /* If the operation is not commutable and the source 1 is memory, we must
+     have a matching destination.  */
+  if (GET_CODE (operands[1]) == MEM
+      && GET_RTX_CLASS (code) != 'c'
       && ! rtx_equal_p (operands[0], operands[1]))
-    return FALSE;
-  return TRUE;
+    return 0;
+  return 1;
 }

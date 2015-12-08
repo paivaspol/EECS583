@@ -1,0 +1,28 @@
+define void @A2_permuteColumns(%struct._A2* %mtx, i32 %ncol, i32* %index) #0 {
+entry:
+  %cmp = icmp eq %struct._A2* %mtx, null
+  %cmp1 = icmp slt i32 %ncol, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %n2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2
+  %0 = load i32* %n2, align 4, !tbaa !0
+  %cmp3 = icmp slt i32 %0, %ncol
+  %cmp5 = icmp eq i32* %index, null
+  %or.cond20 = or i1 %cmp3, %cmp5
+  br i1 %or.cond20, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), %struct._A2* %mtx, i32 %ncol, i32* %index) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %call6 = tail call i32* @IVinit(i32 %ncol, i32 -1) #4
+  tail call void @IVcopy(i32 %ncol, i32* %call6, i32* %index) #4
+  %call7 = tail call i32 @A2_sortColumnsUp(%struct._A2* %mtx, i32 %ncol, i32* %call6) #6
+  tail call void @IVfree(i32* %call6) #4
+  ret void
+}

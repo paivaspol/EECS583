@@ -1,0 +1,37 @@
+define i32 @mb_is_available(i32 %mbAddr, i32 %currMbAddr) #0 {
+entry:
+  %cmp = icmp slt i32 %mbAddr, 0
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %PicSizeInMbs = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 110
+  %1 = load i32* %PicSizeInMbs, align 4, !tbaa !3
+  %cmp1 = icmp sgt i32 %1, %mbAddr
+  br i1 %cmp1, label %if.end, label %return
+
+if.end:                                           ; preds = %lor.lhs.false
+  %DeblockCall = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 143
+  %2 = load i32* %DeblockCall, align 4, !tbaa !3
+  %tobool = icmp eq i32 %2, 0
+  br i1 %tobool, label %if.then2, label %if.end10
+
+if.then2:                                         ; preds = %if.end
+  %idxprom = sext i32 %mbAddr to i64
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %3 = load %struct.macroblock** %mb_data, align 8, !tbaa !0
+  %slice_nr = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 1
+  %4 = load i32* %slice_nr, align 4, !tbaa !3
+  %idxprom3 = sext i32 %currMbAddr to i64
+  %slice_nr6 = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom3, i32 1
+  %5 = load i32* %slice_nr6, align 4, !tbaa !3
+  %cmp7 = icmp eq i32 %4, %5
+  br i1 %cmp7, label %if.end10, label %return
+
+if.end10:                                         ; preds = %if.then2, %if.end
+  br label %return
+
+return:                                           ; preds = %if.then2, %entry, %lor.lhs.false, %if.end10
+  %retval.0 = phi i32 [ 1, %if.end10 ], [ 0, %lor.lhs.false ], [ 0, %entry ], [ 0, %if.then2 ]
+  ret i32 %retval.0
+}

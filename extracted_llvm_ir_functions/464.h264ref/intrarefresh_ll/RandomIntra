@@ -1,0 +1,27 @@
+define i32 @RandomIntra(i32 %mb) #3 {
+entry:
+  %0 = load i32* @NumberIntraPerPicture, align 4, !tbaa !0
+  %cmp4 = icmp sgt i32 %0, 0
+  br i1 %cmp4, label %for.body.lr.ph, label %return
+
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = load i32** @IntraMBs, align 8, !tbaa !3
+  br label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %2 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %2, %0
+  br i1 %cmp, label %for.body, label %return
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv
+  %3 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp1 = icmp eq i32 %3, %mb
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp1, label %return, label %for.cond
+
+return:                                           ; preds = %for.cond, %for.body, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %for.body ], [ 0, %for.cond ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,14 @@
+PP(pp_sassign)
+{
+    dSP; dPOPTOPssrl;
+
+    if (PL_op->op_private & OPpASSIGN_BACKWARDS) {
+	SV *temp;
+	temp = left; left = right; right = temp;
+    }
+    if (PL_tainting && PL_tainted && !SvTAINTED(left))
+	TAINT_NOT;
+    SvSetMagicSV(right, left);
+    SETs(right);
+    RETURN;
+}

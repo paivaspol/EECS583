@@ -1,36 +1,25 @@
-static SV *retrieve_lscalar(pTHX_ stcxt_t *cxt, char *cname)
+static SV *retrieve_tied_key(pTHX_ stcxt_t *cxt, char *cname)
 {
-	I32 len;
+	SV *tv;
 	SV *sv;
+	SV *key;
 
-	RLEN(len);
-	TRACEME(("retrieve_lscalar (#%d), len = %"IVdf, cxt->tagnum, (IV) len));
+	TRACEME(("retrieve_tied_key (#%d)", cxt->tagnum));
 
-	/*
-	 * Allocate an empty scalar of the suitable length.
-	 */
+	tv = NEWSV(10002, 0);
+	SEEN(tv, cname, 0);			/* Will return if tv is null */
+	sv = retrieve(aTHX_ cxt, 0);		/* Retrieve <object> */
+	if (!sv)
+		return (SV *) 0;		/* Failed */
 
-	sv = NEWSV(10002, len);
-	SEEN(sv, cname, 0);	/* Associate this new scalar with tag "tagnum" */
+	key = retrieve(aTHX_ cxt, 0);		/* Retrieve <key> */
+	if (!key)
+		return (SV *) 0;		/* Failed */
 
-	/*
-	 * WARNING: duplicates parts of sv_setpv and breaks SV data encapsulation.
-	 *
-	 * Now, for efficiency reasons, read data directly inside the SV buffer,
-	 * and perform the SV final settings directly by duplicating the final
-	 * work done by sv_setpv. Since we're going to allocate lots of scalars
-	 * this way, it's worth the hassle and risk.
-	 */
+	sv_upgrade(tv, SVt_PVMG);
+	sv_magic(tv, sv, 'p', (char *)key, HEf_SVKEY);
+	SvREFCNT_dec(key);			/* Undo refcnt inc from sv_magic() */
+	SvREFCNT_dec(sv);			/* Undo refcnt inc from sv_magic() */
 
-	SAFEREAD(SvPVX(sv), len, sv);
-	SvCUR_set(sv, len);				/* Record C string length */
-	*SvEND(sv) = '\0';				/* Ensure it's null terminated anyway */
-	(void) SvPOK_only(sv);			/* Validate string pointer */
-	if (cxt->s_tainted)				/* Is input source tainted? */
-		SvTAINT(sv);				/* External data cannot be trusted */
-
-	TRACEME(("large scalar len %"IVdf" '%s'", (IV) len, SvPVX(sv)));
-	TRACEME(("ok (retrieve_lscalar at 0x%"UVxf")", PTR2UV(sv)));
-
-	return sv;
+	return tv;
 }

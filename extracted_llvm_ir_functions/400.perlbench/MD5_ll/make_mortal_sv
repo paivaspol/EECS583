@@ -1,0 +1,132 @@
+define internal fastcc %struct.sv* @make_mortal_sv(i8* %src, i32 %type) #0 {
+entry:
+  %result = alloca [33 x i8], align 16
+  %0 = getelementptr inbounds [33 x i8]* %result, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 33, i8* %0) #2
+  switch i32 %type, label %sw.default [
+    i32 0, label %sw.epilog
+    i32 1, label %sw.bb1
+    i32 2, label %sw.bb2
+  ]
+
+sw.bb1:                                           ; preds = %entry
+  %add.ptr.i = getelementptr inbounds i8* %src, i64 16
+  %from21.i = ptrtoint i8* %src to i64
+  %scevgep19.i = getelementptr i8* %src, i64 1
+  %1 = icmp ugt i8* %add.ptr.i, %scevgep19.i
+  %umax.i = select i1 %1, i8* %add.ptr.i, i8* %scevgep19.i
+  %umax20.i = ptrtoint i8* %umax.i to i64
+  %2 = shl i64 %from21.i, 1
+  br label %while.body.i
+
+while.body.i:                                     ; preds = %while.body.i, %sw.bb1
+  %d.018.i = phi i8* [ %0, %sw.bb1 ], [ %incdec.ptr4.i, %while.body.i ]
+  %from.addr.017.i = phi i8* [ %src, %sw.bb1 ], [ %incdec.ptr5.i, %while.body.i ]
+  %3 = load i8* %from.addr.017.i, align 1, !tbaa !1
+  %conv.i = zext i8 %3 to i64
+  %shr13.i = lshr i64 %conv.i, 4
+  %arrayidx.i = getelementptr inbounds [17 x i8]* @.str30, i64 0, i64 %shr13.i
+  %4 = load i8* %arrayidx.i, align 1, !tbaa !1
+  %incdec.ptr.i = getelementptr inbounds i8* %d.018.i, i64 1
+  store i8 %4, i8* %d.018.i, align 1, !tbaa !1
+  %and.i = and i64 %conv.i, 15
+  %arrayidx3.i = getelementptr inbounds [17 x i8]* @.str30, i64 0, i64 %and.i
+  %5 = load i8* %arrayidx3.i, align 1, !tbaa !1
+  %incdec.ptr4.i = getelementptr inbounds i8* %d.018.i, i64 2
+  store i8 %5, i8* %incdec.ptr.i, align 1, !tbaa !1
+  %incdec.ptr5.i = getelementptr inbounds i8* %from.addr.017.i, i64 1
+  %cmp.i = icmp ult i8* %incdec.ptr5.i, %add.ptr.i
+  br i1 %cmp.i, label %while.body.i, label %hex_16.exit
+
+hex_16.exit:                                      ; preds = %while.body.i
+  %6 = shl i64 %umax20.i, 1
+  %7 = sub i64 %6, %2
+  %scevgep22.i = getelementptr [33 x i8]* %result, i64 0, i64 %7
+  store i8 0, i8* %scevgep22.i, align 2, !tbaa !1
+  br label %sw.epilog
+
+sw.bb2:                                           ; preds = %entry
+  %add.ptr.i10 = getelementptr inbounds i8* %src, i64 16
+  %8 = load i8* %src, align 1, !tbaa !1
+  %conv56.i = zext i8 %8 to i32
+  %shr4757.i = lshr i32 %conv56.i, 2
+  %idxprom4858.i = zext i32 %shr4757.i to i64
+  %arrayidx59.i = getelementptr inbounds [65 x i8]* @.str29, i64 0, i64 %idxprom4858.i
+  %9 = load i8* %arrayidx59.i, align 1, !tbaa !1
+  %incdec.ptr160.i = getelementptr inbounds [33 x i8]* %result, i64 0, i64 1
+  store i8 %9, i8* %0, align 16, !tbaa !1
+  %incdec.ptr55.i = getelementptr inbounds i8* %src, i64 1
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.end.i, %sw.bb2
+  %incdec.ptr165.i = phi i8* [ %incdec.ptr160.i, %sw.bb2 ], [ %incdec.ptr1.i, %if.end.i ]
+  %conv64.i = phi i32 [ %conv56.i, %sw.bb2 ], [ %conv.i13, %if.end.i ]
+  %incdec.ptr63.i = phi i8* [ %incdec.ptr55.i, %sw.bb2 ], [ %incdec.ptr.i12, %if.end.i ]
+  %d.062.i = phi i8* [ %0, %sw.bb2 ], [ %incdec.ptr32.i, %if.end.i ]
+  %from.addr.061.i = phi i8* [ %src, %sw.bb2 ], [ %incdec.ptr8.i, %if.end.i ]
+  %incdec.ptr7.i = getelementptr inbounds i8* %from.addr.061.i, i64 2
+  %10 = load i8* %incdec.ptr63.i, align 1, !tbaa !1
+  %incdec.ptr8.i = getelementptr inbounds i8* %from.addr.061.i, i64 3
+  %11 = load i8* %incdec.ptr7.i, align 1, !tbaa !1
+  %and10.i = shl nuw nsw i32 %conv64.i, 4
+  %shl11.i = and i32 %and10.i, 48
+  %conv12.i = zext i8 %10 to i32
+  %shr1449.i = lshr i32 %conv12.i, 4
+  %or.i = or i32 %shr1449.i, %shl11.i
+  %idxprom1550.i = zext i32 %or.i to i64
+  %arrayidx16.i = getelementptr inbounds [65 x i8]* @.str29, i64 0, i64 %idxprom1550.i
+  %12 = load i8* %arrayidx16.i, align 1, !tbaa !1
+  %incdec.ptr17.i = getelementptr inbounds i8* %d.062.i, i64 2
+  store i8 %12, i8* %incdec.ptr165.i, align 1, !tbaa !1
+  %and19.i = shl nuw nsw i32 %conv12.i, 2
+  %shl20.i = and i32 %and19.i, 60
+  %conv21.i = zext i8 %11 to i32
+  %shr2351.i = lshr i32 %conv21.i, 6
+  %or24.i = or i32 %shl20.i, %shr2351.i
+  %idxprom2552.i = zext i32 %or24.i to i64
+  %arrayidx26.i = getelementptr inbounds [65 x i8]* @.str29, i64 0, i64 %idxprom2552.i
+  %13 = load i8* %arrayidx26.i, align 1, !tbaa !1
+  %incdec.ptr27.i = getelementptr inbounds i8* %d.062.i, i64 3
+  store i8 %13, i8* %incdec.ptr17.i, align 1, !tbaa !1
+  %and29.i = and i32 %conv21.i, 63
+  %idxprom3053.i = zext i32 %and29.i to i64
+  %arrayidx31.i = getelementptr inbounds [65 x i8]* @.str29, i64 0, i64 %idxprom3053.i
+  %14 = load i8* %arrayidx31.i, align 1, !tbaa !1
+  %incdec.ptr32.i = getelementptr inbounds i8* %d.062.i, i64 4
+  store i8 %14, i8* %incdec.ptr27.i, align 1, !tbaa !1
+  %incdec.ptr.i12 = getelementptr inbounds i8* %from.addr.061.i, i64 4
+  %15 = load i8* %incdec.ptr8.i, align 1, !tbaa !1
+  %conv.i13 = zext i8 %15 to i32
+  %shr47.i = lshr i32 %conv.i13, 2
+  %idxprom48.i = zext i32 %shr47.i to i64
+  %arrayidx.i14 = getelementptr inbounds [65 x i8]* @.str29, i64 0, i64 %idxprom48.i
+  %16 = load i8* %arrayidx.i14, align 1, !tbaa !1
+  %incdec.ptr1.i = getelementptr inbounds i8* %d.062.i, i64 5
+  store i8 %16, i8* %incdec.ptr32.i, align 1, !tbaa !1
+  %cmp.i15 = icmp eq i8* %incdec.ptr.i12, %add.ptr.i10
+  br i1 %cmp.i15, label %base64_16.exit, label %if.end.i
+
+base64_16.exit:                                   ; preds = %if.end.i
+  %scevgep.i = getelementptr [33 x i8]* %result, i64 0, i64 21
+  %and.i11 = shl nuw nsw i32 %conv.i13, 4
+  %shl.i = and i32 %and.i11, 48
+  %idxprom454.i = zext i32 %shl.i to i64
+  %arrayidx5.i = getelementptr inbounds [65 x i8]* @.str29, i64 0, i64 %idxprom454.i
+  %17 = load i8* %arrayidx5.i, align 1, !tbaa !1
+  %incdec.ptr6.i = getelementptr inbounds [33 x i8]* %result, i64 0, i64 22
+  store i8 %17, i8* %scevgep.i, align 1, !tbaa !1
+  store i8 0, i8* %incdec.ptr6.i, align 2, !tbaa !1
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %entry
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([25 x i8]* @.str28, i64 0, i64 0), i32 %type) #4
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %entry, %sw.default, %base64_16.exit, %hex_16.exit
+  %ret.0 = phi i8* [ undef, %sw.default ], [ %0, %base64_16.exit ], [ %0, %hex_16.exit ], [ %src, %entry ]
+  %len.0 = phi i64 [ undef, %sw.default ], [ 22, %base64_16.exit ], [ 32, %hex_16.exit ], [ 16, %entry ]
+  %call5 = call %struct.sv* @Perl_newSVpv(i8* %ret.0, i64 %len.0) #4
+  %call6 = call %struct.sv* @Perl_sv_2mortal(%struct.sv* %call5) #4
+  call void @llvm.lifetime.end(i64 33, i8* %0) #2
+  ret %struct.sv* %call6
+}

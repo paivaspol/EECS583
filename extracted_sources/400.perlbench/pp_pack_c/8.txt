@@ -1,0 +1,30 @@
+PP(pp_unpack)
+{
+    dSP;
+    dPOPPOPssrl;
+    I32 gimme = GIMME_V;
+    STRLEN llen;
+    STRLEN rlen;
+    register char *pat = SvPV(left, llen);
+#ifdef PACKED_IS_OCTETS
+    /* Packed side is assumed to be octets - so force downgrade if it
+       has been UTF-8 encoded by accident
+     */
+    register char *s = SvPVbyte(right, rlen);
+#else
+    register char *s = SvPV(right, rlen);
+#endif
+    char *strend = s + rlen;
+    register char *patend = pat + llen;
+    register I32 cnt;
+
+    PUTBACK;
+    cnt = unpackstring(pat, patend, s, strend,
+		     ((gimme == G_SCALAR) ? FLAG_UNPACK_ONLY_ONE : 0)
+		     | (DO_UTF8(right) ? FLAG_UNPACK_DO_UTF8 : 0));
+
+    SPAGAIN;
+    if ( !cnt && gimme == G_SCALAR )
+       PUSHs(&PL_sv_undef);
+    RETURN;
+}

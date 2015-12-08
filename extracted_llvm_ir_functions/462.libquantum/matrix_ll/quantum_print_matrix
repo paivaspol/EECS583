@@ -1,0 +1,58 @@
+define void @quantum_print_matrix(i64 %m.coerce0, { float, float }* nocapture %m.coerce1) #0 {
+entry:
+  %m.sroa.0.0.extract.trunc = trunc i64 %m.coerce0 to i32
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond, %entry
+  %z.0 = phi i32 [ 0, %entry ], [ %inc, %while.cond ]
+  %inc = add nsw i32 %z.0, 1
+  %shl = shl i32 1, %z.0
+  %cmp = icmp slt i32 %shl, %m.sroa.0.0.extract.trunc
+  br i1 %cmp, label %while.cond, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %while.cond
+  %cmp246 = icmp sgt i32 %m.sroa.0.0.extract.trunc, 0
+  br i1 %cmp246, label %for.cond3.preheader.lr.ph, label %for.end23
+
+for.cond3.preheader.lr.ph:                        ; preds = %for.cond.preheader
+  %m.sroa.0.4.extract.shift = lshr i64 %m.coerce0, 32
+  %m.sroa.0.4.extract.trunc = trunc i64 %m.sroa.0.4.extract.shift to i32
+  %cmp444 = icmp sgt i32 %m.sroa.0.4.extract.trunc, 0
+  br label %for.cond3.preheader
+
+for.cond3.preheader:                              ; preds = %for.end, %for.cond3.preheader.lr.ph
+  %indvars.iv49 = phi i64 [ 0, %for.cond3.preheader.lr.ph ], [ %indvars.iv.next50, %for.end ]
+  br i1 %cmp444, label %for.body5.lr.ph, label %for.end
+
+for.body5.lr.ph:                                  ; preds = %for.cond3.preheader
+  %mul = mul i64 %indvars.iv49, %m.sroa.0.4.extract.shift
+  %sext = shl i64 %mul, 32
+  %0 = ashr exact i64 %sext, 32
+  br label %for.body5
+
+for.body5:                                        ; preds = %for.body5, %for.body5.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body5.lr.ph ], [ %indvars.iv.next, %for.body5 ]
+  %1 = add nsw i64 %indvars.iv, %0
+  %arrayidx.realp = getelementptr inbounds { float, float }* %m.coerce1, i64 %1, i32 0
+  %arrayidx.real = load float* %arrayidx.realp, align 4
+  %arrayidx.imagp = getelementptr inbounds { float, float }* %m.coerce1, i64 %1, i32 1
+  %arrayidx.imag = load float* %arrayidx.imagp, align 4
+  %conv = fpext float %arrayidx.real to double
+  %conv17 = fpext float %arrayidx.imag to double
+  %call18 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([10 x i8]* @.str1, i64 0, i64 0), double %conv, double %conv17) #4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %m.sroa.0.4.extract.trunc
+  br i1 %exitcond, label %for.end, label %for.body5
+
+for.end:                                          ; preds = %for.body5, %for.cond3.preheader
+  %putchar43 = tail call i32 @putchar(i32 10) #3
+  %indvars.iv.next50 = add i64 %indvars.iv49, 1
+  %lftr.wideiv51 = trunc i64 %indvars.iv.next50 to i32
+  %exitcond52 = icmp eq i32 %lftr.wideiv51, %m.sroa.0.0.extract.trunc
+  br i1 %exitcond52, label %for.end23, label %for.cond3.preheader
+
+for.end23:                                        ; preds = %for.end, %for.cond.preheader
+  %putchar = tail call i32 @putchar(i32 10) #3
+  ret void
+}

@@ -1,0 +1,142 @@
+define void @writeMB_skip_flagInfo_CABAC(%struct.syntaxelement* nocapture %se, %struct.EncodingEnvironment* %eep_dp) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %1 = load i32* %type, align 4, !tbaa !0
+  %cmp = icmp eq i32 %1, 1
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
+  %2 = load %struct.Slice** %currentSlice, align 8, !tbaa !3
+  %mot_ctx = getelementptr inbounds %struct.Slice* %2, i64 0, i32 7
+  %3 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !tbaa !3
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  %4 = load i32* %current_mb_nr, align 4, !tbaa !0
+  %idxprom = sext i32 %4 to i64
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %5 = load %struct.macroblock** %mb_data, align 8, !tbaa !3
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
+  %6 = load i32* %value1, align 4, !tbaa !0
+  %mb_available_up = getelementptr inbounds %struct.macroblock* %5, i64 %idxprom, i32 6
+  %7 = load %struct.macroblock** %mb_available_up, align 8, !tbaa !3
+  %cmp1 = icmp eq %struct.macroblock* %7, null
+  br i1 %cmp, label %if.then, label %if.else41
+
+if.then:                                          ; preds = %entry
+  br i1 %cmp1, label %if.end, label %if.else
+
+if.else:                                          ; preds = %if.then
+  %skip_flag = getelementptr inbounds %struct.macroblock* %7, i64 0, i32 44
+  %8 = load i32* %skip_flag, align 4, !tbaa !0
+  %not.cmp5 = icmp ne i32 %8, 0
+  %cond = zext i1 %not.cmp5 to i32
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.else
+  %b.0 = phi i32 [ %cond, %if.else ], [ 0, %if.then ]
+  %mb_available_left = getelementptr inbounds %struct.macroblock* %5, i64 %idxprom, i32 7
+  %9 = load %struct.macroblock** %mb_available_left, align 8, !tbaa !3
+  %cmp7 = icmp eq %struct.macroblock* %9, null
+  br i1 %cmp7, label %if.end16, label %if.else10
+
+if.else10:                                        ; preds = %if.end
+  %skip_flag12 = getelementptr inbounds %struct.macroblock* %9, i64 0, i32 44
+  %10 = load i32* %skip_flag12, align 4, !tbaa !0
+  %not.cmp13 = icmp ne i32 %10, 0
+  %phitmp = select i1 %not.cmp13, i32 8, i32 7
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.end, %if.else10
+  %a.0 = phi i32 [ %phitmp, %if.else10 ], [ 7, %if.end ]
+  %add17 = add nsw i32 %a.0, %b.0
+  %cmp19 = icmp eq i32 %6, 0
+  br i1 %cmp19, label %land.lhs.true, label %if.else27
+
+land.lhs.true:                                    ; preds = %if.end16
+  %value2 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2
+  %11 = load i32* %value2, align 4, !tbaa !0
+  %cmp21 = icmp eq i32 %11, 0
+  br i1 %cmp21, label %if.then23, label %if.else27
+
+if.then23:                                        ; preds = %land.lhs.true
+  %idxprom24108 = zext i32 %add17 to i64
+  %arrayidx26 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 %idxprom24108
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx26) #5
+  br label %if.end32
+
+if.else27:                                        ; preds = %land.lhs.true, %if.end16
+  %idxprom28107 = zext i32 %add17 to i64
+  %arrayidx31 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 %idxprom28107
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx31) #5
+  br label %if.end32
+
+if.end32:                                         ; preds = %if.else27, %if.then23
+  %12 = load i32* %value1, align 4, !tbaa !0
+  %cmp34 = icmp eq i32 %12, 0
+  br i1 %cmp34, label %land.rhs, label %land.end
+
+land.rhs:                                         ; preds = %if.end32
+  %value236 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2
+  %13 = load i32* %value236, align 4, !tbaa !0
+  %cmp37 = icmp eq i32 %13, 0
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %if.end32
+  %14 = phi i1 [ false, %if.end32 ], [ %cmp37, %land.rhs ]
+  %15 = zext i1 %14 to i32
+  %cond39 = xor i32 %15, 1
+  %skip_flag40 = getelementptr inbounds %struct.macroblock* %5, i64 %idxprom, i32 44
+  store i32 %cond39, i32* %skip_flag40, align 4, !tbaa !0
+  br label %if.end82
+
+if.else41:                                        ; preds = %entry
+  br i1 %cmp1, label %if.end52, label %if.else46
+
+if.else46:                                        ; preds = %if.else41
+  %skip_flag48 = getelementptr inbounds %struct.macroblock* %7, i64 0, i32 44
+  %16 = load i32* %skip_flag48, align 4, !tbaa !0
+  %cmp49 = icmp ne i32 %16, 0
+  %cond51 = zext i1 %cmp49 to i32
+  br label %if.end52
+
+if.end52:                                         ; preds = %if.else41, %if.else46
+  %b.1 = phi i32 [ %cond51, %if.else46 ], [ 0, %if.else41 ]
+  %mb_available_left53 = getelementptr inbounds %struct.macroblock* %5, i64 %idxprom, i32 7
+  %17 = load %struct.macroblock** %mb_available_left53, align 8, !tbaa !3
+  %cmp54 = icmp eq %struct.macroblock* %17, null
+  br i1 %cmp54, label %if.end63, label %if.else57
+
+if.else57:                                        ; preds = %if.end52
+  %skip_flag59 = getelementptr inbounds %struct.macroblock* %17, i64 0, i32 44
+  %18 = load i32* %skip_flag59, align 4, !tbaa !0
+  %cmp60 = icmp ne i32 %18, 0
+  %cond62 = zext i1 %cmp60 to i32
+  br label %if.end63
+
+if.end63:                                         ; preds = %if.end52, %if.else57
+  %a.1 = phi i32 [ %cond62, %if.else57 ], [ 0, %if.end52 ]
+  %add64 = add nsw i32 %a.1, %b.1
+  %cmp65 = icmp eq i32 %6, 0
+  %idxprom68106 = zext i32 %add64 to i64
+  %arrayidx71 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 %idxprom68106
+  br i1 %cmp65, label %if.then67, label %if.else72
+
+if.then67:                                        ; preds = %if.end63
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx71) #5
+  br label %if.end77
+
+if.else72:                                        ; preds = %if.end63
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx71) #5
+  br label %if.end77
+
+if.end77:                                         ; preds = %if.else72, %if.then67
+  %19 = zext i1 %cmp65 to i32
+  %cond80 = xor i32 %19, 1
+  %skip_flag81 = getelementptr inbounds %struct.macroblock* %5, i64 %idxprom, i32 44
+  store i32 %cond80, i32* %skip_flag81, align 4, !tbaa !0
+  br label %if.end82
+
+if.end82:                                         ; preds = %if.end77, %land.end
+  %act_ctx.0 = phi i32 [ %add17, %land.end ], [ %add64, %if.end77 ]
+  %context = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 6
+  store i32 %act_ctx.0, i32* %context, align 4, !tbaa !0
+  ret void
+}

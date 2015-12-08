@@ -1,0 +1,158 @@
+define void @XS_Time__HiRes_usleep(%struct.cv* nocapture %cv) #0 {
+entry:
+  %tv.i = alloca %struct.timeval, align 8
+  %Ta = alloca %struct.timeval, align 8
+  %Tb = alloca %struct.timeval, align 8
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !3
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !3
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !3
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !3
+  %3 = load i32* %2, align 4, !tbaa !4
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %add.ptr.idx = shl nsw i64 %idx.ext, 32
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %sub.ptr.div486 = lshr exact i64 %sub.ptr.sub3, 3
+  %conv5 = trunc i64 %sub.ptr.div486 to i32
+  %cmp = icmp eq i32 %conv5, 1
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([37 x i8]* @.str4, i64 0, i64 0)) #4
+  %.pre = load %struct.sv*** @PL_stack_base, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %4 = phi %struct.sv** [ %1, %entry ], [ %.pre, %if.then ]
+  %sext = add i64 %add.ptr.idx, 4294967296
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds %struct.sv** %4, i64 %idxprom
+  %5 = load %struct.sv** %arrayidx, align 8, !tbaa !3
+  %sv_flags = getelementptr inbounds %struct.sv* %5, i64 0, i32 2
+  %6 = load i32* %sv_flags, align 4, !tbaa !4
+  %and = and i32 %6, 131072
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.end
+  %sv_any = getelementptr inbounds %struct.sv* %5, i64 0, i32 0
+  %7 = load i8** %sv_any, align 8, !tbaa !3
+  %xnv_nv = getelementptr inbounds i8* %7, i64 32
+  %8 = bitcast i8* %xnv_nv to double*
+  %9 = load double* %8, align 8, !tbaa !5
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.end
+  %call = call double @Perl_sv_2nv(%struct.sv* %5) #4
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi double [ %9, %cond.true ], [ %call, %cond.false ]
+  %10 = load %struct.op** @PL_op, align 8, !tbaa !3
+  %op_private = getelementptr inbounds %struct.op* %10, i64 0, i32 7
+  %11 = load i8* %op_private, align 1, !tbaa !1
+  %and15 = and i8 %11, 32
+  %tobool16 = icmp eq i8 %and15, 0
+  br i1 %tobool16, label %cond.false19, label %cond.true17
+
+cond.true17:                                      ; preds = %cond.end
+  %op_targ = getelementptr inbounds %struct.op* %10, i64 0, i32 3
+  %12 = load i64* %op_targ, align 8, !tbaa !0
+  %13 = load %struct.sv*** @PL_curpad, align 8, !tbaa !3
+  %arrayidx18 = getelementptr inbounds %struct.sv** %13, i64 %12
+  %14 = load %struct.sv** %arrayidx18, align 8, !tbaa !3
+  br label %cond.end21
+
+cond.false19:                                     ; preds = %cond.end
+  %call20 = call %struct.sv* @Perl_sv_newmortal() #4
+  br label %cond.end21
+
+cond.end21:                                       ; preds = %cond.false19, %cond.true17
+  %cond22 = phi %struct.sv* [ %14, %cond.true17 ], [ %call20, %cond.false19 ]
+  %call23 = call i32 @gettimeofday(%struct.timeval* %Ta, %struct.timezone* null) #4
+  %cmp24 = icmp sgt i32 %conv5, 0
+  br i1 %cmp24, label %if.then26, label %if.else44
+
+if.then26:                                        ; preds = %cond.end21
+  %cmp27 = fcmp ogt double %cond, 1.000000e+06
+  br i1 %cmp27, label %if.then29, label %if.else
+
+if.then29:                                        ; preds = %if.then26
+  %div = fdiv double %cond, 1.000000e+06
+  %conv30 = fptosi double %div to i64
+  %tobool31 = icmp eq i64 %conv30, 0
+  br i1 %tobool31, label %if.end41, label %if.then32
+
+if.then32:                                        ; preds = %if.then29
+  %conv33 = trunc i64 %conv30 to i32
+  %call34 = call i32 @sleep(i32 %conv33) #4
+  %conv35 = sitofp i64 %conv30 to double
+  %mul = fmul double %conv35, 1.000000e+06
+  %sub = fsub double %cond, %mul
+  br label %if.end41
+
+if.else:                                          ; preds = %if.then26
+  %cmp37 = fcmp olt double %cond, 0.000000e+00
+  br i1 %cmp37, label %if.then39, label %if.end41
+
+if.then39:                                        ; preds = %if.else
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([56 x i8]* @.str5, i64 0, i64 0), double %cond) #4
+  br label %if.end41
+
+if.end41:                                         ; preds = %if.then29, %if.else, %if.then39, %if.then32
+  %useconds.0 = phi double [ %sub, %if.then32 ], [ %cond, %if.then29 ], [ %cond, %if.then39 ], [ %cond, %if.else ]
+  %conv42 = fptoui double %useconds.0 to i32
+  %conv43 = zext i32 %conv42 to i64
+  %15 = bitcast %struct.timeval* %tv.i to i8*
+  call void @llvm.lifetime.start(i64 16, i8* %15) #3
+  %tv_sec.i = getelementptr inbounds %struct.timeval* %tv.i, i64 0, i32 0
+  store i64 0, i64* %tv_sec.i, align 8, !tbaa !0
+  %tv_usec.i = getelementptr inbounds %struct.timeval* %tv.i, i64 0, i32 1
+  store i64 %conv43, i64* %tv_usec.i, align 8, !tbaa !0
+  %call.i = call i32 @select(i32 0, %struct.fd_set* null, %struct.fd_set* null, %struct.fd_set* null, %struct.timeval* %tv.i) #4
+  call void @llvm.lifetime.end(i64 16, i8* %15) #3
+  br label %if.end46
+
+if.else44:                                        ; preds = %cond.end21
+  %call45 = call i32 @sleep(i32 2147450879) #4
+  br label %if.end46
+
+if.end46:                                         ; preds = %if.else44, %if.end41
+  %call47 = call i32 @gettimeofday(%struct.timeval* %Tb, %struct.timezone* null) #4
+  %tv_sec = getelementptr inbounds %struct.timeval* %Tb, i64 0, i32 0
+  %16 = load i64* %tv_sec, align 8, !tbaa !0
+  %tv_sec48 = getelementptr inbounds %struct.timeval* %Ta, i64 0, i32 0
+  %17 = load i64* %tv_sec48, align 8, !tbaa !0
+  %sub49 = sub nsw i64 %16, %17
+  %conv50 = sitofp i64 %sub49 to double
+  %mul51 = fmul double %conv50, 1.000000e+06
+  %tv_usec = getelementptr inbounds %struct.timeval* %Tb, i64 0, i32 1
+  %18 = load i64* %tv_usec, align 8, !tbaa !0
+  %tv_usec52 = getelementptr inbounds %struct.timeval* %Ta, i64 0, i32 1
+  %19 = load i64* %tv_usec52, align 8, !tbaa !0
+  %sub53 = sub nsw i64 %18, %19
+  %conv54 = sitofp i64 %sub53 to double
+  %add55 = fadd double %mul51, %conv54
+  %20 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !3
+  call void @Perl_sv_setnv(%struct.sv* %cond22, double %add55) #4
+  %sv_flags59 = getelementptr inbounds %struct.sv* %cond22, i64 0, i32 2
+  %21 = load i32* %sv_flags59, align 4, !tbaa !4
+  %and60 = and i32 %21, 16384
+  %tobool61 = icmp eq i32 %and60, 0
+  br i1 %tobool61, label %if.end64, label %if.then62
+
+if.then62:                                        ; preds = %if.end46
+  %call63 = call i32 @Perl_mg_set(%struct.sv* %cond22) #4
+  br label %if.end64
+
+if.end64:                                         ; preds = %if.end46, %if.then62
+  %incdec.ptr65 = getelementptr inbounds %struct.sv** %20, i64 %idxprom
+  store %struct.sv* %cond22, %struct.sv** %incdec.ptr65, align 8, !tbaa !3
+  %22 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !3
+  %add.ptr67 = getelementptr inbounds %struct.sv** %22, i64 %idxprom
+  store %struct.sv** %add.ptr67, %struct.sv*** @PL_stack_sp, align 8, !tbaa !3
+  ret void
+}

@@ -1,0 +1,26 @@
+define i32 @bea_is_dual_infeasible(%struct.arc* nocapture %arc, i64 %red_cost) #0 {
+entry:
+  %cmp = icmp slt i64 %red_cost, 0
+  br i1 %cmp, label %land.lhs.true, label %lor.rhs
+
+land.lhs.true:                                    ; preds = %entry
+  %ident = getelementptr inbounds %struct.arc* %arc, i64 0, i32 3
+  %0 = load i32* %ident, align 4, !tbaa !0
+  %cmp1 = icmp eq i32 %0, 1
+  br i1 %cmp1, label %lor.end, label %lor.rhs
+
+lor.rhs:                                          ; preds = %land.lhs.true, %entry
+  %cmp2 = icmp sgt i64 %red_cost, 0
+  br i1 %cmp2, label %land.rhs, label %lor.end
+
+land.rhs:                                         ; preds = %lor.rhs
+  %ident3 = getelementptr inbounds %struct.arc* %arc, i64 0, i32 3
+  %1 = load i32* %ident3, align 4, !tbaa !0
+  %cmp4 = icmp eq i32 %1, 2
+  br label %lor.end
+
+lor.end:                                          ; preds = %lor.rhs, %land.rhs, %land.lhs.true
+  %2 = phi i1 [ true, %land.lhs.true ], [ false, %lor.rhs ], [ %cmp4, %land.rhs ]
+  %lor.ext = zext i1 %2 to i32
+  ret i32 %lor.ext
+}

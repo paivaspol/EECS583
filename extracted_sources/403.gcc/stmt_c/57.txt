@@ -1,65 +1,65 @@
-void
-expand_start_bindings_and_block (flags, block)
-     int flags;
-     tree block;
+static int
+tail_recursion_args (actuals, formals)
+     tree actuals, formals;
 {
-  struct nesting *thisblock = ALLOC_NESTING ();
-  rtx note;
-  int exit_flag = ((flags & 1) != 0);
-  int block_flag = ((flags & 2) == 0);
+  tree a = actuals, f = formals;
+  int i;
+  rtx *argvec;
 
-  /* If a BLOCK is supplied, then the caller should be requesting a
-     NOTE_INSN_BLOCK_BEG note.  */
-  if (!block_flag && block)
-    abort ();
+  /* Check that number and types of actuals are compatible
+     with the formals.  This is not always true in valid C code.
+     Also check that no formal needs to be addressable
+     and that all formals are scalars.  */
 
-  /* Create a note to mark the beginning of the block.  */
-  if (block_flag)
+  /* Also count the args.  */
+
+  for (a = actuals, f = formals, i = 0; a && f; a = TREE_CHAIN (a), f = TREE_CHAIN (f), i++)
     {
-      note = emit_note (NULL, NOTE_INSN_BLOCK_BEG);
-      NOTE_BLOCK (note) = block;
+      if (TYPE_MAIN_VARIANT (TREE_TYPE (TREE_VALUE (a)))
+	  != TYPE_MAIN_VARIANT (TREE_TYPE (f)))
+	return 0;
+      if (GET_CODE (DECL_RTL (f)) != REG || DECL_MODE (f) == BLKmode)
+	return 0;
     }
-  else
-    note = emit_note (NULL, NOTE_INSN_DELETED);
+  if (a != 0 || f != 0)
+    return 0;
 
-  /* Make an entry on block_stack for the block we are entering.  */
+  /* Compute all the actuals.  */
 
-  thisblock->next = block_stack;
-  thisblock->all = nesting_stack;
-  thisblock->depth = ++nesting_depth;
-  thisblock->data.block.stack_level = 0;
-  thisblock->data.block.cleanups = 0;
-  thisblock->data.block.n_function_calls = 0;
-  thisblock->data.block.exception_region = 0;
-  thisblock->data.block.block_target_temp_slot_level = target_temp_slot_level;
+  argvec = (rtx *) alloca (i * sizeof (rtx));
 
-  thisblock->data.block.conditional_code = 0;
-  thisblock->data.block.last_unconditional_cleanup = note;
-  /* When we insert instructions after the last unconditional cleanup,
-     we don't adjust last_insn.  That means that a later add_insn will
-     clobber the instructions we've just added.  The easiest way to
-     fix this is to just insert another instruction here, so that the
-     instructions inserted after the last unconditional cleanup are
-     never the last instruction.  */
-  emit_note (NULL, NOTE_INSN_DELETED);
-  thisblock->data.block.cleanup_ptr = &thisblock->data.block.cleanups;
+  for (a = actuals, i = 0; a; a = TREE_CHAIN (a), i++)
+    argvec[i] = expand_expr (TREE_VALUE (a), NULL_RTX, VOIDmode, 0);
 
-  if (block_stack
-      && !(block_stack->data.block.cleanups == NULL_TREE
-	   && block_stack->data.block.outer_cleanups == NULL_TREE))
-    thisblock->data.block.outer_cleanups
-      = tree_cons (NULL_TREE, block_stack->data.block.cleanups,
-		   block_stack->data.block.outer_cleanups);
-  else
-    thisblock->data.block.outer_cleanups = 0;
-  thisblock->data.block.label_chain = 0;
-  thisblock->data.block.innermost_stack_block = stack_block_stack;
-  thisblock->data.block.first_insn = note;
-  thisblock->data.block.block_start_count = ++current_block_start_count;
-  thisblock->exit_label = exit_flag ? gen_label_rtx () : 0;
-  block_stack = thisblock;
-  nesting_stack = thisblock;
+  /* Find which actual values refer to current values of previous formals.
+     Copy each of them now, before any formal is changed.  */
 
-  /* Make a new level for allocating stack slots.  */
-  push_temp_slots ();
+  for (a = actuals, i = 0; a; a = TREE_CHAIN (a), i++)
+    {
+      int copy = 0;
+      int j;
+      for (f = formals, j = 0; j < i; f = TREE_CHAIN (f), j++)
+	if (reg_mentioned_p (DECL_RTL (f), argvec[i]))
+	  {
+	    copy = 1;
+	    break;
+	  }
+      if (copy)
+	argvec[i] = copy_to_reg (argvec[i]);
+    }
+
+  /* Store the values of the actuals into the formals.  */
+
+  for (f = formals, a = actuals, i = 0; f;
+       f = TREE_CHAIN (f), a = TREE_CHAIN (a), i++)
+    {
+      if (GET_MODE (DECL_RTL (f)) == GET_MODE (argvec[i]))
+	emit_move_insn (DECL_RTL (f), argvec[i]);
+      else
+	convert_move (DECL_RTL (f), argvec[i],
+		      TREE_UNSIGNED (TREE_TYPE (TREE_VALUE (a))));
+    }
+
+  free_temp_slots ();
+  return 1;
 }

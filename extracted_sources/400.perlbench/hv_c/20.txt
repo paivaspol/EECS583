@@ -1,0 +1,21 @@
+HV *
+Perl_newHV(pTHX)
+{
+    register HV *hv;
+    register XPVHV* xhv;
+
+    hv = (HV*)NEWSV(502,0);
+    sv_upgrade((SV *)hv, SVt_PVHV);
+    xhv = (XPVHV*)SvANY(hv);
+    SvPOK_off(hv);
+    SvNOK_off(hv);
+#ifndef NODEFAULT_SHAREKEYS
+    HvSHAREKEYS_on(hv);         /* key-sharing on by default */
+#endif
+
+    xhv->xhv_max    = 7;	/* HvMAX(hv) = 7 (start with 8 buckets) */
+    xhv->xhv_fill   = 0;	/* HvFILL(hv) = 0 */
+    xhv->xhv_pmroot = 0;	/* HvPMROOT(hv) = 0 */
+    (void)hv_iterinit(hv);	/* so each() will start off right */
+    return hv;
+}

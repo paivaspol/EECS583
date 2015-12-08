@@ -1,5 +1,17 @@
-int
-Perl_PerlIO_seek(pTHX_ PerlIO *f, Off_t offset, int whence)
+void
+PerlIO_list_push(pTHX_ PerlIO_list_t *list, PerlIO_funcs *funcs, SV *arg)
 {
-     Perl_PerlIO_or_fail(f, Seek, -1, (aTHX_ f, offset, whence));
+    PerlIO_pair_t *p;
+    if (list->cur >= list->len) {
+	list->len += 8;
+	if (list->array)
+	    Renew(list->array, list->len, PerlIO_pair_t);
+	else
+	    New('l', list->array, list->len, PerlIO_pair_t);
+    }
+    p = &(list->array[list->cur++]);
+    p->funcs = funcs;
+    if ((p->arg = arg)) {
+	SvREFCNT_inc(arg);
+    }
 }

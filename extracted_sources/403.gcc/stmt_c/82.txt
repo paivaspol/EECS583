@@ -1,40 +1,36 @@
-int
-pushcase (value, converter, label, duplicate)
-     tree value;
-     tree (*converter) PARAMS ((tree, tree));
-     tree label;
-     tree *duplicate;
+static void
+check_seenlabel ()
 {
-  tree index_type;
-  tree nominal_type;
+  /* If this is the first label, warn if any insns have been emitted.  */
+  if (case_stack->data.case_stmt.line_number_status >= 0)
+    {
+      rtx insn;
 
-  /* Fail if not inside a real case statement.  */
-  if (! (case_stack && case_stack->data.case_stmt.start))
-    return 1;
+      restore_line_number_status
+	(case_stack->data.case_stmt.line_number_status);
+      case_stack->data.case_stmt.line_number_status = -1;
 
-  if (stack_block_stack
-      && stack_block_stack->depth > case_stack->depth)
-    return 5;
+      for (insn = case_stack->data.case_stmt.start;
+	   insn;
+	   insn = NEXT_INSN (insn))
+	{
+	  if (GET_CODE (insn) == CODE_LABEL)
+	    break;
+	  if (GET_CODE (insn) != NOTE
+	      && (GET_CODE (insn) != INSN || GET_CODE (PATTERN (insn)) != USE))
+	    {
+	      do
+		insn = PREV_INSN (insn);
+	      while (insn && (GET_CODE (insn) != NOTE || NOTE_LINE_NUMBER (insn) < 0));
 
-  index_type = TREE_TYPE (case_stack->data.case_stmt.index_expr);
-  nominal_type = case_stack->data.case_stmt.nominal_type;
-
-  /* If the index is erroneous, avoid more problems: pretend to succeed.  */
-  if (index_type == error_mark_node)
-    return 0;
-
-  /* Convert VALUE to the type in which the comparisons are nominally done.  */
-  if (value != 0)
-    value = (*converter) (nominal_type, value);
-
-  check_seenlabel ();
-
-  /* Fail if this value is out of range for the actual type of the index
-     (which may be narrower than NOMINAL_TYPE).  */
-  if (value != 0
-      && (TREE_CONSTANT_OVERFLOW (value)
-	  || ! int_fits_type_p (value, index_type)))
-    return 3;
-
-  return add_case_node (value, value, label, duplicate);
+	      /* If insn is zero, then there must have been a syntax error.  */
+	      if (insn)
+		warning_with_file_and_line (NOTE_SOURCE_FILE (insn),
+					    NOTE_LINE_NUMBER (insn),
+					    "unreachable code at beginning of %s",
+					    case_stack->data.case_stmt.printname);
+	      break;
+	    }
+	}
+    }
 }

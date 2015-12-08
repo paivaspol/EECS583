@@ -1,0 +1,18 @@
+PP(pp_anonhash)
+{
+    dSP; dMARK; dORIGMARK;
+    HV* hv = (HV*)sv_2mortal((SV*)newHV());
+
+    while (MARK < SP) {
+	SV* key = *++MARK;
+	SV *val = NEWSV(46, 0);
+	if (MARK < SP)
+	    sv_setsv(val, *++MARK);
+	else if (ckWARN(WARN_MISC))
+	    Perl_warner(aTHX_ packWARN(WARN_MISC), "Odd number of elements in anonymous hash");
+	(void)hv_store_ent(hv,key,val,0);
+    }
+    SP = ORIGMARK;
+    XPUSHs((SV*)hv);
+    RETURN;
+}

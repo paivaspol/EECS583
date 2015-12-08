@@ -1,20 +1,24 @@
 int
-Perl_magic_setglob(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_nextpack(pTHX_ SV *sv, MAGIC *mg, SV *key)
 {
-    register char *s;
-    GV* gv;
-    STRLEN n_a;
+    dSP;
+    const char *meth = SvOK(key) ? "NEXTKEY" : "FIRSTKEY";
 
-    if (!SvOK(sv))
-	return 0;
-    s = SvPV(sv, n_a);
-    if (*s == '*' && s[1])
-	s++;
-    gv = gv_fetchpv(s,TRUE, SVt_PVGV);
-    if (sv == (SV*)gv)
-	return 0;
-    if (GvGP(sv))
-	gp_free((GV*)sv);
-    GvGP(sv) = gp_ref(GvGP(gv));
+    ENTER;
+    SAVETMPS;
+    PUSHSTACKi(PERLSI_MAGIC);
+    PUSHMARK(SP);
+    EXTEND(SP, 2);
+    PUSHs(SvTIED_obj(sv, mg));
+    if (SvOK(key))
+	PUSHs(key);
+    PUTBACK;
+
+    if (call_method(meth, G_SCALAR))
+	sv_setsv(key, *PL_stack_sp--);
+
+    POPSTACK;
+    FREETMPS;
+    LEAVE;
     return 0;
 }

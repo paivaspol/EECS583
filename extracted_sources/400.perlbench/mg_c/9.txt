@@ -1,9 +1,14 @@
-int
-Perl_magic_getuvar(pTHX_ SV *sv, MAGIC *mg)
+U32
+Perl_magic_regdata_cnt(pTHX_ SV *sv, MAGIC *mg)
 {
-    struct ufuncs *uf = (struct ufuncs *)mg->mg_ptr;
+    register REGEXP *rx;
 
-    if (uf && uf->uf_val)
-	(*uf->uf_val)(aTHX_ uf->uf_index, sv);
-    return 0;
+    if (PL_curpm && (rx = PM_GETRE(PL_curpm))) {
+	if (mg->mg_obj)		/* @+ */
+	    return rx->nparens;
+	else			/* @- */
+	    return rx->lastparen;
+    }
+
+    return (U32)-1;
 }

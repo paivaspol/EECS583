@@ -1,5 +1,19 @@
-int
-Perl_PerlIO_fill(pTHX_ PerlIO *f)
+void
+PerlIO_pop(pTHX_ PerlIO *f)
 {
-     Perl_PerlIO_or_fail(f, Fill, -1, (aTHX_ f));
+    PerlIOl *l = *f;
+    if (l) {
+	PerlIO_debug("PerlIO_pop f=%p %s\n", (void*)f, l->tab->name);
+	if (l->tab->Popped) {
+	    /*
+	     * If popped returns non-zero do not free its layer structure
+	     * it has either done so itself, or it is shared and still in
+	     * use
+	     */
+	    if ((*l->tab->Popped) (aTHX_ f) != 0)
+		return;
+	}
+	*f = l->next;
+	Safefree(l);
+    }
 }

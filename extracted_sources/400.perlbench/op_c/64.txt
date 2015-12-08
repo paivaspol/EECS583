@@ -1,0 +1,16 @@
+OP *
+Perl_newSVOP(pTHX_ I32 type, I32 flags, SV *sv)
+{
+    SVOP *svop;
+    NewOp(1101, svop, 1, SVOP);
+    svop->op_type = (OPCODE)type;
+    svop->op_ppaddr = PL_ppaddr[type];
+    svop->op_sv = sv;
+    svop->op_next = (OP*)svop;
+    svop->op_flags = (U8)flags;
+    if (PL_opargs[type] & OA_RETSCALAR)
+	scalar((OP*)svop);
+    if (PL_opargs[type] & OA_TARGET)
+	svop->op_targ = pad_alloc(type, SVs_PADTMP);
+    return CHECKOP(type, svop);
+}

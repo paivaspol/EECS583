@@ -1,21 +1,33 @@
-void
-ix86_free_from_memory (mode)
-     enum machine_mode mode;
+static rtx
+ix86_expand_unop1_builtin (icode, arglist, target)
+     enum insn_code icode;
+     tree arglist;
+     rtx target;
 {
-  if (!TARGET_64BIT || !TARGET_RED_ZONE)
-    {
-      int size;
+  rtx pat;
+  tree arg0 = TREE_VALUE (arglist);
+  rtx op1, op0 = expand_expr (arg0, NULL_RTX, VOIDmode, 0);
+  enum machine_mode tmode = insn_data[icode].operand[0].mode;
+  enum machine_mode mode0 = insn_data[icode].operand[1].mode;
 
-      if (mode == DImode || TARGET_64BIT)
-	size = 8;
-      else if (mode == HImode && TARGET_PARTIAL_REG_STALL)
-	size = 2;
-      else
-	size = 4;
-      /* Use LEA to deallocate stack space.  In peephole2 it will be converted
-         to pop or add instruction if registers are available.  */
-      emit_insn (gen_rtx_SET (VOIDmode, stack_pointer_rtx,
-			      gen_rtx_PLUS (Pmode, stack_pointer_rtx,
-					    GEN_INT (size))));
-    }
+  if (! target
+      || GET_MODE (target) != tmode
+      || ! (*insn_data[icode].operand[0].predicate) (target, tmode))
+    target = gen_reg_rtx (tmode);
+
+  if (VECTOR_MODE_P (mode0))
+    op0 = safe_vector_operand (op0, mode0);
+
+  if (! (*insn_data[icode].operand[1].predicate) (op0, mode0))
+    op0 = copy_to_mode_reg (mode0, op0);
+  
+  op1 = op0;
+  if (! (*insn_data[icode].operand[2].predicate) (op1, mode0))
+    op1 = copy_to_mode_reg (mode0, op1);
+  
+  pat = GEN_FCN (icode) (target, op0, op1);
+  if (! pat)
+    return 0;
+  emit_insn (pat);
+  return target;
 }

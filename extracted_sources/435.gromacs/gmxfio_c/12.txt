@@ -1,46 +1,71 @@
-static bool do_binwrite(void *item,int nitem,int eio,
-			char *desc,char *srcfile,int line)
+static bool do_ascread(void *item,int nitem,int eio,
+		       char *desc,char *srcfile,int line)
 {
-  size_t size=0,wsize;
-  int    ssize;
+  FILE   *fp = curfio->fp;
+  int    i,m,res=0,*iptr,ix;
+  double d,x;
+  real   *ptr;
+  unsigned char *ucptr;
+  char   *cptr;
   
-  check_nitem();
+  check_nitem();  
   switch (eio) {
   case eioREAL:
-    size = sizeof(real);
+    res = sscanf(next_item(fp),"%lf",&d);
+    if (item) *((real *)item) = d;
     break;
   case eioINT:
-    size = sizeof(int);
+    res = sscanf(next_item(fp),"%d",&i);
+    if (item) *((int *)item) = i;
     break;
   case eioNUCHAR:
-    size = sizeof(unsigned char);
+    ucptr = (unsigned char *)item;
+    for(i=0; (i<nitem); i++) {
+      res = sscanf(next_item(fp),"%d",&ix);
+      if (item) ucptr[i] = ix;
+    }
     break;
   case eioUSHORT:
-    size = sizeof(unsigned short);
+    res = sscanf(next_item(fp),"%d",&i);
+    if (item) *((unsigned short *)item) = i;
     break;
   case eioRVEC:
-    size = sizeof(rvec);
+    ptr = (real *)item;
+    for(m=0; (m<DIM); m++) {
+      res = sscanf(next_item(fp),"%lf\n",&x);
+      ptr[m] = x;
+    }
     break;
   case eioNRVEC:
-    size = sizeof(rvec);
+    for(i=0; (i<nitem); i++) {
+      ptr = ((rvec *)item)[i];
+      for(m=0; (m<DIM); m++) {
+	res = sscanf(next_item(fp),"%lf\n",&x);
+	if (item) ptr[m] = x;
+      }
+    }
     break;
   case eioIVEC:
-    size = sizeof(ivec);
+    iptr = (int *)item;
+    for(m=0; (m<DIM); m++) {
+      res = sscanf(next_item(fp),"%d\n",&ix);
+      if (item) iptr[m] = ix;
+    }
     break;
   case eioSTRING:
-    size = ssize = strlen((char *)item)+1;
-    do_binwrite(&ssize,1,eioINT,desc,srcfile,line);
+    cptr = next_item(fp);
+    if (item) {
+      decode_string(strlen(cptr)+1,(char *)item,cptr);
+      /* res = sscanf(cptr,"%s",(char *)item);*/
+      res = 1;
+    }
     break;
   default:
     FE();
   }
-  wsize = fwrite(item,size,nitem,curfio->fp);
-  
-  if ((wsize != nitem) && curfio->bDebug) {
-    fprintf(stderr,"Error writing %s %s to file %s (source %s, line %d)\n",
+  if ((res <= 0) && curfio->bDebug)
+    fprintf(stderr,"Error reading %s %s from file %s (source %s, line %d)\n",
 	    eioNames[eio],desc,curfio->fn,srcfile,line);
-    fprintf(stderr,"written size %u bytes, source size %u bytes\n",
-	    (unsigned int)wsize,(unsigned int)size);
-  }
-  return (wsize == nitem);
+  
+  return (res > 0);
 }

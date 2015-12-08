@@ -1,0 +1,43 @@
+OP *
+Perl_newPMOP(pTHX_ I32 type, I32 flags)
+{
+    PMOP *pmop;
+
+    NewOp(1101, pmop, 1, PMOP);
+    pmop->op_type = (OPCODE)type;
+    pmop->op_ppaddr = PL_ppaddr[type];
+    pmop->op_flags = (U8)flags;
+    pmop->op_private = (U8)(0 | (flags >> 8));
+
+    if (PL_hints & HINT_RE_TAINT)
+	pmop->op_pmpermflags |= PMf_RETAINT;
+    if (PL_hints & HINT_LOCALE)
+	pmop->op_pmpermflags |= PMf_LOCALE;
+    pmop->op_pmflags = pmop->op_pmpermflags;
+
+#ifdef USE_ITHREADS
+    {
+        SV* repointer;
+        if(av_len((AV*) PL_regex_pad[0]) > -1) {
+	    repointer = av_pop((AV*)PL_regex_pad[0]);
+            pmop->op_pmoffset = SvIV(repointer);
+	    SvREPADTMP_off(repointer);
+	    sv_setiv(repointer,0);
+        } else {
+            repointer = newSViv(0);
+            av_push(PL_regex_padav,SvREFCNT_inc(repointer));
+            pmop->op_pmoffset = av_len(PL_regex_padav);
+            PL_regex_pad = AvARRAY(PL_regex_padav);
+        }
+    }
+#endif
+
+        /* link into pm list */
+    if (type != OP_TRANS && PL_curstash) {
+	pmop->op_pmnext = HvPMROOT(PL_curstash);
+	HvPMROOT(PL_curstash) = pmop;
+	PmopSTASH_set(pmop,PL_curstash);
+    }
+
+    return CHECKOP(type, pmop);
+}

@@ -1,0 +1,58 @@
+define internal fastcc i8* @F0convert(double %nv, i8* %endbuf, i64* nocapture %len) #0 {
+entry:
+  %cmp = fcmp olt double %nv, 0.000000e+00
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %sub = fsub double -0.000000e+00, %nv
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %nv.addr.0 = phi double [ %sub, %if.then ], [ %nv, %entry ]
+  %cmp1 = fcmp olt double %nv.addr.0, 0x43F0000000000000
+  br i1 %cmp1, label %if.then3, label %return
+
+if.then3:                                         ; preds = %if.end
+  %add = fadd double %nv.addr.0, 5.000000e-01
+  %conv4 = fptoui double %add to i64
+  %and = and i64 %conv4, 1
+  %tobool5 = icmp ne i64 %and, 0
+  %conv6 = uitofp i64 %conv4 to double
+  %cmp7 = fcmp oeq double %conv6, %add
+  %or.cond = and i1 %tobool5, %cmp7
+  %dec = sext i1 %or.cond to i64
+  %dec.conv4 = add i64 %dec, %conv4
+  br label %do.body
+
+do.body:                                          ; preds = %if.then3, %do.body
+  %uv.0 = phi i64 [ %div, %do.body ], [ %dec.conv4, %if.then3 ]
+  %p.0 = phi i8* [ %incdec.ptr, %do.body ], [ %endbuf, %if.then3 ]
+  %rem = urem i64 %uv.0, 10
+  %conv11 = trunc i64 %rem to i8
+  %add1234 = or i8 %conv11, 48
+  %incdec.ptr = getelementptr inbounds i8* %p.0, i64 -1
+  store i8 %add1234, i8* %incdec.ptr, align 1, !tbaa !1
+  %div = udiv i64 %uv.0, 10
+  %0 = icmp ugt i64 %uv.0, 9
+  br i1 %0, label %do.body, label %do.end
+
+do.end:                                           ; preds = %do.body
+  br i1 %cmp, label %if.then16, label %if.end18
+
+if.then16:                                        ; preds = %do.end
+  %incdec.ptr17 = getelementptr inbounds i8* %p.0, i64 -2
+  store i8 45, i8* %incdec.ptr17, align 1, !tbaa !1
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.then16, %do.end
+  %p.1 = phi i8* [ %incdec.ptr17, %if.then16 ], [ %incdec.ptr, %do.end ]
+  %sub.ptr.lhs.cast = ptrtoint i8* %endbuf to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %p.1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  store i64 %sub.ptr.sub, i64* %len, align 8, !tbaa !5
+  br label %return
+
+return:                                           ; preds = %if.end, %if.end18
+  %retval.0 = phi i8* [ %p.1, %if.end18 ], [ null, %if.end ]
+  ret i8* %retval.0
+}

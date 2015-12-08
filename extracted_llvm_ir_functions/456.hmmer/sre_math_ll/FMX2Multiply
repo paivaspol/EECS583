@@ -1,0 +1,62 @@
+define void @FMX2Multiply(float** nocapture %A, float** nocapture %B, float** nocapture %C, i32 %m, i32 %p, i32 %n) #0 {
+entry:
+  %cmp43 = icmp sgt i32 %m, 0
+  br i1 %cmp43, label %for.cond1.preheader.lr.ph, label %for.end26
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %cmp241 = icmp sgt i32 %n, 0
+  %cmp739 = icmp sgt i32 %p, 0
+  %idxprom9 = sext i32 %p to i64
+  %arrayidx15 = getelementptr inbounds float** %B, i64 %idxprom9
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc24, %for.cond1.preheader.lr.ph
+  %indvars.iv46 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next47, %for.inc24 ]
+  br i1 %cmp241, label %for.body3.lr.ph, label %for.inc24
+
+for.body3.lr.ph:                                  ; preds = %for.cond1.preheader
+  %arrayidx = getelementptr inbounds float** %C, i64 %indvars.iv46
+  %0 = load float** %arrayidx, align 8, !tbaa !4
+  %arrayidx11 = getelementptr inbounds float** %A, i64 %indvars.iv46
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.inc21, %for.body3.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body3.lr.ph ], [ %indvars.iv.next, %for.inc21 ]
+  %arrayidx5 = getelementptr inbounds float* %0, i64 %indvars.iv
+  store float 0.000000e+00, float* %arrayidx5, align 4, !tbaa !0
+  br i1 %cmp739, label %for.body8.lr.ph, label %for.inc21
+
+for.body8.lr.ph:                                  ; preds = %for.body3
+  %1 = load float** %arrayidx11, align 8, !tbaa !4
+  %arrayidx12 = getelementptr inbounds float* %1, i64 %idxprom9
+  %2 = load float** %arrayidx15, align 8, !tbaa !4
+  %arrayidx16 = getelementptr inbounds float* %2, i64 %indvars.iv
+  br label %for.body8
+
+for.body8:                                        ; preds = %for.body8, %for.body8.lr.ph
+  %3 = phi float [ 0.000000e+00, %for.body8.lr.ph ], [ %add, %for.body8 ]
+  %k.040 = phi i32 [ 0, %for.body8.lr.ph ], [ %inc, %for.body8 ]
+  %4 = load float* %arrayidx12, align 4, !tbaa !0
+  %5 = load float* %arrayidx16, align 4, !tbaa !0
+  %mul = fmul float %4, %5
+  %add = fadd float %mul, %3
+  store float %add, float* %arrayidx5, align 4, !tbaa !0
+  %inc = add nsw i32 %k.040, 1
+  %exitcond = icmp eq i32 %inc, %p
+  br i1 %exitcond, label %for.inc21, label %for.body8
+
+for.inc21:                                        ; preds = %for.body8, %for.body3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond45 = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond45, label %for.inc24, label %for.body3
+
+for.inc24:                                        ; preds = %for.inc21, %for.cond1.preheader
+  %indvars.iv.next47 = add i64 %indvars.iv46, 1
+  %lftr.wideiv48 = trunc i64 %indvars.iv.next47 to i32
+  %exitcond49 = icmp eq i32 %lftr.wideiv48, %m
+  br i1 %exitcond49, label %for.end26, label %for.cond1.preheader
+
+for.end26:                                        ; preds = %for.inc24, %entry
+  ret void
+}

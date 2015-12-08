@@ -1,0 +1,119 @@
+PP(pp_rv2hv)
+{
+    dSP; dTOPss;
+    HV *hv;
+    I32 gimme = GIMME_V;
+
+    if (SvROK(sv)) {
+      wasref:
+	tryAMAGICunDEREF(to_hv);
+
+	hv = (HV*)SvRV(sv);
+	if (SvTYPE(hv) != SVt_PVHV && SvTYPE(hv) != SVt_PVAV)
+	    DIE(aTHX_ "Not a HASH reference");
+	if (PL_op->op_flags & OPf_REF) {
+	    SETs((SV*)hv);
+	    RETURN;
+	}
+	else if (LVRET) {
+	    if (gimme != G_ARRAY)
+		Perl_croak(aTHX_ "Can't return hash to lvalue scalar context");
+	    SETs((SV*)hv);
+	    RETURN;
+	}
+	else if (PL_op->op_flags & OPf_MOD
+		&& PL_op->op_private & OPpLVAL_INTRO)
+	    Perl_croak(aTHX_ PL_no_localize_ref);
+    }
+    else {
+	if (SvTYPE(sv) == SVt_PVHV || SvTYPE(sv) == SVt_PVAV) {
+	    hv = (HV*)sv;
+	    if (PL_op->op_flags & OPf_REF) {
+		SETs((SV*)hv);
+		RETURN;
+	    }
+	    else if (LVRET) {
+		if (gimme != G_ARRAY)
+		    Perl_croak(aTHX_ "Can't return hash to lvalue"
+			       " scalar context");
+		SETs((SV*)hv);
+		RETURN;
+	    }
+	}
+	else {
+	    GV *gv;
+	
+	    if (SvTYPE(sv) != SVt_PVGV) {
+		char *sym;
+		STRLEN len;
+
+		if (SvGMAGICAL(sv)) {
+		    mg_get(sv);
+		    if (SvROK(sv))
+			goto wasref;
+		}
+		if (!SvOK(sv)) {
+		    if (PL_op->op_flags & OPf_REF ||
+		      PL_op->op_private & HINT_STRICT_REFS)
+			DIE(aTHX_ PL_no_usym, "a HASH");
+		    if (ckWARN(WARN_UNINITIALIZED))
+			report_uninit();
+		    if (gimme == G_ARRAY) {
+			SP--;
+			RETURN;
+		    }
+		    RETSETUNDEF;
+		}
+		sym = SvPV(sv,len);
+		if ((PL_op->op_flags & OPf_SPECIAL) &&
+		    !(PL_op->op_flags & OPf_MOD))
+		{
+		    gv = (GV*)gv_fetchpv(sym, FALSE, SVt_PVHV);
+		    if (!gv
+			&& (!is_gv_magical(sym,len,0)
+			    || !(gv = (GV*)gv_fetchpv(sym, TRUE, SVt_PVHV))))
+		    {
+			RETSETUNDEF;
+		    }
+		}
+		else {
+		    if (PL_op->op_private & HINT_STRICT_REFS)
+			DIE(aTHX_ PL_no_symref, sym, "a HASH");
+		    gv = (GV*)gv_fetchpv(sym, TRUE, SVt_PVHV);
+		}
+	    }
+	    else {
+		gv = (GV*)sv;
+	    }
+	    hv = GvHVn(gv);
+	    if (PL_op->op_private & OPpLVAL_INTRO)
+		hv = save_hash(gv);
+	    if (PL_op->op_flags & OPf_REF) {
+		SETs((SV*)hv);
+		RETURN;
+	    }
+	    else if (LVRET) {
+		if (gimme != G_ARRAY)
+		    Perl_croak(aTHX_ "Can't return hash to lvalue"
+			       " scalar context");
+		SETs((SV*)hv);
+		RETURN;
+	    }
+	}
+    }
+
+    if (gimme == G_ARRAY) { /* array wanted */
+	*PL_stack_sp = (SV*)hv;
+	return do_kv();
+    }
+    else if (gimme == G_SCALAR) {
+	dTARGET;
+
+	if (SvTYPE(hv) == SVt_PVAV)
+	    hv = avhv_keys((AV*)hv);
+
+	TARG = Perl_hv_scalar(aTHX_ hv);
+	SETTARG;
+    }
+    RETURN;
+}

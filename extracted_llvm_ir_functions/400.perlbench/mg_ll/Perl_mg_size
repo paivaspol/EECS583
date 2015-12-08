@@ -1,0 +1,61 @@
+define i32 @Perl_mg_size(%struct.sv* %sv) #0 {
+entry:
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !0
+  %xmg_magic = getelementptr inbounds i8* %0, i64 40
+  %1 = bitcast i8* %xmg_magic to %struct.magic**
+  %mg.020 = load %struct.magic** %1, align 8
+  %tobool21 = icmp eq %struct.magic* %mg.020, null
+  br i1 %tobool21, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %mg.022 = phi %struct.magic* [ %mg.0, %for.inc ], [ %mg.020, %entry ]
+  %mg_virtual = getelementptr inbounds %struct.magic* %mg.022, i64 0, i32 1
+  %2 = load %struct.mgvtbl** %mg_virtual, align 8, !tbaa !0
+  %tobool1 = icmp eq %struct.mgvtbl* %2, null
+  br i1 %tobool1, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body
+  %svt_len = getelementptr inbounds %struct.mgvtbl* %2, i64 0, i32 2
+  %3 = load i32 (%struct.sv*, %struct.magic*)** %svt_len, align 8, !tbaa !0
+  %tobool2 = icmp eq i32 (%struct.sv*, %struct.magic*)* %3, null
+  br i1 %tobool2, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %call = tail call i32 @Perl_save_alloc(i32 16, i32 0) #7
+  tail call fastcc void @S_save_magic(i32 %call, %struct.sv* %sv) #8
+  %4 = load i32 (%struct.sv*, %struct.magic*)** %svt_len, align 8, !tbaa !0
+  %call4 = tail call i32 %4(%struct.sv* %sv, %struct.magic* %mg.022) #7
+  %conv = sext i32 %call to i64
+  %5 = inttoptr i64 %conv to i8*
+  tail call void @restore_magic(i8* %5) #8
+  br label %return
+
+for.inc:                                          ; preds = %land.lhs.true, %for.body
+  %mg_moremagic = getelementptr inbounds %struct.magic* %mg.022, i64 0, i32 0
+  %mg.0 = load %struct.magic** %mg_moremagic, align 8
+  %tobool = icmp eq %struct.magic* %mg.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %6 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %6, 255
+  %cond = icmp eq i32 %and, 10
+  br i1 %cond, label %sw.bb, label %sw.default
+
+sw.bb:                                            ; preds = %for.end
+  %xav_fill = getelementptr inbounds i8* %0, i64 8
+  %7 = bitcast i8* %xav_fill to i64*
+  %8 = load i64* %7, align 8, !tbaa !4
+  %conv6 = trunc i64 %8 to i32
+  br label %return
+
+sw.default:                                       ; preds = %for.end
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([27 x i8]* @.str, i64 0, i64 0)) #7
+  br label %return
+
+return:                                           ; preds = %sw.default, %sw.bb, %if.then
+  %retval.0 = phi i32 [ %call4, %if.then ], [ %conv6, %sw.bb ], [ 0, %sw.default ]
+  ret i32 %retval.0
+}

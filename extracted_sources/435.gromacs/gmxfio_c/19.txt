@@ -1,5 +1,30 @@
-void gmx_fio_setprecision(int fio,bool bDouble)
+void gmx_fio_select(int fio)
 {
   gmx_fio_check(fio);
-  FIO[fio].bDouble = bDouble;
+#ifdef DEBUG
+  fprintf(stderr,"Select fio called with type %d for file %s\n",
+	  FIO[fio].iFTP,FIO[fio].fn);
+#endif
+
+  if (in_ftpset(FIO[fio].iFTP,asize(ftpXDR),ftpXDR)) {
+#ifdef USE_XDR    
+    do_read  = do_xdr;
+    do_write = do_xdr;
+#else
+    fatal_error(0,"Sorry, no XDR");
+#endif
+  }
+  else if (in_ftpset(FIO[fio].iFTP,asize(ftpASC),ftpASC)) {
+    do_read  = do_ascread;
+    do_write = do_ascwrite;
+  }
+  else if (in_ftpset(FIO[fio].iFTP,asize(ftpBIN),ftpBIN)) {
+    do_read  = do_binread;
+    do_write = do_binwrite;
+  }
+  else 
+    fatal_error(0,"Can not read/write topologies to file type %s",
+		ftp2ext(curfio->iFTP));
+  
+  curfio = &(FIO[fio]);
 }

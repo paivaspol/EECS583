@@ -1,0 +1,32 @@
+define void @CloseSEIMessages() #0 {
+entry:
+  tail call void @CloseSubseqChar() #7
+  tail call void @CloseSparePicture() #7
+  tail call void @CloseSceneInformation() #7
+  tail call void @ClosePanScanRectInfo() #7
+  tail call void @CloseUser_data_unregistered() #7
+  tail call void @CloseUser_data_registered_itu_t_t35() #7
+  tail call void @CloseRandomAccess() #7
+  br label %for.body
+
+for.body:                                         ; preds = %if.end6, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %if.end6 ]
+  %data = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %indvars.iv, i32 3
+  %0 = load i8** %data, align 8, !tbaa !0
+  %tobool = icmp eq i8* %0, null
+  br i1 %tobool, label %if.end6, label %if.then2
+
+if.then2:                                         ; preds = %for.body
+  tail call void @free(i8* %0) #6
+  br label %if.end6
+
+if.end6:                                          ; preds = %for.body, %if.then2
+  store i8* null, i8** %data, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 2
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.end6
+  ret void
+}

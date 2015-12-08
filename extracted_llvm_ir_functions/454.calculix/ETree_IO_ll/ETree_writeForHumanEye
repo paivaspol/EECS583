@@ -1,0 +1,79 @@
+define i32 @ETree_writeForHumanEye(%struct._ETree* %etree, %struct._IO_FILE* %fp) #0 {
+entry:
+  %cmp = icmp eq %struct._ETree* %etree, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %nfront3 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
+  %0 = load i32* %nfront3, align 4, !tbaa !3
+  %cmp4 = icmp slt i32 %0, 1
+  br i1 %cmp4, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([59 x i8]* @.str27, i64 0, i64 0), %struct._ETree* %etree, %struct._IO_FILE* %fp) #5
+  tail call void @exit(i32 -1) #8
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %call5 = tail call i32 @ETree_writeStats(%struct._ETree* %etree, %struct._IO_FILE* %fp) #7
+  %cmp6 = icmp eq i32 %call5, 0
+  br i1 %cmp6, label %if.then7, label %for.body.lr.ph
+
+if.then7:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([94 x i8]* @.str28, i64 0, i64 0), %struct._ETree* %etree, %struct._IO_FILE* %fp, i32 0, %struct._ETree* %etree, %struct._IO_FILE* %fp) #5
+  br label %return
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %tree = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 2
+  %3 = load %struct._Tree** %tree, align 8, !tbaa !0
+  %par10 = getelementptr inbounds %struct._Tree* %3, i64 0, i32 2
+  %4 = load i32** %par10, align 8, !tbaa !0
+  %fch12 = getelementptr inbounds %struct._Tree* %3, i64 0, i32 3
+  %5 = load i32** %fch12, align 8, !tbaa !0
+  %sib14 = getelementptr inbounds %struct._Tree* %3, i64 0, i32 4
+  %6 = load i32** %sib14, align 8, !tbaa !0
+  %nodwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 3
+  %7 = load %struct._IV** %nodwghtsIV, align 8, !tbaa !0
+  %call15 = tail call i32* @IV_entries(%struct._IV* %7) #5
+  %bndwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4
+  %8 = load %struct._IV** %bndwghtsIV, align 8, !tbaa !0
+  %call16 = tail call i32* @IV_entries(%struct._IV* %8) #5
+  %9 = tail call i64 @fwrite(i8* getelementptr inbounds ([57 x i8]* @.str29, i64 0, i64 0), i64 56, i64 1, %struct._IO_FILE* %fp) #9
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds i32* %4, i64 %indvars.iv
+  %10 = load i32* %arrayidx, align 4, !tbaa !3
+  %arrayidx20 = getelementptr inbounds i32* %5, i64 %indvars.iv
+  %11 = load i32* %arrayidx20, align 4, !tbaa !3
+  %arrayidx22 = getelementptr inbounds i32* %6, i64 %indvars.iv
+  %12 = load i32* %arrayidx22, align 4, !tbaa !3
+  %arrayidx24 = getelementptr inbounds i32* %call15, i64 %indvars.iv
+  %13 = load i32* %arrayidx24, align 4, !tbaa !3
+  %arrayidx26 = getelementptr inbounds i32* %call16, i64 %indvars.iv
+  %14 = load i32* %arrayidx26, align 4, !tbaa !3
+  %15 = trunc i64 %indvars.iv to i32
+  %call27 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([27 x i8]* @.str30, i64 0, i64 0), i32 %15, i32 %10, i32 %11, i32 %12, i32 %13, i32 %14) #5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %0
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %call28 = tail call i32 @fflush(%struct._IO_FILE* %fp) #5
+  %16 = tail call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str31, i64 0, i64 0), i64 23, i64 1, %struct._IO_FILE* %fp) #9
+  %vtxToFrontIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 5
+  %17 = load %struct._IV** %vtxToFrontIV, align 8, !tbaa !0
+  %call30 = tail call i32 @IV_writeForHumanEye(%struct._IV* %17, %struct._IO_FILE* %fp) #5
+  %call31 = tail call i32 @fflush(%struct._IO_FILE* %fp) #5
+  br label %return
+
+return:                                           ; preds = %for.end, %if.then7
+  %retval.0 = phi i32 [ 0, %if.then7 ], [ 1, %for.end ]
+  ret i32 %retval.0
+}

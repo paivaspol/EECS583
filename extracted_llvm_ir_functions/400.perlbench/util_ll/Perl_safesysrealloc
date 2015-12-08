@@ -1,0 +1,76 @@
+define noalias i8* @Perl_safesysrealloc(i8* %where, i64 %size) #0 {
+entry:
+  %tobool = icmp eq i64 %size, 0
+  %tobool.i = icmp eq i8* %where, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  br i1 %tobool.i, label %return, label %if.then.i
+
+if.then.i:                                        ; preds = %if.then
+  tail call void @free(i8* %where) #8
+  br label %return
+
+if.end:                                           ; preds = %entry
+  br i1 %tobool.i, label %if.then2, label %if.end3
+
+if.then2:                                         ; preds = %if.end
+  %call = tail call i8* @Perl_safesysmalloc(i64 %size) #9
+  br label %return
+
+if.end3:                                          ; preds = %if.end
+  %call4 = tail call i8* @realloc(i8* %where, i64 %size) #8
+  %cmp = icmp eq i8* %call4, null
+  br i1 %cmp, label %if.else, label %return
+
+if.else:                                          ; preds = %if.end3
+  %0 = load i8* @PL_nomemok, align 1, !tbaa !0
+  %tobool6 = icmp eq i8 %0, 0
+  br i1 %tobool6, label %if.else8, label %return
+
+if.else8:                                         ; preds = %if.else
+  %1 = load %struct.gv** @PL_stderrgv, align 8, !tbaa !2
+  %tobool9 = icmp eq %struct.gv* %1, null
+  br i1 %tobool9, label %cond.false, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.else8
+  %sv_flags = getelementptr inbounds %struct.gv* %1, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, 255
+  %cmp10 = icmp eq i32 %and, 13
+  br i1 %cmp10, label %land.lhs.true11, label %cond.false
+
+land.lhs.true11:                                  ; preds = %land.lhs.true
+  %sv_any = getelementptr inbounds %struct.gv* %1, i64 0, i32 0
+  %3 = load %struct.xpvgv** %sv_any, align 8, !tbaa !2
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %3, i64 0, i32 7
+  %4 = load %struct.gp** %xgv_gp, align 8, !tbaa !2
+  %gp_io = getelementptr inbounds %struct.gp* %4, i64 0, i32 2
+  %5 = load %struct.io** %gp_io, align 8, !tbaa !2
+  %tobool12 = icmp eq %struct.io* %5, null
+  br i1 %tobool12, label %cond.false, label %land.lhs.true13
+
+land.lhs.true13:                                  ; preds = %land.lhs.true11
+  %sv_any17 = getelementptr inbounds %struct.io* %5, i64 0, i32 0
+  %6 = load %struct.xpvio** %sv_any17, align 8, !tbaa !2
+  %xio_ofp = getelementptr inbounds %struct.xpvio* %6, i64 0, i32 8
+  %7 = load %struct._PerlIO*** %xio_ofp, align 8, !tbaa !2
+  %tobool18 = icmp eq %struct._PerlIO** %7, null
+  br i1 %tobool18, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %land.lhs.true13, %land.lhs.true11, %if.else8, %land.lhs.true
+  %call24 = tail call %struct._PerlIO** @Perl_PerlIO_stderr() #8
+  br label %cond.end
+
+cond.end:                                         ; preds = %land.lhs.true13, %cond.false
+  %cond = phi %struct._PerlIO** [ %call24, %cond.false ], [ %7, %land.lhs.true13 ]
+  %call25 = tail call i32 @Perl_PerlIO_fileno(%struct._PerlIO** %cond) #8
+  %call26 = tail call i64 @strlen(i8* getelementptr inbounds ([0 x i8]* @PL_no_mem, i64 0, i64 0)) #8
+  %call27 = tail call i64 @write(i32 %call25, i8* getelementptr inbounds ([0 x i8]* @PL_no_mem, i64 0, i64 0), i64 %call26) #8
+  tail call void @Perl_my_exit(i32 1) #8
+  br label %return
+
+return:                                           ; preds = %if.then.i, %if.then, %if.else, %if.end3, %cond.end, %if.then2
+  %retval.0 = phi i8* [ null, %cond.end ], [ %call, %if.then2 ], [ %call4, %if.end3 ], [ null, %if.else ], [ null, %if.then ], [ null, %if.then.i ]
+  ret i8* %retval.0
+}

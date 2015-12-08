@@ -1,0 +1,117 @@
+bool
+Perl_Gv_AMupdate(pTHX_ HV *stash)
+{
+  GV* gv;
+  CV* cv;
+  MAGIC* mg=mg_find((SV*)stash, PERL_MAGIC_overload_table);
+  AMT *amtp = (mg) ? (AMT*)mg->mg_ptr: (AMT *) NULL;
+  AMT amt;
+
+  if (mg && amtp->was_ok_am == PL_amagic_generation
+      && amtp->was_ok_sub == PL_sub_generation)
+      return (bool)AMT_OVERLOADED(amtp);
+  sv_unmagic((SV*)stash, PERL_MAGIC_overload_table);
+
+  DEBUG_o( Perl_deb(aTHX_ "Recalcing overload magic in package %s\n",HvNAME(stash)) );
+
+  Zero(&amt,1,AMT);
+  amt.was_ok_am = PL_amagic_generation;
+  amt.was_ok_sub = PL_sub_generation;
+  amt.fallback = AMGfallNO;
+  amt.flags = 0;
+
+  {
+    int filled = 0, have_ovl = 0;
+    int i, lim = 1;
+    SV* sv = NULL;
+
+    /* Work with "fallback" key, which we assume to be first in PL_AMG_names */
+
+    /* Try to find via inheritance. */
+    gv = gv_fetchmeth(stash, PL_AMG_names[0], 2, -1);
+    if (gv)
+	sv = GvSV(gv);
+
+    if (!gv)
+	lim = DESTROY_amg;		/* Skip overloading entries. */
+    else if (SvTRUE(sv))
+	amt.fallback=AMGfallYES;
+    else if (SvOK(sv))
+	amt.fallback=AMGfallNEVER;
+
+    for (i = 1; i < lim; i++)
+	amt.table[i] = Nullcv;
+    for (; i < NofAMmeth; i++) {
+	char *cooky = (char*)PL_AMG_names[i];
+	/* Human-readable form, for debugging: */
+	char *cp = (i >= DESTROY_amg ? cooky : AMG_id2name(i));
+	STRLEN l = strlen(cooky);
+
+	DEBUG_o( Perl_deb(aTHX_ "Checking overloading of `%s' in package `%.256s'\n",
+		     cp, HvNAME(stash)) );
+	/* don't fill the cache while looking up!
+	   Creation of inheritance stubs in intermediate packages may
+	   conflict with the logic of runtime method substitution.
+	   Indeed, for inheritance A -> B -> C, if C overloads "+0",
+	   then we could have created stubs for "(+0" in A and C too.
+	   But if B overloads "bool", we may want to use it for
+	   numifying instead of C's "+0". */
+	if (i >= DESTROY_amg)
+	    gv = Perl_gv_fetchmeth_autoload(aTHX_ stash, cooky, l, 0);
+	else				/* Autoload taken care of below */
+	    gv = Perl_gv_fetchmeth(aTHX_ stash, cooky, l, -1);
+        cv = 0;
+        if (gv && (cv = GvCV(gv))) {
+	    if (GvNAMELEN(CvGV(cv)) == 3 && strEQ(GvNAME(CvGV(cv)), "nil")
+		&& strEQ(HvNAME(GvSTASH(CvGV(cv))), "overload")) {
+		/* This is a hack to support autoloading..., while
+		   knowing *which* methods were declared as overloaded. */
+		/* GvSV contains the name of the method. */
+		GV *ngv = Nullgv;
+		
+		DEBUG_o( Perl_deb(aTHX_ "Resolving method `%"SVf256\
+			"' for overloaded `%s' in package `%.256s'\n",
+			     GvSV(gv), cp, HvNAME(stash)) );
+		if (!SvPOK(GvSV(gv))
+		    || !(ngv = gv_fetchmethod_autoload(stash, SvPVX(GvSV(gv)),
+						       FALSE)))
+		{
+		    /* Can be an import stub (created by `can'). */
+		    SV *gvsv = GvSV(gv);
+		    const char *name = SvPOK(gvsv) ?  SvPVX(gvsv) : "???";
+		    Perl_croak(aTHX_ "%s method `%.256s' overloading `%s' "\
+				"in package `%.256s'",
+			       (GvCVGEN(gv) ? "Stub found while resolving"
+				: "Can't resolve"),
+			       name, cp, HvNAME(stash));
+		}
+		cv = GvCV(gv = ngv);
+	    }
+	    DEBUG_o( Perl_deb(aTHX_ "Overloading `%s' in package `%.256s' via `%.256s::%.256s' \n",
+			 cp, HvNAME(stash), HvNAME(GvSTASH(CvGV(cv))),
+			 GvNAME(CvGV(cv))) );
+	    filled = 1;
+	    if (i < DESTROY_amg)
+		have_ovl = 1;
+	} else if (gv) {		/* Autoloaded... */
+	    cv = (CV*)gv;
+	    filled = 1;
+	}
+	amt.table[i]=(CV*)SvREFCNT_inc(cv);
+    }
+    if (filled) {
+      AMT_AMAGIC_on(&amt);
+      if (have_ovl)
+	  AMT_OVERLOADED_on(&amt);
+      sv_magic((SV*)stash, 0, PERL_MAGIC_overload_table,
+						(char*)&amt, sizeof(AMT));
+      return have_ovl;
+    }
+  }
+  /* Here we have no table: */
+  /* no_table: */
+  AMT_AMAGIC_off(&amt);
+  sv_magic((SV*)stash, 0, PERL_MAGIC_overload_table,
+						(char*)&amt, sizeof(AMTS));
+  return FALSE;
+}

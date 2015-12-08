@@ -1,0 +1,55 @@
+PP(pp_lcfirst)
+{
+    dSP;
+    SV *sv = TOPs;
+    register U8 *s;
+    STRLEN slen;
+
+    SvGETMAGIC(sv);
+    if (DO_UTF8(sv) &&
+	(s = (U8*)SvPV_nomg(sv, slen)) && slen &&
+	UTF8_IS_START(*s)) {
+	STRLEN ulen;
+	U8 tmpbuf[UTF8_MAXBYTES_CASE+1];
+	U8 *tend;
+	UV uv;
+
+	toLOWER_utf8(s, tmpbuf, &ulen);
+	uv = utf8_to_uvchr(tmpbuf, 0);
+	tend = uvchr_to_utf8(tmpbuf, uv);
+
+	if (!SvPADTMP(sv) || (STRLEN)(tend - tmpbuf) != ulen || SvREADONLY(sv)) {
+	    dTARGET;
+	    sv_setpvn(TARG, (char*)tmpbuf, tend - tmpbuf);
+	    if (slen > ulen)
+	        sv_catpvn(TARG, (char*)(s + ulen), slen - ulen);
+	    SvUTF8_on(TARG);
+	    SETs(TARG);
+	}
+	else {
+	    s = (U8*)SvPV_force_nomg(sv, slen);
+	    Copy(tmpbuf, s, ulen, U8);
+	}
+    }
+    else {
+	if (!SvPADTMP(sv) || SvREADONLY(sv)) {
+	    dTARGET;
+	    SvUTF8_off(TARG);				/* decontaminate */
+	    sv_setsv_nomg(TARG, sv);
+	    sv = TARG;
+	    SETs(sv);
+	}
+	s = (U8*)SvPV_force_nomg(sv, slen);
+	if (*s) {
+	    if (IN_LOCALE_RUNTIME) {
+		TAINT;
+		SvTAINTED_on(sv);
+		*s = toLOWER_LC(*s);
+	    }
+	    else
+		*s = toLOWER(*s);
+	}
+    }
+    SvSETMAGIC(sv);
+    RETURN;
+}

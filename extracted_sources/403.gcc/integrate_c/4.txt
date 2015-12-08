@@ -1,12 +1,33 @@
 static void
-note_modified_parmregs (reg, x, data)
-     rtx reg;
-     rtx x ATTRIBUTE_UNUSED;
-     void *data ATTRIBUTE_UNUSED;
+save_parm_insns (insn, first_nonparm_insn)
+     rtx insn;
+     rtx first_nonparm_insn;
 {
-  if (GET_CODE (reg) == REG && in_nonparm_insns
-      && REGNO (reg) < max_parm_reg
-      && REGNO (reg) >= FIRST_PSEUDO_REGISTER
-      && parmdecl_map[REGNO (reg)] != 0)
-    TREE_READONLY (parmdecl_map[REGNO (reg)]) = 0;
+  if (insn == NULL_RTX)
+    return;
+
+  for (insn = NEXT_INSN (insn); insn; insn = NEXT_INSN (insn))
+    {
+      if (insn == first_nonparm_insn)
+	in_nonparm_insns = 1;
+
+      if (INSN_P (insn))
+	{
+	  /* Record what interesting things happen to our parameters.  */
+	  note_stores (PATTERN (insn), note_modified_parmregs, NULL);
+
+	  /* If this is a CALL_PLACEHOLDER insn then we need to look into the
+	     three attached sequences: normal call, sibling call and tail
+	     recursion.  */
+	  if (GET_CODE (insn) == CALL_INSN
+	      && GET_CODE (PATTERN (insn)) == CALL_PLACEHOLDER)
+	    {
+	      int i;
+
+	      for (i = 0; i < 3; i++)
+		save_parm_insns (XEXP (PATTERN (insn), i),
+				 first_nonparm_insn);
+	    }
+	}
+    }
 }

@@ -1,0 +1,70 @@
+PP(pp_accept)
+{
+#ifdef HAS_SOCKET
+    dSP; dTARGET;
+    GV *ngv;
+    GV *ggv;
+    register IO *nstio;
+    register IO *gstio;
+    char namebuf[MAXPATHLEN];
+#if (defined(VMS_DO_SOCKETS) && defined(DECCRTL_SOCKETS)) || defined(MPE) || defined(__QNXNTO__)
+    Sock_size_t len = sizeof (struct sockaddr_in);
+#else
+    Sock_size_t len = sizeof namebuf;
+#endif
+    int fd;
+
+    ggv = (GV*)POPs;
+    ngv = (GV*)POPs;
+
+    if (!ngv)
+	goto badexit;
+    if (!ggv)
+	goto nuts;
+
+    gstio = GvIO(ggv);
+    if (!gstio || !IoIFP(gstio))
+	goto nuts;
+
+    nstio = GvIOn(ngv);
+    fd = PerlSock_accept(PerlIO_fileno(IoIFP(gstio)), (struct sockaddr *) namebuf, &len);
+    if (fd < 0)
+	goto badexit;
+    if (IoIFP(nstio))
+	do_close(ngv, FALSE);
+    IoIFP(nstio) = PerlIO_fdopen(fd, "r"SOCKET_OPEN_MODE);
+    IoOFP(nstio) = PerlIO_fdopen(fd, "w"SOCKET_OPEN_MODE);
+    IoTYPE(nstio) = IoTYPE_SOCKET;
+    if (!IoIFP(nstio) || !IoOFP(nstio)) {
+	if (IoIFP(nstio)) PerlIO_close(IoIFP(nstio));
+	if (IoOFP(nstio)) PerlIO_close(IoOFP(nstio));
+	if (!IoIFP(nstio) && !IoOFP(nstio)) PerlLIO_close(fd);
+	goto badexit;
+    }
+#if defined(HAS_FCNTL) && defined(F_SETFD)
+    fcntl(fd, F_SETFD, fd > PL_maxsysfd);	/* ensure close-on-exec */
+#endif
+
+#ifdef EPOC
+    len = sizeof (struct sockaddr_in); /* EPOC somehow truncates info */
+    setbuf( IoIFP(nstio), NULL); /* EPOC gets confused about sockets */
+#endif
+#ifdef __SCO_VERSION__
+    len = sizeof (struct sockaddr_in); /* OpenUNIX 8 somehow truncates info */
+#endif
+
+    PUSHp(namebuf, len);
+    RETURN;
+
+nuts:
+    if (ckWARN(WARN_CLOSED))
+	report_evil_fh(ggv, ggv ? GvIO(ggv) : 0, PL_op->op_type);
+    SETERRNO(EBADF,SS_IVCHAN);
+
+badexit:
+    RETPUSHUNDEF;
+
+#else
+    DIE(aTHX_ PL_no_sock_func, "accept");
+#endif
+}

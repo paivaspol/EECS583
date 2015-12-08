@@ -1,0 +1,110 @@
+define i32 @RBSPtoEBSP(i8* nocapture %streamBuffer, i32 %begin_bytepos, i32 %end_bytepos, i32 %min_num_bytes) #0 {
+entry:
+  %cmp75 = icmp slt i32 %begin_bytepos, %end_bytepos
+  br i1 %cmp75, label %for.body.lr.ph, label %while.cond.preheader
+
+for.body.lr.ph:                                   ; preds = %entry
+  %0 = sext i32 %begin_bytepos to i64
+  br label %for.body
+
+for.cond3.preheader:                              ; preds = %for.body
+  br i1 %cmp75, label %for.body5.lr.ph, label %while.cond.preheader
+
+for.body5.lr.ph:                                  ; preds = %for.cond3.preheader
+  %1 = sext i32 %begin_bytepos to i64
+  br label %for.body5
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv81 = phi i64 [ %0, %for.body.lr.ph ], [ %indvars.iv.next82, %for.body ]
+  %arrayidx = getelementptr inbounds i8* %streamBuffer, i64 %indvars.iv81
+  %2 = load i8* %arrayidx, align 1, !tbaa !0
+  %3 = load i8** @NAL_Payload_buffer, align 8, !tbaa !3
+  %arrayidx2 = getelementptr inbounds i8* %3, i64 %indvars.iv81
+  store i8 %2, i8* %arrayidx2, align 1, !tbaa !0
+  %indvars.iv.next82 = add i64 %indvars.iv81, 1
+  %4 = trunc i64 %indvars.iv.next82 to i32
+  %cmp = icmp slt i32 %4, %end_bytepos
+  br i1 %cmp, label %for.body, label %for.cond3.preheader
+
+while.cond.preheader:                             ; preds = %entry, %if.end, %for.cond3.preheader
+  %j.0.lcssa = phi i32 [ %begin_bytepos, %for.cond3.preheader ], [ %inc24, %if.end ], [ %begin_bytepos, %entry ]
+  %add = add nsw i32 %min_num_bytes, %begin_bytepos
+  %cmp2868 = icmp slt i32 %j.0.lcssa, %add
+  br i1 %cmp2868, label %while.body.lr.ph, label %while.end
+
+while.body.lr.ph:                                 ; preds = %while.cond.preheader
+  %5 = sext i32 %j.0.lcssa to i64
+  br label %while.body
+
+for.body5:                                        ; preds = %for.body5.lr.ph, %if.end
+  %indvars.iv79 = phi i64 [ %1, %for.body5.lr.ph ], [ %indvars.iv.next80, %if.end ]
+  %count.073 = phi i32 [ 0, %for.body5.lr.ph ], [ %count.2, %if.end ]
+  %j.072 = phi i32 [ %begin_bytepos, %for.body5.lr.ph ], [ %inc24, %if.end ]
+  %cmp6 = icmp eq i32 %count.073, 2
+  br i1 %cmp6, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %for.body5
+  %6 = load i8** @NAL_Payload_buffer, align 8, !tbaa !3
+  %arrayidx8 = getelementptr inbounds i8* %6, i64 %indvars.iv79
+  %7 = load i8* %arrayidx8, align 1, !tbaa !0
+  %tobool = icmp ugt i8 %7, 3
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %idxprom9 = sext i32 %j.072 to i64
+  %arrayidx10 = getelementptr inbounds i8* %streamBuffer, i64 %idxprom9
+  store i8 3, i8* %arrayidx10, align 1, !tbaa !0
+  %inc11 = add nsw i32 %j.072, 1
+  br label %if.end
+
+if.end:                                           ; preds = %for.body5, %if.then, %land.lhs.true
+  %j.1 = phi i32 [ %j.072, %land.lhs.true ], [ %inc11, %if.then ], [ %j.072, %for.body5 ]
+  %count.1 = phi i32 [ 2, %land.lhs.true ], [ 0, %if.then ], [ %count.073, %for.body5 ]
+  %8 = load i8** @NAL_Payload_buffer, align 8, !tbaa !3
+  %arrayidx13 = getelementptr inbounds i8* %8, i64 %indvars.iv79
+  %9 = load i8* %arrayidx13, align 1, !tbaa !0
+  %idxprom14 = sext i32 %j.1 to i64
+  %arrayidx15 = getelementptr inbounds i8* %streamBuffer, i64 %idxprom14
+  store i8 %9, i8* %arrayidx15, align 1, !tbaa !0
+  %10 = load i8** @NAL_Payload_buffer, align 8, !tbaa !3
+  %arrayidx17 = getelementptr inbounds i8* %10, i64 %indvars.iv79
+  %11 = load i8* %arrayidx17, align 1, !tbaa !0
+  %cmp19 = icmp eq i8 %11, 0
+  %inc22 = add nsw i32 %count.1, 1
+  %count.2 = select i1 %cmp19, i32 %inc22, i32 0
+  %inc24 = add nsw i32 %j.1, 1
+  %indvars.iv.next80 = add i64 %indvars.iv79, 1
+  %12 = trunc i64 %indvars.iv.next80 to i32
+  %cmp4 = icmp slt i32 %12, %end_bytepos
+  br i1 %cmp4, label %for.body5, label %while.cond.preheader
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %indvars.iv = phi i64 [ %5, %while.body.lr.ph ], [ %indvars.iv.next, %while.body ]
+  %j.269 = phi i32 [ %j.0.lcssa, %while.body.lr.ph ], [ %add38, %while.body ]
+  %arrayidx31 = getelementptr inbounds i8* %streamBuffer, i64 %indvars.iv
+  store i8 0, i8* %arrayidx31, align 1, !tbaa !0
+  %13 = add nsw i64 %indvars.iv, 1
+  %arrayidx34 = getelementptr inbounds i8* %streamBuffer, i64 %13
+  store i8 0, i8* %arrayidx34, align 1, !tbaa !0
+  %14 = add nsw i64 %indvars.iv, 2
+  %arrayidx37 = getelementptr inbounds i8* %streamBuffer, i64 %14
+  store i8 3, i8* %arrayidx37, align 1, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 3
+  %add38 = add nsw i32 %j.269, 3
+  %15 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %type = getelementptr inbounds %struct.ImageParameters* %15, i64 0, i32 6
+  %16 = load i32* %type, align 4, !tbaa !2
+  %idxprom39 = sext i32 %16 to i64
+  %17 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx40 = getelementptr inbounds %struct.StatParameters* %17, i64 0, i32 22, i64 %idxprom39
+  %18 = load i32* %arrayidx40, align 4, !tbaa !2
+  %add41 = add nsw i32 %18, 16
+  store i32 %add41, i32* %arrayidx40, align 4, !tbaa !2
+  %19 = trunc i64 %indvars.iv.next to i32
+  %cmp28 = icmp slt i32 %19, %add
+  br i1 %cmp28, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  %j.2.lcssa = phi i32 [ %j.0.lcssa, %while.cond.preheader ], [ %add38, %while.body ]
+  ret i32 %j.2.lcssa
+}

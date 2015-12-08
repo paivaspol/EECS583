@@ -1,12 +1,10 @@
-void
-Perl_init_tm(pTHX_ struct tm *ptm)	/* see mktime, strftime and asctime */
+int
+Perl_rsignal_restore(pTHX_ int signo, Sigsave_t *save)
 {
-#ifdef HAS_TM_TM_ZONE
-    Time_t now;
-    struct tm* my_tm;
-    (void)time(&now);
-    my_tm = localtime(&now);
-    if (my_tm)
-        Copy(my_tm, ptm, 1, struct tm);
+#if defined(USE_ITHREADS) && !defined(WIN32)
+    /* only "parent" interpreter can diddle signals */
+    if (PL_curinterp != aTHX)
+	return -1;
 #endif
+    return (PerlProc_signal(signo, *save) == SIG_ERR) ? -1 : 0;
 }

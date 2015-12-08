@@ -1,0 +1,206 @@
+PP(pp_splice)
+{
+    dSP; dMARK; dORIGMARK;
+    register AV *ary = (AV*)*++MARK;
+    register SV **src;
+    register SV **dst;
+    register I32 i;
+    register I32 offset;
+    register I32 length;
+    I32 newlen;
+    I32 after;
+    I32 diff;
+    SV **tmparyval = 0;
+    MAGIC *mg;
+
+    if ((mg = SvTIED_mg((SV*)ary, PERL_MAGIC_tied))) {
+	*MARK-- = SvTIED_obj((SV*)ary, mg);
+	PUSHMARK(MARK);
+	PUTBACK;
+	ENTER;
+	call_method("SPLICE",GIMME_V);
+	LEAVE;
+	SPAGAIN;
+	RETURN;
+    }
+
+    SP++;
+
+    if (++MARK < SP) {
+	offset = i = SvIVx(*MARK);
+	if (offset < 0)
+	    offset += AvFILLp(ary) + 1;
+	else
+	    offset -= PL_curcop->cop_arybase;
+	if (offset < 0)
+	    DIE(aTHX_ PL_no_aelem, i);
+	if (++MARK < SP) {
+	    length = SvIVx(*MARK++);
+	    if (length < 0) {
+		length += AvFILLp(ary) - offset + 1;
+		if (length < 0)
+		    length = 0;
+	    }
+	}
+	else
+	    length = AvMAX(ary) + 1;		/* close enough to infinity */
+    }
+    else {
+	offset = 0;
+	length = AvMAX(ary) + 1;
+    }
+    if (offset > AvFILLp(ary) + 1) {
+	if (ckWARN(WARN_MISC))
+	    Perl_warner(aTHX_ packWARN(WARN_MISC), "splice() offset past end of array" );
+	offset = AvFILLp(ary) + 1;
+    }
+    after = AvFILLp(ary) + 1 - (offset + length);
+    if (after < 0) {				/* not that much array */
+	length += after;			/* offset+length now in array */
+	after = 0;
+	if (!AvALLOC(ary))
+	    av_extend(ary, 0);
+    }
+
+    /* At this point, MARK .. SP-1 is our new LIST */
+
+    newlen = SP - MARK;
+    diff = newlen - length;
+    if (newlen && !AvREAL(ary) && AvREIFY(ary))
+	av_reify(ary);
+
+    /* make new elements SVs now: avoid problems if they're from the array */
+    for (dst = MARK, i = newlen; i; i--) {
+        SV *h = *dst;
+	*dst++ = newSVsv(h);
+    }
+
+    if (diff < 0) {				/* shrinking the area */
+	if (newlen) {
+	    New(451, tmparyval, newlen, SV*);	/* so remember insertion */
+	    Copy(MARK, tmparyval, newlen, SV*);
+	}
+
+	MARK = ORIGMARK + 1;
+	if (GIMME == G_ARRAY) {			/* copy return vals to stack */
+	    MEXTEND(MARK, length);
+	    Copy(AvARRAY(ary)+offset, MARK, length, SV*);
+	    if (AvREAL(ary)) {
+		EXTEND_MORTAL(length);
+		for (i = length, dst = MARK; i; i--) {
+		    sv_2mortal(*dst);	/* free them eventualy */
+		    dst++;
+		}
+	    }
+	    MARK += length - 1;
+	}
+	else {
+	    *MARK = AvARRAY(ary)[offset+length-1];
+	    if (AvREAL(ary)) {
+		sv_2mortal(*MARK);
+		for (i = length - 1, dst = &AvARRAY(ary)[offset]; i > 0; i--)
+		    SvREFCNT_dec(*dst++);	/* free them now */
+	    }
+	}
+	AvFILLp(ary) += diff;
+
+	/* pull up or down? */
+
+	if (offset < after) {			/* easier to pull up */
+	    if (offset) {			/* esp. if nothing to pull */
+		src = &AvARRAY(ary)[offset-1];
+		dst = src - diff;		/* diff is negative */
+		for (i = offset; i > 0; i--)	/* can't trust Copy */
+		    *dst-- = *src--;
+	    }
+	    dst = AvARRAY(ary);
+	    SvPVX(ary) = (char*)(AvARRAY(ary) - diff); /* diff is negative */
+	    AvMAX(ary) += diff;
+	}
+	else {
+	    if (after) {			/* anything to pull down? */
+		src = AvARRAY(ary) + offset + length;
+		dst = src + diff;		/* diff is negative */
+		Move(src, dst, after, SV*);
+	    }
+	    dst = &AvARRAY(ary)[AvFILLp(ary)+1];
+						/* avoid later double free */
+	}
+	i = -diff;
+	while (i)
+	    dst[--i] = &PL_sv_undef;
+	
+	if (newlen) {
+ 	    Copy( tmparyval, AvARRAY(ary) + offset, newlen, SV* );
+	    Safefree(tmparyval);
+	}
+    }
+    else {					/* no, expanding (or same) */
+	if (length) {
+	    New(452, tmparyval, length, SV*);	/* so remember deletion */
+	    Copy(AvARRAY(ary)+offset, tmparyval, length, SV*);
+	}
+
+	if (diff > 0) {				/* expanding */
+
+	    /* push up or down? */
+
+	    if (offset < after && diff <= AvARRAY(ary) - AvALLOC(ary)) {
+		if (offset) {
+		    src = AvARRAY(ary);
+		    dst = src - diff;
+		    Move(src, dst, offset, SV*);
+		}
+		SvPVX(ary) = (char*)(AvARRAY(ary) - diff);/* diff is positive */
+		AvMAX(ary) += diff;
+		AvFILLp(ary) += diff;
+	    }
+	    else {
+		if (AvFILLp(ary) + diff >= AvMAX(ary))	/* oh, well */
+		    av_extend(ary, AvFILLp(ary) + diff);
+		AvFILLp(ary) += diff;
+
+		if (after) {
+		    dst = AvARRAY(ary) + AvFILLp(ary);
+		    src = dst - diff;
+		    for (i = after; i; i--) {
+			*dst-- = *src--;
+		    }
+		}
+	    }
+	}
+
+	if (newlen) {
+	    Copy( MARK, AvARRAY(ary) + offset, newlen, SV* );
+	}
+
+	MARK = ORIGMARK + 1;
+	if (GIMME == G_ARRAY) {			/* copy return vals to stack */
+	    if (length) {
+		Copy(tmparyval, MARK, length, SV*);
+		if (AvREAL(ary)) {
+		    EXTEND_MORTAL(length);
+		    for (i = length, dst = MARK; i; i--) {
+			sv_2mortal(*dst);	/* free them eventualy */
+			dst++;
+		    }
+		}
+		Safefree(tmparyval);
+	    }
+	    MARK += length - 1;
+	}
+	else if (length--) {
+	    *MARK = tmparyval[length];
+	    if (AvREAL(ary)) {
+		sv_2mortal(*MARK);
+		while (length-- > 0)
+		    SvREFCNT_dec(tmparyval[length]);
+	    }
+	    Safefree(tmparyval);
+	}
+	else
+	    *MARK = &PL_sv_undef;
+    }
+    SP = MARK;
+    RETURN;
+}

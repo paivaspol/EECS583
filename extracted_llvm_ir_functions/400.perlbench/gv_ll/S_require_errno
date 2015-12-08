@@ -1,0 +1,33 @@
+define internal fastcc void @S_require_errno(%struct.gv* %gv) #0 {
+entry:
+  %call = tail call %struct.hv* @Perl_gv_stashpvn(i8* getelementptr inbounds ([6 x i8]* @.str81, i64 0, i64 0), i32 5, i32 0) #7
+  %tobool = icmp eq %struct.hv* %call, null
+  br i1 %tobool, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %call.i = tail call %struct.gv* @Perl_gv_fetchmethod_autoload(%struct.hv* %call, i8* getelementptr inbounds ([8 x i8]* @.str82, i64 0, i64 0), i32 1) #6
+  %tobool2 = icmp eq %struct.gv* %call.i, null
+  br i1 %tobool2, label %if.then, label %if.end11
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  tail call void @Perl_push_scope() #6
+  %call3 = tail call %struct.sv* @Perl_save_scalar(%struct.gv* %gv) #6
+  %call4 = tail call %struct.sv* @Perl_newSVpvn(i8* getelementptr inbounds ([6 x i8]* @.str81, i64 0, i64 0), i64 5) #6
+  tail call void (i32, %struct.sv*, %struct.sv*, ...)* @Perl_load_module(i32 2, %struct.sv* %call4, %struct.sv* null) #6
+  tail call void @Perl_pop_scope() #6
+  %call5 = tail call %struct.hv* @Perl_gv_stashpvn(i8* getelementptr inbounds ([6 x i8]* @.str81, i64 0, i64 0), i32 5, i32 0) #7
+  %tobool6 = icmp eq %struct.hv* %call5, null
+  br i1 %tobool6, label %if.then10, label %lor.lhs.false7
+
+lor.lhs.false7:                                   ; preds = %if.then
+  %call.i15 = tail call %struct.gv* @Perl_gv_fetchmethod_autoload(%struct.hv* %call5, i8* getelementptr inbounds ([8 x i8]* @.str82, i64 0, i64 0), i32 1) #6
+  %tobool9 = icmp eq %struct.gv* %call.i15, null
+  br i1 %tobool9, label %if.then10, label %if.end11
+
+if.then10:                                        ; preds = %lor.lhs.false7, %if.then
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([48 x i8]* @.str83, i64 0, i64 0)) #6
+  br label %if.end11
+
+if.end11:                                         ; preds = %lor.lhs.false, %lor.lhs.false7, %if.then10
+  ret void
+}

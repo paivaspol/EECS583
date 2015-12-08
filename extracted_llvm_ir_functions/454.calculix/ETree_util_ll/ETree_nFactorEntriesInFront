@@ -1,0 +1,58 @@
+define double @ETree_nFactorEntriesInFront(%struct._ETree* %etree, i32 %symflag, i32 %J) #0 {
+entry:
+  %cmp = icmp eq %struct._ETree* %etree, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %nfront = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
+  %0 = load i32* %nfront, align 4, !tbaa !3
+  %notlhs = icmp sgt i32 %0, 0
+  %notrhs = icmp sgt i32 %J, -1
+  %or.cond.not = and i1 %notrhs, %notlhs
+  %cmp6 = icmp sgt i32 %0, %J
+  %or.cond36 = and i1 %or.cond.not, %cmp6
+  br i1 %or.cond36, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([67 x i8]* @.str4, i64 0, i64 0), %struct._ETree* %etree, i32 %symflag, i32 %J) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false
+  %nodwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 3
+  %2 = load %struct._IV** %nodwghtsIV, align 8, !tbaa !0
+  %call7 = tail call i32 @IV_entry(%struct._IV* %2, i32 %J) #4
+  %bndwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4
+  %3 = load %struct._IV** %bndwghtsIV, align 8, !tbaa !0
+  %call8 = tail call i32 @IV_entry(%struct._IV* %3, i32 %J) #4
+  switch i32 %symflag, label %sw.default [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb11
+  ]
+
+sw.bb:                                            ; preds = %if.end, %if.end
+  %add = add nsw i32 %call7, 1
+  %mul = mul nsw i32 %add, %call7
+  %div = sdiv i32 %mul, 2
+  %mul9 = mul nsw i32 %call8, %call7
+  %add10 = add nsw i32 %div, %mul9
+  br label %sw.epilog
+
+sw.bb11:                                          ; preds = %if.end
+  %mul14 = shl i32 %call8, 1
+  %tmp = add i32 %mul14, %call7
+  %tmp37 = mul i32 %tmp, %call7
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %if.end
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([69 x i8]* @.str5, i64 0, i64 0), %struct._ETree* %etree, i32 %symflag, i32 %J) #4
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %sw.default, %sw.bb11, %sw.bb
+  %nent.0 = phi i32 [ undef, %sw.default ], [ %tmp37, %sw.bb11 ], [ %add10, %sw.bb ]
+  %conv = sitofp i32 %nent.0 to double
+  ret double %conv
+}

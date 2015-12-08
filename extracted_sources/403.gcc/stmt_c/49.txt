@@ -1,14 +1,18 @@
 int
-expand_exit_something ()
+preserve_subexpressions_p ()
 {
-  struct nesting *n;
-  last_expr_type = 0;
-  for (n = nesting_stack; n; n = n->all)
-    if (n->exit_label != 0)
-      {
-	expand_goto_internal (NULL_TREE, n->exit_label, NULL_RTX);
-	return 1;
-      }
+  rtx insn;
 
-  return 0;
+  if (flag_expensive_optimizations)
+    return 1;
+
+  if (optimize == 0 || cfun == 0 || cfun->stmt == 0 || loop_stack == 0)
+    return 0;
+
+  insn = get_last_insn_anywhere ();
+
+  return (insn
+	  && (INSN_UID (insn) - INSN_UID (loop_stack->data.loop.start_label)
+	      < n_non_fixed_regs * 3));
+
 }

@@ -1,17 +1,9 @@
 void
-assemble_end_function (decl, fnname)
-     tree decl;
-     const char *fnname;
+default_ctor_section_asm_out_constructor (symbol, priority)
+     rtx symbol;
+     int priority ATTRIBUTE_UNUSED;
 {
-#ifdef ASM_DECLARE_FUNCTION_SIZE
-  ASM_DECLARE_FUNCTION_SIZE (asm_out_file, fnname, decl);
-#endif
-  if (! CONSTANT_POOL_BEFORE_FUNCTION)
-    {
-      output_constant_pool (fnname, decl);
-      function_section (decl);	/* need to switch back */
-    }
-
-  /* Output any constants which should appear after the function.  */
-  output_after_function_constants ();
+  ctors_section ();
+  assemble_align (POINTER_SIZE);
+  assemble_integer (symbol, POINTER_SIZE / BITS_PER_UNIT, POINTER_SIZE, 1);
 }

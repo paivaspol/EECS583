@@ -1,95 +1,14 @@
-int
-Perl_my_socketpair (int family, int type, int protocol, int fd[2]) {
-    /* Stevens says that family must be AF_LOCAL, protocol 0.
-       I'm going to enforce that, then ignore it, and use TCP (or UDP).  */
-    dTHX;
-    int listener = -1;
-    int connector = -1;
-    int acceptor = -1;
-    struct sockaddr_in listen_addr;
-    struct sockaddr_in connect_addr;
-    Sock_size_t size;
-
-    if (protocol
-#ifdef AF_UNIX
-	|| family != AF_UNIX
+int					/* Cannot prototype with I32
+					   in os2ish.h. */
+my_syspclose(PerlIO *ptr)
+#else
+I32
+Perl_my_pclose(pTHX_ PerlIO *ptr)
 #endif
-    ) {
-	errno = EAFNOSUPPORT;
-	return -1;
-    }
-    if (!fd) {
-	errno = EINVAL;
-	return -1;
-    }
-
-#ifdef EMULATE_SOCKETPAIR_UDP
-    if (type == SOCK_DGRAM)
-	return S_socketpair_udp(fd);
-#endif
-
-    listener = PerlSock_socket(AF_INET, type, 0);
-    if (listener == -1)
-	return -1;
-    memset(&listen_addr, 0, sizeof(listen_addr));
-    listen_addr.sin_family = AF_INET;
-    listen_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    listen_addr.sin_port = 0;	/* kernel choses port.  */
-    if (PerlSock_bind(listener, (struct sockaddr *) &listen_addr,
-	    sizeof(listen_addr)) == -1)
-	goto tidy_up_and_fail;
-    if (PerlSock_listen(listener, 1) == -1)
-	goto tidy_up_and_fail;
-
-    connector = PerlSock_socket(AF_INET, type, 0);
-    if (connector == -1)
-	goto tidy_up_and_fail;
-    /* We want to find out the port number to connect to.  */
-    size = sizeof(connect_addr);
-    if (PerlSock_getsockname(listener, (struct sockaddr *) &connect_addr,
-	    &size) == -1)
-	goto tidy_up_and_fail;
-    if (size != sizeof(connect_addr))
-	goto abort_tidy_up_and_fail;
-    if (PerlSock_connect(connector, (struct sockaddr *) &connect_addr,
-	    sizeof(connect_addr)) == -1)
-	goto tidy_up_and_fail;
-
-    size = sizeof(listen_addr);
-    acceptor = PerlSock_accept(listener, (struct sockaddr *) &listen_addr,
-	    &size);
-    if (acceptor == -1)
-	goto tidy_up_and_fail;
-    if (size != sizeof(listen_addr))
-	goto abort_tidy_up_and_fail;
-    PerlLIO_close(listener);
-    /* Now check we are talking to ourself by matching port and host on the
-       two sockets.  */
-    if (PerlSock_getsockname(connector, (struct sockaddr *) &connect_addr,
-	    &size) == -1)
-	goto tidy_up_and_fail;
-    if (size != sizeof(connect_addr)
-	    || listen_addr.sin_family != connect_addr.sin_family
-	    || listen_addr.sin_addr.s_addr != connect_addr.sin_addr.s_addr
-	    || listen_addr.sin_port != connect_addr.sin_port) {
-	goto abort_tidy_up_and_fail;
-    }
-    fd[0] = connector;
-    fd[1] = acceptor;
-    return 0;
-
-  abort_tidy_up_and_fail:
-  errno = ECONNABORTED; /* I hope this is portable and appropriate.  */
-  tidy_up_and_fail:
-    {
-	int save_errno = errno;
-	if (listener != -1)
-	    PerlLIO_close(listener);
-	if (connector != -1)
-	    PerlLIO_close(connector);
-	if (acceptor != -1)
-	    PerlLIO_close(acceptor);
-	errno = save_errno;
-	return -1;
-    }
+{
+    /* Needs work for PerlIO ! */
+    FILE *f = PerlIO_findFILE(ptr);
+    I32 result = pclose(f);
+    PerlIO_releaseFILE(ptr,f);
+    return result;
 }

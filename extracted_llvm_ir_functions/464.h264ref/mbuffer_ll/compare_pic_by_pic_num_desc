@@ -1,0 +1,22 @@
+define internal i32 @compare_pic_by_pic_num_desc(i8* nocapture %arg1, i8* nocapture %arg2) #4 {
+entry:
+  %0 = bitcast i8* %arg1 to %struct.storable_picture**
+  %1 = load %struct.storable_picture** %0, align 8, !tbaa !0
+  %pic_num = getelementptr inbounds %struct.storable_picture* %1, i64 0, i32 11
+  %2 = load i32* %pic_num, align 4, !tbaa !3
+  %3 = bitcast i8* %arg2 to %struct.storable_picture**
+  %4 = load %struct.storable_picture** %3, align 8, !tbaa !0
+  %pic_num1 = getelementptr inbounds %struct.storable_picture* %4, i64 0, i32 11
+  %5 = load i32* %pic_num1, align 4, !tbaa !3
+  %cmp = icmp slt i32 %2, %5
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %cmp4 = icmp sgt i32 %2, %5
+  %. = sext i1 %cmp4 to i32
+  br label %return
+
+return:                                           ; preds = %if.end, %entry
+  %retval.0 = phi i32 [ 1, %entry ], [ %., %if.end ]
+  ret i32 %retval.0
+}

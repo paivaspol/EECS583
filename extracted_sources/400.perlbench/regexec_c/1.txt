@@ -1,0 +1,61 @@
+STATIC char *
+S_regcppop(pTHX)
+{
+    I32 i;
+    U32 paren = 0;
+    char *input;
+    I32 tmps;
+
+    /* Pop REGCP_OTHER_ELEMS before the parentheses loop starts. */
+    i = SSPOPINT;
+    assert(i == SAVEt_REGCONTEXT); /* Check that the magic cookie is there. */
+    i = SSPOPINT; /* Parentheses elements to pop. */
+    input = (char *) SSPOPPTR;
+    *PL_reglastcloseparen = SSPOPINT;
+    *PL_reglastparen = SSPOPINT;
+    PL_regsize = SSPOPINT;
+
+    /* Now restore the parentheses context. */
+    for (i -= (REGCP_OTHER_ELEMS - REGCP_FRAME_ELEMS);
+	 i > 0; i -= REGCP_PAREN_ELEMS) {
+	paren = (U32)SSPOPINT;
+	PL_reg_start_tmp[paren] = (char *) SSPOPPTR;
+	PL_regstartp[paren] = SSPOPINT;
+	tmps = SSPOPINT;
+	if (paren <= *PL_reglastparen)
+	    PL_regendp[paren] = tmps;
+	DEBUG_r(
+	    PerlIO_printf(Perl_debug_log,
+			  "     restoring \\%"UVuf" to %"IVdf"(%"IVdf")..%"IVdf"%s\n",
+			  (UV)paren, (IV)PL_regstartp[paren],
+			  (IV)(PL_reg_start_tmp[paren] - PL_bostr),
+			  (IV)PL_regendp[paren],
+			  (paren > *PL_reglastparen ? "(no)" : ""));
+	);
+    }
+    DEBUG_r(
+	if ((I32)(*PL_reglastparen + 1) <= PL_regnpar) {
+	    PerlIO_printf(Perl_debug_log,
+			  "     restoring \\%"IVdf"..\\%"IVdf" to undef\n",
+			  (IV)(*PL_reglastparen + 1), (IV)PL_regnpar);
+	}
+    );
+#if 1
+    /* It would seem that the similar code in regtry()
+     * already takes care of this, and in fact it is in
+     * a better location to since this code can #if 0-ed out
+     * but the code in regtry() is needed or otherwise tests
+     * requiring null fields (pat.t#187 and split.t#{13,14}
+     * (as of patchlevel 7877)  will fail.  Then again,
+     * this code seems to be necessary or otherwise
+     * building DynaLoader will fail:
+     * "Error: '*' not in typemap in DynaLoader.xs, line 164"
+     * --jhi */
+    for (paren = *PL_reglastparen + 1; (I32)paren <= PL_regnpar; paren++) {
+	if ((I32)paren > PL_regsize)
+	    PL_regstartp[paren] = -1;
+	PL_regendp[paren] = -1;
+    }
+#endif
+    return input;
+}

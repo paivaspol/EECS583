@@ -1,0 +1,302 @@
+define void @StoreNewMotionVectorsBlock8x8(i32 %dir, i32 %block8x8, i32 %mode, i32 %fw_ref, i32 %bw_ref, i32 %pdir8, i32 %bframe) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %all_mv1 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 71
+  %1 = load i16******* %all_mv1, align 8, !tbaa !0
+  %pred_mv2 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 70
+  %2 = load i16******* %pred_mv2, align 8, !tbaa !0
+  %rem = srem i32 %block8x8, 2
+  %shl = shl i32 %rem, 1
+  %div = sdiv i32 %block8x8, 2
+  %shl3 = shl i32 %div, 1
+  %add = add nsw i32 %shl, 2
+  %add4 = add nsw i32 %shl3, 2
+  %cmp = icmp slt i32 %pdir8, 0
+  br i1 %cmp, label %for.cond.preheader, label %if.end
+
+for.cond.preheader:                               ; preds = %entry
+  %idxprom10 = sext i32 %dir to i64
+  %3 = shl i32 %rem, 1
+  %4 = sext i32 %3 to i64
+  %5 = shl i32 %div, 1
+  %6 = sext i32 %5 to i64
+  br label %for.cond6.preheader
+
+for.cond6.preheader:                              ; preds = %for.cond.preheader, %for.inc39
+  %indvars.iv530 = phi i64 [ %6, %for.cond.preheader ], [ %indvars.iv.next531, %for.inc39 ]
+  br label %for.body8
+
+for.body8:                                        ; preds = %for.cond6.preheader, %for.body8
+  %indvars.iv = phi i64 [ %4, %for.cond6.preheader ], [ %indvars.iv.next, %for.body8 ]
+  %arrayidx14 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom10, i64 0, i64 %indvars.iv, i64 %indvars.iv530, i64 0
+  store i16 0, i16* %arrayidx14, align 4, !tbaa !4
+  %arrayidx22 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom10, i64 0, i64 %indvars.iv, i64 %indvars.iv530, i64 1
+  store i16 0, i16* %arrayidx22, align 2, !tbaa !4
+  %arrayidx30 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom10, i64 1, i64 %indvars.iv, i64 %indvars.iv530, i64 0
+  store i16 0, i16* %arrayidx30, align 4, !tbaa !4
+  %arrayidx38 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom10, i64 1, i64 %indvars.iv, i64 %indvars.iv530, i64 1
+  store i16 0, i16* %arrayidx38, align 2, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %7 = trunc i64 %indvars.iv.next to i32
+  %cmp7 = icmp slt i32 %7, %add
+  br i1 %cmp7, label %for.body8, label %for.inc39
+
+for.inc39:                                        ; preds = %for.body8
+  %indvars.iv.next531 = add i64 %indvars.iv530, 1
+  %8 = trunc i64 %indvars.iv.next531 to i32
+  %cmp5 = icmp slt i32 %8, %add4
+  br i1 %cmp5, label %for.cond6.preheader, label %if.end358
+
+if.end:                                           ; preds = %entry
+  %tobool = icmp eq i32 %bframe, 0
+  br i1 %tobool, label %for.cond43.preheader, label %if.else
+
+for.cond43.preheader:                             ; preds = %if.end
+  %idxprom49 = sext i32 %fw_ref to i64
+  %idxprom60 = sext i32 %dir to i64
+  %9 = shl i32 %rem, 1
+  %10 = sext i32 %9 to i64
+  %11 = shl i32 %div, 1
+  %12 = sext i32 %11 to i64
+  br label %for.cond46.preheader
+
+for.cond46.preheader:                             ; preds = %for.cond43.preheader, %for.inc120
+  %indvars.iv534 = phi i64 [ %12, %for.cond43.preheader ], [ %indvars.iv.next535, %for.inc120 ]
+  br label %for.body48
+
+for.body48:                                       ; preds = %for.cond46.preheader, %for.body48
+  %indvars.iv532 = phi i64 [ %10, %for.cond46.preheader ], [ %indvars.iv.next533, %for.body48 ]
+  %arrayidx52 = getelementptr inbounds i16****** %1, i64 %indvars.iv532
+  %13 = load i16****** %arrayidx52, align 8, !tbaa !0
+  %arrayidx53 = getelementptr inbounds i16***** %13, i64 %indvars.iv534
+  %14 = load i16***** %arrayidx53, align 8, !tbaa !0
+  %15 = load i16**** %14, align 8, !tbaa !0
+  %arrayidx55 = getelementptr inbounds i16*** %15, i64 %idxprom49
+  %16 = load i16*** %arrayidx55, align 8, !tbaa !0
+  %arrayidx56 = getelementptr inbounds i16** %16, i64 4
+  %17 = load i16** %arrayidx56, align 8, !tbaa !0
+  %18 = load i16* %17, align 2, !tbaa !4
+  %arrayidx65 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom60, i64 0, i64 %indvars.iv532, i64 %indvars.iv534, i64 0
+  store i16 %18, i16* %arrayidx65, align 4, !tbaa !4
+  %arrayidx74 = getelementptr inbounds i16* %17, i64 1
+  %19 = load i16* %arrayidx74, align 2, !tbaa !4
+  %arrayidx82 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom60, i64 0, i64 %indvars.iv532, i64 %indvars.iv534, i64 1
+  store i16 %19, i16* %arrayidx82, align 2, !tbaa !4
+  %arrayidx86 = getelementptr inbounds i16****** %2, i64 %indvars.iv532
+  %20 = load i16****** %arrayidx86, align 8, !tbaa !0
+  %arrayidx87 = getelementptr inbounds i16***** %20, i64 %indvars.iv534
+  %21 = load i16***** %arrayidx87, align 8, !tbaa !0
+  %22 = load i16**** %21, align 8, !tbaa !0
+  %arrayidx89 = getelementptr inbounds i16*** %22, i64 %idxprom49
+  %23 = load i16*** %arrayidx89, align 8, !tbaa !0
+  %arrayidx90 = getelementptr inbounds i16** %23, i64 4
+  %24 = load i16** %arrayidx90, align 8, !tbaa !0
+  %25 = load i16* %24, align 2, !tbaa !4
+  %arrayidx99 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @pred_mv8x8, i64 0, i64 %idxprom60, i64 0, i64 %indvars.iv532, i64 %indvars.iv534, i64 0
+  store i16 %25, i16* %arrayidx99, align 4, !tbaa !4
+  %arrayidx108 = getelementptr inbounds i16* %24, i64 1
+  %26 = load i16* %arrayidx108, align 2, !tbaa !4
+  %arrayidx116 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @pred_mv8x8, i64 0, i64 %idxprom60, i64 0, i64 %indvars.iv532, i64 %indvars.iv534, i64 1
+  store i16 %26, i16* %arrayidx116, align 2, !tbaa !4
+  %indvars.iv.next533 = add i64 %indvars.iv532, 1
+  %27 = trunc i64 %indvars.iv.next533 to i32
+  %cmp47 = icmp slt i32 %27, %add
+  br i1 %cmp47, label %for.body48, label %for.inc120
+
+for.inc120:                                       ; preds = %for.body48
+  %indvars.iv.next535 = add i64 %indvars.iv534, 1
+  %28 = trunc i64 %indvars.iv.next535 to i32
+  %cmp44 = icmp slt i32 %28, %add4
+  br i1 %cmp44, label %for.cond46.preheader, label %if.end358
+
+if.else:                                          ; preds = %if.end
+  %29 = and i32 %pdir8, -3
+  %30 = icmp eq i32 %29, 0
+  br i1 %30, label %for.cond126.preheader, label %for.cond211.preheader
+
+for.cond211.preheader:                            ; preds = %if.else
+  %idxprom219 = sext i32 %dir to i64
+  %31 = shl i32 %rem, 1
+  %32 = sext i32 %31 to i64
+  %33 = shl i32 %div, 1
+  %34 = sext i32 %33 to i64
+  br label %for.cond214.preheader
+
+for.cond126.preheader:                            ; preds = %if.else
+  %idxprom132 = sext i32 %mode to i64
+  %idxprom133 = sext i32 %fw_ref to i64
+  %idxprom144 = sext i32 %dir to i64
+  %35 = shl i32 %rem, 1
+  %36 = sext i32 %35 to i64
+  %37 = shl i32 %div, 1
+  %38 = sext i32 %37 to i64
+  br label %for.cond129.preheader
+
+for.cond129.preheader:                            ; preds = %for.cond126.preheader, %for.inc207
+  %indvars.iv546 = phi i64 [ %38, %for.cond126.preheader ], [ %indvars.iv.next547, %for.inc207 ]
+  br label %for.body131
+
+for.body131:                                      ; preds = %for.cond129.preheader, %for.body131
+  %indvars.iv544 = phi i64 [ %36, %for.cond129.preheader ], [ %indvars.iv.next545, %for.body131 ]
+  %arrayidx136 = getelementptr inbounds i16****** %1, i64 %indvars.iv544
+  %39 = load i16****** %arrayidx136, align 8, !tbaa !0
+  %arrayidx137 = getelementptr inbounds i16***** %39, i64 %indvars.iv546
+  %40 = load i16***** %arrayidx137, align 8, !tbaa !0
+  %41 = load i16**** %40, align 8, !tbaa !0
+  %arrayidx139 = getelementptr inbounds i16*** %41, i64 %idxprom133
+  %42 = load i16*** %arrayidx139, align 8, !tbaa !0
+  %arrayidx140 = getelementptr inbounds i16** %42, i64 %idxprom132
+  %43 = load i16** %arrayidx140, align 8, !tbaa !0
+  %44 = load i16* %43, align 2, !tbaa !4
+  %arrayidx149 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom144, i64 0, i64 %indvars.iv544, i64 %indvars.iv546, i64 0
+  store i16 %44, i16* %arrayidx149, align 4, !tbaa !4
+  %arrayidx159 = getelementptr inbounds i16* %43, i64 1
+  %45 = load i16* %arrayidx159, align 2, !tbaa !4
+  %arrayidx167 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom144, i64 0, i64 %indvars.iv544, i64 %indvars.iv546, i64 1
+  store i16 %45, i16* %arrayidx167, align 2, !tbaa !4
+  %arrayidx172 = getelementptr inbounds i16****** %2, i64 %indvars.iv544
+  %46 = load i16****** %arrayidx172, align 8, !tbaa !0
+  %arrayidx173 = getelementptr inbounds i16***** %46, i64 %indvars.iv546
+  %47 = load i16***** %arrayidx173, align 8, !tbaa !0
+  %48 = load i16**** %47, align 8, !tbaa !0
+  %arrayidx175 = getelementptr inbounds i16*** %48, i64 %idxprom133
+  %49 = load i16*** %arrayidx175, align 8, !tbaa !0
+  %arrayidx176 = getelementptr inbounds i16** %49, i64 %idxprom132
+  %50 = load i16** %arrayidx176, align 8, !tbaa !0
+  %51 = load i16* %50, align 2, !tbaa !4
+  %arrayidx185 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @pred_mv8x8, i64 0, i64 %idxprom144, i64 0, i64 %indvars.iv544, i64 %indvars.iv546, i64 0
+  store i16 %51, i16* %arrayidx185, align 4, !tbaa !4
+  %arrayidx195 = getelementptr inbounds i16* %50, i64 1
+  %52 = load i16* %arrayidx195, align 2, !tbaa !4
+  %arrayidx203 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @pred_mv8x8, i64 0, i64 %idxprom144, i64 0, i64 %indvars.iv544, i64 %indvars.iv546, i64 1
+  store i16 %52, i16* %arrayidx203, align 2, !tbaa !4
+  %indvars.iv.next545 = add i64 %indvars.iv544, 1
+  %53 = trunc i64 %indvars.iv.next545 to i32
+  %cmp130 = icmp slt i32 %53, %add
+  br i1 %cmp130, label %for.body131, label %for.inc207
+
+for.inc207:                                       ; preds = %for.body131
+  %indvars.iv.next547 = add i64 %indvars.iv546, 1
+  %54 = trunc i64 %indvars.iv.next547 to i32
+  %cmp127 = icmp slt i32 %54, %add4
+  br i1 %cmp127, label %for.cond129.preheader, label %if.end239
+
+for.cond214.preheader:                            ; preds = %for.cond211.preheader, %for.inc236
+  %indvars.iv550 = phi i64 [ %34, %for.cond211.preheader ], [ %indvars.iv.next551, %for.inc236 ]
+  br label %for.body216
+
+for.body216:                                      ; preds = %for.cond214.preheader, %for.body216
+  %indvars.iv548 = phi i64 [ %32, %for.cond214.preheader ], [ %indvars.iv.next549, %for.body216 ]
+  %arrayidx224 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom219, i64 0, i64 %indvars.iv548, i64 %indvars.iv550, i64 0
+  store i16 0, i16* %arrayidx224, align 4, !tbaa !4
+  %arrayidx232 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom219, i64 0, i64 %indvars.iv548, i64 %indvars.iv550, i64 1
+  store i16 0, i16* %arrayidx232, align 2, !tbaa !4
+  %indvars.iv.next549 = add i64 %indvars.iv548, 1
+  %55 = trunc i64 %indvars.iv.next549 to i32
+  %cmp215 = icmp slt i32 %55, %add
+  br i1 %cmp215, label %for.body216, label %for.inc236
+
+for.inc236:                                       ; preds = %for.body216
+  %indvars.iv.next551 = add i64 %indvars.iv550, 1
+  %56 = trunc i64 %indvars.iv.next551 to i32
+  %cmp212 = icmp slt i32 %56, %add4
+  br i1 %cmp212, label %for.cond214.preheader, label %if.end239
+
+if.end239:                                        ; preds = %for.inc236, %for.inc207
+  %pdir8.off = add i32 %pdir8, -1
+  %57 = icmp ult i32 %pdir8.off, 2
+  br i1 %57, label %for.cond244.preheader, label %for.cond329.preheader
+
+for.cond329.preheader:                            ; preds = %if.end239
+  %idxprom337 = sext i32 %dir to i64
+  %58 = shl i32 %rem, 1
+  %59 = sext i32 %58 to i64
+  %60 = shl i32 %div, 1
+  %61 = sext i32 %60 to i64
+  br label %for.cond332.preheader
+
+for.cond244.preheader:                            ; preds = %if.end239
+  %idxprom250 = sext i32 %mode to i64
+  %idxprom251 = sext i32 %bw_ref to i64
+  %idxprom262 = sext i32 %dir to i64
+  %62 = shl i32 %rem, 1
+  %63 = sext i32 %62 to i64
+  %64 = shl i32 %div, 1
+  %65 = sext i32 %64 to i64
+  br label %for.cond247.preheader
+
+for.cond247.preheader:                            ; preds = %for.cond244.preheader, %for.inc325
+  %indvars.iv538 = phi i64 [ %65, %for.cond244.preheader ], [ %indvars.iv.next539, %for.inc325 ]
+  br label %for.body249
+
+for.body249:                                      ; preds = %for.cond247.preheader, %for.body249
+  %indvars.iv536 = phi i64 [ %63, %for.cond247.preheader ], [ %indvars.iv.next537, %for.body249 ]
+  %arrayidx254 = getelementptr inbounds i16****** %1, i64 %indvars.iv536
+  %66 = load i16****** %arrayidx254, align 8, !tbaa !0
+  %arrayidx255 = getelementptr inbounds i16***** %66, i64 %indvars.iv538
+  %67 = load i16***** %arrayidx255, align 8, !tbaa !0
+  %arrayidx256 = getelementptr inbounds i16**** %67, i64 1
+  %68 = load i16**** %arrayidx256, align 8, !tbaa !0
+  %arrayidx257 = getelementptr inbounds i16*** %68, i64 %idxprom251
+  %69 = load i16*** %arrayidx257, align 8, !tbaa !0
+  %arrayidx258 = getelementptr inbounds i16** %69, i64 %idxprom250
+  %70 = load i16** %arrayidx258, align 8, !tbaa !0
+  %71 = load i16* %70, align 2, !tbaa !4
+  %arrayidx267 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom262, i64 1, i64 %indvars.iv536, i64 %indvars.iv538, i64 0
+  store i16 %71, i16* %arrayidx267, align 4, !tbaa !4
+  %arrayidx277 = getelementptr inbounds i16* %70, i64 1
+  %72 = load i16* %arrayidx277, align 2, !tbaa !4
+  %arrayidx285 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom262, i64 1, i64 %indvars.iv536, i64 %indvars.iv538, i64 1
+  store i16 %72, i16* %arrayidx285, align 2, !tbaa !4
+  %arrayidx290 = getelementptr inbounds i16****** %2, i64 %indvars.iv536
+  %73 = load i16****** %arrayidx290, align 8, !tbaa !0
+  %arrayidx291 = getelementptr inbounds i16***** %73, i64 %indvars.iv538
+  %74 = load i16***** %arrayidx291, align 8, !tbaa !0
+  %arrayidx292 = getelementptr inbounds i16**** %74, i64 1
+  %75 = load i16**** %arrayidx292, align 8, !tbaa !0
+  %arrayidx293 = getelementptr inbounds i16*** %75, i64 %idxprom251
+  %76 = load i16*** %arrayidx293, align 8, !tbaa !0
+  %arrayidx294 = getelementptr inbounds i16** %76, i64 %idxprom250
+  %77 = load i16** %arrayidx294, align 8, !tbaa !0
+  %78 = load i16* %77, align 2, !tbaa !4
+  %arrayidx303 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @pred_mv8x8, i64 0, i64 %idxprom262, i64 1, i64 %indvars.iv536, i64 %indvars.iv538, i64 0
+  store i16 %78, i16* %arrayidx303, align 4, !tbaa !4
+  %arrayidx313 = getelementptr inbounds i16* %77, i64 1
+  %79 = load i16* %arrayidx313, align 2, !tbaa !4
+  %arrayidx321 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @pred_mv8x8, i64 0, i64 %idxprom262, i64 1, i64 %indvars.iv536, i64 %indvars.iv538, i64 1
+  store i16 %79, i16* %arrayidx321, align 2, !tbaa !4
+  %indvars.iv.next537 = add i64 %indvars.iv536, 1
+  %80 = trunc i64 %indvars.iv.next537 to i32
+  %cmp248 = icmp slt i32 %80, %add
+  br i1 %cmp248, label %for.body249, label %for.inc325
+
+for.inc325:                                       ; preds = %for.body249
+  %indvars.iv.next539 = add i64 %indvars.iv538, 1
+  %81 = trunc i64 %indvars.iv.next539 to i32
+  %cmp245 = icmp slt i32 %81, %add4
+  br i1 %cmp245, label %for.cond247.preheader, label %if.end358
+
+for.cond332.preheader:                            ; preds = %for.cond329.preheader, %for.inc354
+  %indvars.iv542 = phi i64 [ %61, %for.cond329.preheader ], [ %indvars.iv.next543, %for.inc354 ]
+  br label %for.body334
+
+for.body334:                                      ; preds = %for.cond332.preheader, %for.body334
+  %indvars.iv540 = phi i64 [ %59, %for.cond332.preheader ], [ %indvars.iv.next541, %for.body334 ]
+  %arrayidx342 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom337, i64 1, i64 %indvars.iv540, i64 %indvars.iv542, i64 0
+  store i16 0, i16* %arrayidx342, align 4, !tbaa !4
+  %arrayidx350 = getelementptr inbounds [2 x [2 x [4 x [4 x [2 x i16]]]]]* @all_mv8x8, i64 0, i64 %idxprom337, i64 1, i64 %indvars.iv540, i64 %indvars.iv542, i64 1
+  store i16 0, i16* %arrayidx350, align 2, !tbaa !4
+  %indvars.iv.next541 = add i64 %indvars.iv540, 1
+  %82 = trunc i64 %indvars.iv.next541 to i32
+  %cmp333 = icmp slt i32 %82, %add
+  br i1 %cmp333, label %for.body334, label %for.inc354
+
+for.inc354:                                       ; preds = %for.body334
+  %indvars.iv.next543 = add i64 %indvars.iv542, 1
+  %83 = trunc i64 %indvars.iv.next543 to i32
+  %cmp330 = icmp slt i32 %83, %add4
+  br i1 %cmp330, label %for.cond332.preheader, label %if.end358
+
+if.end358:                                        ; preds = %for.inc354, %for.inc325, %for.inc120, %for.inc39
+  ret void
+}

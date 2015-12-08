@@ -1,0 +1,98 @@
+OP *
+Perl_newFOROP(pTHX_ I32 flags,char *label,line_t forline,OP *sv,OP *expr,OP *block,OP *cont)
+{
+    LOOP *loop;
+    OP *wop;
+    PADOFFSET padoff = 0;
+    I32 iterflags = 0;
+    I32 iterpflags = 0;
+
+    if (sv) {
+	if (sv->op_type == OP_RV2SV) {	/* symbol table variable */
+	    iterpflags = sv->op_private & OPpOUR_INTRO; /* for our $x () */
+	    sv->op_type = OP_RV2GV;
+	    sv->op_ppaddr = PL_ppaddr[OP_RV2GV];
+	}
+	else if (sv->op_type == OP_PADSV) { /* private variable */
+	    iterpflags = sv->op_private & OPpLVAL_INTRO; /* for my $x () */
+	    padoff = sv->op_targ;
+	    sv->op_targ = 0;
+	    op_free(sv);
+	    sv = Nullop;
+	}
+	else if (sv->op_type == OP_THREADSV) { /* per-thread variable */
+	    padoff = sv->op_targ;
+	    sv->op_targ = 0;
+	    iterflags |= OPf_SPECIAL;
+	    op_free(sv);
+	    sv = Nullop;
+	}
+	else
+	    Perl_croak(aTHX_ "Can't use %s for loop variable", PL_op_desc[sv->op_type]);
+    }
+    else {
+#ifdef USE_5005THREADS
+	padoff = find_threadsv("_");
+	iterflags |= OPf_SPECIAL;
+#else
+	sv = newGVOP(OP_GV, 0, PL_defgv);
+#endif
+    }
+    if (expr->op_type == OP_RV2AV || expr->op_type == OP_PADAV) {
+	expr = mod(force_list(scalar(ref(expr, OP_ITER))), OP_GREPSTART);
+	iterflags |= OPf_STACKED;
+    }
+    else if (expr->op_type == OP_NULL &&
+             (expr->op_flags & OPf_KIDS) &&
+             ((BINOP*)expr)->op_first->op_type == OP_FLOP)
+    {
+	/* Basically turn for($x..$y) into the same as for($x,$y), but we
+	 * set the STACKED flag to indicate that these values are to be
+	 * treated as min/max values by 'pp_iterinit'.
+	 */
+	UNOP* flip = (UNOP*)((UNOP*)((BINOP*)expr)->op_first)->op_first;
+	LOGOP* range = (LOGOP*) flip->op_first;
+	OP* left  = range->op_first;
+	OP* right = left->op_sibling;
+	LISTOP* listop;
+
+	range->op_flags &= ~OPf_KIDS;
+	range->op_first = Nullop;
+
+	listop = (LISTOP*)newLISTOP(OP_LIST, 0, left, right);
+	listop->op_first->op_next = range->op_next;
+	left->op_next = range->op_other;
+	right->op_next = (OP*)listop;
+	listop->op_next = listop->op_first;
+
+	op_free(expr);
+	expr = (OP*)(listop);
+        op_null(expr);
+	iterflags |= OPf_STACKED;
+    }
+    else {
+        expr = mod(force_list(expr), OP_GREPSTART);
+    }
+
+    loop = (LOOP*)list(convert(OP_ENTERITER, iterflags,
+			       append_elem(OP_LIST, expr, scalar(sv))));
+    assert(!loop->op_next);
+    /* for my  $x () sets OPpLVAL_INTRO;
+     * for our $x () sets OPpOUR_INTRO; both only used by Deparse.pm */
+    loop->op_private = (U8)iterpflags;
+#ifdef PL_OP_SLAB_ALLOC
+    {
+	LOOP *tmp;
+	NewOp(1234,tmp,1,LOOP);
+	Copy(loop,tmp,1,LISTOP);
+	FreeOp(loop);
+	loop = tmp;
+    }
+#else
+    Renew(loop, 1, LOOP);
+#endif
+    loop->op_targ = padoff;
+    wop = newWHILEOP(flags, 1, loop, forline, newOP(OP_ITER, 0), block, cont);
+    PL_copline = forline;
+    return newSTATEOP(0, label, wop);
+}

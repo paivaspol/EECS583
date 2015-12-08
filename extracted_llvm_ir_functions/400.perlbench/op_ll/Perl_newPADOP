@@ -1,0 +1,95 @@
+define %struct.op* @Perl_newPADOP(i32 %type, i32 %flags, %struct.sv* %sv) #0 {
+entry:
+  %call = tail call i8* @Perl_safesysmalloc(i64 48) #7
+  tail call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 48, i32 1, i1 false)
+  %conv = trunc i32 %type to i16
+  %op_type = getelementptr inbounds i8* %call, i64 32
+  %0 = bitcast i8* %op_type to i16*
+  store i16 %conv, i16* %0, align 2, !tbaa !4
+  %idxprom = sext i32 %type to i64
+  %arrayidx = getelementptr inbounds [0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 %idxprom
+  %1 = load %struct.op* ()** %arrayidx, align 8, !tbaa !3
+  %op_ppaddr = getelementptr inbounds i8* %call, i64 16
+  %2 = bitcast i8* %op_ppaddr to %struct.op* ()**
+  store %struct.op* ()* %1, %struct.op* ()** %2, align 8, !tbaa !3
+  %call1 = tail call i64 @Perl_pad_alloc(i32 %type, i32 512) #7
+  %op_padix = getelementptr inbounds i8* %call, i64 40
+  %3 = bitcast i8* %op_padix to i64*
+  store i64 %call1, i64* %3, align 8, !tbaa !5
+  %4 = load %struct.sv*** @PL_curpad, align 8, !tbaa !3
+  %arrayidx3 = getelementptr inbounds %struct.sv** %4, i64 %call1
+  %5 = load %struct.sv** %arrayidx3, align 8, !tbaa !3
+  tail call void @Perl_sv_free(%struct.sv* %5) #7
+  %6 = load i64* %3, align 8, !tbaa !5
+  %7 = load %struct.sv*** @PL_curpad, align 8, !tbaa !3
+  %arrayidx5 = getelementptr inbounds %struct.sv** %7, i64 %6
+  store %struct.sv* %sv, %struct.sv** %arrayidx5, align 8, !tbaa !3
+  %tobool = icmp eq %struct.sv* %sv, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %8 = load i32* %sv_flags, align 4, !tbaa !0
+  %or = or i32 %8, 768
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %9 = bitcast i8* %call to %struct.op*
+  %op_next = bitcast i8* %call to %struct.op**
+  store %struct.op* %9, %struct.op** %op_next, align 8, !tbaa !3
+  %conv6 = trunc i32 %flags to i8
+  %10 = getelementptr inbounds i8* %call, i64 36
+  store i8 %conv6, i8* %10, align 1, !tbaa !1
+  %arrayidx8 = getelementptr inbounds [0 x i32]* @PL_opargs, i64 0, i64 %idxprom
+  %11 = load i32* %arrayidx8, align 4, !tbaa !0
+  %and = and i32 %11, 4
+  %tobool9 = icmp eq i32 %and, 0
+  br i1 %tobool9, label %if.end12, label %if.then10
+
+if.then10:                                        ; preds = %if.end
+  %call11 = tail call %struct.op* @Perl_scalar(%struct.op* %9) #8
+  %.pre = load i32* %arrayidx8, align 4, !tbaa !0
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end, %if.then10
+  %12 = phi i32 [ %11, %if.end ], [ %.pre, %if.then10 ]
+  %and15 = and i32 %12, 8
+  %tobool16 = icmp eq i32 %and15, 0
+  br i1 %tobool16, label %if.end19, label %if.then17
+
+if.then17:                                        ; preds = %if.end12
+  %call18 = tail call i64 @Perl_pad_alloc(i32 %type, i32 512) #7
+  %op_targ = getelementptr inbounds i8* %call, i64 24
+  %13 = bitcast i8* %op_targ to i64*
+  store i64 %call18, i64* %13, align 8, !tbaa !5
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.end12, %if.then17
+  %14 = load i8** @PL_op_mask, align 8, !tbaa !3
+  %tobool20 = icmp eq i8* %14, null
+  br i1 %tobool20, label %cond.false, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end19
+  %arrayidx22 = getelementptr inbounds i8* %14, i64 %idxprom
+  %15 = load i8* %arrayidx22, align 1, !tbaa !1
+  %tobool24 = icmp eq i8 %15, 0
+  br i1 %tobool24, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %land.lhs.true
+  tail call void @Perl_op_free(%struct.op* %9) #8
+  %arrayidx26 = getelementptr inbounds [0 x i8*]* @PL_op_desc, i64 0, i64 %idxprom
+  %16 = load i8** %arrayidx26, align 8, !tbaa !3
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([31 x i8]* @.str33, i64 0, i64 0), i8* %16) #7
+  br label %cond.end
+
+cond.false:                                       ; preds = %land.lhs.true, %if.end19
+  %arrayidx28 = getelementptr inbounds [0 x %struct.op* (%struct.op*)*]* @PL_check, i64 0, i64 %idxprom
+  %17 = load %struct.op* (%struct.op*)** %arrayidx28, align 8, !tbaa !3
+  %call29 = tail call %struct.op* %17(%struct.op* %9) #7
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi %struct.op* [ null, %cond.true ], [ %call29, %cond.false ]
+  ret %struct.op* %cond
+}

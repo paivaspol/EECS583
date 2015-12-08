@@ -1,18 +1,55 @@
-static int
-redirect_exp (olabel, nlabel, insn)
+static void
+redirect_exp_1 (loc, olabel, nlabel, insn)
+     rtx *loc;
      rtx olabel, nlabel;
      rtx insn;
 {
-  rtx *loc;
+  rtx x = *loc;
+  RTX_CODE code = GET_CODE (x);
+  int i;
+  const char *fmt;
 
-  if (GET_CODE (PATTERN (insn)) == PARALLEL)
-    loc = &XVECEXP (PATTERN (insn), 0, 0);
-  else
-    loc = &PATTERN (insn);
+  if (code == LABEL_REF)
+    {
+      if (XEXP (x, 0) == olabel)
+	{
+	  rtx n;
+	  if (nlabel)
+	    n = gen_rtx_LABEL_REF (VOIDmode, nlabel);
+	  else
+	    n = gen_rtx_RETURN (VOIDmode);
 
-  redirect_exp_1 (loc, olabel, nlabel, insn);
-  if (num_validated_changes () == 0)
-    return 0;
+	  validate_change (insn, loc, n, 1);
+	  return;
+	}
+    }
+  else if (code == RETURN && olabel == 0)
+    {
+      x = gen_rtx_LABEL_REF (VOIDmode, nlabel);
+      if (loc == &PATTERN (insn))
+	x = gen_rtx_SET (VOIDmode, pc_rtx, x);
+      validate_change (insn, loc, x, 1);
+      return;
+    }
 
-  return apply_change_group ();
+  if (code == SET && nlabel == 0 && SET_DEST (x) == pc_rtx
+      && GET_CODE (SET_SRC (x)) == LABEL_REF
+      && XEXP (SET_SRC (x), 0) == olabel)
+    {
+      validate_change (insn, loc, gen_rtx_RETURN (VOIDmode), 1);
+      return;
+    }
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	redirect_exp_1 (&XEXP (x, i), olabel, nlabel, insn);
+      else if (fmt[i] == 'E')
+	{
+	  int j;
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    redirect_exp_1 (&XVECEXP (x, i, j), olabel, nlabel, insn);
+	}
+    }
 }

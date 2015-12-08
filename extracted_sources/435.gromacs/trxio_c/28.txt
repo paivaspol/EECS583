@@ -1,0 +1,17 @@
+bool read_next_v(int status,real *t,int natoms,rvec v[],matrix box)
+{
+  t_trxframe fr;
+  bool bRet;
+
+  clear_trxframe(&fr,TRUE);
+  fr.flags = TRX_NEED_V;
+  fr.natoms = natoms;
+  fr.time = *t;
+  fr.v = v;
+  bRet = read_next_frame(status,&fr);
+  *t = fr.time;
+  clear_v(&fr);
+  copy_mat(fr.box,box);
+
+  return bRet;
+}

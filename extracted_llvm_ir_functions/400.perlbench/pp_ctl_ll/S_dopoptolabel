@@ -1,0 +1,136 @@
+define internal fastcc i32 @S_dopoptolabel(i8* nocapture %label) #0 {
+entry:
+  %0 = load %struct.stackinfo** @PL_curstackinfo, align 8, !tbaa !0
+  %si_cxix = getelementptr inbounds %struct.stackinfo* %0, i64 0, i32 2
+  %1 = load i32* %si_cxix, align 4, !tbaa !3
+  %cmp55 = icmp sgt i32 %1, -1
+  br i1 %cmp55, label %for.body.lr.ph, label %return
+
+for.body.lr.ph:                                   ; preds = %entry
+  %2 = sext i32 %1 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc.for.body_crit_edge, %for.body.lr.ph
+  %3 = phi %struct.stackinfo* [ %0, %for.body.lr.ph ], [ %.pre, %for.inc.for.body_crit_edge ]
+  %indvars.iv = phi i64 [ %2, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc.for.body_crit_edge ]
+  %i.056 = phi i32 [ %1, %for.body.lr.ph ], [ %dec, %for.inc.for.body_crit_edge ]
+  %si_cxstack = getelementptr inbounds %struct.stackinfo* %3, i64 0, i32 1
+  %4 = load %struct.context** %si_cxstack, align 8, !tbaa !0
+  %cx_type = getelementptr inbounds %struct.context* %4, i64 %indvars.iv, i32 0
+  %5 = load i32* %cx_type, align 4, !tbaa !3
+  %and = and i32 %5, 255
+  switch i32 %and, label %for.inc [
+    i32 4, label %sw.bb
+    i32 1, label %sw.bb
+    i32 6, label %sw.bb
+    i32 2, label %sw.bb
+    i32 0, label %sw.bb
+    i32 3, label %sw.bb34
+  ]
+
+sw.bb:                                            ; preds = %for.body, %for.body, %for.body, %for.body, %for.body
+  %6 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings = getelementptr inbounds %struct.cop* %6, i64 0, i32 14
+  %7 = load %struct.sv** %cop_warnings, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct.sv* %7, null
+  br i1 %cmp1, label %lor.lhs.false10, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %sw.bb
+  %8 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings2 = getelementptr inbounds %struct.cop* %8, i64 0, i32 14
+  %9 = load %struct.sv** %cop_warnings2, align 8, !tbaa !0
+  %cmp3 = icmp eq %struct.sv* %9, inttoptr (i64 32 to %struct.sv*)
+  br i1 %cmp3, label %lor.lhs.false10, label %land.lhs.true4
+
+land.lhs.true4:                                   ; preds = %land.lhs.true
+  %10 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings5 = getelementptr inbounds %struct.cop* %10, i64 0, i32 14
+  %11 = load %struct.sv** %cop_warnings5, align 8, !tbaa !0
+  %cmp6 = icmp eq %struct.sv* %11, inttoptr (i64 16 to %struct.sv*)
+  br i1 %cmp6, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true4
+  %12 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings7 = getelementptr inbounds %struct.cop* %12, i64 0, i32 14
+  %13 = load %struct.sv** %cop_warnings7, align 8, !tbaa !0
+  %sv_any = getelementptr inbounds %struct.sv* %13, i64 0, i32 0
+  %14 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %14 to i8**
+  %15 = load i8** %xpv_pv, align 8, !tbaa !0
+  %16 = load i8* %15, align 1, !tbaa !1
+  %and9 = and i8 %16, 64
+  %tobool = icmp eq i8 %and9, 0
+  br i1 %tobool, label %lor.lhs.false10, label %if.then
+
+lor.lhs.false10:                                  ; preds = %lor.lhs.false, %land.lhs.true, %sw.bb
+  %17 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings11 = getelementptr inbounds %struct.cop* %17, i64 0, i32 14
+  %18 = load %struct.sv** %cop_warnings11, align 8, !tbaa !0
+  %cmp12 = icmp eq %struct.sv* %18, null
+  br i1 %cmp12, label %land.lhs.true14, label %if.end
+
+land.lhs.true14:                                  ; preds = %lor.lhs.false10
+  %19 = load i8* @PL_dowarn, align 1, !tbaa !1
+  %and16 = and i8 %19, 1
+  %tobool17 = icmp eq i8 %and16, 0
+  br i1 %tobool17, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %land.lhs.true14, %land.lhs.true4
+  %20 = load i32* %cx_type, align 4, !tbaa !3
+  %and19 = and i32 %20, 255
+  %idxprom20 = zext i32 %and19 to i64
+  %arrayidx21 = getelementptr inbounds [7 x i8*]* @context_name, i64 0, i64 %idxprom20
+  %21 = load i8** %arrayidx21, align 8, !tbaa !0
+  %22 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_type = getelementptr inbounds %struct.op* %22, i64 0, i32 4
+  %23 = load i16* %op_type, align 2, !tbaa !6
+  %cmp23 = icmp eq i16 %23, 351
+  br i1 %cmp23, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %if.then
+  %call = tail call i8* @Perl_custom_op_name(%struct.op* %22) #7
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.then
+  %idxprom26 = zext i16 %23 to i64
+  %arrayidx27 = getelementptr inbounds [0 x i8*]* @PL_op_name, i64 0, i64 %idxprom26
+  %24 = load i8** %arrayidx27, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %call, %cond.true ], [ %24, %cond.false ]
+  tail call void (i32, i8*, ...)* @Perl_warner(i32 3, i8* getelementptr inbounds ([18 x i8]* @.str80, i64 0, i64 0), i8* %21, i8* %cond) #7
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true14, %cond.end, %lor.lhs.false10
+  %25 = load i32* %cx_type, align 4, !tbaa !3
+  %and29 = and i32 %25, 255
+  %cmp30 = icmp eq i32 %and29, 0
+  br i1 %cmp30, label %return, label %for.inc
+
+sw.bb34:                                          ; preds = %for.body
+  %label35 = getelementptr inbounds %struct.context* %4, i64 %indvars.iv, i32 1, i32 0, i32 7, i32 0, i32 0
+  %26 = load i8** %label35, align 8, !tbaa !0
+  %tobool36 = icmp eq i8* %26, null
+  br i1 %tobool36, label %for.inc, label %lor.lhs.false37
+
+lor.lhs.false37:                                  ; preds = %sw.bb34
+  %call43 = tail call i32 @strcmp(i8* %label, i8* %26) #7
+  %tobool44 = icmp eq i32 %call43, 0
+  br i1 %tobool44, label %return, label %for.inc
+
+for.inc:                                          ; preds = %lor.lhs.false37, %sw.bb34, %for.body, %if.end
+  %dec = add nsw i32 %i.056, -1
+  %27 = trunc i64 %indvars.iv to i32
+  %cmp = icmp sgt i32 %27, 0
+  br i1 %cmp, label %for.inc.for.body_crit_edge, label %return
+
+for.inc.for.body_crit_edge:                       ; preds = %for.inc
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %.pre = load %struct.stackinfo** @PL_curstackinfo, align 8, !tbaa !0
+  br label %for.body
+
+return:                                           ; preds = %for.inc, %lor.lhs.false37, %if.end, %entry
+  %retval.0 = phi i32 [ %1, %entry ], [ %i.056, %lor.lhs.false37 ], [ -1, %if.end ], [ %dec, %for.inc ]
+  ret i32 %retval.0
+}

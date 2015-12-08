@@ -1,0 +1,18 @@
+PP(pp_rand)
+{
+    dSP; dTARGET;
+    NV value;
+    if (MAXARG < 1)
+	value = 1.0;
+    else
+	value = POPn;
+    if (value == 0.0)
+	value = 1.0;
+    if (!PL_srand_called) {
+	(void)seedDrand01((Rand_seed_t)seed());
+	PL_srand_called = TRUE;
+    }
+    value *= Drand01();
+    XPUSHn(value);
+    RETURN;
+}

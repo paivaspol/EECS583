@@ -1,5 +1,10 @@
 void
-Perl_PerlIO_set_cnt(pTHX_ PerlIO *f, int cnt)
+Perl_boot_core_PerlIO(pTHX)
 {
-     Perl_PerlIO_or_fail_void(f, Set_ptrcnt, (aTHX_ f, NULL, cnt));
+#ifdef USE_ATTRIBUTES_FOR_PERLIO
+    newXS("io::MODIFY_SCALAR_ATTRIBUTES", XS_io_MODIFY_SCALAR_ATTRIBUTES,
+	  __FILE__);
+#endif
+    newXS("PerlIO::Layer::find", XS_PerlIO__Layer__find, __FILE__);
+    newXS("PerlIO::Layer::NoWarnings", XS_PerlIO__Layer__NoWarnings, __FILE__);
 }

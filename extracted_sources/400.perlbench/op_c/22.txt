@@ -1,14 +1,74 @@
-static void
-const_sv_xsub(pTHX_ CV* cv)
+OP *
+Perl_list(pTHX_ OP *o)
 {
-    dXSARGS;
-    if (items != 0) {
-#if 0
-        Perl_croak(aTHX_ "usage: %s::%s()",
-                   HvNAME(GvSTASH(CvGV(cv))), GvNAME(CvGV(cv)));
-#endif
+    OP *kid;
+
+    /* assumes no premature commitment */
+    if (!o || (o->op_flags & OPf_WANT) || PL_error_count
+	 || o->op_type == OP_RETURN)
+    {
+	return o;
     }
-    EXTEND(sp, 1);
-    ST(0) = (SV*)XSANY.any_ptr;
-    XSRETURN(1);
+
+    if ((o->op_private & OPpTARGET_MY)
+	&& (PL_opargs[o->op_type] & OA_TARGLEX))/* OPp share the meaning */
+    {
+	return o;				/* As if inside SASSIGN */
+    }
+
+    o->op_flags = (o->op_flags & ~OPf_WANT) | OPf_WANT_LIST;
+
+    switch (o->op_type) {
+    case OP_FLOP:
+    case OP_REPEAT:
+	list(cBINOPo->op_first);
+	break;
+    case OP_OR:
+    case OP_AND:
+    case OP_COND_EXPR:
+	for (kid = cUNOPo->op_first->op_sibling; kid; kid = kid->op_sibling)
+	    list(kid);
+	break;
+    default:
+    case OP_MATCH:
+    case OP_QR:
+    case OP_SUBST:
+    case OP_NULL:
+	if (!(o->op_flags & OPf_KIDS))
+	    break;
+	if (!o->op_next && cUNOPo->op_first->op_type == OP_FLOP) {
+	    list(cBINOPo->op_first);
+	    return gen_constant_list(o);
+	}
+    case OP_LIST:
+	listkids(o);
+	break;
+    case OP_LEAVE:
+    case OP_LEAVETRY:
+	kid = cLISTOPo->op_first;
+	list(kid);
+	while ((kid = kid->op_sibling)) {
+	    if (kid->op_sibling)
+		scalarvoid(kid);
+	    else
+		list(kid);
+	}
+	WITH_THR(PL_curcop = &PL_compiling);
+	break;
+    case OP_SCOPE:
+    case OP_LINESEQ:
+	for (kid = cLISTOPo->op_first; kid; kid = kid->op_sibling) {
+	    if (kid->op_sibling)
+		scalarvoid(kid);
+	    else
+		list(kid);
+	}
+	WITH_THR(PL_curcop = &PL_compiling);
+	break;
+    case OP_REQUIRE:
+	/* all requires must return a boolean value */
+	o->op_flags &= ~OPf_WANT;
+	return scalar(o);
+    }
+    return o;
 }

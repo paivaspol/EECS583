@@ -1,224 +1,53 @@
-int
-ix86_expand_movstr (dst, src, count_exp, align_exp)
-     rtx dst, src, count_exp, align_exp;
+void
+ix86_split_lshrdi (operands, scratch)
+     rtx *operands, scratch;
 {
-  rtx srcreg, destreg, countreg;
-  enum machine_mode counter_mode;
-  HOST_WIDE_INT align = 0;
-  unsigned HOST_WIDE_INT count = 0;
-  rtx insns;
+  rtx low[2], high[2];
+  int count;
 
-  start_sequence ();
-
-  if (GET_CODE (align_exp) == CONST_INT)
-    align = INTVAL (align_exp);
-
-  /* This simple hack avoids all inlining code and simplifies code below.  */
-  if (!TARGET_ALIGN_STRINGOPS)
-    align = 64;
-
-  if (GET_CODE (count_exp) == CONST_INT)
-    count = INTVAL (count_exp);
-
-  /* Figure out proper mode for counter.  For 32bits it is always SImode,
-     for 64bits use SImode when possible, otherwise DImode.
-     Set count to number of bytes copied when known at compile time.  */
-  if (!TARGET_64BIT || GET_MODE (count_exp) == SImode
-      || x86_64_zero_extended_value (count_exp))
-    counter_mode = SImode;
-  else
-    counter_mode = DImode;
-
-  if (counter_mode != SImode && counter_mode != DImode)
-    abort ();
-
-  destreg = copy_to_mode_reg (Pmode, XEXP (dst, 0));
-  srcreg = copy_to_mode_reg (Pmode, XEXP (src, 0));
-
-  emit_insn (gen_cld ());
-
-  /* When optimizing for size emit simple rep ; movsb instruction for
-     counts not divisible by 4.  */
-
-  if ((!optimize || optimize_size) && (count == 0 || (count & 0x03)))
+  if (GET_CODE (operands[2]) == CONST_INT)
     {
-      countreg = ix86_zero_extend_to_Pmode (count_exp);
-      if (TARGET_64BIT)
-	emit_insn (gen_rep_movqi_rex64 (destreg, srcreg, countreg,
-				        destreg, srcreg, countreg));
-      else
-	emit_insn (gen_rep_movqi (destreg, srcreg, countreg,
-				  destreg, srcreg, countreg));
-    }
+      split_di (operands, 2, low, high);
+      count = INTVAL (operands[2]) & 63;
 
-  /* For constant aligned (or small unaligned) copies use rep movsl
-     followed by code copying the rest.  For PentiumPro ensure 8 byte
-     alignment to allow rep movsl acceleration.  */
-
-  else if (count != 0
-	   && (align >= 8
-	       || (!TARGET_PENTIUMPRO && !TARGET_64BIT && align >= 4)
-	       || optimize_size || count < (unsigned int) 64))
-    {
-      int size = TARGET_64BIT && !optimize_size ? 8 : 4;
-      if (count & ~(size - 1))
+      if (count >= 32)
 	{
-	  countreg = copy_to_mode_reg (counter_mode,
-				       GEN_INT ((count >> (size == 4 ? 2 : 3))
-						& (TARGET_64BIT ? -1 : 0x3fffffff)));
-	  countreg = ix86_zero_extend_to_Pmode (countreg);
-	  if (size == 4)
-	    {
-	      if (TARGET_64BIT)
-		emit_insn (gen_rep_movsi_rex64 (destreg, srcreg, countreg,
-					        destreg, srcreg, countreg));
-	      else
-		emit_insn (gen_rep_movsi (destreg, srcreg, countreg,
-					  destreg, srcreg, countreg));
-	    }
+	  emit_move_insn (low[0], high[1]);
+	  emit_move_insn (high[0], const0_rtx);
+
+	  if (count > 32)
+	    emit_insn (gen_lshrsi3 (low[0], low[0], GEN_INT (count - 32)));
+	}
+      else
+	{
+	  if (!rtx_equal_p (operands[0], operands[1]))
+	    emit_move_insn (operands[0], operands[1]);
+	  emit_insn (gen_x86_shrd_1 (low[0], high[0], GEN_INT (count)));
+	  emit_insn (gen_lshrsi3 (high[0], high[0], GEN_INT (count)));
+	}
+    }
+  else
+    {
+      if (!rtx_equal_p (operands[0], operands[1]))
+	emit_move_insn (operands[0], operands[1]);
+
+      split_di (operands, 1, low, high);
+
+      emit_insn (gen_x86_shrd_1 (low[0], high[0], operands[2]));
+      emit_insn (gen_lshrsi3 (high[0], high[0], operands[2]));
+
+      /* Heh.  By reversing the arguments, we can reuse this pattern.  */
+      if (TARGET_CMOVE && (! no_new_pseudos || scratch))
+	{
+	  if (! no_new_pseudos)
+	    scratch = force_reg (SImode, const0_rtx);
 	  else
-	    emit_insn (gen_rep_movdi_rex64 (destreg, srcreg, countreg,
-					    destreg, srcreg, countreg));
-	}
-      if (size == 8 && (count & 0x04))
-	emit_insn (gen_strmovsi (destreg, srcreg));
-      if (count & 0x02)
-	emit_insn (gen_strmovhi (destreg, srcreg));
-      if (count & 0x01)
-	emit_insn (gen_strmovqi (destreg, srcreg));
-    }
-  /* The generic code based on the glibc implementation:
-     - align destination to 4 bytes (8 byte alignment is used for PentiumPro
-     allowing accelerated copying there)
-     - copy the data using rep movsl
-     - copy the rest.  */
-  else
-    {
-      rtx countreg2;
-      rtx label = NULL;
-      int desired_alignment = (TARGET_PENTIUMPRO
-			       && (count == 0 || count >= (unsigned int) 260)
-			       ? 8 : UNITS_PER_WORD);
+	    emit_move_insn (scratch, const0_rtx);
 
-      /* In case we don't know anything about the alignment, default to
-         library version, since it is usually equally fast and result in
-         shorter code.  */
-      if (!TARGET_INLINE_ALL_STRINGOPS && align < UNITS_PER_WORD)
-	{
-	  end_sequence ();
-	  return 0;
-	}
-
-      if (TARGET_SINGLE_STRINGOP)
-	emit_insn (gen_cld ());
-
-      countreg2 = gen_reg_rtx (Pmode);
-      countreg = copy_to_mode_reg (counter_mode, count_exp);
-
-      /* We don't use loops to align destination and to copy parts smaller
-         than 4 bytes, because gcc is able to optimize such code better (in
-         the case the destination or the count really is aligned, gcc is often
-         able to predict the branches) and also it is friendlier to the
-         hardware branch prediction.
-
-         Using loops is benefical for generic case, because we can
-         handle small counts using the loops.  Many CPUs (such as Athlon)
-         have large REP prefix setup costs.
-
-         This is quite costy.  Maybe we can revisit this decision later or
-         add some customizability to this code.  */
-
-      if (count == 0 && align < desired_alignment)
-	{
-	  label = gen_label_rtx ();
-	  emit_cmp_and_jump_insns (countreg, GEN_INT (desired_alignment - 1),
-				   LEU, 0, counter_mode, 1, label);
-	}
-      if (align <= 1)
-	{
-	  rtx label = ix86_expand_aligntest (destreg, 1);
-	  emit_insn (gen_strmovqi (destreg, srcreg));
-	  ix86_adjust_counter (countreg, 1);
-	  emit_label (label);
-	  LABEL_NUSES (label) = 1;
-	}
-      if (align <= 2)
-	{
-	  rtx label = ix86_expand_aligntest (destreg, 2);
-	  emit_insn (gen_strmovhi (destreg, srcreg));
-	  ix86_adjust_counter (countreg, 2);
-	  emit_label (label);
-	  LABEL_NUSES (label) = 1;
-	}
-      if (align <= 4 && desired_alignment > 4)
-	{
-	  rtx label = ix86_expand_aligntest (destreg, 4);
-	  emit_insn (gen_strmovsi (destreg, srcreg));
-	  ix86_adjust_counter (countreg, 4);
-	  emit_label (label);
-	  LABEL_NUSES (label) = 1;
-	}
-
-      if (label && desired_alignment > 4 && !TARGET_64BIT)
-	{
-	  emit_label (label);
-	  LABEL_NUSES (label) = 1;
-	  label = NULL_RTX;
-	}
-      if (!TARGET_SINGLE_STRINGOP)
-	emit_insn (gen_cld ());
-      if (TARGET_64BIT)
-	{
-	  emit_insn (gen_lshrdi3 (countreg2, ix86_zero_extend_to_Pmode (countreg),
-				  GEN_INT (3)));
-	  emit_insn (gen_rep_movdi_rex64 (destreg, srcreg, countreg2,
-					  destreg, srcreg, countreg2));
+	  emit_insn (gen_x86_shift_adj_1 (low[0], high[0], operands[2],
+					  scratch));
 	}
       else
-	{
-	  emit_insn (gen_lshrsi3 (countreg2, countreg, GEN_INT (2)));
-	  emit_insn (gen_rep_movsi (destreg, srcreg, countreg2,
-				    destreg, srcreg, countreg2));
-	}
-
-      if (label)
-	{
-	  emit_label (label);
-	  LABEL_NUSES (label) = 1;
-	}
-      if (TARGET_64BIT && align > 4 && count != 0 && (count & 4))
-	emit_insn (gen_strmovsi (destreg, srcreg));
-      if ((align <= 4 || count == 0) && TARGET_64BIT)
-	{
-	  rtx label = ix86_expand_aligntest (countreg, 4);
-	  emit_insn (gen_strmovsi (destreg, srcreg));
-	  emit_label (label);
-	  LABEL_NUSES (label) = 1;
-	}
-      if (align > 2 && count != 0 && (count & 2))
-	emit_insn (gen_strmovhi (destreg, srcreg));
-      if (align <= 2 || count == 0)
-	{
-	  rtx label = ix86_expand_aligntest (countreg, 2);
-	  emit_insn (gen_strmovhi (destreg, srcreg));
-	  emit_label (label);
-	  LABEL_NUSES (label) = 1;
-	}
-      if (align > 1 && count != 0 && (count & 1))
-	emit_insn (gen_strmovqi (destreg, srcreg));
-      if (align <= 1 || count == 0)
-	{
-	  rtx label = ix86_expand_aligntest (countreg, 1);
-	  emit_insn (gen_strmovqi (destreg, srcreg));
-	  emit_label (label);
-	  LABEL_NUSES (label) = 1;
-	}
+	emit_insn (gen_x86_shift_adj_2 (low[0], high[0], operands[2]));
     }
-
-  insns = get_insns ();
-  end_sequence ();
-
-  ix86_set_move_mem_attrs (insns, dst, src, destreg, srcreg);
-  emit_insns (insns);
-  return 1;
 }

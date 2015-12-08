@@ -1,0 +1,304 @@
+PP(pp_split)
+{
+    dSP; dTARG;
+    AV *ary;
+    register IV limit = POPi;			/* note, negative is forever */
+    SV *sv = POPs;
+    STRLEN len;
+    register char *s = SvPV(sv, len);
+    bool do_utf8 = DO_UTF8(sv);
+    char *strend = s + len;
+    register PMOP *pm;
+    register REGEXP *rx;
+    register SV *dstr;
+    register char *m;
+    I32 iters = 0;
+    STRLEN slen = do_utf8 ? utf8_length((U8*)s, (U8*)strend) : (strend - s);
+    I32 maxiters = slen + 10;
+    I32 i;
+    char *orig;
+    I32 origlimit = limit;
+    I32 realarray = 0;
+    I32 base;
+    I32 gimme = GIMME_V;
+    I32 oldsave = PL_savestack_ix;
+    I32 make_mortal = 1;
+    MAGIC *mg = (MAGIC *) NULL;
+
+#ifdef DEBUGGING
+    Copy(&LvTARGOFF(POPs), &pm, 1, PMOP*);
+#else
+    pm = (PMOP*)POPs;
+#endif
+    if (!pm || !s)
+	DIE(aTHX_ "panic: pp_split");
+    rx = PM_GETRE(pm);
+
+    TAINT_IF((pm->op_pmflags & PMf_LOCALE) &&
+	     (pm->op_pmflags & (PMf_WHITE | PMf_SKIPWHITE)));
+
+    RX_MATCH_UTF8_set(rx, do_utf8);
+
+    if (pm->op_pmreplroot) {
+#ifdef USE_ITHREADS
+	ary = GvAVn((GV*)PAD_SVl(INT2PTR(PADOFFSET, pm->op_pmreplroot)));
+#else
+	ary = GvAVn((GV*)pm->op_pmreplroot);
+#endif
+    }
+    else if (gimme != G_ARRAY)
+#ifdef USE_5005THREADS
+	ary = (AV*)PAD_SVl(0);
+#else
+	ary = GvAVn(PL_defgv);
+#endif /* USE_5005THREADS */
+    else
+	ary = Nullav;
+    if (ary && (gimme != G_ARRAY || (pm->op_pmflags & PMf_ONCE))) {
+	realarray = 1;
+	PUTBACK;
+	av_extend(ary,0);
+	av_clear(ary);
+	SPAGAIN;
+	if ((mg = SvTIED_mg((SV*)ary, PERL_MAGIC_tied))) {
+	    PUSHMARK(SP);
+	    XPUSHs(SvTIED_obj((SV*)ary, mg));
+	}
+	else {
+	    if (!AvREAL(ary)) {
+		AvREAL_on(ary);
+		AvREIFY_off(ary);
+		for (i = AvFILLp(ary); i >= 0; i--)
+		    AvARRAY(ary)[i] = &PL_sv_undef;	/* don't free mere refs */
+	    }
+	    /* temporarily switch stacks */
+	    SAVESWITCHSTACK(PL_curstack, ary);
+	    make_mortal = 0;
+	}
+    }
+    base = SP - PL_stack_base;
+    orig = s;
+    if (pm->op_pmflags & PMf_SKIPWHITE) {
+	if (pm->op_pmflags & PMf_LOCALE) {
+	    while (isSPACE_LC(*s))
+		s++;
+	}
+	else {
+	    while (isSPACE(*s))
+		s++;
+	}
+    }
+    if (pm->op_pmflags & (PMf_MULTILINE|PMf_SINGLELINE)) {
+	SAVEINT(PL_multiline);
+	PL_multiline = pm->op_pmflags & PMf_MULTILINE;
+    }
+
+    if (!limit)
+	limit = maxiters + 2;
+    if (pm->op_pmflags & PMf_WHITE) {
+	while (--limit) {
+	    m = s;
+	    while (m < strend &&
+		   !((pm->op_pmflags & PMf_LOCALE)
+		     ? isSPACE_LC(*m) : isSPACE(*m)))
+		++m;
+	    if (m >= strend)
+		break;
+
+	    dstr = newSVpvn(s, m-s);
+	    if (make_mortal)
+		sv_2mortal(dstr);
+	    if (do_utf8)
+		(void)SvUTF8_on(dstr);
+	    XPUSHs(dstr);
+
+	    s = m + 1;
+	    while (s < strend &&
+		   ((pm->op_pmflags & PMf_LOCALE)
+		    ? isSPACE_LC(*s) : isSPACE(*s)))
+		++s;
+	}
+    }
+    else if (rx->precomp[0] == '^' && rx->precomp[1] == '\0') {
+	while (--limit) {
+	    /*SUPPRESS 530*/
+	    for (m = s; m < strend && *m != '\n'; m++) ;
+	    m++;
+	    if (m >= strend)
+		break;
+	    dstr = newSVpvn(s, m-s);
+	    if (make_mortal)
+		sv_2mortal(dstr);
+	    if (do_utf8)
+		(void)SvUTF8_on(dstr);
+	    XPUSHs(dstr);
+	    s = m;
+	}
+    }
+    else if (do_utf8 == ((rx->reganch & ROPT_UTF8) != 0) &&
+	     (rx->reganch & RE_USE_INTUIT) && !rx->nparens
+	     && (rx->reganch & ROPT_CHECK_ALL)
+	     && !(rx->reganch & ROPT_ANCH)) {
+	int tail = (rx->reganch & RE_INTUIT_TAIL);
+	SV *csv = CALLREG_INTUIT_STRING(aTHX_ rx);
+
+	len = rx->minlen;
+	if (len == 1 && !(rx->reganch & ROPT_UTF8) && !tail) {
+	    STRLEN n_a;
+	    char c = *SvPV(csv, n_a);
+	    while (--limit) {
+		/*SUPPRESS 530*/
+		for (m = s; m < strend && *m != c; m++) ;
+		if (m >= strend)
+		    break;
+		dstr = newSVpvn(s, m-s);
+		if (make_mortal)
+		    sv_2mortal(dstr);
+		if (do_utf8)
+		    (void)SvUTF8_on(dstr);
+		XPUSHs(dstr);
+		/* The rx->minlen is in characters but we want to step
+		 * s ahead by bytes. */
+ 		if (do_utf8)
+		    s = (char*)utf8_hop((U8*)m, len);
+ 		else
+		    s = m + len; /* Fake \n at the end */
+	    }
+	}
+	else {
+#ifndef lint
+	    while (s < strend && --limit &&
+	      (m = fbm_instr((unsigned char*)s, (unsigned char*)strend,
+			     csv, PL_multiline ? FBMrf_MULTILINE : 0)) )
+#endif
+	    {
+		dstr = newSVpvn(s, m-s);
+		if (make_mortal)
+		    sv_2mortal(dstr);
+		if (do_utf8)
+		    (void)SvUTF8_on(dstr);
+		XPUSHs(dstr);
+		/* The rx->minlen is in characters but we want to step
+		 * s ahead by bytes. */
+ 		if (do_utf8)
+		    s = (char*)utf8_hop((U8*)m, len);
+ 		else
+		    s = m + len; /* Fake \n at the end */
+	    }
+	}
+    }
+    else {
+	maxiters += slen * rx->nparens;
+	while (s < strend && --limit)
+	{
+	    PUTBACK;
+	    i = CALLREGEXEC(aTHX_ rx, s, strend, orig, 1 , sv, NULL, 0);
+	    SPAGAIN;
+	    if (i == 0)
+		break;
+	    TAINT_IF(RX_MATCH_TAINTED(rx));
+	    if (RX_MATCH_COPIED(rx) && rx->subbeg != orig) {
+		m = s;
+		s = orig;
+		orig = rx->subbeg;
+		s = orig + (m - s);
+		strend = s + (strend - m);
+	    }
+	    m = rx->startp[0] + orig;
+	    dstr = newSVpvn(s, m-s);
+	    if (make_mortal)
+		sv_2mortal(dstr);
+	    if (do_utf8)
+		(void)SvUTF8_on(dstr);
+	    XPUSHs(dstr);
+	    if (rx->nparens) {
+		for (i = 1; i <= (I32)rx->nparens; i++) {
+		    s = rx->startp[i] + orig;
+		    m = rx->endp[i] + orig;
+
+		    /* japhy (07/27/01) -- the (m && s) test doesn't catch
+		       parens that didn't match -- they should be set to
+		       undef, not the empty string */
+		    if (m >= orig && s >= orig) {
+			dstr = newSVpvn(s, m-s);
+		    }
+		    else
+			dstr = &PL_sv_undef;  /* undef, not "" */
+		    if (make_mortal)
+			sv_2mortal(dstr);
+		    if (do_utf8)
+			(void)SvUTF8_on(dstr);
+		    XPUSHs(dstr);
+		}
+	    }
+	    s = rx->endp[0] + orig;
+	}
+    }
+
+    iters = (SP - PL_stack_base) - base;
+    if (iters > maxiters)
+	DIE(aTHX_ "Split loop");
+
+    /* keep field after final delim? */
+    if (s < strend || (iters && origlimit)) {
+        STRLEN l = strend - s;
+	dstr = newSVpvn(s, l);
+	if (make_mortal)
+	    sv_2mortal(dstr);
+	if (do_utf8)
+	    (void)SvUTF8_on(dstr);
+	XPUSHs(dstr);
+	iters++;
+    }
+    else if (!origlimit) {
+	while (iters > 0 && (!TOPs || !SvANY(TOPs) || SvCUR(TOPs) == 0)) {
+	    if (TOPs && !make_mortal)
+		sv_2mortal(TOPs);
+	    iters--;
+	    *SP-- = &PL_sv_undef;
+	}
+    }
+
+    PUTBACK;
+    LEAVE_SCOPE(oldsave); /* may undo an earlier SWITCHSTACK */
+    SPAGAIN;
+    if (realarray) {
+	if (!mg) {
+	    if (SvSMAGICAL(ary)) {
+		PUTBACK;
+		mg_set((SV*)ary);
+		SPAGAIN;
+	    }
+	    if (gimme == G_ARRAY) {
+		EXTEND(SP, iters);
+		Copy(AvARRAY(ary), SP + 1, iters, SV*);
+		SP += iters;
+		RETURN;
+	    }
+	}
+	else {
+	    PUTBACK;
+	    ENTER;
+	    call_method("PUSH",G_SCALAR|G_DISCARD);
+	    LEAVE;
+	    SPAGAIN;
+	    if (gimme == G_ARRAY) {
+		/* EXTEND should not be needed - we just popped them */
+		EXTEND(SP, iters);
+		for (i=0; i < iters; i++) {
+		    SV **svp = av_fetch(ary, i, FALSE);
+		    PUSHs((svp) ? *svp : &PL_sv_undef);
+		}
+		RETURN;
+	    }
+	}
+    }
+    else {
+	if (gimme == G_ARRAY)
+	    RETURN;
+    }
+
+    GETTARGET;
+    PUSHi(iters);
+    RETURN;
+}

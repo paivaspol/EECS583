@@ -1,0 +1,22 @@
+STATIC void
+S_check_uni(pTHX)
+{
+    char *s;
+    char *t;
+
+    if (PL_oldoldbufptr != PL_last_uni)
+	return;
+    while (isSPACE(*PL_last_uni))
+	PL_last_uni++;
+    for (s = PL_last_uni; isALNUM_lazy_if(s,UTF) || *s == '-'; s++) ;
+    if ((t = strchr(s, '(')) && t < PL_bufptr)
+	return;
+    if (ckWARN_d(WARN_AMBIGUOUS)){
+        char ch = *s;
+        *s = '\0';
+        Perl_warner(aTHX_ packWARN(WARN_AMBIGUOUS),
+		   "Warning: Use of \"%s\" without parentheses is ambiguous",
+		   PL_last_uni);
+        *s = ch;
+    }
+}

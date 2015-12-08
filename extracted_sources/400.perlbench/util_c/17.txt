@@ -1,11 +1,9 @@
 void
-Perl_atfork_lock(void)
+Perl_warn_nocontext(const char *pat, ...)
 {
-#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
-    /* locks must be held in locking order (if any) */
-#  ifdef MYMALLOC
-    MUTEX_LOCK(&PL_malloc_mutex);
-#  endif
-    OP_REFCNT_LOCK;
-#endif
+    dTHX;
+    va_list args;
+    va_start(args, pat);
+    vwarn(pat, &args);
+    va_end(args);
 }

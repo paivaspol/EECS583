@@ -1,17 +1,14 @@
 int
-Perl_sv_isa(pTHX_ SV *sv, const char *name)
+Perl_sv_backoff(pTHX_ register SV *sv)
 {
-    if (!sv)
-	return 0;
-    if (SvGMAGICAL(sv))
-	mg_get(sv);
-    if (!SvROK(sv))
-	return 0;
-    sv = (SV*)SvRV(sv);
-    if (!SvOBJECT(sv))
-	return 0;
-    if (!HvNAME(SvSTASH(sv)))
-	return 0;
-
-    return strEQ(HvNAME(SvSTASH(sv)), name);
+    assert(SvOOK(sv));
+    if (SvIVX(sv)) {
+	char *s = SvPVX(sv);
+	SvLEN(sv) += SvIVX(sv);
+	SvPVX(sv) -= SvIVX(sv);
+	SvIV_set(sv, 0);
+	Move(s, SvPVX(sv), SvCUR(sv)+1, char);
+    }
+    SvFLAGS(sv) &= ~SVf_OOK;
+    return 0;
 }

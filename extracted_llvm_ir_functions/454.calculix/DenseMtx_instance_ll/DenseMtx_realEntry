@@ -1,0 +1,79 @@
+define void @DenseMtx_realEntry(%struct._DenseMtx* %mtx, i32 %irow, i32 %jcol, double* %pValue) #0 {
+entry:
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null
+  %cmp1 = icmp eq double* %pValue, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([62 x i8]* @.str9, i64 0, i64 0), i64 61, i64 1, %struct._IO_FILE* %0)
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0
+  %2 = load i32* %type, align 4, !tbaa !3
+  %cmp2 = icmp eq i32 %2, 1
+  br i1 %cmp2, label %if.end5, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([70 x i8]* @.str10, i64 0, i64 0), i64 69, i64 1, %struct._IO_FILE* %3)
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end5:                                          ; preds = %if.end
+  %cmp6 = icmp sgt i32 %irow, -1
+  %nrow10.phi.trans.insert = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3
+  %.pre = load i32* %nrow10.phi.trans.insert, align 4, !tbaa !3
+  %cmp8 = icmp sgt i32 %.pre, %irow
+  %or.cond43 = and i1 %cmp6, %cmp8
+  br i1 %or.cond43, label %if.end12, label %if.then9
+
+if.then9:                                         ; preds = %if.end5
+  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call11 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([72 x i8]* @.str11, i64 0, i64 0), i32 %irow, i32 %.pre) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end12:                                         ; preds = %if.end5
+  %cmp13 = icmp sgt i32 %jcol, -1
+  %ncol17.phi.trans.insert = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4
+  %.pre42 = load i32* %ncol17.phi.trans.insert, align 4, !tbaa !3
+  %cmp15 = icmp sgt i32 %.pre42, %jcol
+  %or.cond44 = and i1 %cmp13, %cmp15
+  br i1 %or.cond44, label %if.end19, label %if.then16
+
+if.then16:                                        ; preds = %if.end12
+  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call18 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([72 x i8]* @.str12, i64 0, i64 0), i32 %jcol, i32 %.pre42) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end19:                                         ; preds = %if.end12
+  %entries = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9
+  %7 = load double** %entries, align 8, !tbaa !0
+  %cmp20 = icmp eq double* %7, null
+  br i1 %cmp20, label %if.then21, label %if.end23
+
+if.then21:                                        ; preds = %if.end19
+  %8 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %9 = tail call i64 @fwrite(i8* getelementptr inbounds ([62 x i8]* @.str13, i64 0, i64 0), i64 61, i64 1, %struct._IO_FILE* %8)
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end23:                                         ; preds = %if.end19
+  %inc1 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 5
+  %10 = load i32* %inc1, align 4, !tbaa !3
+  %mul = mul nsw i32 %10, %irow
+  %inc2 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 6
+  %11 = load i32* %inc2, align 4, !tbaa !3
+  %mul24 = mul nsw i32 %11, %jcol
+  %add = add nsw i32 %mul24, %mul
+  %idxprom = sext i32 %add to i64
+  %arrayidx = getelementptr inbounds double* %7, i64 %idxprom
+  %12 = load double* %arrayidx, align 8, !tbaa !4
+  store double %12, double* %pValue, align 8, !tbaa !4
+  ret void
+}

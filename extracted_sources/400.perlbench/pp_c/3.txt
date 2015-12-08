@@ -1,0 +1,25 @@
+PP(pp_padhv)
+{
+    dSP; dTARGET;
+    I32 gimme;
+
+    XPUSHs(TARG);
+    if (PL_op->op_private & OPpLVAL_INTRO)
+	SAVECLEARSV(PAD_SVl(PL_op->op_targ));
+    if (PL_op->op_flags & OPf_REF)
+	RETURN;
+    else if (LVRET) {
+	if (GIMME == G_SCALAR)
+	    Perl_croak(aTHX_ "Can't return hash to lvalue scalar context");
+	RETURN;
+    }
+    gimme = GIMME_V;
+    if (gimme == G_ARRAY) {
+	RETURNOP(do_kv());
+    }
+    else if (gimme == G_SCALAR) {
+	SV* sv = Perl_hv_scalar(aTHX_ (HV*)TARG);
+	SETs(sv);
+    }
+    RETURN;
+}

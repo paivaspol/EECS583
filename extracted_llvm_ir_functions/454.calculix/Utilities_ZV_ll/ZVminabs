@@ -1,0 +1,70 @@
+define double @ZVminabs(i32 %size, double* %x) #0 {
+entry:
+  %cmp = icmp slt i32 %size, 0
+  %cmp1 = icmp eq double* %x, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp256 = icmp sgt i32 %size, 0
+  br i1 %cmp256, label %for.body, label %for.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str11, i64 0, i64 0), i32 %size, double* %x) #5
+  tail call void @exit(i32 -1) #7
+  unreachable
+
+for.body:                                         ; preds = %for.cond.preheader, %if.end25
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end25 ], [ 0, %for.cond.preheader ]
+  %ii.058 = phi i32 [ %inc, %if.end25 ], [ 0, %for.cond.preheader ]
+  %minabs.057 = phi double [ %minabs.1, %if.end25 ], [ 0.000000e+00, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv
+  %1 = load double* %arrayidx, align 8, !tbaa !0
+  %call3 = tail call double @fabs(double %1) #4
+  %2 = or i64 %indvars.iv, 1
+  %arrayidx5 = getelementptr inbounds double* %x, i64 %2
+  %3 = load double* %arrayidx5, align 8, !tbaa !0
+  %call6 = tail call double @fabs(double %3) #4
+  %cmp7 = fcmp oeq double %1, 0.000000e+00
+  br i1 %cmp7, label %if.end25, label %if.else
+
+if.else:                                          ; preds = %for.body
+  %cmp9 = fcmp oeq double %3, 0.000000e+00
+  br i1 %cmp9, label %if.end25, label %if.else11
+
+if.else11:                                        ; preds = %if.else
+  %cmp12 = fcmp ult double %call3, %call6
+  br i1 %cmp12, label %if.else17, label %if.then13
+
+if.then13:                                        ; preds = %if.else11
+  %div = fdiv double %call6, %call3
+  %mul = fmul double %div, %div
+  %add14 = fadd double %mul, 1.000000e+00
+  %call15 = tail call double @sqrt(double %add14) #5
+  %mul16 = fmul double %call3, %call15
+  br label %if.end25
+
+if.else17:                                        ; preds = %if.else11
+  %div18 = fdiv double %call3, %call6
+  %mul19 = fmul double %div18, %div18
+  %add20 = fadd double %mul19, 1.000000e+00
+  %call21 = tail call double @sqrt(double %add20) #5
+  %mul22 = fmul double %call6, %call21
+  br label %if.end25
+
+if.end25:                                         ; preds = %if.else, %for.body, %if.else17, %if.then13
+  %abs.0 = phi double [ %mul16, %if.then13 ], [ %mul22, %if.else17 ], [ %call6, %for.body ], [ %call3, %if.else ]
+  %cmp26 = icmp eq i32 %ii.058, 0
+  %cmp28 = fcmp ogt double %minabs.057, %abs.0
+  %or.cond55 = or i1 %cmp26, %cmp28
+  %minabs.1 = select i1 %or.cond55, double %abs.0, double %minabs.057
+  %inc = add nsw i32 %ii.058, 1
+  %indvars.iv.next = add i64 %indvars.iv, 2
+  %exitcond = icmp eq i32 %inc, %size
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.end25, %for.cond.preheader
+  %minabs.0.lcssa = phi double [ 0.000000e+00, %for.cond.preheader ], [ %minabs.1, %if.end25 ]
+  ret double %minabs.0.lcssa
+}

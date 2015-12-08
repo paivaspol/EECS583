@@ -1,146 +1,67 @@
-int
-Perl_getcwd_sv(pTHX_ register SV *sv)
+I32
+Perl_wait4pid(pTHX_ Pid_t pid, int *statusp, int flags)
 {
-#ifndef PERL_MICRO
-
-#ifndef INCOMPLETE_TAINTS
-    SvTAINTED_on(sv);
-#endif
-
-#ifdef HAS_GETCWD
+    I32 result;
+    if (!pid)
+	return -1;
+#if !defined(HAS_WAITPID) && !defined(HAS_WAIT4) || defined(HAS_WAITPID_RUNTIME)
     {
-	char buf[MAXPATHLEN];
+	SV *sv;
+	SV** svp;
+	char spid[TYPE_CHARS(IV)];
 
-	/* Some getcwd()s automatically allocate a buffer of the given
-	 * size from the heap if they are given a NULL buffer pointer.
-	 * The problem is that this behaviour is not portable. */
-	if (getcwd(buf, sizeof(buf) - 1)) {
-	    STRLEN len = strlen(buf);
-	    sv_setpvn(sv, buf, len);
-	    return TRUE;
+	if (pid > 0) {
+	    sprintf(spid, "%"IVdf, (IV)pid);
+	    svp = hv_fetch(PL_pidstatus,spid,strlen(spid),FALSE);
+	    if (svp && *svp != &PL_sv_undef) {
+		*statusp = SvIVX(*svp);
+		(void)hv_delete(PL_pidstatus,spid,strlen(spid),G_DISCARD);
+		return pid;
+	    }
 	}
 	else {
-	    sv_setsv(sv, &PL_sv_undef);
-	    return FALSE;
-	}
-    }
+	    HE *entry;
 
-#else
-
-    Stat_t statbuf;
-    int orig_cdev, orig_cino, cdev, cino, odev, oino, tdev, tino;
-    int namelen, pathlen=0;
-    DIR *dir;
-    Direntry_t *dp;
-
-    (void)SvUPGRADE(sv, SVt_PV);
-
-    if (PerlLIO_lstat(".", &statbuf) < 0) {
-	SV_CWD_RETURN_UNDEF;
-    }
-
-    orig_cdev = statbuf.st_dev;
-    orig_cino = statbuf.st_ino;
-    cdev = orig_cdev;
-    cino = orig_cino;
-
-    for (;;) {
-	odev = cdev;
-	oino = cino;
-
-	if (PerlDir_chdir("..") < 0) {
-	    SV_CWD_RETURN_UNDEF;
-	}
-	if (PerlLIO_stat(".", &statbuf) < 0) {
-	    SV_CWD_RETURN_UNDEF;
-	}
-
-	cdev = statbuf.st_dev;
-	cino = statbuf.st_ino;
-
-	if (odev == cdev && oino == cino) {
-	    break;
-	}
-	if (!(dir = PerlDir_open("."))) {
-	    SV_CWD_RETURN_UNDEF;
-	}
-
-	while ((dp = PerlDir_read(dir)) != NULL) {
-#ifdef DIRNAMLEN
-	    namelen = dp->d_namlen;
-#else
-	    namelen = strlen(dp->d_name);
-#endif
-	    /* skip . and .. */
-	    if (SV_CWD_ISDOT(dp)) {
-		continue;
-	    }
-
-	    if (PerlLIO_lstat(dp->d_name, &statbuf) < 0) {
-		SV_CWD_RETURN_UNDEF;
-	    }
-
-	    tdev = statbuf.st_dev;
-	    tino = statbuf.st_ino;
-	    if (tino == oino && tdev == odev) {
-		break;
+	    hv_iterinit(PL_pidstatus);
+	    if ((entry = hv_iternext(PL_pidstatus))) {
+		pid = atoi(hv_iterkey(entry,(I32*)statusp));
+		sv = hv_iterval(PL_pidstatus,entry);
+		*statusp = SvIVX(sv);
+		sprintf(spid, "%"IVdf, (IV)pid);
+		(void)hv_delete(PL_pidstatus,spid,strlen(spid),G_DISCARD);
+		return pid;
 	    }
 	}
-
-	if (!dp) {
-	    SV_CWD_RETURN_UNDEF;
-	}
-
-	if (pathlen + namelen + 1 >= MAXPATHLEN) {
-	    SV_CWD_RETURN_UNDEF;
-	}
-
-	SvGROW(sv, pathlen + namelen + 1);
-
-	if (pathlen) {
-	    /* shift down */
-	    Move(SvPVX(sv), SvPVX(sv) + namelen + 1, pathlen, char);
-	}
-
-	/* prepend current directory to the front */
-	*SvPVX(sv) = '/';
-	Move(dp->d_name, SvPVX(sv)+1, namelen, char);
-	pathlen += (namelen + 1);
-
-#ifdef VOID_CLOSEDIR
-	PerlDir_close(dir);
-#else
-	if (PerlDir_close(dir) < 0) {
-	    SV_CWD_RETURN_UNDEF;
-	}
+    }
 #endif
-    }
-
-    if (pathlen) {
-	SvCUR_set(sv, pathlen);
-	*SvEND(sv) = '\0';
-	SvPOK_only(sv);
-
-	if (PerlDir_chdir(SvPVX(sv)) < 0) {
-	    SV_CWD_RETURN_UNDEF;
+#ifdef HAS_WAITPID
+#  ifdef HAS_WAITPID_RUNTIME
+    if (!HAS_WAITPID_RUNTIME)
+	goto hard_way;
+#  endif
+    result = PerlProc_waitpid(pid,statusp,flags);
+    goto finish;
+#endif
+#if !defined(HAS_WAITPID) && defined(HAS_WAIT4)
+    result = wait4((pid==-1)?0:pid,statusp,flags,Null(struct rusage *));
+    goto finish;
+#endif
+#if !defined(HAS_WAITPID) && !defined(HAS_WAIT4) || defined(HAS_WAITPID_RUNTIME)
+  hard_way:
+    {
+	if (flags)
+	    Perl_croak(aTHX_ "Can't do waitpid with flags");
+	else {
+	    while ((result = PerlProc_wait(statusp)) != pid && pid > 0 && result >= 0)
+		pidgone(result,*statusp);
+	    if (result < 0)
+		*statusp = -1;
 	}
     }
-    if (PerlLIO_stat(".", &statbuf) < 0) {
-	SV_CWD_RETURN_UNDEF;
-    }
-
-    cdev = statbuf.st_dev;
-    cino = statbuf.st_ino;
-
-    if (cdev != orig_cdev || cino != orig_cino) {
-	Perl_croak(aTHX_ "Unstable directory path, "
-		   "current directory changed unexpectedly");
-    }
-
-    return TRUE;
 #endif
-
-#else
-    return FALSE;
-#endif
+  finish:
+    if (result < 0 && errno == EINTR) {
+	PERL_ASYNC_CHECK();
+    }
+    return result;
 }

@@ -1,0 +1,36 @@
+define i32 @SubMtxList_isCountZero(%struct._SubMtxList* %list, i32 %ilist) #0 {
+entry:
+  %cmp = icmp eq %struct._SubMtxList* %list, null
+  %cmp1 = icmp slt i32 %ilist, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %nlist = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 0
+  %0 = load i32* %nlist, align 4, !tbaa !0
+  %cmp3 = icmp sgt i32 %0, %ilist
+  br i1 %cmp3, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([59 x i8]* @.str1, i64 0, i64 0), %struct._SubMtxList* %list, i32 %ilist) #4
+  br label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false2, %if.then
+  %counts = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 2
+  %2 = load i32** %counts, align 8, !tbaa !3
+  %cmp4 = icmp eq i32* %2, null
+  br i1 %cmp4, label %return, label %if.else
+
+if.else:                                          ; preds = %if.end
+  %idxprom = sext i32 %ilist to i64
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom
+  %3 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp7 = icmp eq i32 %3, 0
+  %conv = zext i1 %cmp7 to i32
+  br label %return
+
+return:                                           ; preds = %if.end, %if.else
+  %retval.0 = phi i32 [ %conv, %if.else ], [ 1, %if.end ]
+  ret i32 %retval.0
+}

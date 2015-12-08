@@ -1,0 +1,16 @@
+define i32 @Perl_unpackstring(i8* %pat, i8* %patend, i8* %s, i8* %strend, i32 %flags) #0 {
+entry:
+  %sym = alloca %struct.tempsym_t, align 8
+  %0 = bitcast %struct.tempsym_t* %sym to i8*
+  call void @llvm.lifetime.start(i64 56, i8* %0) #1
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 56, i32 8, i1 false)
+  %patptr = getelementptr inbounds %struct.tempsym_t* %sym, i64 0, i32 0
+  store i8* %pat, i8** %patptr, align 8, !tbaa !0
+  %patend1 = getelementptr inbounds %struct.tempsym_t* %sym, i64 0, i32 1
+  store i8* %patend, i8** %patend1, align 8, !tbaa !0
+  %flags2 = getelementptr inbounds %struct.tempsym_t* %sym, i64 0, i32 8
+  store i32 %flags, i32* %flags2, align 8, !tbaa !3
+  %call = call fastcc i32 @S_unpack_rec(%struct.tempsym_t* %sym, i8* %s, i8* %s, i8* %strend, i8** null) #7
+  call void @llvm.lifetime.end(i64 56, i8* %0) #1
+  ret i32 %call
+}

@@ -1,12 +1,10 @@
-static hashval_t
-ehspec_filter_hash (pentry)
+static int
+ehspec_filter_eq (pentry, pdata)
      const PTR pentry;
+     const PTR pdata;
 {
   const struct ttypes_filter *entry = (const struct ttypes_filter *) pentry;
-  hashval_t h = 0;
-  tree list;
+  const struct ttypes_filter *data = (const struct ttypes_filter *) pdata;
 
-  for (list = entry->t; list ; list = TREE_CHAIN (list))
-    h = (h << 5) + (h >> 27) + TYPE_HASH (TREE_VALUE (list));
-  return h;
+  return type_list_equal (entry->t, data->t);
 }

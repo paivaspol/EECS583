@@ -1,19 +1,15 @@
 void
-Perl_filter_del(pTHX_ filter_t funcp)
+Perl_deprecate_old(pTHX_ char *s)
 {
-    SV *datasv;
-    DEBUG_P(PerlIO_printf(Perl_debug_log, "filter_del func %p", (void*)funcp));
-    if (!PL_rsfp_filters || AvFILLp(PL_rsfp_filters)<0)
-	return;
-    /* if filter is on top of stack (usual case) just pop it off */
-    datasv = FILTER_DATA(AvFILLp(PL_rsfp_filters));
-    if (IoANY(datasv) == (void *)funcp) {
-	IoFLAGS(datasv) &= ~IOf_FAKE_DIRP;
-	IoANY(datasv) = (void *)NULL;
-	sv_free(av_pop(PL_rsfp_filters));
+    /* This function should NOT be called for any new deprecated warnings */
+    /* Use Perl_deprecate instead                                         */
+    /*                                                                    */
+    /* It is here to maintain backward compatibility with the pre-5.8     */
+    /* warnings category hierarchy. The "deprecated" category used to     */
+    /* live under the "syntax" category. It is now a top-level category   */
+    /* in its own right.                                                  */
 
-        return;
-    }
-    /* we need to search for the correct entry and clear it	*/
-    Perl_die(aTHX_ "filter_del can only delete in reverse order (currently)");
+    if (ckWARN2(WARN_DEPRECATED, WARN_SYNTAX))
+	Perl_warner(aTHX_ packWARN2(WARN_DEPRECATED, WARN_SYNTAX), 
+			"Use of %s is deprecated", s);
 }

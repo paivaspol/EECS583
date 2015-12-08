@@ -1,13 +1,69 @@
-void
-Perl_newMYSUB(pTHX_ I32 floor, OP *o, OP *proto, OP *attrs, OP *block)
+OP *
+Perl_scalar(pTHX_ OP *o)
 {
-    if (o)
-	SAVEFREEOP(o);
-    if (proto)
-	SAVEFREEOP(proto);
-    if (attrs)
-	SAVEFREEOP(attrs);
-    if (block)
-	SAVEFREEOP(block);
-    Perl_croak(aTHX_ "\"my sub\" not yet implemented");
+    OP *kid;
+
+    /* assumes no premature commitment */
+    if (!o || (o->op_flags & OPf_WANT) || PL_error_count
+	 || o->op_type == OP_RETURN)
+    {
+	return o;
+    }
+
+    o->op_flags = (o->op_flags & ~OPf_WANT) | OPf_WANT_SCALAR;
+
+    switch (o->op_type) {
+    case OP_REPEAT:
+	scalar(cBINOPo->op_first);
+	break;
+    case OP_OR:
+    case OP_AND:
+    case OP_COND_EXPR:
+	for (kid = cUNOPo->op_first->op_sibling; kid; kid = kid->op_sibling)
+	    scalar(kid);
+	break;
+    case OP_SPLIT:
+	if ((kid = cLISTOPo->op_first) && kid->op_type == OP_PUSHRE) {
+	    if (!kPMOP->op_pmreplroot)
+		deprecate_old("implicit split to @_");
+	}
+	/* FALL THROUGH */
+    case OP_MATCH:
+    case OP_QR:
+    case OP_SUBST:
+    case OP_NULL:
+    default:
+	if (o->op_flags & OPf_KIDS) {
+	    for (kid = cUNOPo->op_first; kid; kid = kid->op_sibling)
+		scalar(kid);
+	}
+	break;
+    case OP_LEAVE:
+    case OP_LEAVETRY:
+	kid = cLISTOPo->op_first;
+	scalar(kid);
+	while ((kid = kid->op_sibling)) {
+	    if (kid->op_sibling)
+		scalarvoid(kid);
+	    else
+		scalar(kid);
+	}
+	WITH_THR(PL_curcop = &PL_compiling);
+	break;
+    case OP_SCOPE:
+    case OP_LINESEQ:
+    case OP_LIST:
+	for (kid = cLISTOPo->op_first; kid; kid = kid->op_sibling) {
+	    if (kid->op_sibling)
+		scalarvoid(kid);
+	    else
+		scalar(kid);
+	}
+	WITH_THR(PL_curcop = &PL_compiling);
+	break;
+    case OP_SORT:
+	if (ckWARN(WARN_VOID))
+	    Perl_warner(aTHX_ packWARN(WARN_VOID), "Useless use of sort in scalar context");
+    }
+    return o;
 }

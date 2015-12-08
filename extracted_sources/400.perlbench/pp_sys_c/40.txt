@@ -1,0 +1,52 @@
+PP(pp_socket)
+{
+#ifdef HAS_SOCKET
+    dSP;
+    GV *gv;
+    register IO *io;
+    int protocol = POPi;
+    int type = POPi;
+    int domain = POPi;
+    int fd;
+
+    gv = (GV*)POPs;
+    io = gv ? GvIOn(gv) : NULL;
+
+    if (!gv || !io) {
+	if (ckWARN2(WARN_UNOPENED,WARN_CLOSED))
+	    report_evil_fh(gv, io, PL_op->op_type);
+	if (IoIFP(io))
+	    do_close(gv, FALSE);
+	SETERRNO(EBADF,LIB_INVARG);
+	RETPUSHUNDEF;
+    }
+
+    if (IoIFP(io))
+	do_close(gv, FALSE);
+
+    TAINT_PROPER("socket");
+    fd = PerlSock_socket(domain, type, protocol);
+    if (fd < 0)
+	RETPUSHUNDEF;
+    IoIFP(io) = PerlIO_fdopen(fd, "r"SOCKET_OPEN_MODE);	/* stdio gets confused about sockets */
+    IoOFP(io) = PerlIO_fdopen(fd, "w"SOCKET_OPEN_MODE);
+    IoTYPE(io) = IoTYPE_SOCKET;
+    if (!IoIFP(io) || !IoOFP(io)) {
+	if (IoIFP(io)) PerlIO_close(IoIFP(io));
+	if (IoOFP(io)) PerlIO_close(IoOFP(io));
+	if (!IoIFP(io) && !IoOFP(io)) PerlLIO_close(fd);
+	RETPUSHUNDEF;
+    }
+#if defined(HAS_FCNTL) && defined(F_SETFD)
+    fcntl(fd, F_SETFD, fd > PL_maxsysfd);	/* ensure close-on-exec */
+#endif
+
+#ifdef EPOC
+    setbuf( IoIFP(io), NULL); /* EPOC gets confused about sockets */
+#endif
+
+    RETPUSHYES;
+#else
+    DIE(aTHX_ PL_no_sock_func, "socket");
+#endif
+}

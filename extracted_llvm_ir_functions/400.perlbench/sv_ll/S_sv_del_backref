@@ -1,0 +1,60 @@
+define internal fastcc void @S_sv_del_backref(%struct.sv* %sv) #0 {
+entry:
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !0
+  %xrv_rv = bitcast i8* %0 to %struct.sv**
+  %1 = load %struct.sv** %xrv_rv, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %1, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, 57344
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %call = tail call %struct.magic* @Perl_mg_find(%struct.sv* %1, i32 60) #8
+  %tobool1 = icmp eq %struct.magic* %call, null
+  br i1 %tobool1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([19 x i8]* @.str72, i64 0, i64 0)) #8
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false
+  %mg_obj = getelementptr inbounds %struct.magic* %call, i64 0, i32 5
+  %3 = load %struct.sv** %mg_obj, align 8, !tbaa !0
+  %sv_any2 = bitcast %struct.sv* %3 to %struct.xpvav**
+  %4 = load %struct.xpvav** %sv_any2, align 8, !tbaa !0
+  %xav_array = getelementptr inbounds %struct.xpvav* %4, i64 0, i32 0
+  %5 = load i8** %xav_array, align 8, !tbaa !0
+  %6 = bitcast i8* %5 to %struct.sv**
+  %xav_fill = getelementptr inbounds %struct.xpvav* %4, i64 0, i32 1
+  %7 = load i64* %xav_fill, align 8, !tbaa !5
+  %conv = trunc i64 %7 to i32
+  %cmp18 = icmp sgt i32 %conv, -1
+  br i1 %cmp18, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %sext = shl i64 %7, 32
+  %8 = ashr exact i64 %sext, 32
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ %8, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds %struct.sv** %6, i64 %indvars.iv
+  %9 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %cmp5 = icmp eq %struct.sv* %9, %sv
+  br i1 %cmp5, label %if.then7, label %for.inc
+
+if.then7:                                         ; preds = %for.body
+  store %struct.sv* null, %struct.sv** %arrayidx, align 8, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then7
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %10 = trunc i64 %indvars.iv to i32
+  %cmp = icmp sgt i32 %10, 0
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %if.end
+  ret void
+}

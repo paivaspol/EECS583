@@ -1,11 +1,27 @@
 void
-Perl_qerror(pTHX_ SV *err)
+Perl_rxres_save(pTHX_ void **rsp, REGEXP *rx)
 {
-    if (PL_in_eval)
-	sv_catsv(ERRSV, err);
-    else if (PL_errors)
-	sv_catsv(PL_errors, err);
-    else
-	Perl_warn(aTHX_ "%"SVf, err);
-    ++PL_error_count;
+    UV *p = (UV*)*rsp;
+    U32 i;
+
+    if (!p || p[1] < rx->nparens) {
+	i = 6 + rx->nparens * 2;
+	if (!p)
+	    New(501, p, i, UV);
+	else
+	    Renew(p, i, UV);
+	*rsp = (void*)p;
+    }
+
+    *p++ = PTR2UV(RX_MATCH_COPIED(rx) ? rx->subbeg : Nullch);
+    RX_MATCH_COPIED_off(rx);
+
+    *p++ = rx->nparens;
+
+    *p++ = PTR2UV(rx->subbeg);
+    *p++ = (UV)rx->sublen;
+    for (i = 0; i <= rx->nparens; ++i) {
+	*p++ = (UV)rx->startp[i];
+	*p++ = (UV)rx->endp[i];
+    }
 }

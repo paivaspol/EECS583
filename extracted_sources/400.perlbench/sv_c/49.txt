@@ -1,79 +1,17 @@
-void
-Perl_sv_reset(pTHX_ register char *s, HV *stash)
+STATIC void
+S_more_xpvbm(pTHX)
 {
-    register HE *entry;
-    register GV *gv;
-    register SV *sv;
-    register I32 i;
-    register PMOP *pm;
-    register I32 max;
-    char todo[PERL_UCHAR_MAX+1];
+    register XPVBM* xpvbm;
+    register XPVBM* xpvbmend;
+    New(721, xpvbm, PERL_ARENA_SIZE/sizeof(XPVBM), XPVBM);
+    xpvbm->xpv_pv = (char*)PL_xpvbm_arenaroot;
+    PL_xpvbm_arenaroot = xpvbm;
 
-    if (!stash)
-	return;
-
-    if (!*s) {		/* reset ?? searches */
-	for (pm = HvPMROOT(stash); pm; pm = pm->op_pmnext) {
-	    pm->op_pmdynflags &= ~PMdf_USED;
-	}
-	return;
+    xpvbmend = &xpvbm[PERL_ARENA_SIZE / sizeof(XPVBM) - 1];
+    PL_xpvbm_root = ++xpvbm;
+    while (xpvbm < xpvbmend) {
+	xpvbm->xpv_pv = (char*)(xpvbm + 1);
+	xpvbm++;
     }
-
-    /* reset variables */
-
-    if (!HvARRAY(stash))
-	return;
-
-    Zero(todo, 256, char);
-    while (*s) {
-	i = (unsigned char)*s;
-	if (s[1] == '-') {
-	    s += 2;
-	}
-	max = (unsigned char)*s++;
-	for ( ; i <= max; i++) {
-	    todo[i] = 1;
-	}
-	for (i = 0; i <= (I32) HvMAX(stash); i++) {
-	    for (entry = HvARRAY(stash)[i];
-		 entry;
-		 entry = HeNEXT(entry))
-	    {
-		if (!todo[(U8)*HeKEY(entry)])
-		    continue;
-		gv = (GV*)HeVAL(entry);
-		sv = GvSV(gv);
-		if (SvTHINKFIRST(sv)) {
-		    if (!SvREADONLY(sv) && SvROK(sv))
-			sv_unref(sv);
-		    continue;
-		}
-		SvOK_off(sv);
-		if (SvTYPE(sv) >= SVt_PV) {
-		    SvCUR_set(sv, 0);
-		    if (SvPVX(sv) != Nullch)
-			*SvPVX(sv) = '\0';
-		    SvTAINT(sv);
-		}
-		if (GvAV(gv)) {
-		    av_clear(GvAV(gv));
-		}
-		if (GvHV(gv) && !HvNAME(GvHV(gv))) {
-		    hv_clear(GvHV(gv));
-#ifndef PERL_MICRO
-#ifdef USE_ENVIRON_ARRAY
-		    if (gv == PL_envgv
-#  ifdef USE_ITHREADS
-			&& PL_curinterp == aTHX
-#  endif
-		    )
-		    {
-			environ[0] = Nullch;
-		    }
-#endif
-#endif /* !PERL_MICRO */
-		}
-	    }
-	}
-    }
+    xpvbm->xpv_pv = 0;
 }

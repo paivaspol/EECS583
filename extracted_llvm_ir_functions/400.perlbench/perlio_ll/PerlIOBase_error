@@ -1,0 +1,22 @@
+define i64 @PerlIOBase_error(%struct._PerlIO** %f) #5 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %return, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %1 = load i32* %flags, align 4, !tbaa !0
+  %and = lshr i32 %1, 11
+  %and.lobit = and i32 %and, 1
+  %conv25 = zext i32 %and.lobit to i64
+  br label %return
+
+return:                                           ; preds = %entry, %land.lhs.true, %if.then
+  %retval.0 = phi i64 [ %conv25, %if.then ], [ 1, %land.lhs.true ], [ 1, %entry ]
+  ret i64 %retval.0
+}

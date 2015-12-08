@@ -1,0 +1,72 @@
+define void @BZ2_bzReadGetUnused(i32* %bzerror, i8* %b, i8** %unused, i32* %nUnused) #4 {
+entry:
+  %cmp = icmp eq i8* %b, null
+  br i1 %cmp, label %if.then, label %if.end6
+
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq i32* %bzerror, null
+  br i1 %cmp1, label %return, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  store i32 -2, i32* %bzerror, align 4, !tbaa !3
+  br label %return
+
+if.end6:                                          ; preds = %entry
+  %lastErr7 = getelementptr inbounds i8* %b, i64 5096
+  %0 = bitcast i8* %lastErr7 to i32*
+  %1 = load i32* %0, align 4, !tbaa !3
+  %cmp8 = icmp eq i32 %1, 4
+  br i1 %cmp8, label %if.end17, label %if.then9
+
+if.then9:                                         ; preds = %if.end6
+  %cmp10 = icmp eq i32* %bzerror, null
+  br i1 %cmp10, label %if.then14, label %if.then11
+
+if.then11:                                        ; preds = %if.then9
+  store i32 -1, i32* %bzerror, align 4, !tbaa !3
+  br label %if.then14
+
+if.then14:                                        ; preds = %if.then11, %if.then9
+  store i32 -1, i32* %0, align 4, !tbaa !3
+  br label %return
+
+if.end17:                                         ; preds = %if.end6
+  %cmp18 = icmp eq i8** %unused, null
+  %cmp19 = icmp eq i32* %nUnused, null
+  %or.cond = or i1 %cmp18, %cmp19
+  %cmp21 = icmp eq i32* %bzerror, null
+  br i1 %or.cond, label %if.then20, label %if.end28
+
+if.then20:                                        ; preds = %if.end17
+  br i1 %cmp21, label %if.then25, label %if.then22
+
+if.then22:                                        ; preds = %if.then20
+  store i32 -2, i32* %bzerror, align 4, !tbaa !3
+  br label %if.then25
+
+if.then25:                                        ; preds = %if.then22, %if.then20
+  store i32 -2, i32* %0, align 4, !tbaa !3
+  br label %return
+
+if.end28:                                         ; preds = %if.end17
+  br i1 %cmp21, label %if.end35, label %if.then30
+
+if.then30:                                        ; preds = %if.end28
+  store i32 0, i32* %bzerror, align 4, !tbaa !3
+  br label %if.end35
+
+if.end35:                                         ; preds = %if.end28, %if.then30
+  store i32 0, i32* %0, align 4, !tbaa !3
+  %strm = getelementptr inbounds i8* %b, i64 5016
+  %avail_in = getelementptr inbounds i8* %b, i64 5024
+  %2 = bitcast i8* %avail_in to i32*
+  %3 = load i32* %2, align 4, !tbaa !3
+  store i32 %3, i32* %nUnused, align 4, !tbaa !3
+  %next_in = bitcast i8* %strm to i8**
+  %4 = load i8** %next_in, align 8, !tbaa !0
+  store i8* %4, i8** %unused, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.then2, %if.then, %if.then25, %if.then14, %if.end35
+  ret void
+}

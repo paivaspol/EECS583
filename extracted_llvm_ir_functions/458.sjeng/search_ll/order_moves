@@ -1,0 +1,644 @@
+define void @order_moves(%struct.move_s* nocapture %moves, i32* nocapture %move_ordering, i32* nocapture %see_values, i32 %num_moves, i32 %best) #0 {
+entry:
+  %0 = load i32* @searching_pv, align 4, !tbaa !0
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %for.cond301.preheader, label %if.then
+
+for.cond301.preheader:                            ; preds = %entry
+  %cmp302762 = icmp sgt i32 %num_moves, 0
+  br i1 %cmp302762, label %for.body303.lr.ph, label %if.end543
+
+for.body303.lr.ph:                                ; preds = %for.cond301.preheader
+  %cmp316 = icmp ne i32 %best, -1
+  %cmp356 = icmp eq i32 %best, -2
+  br label %for.body303
+
+if.then:                                          ; preds = %entry
+  store i32 0, i32* @searching_pv, align 4, !tbaa !0
+  %cmp765 = icmp sgt i32 %num_moves, 0
+  br i1 %cmp765, label %for.body.lr.ph, label %if.end543
+
+for.body.lr.ph:                                   ; preds = %if.then
+  %1 = icmp ult i32 %best, -2
+  %cmp146 = icmp eq i32 %best, -2
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv768 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next769, %for.inc ]
+  %from1 = getelementptr inbounds %struct.move_s* %moves, i64 %indvars.iv768, i32 0
+  %2 = load i32* %from1, align 4, !tbaa !2
+  %target4 = getelementptr inbounds %struct.move_s* %moves, i64 %indvars.iv768, i32 1
+  %3 = load i32* %target4, align 4, !tbaa !2
+  %promoted7 = getelementptr inbounds %struct.move_s* %moves, i64 %indvars.iv768, i32 3
+  %4 = load i32* %promoted7, align 4, !tbaa !2
+  %captured10 = getelementptr inbounds %struct.move_s* %moves, i64 %indvars.iv768, i32 2
+  %5 = load i32* %captured10, align 4, !tbaa !2
+  %cmp11 = icmp ne i32 %5, 13
+  br i1 %cmp11, label %if.then12, label %if.else50
+
+if.then12:                                        ; preds = %for.body
+  %idxprom13 = sext i32 %5 to i64
+  %arrayidx14 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom13
+  %6 = load i32* %arrayidx14, align 4, !tbaa !2
+  %ispos757 = icmp sgt i32 %6, -1
+  %neg758 = sub i32 0, %6
+  %7 = select i1 %ispos757, i32 %6, i32 %neg758
+  %add = add nsw i32 %7, 15
+  %idxprom15 = sext i32 %2 to i64
+  %arrayidx16 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom15
+  %8 = load i32* %arrayidx16, align 4, !tbaa !2
+  %idxprom17 = sext i32 %8 to i64
+  %arrayidx18 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom17
+  %9 = load i32* %arrayidx18, align 4, !tbaa !2
+  %ispos759 = icmp sgt i32 %9, -1
+  %neg760 = sub i32 0, %9
+  %10 = select i1 %ispos759, i32 %9, i32 %neg760
+  %cmp20 = icmp slt i32 %add, %10
+  br i1 %cmp20, label %if.else, label %if.then21
+
+if.then21:                                        ; preds = %if.then12
+  %shr = ashr i32 %10, 4
+  %sub = sub nsw i32 %7, %shr
+  %arrayidx31 = getelementptr inbounds i32* %see_values, i64 %indvars.iv768
+  store i32 %sub, i32* %arrayidx31, align 4, !tbaa !2
+  %add34 = add nsw i32 %sub, 50000000
+  %arrayidx36 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv768
+  store i32 %add34, i32* %arrayidx36, align 4, !tbaa !2
+  br label %if.end53
+
+if.else:                                          ; preds = %if.then12
+  %11 = load i32* @white_to_move, align 4, !tbaa !2
+  %not.tobool37 = icmp eq i32 %11, 0
+  %cond = zext i1 %not.tobool37 to i32
+  %call38 = tail call i32 @see(i32 %cond, i32 %3, i32 %2) #5
+  %cmp39 = icmp sgt i32 %call38, -51
+  br i1 %cmp39, label %if.then40, label %if.else44
+
+if.then40:                                        ; preds = %if.else
+  %add41 = add nsw i32 %call38, 50000000
+  %arrayidx43 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv768
+  store i32 %add41, i32* %arrayidx43, align 4, !tbaa !2
+  br label %if.end
+
+if.else44:                                        ; preds = %if.else
+  %arrayidx46 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv768
+  store i32 %call38, i32* %arrayidx46, align 4, !tbaa !2
+  br label %if.end
+
+if.end:                                           ; preds = %if.else44, %if.then40
+  %arrayidx48 = getelementptr inbounds i32* %see_values, i64 %indvars.iv768
+  store i32 %call38, i32* %arrayidx48, align 4, !tbaa !2
+  br label %if.end53
+
+if.else50:                                        ; preds = %for.body
+  %arrayidx52 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv768
+  store i32 0, i32* %arrayidx52, align 4, !tbaa !2
+  br label %if.end53
+
+if.end53:                                         ; preds = %if.then21, %if.end, %if.else50
+  %12 = load i32* @ply, align 4, !tbaa !2
+  %idxprom54 = sext i32 %12 to i64
+  %from56 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 1, i64 %idxprom54, i32 0
+  %13 = load i32* %from56, align 4, !tbaa !2
+  %cmp57 = icmp eq i32 %2, %13
+  br i1 %cmp57, label %land.lhs.true, label %if.else103
+
+land.lhs.true:                                    ; preds = %if.end53
+  %target60 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 1, i64 %idxprom54, i32 1
+  %14 = load i32* %target60, align 4, !tbaa !2
+  %cmp61 = icmp eq i32 %3, %14
+  br i1 %cmp61, label %land.lhs.true62, label %if.else103
+
+land.lhs.true62:                                  ; preds = %land.lhs.true
+  %promoted65 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 1, i64 %idxprom54, i32 3
+  %15 = load i32* %promoted65, align 4, !tbaa !2
+  %cmp66 = icmp eq i32 %4, %15
+  br i1 %cmp66, label %if.then67, label %if.else103
+
+if.then67:                                        ; preds = %land.lhs.true62
+  store i32 1, i32* @searching_pv, align 4, !tbaa !0
+  %arrayidx69 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv768
+  store i32 100000000, i32* %arrayidx69, align 4, !tbaa !2
+  br i1 %cmp11, label %if.then71, label %for.inc
+
+if.then71:                                        ; preds = %if.then67
+  %idxprom72 = sext i32 %5 to i64
+  %arrayidx73 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom72
+  %16 = load i32* %arrayidx73, align 4, !tbaa !2
+  %ispos753 = icmp sgt i32 %16, -1
+  %neg754 = sub i32 0, %16
+  %17 = select i1 %ispos753, i32 %16, i32 %neg754
+  %add75 = add nsw i32 %17, 15
+  %idxprom76 = sext i32 %2 to i64
+  %arrayidx77 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom76
+  %18 = load i32* %arrayidx77, align 4, !tbaa !2
+  %idxprom78 = sext i32 %18 to i64
+  %arrayidx79 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom78
+  %19 = load i32* %arrayidx79, align 4, !tbaa !2
+  %ispos755 = icmp sgt i32 %19, -1
+  %neg756 = sub i32 0, %19
+  %20 = select i1 %ispos755, i32 %19, i32 %neg756
+  %cmp81 = icmp slt i32 %add75, %20
+  br i1 %cmp81, label %if.else95, label %if.then82
+
+if.then82:                                        ; preds = %if.then71
+  %shr91 = ashr i32 %20, 4
+  %sub92 = sub nsw i32 %17, %shr91
+  %arrayidx94 = getelementptr inbounds i32* %see_values, i64 %indvars.iv768
+  store i32 %sub92, i32* %arrayidx94, align 4, !tbaa !2
+  br label %for.inc
+
+if.else95:                                        ; preds = %if.then71
+  %21 = load i32* @white_to_move, align 4, !tbaa !2
+  %not.tobool96 = icmp eq i32 %21, 0
+  %cond97 = zext i1 %not.tobool96 to i32
+  %call98 = tail call i32 @see(i32 %cond97, i32 %3, i32 %2) #5
+  %arrayidx100 = getelementptr inbounds i32* %see_values, i64 %indvars.iv768
+  store i32 %call98, i32* %arrayidx100, align 4, !tbaa !2
+  br label %for.inc
+
+if.else103:                                       ; preds = %land.lhs.true62, %land.lhs.true, %if.end53
+  %22 = trunc i64 %indvars.iv768 to i32
+  %cmp108 = icmp eq i32 %22, %best
+  %or.cond = and i1 %1, %cmp108
+  br i1 %or.cond, label %if.then109, label %if.else145
+
+if.then109:                                       ; preds = %if.else103
+  %arrayidx111 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv768
+  store i32 100000000, i32* %arrayidx111, align 4, !tbaa !2
+  br i1 %cmp11, label %if.then113, label %for.inc
+
+if.then113:                                       ; preds = %if.then109
+  %idxprom114 = sext i32 %5 to i64
+  %arrayidx115 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom114
+  %23 = load i32* %arrayidx115, align 4, !tbaa !2
+  %ispos749 = icmp sgt i32 %23, -1
+  %neg750 = sub i32 0, %23
+  %24 = select i1 %ispos749, i32 %23, i32 %neg750
+  %add117 = add nsw i32 %24, 15
+  %idxprom118 = sext i32 %2 to i64
+  %arrayidx119 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom118
+  %25 = load i32* %arrayidx119, align 4, !tbaa !2
+  %idxprom120 = sext i32 %25 to i64
+  %arrayidx121 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom120
+  %26 = load i32* %arrayidx121, align 4, !tbaa !2
+  %ispos751 = icmp sgt i32 %26, -1
+  %neg752 = sub i32 0, %26
+  %27 = select i1 %ispos751, i32 %26, i32 %neg752
+  %cmp123 = icmp slt i32 %add117, %27
+  br i1 %cmp123, label %if.else137, label %if.then124
+
+if.then124:                                       ; preds = %if.then113
+  %shr133 = ashr i32 %27, 4
+  %sub134 = sub nsw i32 %24, %shr133
+  %arrayidx136 = getelementptr inbounds i32* %see_values, i64 %indvars.iv768
+  store i32 %sub134, i32* %arrayidx136, align 4, !tbaa !2
+  br label %for.inc
+
+if.else137:                                       ; preds = %if.then113
+  %28 = load i32* @white_to_move, align 4, !tbaa !2
+  %not.tobool138 = icmp eq i32 %28, 0
+  %cond139 = zext i1 %not.tobool138 to i32
+  %call140 = tail call i32 @see(i32 %cond139, i32 %3, i32 %2) #5
+  %arrayidx142 = getelementptr inbounds i32* %see_values, i64 %indvars.iv768
+  store i32 %call140, i32* %arrayidx142, align 4, !tbaa !2
+  br label %for.inc
+
+if.else145:                                       ; preds = %if.else103
+  br i1 %cmp146, label %if.then147, label %if.else211
+
+if.then147:                                       ; preds = %if.else145
+  %add148 = add nsw i32 %12, 1
+  %idxprom149 = sext i32 %add148 to i64
+  %from154 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 %idxprom149, i64 %idxprom149, i32 0
+  %29 = load i32* %from154, align 4, !tbaa !2
+  %cmp155 = icmp eq i32 %2, %29
+  br i1 %cmp155, label %land.lhs.true156, label %for.inc
+
+land.lhs.true156:                                 ; preds = %if.then147
+  %target163 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 %idxprom149, i64 %idxprom149, i32 1
+  %30 = load i32* %target163, align 4, !tbaa !2
+  %cmp164 = icmp eq i32 %3, %30
+  br i1 %cmp164, label %land.lhs.true165, label %for.inc
+
+land.lhs.true165:                                 ; preds = %land.lhs.true156
+  %promoted172 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 %idxprom149, i64 %idxprom149, i32 3
+  %31 = load i32* %promoted172, align 4, !tbaa !2
+  %cmp173 = icmp eq i32 %4, %31
+  br i1 %cmp173, label %if.then174, label %for.inc
+
+if.then174:                                       ; preds = %land.lhs.true165
+  %arrayidx176 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv768
+  store i32 100000000, i32* %arrayidx176, align 4, !tbaa !2
+  br i1 %cmp11, label %if.then178, label %for.inc
+
+if.then178:                                       ; preds = %if.then174
+  %idxprom179 = sext i32 %5 to i64
+  %arrayidx180 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom179
+  %32 = load i32* %arrayidx180, align 4, !tbaa !2
+  %ispos745 = icmp sgt i32 %32, -1
+  %neg746 = sub i32 0, %32
+  %33 = select i1 %ispos745, i32 %32, i32 %neg746
+  %add182 = add nsw i32 %33, 15
+  %idxprom183 = sext i32 %2 to i64
+  %arrayidx184 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom183
+  %34 = load i32* %arrayidx184, align 4, !tbaa !2
+  %idxprom185 = sext i32 %34 to i64
+  %arrayidx186 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom185
+  %35 = load i32* %arrayidx186, align 4, !tbaa !2
+  %ispos747 = icmp sgt i32 %35, -1
+  %neg748 = sub i32 0, %35
+  %36 = select i1 %ispos747, i32 %35, i32 %neg748
+  %cmp188 = icmp slt i32 %add182, %36
+  br i1 %cmp188, label %if.else202, label %if.then189
+
+if.then189:                                       ; preds = %if.then178
+  %shr198 = ashr i32 %36, 4
+  %sub199 = sub nsw i32 %33, %shr198
+  %arrayidx201 = getelementptr inbounds i32* %see_values, i64 %indvars.iv768
+  store i32 %sub199, i32* %arrayidx201, align 4, !tbaa !2
+  br label %for.inc
+
+if.else202:                                       ; preds = %if.then178
+  %37 = load i32* @white_to_move, align 4, !tbaa !2
+  %not.tobool203 = icmp eq i32 %37, 0
+  %cond204 = zext i1 %not.tobool203 to i32
+  %call205 = tail call i32 @see(i32 %cond204, i32 %3, i32 %2) #5
+  %arrayidx207 = getelementptr inbounds i32* %see_values, i64 %indvars.iv768
+  store i32 %call205, i32* %arrayidx207, align 4, !tbaa !2
+  br label %for.inc
+
+if.else211:                                       ; preds = %if.else145
+  %cmp212 = icmp ne i32 %12, 1
+  %38 = load i32* @i_depth, align 4, !tbaa !2
+  %cmp213 = icmp slt i32 %38, 2
+  %or.cond544 = or i1 %cmp212, %cmp213
+  br i1 %or.cond544, label %if.then214, label %if.else289
+
+if.then214:                                       ; preds = %if.else211
+  %idxprom215 = sext i32 %3 to i64
+  %idxprom216 = sext i32 %2 to i64
+  %arrayidx218 = getelementptr inbounds [144 x [144 x i32]]* @history_h, i64 0, i64 %idxprom216, i64 %idxprom215
+  %39 = load i32* %arrayidx218, align 4, !tbaa !2
+  %arrayidx220 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv768
+  %40 = load i32* %arrayidx220, align 4, !tbaa !2
+  %add221 = add i32 %40, %39
+  store i32 %add221, i32* %arrayidx220, align 4, !tbaa !2
+  %41 = load i32* @ply, align 4, !tbaa !2
+  %idxprom222 = sext i32 %41 to i64
+  %from224 = getelementptr inbounds [300 x %struct.move_s]* @killer1, i64 0, i64 %idxprom222, i32 0
+  %42 = load i32* %from224, align 4, !tbaa !2
+  %cmp225 = icmp eq i32 %2, %42
+  br i1 %cmp225, label %land.lhs.true226, label %if.else240
+
+land.lhs.true226:                                 ; preds = %if.then214
+  %target229 = getelementptr inbounds [300 x %struct.move_s]* @killer1, i64 0, i64 %idxprom222, i32 1
+  %43 = load i32* %target229, align 4, !tbaa !2
+  %cmp230 = icmp eq i32 %3, %43
+  br i1 %cmp230, label %land.lhs.true231, label %if.else240
+
+land.lhs.true231:                                 ; preds = %land.lhs.true226
+  %promoted234 = getelementptr inbounds [300 x %struct.move_s]* @killer1, i64 0, i64 %idxprom222, i32 3
+  %44 = load i32* %promoted234, align 4, !tbaa !2
+  %cmp235 = icmp eq i32 %4, %44
+  br i1 %cmp235, label %if.then236, label %if.else240
+
+if.then236:                                       ; preds = %land.lhs.true231
+  %add239 = add nsw i32 %add221, 25000000
+  store i32 %add239, i32* %arrayidx220, align 4, !tbaa !2
+  br label %for.inc
+
+if.else240:                                       ; preds = %land.lhs.true231, %land.lhs.true226, %if.then214
+  %from243 = getelementptr inbounds [300 x %struct.move_s]* @killer2, i64 0, i64 %idxprom222, i32 0
+  %45 = load i32* %from243, align 4, !tbaa !2
+  %cmp244 = icmp eq i32 %2, %45
+  br i1 %cmp244, label %land.lhs.true245, label %if.else259
+
+land.lhs.true245:                                 ; preds = %if.else240
+  %target248 = getelementptr inbounds [300 x %struct.move_s]* @killer2, i64 0, i64 %idxprom222, i32 1
+  %46 = load i32* %target248, align 4, !tbaa !2
+  %cmp249 = icmp eq i32 %3, %46
+  br i1 %cmp249, label %land.lhs.true250, label %if.else259
+
+land.lhs.true250:                                 ; preds = %land.lhs.true245
+  %promoted253 = getelementptr inbounds [300 x %struct.move_s]* @killer2, i64 0, i64 %idxprom222, i32 3
+  %47 = load i32* %promoted253, align 4, !tbaa !2
+  %cmp254 = icmp eq i32 %4, %47
+  br i1 %cmp254, label %if.then255, label %if.else259
+
+if.then255:                                       ; preds = %land.lhs.true250
+  %add258 = add nsw i32 %add221, 20000000
+  store i32 %add258, i32* %arrayidx220, align 4, !tbaa !2
+  br label %for.inc
+
+if.else259:                                       ; preds = %land.lhs.true250, %land.lhs.true245, %if.else240
+  %from262 = getelementptr inbounds [300 x %struct.move_s]* @killer3, i64 0, i64 %idxprom222, i32 0
+  %48 = load i32* %from262, align 4, !tbaa !2
+  %cmp263 = icmp eq i32 %2, %48
+  br i1 %cmp263, label %land.lhs.true264, label %for.inc
+
+land.lhs.true264:                                 ; preds = %if.else259
+  %target267 = getelementptr inbounds [300 x %struct.move_s]* @killer3, i64 0, i64 %idxprom222, i32 1
+  %49 = load i32* %target267, align 4, !tbaa !2
+  %cmp268 = icmp eq i32 %3, %49
+  br i1 %cmp268, label %land.lhs.true269, label %for.inc
+
+land.lhs.true269:                                 ; preds = %land.lhs.true264
+  %promoted272 = getelementptr inbounds [300 x %struct.move_s]* @killer3, i64 0, i64 %idxprom222, i32 3
+  %50 = load i32* %promoted272, align 4, !tbaa !2
+  %cmp273 = icmp eq i32 %4, %50
+  br i1 %cmp273, label %if.then274, label %for.inc
+
+if.then274:                                       ; preds = %land.lhs.true269
+  %add277 = add nsw i32 %add221, 15000000
+  store i32 %add277, i32* %arrayidx220, align 4, !tbaa !2
+  br label %for.inc
+
+if.else289:                                       ; preds = %if.else211
+  %arrayidx285 = getelementptr inbounds [512 x i32]* @rootnodecount, i64 0, i64 %indvars.iv768
+  %51 = load i32* %arrayidx285, align 4, !tbaa !2
+  %div292 = udiv i32 %51, 100
+  %arrayidx294 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv768
+  store i32 %div292, i32* %arrayidx294, align 4, !tbaa !2
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then82, %if.else95, %if.then67, %if.then174, %if.else202, %if.then189, %land.lhs.true165, %land.lhs.true156, %if.then147, %if.else289, %if.then236, %if.else259, %land.lhs.true264, %land.lhs.true269, %if.then274, %if.then255, %if.then109, %if.else137, %if.then124
+  %indvars.iv.next769 = add i64 %indvars.iv768, 1
+  %lftr.wideiv770 = trunc i64 %indvars.iv.next769 to i32
+  %exitcond771 = icmp eq i32 %lftr.wideiv770, %num_moves
+  br i1 %exitcond771, label %if.end543, label %for.body
+
+for.body303:                                      ; preds = %for.inc540, %for.body303.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body303.lr.ph ], [ %indvars.iv.next, %for.inc540 ]
+  %from306 = getelementptr inbounds %struct.move_s* %moves, i64 %indvars.iv, i32 0
+  %52 = load i32* %from306, align 4, !tbaa !2
+  %target309 = getelementptr inbounds %struct.move_s* %moves, i64 %indvars.iv, i32 1
+  %53 = load i32* %target309, align 4, !tbaa !2
+  %promoted312 = getelementptr inbounds %struct.move_s* %moves, i64 %indvars.iv, i32 3
+  %54 = load i32* %promoted312, align 4, !tbaa !2
+  %captured315 = getelementptr inbounds %struct.move_s* %moves, i64 %indvars.iv, i32 2
+  %55 = load i32* %captured315, align 4, !tbaa !2
+  %56 = trunc i64 %indvars.iv to i32
+  %cmp318 = icmp eq i32 %56, %best
+  %or.cond761 = and i1 %cmp316, %cmp318
+  br i1 %or.cond761, label %if.then319, label %if.else355
+
+if.then319:                                       ; preds = %for.body303
+  %arrayidx321 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv
+  store i32 100000000, i32* %arrayidx321, align 4, !tbaa !2
+  %cmp322 = icmp eq i32 %55, 13
+  br i1 %cmp322, label %if.end473, label %if.then323
+
+if.then323:                                       ; preds = %if.then319
+  %idxprom324 = sext i32 %55 to i64
+  %arrayidx325 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom324
+  %57 = load i32* %arrayidx325, align 4, !tbaa !2
+  %ispos741 = icmp sgt i32 %57, -1
+  %neg742 = sub i32 0, %57
+  %58 = select i1 %ispos741, i32 %57, i32 %neg742
+  %add327 = add nsw i32 %58, 15
+  %idxprom328 = sext i32 %52 to i64
+  %arrayidx329 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom328
+  %59 = load i32* %arrayidx329, align 4, !tbaa !2
+  %idxprom330 = sext i32 %59 to i64
+  %arrayidx331 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom330
+  %60 = load i32* %arrayidx331, align 4, !tbaa !2
+  %ispos743 = icmp sgt i32 %60, -1
+  %neg744 = sub i32 0, %60
+  %61 = select i1 %ispos743, i32 %60, i32 %neg744
+  %cmp333 = icmp slt i32 %add327, %61
+  br i1 %cmp333, label %if.else347, label %if.then334
+
+if.then334:                                       ; preds = %if.then323
+  %shr343 = ashr i32 %61, 4
+  %sub344 = sub nsw i32 %58, %shr343
+  %arrayidx346 = getelementptr inbounds i32* %see_values, i64 %indvars.iv
+  store i32 %sub344, i32* %arrayidx346, align 4, !tbaa !2
+  br label %if.end473
+
+if.else347:                                       ; preds = %if.then323
+  %62 = load i32* @white_to_move, align 4, !tbaa !2
+  %not.tobool348 = icmp eq i32 %62, 0
+  %cond349 = zext i1 %not.tobool348 to i32
+  %call350 = tail call i32 @see(i32 %cond349, i32 %53, i32 %52) #5
+  %arrayidx352 = getelementptr inbounds i32* %see_values, i64 %indvars.iv
+  store i32 %call350, i32* %arrayidx352, align 4, !tbaa !2
+  br label %if.end473
+
+if.else355:                                       ; preds = %for.body303
+  br i1 %cmp356, label %if.then357, label %if.else421
+
+if.then357:                                       ; preds = %if.else355
+  %63 = load i32* @ply, align 4, !tbaa !2
+  %add358 = add nsw i32 %63, 1
+  %idxprom359 = sext i32 %add358 to i64
+  %from364 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 %idxprom359, i64 %idxprom359, i32 0
+  %64 = load i32* %from364, align 4, !tbaa !2
+  %cmp365 = icmp eq i32 %52, %64
+  br i1 %cmp365, label %land.lhs.true366, label %if.end473
+
+land.lhs.true366:                                 ; preds = %if.then357
+  %target373 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 %idxprom359, i64 %idxprom359, i32 1
+  %65 = load i32* %target373, align 4, !tbaa !2
+  %cmp374 = icmp eq i32 %53, %65
+  br i1 %cmp374, label %land.lhs.true375, label %if.end473
+
+land.lhs.true375:                                 ; preds = %land.lhs.true366
+  %promoted382 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 %idxprom359, i64 %idxprom359, i32 3
+  %66 = load i32* %promoted382, align 4, !tbaa !2
+  %cmp383 = icmp eq i32 %54, %66
+  br i1 %cmp383, label %if.then384, label %if.end473
+
+if.then384:                                       ; preds = %land.lhs.true375
+  %arrayidx386 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv
+  store i32 100000000, i32* %arrayidx386, align 4, !tbaa !2
+  %cmp387 = icmp eq i32 %55, 13
+  br i1 %cmp387, label %if.end473, label %if.then388
+
+if.then388:                                       ; preds = %if.then384
+  %idxprom389 = sext i32 %55 to i64
+  %arrayidx390 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom389
+  %67 = load i32* %arrayidx390, align 4, !tbaa !2
+  %ispos737 = icmp sgt i32 %67, -1
+  %neg738 = sub i32 0, %67
+  %68 = select i1 %ispos737, i32 %67, i32 %neg738
+  %add392 = add nsw i32 %68, 15
+  %idxprom393 = sext i32 %52 to i64
+  %arrayidx394 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom393
+  %69 = load i32* %arrayidx394, align 4, !tbaa !2
+  %idxprom395 = sext i32 %69 to i64
+  %arrayidx396 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom395
+  %70 = load i32* %arrayidx396, align 4, !tbaa !2
+  %ispos739 = icmp sgt i32 %70, -1
+  %neg740 = sub i32 0, %70
+  %71 = select i1 %ispos739, i32 %70, i32 %neg740
+  %cmp398 = icmp slt i32 %add392, %71
+  br i1 %cmp398, label %if.else412, label %if.then399
+
+if.then399:                                       ; preds = %if.then388
+  %shr408 = ashr i32 %71, 4
+  %sub409 = sub nsw i32 %68, %shr408
+  %arrayidx411 = getelementptr inbounds i32* %see_values, i64 %indvars.iv
+  store i32 %sub409, i32* %arrayidx411, align 4, !tbaa !2
+  br label %if.end473
+
+if.else412:                                       ; preds = %if.then388
+  %72 = load i32* @white_to_move, align 4, !tbaa !2
+  %not.tobool413 = icmp eq i32 %72, 0
+  %cond414 = zext i1 %not.tobool413 to i32
+  %call415 = tail call i32 @see(i32 %cond414, i32 %53, i32 %52) #5
+  %arrayidx417 = getelementptr inbounds i32* %see_values, i64 %indvars.iv
+  store i32 %call415, i32* %arrayidx417, align 4, !tbaa !2
+  br label %if.end473
+
+if.else421:                                       ; preds = %if.else355
+  %cmp422 = icmp eq i32 %55, 13
+  br i1 %cmp422, label %if.else468, label %if.then423
+
+if.then423:                                       ; preds = %if.else421
+  %idxprom424 = sext i32 %55 to i64
+  %arrayidx425 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom424
+  %73 = load i32* %arrayidx425, align 4, !tbaa !2
+  %ispos = icmp sgt i32 %73, -1
+  %neg = sub i32 0, %73
+  %74 = select i1 %ispos, i32 %73, i32 %neg
+  %add427 = add nsw i32 %74, 15
+  %idxprom428 = sext i32 %52 to i64
+  %arrayidx429 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom428
+  %75 = load i32* %arrayidx429, align 4, !tbaa !2
+  %idxprom430 = sext i32 %75 to i64
+  %arrayidx431 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom430
+  %76 = load i32* %arrayidx431, align 4, !tbaa !2
+  %ispos735 = icmp sgt i32 %76, -1
+  %neg736 = sub i32 0, %76
+  %77 = select i1 %ispos735, i32 %76, i32 %neg736
+  %cmp433 = icmp slt i32 %add427, %77
+  br i1 %cmp433, label %if.else452, label %if.then434
+
+if.then434:                                       ; preds = %if.then423
+  %shr443 = ashr i32 %77, 4
+  %sub444 = sub nsw i32 %74, %shr443
+  %arrayidx446 = getelementptr inbounds i32* %see_values, i64 %indvars.iv
+  store i32 %sub444, i32* %arrayidx446, align 4, !tbaa !2
+  %add449 = add nsw i32 %sub444, 50000000
+  %arrayidx451 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv
+  store i32 %add449, i32* %arrayidx451, align 4, !tbaa !2
+  br label %if.end473
+
+if.else452:                                       ; preds = %if.then423
+  %78 = load i32* @white_to_move, align 4, !tbaa !2
+  %not.tobool453 = icmp eq i32 %78, 0
+  %cond454 = zext i1 %not.tobool453 to i32
+  %call455 = tail call i32 @see(i32 %cond454, i32 %53, i32 %52) #5
+  %cmp456 = icmp sgt i32 %call455, -51
+  br i1 %cmp456, label %if.then457, label %if.else461
+
+if.then457:                                       ; preds = %if.else452
+  %add458 = add nsw i32 %call455, 50000000
+  %arrayidx460 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv
+  store i32 %add458, i32* %arrayidx460, align 4, !tbaa !2
+  br label %if.end464
+
+if.else461:                                       ; preds = %if.else452
+  %arrayidx463 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv
+  store i32 %call455, i32* %arrayidx463, align 4, !tbaa !2
+  br label %if.end464
+
+if.end464:                                        ; preds = %if.else461, %if.then457
+  %arrayidx466 = getelementptr inbounds i32* %see_values, i64 %indvars.iv
+  store i32 %call455, i32* %arrayidx466, align 4, !tbaa !2
+  br label %if.end473
+
+if.else468:                                       ; preds = %if.else421
+  %arrayidx470 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv
+  store i32 0, i32* %arrayidx470, align 4, !tbaa !2
+  br label %if.end473
+
+if.end473:                                        ; preds = %land.lhs.true375, %land.lhs.true366, %if.then357, %if.then319, %if.then384, %if.else412, %if.then399, %if.then434, %if.end464, %if.else468, %if.else347, %if.then334
+  %idxprom474 = sext i32 %53 to i64
+  %idxprom475 = sext i32 %52 to i64
+  %arrayidx477 = getelementptr inbounds [144 x [144 x i32]]* @history_h, i64 0, i64 %idxprom475, i64 %idxprom474
+  %79 = load i32* %arrayidx477, align 4, !tbaa !2
+  %arrayidx479 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv
+  %80 = load i32* %arrayidx479, align 4, !tbaa !2
+  %add480 = add i32 %80, %79
+  store i32 %add480, i32* %arrayidx479, align 4, !tbaa !2
+  %81 = load i32* @ply, align 4, !tbaa !2
+  %idxprom481 = sext i32 %81 to i64
+  %from483 = getelementptr inbounds [300 x %struct.move_s]* @killer1, i64 0, i64 %idxprom481, i32 0
+  %82 = load i32* %from483, align 4, !tbaa !2
+  %cmp484 = icmp eq i32 %52, %82
+  br i1 %cmp484, label %land.lhs.true485, label %if.else499
+
+land.lhs.true485:                                 ; preds = %if.end473
+  %target488 = getelementptr inbounds [300 x %struct.move_s]* @killer1, i64 0, i64 %idxprom481, i32 1
+  %83 = load i32* %target488, align 4, !tbaa !2
+  %cmp489 = icmp eq i32 %53, %83
+  br i1 %cmp489, label %land.lhs.true490, label %if.else499
+
+land.lhs.true490:                                 ; preds = %land.lhs.true485
+  %promoted493 = getelementptr inbounds [300 x %struct.move_s]* @killer1, i64 0, i64 %idxprom481, i32 3
+  %84 = load i32* %promoted493, align 4, !tbaa !2
+  %cmp494 = icmp eq i32 %54, %84
+  br i1 %cmp494, label %if.then495, label %if.else499
+
+if.then495:                                       ; preds = %land.lhs.true490
+  %add498 = add nsw i32 %add480, 25000000
+  store i32 %add498, i32* %arrayidx479, align 4, !tbaa !2
+  br label %for.inc540
+
+if.else499:                                       ; preds = %land.lhs.true490, %land.lhs.true485, %if.end473
+  %from502 = getelementptr inbounds [300 x %struct.move_s]* @killer2, i64 0, i64 %idxprom481, i32 0
+  %85 = load i32* %from502, align 4, !tbaa !2
+  %cmp503 = icmp eq i32 %52, %85
+  br i1 %cmp503, label %land.lhs.true504, label %if.else518
+
+land.lhs.true504:                                 ; preds = %if.else499
+  %target507 = getelementptr inbounds [300 x %struct.move_s]* @killer2, i64 0, i64 %idxprom481, i32 1
+  %86 = load i32* %target507, align 4, !tbaa !2
+  %cmp508 = icmp eq i32 %53, %86
+  br i1 %cmp508, label %land.lhs.true509, label %if.else518
+
+land.lhs.true509:                                 ; preds = %land.lhs.true504
+  %promoted512 = getelementptr inbounds [300 x %struct.move_s]* @killer2, i64 0, i64 %idxprom481, i32 3
+  %87 = load i32* %promoted512, align 4, !tbaa !2
+  %cmp513 = icmp eq i32 %54, %87
+  br i1 %cmp513, label %if.then514, label %if.else518
+
+if.then514:                                       ; preds = %land.lhs.true509
+  %add517 = add nsw i32 %add480, 20000000
+  store i32 %add517, i32* %arrayidx479, align 4, !tbaa !2
+  br label %for.inc540
+
+if.else518:                                       ; preds = %land.lhs.true509, %land.lhs.true504, %if.else499
+  %from521 = getelementptr inbounds [300 x %struct.move_s]* @killer3, i64 0, i64 %idxprom481, i32 0
+  %88 = load i32* %from521, align 4, !tbaa !2
+  %cmp522 = icmp eq i32 %52, %88
+  br i1 %cmp522, label %land.lhs.true523, label %for.inc540
+
+land.lhs.true523:                                 ; preds = %if.else518
+  %target526 = getelementptr inbounds [300 x %struct.move_s]* @killer3, i64 0, i64 %idxprom481, i32 1
+  %89 = load i32* %target526, align 4, !tbaa !2
+  %cmp527 = icmp eq i32 %53, %89
+  br i1 %cmp527, label %land.lhs.true528, label %for.inc540
+
+land.lhs.true528:                                 ; preds = %land.lhs.true523
+  %promoted531 = getelementptr inbounds [300 x %struct.move_s]* @killer3, i64 0, i64 %idxprom481, i32 3
+  %90 = load i32* %promoted531, align 4, !tbaa !2
+  %cmp532 = icmp eq i32 %54, %90
+  br i1 %cmp532, label %if.then533, label %for.inc540
+
+if.then533:                                       ; preds = %land.lhs.true528
+  %add536 = add nsw i32 %add480, 15000000
+  store i32 %add536, i32* %arrayidx479, align 4, !tbaa !2
+  br label %for.inc540
+
+for.inc540:                                       ; preds = %if.then495, %if.else518, %land.lhs.true523, %land.lhs.true528, %if.then533, %if.then514
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %num_moves
+  br i1 %exitcond, label %if.end543, label %for.body303
+
+if.end543:                                        ; preds = %if.then, %for.inc, %for.cond301.preheader, %for.inc540
+  ret void
+}

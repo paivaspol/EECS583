@@ -1,0 +1,77 @@
+define void @XS_Opcode_invert_opset(%struct.cv* nocapture %cv) #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !3
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %add.ptr.idx = shl nsw i64 %idx.ext, 32
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %4 = and i64 %sub.ptr.sub3, 34359738360
+  %cmp = icmp eq i64 %4, 8
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([35 x i8]* @.str7, i64 0, i64 0)) #4
+  %.pre = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %5 = phi %struct.sv** [ %1, %entry ], [ %.pre, %if.then ]
+  %sext = add i64 %add.ptr.idx, 4294967296
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds %struct.sv** %5, i64 %idxprom
+  %6 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %7 = load i64* @my_cxt.2, align 8, !tbaa !4
+  %call = tail call fastcc %struct.sv* @new_opset(%struct.sv* %6) #5
+  %call8 = tail call %struct.sv* @Perl_sv_2mortal(%struct.sv* %call) #4
+  %sv_any = getelementptr inbounds %struct.sv* %call8, i64 0, i32 0
+  %8 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %8 to i8**
+  %9 = load i8** %xpv_pv, align 8, !tbaa !0
+  %cmp944 = icmp eq i64 %7, 0
+  br i1 %cmp944, label %while.end, label %while.body
+
+while.body:                                       ; preds = %if.end, %while.body
+  %dec45.in = phi i64 [ %dec45, %while.body ], [ %7, %if.end ]
+  %dec45 = add i64 %dec45.in, -1
+  %arrayidx11 = getelementptr inbounds i8* %9, i64 %dec45
+  %10 = load i8* %arrayidx11, align 1, !tbaa !1
+  %neg = xor i8 %10, -1
+  store i8 %neg, i8* %arrayidx11, align 1, !tbaa !1
+  %cmp9 = icmp eq i64 %dec45, 0
+  br i1 %cmp9, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %if.end
+  %11 = load i32* @PL_maxo, align 4, !tbaa !3
+  %and = and i32 %11, 7
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end22, label %if.then15
+
+if.then15:                                        ; preds = %while.end
+  %shl = shl i32 255, %and
+  %neg17 = xor i32 %shl, 255
+  %12 = load i64* @my_cxt.2, align 8, !tbaa !4
+  %sub = add nsw i64 %12, -1
+  %arrayidx18 = getelementptr inbounds i8* %9, i64 %sub
+  %13 = load i8* %arrayidx18, align 1, !tbaa !1
+  %conv1941 = zext i8 %13 to i32
+  %and20 = and i32 %conv1941, %neg17
+  %conv21 = trunc i32 %and20 to i8
+  store i8 %conv21, i8* %arrayidx18, align 1, !tbaa !1
+  br label %if.end22
+
+if.end22:                                         ; preds = %while.end, %if.then15
+  %14 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %arrayidx25 = getelementptr inbounds %struct.sv** %14, i64 %idxprom
+  store %struct.sv* %call8, %struct.sv** %arrayidx25, align 8, !tbaa !0
+  %15 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %add.ptr27 = getelementptr inbounds %struct.sv** %15, i64 %idxprom
+  store %struct.sv** %add.ptr27, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  ret void
+}

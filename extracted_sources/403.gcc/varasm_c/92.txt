@@ -1,32 +1,12 @@
 static void
-globalize_decl (decl)
+mark_weak (decl)
      tree decl;
 {
-  const char *name = XSTR (XEXP (DECL_RTL (decl), 0), 0);
+  DECL_WEAK (decl) = 1;
 
-#if defined (ASM_WEAKEN_LABEL) || defined (ASM_WEAKEN_DECL)
-  if (DECL_WEAK (decl))
-    {
-      tree *p, t;
-
-#ifdef ASM_WEAKEN_DECL
-      ASM_WEAKEN_DECL (asm_out_file, decl, name, 0);
-#else
-      ASM_WEAKEN_LABEL (asm_out_file, name);
-#endif
-
-      /* Remove this function from the pending weak list so that
-	 we do not emit multiple .weak directives for it.  */
-      for (p = &weak_decls; (t = *p) ; )
-	{
-	  if (DECL_ASSEMBLER_NAME (decl) == DECL_ASSEMBLER_NAME (TREE_VALUE (t)))
-	    *p = TREE_CHAIN (t);
-	  else
-	    p = &TREE_CHAIN (t);
-	}
-      return;
-    }
-#endif
-
-  ASM_GLOBALIZE_LABEL (asm_out_file, name);
+  if (DECL_RTL_SET_P (decl)
+      && GET_CODE (DECL_RTL (decl)) == MEM
+      && XEXP (DECL_RTL (decl), 0)
+      && GET_CODE (XEXP (DECL_RTL (decl), 0)) == SYMBOL_REF)
+    SYMBOL_REF_WEAK (XEXP (DECL_RTL (decl), 0)) = 1;
 }

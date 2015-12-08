@@ -1,0 +1,88 @@
+OP *
+Perl_ref(pTHX_ OP *o, I32 type)
+{
+    OP *kid;
+
+    if (!o || PL_error_count)
+	return o;
+
+    switch (o->op_type) {
+    case OP_ENTERSUB:
+	if ((type == OP_EXISTS || type == OP_DEFINED || type == OP_LOCK) &&
+	    !(o->op_flags & OPf_STACKED)) {
+	    o->op_type = OP_RV2CV;             /* entersub => rv2cv */
+	    o->op_ppaddr = PL_ppaddr[OP_RV2CV];
+	    assert(cUNOPo->op_first->op_type == OP_NULL);
+	    op_null(((LISTOP*)cUNOPo->op_first)->op_first);	/* disable pushmark */
+	    o->op_flags |= OPf_SPECIAL;
+	}
+	break;
+
+    case OP_COND_EXPR:
+	for (kid = cUNOPo->op_first->op_sibling; kid; kid = kid->op_sibling)
+	    ref(kid, type);
+	break;
+    case OP_RV2SV:
+	if (type == OP_DEFINED)
+	    o->op_flags |= OPf_SPECIAL;		/* don't create GV */
+	ref(cUNOPo->op_first, o->op_type);
+	/* FALL THROUGH */
+    case OP_PADSV:
+	if (type == OP_RV2SV || type == OP_RV2AV || type == OP_RV2HV) {
+	    o->op_private |= (type == OP_RV2AV ? OPpDEREF_AV
+			      : type == OP_RV2HV ? OPpDEREF_HV
+			      : OPpDEREF_SV);
+	    o->op_flags |= OPf_MOD;
+	}
+	break;
+
+    case OP_THREADSV:
+	o->op_flags |= OPf_MOD;		/* XXX ??? */
+	break;
+
+    case OP_RV2AV:
+    case OP_RV2HV:
+	o->op_flags |= OPf_REF;
+	/* FALL THROUGH */
+    case OP_RV2GV:
+	if (type == OP_DEFINED)
+	    o->op_flags |= OPf_SPECIAL;		/* don't create GV */
+	ref(cUNOPo->op_first, o->op_type);
+	break;
+
+    case OP_PADAV:
+    case OP_PADHV:
+	o->op_flags |= OPf_REF;
+	break;
+
+    case OP_SCALAR:
+    case OP_NULL:
+	if (!(o->op_flags & OPf_KIDS))
+	    break;
+	ref(cBINOPo->op_first, type);
+	break;
+    case OP_AELEM:
+    case OP_HELEM:
+	ref(cBINOPo->op_first, o->op_type);
+	if (type == OP_RV2SV || type == OP_RV2AV || type == OP_RV2HV) {
+	    o->op_private |= (type == OP_RV2AV ? OPpDEREF_AV
+			      : type == OP_RV2HV ? OPpDEREF_HV
+			      : OPpDEREF_SV);
+	    o->op_flags |= OPf_MOD;
+	}
+	break;
+
+    case OP_SCOPE:
+    case OP_LEAVE:
+    case OP_ENTER:
+    case OP_LIST:
+	if (!(o->op_flags & OPf_KIDS))
+	    break;
+	ref(cLISTOPo->op_last, type);
+	break;
+    default:
+	break;
+    }
+    return scalar(o);
+
+}

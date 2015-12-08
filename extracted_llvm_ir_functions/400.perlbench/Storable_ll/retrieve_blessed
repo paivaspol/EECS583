@@ -1,0 +1,153 @@
+define internal %struct.sv* @retrieve_blessed(%struct.stcxt* %cxt, i8* nocapture %cname) #1 {
+entry:
+  %len = alloca i32, align 4
+  %buf = alloca [128 x i8], align 16
+  %0 = getelementptr inbounds [128 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 128, i8* %0) #3
+  %fio = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 23
+  %1 = load %struct._PerlIO*** %fio, align 8, !tbaa !0
+  %tobool = icmp eq %struct._PerlIO** %1, null
+  br i1 %tobool, label %if.then, label %if.else5
+
+if.then:                                          ; preds = %entry
+  %aptr = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 21, i32 2
+  %2 = load i8** %aptr, align 8, !tbaa !0
+  %aend = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 21, i32 3
+  %3 = load i8** %aend, align 8, !tbaa !0
+  %cmp = icmp ult i8* %2, %3
+  br i1 %cmp, label %if.then2, label %cleanup
+
+if.then2:                                         ; preds = %if.then
+  %incdec.ptr = getelementptr inbounds i8* %2, i64 1
+  store i8* %incdec.ptr, i8** %aptr, align 8, !tbaa !0
+  %4 = load i8* %2, align 1, !tbaa !1
+  %conv = zext i8 %4 to i32
+  store i32 %conv, i32* %len, align 4, !tbaa !3
+  br label %if.end11
+
+if.else5:                                         ; preds = %entry
+  %call = call i32 @PerlIO_getc(%struct._PerlIO** %1) #7
+  store i32 %call, i32* %len, align 4, !tbaa !3
+  %cmp7 = icmp eq i32 %call, -1
+  br i1 %cmp7, label %cleanup, label %if.end11
+
+if.end11:                                         ; preds = %if.else5, %if.then2
+  %5 = phi i32 [ %call, %if.else5 ], [ %conv, %if.then2 ]
+  %and = and i32 %5, 128
+  %tobool12 = icmp eq i32 %and, 0
+  br i1 %tobool12, label %if.end56, label %if.then13
+
+if.then13:                                        ; preds = %if.end11
+  %6 = load %struct._PerlIO*** %fio, align 8, !tbaa !0
+  %tobool15 = icmp eq %struct._PerlIO** %6, null
+  br i1 %tobool15, label %if.then16, label %if.else43
+
+if.then16:                                        ; preds = %if.then13
+  %aptr18 = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 21, i32 2
+  %7 = load i8** %aptr18, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds i8* %7, i64 4
+  %aend20 = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 21, i32 3
+  %8 = load i8** %aend20, align 8, !tbaa !0
+  %cmp21 = icmp ugt i8* %add.ptr, %8
+  br i1 %cmp21, label %cleanup, label %if.end37
+
+if.end37:                                         ; preds = %if.then16
+  %storemerge.in = bitcast i8* %7 to i32*
+  %storemerge = load i32* %storemerge.in, align 1
+  store i32 %storemerge, i32* %len, align 4
+  store i8* %add.ptr, i8** %aptr18, align 8, !tbaa !0
+  br label %if.end50
+
+if.else43:                                        ; preds = %if.then13
+  %9 = bitcast i32* %len to i8*
+  %call45 = call i64 @Perl_PerlIO_read(%struct._PerlIO** %6, i8* %9, i64 4) #7
+  %cmp46 = icmp eq i64 %call45, 4
+  br i1 %cmp46, label %if.end50, label %cleanup
+
+if.end50:                                         ; preds = %if.else43, %if.end37
+  %netorder = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 11
+  %10 = load i32* %netorder, align 4, !tbaa !3
+  %tobool51 = icmp eq i32 %10, 0
+  %.pre = load i32* %len, align 4, !tbaa !3
+  br i1 %tobool51, label %if.end53, label %if.then52
+
+if.then52:                                        ; preds = %if.end50
+  %11 = call i32 asm "bswap $0", "=r,0,~{dirflag},~{fpsr},~{flags}"(i32 %.pre) #3, !srcloc !17
+  store i32 %11, i32* %len, align 4, !tbaa !3
+  br label %if.end53
+
+if.end53:                                         ; preds = %if.end50, %if.then52
+  %12 = phi i32 [ %11, %if.then52 ], [ %.pre, %if.end50 ]
+  %add = add nsw i32 %12, 1
+  %conv54 = sext i32 %add to i64
+  %call55 = call i8* @Perl_safesysmalloc(i64 %conv54) #7
+  br label %if.end56
+
+if.end56:                                         ; preds = %if.end11, %if.end53
+  %class.0 = phi i8* [ %call55, %if.end53 ], [ %0, %if.end11 ]
+  %13 = load %struct._PerlIO*** %fio, align 8, !tbaa !0
+  %tobool58 = icmp eq %struct._PerlIO** %13, null
+  br i1 %tobool58, label %if.then59, label %if.else77
+
+if.then59:                                        ; preds = %if.end56
+  %aptr61 = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 21, i32 2
+  %14 = load i8** %aptr61, align 8, !tbaa !0
+  %15 = load i32* %len, align 4, !tbaa !3
+  %idx.ext = sext i32 %15 to i64
+  %add.ptr62 = getelementptr inbounds i8* %14, i64 %idx.ext
+  %aend64 = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 21, i32 3
+  %16 = load i8** %aend64, align 8, !tbaa !0
+  %cmp65 = icmp ugt i8* %add.ptr62, %16
+  br i1 %cmp65, label %cleanup, label %if.then67
+
+if.then67:                                        ; preds = %if.then59
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %class.0, i8* %14, i64 %idx.ext, i32 1, i1 false)
+  %17 = load i32* %len, align 4, !tbaa !3
+  %18 = load i8** %aptr61, align 8, !tbaa !0
+  %idx.ext73 = sext i32 %17 to i64
+  %add.ptr74 = getelementptr inbounds i8* %18, i64 %idx.ext73
+  store i8* %add.ptr74, i8** %aptr61, align 8, !tbaa !0
+  br label %if.end86
+
+if.else77:                                        ; preds = %if.end56
+  %19 = load i32* %len, align 4, !tbaa !3
+  %conv79 = sext i32 %19 to i64
+  %call80 = call i64 @Perl_PerlIO_read(%struct._PerlIO** %13, i8* %class.0, i64 %conv79) #7
+  %20 = load i32* %len, align 4, !tbaa !3
+  %conv81 = sext i32 %20 to i64
+  %cmp82 = icmp eq i64 %call80, %conv81
+  br i1 %cmp82, label %if.end86, label %cleanup
+
+if.end86:                                         ; preds = %if.else77, %if.then67
+  %21 = phi i32 [ %20, %if.else77 ], [ %17, %if.then67 ]
+  %idxprom = sext i32 %21 to i64
+  %arrayidx = getelementptr inbounds i8* %class.0, i64 %idxprom
+  store i8 0, i8* %arrayidx, align 1, !tbaa !1
+  %aclass = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 7
+  %22 = load %struct.av** %aclass, align 8, !tbaa !0
+  %classnum = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 10
+  %23 = load i64* %classnum, align 8, !tbaa !4
+  %inc = add nsw i64 %23, 1
+  store i64 %inc, i64* %classnum, align 8, !tbaa !4
+  %conv87 = trunc i64 %23 to i32
+  %24 = load i32* %len, align 4, !tbaa !3
+  %conv88 = sext i32 %24 to i64
+  %call89 = call %struct.sv* @Perl_newSVpvn(i8* %class.0, i64 %conv88) #7
+  %call90 = call %struct.sv** @Perl_av_store(%struct.av* %22, i32 %conv87, %struct.sv* %call89) #7
+  %tobool91 = icmp eq %struct.sv** %call90, null
+  br i1 %tobool91, label %cleanup, label %if.end93
+
+if.end93:                                         ; preds = %if.end86
+  %call94 = call fastcc %struct.sv* @retrieve(%struct.stcxt* %cxt, i8* %class.0) #6
+  %cmp96 = icmp eq i8* %class.0, %0
+  br i1 %cmp96, label %cleanup, label %if.then98
+
+if.then98:                                        ; preds = %if.end93
+  call void @Perl_safesysfree(i8* %class.0) #7
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.then98, %if.end93, %if.end86, %if.else77, %if.then59, %if.else43, %if.then16, %if.else5, %if.then
+  %retval.0 = phi %struct.sv* [ null, %if.then ], [ null, %if.else5 ], [ null, %if.then16 ], [ null, %if.else43 ], [ null, %if.then59 ], [ null, %if.else77 ], [ null, %if.end86 ], [ %call94, %if.end93 ], [ %call94, %if.then98 ]
+  call void @llvm.lifetime.end(i64 128, i8* %0) #3
+  ret %struct.sv* %retval.0
+}

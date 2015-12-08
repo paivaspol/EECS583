@@ -1,0 +1,22 @@
+STATIC OP *
+S_dup_attrlist(pTHX_ OP *o)
+{
+    OP *rop = Nullop;
+
+    /* An attrlist is either a simple OP_CONST or an OP_LIST with kids,
+     * where the first kid is OP_PUSHMARK and the remaining ones
+     * are OP_CONST.  We need to push the OP_CONST values.
+     */
+    if (o->op_type == OP_CONST)
+	rop = newSVOP(OP_CONST, o->op_flags, SvREFCNT_inc(cSVOPo->op_sv));
+    else {
+	assert((o->op_type == OP_LIST) && (o->op_flags & OPf_KIDS));
+	for (o = cLISTOPo->op_first; o; o=o->op_sibling) {
+	    if (o->op_type == OP_CONST)
+		rop = append_elem(OP_LIST, rop,
+				  newSVOP(OP_CONST, o->op_flags,
+					  SvREFCNT_inc(cSVOPo->op_sv)));
+	}
+    }
+    return rop;
+}

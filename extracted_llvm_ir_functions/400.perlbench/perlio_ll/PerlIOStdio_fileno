@@ -1,0 +1,31 @@
+define i64 @PerlIOStdio_fileno(%struct._PerlIO** %f) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %if.end, label %land.lhs.true2
+
+land.lhs.true2:                                   ; preds = %land.lhs.true
+  %stdio = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %stdio to %struct._IO_FILE**
+  %2 = load %struct._IO_FILE** %1, align 8, !tbaa !3
+  %tobool3 = icmp eq %struct._IO_FILE* %2, null
+  br i1 %tobool3, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true2
+  %call = tail call i32 @fileno(%struct._IO_FILE* %2) #9
+  %conv = sext i32 %call to i64
+  br label %return
+
+if.end:                                           ; preds = %land.lhs.true2, %land.lhs.true, %entry
+  %call4 = tail call i32* @__errno_location() #9
+  store i32 9, i32* %call4, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then
+  %retval.0 = phi i64 [ %conv, %if.then ], [ -1, %if.end ]
+  ret i64 %retval.0
+}

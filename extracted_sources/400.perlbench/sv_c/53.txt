@@ -1,20 +1,6 @@
 void
-Perl_sv_unref_flags(pTHX_ SV *sv, U32 flags)
+Perl_sv_setiv_mg(pTHX_ register SV *sv, IV i)
 {
-    SV* rv = SvRV(sv);
-
-    if (SvWEAKREF(sv)) {
-    	sv_del_backref(sv);
-	SvWEAKREF_off(sv);
-	SvRV(sv) = 0;
-	return;
-    }
-    SvRV(sv) = 0;
-    SvROK_off(sv);
-    /* You can't have a || SvREADONLY(rv) here, as $a = $$a, where $a was
-       assigned to as BEGIN {$a = \"Foo"} will fail.  */
-    if (SvREFCNT(rv) != 1 || (flags & SV_IMMEDIATE_UNREF))
-	SvREFCNT_dec(rv);
-    else /* XXX Hack, but hard to make $a=$a->[1] work otherwise */
-	sv_2mortal(rv);		/* Schedule for freeing later */
+    sv_setiv(sv,i);
+    SvSETMAGIC(sv);
 }

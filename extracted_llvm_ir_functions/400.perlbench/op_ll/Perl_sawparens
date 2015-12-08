@@ -1,0 +1,15 @@
+define %struct.op* @Perl_sawparens(%struct.op* %o) #0 {
+entry:
+  %tobool = icmp eq %struct.op* %o, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %op_flags = getelementptr inbounds %struct.op* %o, i64 0, i32 6
+  %0 = load i8* %op_flags, align 1, !tbaa !1
+  %or = or i8 %0, 8
+  store i8 %or, i8* %op_flags, align 1, !tbaa !1
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret %struct.op* %o
+}

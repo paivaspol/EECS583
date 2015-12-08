@@ -1,0 +1,14 @@
+define void @cbp_linfo_inter(i32 %cbp, i32 %dummy, i32* nocapture %len, i32* nocapture %info) #0 {
+entry:
+  %idxprom = sext i32 %cbp to i64
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %yuv_format = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 159
+  %1 = load i32* %yuv_format, align 4, !tbaa !0
+  %tobool = icmp ne i32 %1, 0
+  %idxprom1 = zext i1 %tobool to i64
+  %arrayidx3 = getelementptr inbounds [2 x [48 x [2 x i8]]]* @NCBP, i64 0, i64 %idxprom1, i64 %idxprom, i64 1
+  %2 = load i8* %arrayidx3, align 1, !tbaa !1
+  %conv = zext i8 %2 to i32
+  tail call void @ue_linfo(i32 %conv, i32 undef, i32* %len, i32* %info) #4
+  ret void
+}

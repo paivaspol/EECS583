@@ -1,16 +1,17 @@
-void
-Perl_mg_magical(pTHX_ SV *sv)
+STATIC void
+S_save_magic(pTHX_ I32 mgs_ix, SV *sv)
 {
-    MAGIC* mg;
-    for (mg = SvMAGIC(sv); mg; mg = mg->mg_moremagic) {
-	MGVTBL* vtbl = mg->mg_virtual;
-	if (vtbl) {
-	    if (vtbl->svt_get && !(mg->mg_flags & MGf_GSKIP))
-		SvGMAGICAL_on(sv);
-	    if (vtbl->svt_set)
-		SvSMAGICAL_on(sv);
-	    if (!(SvFLAGS(sv) & (SVs_GMG|SVs_SMG)) || vtbl->svt_clear)
-		SvRMAGICAL_on(sv);
-	}
-    }
+    MGS* mgs;
+    assert(SvMAGICAL(sv));
+
+    SAVEDESTRUCTOR_X(restore_magic, INT2PTR(void*, (IV)mgs_ix));
+
+    mgs = SSPTR(mgs_ix, MGS*);
+    mgs->mgs_sv = sv;
+    mgs->mgs_flags = SvMAGICAL(sv) | SvREADONLY(sv);
+    mgs->mgs_ss_ix = PL_savestack_ix;   /* points after the saved destructor */
+
+    SvMAGICAL_off(sv);
+    SvREADONLY_off(sv);
+    SvFLAGS(sv) |= (SvFLAGS(sv) & (SVp_NOK|SVp_POK)) >> PRIVSHIFT;
 }

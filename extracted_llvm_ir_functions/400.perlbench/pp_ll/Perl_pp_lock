@@ -1,0 +1,26 @@
+define %struct.op* @Perl_pp_lock() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv** %0, align 8, !tbaa !0
+  %2 = load void (%struct.sv*)** @PL_lockhook, align 8, !tbaa !0
+  tail call void %2(%struct.sv* %1) #7
+  %sv_flags = getelementptr inbounds %struct.sv* %1, i64 0, i32 2
+  %3 = load i32* %sv_flags, align 4, !tbaa !4
+  %and = and i32 %3, 255
+  %and.off = add i32 %and, -10
+  %switch = icmp ult i32 %and.off, 3
+  br i1 %switch, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call fastcc %struct.sv* @S_refto(%struct.sv* %1) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %retsv.0 = phi %struct.sv* [ %call, %if.then ], [ %1, %entry ]
+  store %struct.sv* %retsv.0, %struct.sv** %0, align 8, !tbaa !0
+  store %struct.sv** %0, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %4 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %4, i64 0, i32 0
+  %5 = load %struct.op** %op_next, align 8, !tbaa !0
+  ret %struct.op* %5
+}

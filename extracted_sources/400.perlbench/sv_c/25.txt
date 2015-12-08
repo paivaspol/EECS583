@@ -1,6 +1,17 @@
-void
-Perl_sv_setpv_mg(pTHX_ register SV *sv, register const char *ptr)
+STATIC void
+S_more_xpv(pTHX)
 {
-    sv_setpv(sv,ptr);
-    SvSETMAGIC(sv);
+    register XPV* xpv;
+    register XPV* xpvend;
+    New(713, xpv, PERL_ARENA_SIZE/sizeof(XPV), XPV);
+    xpv->xpv_pv = (char*)PL_xpv_arenaroot;
+    PL_xpv_arenaroot = xpv;
+
+    xpvend = &xpv[PERL_ARENA_SIZE / sizeof(XPV) - 1];
+    PL_xpv_root = ++xpv;
+    while (xpv < xpvend) {
+	xpv->xpv_pv = (char*)(xpv + 1);
+	xpv++;
+    }
+    xpv->xpv_pv = 0;
 }

@@ -1,0 +1,25 @@
+STATIC bool
+S_utf8_mg_pos_init(pTHX_ SV *sv, MAGIC **mgp, STRLEN **cachep, I32 i, I32 *offsetp, U8 *s, U8 *start)
+{
+    bool found = FALSE; 
+
+    if (SvMAGICAL(sv) && !SvREADONLY(sv)) {
+	if (!*mgp)
+	    *mgp = sv_magicext(sv, 0, PERL_MAGIC_utf8, &PL_vtbl_utf8, 0, 0);
+	assert(*mgp);
+
+        if ((*mgp)->mg_ptr)
+            *cachep = (STRLEN *) (*mgp)->mg_ptr;
+        else {
+            Newz(0, *cachep, PERL_MAGIC_UTF8_CACHESIZE * 2, STRLEN);
+            (*mgp)->mg_ptr = (char *) *cachep;
+        }
+        assert(*cachep);
+
+        (*cachep)[i]   = *offsetp;
+        (*cachep)[i+1] = s - start;
+        found = TRUE;
+    }
+
+    return found;
+}

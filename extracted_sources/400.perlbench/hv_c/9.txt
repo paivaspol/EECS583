@@ -1,5 +1,19 @@
-void
-Perl_hv_magic(pTHX_ HV *hv, GV *gv, int how)
+SV**
+Perl_hv_fetch(pTHX_ HV *hv, const char *key, I32 klen_i32, I32 lval)
 {
-    sv_magic((SV*)hv, (SV*)gv, how, Nullch, 0);
+    HE *hek;
+    STRLEN klen;
+    int flags;
+
+    if (klen_i32 < 0) {
+	klen = -klen_i32;
+	flags = HVhek_UTF8;
+    } else {
+	klen = klen_i32;
+	flags = 0;
+    }
+    hek = hv_fetch_common (hv, NULL, key, klen, flags,
+			   HV_FETCH_JUST_SV | (lval ? HV_FETCH_LVALUE : 0),
+			   Nullsv, 0);
+    return hek ? &HeVAL(hek) : NULL;
 }

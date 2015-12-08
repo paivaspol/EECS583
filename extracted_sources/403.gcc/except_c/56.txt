@@ -1,62 +1,62 @@
 static void
-sjlj_emit_function_enter (dispatch_label)
-     rtx dispatch_label;
+sjlj_mark_call_sites (lp_info)
+     struct sjlj_lp_info *lp_info;
 {
-  rtx fn_begin, fc, mem, seq;
+  int last_call_site = -2;
+  rtx insn, mem;
 
-  fc = cfun->eh->sjlj_fc;
-
-  start_sequence ();
-
-  /* We're storing this libcall's address into memory instead of
-     calling it directly.  Thus, we must call assemble_external_libcall
-     here, as we can not depend on emit_library_call to do it for us.  */
-  assemble_external_libcall (eh_personality_libfunc);
-  mem = adjust_address (fc, Pmode, sjlj_fc_personality_ofs);
-  emit_move_insn (mem, eh_personality_libfunc);
-
-  mem = adjust_address (fc, Pmode, sjlj_fc_lsda_ofs);
-  if (cfun->uses_eh_lsda)
+  for (insn = get_insns (); insn ; insn = NEXT_INSN (insn))
     {
-      char buf[20];
-      ASM_GENERATE_INTERNAL_LABEL (buf, "LLSDA", sjlj_funcdef_number);
-      emit_move_insn (mem, gen_rtx_SYMBOL_REF (Pmode, ggc_strdup (buf)));
+      struct eh_region *region;
+      int this_call_site;
+      rtx note, before, p;
+
+      /* Reset value tracking at extended basic block boundaries.  */
+      if (GET_CODE (insn) == CODE_LABEL)
+	last_call_site = -2;
+
+      if (! INSN_P (insn))
+	continue;
+
+      note = find_reg_note (insn, REG_EH_REGION, NULL_RTX);
+      if (!note)
+	{
+	  /* Calls (and trapping insns) without notes are outside any
+	     exception handling region in this function.  Mark them as
+	     no action.  */
+	  if (GET_CODE (insn) == CALL_INSN
+	      || (flag_non_call_exceptions
+		  && may_trap_p (PATTERN (insn))))
+	    this_call_site = -1;
+	  else
+	    continue;
+	}
+      else
+	{
+	  /* Calls that are known to not throw need not be marked.  */
+	  if (INTVAL (XEXP (note, 0)) <= 0)
+	    continue;
+
+	  region = cfun->eh->region_array[INTVAL (XEXP (note, 0))];
+	  this_call_site = lp_info[region->region_number].call_site_index;
+	}
+
+      if (this_call_site == last_call_site)
+	continue;
+
+      /* Don't separate a call from it's argument loads.  */
+      before = insn;
+      if (GET_CODE (insn) == CALL_INSN)
+         before = find_first_parameter_load (insn, NULL_RTX);
+
+      start_sequence ();
+      mem = adjust_address (cfun->eh->sjlj_fc, TYPE_MODE (integer_type_node),
+			    sjlj_fc_call_site_ofs);
+      emit_move_insn (mem, GEN_INT (this_call_site));
+      p = get_insns ();
+      end_sequence ();
+
+      emit_insns_before (p, before);
+      last_call_site = this_call_site;
     }
-  else
-    emit_move_insn (mem, const0_rtx);
-
-#ifdef DONT_USE_BUILTIN_SETJMP
-  {
-    rtx x, note;
-    x = emit_library_call_value (setjmp_libfunc, NULL_RTX, LCT_RETURNS_TWICE,
-				 TYPE_MODE (integer_type_node), 1,
-				 plus_constant (XEXP (fc, 0),
-						sjlj_fc_jbuf_ofs), Pmode);
-
-    note = emit_note (NULL, NOTE_INSN_EXPECTED_VALUE);
-    NOTE_EXPECTED_VALUE (note) = gen_rtx_EQ (VOIDmode, x, const0_rtx);
-
-    emit_cmp_and_jump_insns (x, const0_rtx, NE, 0,
-			     TYPE_MODE (integer_type_node), 0, dispatch_label);
-  }
-#else
-  expand_builtin_setjmp_setup (plus_constant (XEXP (fc, 0), sjlj_fc_jbuf_ofs),
-			       dispatch_label);
-#endif
-
-  emit_library_call (unwind_sjlj_register_libfunc, LCT_NORMAL, VOIDmode,
-		     1, XEXP (fc, 0), Pmode);
-
-  seq = get_insns ();
-  end_sequence ();
-
-  /* ??? Instead of doing this at the beginning of the function,
-     do this in a block that is at loop level 0 and dominates all
-     can_throw_internal instructions.  */
-
-  for (fn_begin = get_insns (); ; fn_begin = NEXT_INSN (fn_begin))
-    if (GET_CODE (fn_begin) == NOTE
-	&& NOTE_LINE_NUMBER (fn_begin) == NOTE_INSN_FUNCTION_BEG)
-      break;
-  emit_insns_after (seq, fn_begin);
 }

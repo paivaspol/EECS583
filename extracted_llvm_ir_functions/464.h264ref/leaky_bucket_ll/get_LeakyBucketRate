@@ -1,0 +1,44 @@
+define i32 @get_LeakyBucketRate(i64 %NumberLeakyBuckets, i64* nocapture %Rmin) #0 {
+entry:
+  %buf = alloca i64, align 8
+  %0 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %arraydecay = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 89, i64 0
+  %call = call %struct._IO_FILE* @fopen(i8* %arraydecay, i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0)) #4
+  %cmp = icmp eq %struct._IO_FILE* %call, null
+  br i1 %cmp, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp214 = icmp eq i64 %NumberLeakyBuckets, 0
+  br i1 %cmp214, label %for.end, label %for.body
+
+if.then:                                          ; preds = %entry
+  %puts13 = call i32 @puts(i8* getelementptr inbounds ([76 x i8]* @str14, i64 0, i64 0))
+  br label %return
+
+for.body:                                         ; preds = %for.cond.preheader, %if.end8
+  %i.015 = phi i64 [ %inc, %if.end8 ], [ 0, %for.cond.preheader ]
+  %call3 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %call, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i64* %buf) #4
+  %cmp4 = icmp eq i32 %call3, 1
+  br i1 %cmp4, label %if.end8, label %if.then5
+
+if.then5:                                         ; preds = %for.body
+  %puts = call i32 @puts(i8* getelementptr inbounds ([90 x i8]* @str, i64 0, i64 0))
+  %call7 = call i32 @fclose(%struct._IO_FILE* %call) #4
+  br label %return
+
+if.end8:                                          ; preds = %for.body
+  %1 = load i64* %buf, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i64* %Rmin, i64 %i.015
+  store i64 %1, i64* %arrayidx, align 8, !tbaa !3
+  %inc = add i64 %i.015, 1
+  %cmp2 = icmp ult i64 %inc, %NumberLeakyBuckets
+  br i1 %cmp2, label %for.body, label %for.end
+
+for.end:                                          ; preds = %if.end8, %for.cond.preheader
+  %call9 = call i32 @fclose(%struct._IO_FILE* %call) #4
+  br label %return
+
+return:                                           ; preds = %for.end, %if.then5, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then5 ], [ 1, %for.end ]
+  ret i32 %retval.0
+}

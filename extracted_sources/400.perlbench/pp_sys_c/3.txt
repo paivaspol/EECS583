@@ -1,0 +1,37 @@
+PP(pp_glob)
+{
+    OP *result;
+    tryAMAGICunTARGET(iter, -1);
+
+    /* Note that we only ever get here if File::Glob fails to load
+     * without at the same time croaking, for some reason, or if
+     * perl was built with PERL_EXTERNAL_GLOB */
+
+    ENTER;
+
+#ifndef VMS
+    if (PL_tainting) {
+	/*
+	 * The external globbing program may use things we can't control,
+	 * so for security reasons we must assume the worst.
+	 */
+	TAINT;
+	taint_proper(PL_no_security, "glob");
+    }
+#endif /* !VMS */
+
+    SAVESPTR(PL_last_in_gv);	/* We don't want this to be permanent. */
+    PL_last_in_gv = (GV*)*PL_stack_sp--;
+
+    SAVESPTR(PL_rs);		/* This is not permanent, either. */
+    PL_rs = sv_2mortal(newSVpvn("\000", 1));
+#ifndef DOSISH
+#ifndef CSH
+    *SvPVX(PL_rs) = '\n';
+#endif	/* !CSH */
+#endif	/* !DOSISH */
+
+    result = do_readline();
+    LEAVE;
+    return result;
+}

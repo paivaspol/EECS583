@@ -1,0 +1,141 @@
+define i32 @Chv_countEntries(%struct._Chv* %chv, i32 %npivot, i32* %pivotsizes, i32 %countflag) #0 {
+entry:
+  %nD = alloca i32, align 4
+  %nL = alloca i32, align 4
+  %nU = alloca i32, align 4
+  %cmp = icmp eq %struct._Chv* %chv, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([59 x i8]* @.str8, i64 0, i64 0), %struct._Chv* null, i32 %npivot, i32* %pivotsizes, i32 %countflag) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %countflag.off = add i32 %countflag, -1
+  %1 = icmp ugt i32 %countflag.off, 6
+  br i1 %1, label %if.then3, label %if.end5
+
+if.then3:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call4 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([352 x i8]* @.str9, i64 0, i64 0), %struct._Chv* %chv, i32 %npivot, i32* %pivotsizes, i32 %countflag, i32 %countflag) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end5:                                          ; preds = %if.end
+  %symflag = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
+  %3 = load i32* %symflag, align 4, !tbaa !3
+  %switch = icmp ult i32 %3, 2
+  br i1 %switch, label %land.lhs.true, label %if.end17
+
+land.lhs.true:                                    ; preds = %if.end5
+  switch i32 %countflag, label %if.end17 [
+    i32 5, label %if.then15
+    i32 4, label %if.then15
+    i32 1, label %if.then15
+  ]
+
+if.then15:                                        ; preds = %land.lhs.true, %land.lhs.true, %land.lhs.true
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call16 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([106 x i8]* @.str10, i64 0, i64 0), %struct._Chv* %chv, i32 %npivot, i32* %pivotsizes, i32 %countflag, i32 %countflag) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end17:                                         ; preds = %if.end5, %land.lhs.true
+  call void @Chv_dimensions(%struct._Chv* %chv, i32* %nD, i32* %nL, i32* %nU) #5
+  switch i32 %countflag, label %sw.epilog [
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb19
+    i32 3, label %sw.bb31
+    i32 4, label %sw.bb54
+    i32 5, label %sw.bb58
+    i32 6, label %sw.bb60
+    i32 7, label %sw.bb79
+  ]
+
+sw.bb:                                            ; preds = %if.end17
+  %5 = load i32* %nD, align 4, !tbaa !3
+  %sub = add nsw i32 %5, -1
+  %mul = mul nsw i32 %sub, %5
+  %div = sdiv i32 %mul, 2
+  %6 = load i32* %nL, align 4, !tbaa !3
+  %mul18 = mul nsw i32 %6, %5
+  %add = add nsw i32 %mul18, %div
+  br label %sw.epilog
+
+sw.bb19:                                          ; preds = %if.end17
+  %7 = load i32* %symflag, align 4, !tbaa !3
+  %switch115 = icmp ugt i32 %7, 1
+  %cmp26 = icmp eq i32* %pivotsizes, null
+  %or.cond = or i1 %switch115, %cmp26
+  %8 = load i32* %nD, align 4, !tbaa !3
+  br i1 %or.cond, label %sw.epilog, label %if.then27
+
+if.then27:                                        ; preds = %sw.bb19
+  %mul28 = shl nsw i32 %8, 1
+  %sub29 = sub nsw i32 %mul28, %npivot
+  br label %sw.epilog
+
+sw.bb31:                                          ; preds = %if.end17
+  %9 = load i32* %symflag, align 4, !tbaa !3
+  %switch116 = icmp ugt i32 %9, 1
+  %cmp38 = icmp eq i32* %pivotsizes, null
+  %or.cond117 = or i1 %switch116, %cmp38
+  %10 = load i32* %nD, align 4, !tbaa !3
+  %sub48 = add nsw i32 %10, -1
+  %mul49 = mul nsw i32 %sub48, %10
+  %div50 = sdiv i32 %mul49, 2
+  %11 = load i32* %nU, align 4, !tbaa !3
+  %mul51 = mul nsw i32 %11, %10
+  br i1 %or.cond117, label %if.else47, label %if.then39
+
+if.then39:                                        ; preds = %sw.bb31
+  %sub43 = sub i32 %npivot, %10
+  %add44 = add i32 %sub43, %div50
+  %add46 = add i32 %add44, %mul51
+  br label %sw.epilog
+
+if.else47:                                        ; preds = %sw.bb31
+  %add52 = add nsw i32 %mul51, %div50
+  br label %sw.epilog
+
+sw.bb54:                                          ; preds = %if.end17
+  %12 = load i32* %nD, align 4, !tbaa !3
+  %sub55 = add nsw i32 %12, -1
+  %mul56 = mul nsw i32 %sub55, %12
+  %div57 = sdiv i32 %mul56, 2
+  br label %sw.epilog
+
+sw.bb58:                                          ; preds = %if.end17
+  %13 = load i32* %nD, align 4, !tbaa !3
+  %14 = load i32* %nL, align 4, !tbaa !3
+  %mul59 = mul nsw i32 %14, %13
+  br label %sw.epilog
+
+sw.bb60:                                          ; preds = %if.end17
+  %15 = load i32* %symflag, align 4, !tbaa !3
+  %switch118 = icmp ugt i32 %15, 1
+  %cmp67 = icmp eq i32* %pivotsizes, null
+  %or.cond119 = or i1 %switch118, %cmp67
+  %16 = load i32* %nD, align 4, !tbaa !3
+  %sub75 = add nsw i32 %16, -1
+  %mul76 = mul nsw i32 %sub75, %16
+  %div77 = sdiv i32 %mul76, 2
+  br i1 %or.cond119, label %sw.epilog, label %if.then68
+
+if.then68:                                        ; preds = %sw.bb60
+  %sub72 = sub i32 %npivot, %16
+  %add73 = add i32 %sub72, %div77
+  br label %sw.epilog
+
+sw.bb79:                                          ; preds = %if.end17
+  %17 = load i32* %nD, align 4, !tbaa !3
+  %18 = load i32* %nU, align 4, !tbaa !3
+  %mul80 = mul nsw i32 %18, %17
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %sw.bb60, %sw.bb19, %if.then68, %if.then39, %if.else47, %if.then27, %if.end17, %sw.bb79, %sw.bb58, %sw.bb54, %sw.bb
+  %count.0 = phi i32 [ undef, %if.end17 ], [ %mul80, %sw.bb79 ], [ %add73, %if.then68 ], [ %mul59, %sw.bb58 ], [ %div57, %sw.bb54 ], [ %add46, %if.then39 ], [ %add52, %if.else47 ], [ %sub29, %if.then27 ], [ %add, %sw.bb ], [ %8, %sw.bb19 ], [ %div77, %sw.bb60 ]
+  ret i32 %count.0
+}

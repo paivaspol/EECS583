@@ -1,22 +1,29 @@
-static SV *retrieve_tied_idx(pTHX_ stcxt_t *cxt, char *cname)
+static SV *retrieve_tied_scalar(pTHX_ stcxt_t *cxt, char *cname)
 {
 	SV *tv;
-	SV *sv;
-	I32 idx;
+	SV *sv, *obj = NULL;
 
-	TRACEME(("retrieve_tied_idx (#%d)", cxt->tagnum));
+	TRACEME(("retrieve_tied_scalar (#%d)", cxt->tagnum));
 
 	tv = NEWSV(10002, 0);
-	SEEN(tv, cname, 0);			/* Will return if tv is null */
+	SEEN(tv, cname, 0);			/* Will return if rv is null */
 	sv = retrieve(aTHX_ cxt, 0);		/* Retrieve <object> */
-	if (!sv)
+	if (!sv) {
 		return (SV *) 0;		/* Failed */
-
-	RLEN(idx);					/* Retrieve <idx> */
+	}
+	else if (SvTYPE(sv) != SVt_NULL) {
+		obj = sv;
+	}
 
 	sv_upgrade(tv, SVt_PVMG);
-	sv_magic(tv, sv, 'p', Nullch, idx);
-	SvREFCNT_dec(sv);			/* Undo refcnt inc from sv_magic() */
+	sv_magic(tv, obj, 'q', Nullch, 0);
+
+	if (obj) {
+		/* Undo refcnt inc from sv_magic() */
+		SvREFCNT_dec(obj);
+	}
+
+	TRACEME(("ok (retrieve_tied_scalar at 0x%"UVxf")", PTR2UV(tv)));
 
 	return tv;
 }

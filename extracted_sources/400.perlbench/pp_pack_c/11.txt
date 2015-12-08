@@ -1,0 +1,25 @@
+STATIC int
+S_div128(pTHX_ SV *pnum, bool *done)
+{
+  STRLEN          len;
+  char           *s = SvPV(pnum, len);
+  int             m = 0;
+  int             r = 0;
+  char           *t = s;
+
+  *done = 1;
+  while (*t) {
+    int             i;
+
+    i = m * 10 + (*t - '0');
+    m = i & 0x7F;
+    r = (i >> 7);		/* r < 10 */
+    if (r) {
+      *done = 0;
+    }
+    *(t++) = '0' + r;
+  }
+  *(t++) = '\0';
+  SvCUR_set(pnum, (STRLEN) (t - s));
+  return (m);
+}

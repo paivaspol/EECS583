@@ -1,26 +1,17 @@
 static rtx
-ix86_expand_store_builtin (icode, arglist)
-     enum insn_code icode;
-     tree arglist;
+safe_vector_operand (x, mode)
+     rtx x;
+     enum machine_mode mode;
 {
-  rtx pat;
-  tree arg0 = TREE_VALUE (arglist);
-  tree arg1 = TREE_VALUE (TREE_CHAIN (arglist));
-  rtx op0 = expand_expr (arg0, NULL_RTX, VOIDmode, 0);
-  rtx op1 = expand_expr (arg1, NULL_RTX, VOIDmode, 0);
-  enum machine_mode mode0 = insn_data[icode].operand[0].mode;
-  enum machine_mode mode1 = insn_data[icode].operand[1].mode;
+  if (x != const0_rtx)
+    return x;
+  x = gen_reg_rtx (mode);
 
-  if (VECTOR_MODE_P (mode1))
-    op1 = safe_vector_operand (op1, mode1);
-
-  op0 = gen_rtx_MEM (mode0, copy_to_mode_reg (Pmode, op0));
-
-  if (! (*insn_data[icode].operand[1].predicate) (op1, mode1))
-    op1 = copy_to_mode_reg (mode1, op1);
-
-  pat = GEN_FCN (icode) (op0, op1);
-  if (pat)
-    emit_insn (pat);
-  return 0;
+  if (VALID_MMX_REG_MODE (mode) || VALID_MMX_REG_MODE_3DNOW (mode))
+    emit_insn (gen_mmx_clrdi (mode == DImode ? x
+			      : gen_rtx_SUBREG (DImode, x, 0)));
+  else
+    emit_insn (gen_sse_clrv4sf (mode == V4SFmode ? x
+				: gen_rtx_SUBREG (V4SFmode, x, 0)));
+  return x;
 }

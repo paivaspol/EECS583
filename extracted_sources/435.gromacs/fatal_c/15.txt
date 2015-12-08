@@ -1,6 +1,26 @@
-void print_warn_num(void)
+void warning(char *s)
 {
-  if (nwarn > 0)
-    fprintf(stderr,"There %s %d warning%s\n",
-	    (nwarn==1) ? "was" : "were", nwarn, (nwarn==1) ? "" : "s");
+#define indent 2 
+  char linenobuf[32], *temp, *temp2;
+  int i;
+
+  nwarn++;
+  if (s == NULL)
+    s = warn_buf;
+  if (lineno != -1)
+    sprintf(linenobuf,"%d",lineno);
+  else
+    strcpy(linenobuf,"unknown");
+  snew(temp,strlen(s)+indent+1);
+  for(i=0; i<indent; i++)
+    temp[i] = ' ';
+  temp[indent] = '\0';
+  strcat(temp,s);
+  temp2 = wrap_lines(temp,81-indent,indent);
+  fprintf(stderr,"WARNING %d [file %s, line %s]:\n%s\n",
+	  nwarn,filenm,linenobuf,temp2);
+  sfree(temp);
+  sfree(temp2);
+  if (nwarn >= maxwarn)
+    fatal_error(0,"Too many warnings, %s terminated",Program());
 }

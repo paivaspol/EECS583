@@ -1,38 +1,51 @@
 int
-Perl_magic_getdefelem(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_setpos(pTHX_ SV *sv, MAGIC *mg)
 {
-    SV *targ = Nullsv;
-    if (LvTARGLEN(sv)) {
-	if (mg->mg_obj) {
-	    SV *ahv = LvTARG(sv);
-	    if (SvTYPE(ahv) == SVt_PVHV) {
-		HE *he = hv_fetch_ent((HV*)ahv, mg->mg_obj, FALSE, 0);
-		if (he)
-		    targ = HeVAL(he);
-	    }
-	    else {
-		SV **svp = avhv_fetch_ent((AV*)ahv, mg->mg_obj, FALSE, 0);
-		if (svp)
-		    targ = *svp;
-	    }
-	}
-	else {
-	    AV* av = (AV*)LvTARG(sv);
-	    if ((I32)LvTARGOFF(sv) <= AvFILL(av))
-		targ = AvARRAY(av)[LvTARGOFF(sv)];
-	}
-	if (targ && targ != &PL_sv_undef) {
-	    /* somebody else defined it for us */
-	    SvREFCNT_dec(LvTARG(sv));
-	    LvTARG(sv) = SvREFCNT_inc(targ);
-	    LvTARGLEN(sv) = 0;
-	    SvREFCNT_dec(mg->mg_obj);
-	    mg->mg_obj = Nullsv;
-	    mg->mg_flags &= ~MGf_REFCOUNTED;
-	}
+    SV* lsv = LvTARG(sv);
+    SSize_t pos;
+    STRLEN len;
+    STRLEN ulen = 0;
+
+    mg = 0;
+
+    if (SvTYPE(lsv) >= SVt_PVMG && SvMAGIC(lsv))
+	mg = mg_find(lsv, PERL_MAGIC_regex_global);
+    if (!mg) {
+	if (!SvOK(sv))
+	    return 0;
+	sv_magic(lsv, (SV*)0, PERL_MAGIC_regex_global, Nullch, 0);
+	mg = mg_find(lsv, PERL_MAGIC_regex_global);
     }
-    else
-	targ = LvTARG(sv);
-    sv_setsv(sv, targ ? targ : &PL_sv_undef);
+    else if (!SvOK(sv)) {
+	mg->mg_len = -1;
+	return 0;
+    }
+    len = SvPOK(lsv) ? SvCUR(lsv) : sv_len(lsv);
+
+    pos = SvIV(sv) - PL_curcop->cop_arybase;
+
+    if (DO_UTF8(lsv)) {
+	ulen = sv_len_utf8(lsv);
+	if (ulen)
+	    len = ulen;
+    }
+
+    if (pos < 0) {
+	pos += len;
+	if (pos < 0)
+	    pos = 0;
+    }
+    else if (pos > (SSize_t)len)
+	pos = len;
+
+    if (ulen) {
+	I32 p = pos;
+	sv_pos_u2b(lsv, &p, 0);
+	pos = p;
+    }
+
+    mg->mg_len = pos;
+    mg->mg_flags &= ~MGf_MINMATCH;
+
     return 0;
 }

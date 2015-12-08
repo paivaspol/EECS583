@@ -1,0 +1,49 @@
+define void @DVshuffle(i32 %size, double* %y, i32 %seed) #0 {
+entry:
+  %drand = alloca %struct._Drand, align 8
+  %cmp = icmp sgt i32 %size, 0
+  %cmp1 = icmp slt i32 %seed, 1
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end13
+
+if.then:                                          ; preds = %entry
+  %cmp2 = icmp eq double* %y, null
+  br i1 %cmp2, label %if.then3, label %if.else
+
+if.then3:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([72 x i8]* @.str36, i64 0, i64 0), i32 %size, double* null, i32 %seed) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.else:                                          ; preds = %if.then
+  %1 = bitcast %struct._Drand* %drand to i8*
+  call void @llvm.lifetime.start(i64 72, i8* %1) #4
+  call void @Drand_setDefaultFields(%struct._Drand* %drand) #5
+  call void @Drand_setSeed(%struct._Drand* %drand, i32 %seed) #5
+  br i1 %cmp, label %for.body.lr.ph, label %if.end13
+
+for.body.lr.ph:                                   ; preds = %if.else
+  %conv = sitofp i32 %size to double
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %call5 = call double @Drand_value(%struct._Drand* %drand) #5
+  %mul = fmul double %conv, %call5
+  %conv6 = fptosi double %mul to i32
+  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv
+  %2 = load double* %arrayidx, align 8, !tbaa !3
+  %idxprom7 = sext i32 %conv6 to i64
+  %arrayidx8 = getelementptr inbounds double* %y, i64 %idxprom7
+  %3 = load double* %arrayidx8, align 8, !tbaa !3
+  store double %3, double* %arrayidx, align 8, !tbaa !3
+  store double %2, double* %arrayidx8, align 8, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %size
+  br i1 %exitcond, label %if.end13, label %for.body
+
+if.end13:                                         ; preds = %if.else, %for.body, %entry
+  ret void
+}

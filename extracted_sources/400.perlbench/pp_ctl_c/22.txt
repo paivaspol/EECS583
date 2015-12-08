@@ -1,0 +1,17 @@
+STATIC I32
+S_dopoptoeval(pTHX_ I32 startingblock)
+{
+    I32 i;
+    register PERL_CONTEXT *cx;
+    for (i = startingblock; i >= 0; i--) {
+	cx = &cxstack[i];
+	switch (CxTYPE(cx)) {
+	default:
+	    continue;
+	case CXt_EVAL:
+	    DEBUG_l( Perl_deb(aTHX_ "(Found eval #%ld)\n", (long)i));
+	    return i;
+	}
+    }
+    return i;
+}

@@ -1,0 +1,26 @@
+define i64 @vtohl(i64 %n) #7 {
+entry:
+  %u = alloca %union.anon.7, align 8
+  %value = getelementptr inbounds %union.anon.7* %u, i64 0, i32 0
+  store i64 %n, i64* %value, align 8, !tbaa !4
+  %c = bitcast %union.anon.7* %u to [8 x i8]*
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv13 = phi i64 [ 0, %entry ], [ %indvars.iv.next14, %for.body ]
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %n.addr.010 = phi i64 [ 0, %entry ], [ %or, %for.body ]
+  %arrayidx = getelementptr inbounds [8 x i8]* %c, i64 0, i64 %indvars.iv13
+  %0 = load i8* %arrayidx, align 1, !tbaa !0
+  %conv3 = zext i8 %0 to i64
+  %shl = shl i64 %conv3, %indvars.iv
+  %or = or i64 %shl, %n.addr.010
+  %indvars.iv.next14 = add i64 %indvars.iv13, 1
+  %indvars.iv.next = add i64 %indvars.iv, 8
+  %lftr.wideiv = trunc i64 %indvars.iv.next14 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 8
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  ret i64 %or
+}

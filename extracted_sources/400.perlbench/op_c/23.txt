@@ -1,0 +1,26 @@
+OP *
+Perl_scalarseq(pTHX_ OP *o)
+{
+    OP *kid;
+
+    if (o) {
+	if (o->op_type == OP_LINESEQ ||
+	     o->op_type == OP_SCOPE ||
+	     o->op_type == OP_LEAVE ||
+	     o->op_type == OP_LEAVETRY)
+	{
+	    for (kid = cLISTOPo->op_first; kid; kid = kid->op_sibling) {
+		if (kid->op_sibling) {
+		    scalarvoid(kid);
+		}
+	    }
+	    PL_curcop = &PL_compiling;
+	}
+	o->op_flags &= ~OPf_PARENS;
+	if (PL_hints & HINT_BLOCK_SCOPE)
+	    o->op_flags |= OPf_PARENS;
+    }
+    else
+	o = newOP(OP_STUB, 0);
+    return o;
+}

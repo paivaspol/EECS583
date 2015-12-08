@@ -1,0 +1,117 @@
+define internal fastcc void @S_incpush(i8* %p, i32 %addsubdirs, i32 %addoldvers, i32 %usesep) #0 {
+entry:
+  %tobool = icmp eq i8* %p, null
+  br i1 %tobool, label %if.end51, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %0 = load i8* %p, align 1, !tbaa !1
+  %tobool1 = icmp eq i8 %0, 0
+  br i1 %tobool1, label %if.end51, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false
+  %tobool2 = icmp ne i32 %addsubdirs, 0
+  %tobool2.not = xor i1 %tobool2, true
+  %tobool4 = icmp eq i32 %addoldvers, 0
+  %or.cond = and i1 %tobool4, %tobool2.not
+  br i1 %or.cond, label %land.rhs.lr.ph, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %call = call %struct.sv* @Perl_newSV(i64 0) #7
+  br label %land.rhs.lr.ph
+
+land.rhs.lr.ph:                                   ; preds = %if.end, %if.then5
+  %subdir.0.ph = phi %struct.sv* [ null, %if.end ], [ %call, %if.then5 ]
+  %tobool10 = icmp eq i32 %usesep, 0
+  br label %land.rhs
+
+land.rhs:                                         ; preds = %cond.end, %land.rhs.lr.ph
+  %p.addr.092 = phi i8* [ %p, %land.rhs.lr.ph ], [ %p.addr.3, %cond.end ]
+  %subdir.091 = phi %struct.sv* [ %subdir.0.ph, %land.rhs.lr.ph ], [ %subdir.3, %cond.end ]
+  %1 = load i8* %p.addr.092, align 1, !tbaa !1
+  %tobool8 = icmp eq i8 %1, 0
+  br i1 %tobool8, label %while.end48, label %while.body
+
+while.body:                                       ; preds = %land.rhs
+  %call9 = call %struct.sv* @Perl_newSV(i64 0) #7
+  br i1 %tobool10, label %if.else, label %while.cond12
+
+while.cond12:                                     ; preds = %while.body, %while.cond12
+  %p.addr.1 = phi i8* [ %incdec.ptr, %while.cond12 ], [ %p.addr.092, %while.body ]
+  %2 = load i8* %p.addr.1, align 1, !tbaa !1
+  %cmp = icmp eq i8 %2, 58
+  %incdec.ptr = getelementptr inbounds i8* %p.addr.1, i64 1
+  br i1 %cmp, label %while.cond12, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %while.cond12
+  %call18 = call i8* @strchr(i8* %p.addr.1, i32 58) #7
+  %cmp19 = icmp eq i8* %call18, null
+  br i1 %cmp19, label %if.else, label %if.then21
+
+if.then21:                                        ; preds = %land.lhs.true
+  %sub.ptr.lhs.cast = ptrtoint i8* %call18 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %p.addr.1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  call void @Perl_sv_setpvn(%struct.sv* %call9, i8* %p.addr.1, i64 %sub.ptr.sub) #7
+  %add.ptr = getelementptr inbounds i8* %call18, i64 1
+  br label %if.end22
+
+if.else:                                          ; preds = %while.body, %land.lhs.true
+  %p.addr.286 = phi i8* [ %p.addr.1, %land.lhs.true ], [ %p.addr.092, %while.body ]
+  call void @Perl_sv_setpv(%struct.sv* %call9, i8* %p.addr.286) #7
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.else, %if.then21
+  %p.addr.3 = phi i8* [ %add.ptr, %if.then21 ], [ null, %if.else ]
+  %tobool2.not95 = xor i1 %tobool2, true
+  %brmerge = or i1 %or.cond, %tobool2.not95
+  br i1 %brmerge, label %if.end39, label %if.then28
+
+if.then28:                                        ; preds = %if.end22
+  call void (%struct.sv*, i8*, ...)* @Perl_sv_setpvf(%struct.sv* %subdir.091, i8* getelementptr inbounds ([15 x i8]* @.str59, i64 0, i64 0), %struct.sv* %call9, i32 5, i32 8, i32 7, i8* getelementptr inbounds ([9 x i8]* @.str41, i64 0, i64 0)) #7
+  %call29 = call fastcc %struct.sv* @S_incpush_if_exists(%struct.sv* %subdir.091) #8
+  call void (%struct.sv*, i8*, ...)* @Perl_sv_setpvf(%struct.sv* %call29, i8* getelementptr inbounds ([12 x i8]* @.str60, i64 0, i64 0), %struct.sv* %call9, i32 5, i32 8, i32 7) #7
+  %call30 = call fastcc %struct.sv* @S_incpush_if_exists(%struct.sv* %call29) #8
+  call void (%struct.sv*, i8*, ...)* @Perl_sv_setpvf(%struct.sv* %call30, i8* getelementptr inbounds ([6 x i8]* @.str61, i64 0, i64 0), %struct.sv* %call9, i8* getelementptr inbounds ([9 x i8]* @.str41, i64 0, i64 0)) #7
+  %call31 = call fastcc %struct.sv* @S_incpush_if_exists(%struct.sv* %call30) #8
+  br label %if.end39
+
+if.end39:                                         ; preds = %if.end22, %if.then28
+  %subdir.3 = phi %struct.sv* [ %subdir.091, %if.end22 ], [ %call31, %if.then28 ]
+  %3 = load %struct.gv** @PL_incgv, align 8, !tbaa !0
+  %sv_any = getelementptr inbounds %struct.gv* %3, i64 0, i32 0
+  %4 = load %struct.xpvgv** %sv_any, align 8, !tbaa !0
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %4, i64 0, i32 7
+  %5 = load %struct.gp** %xgv_gp, align 8, !tbaa !0
+  %gp_av = getelementptr inbounds %struct.gp* %5, i64 0, i32 4
+  %6 = load %struct.av** %gp_av, align 8, !tbaa !0
+  %tobool40 = icmp eq %struct.av* %6, null
+  br i1 %tobool40, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %if.end39
+  %call44 = call %struct.gv* @Perl_gv_AVadd(%struct.gv* %3) #7
+  %sv_any45 = getelementptr inbounds %struct.gv* %call44, i64 0, i32 0
+  %7 = load %struct.xpvgv** %sv_any45, align 8, !tbaa !0
+  %xgv_gp46 = getelementptr inbounds %struct.xpvgv* %7, i64 0, i32 7
+  %8 = load %struct.gp** %xgv_gp46, align 8, !tbaa !0
+  %gp_av47 = getelementptr inbounds %struct.gp* %8, i64 0, i32 4
+  %9 = load %struct.av** %gp_av47, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.end39, %cond.false
+  %cond = phi %struct.av* [ %9, %cond.false ], [ %6, %if.end39 ]
+  call void @Perl_av_push(%struct.av* %cond, %struct.sv* %call9) #7
+  %tobool7 = icmp eq i8* %p.addr.3, null
+  br i1 %tobool7, label %while.end48, label %land.rhs
+
+while.end48:                                      ; preds = %cond.end, %land.rhs
+  %subdir.0.lcssa = phi %struct.sv* [ %subdir.091, %land.rhs ], [ %subdir.3, %cond.end ]
+  %tobool49 = icmp eq %struct.sv* %subdir.0.lcssa, null
+  br i1 %tobool49, label %if.end51, label %if.then50
+
+if.then50:                                        ; preds = %while.end48
+  call void @Perl_sv_free(%struct.sv* %subdir.0.lcssa) #7
+  br label %if.end51
+
+if.end51:                                         ; preds = %while.end48, %lor.lhs.false, %entry, %if.then50
+  ret void
+}

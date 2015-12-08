@@ -1,0 +1,34 @@
+define void @Free2DArray(i8** %p, i32 %dim1) #0 {
+entry:
+  %cmp = icmp eq i8** %p, null
+  br i1 %cmp, label %if.end6, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp113 = icmp sgt i32 %dim1, 0
+  br i1 %cmp113, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds i8** %p, i64 %indvars.iv
+  %0 = load i8** %arrayidx, align 8, !tbaa !0
+  %cmp2 = icmp eq i8* %0, null
+  br i1 %cmp2, label %for.inc, label %if.then3
+
+if.then3:                                         ; preds = %for.body
+  tail call void @free(i8* %0) #8
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %dim1
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %1 = bitcast i8** %p to i8*
+  tail call void @free(i8* %1) #8
+  br label %if.end6
+
+if.end6:                                          ; preds = %entry, %for.end
+  ret void
+}

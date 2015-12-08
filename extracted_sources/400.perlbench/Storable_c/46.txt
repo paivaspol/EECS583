@@ -1,22 +1,53 @@
-static SV *retrieve_tied_array(pTHX_ stcxt_t *cxt, char *cname)
+static SV *retrieve_ref(pTHX_ stcxt_t *cxt, char *cname)
 {
-	SV *tv;
+	SV *rv;
 	SV *sv;
 
-	TRACEME(("retrieve_tied_array (#%d)", cxt->tagnum));
+	TRACEME(("retrieve_ref (#%d)", cxt->tagnum));
 
-	tv = NEWSV(10002, 0);
-	SEEN(tv, cname, 0);			/* Will return if tv is null */
-	sv = retrieve(aTHX_ cxt, 0);		/* Retrieve <object> */
+	/*
+	 * We need to create the SV that holds the reference to the yet-to-retrieve
+	 * object now, so that we may record the address in the seen table.
+	 * Otherwise, if the object to retrieve references us, we won't be able
+	 * to resolve the SX_OBJECT we'll see at that point! Hence we cannot
+	 * do the retrieve first and use rv = newRV(sv) since it will be too late
+	 * for SEEN() recording.
+	 */
+
+	rv = NEWSV(10002, 0);
+	SEEN(rv, cname, 0);		/* Will return if rv is null */
+	sv = retrieve(aTHX_ cxt, 0);	/* Retrieve <object> */
 	if (!sv)
-		return (SV *) 0;		/* Failed */
+		return (SV *) 0;	/* Failed */
 
-	sv_upgrade(tv, SVt_PVAV);
-	AvREAL_off((AV *)tv);
-	sv_magic(tv, sv, 'P', Nullch, 0);
-	SvREFCNT_dec(sv);			/* Undo refcnt inc from sv_magic() */
+	/*
+	 * WARNING: breaks RV encapsulation.
+	 *
+	 * Now for the tricky part. We have to upgrade our existing SV, so that
+	 * it is now an RV on sv... Again, we cheat by duplicating the code
+	 * held in newSVrv(), since we already got our SV from retrieve().
+	 *
+	 * We don't say:
+	 *
+	 *		SvRV(rv) = SvREFCNT_inc(sv);
+	 *
+	 * here because the reference count we got from retrieve() above is
+	 * already correct: if the object was retrieved from the file, then
+	 * its reference count is one. Otherwise, if it was retrieved via
+	 * an SX_OBJECT indication, a ref count increment was done.
+	 */
 
-	TRACEME(("ok (retrieve_tied_array at 0x%"UVxf")", PTR2UV(tv)));
+	if (cname) {
+		/* No need to do anything, as rv will already be PVMG.  */
+		assert (SvTYPE(rv) >= SVt_RV);
+	} else {
+		sv_upgrade(rv, SVt_RV);
+	}
 
-	return tv;
+	SvRV(rv) = sv;				/* $rv = \$sv */
+	SvROK_on(rv);
+
+	TRACEME(("ok (retrieve_ref at 0x%"UVxf")", PTR2UV(rv)));
+
+	return rv;
 }

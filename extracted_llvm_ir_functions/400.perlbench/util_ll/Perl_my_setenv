@@ -1,0 +1,197 @@
+define void @Perl_my_setenv(i8* nocapture %nam, i8* %val) #0 {
+entry:
+  %0 = load i32* @PL_use_safe_putenv, align 4, !tbaa !3
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.then, label %if.else88
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @Perl_setenv_getix(i8* %nam) #9
+  %1 = load i8*** @environ, align 8, !tbaa !2
+  %2 = load i8*** @PL_origenviron, align 8, !tbaa !2
+  %cmp = icmp eq i8** %1, %2
+  %3 = sext i32 %call to i64
+  br i1 %cmp, label %for.cond, label %if.end
+
+for.cond:                                         ; preds = %if.then, %for.cond
+  %indvars.iv187 = phi i64 [ %indvars.iv.next188, %for.cond ], [ %3, %if.then ]
+  %indvars.iv185 = phi i32 [ %indvars.iv.next186, %for.cond ], [ %call, %if.then ]
+  %arrayidx = getelementptr inbounds i8** %1, i64 %indvars.iv187
+  %4 = load i8** %arrayidx, align 8, !tbaa !2
+  %tobool2 = icmp eq i8* %4, null
+  %indvars.iv.next188 = add i64 %indvars.iv187, 1
+  %indvars.iv.next186 = add i32 %indvars.iv185, 1
+  br i1 %tobool2, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.cond
+  %add = add nsw i32 %indvars.iv185, 2
+  %conv = sext i32 %add to i64
+  %mul = shl nsw i64 %conv, 3
+  %call3 = tail call i8* @Perl_safesysmalloc(i64 %mul) #9
+  %5 = bitcast i8* %call3 to i8**
+  %cmp5181 = icmp sgt i32 %indvars.iv185, 0
+  br i1 %cmp5181, label %for.body7.lr.ph, label %for.end27
+
+for.body7.lr.ph:                                  ; preds = %for.end
+  %.pre190 = load i8*** @environ, align 8, !tbaa !2
+  br label %for.body7
+
+for.body7:                                        ; preds = %for.body7, %for.body7.lr.ph
+  %6 = phi i8** [ %.pre190, %for.body7.lr.ph ], [ %8, %for.body7 ]
+  %indvars.iv183 = phi i64 [ 0, %for.body7.lr.ph ], [ %indvars.iv.next184, %for.body7 ]
+  %arrayidx9 = getelementptr inbounds i8** %6, i64 %indvars.iv183
+  %7 = load i8** %arrayidx9, align 8, !tbaa !2
+  %call10 = tail call i64 @strlen(i8* %7) #8
+  %add12 = shl i64 %call10, 32
+  %sext169 = add i64 %add12, 4294967296
+  %conv13 = ashr exact i64 %sext169, 32
+  %call15 = tail call i8* @Perl_safesysmalloc(i64 %conv13) #9
+  %arrayidx17 = getelementptr inbounds i8** %5, i64 %indvars.iv183
+  store i8* %call15, i8** %arrayidx17, align 8, !tbaa !2
+  %8 = load i8*** @environ, align 8, !tbaa !2
+  %arrayidx21 = getelementptr inbounds i8** %8, i64 %indvars.iv183
+  %9 = load i8** %arrayidx21, align 8, !tbaa !2
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call15, i8* %9, i64 %conv13, i32 1, i1 false)
+  %indvars.iv.next184 = add i64 %indvars.iv183, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next184 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %indvars.iv185
+  br i1 %exitcond, label %for.end27, label %for.body7
+
+for.end27:                                        ; preds = %for.body7, %for.end
+  %arrayidx29 = getelementptr inbounds i8** %5, i64 %indvars.iv187
+  store i8* null, i8** %arrayidx29, align 8, !tbaa !2
+  store i8** %5, i8*** @environ, align 8, !tbaa !2
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %for.end27
+  %10 = phi i8** [ %5, %for.end27 ], [ %1, %if.then ]
+  %tobool30 = icmp eq i8* %val, null
+  %arrayidx45 = getelementptr inbounds i8** %10, i64 %3
+  %11 = load i8** %arrayidx45, align 8, !tbaa !2
+  %tobool.i = icmp eq i8* %11, null
+  br i1 %tobool30, label %if.then31, label %if.end43
+
+if.then31:                                        ; preds = %if.end
+  br i1 %tobool.i, label %if.end117, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.then31
+  tail call void @free(i8* %11) #8
+  %.pre = load i8*** @environ, align 8, !tbaa !2
+  %arrayidx35177.phi.trans.insert = getelementptr inbounds i8** %.pre, i64 %3
+  %.pre189 = load i8** %arrayidx35177.phi.trans.insert, align 8, !tbaa !2
+  %phitmp = icmp eq i8* %.pre189, null
+  br i1 %phitmp, label %if.end117, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %while.cond.preheader
+  %arrayidx35177 = getelementptr inbounds i8** %.pre, i64 %3
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %indvars.iv = phi i64 [ %3, %while.body.lr.ph ], [ %indvars.iv.next, %while.body ]
+  %arrayidx35180 = phi i8** [ %arrayidx35177, %while.body.lr.ph ], [ %arrayidx35, %while.body ]
+  %12 = phi i8** [ %.pre, %while.body.lr.ph ], [ %14, %while.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %arrayidx39 = getelementptr inbounds i8** %12, i64 %indvars.iv.next
+  %13 = load i8** %arrayidx39, align 8, !tbaa !2
+  store i8* %13, i8** %arrayidx35180, align 8, !tbaa !2
+  %14 = load i8*** @environ, align 8, !tbaa !2
+  %arrayidx35 = getelementptr inbounds i8** %14, i64 %indvars.iv.next
+  %15 = load i8** %arrayidx35, align 8, !tbaa !2
+  %tobool36 = icmp eq i8* %15, null
+  br i1 %tobool36, label %if.end117, label %while.body
+
+if.end43:                                         ; preds = %if.end
+  br i1 %tobool.i, label %if.then47, label %Perl_safesysfree.exit175
+
+if.then47:                                        ; preds = %if.end43
+  %16 = bitcast i8** %10 to i8*
+  %add48 = add nsw i32 %call, 2
+  %conv49 = sext i32 %add48 to i64
+  %mul50 = shl nsw i64 %conv49, 3
+  %call51 = tail call i8* @Perl_safesysrealloc(i8* %16, i64 %mul50) #9
+  %17 = bitcast i8* %call51 to i8**
+  store i8** %17, i8*** @environ, align 8, !tbaa !2
+  %add52 = add nsw i32 %call, 1
+  %idxprom53 = sext i32 %add52 to i64
+  %arrayidx54 = getelementptr inbounds i8** %17, i64 %idxprom53
+  store i8* null, i8** %arrayidx54, align 8, !tbaa !2
+  br label %if.end57
+
+Perl_safesysfree.exit175:                         ; preds = %if.end43
+  tail call void @free(i8* %11) #8
+  br label %if.end57
+
+if.end57:                                         ; preds = %Perl_safesysfree.exit175, %if.then47
+  %call58 = tail call i64 @strlen(i8* %nam) #8
+  %conv59 = trunc i64 %call58 to i32
+  %call60 = tail call i64 @strlen(i8* %val) #8
+  %conv61 = trunc i64 %call60 to i32
+  %add62 = add i64 %call60, %call58
+  %add63 = shl i64 %add62, 32
+  %sext = add i64 %add63, 8589934592
+  %conv64 = ashr exact i64 %sext, 32
+  %call66 = tail call i8* @Perl_safesysmalloc(i64 %conv64) #9
+  %18 = load i8*** @environ, align 8, !tbaa !2
+  %arrayidx68 = getelementptr inbounds i8** %18, i64 %3
+  store i8* %call66, i8** %arrayidx68, align 8, !tbaa !2
+  %19 = load i8*** @environ, align 8, !tbaa !2
+  %arrayidx70 = getelementptr inbounds i8** %19, i64 %3
+  %20 = load i8** %arrayidx70, align 8, !tbaa !2
+  %sext167 = shl i64 %call58, 32
+  %conv71 = ashr exact i64 %sext167, 32
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %20, i8* %nam, i64 %conv71, i32 1, i1 false)
+  %21 = load i8*** @environ, align 8, !tbaa !2
+  %arrayidx74 = getelementptr inbounds i8** %21, i64 %3
+  %22 = load i8** %arrayidx74, align 8, !tbaa !2
+  %add.ptr = getelementptr inbounds i8* %22, i64 %conv71
+  store i8 61, i8* %add.ptr, align 1, !tbaa !0
+  %23 = load i8*** @environ, align 8, !tbaa !2
+  %arrayidx76 = getelementptr inbounds i8** %23, i64 %3
+  %24 = load i8** %arrayidx76, align 8, !tbaa !2
+  %add77 = add nsw i32 %conv59, 1
+  %idx.ext78 = sext i32 %add77 to i64
+  %add.ptr79 = getelementptr inbounds i8* %24, i64 %idx.ext78
+  %sext168 = shl i64 %call60, 32
+  %conv80 = ashr exact i64 %sext168, 32
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr79, i8* %val, i64 %conv80, i32 1, i1 false)
+  %25 = load i8*** @environ, align 8, !tbaa !2
+  %arrayidx83 = getelementptr inbounds i8** %25, i64 %3
+  %26 = load i8** %arrayidx83, align 8, !tbaa !2
+  %add85 = add nsw i32 %add77, %conv61
+  %idx.ext86 = sext i32 %add85 to i64
+  %add.ptr87 = getelementptr inbounds i8* %26, i64 %idx.ext86
+  store i8 0, i8* %add.ptr87, align 1, !tbaa !0
+  br label %if.end117
+
+if.else88:                                        ; preds = %entry
+  %call90 = tail call i64 @strlen(i8* %nam) #8
+  %conv91 = trunc i64 %call90 to i32
+  %tobool93 = icmp eq i8* %val, null
+  %.val = select i1 %tobool93, i8* getelementptr inbounds ([1 x i8]* @.str3, i64 0, i64 0), i8* %val
+  %call96 = tail call i64 @strlen(i8* %.val) #8
+  %conv97 = trunc i64 %call96 to i32
+  %add98 = add i64 %call96, %call90
+  %add99 = shl i64 %add98, 32
+  %sext170 = add i64 %add99, 8589934592
+  %conv100 = ashr exact i64 %sext170, 32
+  %call102 = tail call i8* @Perl_safesysmalloc(i64 %conv100) #9
+  %sext171 = shl i64 %call90, 32
+  %conv103 = ashr exact i64 %sext171, 32
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call102, i8* %nam, i64 %conv103, i32 1, i1 false)
+  %add.ptr106 = getelementptr inbounds i8* %call102, i64 %conv103
+  store i8 61, i8* %add.ptr106, align 1, !tbaa !0
+  %add107 = add nsw i32 %conv91, 1
+  %idx.ext108 = sext i32 %add107 to i64
+  %add.ptr109 = getelementptr inbounds i8* %call102, i64 %idx.ext108
+  %sext172 = shl i64 %call96, 32
+  %conv110 = ashr exact i64 %sext172, 32
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr109, i8* %.val, i64 %conv110, i32 1, i1 false)
+  %add113 = add nsw i32 %add107, %conv97
+  %idx.ext114 = sext i32 %add113 to i64
+  %add.ptr115 = getelementptr inbounds i8* %call102, i64 %idx.ext114
+  store i8 0, i8* %add.ptr115, align 1, !tbaa !0
+  %call116 = tail call i32 @putenv(i8* %call102) #8
+  br label %if.end117
+
+if.end117:                                        ; preds = %if.then31, %while.cond.preheader, %while.body, %if.else88, %if.end57
+  ret void
+}

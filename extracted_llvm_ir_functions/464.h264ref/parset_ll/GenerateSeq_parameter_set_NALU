@@ -1,0 +1,14 @@
+define %struct.NALU_t* @GenerateSeq_parameter_set_NALU() #0 {
+entry:
+  %rbsp = alloca [64000 x i8], align 16
+  %call = call %struct.NALU_t* (i32, ...)* bitcast (%struct.NALU_t* (...)* @AllocNALU to %struct.NALU_t* (i32, ...)*)(i32 64000) #5
+  %0 = getelementptr inbounds [64000 x i8]* %rbsp, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 64000, i8* %0) #2
+  %1 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !0
+  %call1 = call i32 @GenerateSeq_parameter_set_rbsp(%struct.seq_parameter_set_rbsp_t* %1, i8* %0) #6
+  %call3 = call i32 @RBSPtoNALU(i8* %0, %struct.NALU_t* %call, i32 %call1, i32 7, i32 3, i32 0, i32 1) #5
+  %startcodeprefix_len = getelementptr inbounds %struct.NALU_t* %call, i64 0, i32 0
+  store i32 4, i32* %startcodeprefix_len, align 4, !tbaa !3
+  call void @llvm.lifetime.end(i64 64000, i8* %0) #2
+  ret %struct.NALU_t* %call
+}

@@ -1,0 +1,32 @@
+define void @Drand_setDefaultFields(%struct._Drand* %drand) #0 {
+entry:
+  %cmp = icmp eq %struct._Drand* %drand, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str2, i64 0, i64 0), %struct._Drand* null) #3
+  tail call void @exit(i32 -1) #4
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %seed1 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 0
+  store double 0x419D6F3454000000, double* %seed1, align 8, !tbaa !3
+  %seed2 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 1
+  store double 0x41CD6F3458800000, double* %seed2, align 8, !tbaa !3
+  %base1 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 2
+  store double 0x41DFFFFFEAC00000, double* %base1, align 8, !tbaa !3
+  %base2 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 3
+  store double 0x41DFFFFFC1C00000, double* %base2, align 8, !tbaa !3
+  %lower = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 4
+  store double 0.000000e+00, double* %lower, align 8, !tbaa !3
+  %upper = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 5
+  store double 1.000000e+00, double* %upper, align 8, !tbaa !3
+  %mean = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 6
+  store double 0.000000e+00, double* %mean, align 8, !tbaa !3
+  %sigma = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 7
+  store double 1.000000e+00, double* %sigma, align 8, !tbaa !3
+  %mode = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 8
+  store i32 1, i32* %mode, align 4, !tbaa !4
+  ret void
+}

@@ -1,0 +1,51 @@
+define %struct.op* @Perl_pp_gvsv() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_max, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %1 to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp = icmp slt i64 %sub.ptr.sub, 8
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.sv** @Perl_stack_grow(%struct.sv** %0, %struct.sv** %0, i32 1) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %sp.0 = phi %struct.sv** [ %call, %if.then ], [ %0, %entry ]
+  %2 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_private = getelementptr inbounds %struct.op* %2, i64 0, i32 7
+  %3 = load i8* %op_private, align 1, !tbaa !1
+  %tobool = icmp slt i8 %3, 0
+  %op_sv = getelementptr inbounds %struct.op* %2, i64 1
+  %4 = bitcast %struct.op* %op_sv to %struct.sv**
+  %5 = load %struct.sv** %4, align 8, !tbaa !0
+  br i1 %tobool, label %if.then1, label %if.else
+
+if.then1:                                         ; preds = %if.end
+  %6 = bitcast %struct.sv* %5 to %struct.gv*
+  %call2 = tail call %struct.sv* @Perl_save_scalar(%struct.gv* %6) #8
+  %incdec.ptr = getelementptr inbounds %struct.sv** %sp.0, i64 1
+  store %struct.sv* %call2, %struct.sv** %incdec.ptr, align 8, !tbaa !0
+  br label %if.end5
+
+if.else:                                          ; preds = %if.end
+  %sv_any = bitcast %struct.sv* %5 to %struct.xpvgv**
+  %7 = load %struct.xpvgv** %sv_any, align 8, !tbaa !0
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %7, i64 0, i32 7
+  %8 = load %struct.gp** %xgv_gp, align 8, !tbaa !0
+  %gp_sv = getelementptr inbounds %struct.gp* %8, i64 0, i32 0
+  %9 = load %struct.sv** %gp_sv, align 8, !tbaa !0
+  %incdec.ptr4 = getelementptr inbounds %struct.sv** %sp.0, i64 1
+  store %struct.sv* %9, %struct.sv** %incdec.ptr4, align 8, !tbaa !0
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.else, %if.then1
+  %sp.1 = phi %struct.sv** [ %incdec.ptr, %if.then1 ], [ %incdec.ptr4, %if.else ]
+  store %struct.sv** %sp.1, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %10 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %10, i64 0, i32 0
+  %11 = load %struct.op** %op_next, align 8, !tbaa !0
+  ret %struct.op* %11
+}

@@ -1,15 +1,12 @@
-static void add_filters(char *filter,int *n,int nf,int ftp[])
+bool ftp2bSet(int ftp,int nfile,t_filenm fnm[])
 {
-  char buf[8];
-  int  i;
-
-  sprintf(filter,"*.{");  
-  for(i=0; (i<nf); i++) {
-    sprintf(buf,"%s",ftp2ext(ftp[i]));
-    if (*n > 0)
-      strcat(filter,",");
-    strcat(filter,buf);
-    (*n) ++;
-  }
-  strcat(filter,"}");
+  int i;
+  
+  for(i=0; (i<nfile); i++)
+    if (ftp == fnm[i].ftp)
+      return (bool) IS_SET(fnm[i]);
+      
+  fprintf(stderr,"ftp2bSet: No filetype %s\n",deffile[ftp].ext);
+  
+  return FALSE;
 }

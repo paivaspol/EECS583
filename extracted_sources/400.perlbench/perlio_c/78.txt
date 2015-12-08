@@ -1,0 +1,27 @@
+IV
+PerlIOStdio_pushed(pTHX_ PerlIO *f, const char *mode, SV *arg, PerlIO_funcs *tab)
+{
+    PerlIO *n;
+    if (PerlIOValid(f) && PerlIOValid(n = PerlIONext(f))) {
+        PerlIO_funcs *toptab = PerlIOBase(n)->tab;
+        if (toptab == tab) {
+	    /* Top is already stdio - pop self (duplicate) and use original */
+	    PerlIO_pop(aTHX_ f);
+	    return 0;
+	} else {
+	    int fd = PerlIO_fileno(n);
+	    char tmode[8];
+	    FILE *stdio;
+	    if (fd >= 0 && (stdio  = PerlSIO_fdopen(fd,
+			    mode = PerlIOStdio_mode(mode, tmode)))) {
+		PerlIOSelf(f, PerlIOStdio)->stdio = stdio;
+	    	/* We never call down so do any pending stuff now */
+	    	PerlIO_flush(PerlIONext(f));
+	    }
+	    else {
+		return -1;
+	    }
+        }
+    }
+    return PerlIOBase_pushed(aTHX_ f, mode, arg, tab);
+}

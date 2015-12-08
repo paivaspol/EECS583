@@ -1,0 +1,25 @@
+define i64 @PerlIOPending_flush(%struct._PerlIO** %f) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %buf = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %buf to i8**
+  %2 = load i8** %1, align 8, !tbaa !3
+  %tobool = icmp eq i8* %2, null
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %oneword = getelementptr inbounds %struct._PerlIO* %0, i64 2, i32 2
+  %3 = bitcast i32* %oneword to i8*
+  %cmp = icmp eq i8* %2, %3
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @Perl_safesysfree(i8* %2) #9
+  %4 = getelementptr inbounds %struct._PerlIO* %buf, i64 0, i32 0
+  store %struct._PerlIO* null, %struct._PerlIO** %4, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %entry, %if.then
+  tail call void @PerlIO_pop(%struct._PerlIO** %f) #10
+  ret i64 0
+}

@@ -1,0 +1,269 @@
+define i64 @price_out_impl(%struct.network* %net) #0 {
+entry:
+  %bigM1 = getelementptr inbounds %struct.network* %net, i64 0, i32 18
+  %0 = load i64* %bigM1, align 8, !tbaa !0
+  %sub = add nsw i64 %0, -15
+  %n_trips = getelementptr inbounds %struct.network* %net, i64 0, i32 3
+  %1 = load i64* %n_trips, align 8, !tbaa !0
+  %cmp = icmp slt i64 %1, 15001
+  br i1 %cmp, label %if.then, label %if.end12.thread
+
+if.end12.thread:                                  ; preds = %entry
+  %stop_arcs215 = getelementptr inbounds %struct.network* %net, i64 0, i32 24
+  %2 = load %struct.arc** %stop_arcs215, align 8, !tbaa !3
+  %arcs216 = getelementptr inbounds %struct.network* %net, i64 0, i32 23
+  %3 = load %struct.arc** %arcs216, align 8, !tbaa !3
+  br label %land.rhs.lr.ph
+
+if.then:                                          ; preds = %entry
+  %m = getelementptr inbounds %struct.network* %net, i64 0, i32 5
+  %4 = load i64* %m, align 8, !tbaa !0
+  %max_new_m = getelementptr inbounds %struct.network* %net, i64 0, i32 9
+  %5 = load i64* %max_new_m, align 8, !tbaa !0
+  %add = add nsw i64 %5, %4
+  %max_m = getelementptr inbounds %struct.network* %net, i64 0, i32 4
+  %6 = load i64* %max_m, align 8, !tbaa !0
+  %cmp2 = icmp sgt i64 %add, %6
+  br i1 %cmp2, label %land.lhs.true, label %if.end12
+
+land.lhs.true:                                    ; preds = %if.then
+  %mul = mul nsw i64 %1, %1
+  %div = lshr i64 %mul, 1
+  %add6 = add nsw i64 %4, %div
+  %cmp8 = icmp sgt i64 %add6, %6
+  br i1 %cmp8, label %if.then9, label %if.end12
+
+if.then9:                                         ; preds = %land.lhs.true
+  %call = tail call i64 @resize_prob(%struct.network* %net) #5
+  %tobool = icmp eq i64 %call, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %if.then9
+  tail call void @refresh_neighbour_lists(%struct.network* %net) #4
+  %.pre = load i64* %n_trips, align 8, !tbaa !0
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.then, %land.lhs.true, %if.end
+  %7 = phi i64 [ %.pre, %if.end ], [ %1, %land.lhs.true ], [ %1, %if.then ]
+  %resized.0 = phi i64 [ 1, %if.end ], [ 0, %land.lhs.true ], [ 0, %if.then ]
+  %stop_arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 24
+  %8 = load %struct.arc** %stop_arcs, align 8, !tbaa !3
+  %arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 23
+  %9 = load %struct.arc** %arcs, align 8, !tbaa !3
+  %cmp14206 = icmp sgt i64 %7, 0
+  br i1 %cmp14206, label %land.rhs.lr.ph, label %for.cond16.preheader
+
+land.rhs.lr.ph:                                   ; preds = %if.end12.thread, %if.end12
+  %10 = phi %struct.arc* [ %3, %if.end12.thread ], [ %9, %if.end12 ]
+  %11 = phi %struct.arc* [ %2, %if.end12.thread ], [ %8, %if.end12 ]
+  %stop_arcs221 = phi %struct.arc** [ %stop_arcs215, %if.end12.thread ], [ %stop_arcs, %if.end12 ]
+  %resized.0219 = phi i64 [ 0, %if.end12.thread ], [ %resized.0, %if.end12 ]
+  %12 = phi i64 [ %1, %if.end12.thread ], [ %7, %if.end12 ]
+  br label %land.rhs
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.inc
+  %i.0208 = phi i64 [ 0, %land.rhs.lr.ph ], [ %inc, %for.inc ]
+  %arcout.0207 = phi %struct.arc* [ %10, %land.rhs.lr.ph ], [ %add.ptr, %for.inc ]
+  %ident = getelementptr inbounds %struct.arc* %arcout.0207, i64 1, i32 3
+  %13 = load i32* %ident, align 4, !tbaa !4
+  %cmp15 = icmp eq i32 %13, -1
+  br i1 %cmp15, label %for.inc, label %for.cond16.preheader
+
+for.cond16.preheader:                             ; preds = %for.inc, %land.rhs, %if.end12
+  %14 = phi %struct.arc* [ %8, %if.end12 ], [ %11, %land.rhs ], [ %11, %for.inc ]
+  %stop_arcs220 = phi %struct.arc** [ %stop_arcs, %if.end12 ], [ %stop_arcs221, %land.rhs ], [ %stop_arcs221, %for.inc ]
+  %resized.0218 = phi i64 [ %resized.0, %if.end12 ], [ %resized.0219, %land.rhs ], [ %resized.0219, %for.inc ]
+  %15 = phi i64 [ %7, %if.end12 ], [ %12, %land.rhs ], [ %12, %for.inc ]
+  %i.0.lcssa = phi i64 [ 0, %if.end12 ], [ %i.0208, %land.rhs ], [ %inc, %for.inc ]
+  %arcout.0.lcssa = phi %struct.arc* [ %9, %if.end12 ], [ %arcout.0207, %land.rhs ], [ %add.ptr, %for.inc ]
+  %cmp17200 = icmp slt i64 %i.0.lcssa, %15
+  br i1 %cmp17200, label %for.body18.lr.ph, label %return
+
+for.body18.lr.ph:                                 ; preds = %for.cond16.preheader
+  %max_residual_new_m = getelementptr inbounds %struct.network* %net, i64 0, i32 8
+  %flow = getelementptr inbounds %struct.arc* %14, i64 0, i32 6
+  br label %for.body18
+
+for.inc:                                          ; preds = %land.rhs
+  %inc = add nsw i64 %i.0208, 1
+  %add.ptr = getelementptr inbounds %struct.arc* %arcout.0207, i64 3
+  %cmp14 = icmp slt i64 %inc, %12
+  br i1 %cmp14, label %land.rhs, label %for.cond16.preheader
+
+for.body18:                                       ; preds = %for.inc66, %for.body18.lr.ph
+  %i.1204 = phi i64 [ %i.0.lcssa, %for.body18.lr.ph ], [ %inc67, %for.inc66 ]
+  %first_of_sparse_list.0203 = phi %struct.arc* [ null, %for.body18.lr.ph ], [ %first_of_sparse_list.1, %for.inc66 ]
+  %new_arcs.0202 = phi i64 [ 0, %for.body18.lr.ph ], [ %new_arcs.3, %for.inc66 ]
+  %arcout.1201 = phi %struct.arc* [ %arcout.0.lcssa, %for.body18.lr.ph ], [ %add.ptr68, %for.inc66 ]
+  %ident20 = getelementptr inbounds %struct.arc* %arcout.1201, i64 1, i32 3
+  %16 = load i32* %ident20, align 4, !tbaa !4
+  %cmp21 = icmp eq i32 %16, -1
+  br i1 %cmp21, label %if.end26, label %if.then22
+
+if.then22:                                        ; preds = %for.body18
+  %arrayidx19 = getelementptr inbounds %struct.arc* %arcout.1201, i64 1
+  %head23 = getelementptr inbounds %struct.arc* %arcout.1201, i64 0, i32 2
+  %17 = load %struct.node** %head23, align 8, !tbaa !3
+  %firstout = getelementptr inbounds %struct.node* %17, i64 0, i32 7
+  %18 = load %struct.arc** %firstout, align 8, !tbaa !3
+  %head24 = getelementptr inbounds %struct.arc* %18, i64 0, i32 2
+  %19 = load %struct.node** %head24, align 8, !tbaa !3
+  %arc_tmp = getelementptr inbounds %struct.node* %19, i64 0, i32 9
+  store %struct.arc* %first_of_sparse_list.0203, %struct.arc** %arc_tmp, align 8, !tbaa !3
+  br label %if.end26
+
+if.end26:                                         ; preds = %for.body18, %if.then22
+  %first_of_sparse_list.1 = phi %struct.arc* [ %arrayidx19, %if.then22 ], [ %first_of_sparse_list.0203, %for.body18 ]
+  %ident27 = getelementptr inbounds %struct.arc* %arcout.1201, i64 0, i32 3
+  %20 = load i32* %ident27, align 4, !tbaa !4
+  %cmp28 = icmp eq i32 %20, -1
+  br i1 %cmp28, label %for.inc66, label %if.end30
+
+if.end30:                                         ; preds = %if.end26
+  %head31 = getelementptr inbounds %struct.arc* %arcout.1201, i64 0, i32 2
+  %21 = load %struct.node** %head31, align 8, !tbaa !3
+  %time = getelementptr inbounds %struct.node* %21, i64 0, i32 13
+  %22 = load i32* %time, align 4, !tbaa !4
+  %conv = sext i32 %22 to i64
+  %org_cost = getelementptr inbounds %struct.arc* %arcout.1201, i64 0, i32 7
+  %23 = load i64* %org_cost, align 8, !tbaa !0
+  %sub32 = sub i64 %sub, %23
+  %add33 = add i64 %sub32, %conv
+  %potential = getelementptr inbounds %struct.node* %21, i64 0, i32 0
+  %tail34 = getelementptr inbounds %struct.arc* %first_of_sparse_list.1, i64 0, i32 1
+  %24 = load %struct.node** %tail34, align 8, !tbaa !3
+  %arc_tmp35 = getelementptr inbounds %struct.node* %24, i64 0, i32 9
+  %arcin.0191196 = load %struct.arc** %arc_tmp35, align 8
+  %tobool36192197 = icmp eq %struct.arc* %arcin.0191196, null
+  br i1 %tobool36192197, label %for.inc66, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %if.end30, %if.end64
+  %arcin.0191199 = phi %struct.arc* [ %arcin.0191, %if.end64 ], [ %arcin.0191196, %if.end30 ]
+  %new_arcs.1.ph198 = phi i64 [ %new_arcs.2, %if.end64 ], [ %new_arcs.0202, %if.end30 ]
+  br label %while.body
+
+while.cond:                                       ; preds = %while.body
+  %arc_tmp45 = getelementptr inbounds %struct.node* %25, i64 0, i32 9
+  %arcin.0 = load %struct.arc** %arc_tmp45, align 8
+  %tobool36 = icmp eq %struct.arc* %arcin.0, null
+  br i1 %tobool36, label %for.inc66, label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond
+  %arcin.0193 = phi %struct.arc* [ %arcin.0191199, %while.body.lr.ph ], [ %arcin.0, %while.cond ]
+  %tail37 = getelementptr inbounds %struct.arc* %arcin.0193, i64 0, i32 1
+  %25 = load %struct.node** %tail37, align 8, !tbaa !3
+  %time38 = getelementptr inbounds %struct.node* %25, i64 0, i32 13
+  %26 = load i32* %time38, align 4, !tbaa !4
+  %conv39 = sext i32 %26 to i64
+  %org_cost40 = getelementptr inbounds %struct.arc* %arcin.0193, i64 0, i32 7
+  %27 = load i64* %org_cost40, align 8, !tbaa !0
+  %add41 = add nsw i64 %conv39, %27
+  %cmp42 = icmp sgt i64 %add41, %add33
+  br i1 %cmp42, label %while.cond, label %if.end46
+
+if.end46:                                         ; preds = %while.body
+  %potential47 = getelementptr inbounds %struct.node* %25, i64 0, i32 0
+  %28 = load i64* %potential47, align 8, !tbaa !0
+  %sub48 = sub nsw i64 30, %28
+  %29 = load i64* %potential, align 8, !tbaa !0
+  %add50 = add nsw i64 %sub48, %29
+  %cmp51 = icmp slt i64 %add50, 0
+  br i1 %cmp51, label %if.then53, label %if.end64
+
+if.then53:                                        ; preds = %if.end46
+  %30 = load i64* %max_residual_new_m, align 8, !tbaa !0
+  %cmp54 = icmp slt i64 %new_arcs.1.ph198, %30
+  br i1 %cmp54, label %if.then56, label %if.else
+
+if.then56:                                        ; preds = %if.then53
+  tail call void @insert_new_arc(%struct.arc* %14, i64 %new_arcs.1.ph198, %struct.node* %25, %struct.node* %21, i64 30, i64 %add50) #5
+  %inc57 = add nsw i64 %new_arcs.1.ph198, 1
+  br label %if.end64
+
+if.else:                                          ; preds = %if.then53
+  %31 = load i64* %flow, align 8, !tbaa !0
+  %cmp59 = icmp sgt i64 %31, %add50
+  br i1 %cmp59, label %if.then61, label %if.end64
+
+if.then61:                                        ; preds = %if.else
+  tail call void @replace_weaker_arc(%struct.network* %net, %struct.arc* %14, %struct.node* %25, %struct.node* %21, i64 30, i64 %add50) #5
+  br label %if.end64
+
+if.end64:                                         ; preds = %if.then56, %if.then61, %if.else, %if.end46
+  %new_arcs.2 = phi i64 [ %inc57, %if.then56 ], [ %new_arcs.1.ph198, %if.then61 ], [ %new_arcs.1.ph198, %if.else ], [ %new_arcs.1.ph198, %if.end46 ]
+  %arc_tmp65 = getelementptr inbounds %struct.node* %25, i64 0, i32 9
+  %arcin.0191 = load %struct.arc** %arc_tmp65, align 8
+  %tobool36192 = icmp eq %struct.arc* %arcin.0191, null
+  br i1 %tobool36192, label %for.inc66, label %while.body.lr.ph
+
+for.inc66:                                        ; preds = %while.cond, %if.end64, %if.end30, %if.end26
+  %new_arcs.3 = phi i64 [ %new_arcs.0202, %if.end26 ], [ %new_arcs.1.ph198, %while.cond ], [ %new_arcs.0202, %if.end30 ], [ %new_arcs.2, %if.end64 ]
+  %inc67 = add nsw i64 %i.1204, 1
+  %add.ptr68 = getelementptr inbounds %struct.arc* %arcout.1201, i64 3
+  %exitcond = icmp eq i64 %inc67, %15
+  br i1 %exitcond, label %for.end69, label %for.body18
+
+for.end69:                                        ; preds = %for.inc66
+  %tobool70 = icmp eq i64 %new_arcs.3, 0
+  br i1 %tobool70, label %return, label %if.then71
+
+if.then71:                                        ; preds = %for.end69
+  %32 = load %struct.arc** %stop_arcs220, align 8, !tbaa !3
+  %add.ptr74 = getelementptr inbounds %struct.arc* %32, i64 %new_arcs.3
+  store %struct.arc* %add.ptr74, %struct.arc** %stop_arcs220, align 8, !tbaa !3
+  %tobool76 = icmp eq i64 %resized.0218, 0
+  br i1 %tobool76, label %for.body90, label %for.body81
+
+for.body81:                                       ; preds = %if.then71, %for.body81
+  %arcnew.0190 = phi %struct.arc* [ %incdec.ptr, %for.body81 ], [ %32, %if.then71 ]
+  %flow82 = getelementptr inbounds %struct.arc* %arcnew.0190, i64 0, i32 6
+  store i64 0, i64* %flow82, align 8, !tbaa !0
+  %ident83 = getelementptr inbounds %struct.arc* %arcnew.0190, i64 0, i32 3
+  store i32 1, i32* %ident83, align 4, !tbaa !4
+  %incdec.ptr = getelementptr inbounds %struct.arc* %arcnew.0190, i64 1
+  %cmp79 = icmp eq %struct.arc* %incdec.ptr, %add.ptr74
+  br i1 %cmp79, label %if.end103, label %for.body81
+
+for.body90:                                       ; preds = %if.then71, %for.body90
+  %arcnew.1187 = phi %struct.arc* [ %incdec.ptr101, %for.body90 ], [ %32, %if.then71 ]
+  %flow91 = getelementptr inbounds %struct.arc* %arcnew.1187, i64 0, i32 6
+  store i64 0, i64* %flow91, align 8, !tbaa !0
+  %ident92 = getelementptr inbounds %struct.arc* %arcnew.1187, i64 0, i32 3
+  store i32 1, i32* %ident92, align 4, !tbaa !4
+  %tail93 = getelementptr inbounds %struct.arc* %arcnew.1187, i64 0, i32 1
+  %33 = load %struct.node** %tail93, align 8, !tbaa !3
+  %firstout94 = getelementptr inbounds %struct.node* %33, i64 0, i32 7
+  %34 = load %struct.arc** %firstout94, align 8, !tbaa !3
+  %nextout = getelementptr inbounds %struct.arc* %arcnew.1187, i64 0, i32 4
+  store %struct.arc* %34, %struct.arc** %nextout, align 8, !tbaa !3
+  store %struct.arc* %arcnew.1187, %struct.arc** %firstout94, align 8, !tbaa !3
+  %head97 = getelementptr inbounds %struct.arc* %arcnew.1187, i64 0, i32 2
+  %35 = load %struct.node** %head97, align 8, !tbaa !3
+  %firstin = getelementptr inbounds %struct.node* %35, i64 0, i32 8
+  %36 = load %struct.arc** %firstin, align 8, !tbaa !3
+  %nextin = getelementptr inbounds %struct.arc* %arcnew.1187, i64 0, i32 5
+  store %struct.arc* %36, %struct.arc** %nextin, align 8, !tbaa !3
+  store %struct.arc* %arcnew.1187, %struct.arc** %firstin, align 8, !tbaa !3
+  %incdec.ptr101 = getelementptr inbounds %struct.arc* %arcnew.1187, i64 1
+  %cmp88 = icmp eq %struct.arc* %incdec.ptr101, %add.ptr74
+  br i1 %cmp88, label %if.end103, label %for.body90
+
+if.end103:                                        ; preds = %for.body81, %for.body90
+  %m104 = getelementptr inbounds %struct.network* %net, i64 0, i32 5
+  %37 = load i64* %m104, align 8, !tbaa !0
+  %add105 = add nsw i64 %37, %new_arcs.3
+  store i64 %add105, i64* %m104, align 8, !tbaa !0
+  %m_impl = getelementptr inbounds %struct.network* %net, i64 0, i32 7
+  %38 = load i64* %m_impl, align 8, !tbaa !0
+  %add106 = add nsw i64 %38, %new_arcs.3
+  store i64 %add106, i64* %m_impl, align 8, !tbaa !0
+  %max_residual_new_m107 = getelementptr inbounds %struct.network* %net, i64 0, i32 8
+  %39 = load i64* %max_residual_new_m107, align 8, !tbaa !0
+  %sub108 = sub nsw i64 %39, %new_arcs.3
+  store i64 %sub108, i64* %max_residual_new_m107, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %for.cond16.preheader, %if.end103, %for.end69, %if.then9
+  %retval.0 = phi i64 [ -1, %if.then9 ], [ 0, %for.end69 ], [ %new_arcs.3, %if.end103 ], [ 0, %for.cond16.preheader ]
+  ret i64 %retval.0
+}

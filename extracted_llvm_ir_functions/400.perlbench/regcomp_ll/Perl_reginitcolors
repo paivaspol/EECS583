@@ -1,0 +1,50 @@
+define void @Perl_reginitcolors() #0 {
+entry:
+  %call = tail call i8* @getenv(i8* getelementptr inbounds ([15 x i8]* @.str, i64 0, i64 0)) #8
+  %tobool = icmp eq i8* %call, null
+  br i1 %tobool, label %while.body10, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i8* @Perl_savepv(i8* %call) #8
+  store i8* %call1, i8** getelementptr inbounds ([6 x i8*]* @PL_colors, i64 0, i64 0), align 8, !tbaa !0
+  br label %while.body
+
+while.body:                                       ; preds = %while.cond.backedge, %if.then
+  %indvars.iv29 = phi i64 [ 1, %if.then ], [ %indvars.iv.next30, %while.cond.backedge ]
+  %s.027 = phi i8* [ %call1, %if.then ], [ %s.0.be, %while.cond.backedge ]
+  %call2 = tail call i8* @strchr(i8* %s.027, i32 9) #8
+  %tobool3 = icmp eq i8* %call2, null
+  br i1 %tobool3, label %if.else, label %if.then4
+
+if.then4:                                         ; preds = %while.body
+  store i8 0, i8* %call2, align 1, !tbaa !1
+  %incdec.ptr = getelementptr inbounds i8* %call2, i64 1
+  %arrayidx = getelementptr inbounds [6 x i8*]* @PL_colors, i64 0, i64 %indvars.iv29
+  store i8* %incdec.ptr, i8** %arrayidx, align 8, !tbaa !0
+  br label %while.cond.backedge
+
+if.else:                                          ; preds = %while.body
+  %arrayidx6 = getelementptr inbounds [6 x i8*]* @PL_colors, i64 0, i64 %indvars.iv29
+  store i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0), i8** %arrayidx6, align 8, !tbaa !0
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.else, %if.then4
+  %s.0.be = phi i8* [ %incdec.ptr, %if.then4 ], [ getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0), %if.else ]
+  %indvars.iv.next30 = add i64 %indvars.iv29, 1
+  %lftr.wideiv31 = trunc i64 %indvars.iv.next30 to i32
+  %exitcond32 = icmp eq i32 %lftr.wideiv31, 6
+  br i1 %exitcond32, label %if.end15, label %while.body
+
+while.body10:                                     ; preds = %entry, %while.body10
+  %indvars.iv = phi i64 [ %indvars.iv.next, %while.body10 ], [ 0, %entry ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %arrayidx13 = getelementptr inbounds [6 x i8*]* @PL_colors, i64 0, i64 %indvars.iv
+  store i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0), i8** %arrayidx13, align 8, !tbaa !0
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 6
+  br i1 %exitcond, label %if.end15, label %while.body10
+
+if.end15:                                         ; preds = %while.cond.backedge, %while.body10
+  store i32 1, i32* @PL_colorset, align 4, !tbaa !3
+  ret void
+}

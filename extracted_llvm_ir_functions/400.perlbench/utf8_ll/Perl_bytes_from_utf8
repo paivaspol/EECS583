@@ -1,0 +1,96 @@
+define i8* @Perl_bytes_from_utf8(i8* %s, i64* nocapture %len, i8* nocapture %is_utf8) #0 {
+entry:
+  %0 = load i8* %is_utf8, align 1, !tbaa !1
+  %tobool = icmp eq i8 %0, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = load i64* %len, align 8, !tbaa !3
+  %add.ptr = getelementptr inbounds i8* %s, i64 %1
+  br label %for.cond.outer
+
+for.cond.outer:                                   ; preds = %if.then21, %if.end
+  %s.addr.0.ph = phi i8* [ %s, %if.end ], [ %incdec.ptr10, %if.then21 ]
+  %count.0.ph = phi i32 [ 0, %if.end ], [ %inc, %if.then21 ]
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond.outer, %for.body
+  %s.addr.0 = phi i8* [ %incdec.ptr, %for.body ], [ %s.addr.0.ph, %for.cond.outer ]
+  %cmp = icmp ult i8* %s.addr.0, %add.ptr
+  br i1 %cmp, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond
+  %incdec.ptr = getelementptr inbounds i8* %s.addr.0, i64 1
+  %2 = load i8* %s.addr.0, align 1, !tbaa !1
+  %cmp1 = icmp sgt i8 %2, -1
+  br i1 %cmp1, label %for.cond, label %if.then3
+
+if.then3:                                         ; preds = %for.body
+  %and = and i8 %2, -4
+  %cmp5 = icmp eq i8 %and, -64
+  %cmp7 = icmp ult i8* %incdec.ptr, %add.ptr
+  %or.cond = and i1 %cmp5, %cmp7
+  br i1 %or.cond, label %land.lhs.true9, label %return
+
+land.lhs.true9:                                   ; preds = %if.then3
+  %3 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %4 = icmp slt i8 %3, 0
+  %cmp19 = icmp ult i8 %3, -64
+  %or.cond75 = and i1 %4, %cmp19
+  br i1 %or.cond75, label %if.then21, label %return
+
+if.then21:                                        ; preds = %land.lhs.true9
+  %incdec.ptr10 = getelementptr inbounds i8* %s.addr.0, i64 2
+  %inc = add nsw i32 %count.0.ph, 1
+  br label %for.cond.outer
+
+for.end:                                          ; preds = %for.cond
+  store i8 0, i8* %is_utf8, align 1, !tbaa !1
+  %5 = load i64* %len, align 8, !tbaa !3
+  %conv24 = sext i32 %count.0.ph to i64
+  %sub = sub i64 1, %conv24
+  %add = add i64 %sub, %5
+  %call = tail call i8* @Perl_safesysmalloc(i64 %add) #5
+  %6 = load i64* %len, align 8, !tbaa !3
+  %add27 = add i64 %sub, %6
+  tail call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 %add27, i32 1, i1 false)
+  %cmp2976 = icmp sgt i64 %1, 0
+  br i1 %cmp2976, label %while.body, label %while.end
+
+while.body:                                       ; preds = %for.end, %if.end42
+  %d.078 = phi i8* [ %incdec.ptr43, %if.end42 ], [ %call, %for.end ]
+  %s.addr.177 = phi i8* [ %s.addr.2, %if.end42 ], [ %s, %for.end ]
+  %incdec.ptr32 = getelementptr inbounds i8* %s.addr.177, i64 1
+  %7 = load i8* %s.addr.177, align 1, !tbaa !1
+  %cmp34 = icmp sgt i8 %7, -1
+  br i1 %cmp34, label %if.end42, label %if.then36
+
+if.then36:                                        ; preds = %while.body
+  %shl = shl i8 %7, 6
+  %incdec.ptr38 = getelementptr inbounds i8* %s.addr.177, i64 2
+  %8 = load i8* %incdec.ptr32, align 1, !tbaa !1
+  %and40 = and i8 %8, 63
+  %or = or i8 %and40, %shl
+  br label %if.end42
+
+if.end42:                                         ; preds = %if.then36, %while.body
+  %s.addr.2 = phi i8* [ %incdec.ptr32, %while.body ], [ %incdec.ptr38, %if.then36 ]
+  %c31.0 = phi i8 [ %7, %while.body ], [ %or, %if.then36 ]
+  %incdec.ptr43 = getelementptr inbounds i8* %d.078, i64 1
+  store i8 %c31.0, i8* %d.078, align 1, !tbaa !1
+  %cmp29 = icmp ult i8* %s.addr.2, %add.ptr
+  br i1 %cmp29, label %while.body, label %while.end
+
+while.end:                                        ; preds = %if.end42, %for.end
+  %d.0.lcssa = phi i8* [ %call, %for.end ], [ %incdec.ptr43, %if.end42 ]
+  store i8 0, i8* %d.0.lcssa, align 1, !tbaa !1
+  %sub.ptr.lhs.cast = ptrtoint i8* %d.0.lcssa to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %call to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  store i64 %sub.ptr.sub, i64* %len, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.then3, %land.lhs.true9, %entry, %while.end
+  %retval.0 = phi i8* [ %call, %while.end ], [ %s, %entry ], [ %s, %land.lhs.true9 ], [ %s, %if.then3 ]
+  ret i8* %retval.0
+}

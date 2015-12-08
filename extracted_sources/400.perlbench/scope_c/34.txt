@@ -1,9 +1,14 @@
-void
-Perl_save_delete(pTHX_ HV *hv, char *key, I32 klen)
+SV **
+Perl_save_threadsv(pTHX_ PADOFFSET i)
 {
-    SSCHECK(4);
-    SSPUSHINT(klen);
-    SSPUSHPTR(key);
-    SSPUSHPTR(SvREFCNT_inc(hv));
-    SSPUSHINT(SAVEt_DELETE);
+#ifdef USE_5005THREADS
+    SV **svp = &THREADSV(i);	/* XXX Change to save by offset */
+    DEBUG_S(PerlIO_printf(Perl_debug_log, "save_threadsv %"UVuf": %p %p:%s\n",
+			  (UV)i, svp, *svp, SvPEEK(*svp)));
+    save_svref(svp);
+    return svp;
+#else
+    Perl_croak(aTHX_ "panic: save_threadsv called in non-threaded perl");
+    return 0;
+#endif /* USE_5005THREADS */
 }

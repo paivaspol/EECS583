@@ -1,0 +1,59 @@
+PP(pp_binmode)
+{
+    dSP;
+    GV *gv;
+    IO *io;
+    PerlIO *fp;
+    MAGIC *mg;
+    SV *discp = Nullsv;
+
+    if (MAXARG < 1)
+	RETPUSHUNDEF;
+    if (MAXARG > 1) {
+	discp = POPs;
+    }
+
+    gv = (GV*)POPs;
+
+    if (gv && (io = GvIO(gv))
+	&& (mg = SvTIED_mg((SV*)io, PERL_MAGIC_tiedscalar)))
+    {
+	PUSHMARK(SP);
+	XPUSHs(SvTIED_obj((SV*)io, mg));
+	if (discp)
+	    XPUSHs(discp);
+	PUTBACK;
+	ENTER;
+	call_method("BINMODE", G_SCALAR);
+	LEAVE;
+	SPAGAIN;
+	RETURN;
+    }
+
+    EXTEND(SP, 1);
+    if (!(io = GvIO(gv)) || !(fp = IoIFP(io))) {
+	if (ckWARN2(WARN_UNOPENED,WARN_CLOSED))
+	    report_evil_fh(gv, io, PL_op->op_type);
+	SETERRNO(EBADF,RMS_IFI);
+        RETPUSHUNDEF;
+    }
+
+    PUTBACK;
+    if (PerlIO_binmode(aTHX_ fp,IoTYPE(io),mode_from_discipline(discp),
+                       (discp) ? SvPV_nolen(discp) : Nullch)) {
+	if (IoOFP(io) && IoOFP(io) != IoIFP(io)) {
+	     if (!PerlIO_binmode(aTHX_ IoOFP(io),IoTYPE(io),
+			mode_from_discipline(discp),
+                       (discp) ? SvPV_nolen(discp) : Nullch)) {
+		SPAGAIN;
+		RETPUSHUNDEF;
+	     }
+	}
+	SPAGAIN;
+	RETPUSHYES;
+    }
+    else {
+	SPAGAIN;
+	RETPUSHUNDEF;
+    }
+}

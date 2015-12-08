@@ -1,0 +1,27 @@
+void
+Perl_ptr_table_store(pTHX_ PTR_TBL_t *tbl, void *oldv, void *newv)
+{
+    PTR_TBL_ENT_t *tblent, **otblent;
+    /* XXX this may be pessimal on platforms where pointers aren't good
+     * hash values e.g. if they grow faster in the most significant
+     * bits */
+    UV hash = PTR_TABLE_HASH(oldv);
+    bool empty = 1;
+
+    assert(tbl);
+    otblent = &tbl->tbl_ary[hash & tbl->tbl_max];
+    for (tblent = *otblent; tblent; empty=0, tblent = tblent->next) {
+	if (tblent->oldval == oldv) {
+	    tblent->newval = newv;
+	    return;
+	}
+    }
+    tblent = S_new_pte(aTHX);
+    tblent->oldval = oldv;
+    tblent->newval = newv;
+    tblent->next = *otblent;
+    *otblent = tblent;
+    tbl->tbl_items++;
+    if (!empty && tbl->tbl_items > tbl->tbl_max)
+	ptr_table_split(tbl);
+}

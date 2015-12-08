@@ -1,0 +1,16 @@
+define %struct._PerlIO** @Perl_PerlIO_stdout() #1 {
+entry:
+  %0 = load %struct._PerlIO*** @PL_perlio, align 8, !tbaa !3
+  %tobool = icmp eq %struct._PerlIO** %0, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @PerlIO_stdstreams() #10
+  %.pre = load %struct._PerlIO*** @PL_perlio, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %1 = phi %struct._PerlIO** [ %0, %entry ], [ %.pre, %if.then ]
+  %arrayidx = getelementptr inbounds %struct._PerlIO** %1, i64 2
+  ret %struct._PerlIO** %arrayidx
+}

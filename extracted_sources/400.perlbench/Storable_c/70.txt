@@ -1,152 +1,81 @@
-static SV *retrieve(pTHX_ stcxt_t *cxt, char *cname)
+static SV *old_retrieve_hash(pTHX_ stcxt_t *cxt, char *cname)
 {
-	int type;
-	SV **svh;
-	SV *sv;
+	I32 len;
+	I32 size;
+	I32 i;
+	HV *hv;
+	SV *sv = (SV *) 0;
+	int c;
+	static SV *sv_h_undef = (SV *) 0;		/* hv_store() bug */
 
-	TRACEME(("retrieve"));
+	TRACEME(("old_retrieve_hash (#%d)", cxt->tagnum));
 
 	/*
-	 * Grab address tag which identifies the object if we are retrieving
-	 * an older format. Since the new binary format counts objects and no
-	 * longer explicitely tags them, we must keep track of the correspondance
-	 * ourselves.
-	 *
-	 * The following section will disappear one day when the old format is
-	 * no longer supported, hence the final "goto" in the "if" block.
+	 * Read length, allocate table.
 	 */
 
-	if (cxt->hseen) {						/* Retrieving old binary */
-		stag_t tag;
-		if (cxt->netorder) {
-			I32 nettag;
-			READ(&nettag, sizeof(I32));		/* Ordered sequence of I32 */
-			tag = (stag_t) nettag;
-		} else
-			READ(&tag, sizeof(stag_t));		/* Original address of the SV */
+	RLEN(len);
+	TRACEME(("size = %d", len));
+	hv = newHV();
+	SEEN(hv, 0, 0);			/* Will return if table not allocated properly */
+	if (len == 0)
+		return (SV *) hv;	/* No data follow if table empty */
+	hv_ksplit(hv, len);		/* pre-extend hash to save multiple splits */
 
-		GETMARK(type);
-		if (type == SX_OBJECT) {
-			I32 tagn;
-			svh = hv_fetch(cxt->hseen, (char *) &tag, sizeof(tag), FALSE);
-			if (!svh)
-				CROAK(("Old tag 0x%"UVxf" should have been mapped already",
-					(UV) tag));
-			tagn = SvIV(*svh);	/* Mapped tag number computed earlier below */
+	/*
+	 * Now get each key/value pair in turn...
+	 */
 
-			/*
-			 * The following code is common with the SX_OBJECT case below.
-			 */
-
-			svh = av_fetch(cxt->aseen, tagn, FALSE);
-			if (!svh)
-				CROAK(("Object #%"IVdf" should have been retrieved already",
-					(IV) tagn));
-			sv = *svh;
-			TRACEME(("has retrieved #%d at 0x%"UVxf, tagn, PTR2UV(sv)));
-			SvREFCNT_inc(sv);	/* One more reference to this same sv */
-			return sv;			/* The SV pointer where object was retrieved */
-		}
-
+	for (i = 0; i < len; i++) {
 		/*
-		 * Map new object, but don't increase tagnum. This will be done
-		 * by each of the retrieve_* functions when they call SEEN().
-		 *
-		 * The mapping associates the "tag" initially present with a unique
-		 * tag number. See test for SX_OBJECT above to see how this is perused.
+		 * Get value first.
 		 */
 
-		if (!hv_store(cxt->hseen, (char *) &tag, sizeof(tag),
-				newSViv(cxt->tagnum), 0))
+		GETMARK(c);
+		if (c == SX_VL_UNDEF) {
+			TRACEME(("(#%d) undef value", i));
+			/*
+			 * Due to a bug in hv_store(), it's not possible to pass
+			 * &PL_sv_undef to hv_store() as a value, otherwise the
+			 * associated key will not be creatable any more. -- RAM, 14/01/97
+			 */
+			if (!sv_h_undef)
+				sv_h_undef = newSVsv(&PL_sv_undef);
+			sv = SvREFCNT_inc(sv_h_undef);
+		} else if (c == SX_VALUE) {
+			TRACEME(("(#%d) value", i));
+			sv = retrieve(aTHX_ cxt, 0);
+			if (!sv)
+				return (SV *) 0;
+		} else
+			(void) retrieve_other(aTHX_ (stcxt_t *) 0, 0);	/* Will croak out */
+
+		/*
+		 * Get key.
+		 * Since we're reading into kbuf, we must ensure we're not
+		 * recursing between the read and the hv_store() where it's used.
+		 * Hence the key comes after the value.
+		 */
+
+		GETMARK(c);
+		if (c != SX_KEY)
+			(void) retrieve_other(aTHX_ (stcxt_t *) 0, 0);	/* Will croak out */
+		RLEN(size);						/* Get key size */
+		KBUFCHK((STRLEN)size);					/* Grow hash key read pool if needed */
+		if (size)
+			READ(kbuf, size);
+		kbuf[size] = '\0';				/* Mark string end, just in case */
+		TRACEME(("(#%d) key '%s'", i, kbuf));
+
+		/*
+		 * Enter key/value pair into hash table.
+		 */
+
+		if (hv_store(hv, kbuf, (U32) size, sv, 0) == 0)
 			return (SV *) 0;
-
-		goto first_time;
 	}
 
-	/*
-	 * Regular post-0.6 binary format.
-	 */
+	TRACEME(("ok (retrieve_hash at 0x%"UVxf")", PTR2UV(hv)));
 
-	GETMARK(type);
-
-	TRACEME(("retrieve type = %d", type));
-
-	/*
-	 * Are we dealing with an object we should have already retrieved?
-	 */
-
-	if (type == SX_OBJECT) {
-		I32 tag;
-		READ_I32(tag);
-		tag = ntohl(tag);
-		svh = av_fetch(cxt->aseen, tag, FALSE);
-		if (!svh)
-			CROAK(("Object #%"IVdf" should have been retrieved already",
-				(IV) tag));
-		sv = *svh;
-		TRACEME(("had retrieved #%d at 0x%"UVxf, tag, PTR2UV(sv)));
-		SvREFCNT_inc(sv);	/* One more reference to this same sv */
-		return sv;			/* The SV pointer where object was retrieved */
-	} else if (type >= SX_ERROR && cxt->ver_minor > STORABLE_BIN_MINOR) {
-            if (cxt->accept_future_minor < 0)
-                cxt->accept_future_minor
-                    = (SvTRUE(get_sv("Storable::accept_future_minor",
-                                          TRUE))
-                       ? 1 : 0);
-            if (cxt->accept_future_minor == 1) {
-                CROAK(("Storable binary image v%d.%d contains data of type %d. "
-                       "This Storable is v%d.%d and can only handle data types up to %d",
-                       cxt->ver_major, cxt->ver_minor, type,
-                       STORABLE_BIN_MAJOR, STORABLE_BIN_MINOR, SX_ERROR - 1));
-            }
-        }
-
-first_time:		/* Will disappear when support for old format is dropped */
-
-	/*
-	 * Okay, first time through for this one.
-	 */
-
-	sv = RETRIEVE(cxt, type)(aTHX_ cxt, cname);
-	if (!sv)
-		return (SV *) 0;			/* Failed */
-
-	/*
-	 * Old binary formats (pre-0.7).
-	 *
-	 * Final notifications, ended by SX_STORED may now follow.
-	 * Currently, the only pertinent notification to apply on the
-	 * freshly retrieved object is either:
-	 *    SX_CLASS <char-len> <classname> for short classnames.
-	 *    SX_LG_CLASS <int-len> <classname> for larger one (rare!).
-	 * Class name is then read into the key buffer pool used by
-	 * hash table key retrieval.
-	 */
-
-	if (cxt->ver_major < 2) {
-		while ((type = GETCHAR()) != SX_STORED) {
-			I32 len;
-			switch (type) {
-			case SX_CLASS:
-				GETMARK(len);			/* Length coded on a single char */
-				break;
-			case SX_LG_CLASS:			/* Length coded on a regular integer */
-				RLEN(len);
-				break;
-			case EOF:
-			default:
-				return (SV *) 0;		/* Failed */
-			}
-			KBUFCHK((STRLEN)len);			/* Grow buffer as necessary */
-			if (len)
-				READ(kbuf, len);
-			kbuf[len] = '\0';			/* Mark string end */
-			BLESS(sv, kbuf);
-		}
-	}
-
-	TRACEME(("ok (retrieved 0x%"UVxf", refcnt=%d, %s)", PTR2UV(sv),
-		SvREFCNT(sv) - 1, sv_reftype(sv, FALSE)));
-
-	return sv;	/* Ok */
+	return (SV *) hv;
 }

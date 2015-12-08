@@ -1,20 +1,18 @@
 void
-Perl_pad_fixup_inner_anons(pTHX_ PADLIST *padlist, CV *old_cv, CV *new_cv)
+Perl_pad_block_start(pTHX_ int full)
 {
-    I32 ix;
-    AV *comppad_name = (AV*)AvARRAY(padlist)[0];
-    AV *comppad = (AV*)AvARRAY(padlist)[1];
-    SV **namepad = AvARRAY(comppad_name);
-    SV **curpad = AvARRAY(comppad);
-    for (ix = AvFILLp(comppad_name); ix > 0; ix--) {
-	SV *namesv = namepad[ix];
-	if (namesv && namesv != &PL_sv_undef
-	    && *SvPVX(namesv) == '&')
-	{
-	    CV *innercv = (CV*)curpad[ix];
-	    assert(CvWEAKOUTSIDE(innercv));
-	    assert(CvOUTSIDE(innercv) == old_cv);
-	    CvOUTSIDE(innercv) = new_cv;
-	}
-    }
+    ASSERT_CURPAD_ACTIVE("pad_block_start");
+    SAVEI32(PL_comppad_name_floor);
+    PL_comppad_name_floor = AvFILLp(PL_comppad_name);
+    if (full)
+	PL_comppad_name_fill = PL_comppad_name_floor;
+    if (PL_comppad_name_floor < 0)
+	PL_comppad_name_floor = 0;
+    SAVEI32(PL_min_intro_pending);
+    SAVEI32(PL_max_intro_pending);
+    PL_min_intro_pending = 0;
+    SAVEI32(PL_comppad_name_fill);
+    SAVEI32(PL_padix_floor);
+    PL_padix_floor = PL_padix;
+    PL_pad_reset_pending = FALSE;
 }

@@ -1,0 +1,41 @@
+STATIC void
+S_apply_attrs(pTHX_ HV *stash, SV *target, OP *attrs, bool for_my)
+{
+    SV *stashsv;
+
+    /* fake up C<use attributes $pkg,$rv,@attrs> */
+    ENTER;		/* need to protect against side-effects of 'use' */
+    SAVEINT(PL_expect);
+    if (stash)
+	stashsv = newSVpv(HvNAME(stash), 0);
+    else
+	stashsv = &PL_sv_no;
+
+#define ATTRSMODULE "attributes"
+#define ATTRSMODULE_PM "attributes.pm"
+
+    if (for_my) {
+	SV **svp;
+	/* Don't force the C<use> if we don't need it. */
+	svp = hv_fetch(GvHVn(PL_incgv), ATTRSMODULE_PM,
+		       sizeof(ATTRSMODULE_PM)-1, 0);
+	if (svp && *svp != &PL_sv_undef)
+	    ; 		/* already in %INC */
+	else
+	    Perl_load_module(aTHX_ PERL_LOADMOD_NOIMPORT,
+			     newSVpvn(ATTRSMODULE, sizeof(ATTRSMODULE)-1),
+			     Nullsv);
+    }
+    else {
+	Perl_load_module(aTHX_ PERL_LOADMOD_IMPORT_OPS,
+			 newSVpvn(ATTRSMODULE, sizeof(ATTRSMODULE)-1),
+			 Nullsv,
+			 prepend_elem(OP_LIST,
+				      newSVOP(OP_CONST, 0, stashsv),
+				      prepend_elem(OP_LIST,
+						   newSVOP(OP_CONST, 0,
+							   newRV(target)),
+						   dup_attrlist(attrs))));
+    }
+    LEAVE;
+}

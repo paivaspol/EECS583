@@ -1,0 +1,52 @@
+OP *
+Perl_ck_grep(pTHX_ OP *o)
+{
+    LOGOP *gwop;
+    OP *kid;
+    OPCODE type = o->op_type == OP_GREPSTART ? OP_GREPWHILE : OP_MAPWHILE;
+
+    o->op_ppaddr = PL_ppaddr[OP_GREPSTART];
+    NewOp(1101, gwop, 1, LOGOP);
+
+    if (o->op_flags & OPf_STACKED) {
+	OP* k;
+	o = ck_sort(o);
+        kid = cLISTOPo->op_first->op_sibling;
+	if (!cUNOPx(kid)->op_next)
+	    Perl_croak(aTHX_ "panic: ck_grep");
+	for (k = cUNOPx(kid)->op_first; k; k = k->op_next) {
+	    kid = k;
+	}
+	kid->op_next = (OP*)gwop;
+	o->op_flags &= ~OPf_STACKED;
+    }
+    kid = cLISTOPo->op_first->op_sibling;
+    if (type == OP_MAPWHILE)
+	list(kid);
+    else
+	scalar(kid);
+    o = ck_fun(o);
+    if (PL_error_count)
+	return o;
+    kid = cLISTOPo->op_first->op_sibling;
+    if (kid->op_type != OP_NULL)
+	Perl_croak(aTHX_ "panic: ck_grep");
+    kid = kUNOP->op_first;
+
+    gwop->op_type = type;
+    gwop->op_ppaddr = PL_ppaddr[type];
+    gwop->op_first = listkids(o);
+    gwop->op_flags |= OPf_KIDS;
+    gwop->op_private = 1;
+    gwop->op_other = LINKLIST(kid);
+    gwop->op_targ = pad_alloc(type, SVs_PADTMP);
+    kid->op_next = (OP*)gwop;
+
+    kid = cLISTOPo->op_first->op_sibling;
+    if (!kid || !kid->op_sibling)
+	return too_few_arguments(o,OP_DESC(o));
+    for (kid = kid->op_sibling; kid; kid = kid->op_sibling)
+	mod(kid, OP_GREPSTART);
+
+    return (OP*)gwop;
+}

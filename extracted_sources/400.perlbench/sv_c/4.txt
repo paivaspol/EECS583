@@ -1,16 +1,22 @@
-static void
-do_clean_named_objs(pTHX_ SV *sv)
+STATIC I32
+S_visit(pTHX_ SVFUNC_t f, U32 flags, U32 mask)
 {
-    if (SvTYPE(sv) == SVt_PVGV && GvGP(sv)) {
-	if ( SvOBJECT(GvSV(sv)) ||
-	     (GvAV(sv) && SvOBJECT(GvAV(sv))) ||
-	     (GvHV(sv) && SvOBJECT(GvHV(sv))) ||
-	     (GvIO(sv) && SvOBJECT(GvIO(sv))) ||
-	     (GvCV(sv) && SvOBJECT(GvCV(sv))) )
-	{
-	    DEBUG_D((PerlIO_printf(Perl_debug_log, "Cleaning named glob object:\n "), sv_dump(sv)));
-	    SvFLAGS(sv) |= SVf_BREAK;
-	    SvREFCNT_dec(sv);
+    SV* sva;
+    SV* sv;
+    register SV* svend;
+    I32 visited = 0;
+
+    for (sva = PL_sv_arenaroot; sva; sva = (SV*)SvANY(sva)) {
+	svend = &sva[SvREFCNT(sva)];
+	for (sv = sva + 1; sv < svend; ++sv) {
+	    if (SvTYPE(sv) != SVTYPEMASK
+		    && (sv->sv_flags & mask) == flags
+		    && SvREFCNT(sv))
+	    {
+		(FCALL)(aTHX_ sv);
+		++visited;
+	    }
 	}
     }
+    return visited;
 }

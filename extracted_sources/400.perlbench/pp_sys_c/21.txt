@@ -1,0 +1,50 @@
+PP(pp_getc)
+{
+    dSP; dTARGET;
+    GV *gv;
+    IO *io = NULL;
+    MAGIC *mg;
+
+    if (MAXARG == 0)
+	gv = PL_stdingv;
+    else
+	gv = (GV*)POPs;
+
+    if (gv && (io = GvIO(gv))
+	&& (mg = SvTIED_mg((SV*)io, PERL_MAGIC_tiedscalar)))
+    {
+	I32 gimme = GIMME_V;
+	PUSHMARK(SP);
+	XPUSHs(SvTIED_obj((SV*)io, mg));
+	PUTBACK;
+	ENTER;
+	call_method("GETC", gimme);
+	LEAVE;
+	SPAGAIN;
+	if (gimme == G_SCALAR)
+	    SvSetMagicSV_nosteal(TARG, TOPs);
+	RETURN;
+    }
+    if (!gv || do_eof(gv)) { /* make sure we have fp with something */
+	if (ckWARN2(WARN_UNOPENED,WARN_CLOSED)
+		&& (!io || (!IoIFP(io) && IoTYPE(io) != IoTYPE_WRONLY)))
+	    report_evil_fh(gv, io, PL_op->op_type);
+	SETERRNO(EBADF,RMS_IFI);
+	RETPUSHUNDEF;
+    }
+    TAINT;
+    sv_setpv(TARG, " ");
+    *SvPVX(TARG) = PerlIO_getc(IoIFP(GvIOp(gv))); /* should never be EOF */
+    if (PerlIO_isutf8(IoIFP(GvIOp(gv)))) {
+	/* Find out how many bytes the char needs */
+	Size_t len = UTF8SKIP(SvPVX(TARG));
+	if (len > 1) {
+	    SvGROW(TARG,len+1);
+	    len = PerlIO_read(IoIFP(GvIOp(gv)),SvPVX(TARG)+1,len-1);
+	    SvCUR_set(TARG,1+len);
+	}
+	SvUTF8_on(TARG);
+    }
+    PUSHTARG;
+    RETURN;
+}

@@ -1,5 +1,20 @@
-void
-Perl_sv_setsv(pTHX_ SV *dstr, register SV *sstr)
+STATIC void
+S_more_xnv(pTHX)
 {
-    sv_setsv_flags(dstr, sstr, SV_GMAGIC);
+    register NV* xnv;
+    register NV* xnvend;
+    XPV *ptr;
+    New(711, ptr, PERL_ARENA_SIZE/sizeof(XPV), XPV);
+    ptr->xpv_pv = (char*)PL_xnv_arenaroot;
+    PL_xnv_arenaroot = ptr;
+
+    xnv = (NV*) ptr;
+    xnvend = &xnv[PERL_ARENA_SIZE / sizeof(NV) - 1];
+    xnv += (sizeof(XPVIV) - 1) / sizeof(NV) + 1; /* fudge by sizeof XPVIV */
+    PL_xnv_root = xnv;
+    while (xnv < xnvend) {
+	*(NV**)xnv = (NV*)(xnv + 1);
+	xnv++;
+    }
+    *(NV**)xnv = 0;
 }

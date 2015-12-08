@@ -1,46 +1,12 @@
-void
-Perl_sv_free(pTHX_ SV *sv)
+STATIC XPVLV*
+S_new_xpvlv(pTHX)
 {
-    int refcount_is_zero;
-
-    if (!sv)
-	return;
-    if (SvREFCNT(sv) == 0) {
-	if (SvFLAGS(sv) & SVf_BREAK)
-	    /* this SV's refcnt has been artificially decremented to
-	     * trigger cleanup */
-	    return;
-	if (PL_in_clean_all) /* All is fair */
-	    return;
-	if (SvREADONLY(sv) && SvIMMORTAL(sv)) {
-	    /* make sure SvREFCNT(sv)==0 happens very seldom */
-	    SvREFCNT(sv) = (~(U32)0)/2;
-	    return;
-	}
-	if (ckWARN_d(WARN_INTERNAL))
-	    Perl_warner(aTHX_ packWARN(WARN_INTERNAL),
-                        "Attempt to free unreferenced scalar: SV 0x%"UVxf
-                        pTHX__FORMAT, PTR2UV(sv) pTHX__VALUE);
-	return;
-    }
-    ATOMIC_DEC_AND_TEST(refcount_is_zero, SvREFCNT(sv));
-    if (!refcount_is_zero)
-	return;
-#ifdef DEBUGGING
-    if (SvTEMP(sv)) {
-	if (ckWARN_d(WARN_DEBUGGING))
-	    Perl_warner(aTHX_ packWARN(WARN_DEBUGGING),
-			"Attempt to free temp prematurely: SV 0x%"UVxf
-                        pTHX__FORMAT, PTR2UV(sv) pTHX__VALUE);
-	return;
-    }
-#endif
-    if (SvREADONLY(sv) && SvIMMORTAL(sv)) {
-	/* make sure SvREFCNT(sv)==0 happens very seldom */
-	SvREFCNT(sv) = (~(U32)0)/2;
-	return;
-    }
-    sv_clear(sv);
-    if (! SvREFCNT(sv))
-	del_SV(sv);
+    XPVLV* xpvlv;
+    LOCK_SV_MUTEX;
+    if (!PL_xpvlv_root)
+	more_xpvlv();
+    xpvlv = PL_xpvlv_root;
+    PL_xpvlv_root = (XPVLV*)xpvlv->xpv_pv;
+    UNLOCK_SV_MUTEX;
+    return xpvlv;
 }

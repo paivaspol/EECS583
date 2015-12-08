@@ -1,15 +1,15 @@
 int
-simple_cst_list_equal (l1, l2)
-     tree l1, l2;
+tree_int_cst_msb (t)
+     tree t;
 {
-  while (l1 != NULL_TREE && l2 != NULL_TREE)
-    {
-      if (simple_cst_equal (TREE_VALUE (l1), TREE_VALUE (l2)) != 1)
-	return 0;
+  int prec;
+  HOST_WIDE_INT h;
+  unsigned HOST_WIDE_INT l;
 
-      l1 = TREE_CHAIN (l1);
-      l2 = TREE_CHAIN (l2);
-    }
-
-  return l1 == l2;
+  /* Note that using TYPE_PRECISION here is wrong.  We care about the
+     actual bits, not the (arbitrary) range of the type.  */
+  prec = GET_MODE_BITSIZE (TYPE_MODE (TREE_TYPE (t))) - 1;
+  rshift_double (TREE_INT_CST_LOW (t), TREE_INT_CST_HIGH (t), prec,
+		 2 * HOST_BITS_PER_WIDE_INT, &l, &h, 0);
+  return (l & 1) == 1;
 }

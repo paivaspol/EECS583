@@ -1,0 +1,26 @@
+define i32 @MSMDinfo_isValid(%struct._MSMDinfo* %info) #3 {
+entry:
+  %cmp = icmp eq %struct._MSMDinfo* %info, null
+  br i1 %cmp, label %if.end, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %compressFlag = getelementptr inbounds %struct._MSMDinfo* %info, i64 0, i32 0
+  %0 = load i32* %compressFlag, align 4, !tbaa !3
+  %cmp1 = icmp slt i32 %0, 0
+  %cmp4 = icmp eq i32 %0, 3
+  %or.cond = or i1 %cmp1, %cmp4
+  %cmp7 = icmp sgt i32 %0, 6
+  %or.cond18 = or i1 %or.cond, %cmp7
+  br i1 %or.cond18, label %if.end, label %lor.lhs.false8
+
+lor.lhs.false8:                                   ; preds = %lor.lhs.false
+  %prioType = getelementptr inbounds %struct._MSMDinfo* %info, i64 0, i32 1
+  %1 = load i32* %prioType, align 4, !tbaa !3
+  %.off = add i32 %1, -1
+  %not. = icmp ult i32 %.off, 4
+  %. = zext i1 %not. to i32
+  ret i32 %.
+
+if.end:                                           ; preds = %entry, %lor.lhs.false
+  ret i32 0
+}

@@ -1,0 +1,474 @@
+define void @report_frame_statistic() #0 {
+entry:
+  %name = alloca [20 x i8], align 16
+  %now = alloca i64, align 8
+  %string = alloca [1000 x i8], align 16
+  %0 = getelementptr inbounds [1000 x i8]* %string, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 1000, i8* %0) #3
+  %call = call %struct._IO_FILE* @fopen(i8* getelementptr inbounds ([15 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str5, i64 0, i64 0)) #6
+  %cmp = icmp eq %struct._IO_FILE* %call, null
+  br i1 %cmp, label %if.then, label %if.else8
+
+if.then:                                          ; preds = %entry
+  %call1 = call %struct._IO_FILE* @fopen(i8* getelementptr inbounds ([15 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #6
+  %cmp2 = icmp eq %struct._IO_FILE* %call1, null
+  br i1 %cmp2, label %if.then3, label %if.else
+
+if.then3:                                         ; preds = %if.then
+  %call4 = call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([19 x i8]* @.str8, i64 0, i64 0)) #6
+  call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 500) #6
+  br label %if.end15
+
+if.else:                                          ; preds = %if.then
+  %1 = call i64 @fwrite(i8* getelementptr inbounds ([469 x i8]* @.str9, i64 0, i64 0), i64 468, i64 1, %struct._IO_FILE* %call1)
+  %2 = call i64 @fwrite(i8* getelementptr inbounds ([469 x i8]* @.str10, i64 0, i64 0), i64 468, i64 1, %struct._IO_FILE* %call1)
+  %3 = call i64 @fwrite(i8* getelementptr inbounds ([469 x i8]* @.str9, i64 0, i64 0), i64 468, i64 1, %struct._IO_FILE* %call1)
+  br label %if.end15
+
+if.else8:                                         ; preds = %entry
+  %call9 = call i32 @fclose(%struct._IO_FILE* %call) #6
+  %call10 = call %struct._IO_FILE* @fopen(i8* getelementptr inbounds ([15 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #6
+  %cmp11 = icmp eq %struct._IO_FILE* %call10, null
+  br i1 %cmp11, label %if.then12, label %if.end15
+
+if.then12:                                        ; preds = %if.else8
+  %call13 = call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([19 x i8]* @.str8, i64 0, i64 0)) #6
+  call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 500) #6
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.else8, %if.then12, %if.then3, %if.else
+  %p_stat_frm.0 = phi %struct._IO_FILE* [ null, %if.then3 ], [ %call1, %if.else ], [ null, %if.then12 ], [ %call10, %if.else8 ]
+  %4 = load i32* @frame_statistic_start, align 4, !tbaa !0
+  %tobool = icmp eq i32 %4, 0
+  br i1 %tobool, label %if.end19, label %if.then16
+
+if.then16:                                        ; preds = %if.end15
+  %5 = call i64 @fwrite(i8* getelementptr inbounds ([469 x i8]* @.str11, i64 0, i64 0), i64 468, i64 1, %struct._IO_FILE* %p_stat_frm.0)
+  %6 = call i64 @fwrite(i8* getelementptr inbounds ([469 x i8]* @.str9, i64 0, i64 0), i64 468, i64 1, %struct._IO_FILE* %p_stat_frm.0)
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.end15, %if.then16
+  %call20 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([8 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str14, i64 0, i64 0)) #6
+  %call21 = call i64 @time(i64* null) #6
+  store i64 %call21, i64* %now, align 8, !tbaa !6
+  %call22 = call i64 @time(i64* %now) #6
+  %call23 = call %struct.tm* @localtime(i64* %now) #6
+  %call24 = call i64 @strftime(i8* %0, i64 1000, i8* getelementptr inbounds ([9 x i8]* @.str15, i64 0, i64 0), %struct.tm* %call23) #6
+  %call26 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([10 x i8]* @.str16, i64 0, i64 0), i8* %0) #6
+  %call28 = call i64 @strftime(i8* %0, i64 1000, i8* getelementptr inbounds ([9 x i8]* @.str17, i64 0, i64 0), %struct.tm* %call23) #6
+  %call30 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([9 x i8]* @.str18, i64 0, i64 0), i8* %0) #6
+  %.pre = load %struct.InputParameters** @input, align 8, !tbaa !3
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %if.end19
+  %indvars.iv461 = phi i64 [ 0, %if.end19 ], [ %indvars.iv.next462, %for.body ]
+  %arraydecay32 = getelementptr inbounds %struct.InputParameters* %.pre, i64 0, i32 26, i64 0
+  %call33 = call i64 @strlen(i8* %arraydecay32) #8
+  %sub = add i64 %call33, 4294967276
+  %conv = trunc i64 %sub to i32
+  %cmp34 = icmp slt i32 %conv, 0
+  %.conv = select i1 %cmp34, i64 0, i64 %sub
+  %add = add i64 %.conv, %indvars.iv461
+  %sext = shl i64 %add, 32
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds %struct.InputParameters* %.pre, i64 0, i32 26, i64 %idxprom
+  %7 = load i8* %arrayidx, align 1, !tbaa !1
+  %arrayidx43 = getelementptr inbounds [20 x i8]* %name, i64 0, i64 %indvars.iv461
+  store i8 %7, i8* %arrayidx43, align 1, !tbaa !1
+  %indvars.iv.next462 = add i64 %indvars.iv461, 1
+  %lftr.wideiv463 = trunc i64 %indvars.iv.next462 to i32
+  %exitcond464 = icmp eq i32 %lftr.wideiv463, 20
+  br i1 %exitcond464, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %arraydecay44 = getelementptr inbounds [20 x i8]* %name, i64 0, i64 0
+  %call45 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([9 x i8]* @.str19, i64 0, i64 0), i8* %arraydecay44) #6
+  %8 = load i32* @frame_no, align 4, !tbaa !0
+  %call46 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str20, i64 0, i64 0), i32 %8) #6
+  %9 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %qp = getelementptr inbounds %struct.ImageParameters* %9, i64 0, i32 10
+  %10 = load i32* %qp, align 4, !tbaa !0
+  %call47 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str20, i64 0, i64 0), i32 %10) #6
+  %11 = load %struct.InputParameters** @input, align 8, !tbaa !3
+  %PicInterlace = getelementptr inbounds %struct.InputParameters* %11, i64 0, i32 91
+  %12 = load i32* %PicInterlace, align 4, !tbaa !0
+  %MbInterlace = getelementptr inbounds %struct.InputParameters* %11, i64 0, i32 92
+  %13 = load i32* %MbInterlace, align 4, !tbaa !0
+  %call48 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([11 x i8]* @.str21, i64 0, i64 0), i32 %12, i32 %13) #6
+  %14 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %frame_num = getelementptr inbounds %struct.ImageParameters* %14, i64 0, i32 105
+  %15 = load i32* %frame_num, align 4, !tbaa !0
+  %cmp49 = icmp eq i32 %15, 0
+  %16 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  br i1 %cmp49, label %if.then51, label %if.else52
+
+if.then51:                                        ; preds = %for.end
+  %bit_ctr_I = getelementptr inbounds %struct.StatParameters* %16, i64 0, i32 14
+  %17 = load i32* %bit_ctr_I, align 4, !tbaa !0
+  br label %if.end55
+
+if.else52:                                        ; preds = %for.end
+  %bit_ctr_n = getelementptr inbounds %struct.StatParameters* %16, i64 0, i32 5
+  %18 = load i32* %bit_ctr_n, align 4, !tbaa !0
+  %19 = load i32* @report_frame_statistic.last_bit_ctr_n, align 4, !tbaa !0
+  %sub53 = sub nsw i32 %18, %19
+  store i32 %18, i32* @report_frame_statistic.last_bit_ctr_n, align 4, !tbaa !0
+  br label %if.end55
+
+if.end55:                                         ; preds = %if.else52, %if.then51
+  %bitcounter.0 = phi i32 [ %17, %if.then51 ], [ %sub53, %if.else52 ]
+  %call56 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str22, i64 0, i64 0), i32 %bitcounter.0) #6
+  %20 = load %struct.SNRParameters** @snr, align 8, !tbaa !3
+  %snr_y = getelementptr inbounds %struct.SNRParameters* %20, i64 0, i32 0
+  %21 = load float* %snr_y, align 4, !tbaa !5
+  %conv57 = fpext float %21 to double
+  %snr_u = getelementptr inbounds %struct.SNRParameters* %20, i64 0, i32 1
+  %22 = load float* %snr_u, align 4, !tbaa !5
+  %conv58 = fpext float %22 to double
+  %snr_v = getelementptr inbounds %struct.SNRParameters* %20, i64 0, i32 2
+  %23 = load float* %snr_v, align 4, !tbaa !5
+  %conv59 = fpext float %23 to double
+  %call60 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([22 x i8]* @.str23, i64 0, i64 0), double %conv57, double %conv58, double %conv59) #6
+  %24 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx62 = getelementptr inbounds %struct.StatParameters* %24, i64 0, i32 20, i64 2, i64 9
+  %25 = load i32* %arrayidx62, align 4, !tbaa !0
+  %26 = load i32* @report_frame_statistic.last_mode_use.2.9, align 4, !tbaa !0
+  %sub63 = sub nsw i32 %25, %26
+  %call64 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub63) #6
+  %27 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx67 = getelementptr inbounds %struct.StatParameters* %27, i64 0, i32 20, i64 2, i64 13
+  %28 = load i32* %arrayidx67, align 4, !tbaa !0
+  %29 = load i32* @report_frame_statistic.last_mode_use.2.13, align 4, !tbaa !0
+  %sub68 = sub nsw i32 %28, %29
+  %call69 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub68) #6
+  %30 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx72 = getelementptr inbounds %struct.StatParameters* %30, i64 0, i32 20, i64 2, i64 10
+  %31 = load i32* %arrayidx72, align 4, !tbaa !0
+  %32 = load i32* @report_frame_statistic.last_mode_use.2.10, align 8, !tbaa !0
+  %sub73 = sub nsw i32 %31, %32
+  %call74 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub73) #6
+  %33 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx75 = getelementptr inbounds %struct.StatParameters* %33, i64 0, i32 11, i64 0
+  %34 = load i32* %arrayidx75, align 4, !tbaa !0
+  %35 = load i32* getelementptr inbounds ([4 x i32]* @report_frame_statistic.last_mode_chroma_use, i64 0, i64 0), align 16, !tbaa !0
+  %sub76 = sub nsw i32 %34, %35
+  %call77 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub76) #6
+  %36 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx79 = getelementptr inbounds %struct.StatParameters* %36, i64 0, i32 11, i64 1
+  %37 = load i32* %arrayidx79, align 4, !tbaa !0
+  %38 = load i32* getelementptr inbounds ([4 x i32]* @report_frame_statistic.last_mode_chroma_use, i64 0, i64 1), align 4, !tbaa !0
+  %sub80 = sub nsw i32 %37, %38
+  %call81 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub80) #6
+  %39 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx83 = getelementptr inbounds %struct.StatParameters* %39, i64 0, i32 11, i64 2
+  %40 = load i32* %arrayidx83, align 4, !tbaa !0
+  %41 = load i32* getelementptr inbounds ([4 x i32]* @report_frame_statistic.last_mode_chroma_use, i64 0, i64 2), align 8, !tbaa !0
+  %sub84 = sub nsw i32 %40, %41
+  %call85 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub84) #6
+  %42 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx87 = getelementptr inbounds %struct.StatParameters* %42, i64 0, i32 11, i64 3
+  %43 = load i32* %arrayidx87, align 4, !tbaa !0
+  %44 = load i32* getelementptr inbounds ([4 x i32]* @report_frame_statistic.last_mode_chroma_use, i64 0, i64 3), align 4, !tbaa !0
+  %sub88 = sub nsw i32 %43, %44
+  %call89 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub88) #6
+  %45 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx92 = getelementptr inbounds %struct.StatParameters* %45, i64 0, i32 20, i64 0, i64 9
+  %46 = load i32* %arrayidx92, align 4, !tbaa !0
+  %47 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 9), align 4, !tbaa !0
+  %sub93 = sub nsw i32 %46, %47
+  %call94 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub93) #6
+  %48 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx97 = getelementptr inbounds %struct.StatParameters* %48, i64 0, i32 20, i64 0, i64 13
+  %49 = load i32* %arrayidx97, align 4, !tbaa !0
+  %50 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 13), align 4, !tbaa !0
+  %sub98 = sub nsw i32 %49, %50
+  %call99 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub98) #6
+  %51 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx102 = getelementptr inbounds %struct.StatParameters* %51, i64 0, i32 20, i64 0, i64 10
+  %52 = load i32* %arrayidx102, align 4, !tbaa !0
+  %53 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 10), align 8, !tbaa !0
+  %sub103 = sub nsw i32 %52, %53
+  %call104 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub103) #6
+  %54 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx107 = getelementptr inbounds %struct.StatParameters* %54, i64 0, i32 20, i64 0, i64 0
+  %55 = load i32* %arrayidx107, align 4, !tbaa !0
+  %56 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 0), align 16, !tbaa !0
+  %sub108 = sub nsw i32 %55, %56
+  %call109 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub108) #6
+  %57 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx112 = getelementptr inbounds %struct.StatParameters* %57, i64 0, i32 20, i64 0, i64 1
+  %58 = load i32* %arrayidx112, align 4, !tbaa !0
+  %59 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 1), align 4, !tbaa !0
+  %sub113 = sub nsw i32 %58, %59
+  %call114 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub113) #6
+  %60 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx117 = getelementptr inbounds %struct.StatParameters* %60, i64 0, i32 20, i64 0, i64 2
+  %61 = load i32* %arrayidx117, align 4, !tbaa !0
+  %62 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 2), align 8, !tbaa !0
+  %sub118 = sub nsw i32 %61, %62
+  %call119 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub118) #6
+  %63 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx122 = getelementptr inbounds %struct.StatParameters* %63, i64 0, i32 20, i64 0, i64 3
+  %64 = load i32* %arrayidx122, align 4, !tbaa !0
+  %65 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 3), align 4, !tbaa !0
+  %sub123 = sub nsw i32 %64, %65
+  %call124 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub123) #6
+  %66 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx126 = getelementptr inbounds %struct.StatParameters* %66, i64 0, i32 9, i64 0, i64 1
+  %67 = load i32* %arrayidx126, align 4, !tbaa !0
+  %call127 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %67) #6
+  %68 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx129 = getelementptr inbounds %struct.StatParameters* %68, i64 0, i32 10, i64 0, i64 1
+  %69 = load i32* %arrayidx129, align 4, !tbaa !0
+  %call130 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %69) #6
+  %70 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx133 = getelementptr inbounds %struct.StatParameters* %70, i64 0, i32 9, i64 0, i64 2
+  %71 = load i32* %arrayidx133, align 4, !tbaa !0
+  %call134 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %71) #6
+  %72 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx137 = getelementptr inbounds %struct.StatParameters* %72, i64 0, i32 10, i64 0, i64 2
+  %73 = load i32* %arrayidx137, align 4, !tbaa !0
+  %call138 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %73) #6
+  %74 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx141 = getelementptr inbounds %struct.StatParameters* %74, i64 0, i32 9, i64 0, i64 3
+  %75 = load i32* %arrayidx141, align 4, !tbaa !0
+  %call142 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %75) #6
+  %76 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx145 = getelementptr inbounds %struct.StatParameters* %76, i64 0, i32 10, i64 0, i64 3
+  %77 = load i32* %arrayidx145, align 4, !tbaa !0
+  %call146 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %77) #6
+  %78 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx149 = getelementptr inbounds %struct.StatParameters* %78, i64 0, i32 20, i64 0, i64 8
+  %79 = load i32* %arrayidx149, align 4, !tbaa !0
+  %80 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 8), align 16, !tbaa !0
+  %sub150 = sub nsw i32 %79, %80
+  %call151 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub150) #6
+  %81 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx154 = getelementptr inbounds %struct.StatParameters* %81, i64 0, i32 20, i64 0, i64 4
+  %82 = load i32* %arrayidx154, align 4, !tbaa !0
+  %83 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 4), align 16, !tbaa !0
+  %sub155 = sub nsw i32 %82, %83
+  %call156 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub155) #6
+  %84 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx159 = getelementptr inbounds %struct.StatParameters* %84, i64 0, i32 9, i64 0, i64 4
+  %85 = load i32* %arrayidx159, align 4, !tbaa !0
+  %call160 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %85) #6
+  %86 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx163 = getelementptr inbounds %struct.StatParameters* %86, i64 0, i32 10, i64 0, i64 4
+  %87 = load i32* %arrayidx163, align 4, !tbaa !0
+  %call164 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %87) #6
+  %88 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx167 = getelementptr inbounds %struct.StatParameters* %88, i64 0, i32 20, i64 0, i64 5
+  %89 = load i32* %arrayidx167, align 4, !tbaa !0
+  %90 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 5), align 4, !tbaa !0
+  %sub168 = sub nsw i32 %89, %90
+  %call169 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub168) #6
+  %91 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx172 = getelementptr inbounds %struct.StatParameters* %91, i64 0, i32 20, i64 0, i64 6
+  %92 = load i32* %arrayidx172, align 4, !tbaa !0
+  %93 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 6), align 8, !tbaa !0
+  %sub173 = sub nsw i32 %92, %93
+  %call174 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub173) #6
+  %94 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx177 = getelementptr inbounds %struct.StatParameters* %94, i64 0, i32 20, i64 0, i64 7
+  %95 = load i32* %arrayidx177, align 4, !tbaa !0
+  %96 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 7), align 4, !tbaa !0
+  %sub178 = sub nsw i32 %95, %96
+  %call179 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub178) #6
+  %97 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx182 = getelementptr inbounds %struct.StatParameters* %97, i64 0, i32 20, i64 1, i64 9
+  %98 = load i32* %arrayidx182, align 4, !tbaa !0
+  %99 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 9), align 4, !tbaa !0
+  %sub183 = sub nsw i32 %98, %99
+  %call184 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub183) #6
+  %100 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx187 = getelementptr inbounds %struct.StatParameters* %100, i64 0, i32 20, i64 1, i64 13
+  %101 = load i32* %arrayidx187, align 4, !tbaa !0
+  %102 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 13), align 4, !tbaa !0
+  %sub188 = sub nsw i32 %101, %102
+  %call189 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub188) #6
+  %103 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx192 = getelementptr inbounds %struct.StatParameters* %103, i64 0, i32 20, i64 1, i64 10
+  %104 = load i32* %arrayidx192, align 4, !tbaa !0
+  %105 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 10), align 8, !tbaa !0
+  %sub193 = sub nsw i32 %104, %105
+  %call194 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub193) #6
+  %106 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx197 = getelementptr inbounds %struct.StatParameters* %106, i64 0, i32 20, i64 1, i64 0
+  %107 = load i32* %arrayidx197, align 4, !tbaa !0
+  %108 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 0), align 16, !tbaa !0
+  %sub198 = sub nsw i32 %107, %108
+  %call199 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub198) #6
+  %109 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx202 = getelementptr inbounds %struct.StatParameters* %109, i64 0, i32 20, i64 1, i64 1
+  %110 = load i32* %arrayidx202, align 4, !tbaa !0
+  %111 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 1), align 4, !tbaa !0
+  %sub203 = sub nsw i32 %110, %111
+  %call204 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub203) #6
+  %112 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx207 = getelementptr inbounds %struct.StatParameters* %112, i64 0, i32 20, i64 1, i64 2
+  %113 = load i32* %arrayidx207, align 4, !tbaa !0
+  %114 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 2), align 8, !tbaa !0
+  %sub208 = sub nsw i32 %113, %114
+  %call209 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub208) #6
+  %115 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx212 = getelementptr inbounds %struct.StatParameters* %115, i64 0, i32 20, i64 1, i64 3
+  %116 = load i32* %arrayidx212, align 4, !tbaa !0
+  %117 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 3), align 4, !tbaa !0
+  %sub213 = sub nsw i32 %116, %117
+  %call214 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub213) #6
+  %118 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx217 = getelementptr inbounds %struct.StatParameters* %118, i64 0, i32 9, i64 1, i64 0
+  %119 = load i32* %arrayidx217, align 4, !tbaa !0
+  %call218 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %119) #6
+  %120 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx221 = getelementptr inbounds %struct.StatParameters* %120, i64 0, i32 10, i64 1, i64 0
+  %121 = load i32* %arrayidx221, align 4, !tbaa !0
+  %call222 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %121) #6
+  %122 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx225 = getelementptr inbounds %struct.StatParameters* %122, i64 0, i32 9, i64 1, i64 1
+  %123 = load i32* %arrayidx225, align 4, !tbaa !0
+  %call226 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %123) #6
+  %124 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx229 = getelementptr inbounds %struct.StatParameters* %124, i64 0, i32 10, i64 1, i64 1
+  %125 = load i32* %arrayidx229, align 4, !tbaa !0
+  %call230 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %125) #6
+  %126 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx233 = getelementptr inbounds %struct.StatParameters* %126, i64 0, i32 9, i64 1, i64 2
+  %127 = load i32* %arrayidx233, align 4, !tbaa !0
+  %call234 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %127) #6
+  %128 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx237 = getelementptr inbounds %struct.StatParameters* %128, i64 0, i32 10, i64 1, i64 2
+  %129 = load i32* %arrayidx237, align 4, !tbaa !0
+  %call238 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %129) #6
+  %130 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx241 = getelementptr inbounds %struct.StatParameters* %130, i64 0, i32 9, i64 1, i64 3
+  %131 = load i32* %arrayidx241, align 4, !tbaa !0
+  %call242 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %131) #6
+  %132 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx245 = getelementptr inbounds %struct.StatParameters* %132, i64 0, i32 10, i64 1, i64 3
+  %133 = load i32* %arrayidx245, align 4, !tbaa !0
+  %call246 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %133) #6
+  %134 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx249 = getelementptr inbounds %struct.StatParameters* %134, i64 0, i32 20, i64 1, i64 8
+  %135 = load i32* %arrayidx249, align 4, !tbaa !0
+  %136 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 8), align 16, !tbaa !0
+  %sub250 = sub nsw i32 %135, %136
+  %call251 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub250) #6
+  %137 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx253 = getelementptr inbounds %struct.StatParameters* %137, i64 0, i32 8, i64 1, i64 0
+  %138 = load i32* %arrayidx253, align 4, !tbaa !0
+  %arrayidx256 = getelementptr inbounds %struct.StatParameters* %137, i64 0, i32 8, i64 1, i64 1
+  %139 = load i32* %arrayidx256, align 4, !tbaa !0
+  %140 = load i32* @report_frame_statistic.last_b8_mode_0.1.0, align 8, !tbaa !0
+  %141 = load i32* @report_frame_statistic.last_b8_mode_0.1.1, align 4, !tbaa !0
+  %add258.neg = add i32 %139, %138
+  %add257 = sub i32 %add258.neg, %140
+  %sub259 = sub i32 %add257, %141
+  %call260 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub259) #6
+  %142 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx263 = getelementptr inbounds %struct.StatParameters* %142, i64 0, i32 8, i64 1, i64 1
+  %143 = load i32* %arrayidx263, align 4, !tbaa !0
+  %144 = load i32* @report_frame_statistic.last_b8_mode_0.1.1, align 4, !tbaa !0
+  %sub264 = sub nsw i32 %143, %144
+  %call265 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub264) #6
+  %145 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx268 = getelementptr inbounds %struct.StatParameters* %145, i64 0, i32 8, i64 1, i64 0
+  %146 = load i32* %arrayidx268, align 4, !tbaa !0
+  %147 = load i32* @report_frame_statistic.last_b8_mode_0.1.0, align 8, !tbaa !0
+  %sub269 = sub nsw i32 %146, %147
+  %call270 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub269) #6
+  %148 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx273 = getelementptr inbounds %struct.StatParameters* %148, i64 0, i32 20, i64 1, i64 4
+  %149 = load i32* %arrayidx273, align 4, !tbaa !0
+  %150 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 4), align 16, !tbaa !0
+  %sub274 = sub nsw i32 %149, %150
+  %call275 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub274) #6
+  %151 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx278 = getelementptr inbounds %struct.StatParameters* %151, i64 0, i32 9, i64 1, i64 4
+  %152 = load i32* %arrayidx278, align 4, !tbaa !0
+  %call279 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %152) #6
+  %153 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx282 = getelementptr inbounds %struct.StatParameters* %153, i64 0, i32 10, i64 1, i64 4
+  %154 = load i32* %arrayidx282, align 4, !tbaa !0
+  %call283 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %154) #6
+  %155 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx286 = getelementptr inbounds %struct.StatParameters* %155, i64 0, i32 20, i64 1, i64 5
+  %156 = load i32* %arrayidx286, align 4, !tbaa !0
+  %157 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 5), align 4, !tbaa !0
+  %sub287 = sub nsw i32 %156, %157
+  %call288 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub287) #6
+  %158 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx291 = getelementptr inbounds %struct.StatParameters* %158, i64 0, i32 20, i64 1, i64 6
+  %159 = load i32* %arrayidx291, align 4, !tbaa !0
+  %160 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 6), align 8, !tbaa !0
+  %sub292 = sub nsw i32 %159, %160
+  %call293 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub292) #6
+  %161 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx296 = getelementptr inbounds %struct.StatParameters* %161, i64 0, i32 20, i64 1, i64 7
+  %162 = load i32* %arrayidx296, align 4, !tbaa !0
+  %163 = load i32* getelementptr inbounds ([15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 7), align 4, !tbaa !0
+  %sub297 = sub nsw i32 %162, %163
+  %call298 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %p_stat_frm.0, i8* getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), i32 %sub297) #6
+  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %p_stat_frm.0)
+  %164 = load %struct.StatParameters** @stats, align 8, !tbaa !3
+  %arrayidx302 = getelementptr inbounds %struct.StatParameters* %164, i64 0, i32 20, i64 2, i64 9
+  %165 = load i32* %arrayidx302, align 4, !tbaa !0
+  store i32 %165, i32* @report_frame_statistic.last_mode_use.2.9, align 4, !tbaa !0
+  %arrayidx305 = getelementptr inbounds %struct.StatParameters* %164, i64 0, i32 20, i64 2, i64 13
+  %166 = load i32* %arrayidx305, align 4, !tbaa !0
+  store i32 %166, i32* @report_frame_statistic.last_mode_use.2.13, align 4, !tbaa !0
+  %arrayidx308 = getelementptr inbounds %struct.StatParameters* %164, i64 0, i32 20, i64 2, i64 10
+  %167 = load i32* %arrayidx308, align 4, !tbaa !0
+  store i32 %167, i32* @report_frame_statistic.last_mode_use.2.10, align 8, !tbaa !0
+  br label %for.body312
+
+for.body312:                                      ; preds = %for.body312, %if.end55
+  %indvars.iv453 = phi i64 [ 0, %if.end55 ], [ %indvars.iv.next454, %for.body312 ]
+  %arrayidx316 = getelementptr inbounds %struct.StatParameters* %164, i64 0, i32 20, i64 0, i64 %indvars.iv453
+  %168 = load i32* %arrayidx316, align 4, !tbaa !0
+  %arrayidx318 = getelementptr inbounds [15 x i32]* @report_frame_statistic.last_mode_use.0, i64 0, i64 %indvars.iv453
+  store i32 %168, i32* %arrayidx318, align 4, !tbaa !0
+  %arrayidx322 = getelementptr inbounds %struct.StatParameters* %164, i64 0, i32 20, i64 1, i64 %indvars.iv453
+  %169 = load i32* %arrayidx322, align 4, !tbaa !0
+  %arrayidx324 = getelementptr inbounds [15 x i32]* @report_frame_statistic.last_mode_use.1, i64 0, i64 %indvars.iv453
+  store i32 %169, i32* %arrayidx324, align 4, !tbaa !0
+  %arrayidx328 = getelementptr inbounds %struct.StatParameters* %164, i64 0, i32 9, i64 0, i64 %indvars.iv453
+  store i32 0, i32* %arrayidx328, align 4, !tbaa !0
+  %arrayidx332 = getelementptr inbounds %struct.StatParameters* %164, i64 0, i32 9, i64 1, i64 %indvars.iv453
+  store i32 0, i32* %arrayidx332, align 4, !tbaa !0
+  %arrayidx336 = getelementptr inbounds %struct.StatParameters* %164, i64 0, i32 10, i64 0, i64 %indvars.iv453
+  store i32 0, i32* %arrayidx336, align 4, !tbaa !0
+  %arrayidx340 = getelementptr inbounds %struct.StatParameters* %164, i64 0, i32 10, i64 1, i64 %indvars.iv453
+  store i32 0, i32* %arrayidx340, align 4, !tbaa !0
+  %indvars.iv.next454 = add i64 %indvars.iv453, 1
+  %lftr.wideiv455 = trunc i64 %indvars.iv.next454 to i32
+  %exitcond456 = icmp eq i32 %lftr.wideiv455, 15
+  br i1 %exitcond456, label %for.end343, label %for.body312
+
+for.end343:                                       ; preds = %for.body312
+  %arrayidx346 = getelementptr inbounds %struct.StatParameters* %164, i64 0, i32 8, i64 1, i64 0
+  %170 = load i32* %arrayidx346, align 4, !tbaa !0
+  store i32 %170, i32* @report_frame_statistic.last_b8_mode_0.1.0, align 8, !tbaa !0
+  %arrayidx349 = getelementptr inbounds %struct.StatParameters* %164, i64 0, i32 8, i64 1, i64 1
+  %171 = load i32* %arrayidx349, align 4, !tbaa !0
+  store i32 %171, i32* @report_frame_statistic.last_b8_mode_0.1.1, align 4, !tbaa !0
+  br label %for.body353
+
+for.body353:                                      ; preds = %for.body353, %for.end343
+  %indvars.iv = phi i64 [ 0, %for.end343 ], [ %indvars.iv.next, %for.body353 ]
+  %arrayidx356 = getelementptr inbounds %struct.StatParameters* %164, i64 0, i32 11, i64 %indvars.iv
+  %172 = load i32* %arrayidx356, align 4, !tbaa !0
+  %arrayidx358 = getelementptr inbounds [4 x i32]* @report_frame_statistic.last_mode_chroma_use, i64 0, i64 %indvars.iv
+  store i32 %172, i32* %arrayidx358, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.end361, label %for.body353
+
+for.end361:                                       ; preds = %for.body353
+  store i32 0, i32* @frame_statistic_start, align 4, !tbaa !0
+  %call362 = call i32 @fclose(%struct._IO_FILE* %p_stat_frm.0) #6
+  call void @llvm.lifetime.end(i64 1000, i8* %0) #3
+  ret void
+}

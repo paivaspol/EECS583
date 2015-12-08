@@ -1,13 +1,47 @@
 void
-Perl_my_swabn(void *ptr, int n)
+Perl_vwarn(pTHX_ const char* pat, va_list *args)
 {
-    register char *s = (char *)ptr;
-    register char *e = s + (n-1);
-    register char tc;
+    char *message;
+    HV *stash;
+    GV *gv;
+    CV *cv;
+    SV *msv;
+    STRLEN msglen;
+    I32 utf8 = 0;
 
-    for (n /= 2; n > 0; s++, e--, n--) {
-      tc = *s;
-      *s = *e;
-      *e = tc;
+    msv = vmess(pat, args);
+    utf8 = SvUTF8(msv);
+    message = SvPV(msv, msglen);
+
+    if (PL_warnhook) {
+	/* sv_2cv might call Perl_warn() */
+	SV *oldwarnhook = PL_warnhook;
+	ENTER;
+	SAVESPTR(PL_warnhook);
+	PL_warnhook = Nullsv;
+	cv = sv_2cv(oldwarnhook, &stash, &gv, 0);
+	LEAVE;
+	if (cv && !CvDEPTH(cv) && (CvROOT(cv) || CvXSUB(cv))) {
+	    dSP;
+	    SV *msg;
+
+	    ENTER;
+	    save_re_context();
+	    msg = newSVpvn(message, msglen);
+	    SvFLAGS(msg) |= utf8;
+	    SvREADONLY_on(msg);
+	    SAVEFREESV(msg);
+
+	    PUSHSTACKi(PERLSI_WARNHOOK);
+	    PUSHMARK(SP);
+	    XPUSHs(msg);
+	    PUTBACK;
+	    call_sv((SV*)cv, G_DISCARD);
+	    POPSTACK;
+	    LEAVE;
+	    return;
+	}
     }
+
+    write_to_stderr(message, msglen);
 }

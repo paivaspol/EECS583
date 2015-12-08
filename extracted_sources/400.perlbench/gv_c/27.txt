@@ -1,0 +1,16 @@
+int
+Perl_magic_freeovrld(pTHX_ SV *sv, MAGIC *mg)
+{
+    AMT *amtp = (AMT*)mg->mg_ptr;
+    if (amtp && AMT_AMAGIC(amtp)) {
+	int i;
+	for (i = 1; i < NofAMmeth; i++) {
+	    CV *cv = amtp->table[i];
+	    if (cv != Nullcv) {
+		SvREFCNT_dec((SV *) cv);
+		amtp->table[i] = Nullcv;
+	    }
+	}
+    }
+ return 0;
+}

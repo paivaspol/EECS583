@@ -1,0 +1,105 @@
+define i32 @A2_readFromBinaryFile(%struct._A2* %mtx, %struct._IO_FILE* %fp) #0 {
+entry:
+  %itemp = alloca [5 x i32], align 16
+  %cmp = icmp eq %struct._A2* %mtx, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str8, i64 0, i64 0), %struct._A2* %mtx, %struct._IO_FILE* %fp) #5
+  br label %return
+
+if.end:                                           ; preds = %entry
+  call void @A2_clearData(%struct._A2* %mtx) #5
+  %1 = bitcast [5 x i32]* %itemp to i8*
+  %call2 = call i64 @fread(i8* %1, i64 4, i64 5, %struct._IO_FILE* %fp) #5
+  %conv = trunc i64 %call2 to i32
+  %cmp3 = icmp eq i32 %conv, 5
+  br i1 %cmp3, label %if.end7, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call6 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([55 x i8]* @.str9, i64 0, i64 0), i32 %conv, i32 5) #5
+  br label %return
+
+if.end7:                                          ; preds = %if.end
+  %3 = load %struct._IO_FILE** @stdout, align 8, !tbaa !0
+  %4 = bitcast [5 x i32]* %itemp to i64*
+  %5 = load i64* %4, align 16
+  %6 = trunc i64 %5 to i32
+  %7 = lshr i64 %5, 32
+  %8 = trunc i64 %7 to i32
+  %arrayidx9 = getelementptr inbounds [5 x i32]* %itemp, i64 0, i64 2
+  %9 = bitcast i32* %arrayidx9 to i64*
+  %10 = load i64* %9, align 8
+  %11 = trunc i64 %10 to i32
+  %12 = lshr i64 %10, 32
+  %13 = trunc i64 %12 to i32
+  %arrayidx11 = getelementptr inbounds [5 x i32]* %itemp, i64 0, i64 4
+  %14 = load i32* %arrayidx11, align 16, !tbaa !3
+  %call12 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([31 x i8]* @.str10, i64 0, i64 0), i32 %6, i32 %8, i32 %11, i32 %13, i32 %14) #5
+  %15 = load %struct._IO_FILE** @stdout, align 8, !tbaa !0
+  %call13 = call i32 @fflush(%struct._IO_FILE* %15) #5
+  call void @A2_init(%struct._A2* %mtx, i32 %6, i32 %8, i32 %11, i32 %13, i32 %14, double* null) #5
+  %n1 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 1
+  %16 = load i32* %n1, align 4, !tbaa !3
+  %sub = add nsw i32 %16, -1
+  %inc1 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 3
+  %17 = load i32* %inc1, align 4, !tbaa !3
+  %mul = mul nsw i32 %sub, %17
+  %add = add nsw i32 %mul, 1
+  %n2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2
+  %18 = load i32* %n2, align 4, !tbaa !3
+  %sub19 = add nsw i32 %18, -1
+  %inc2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4
+  %19 = load i32* %inc2, align 4, !tbaa !3
+  %mul20 = mul nsw i32 %sub19, %19
+  %add21 = add nsw i32 %add, %mul20
+  %cmp22 = icmp sgt i32 %add21, 0
+  br i1 %cmp22, label %if.then24, label %return
+
+if.then24:                                        ; preds = %if.end7
+  %type = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0
+  %20 = load i32* %type, align 4, !tbaa !3
+  switch i32 %20, label %return [
+    i32 1, label %if.then27
+    i32 2, label %if.then39
+  ]
+
+if.then27:                                        ; preds = %if.then24
+  %entries = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 6
+  %21 = load double** %entries, align 8, !tbaa !0
+  %22 = bitcast double* %21 to i8*
+  %conv28 = sext i32 %add21 to i64
+  %call29 = call i64 @fread(i8* %22, i64 8, i64 %conv28, %struct._IO_FILE* %fp) #5
+  %conv30 = trunc i64 %call29 to i32
+  %cmp31 = icmp eq i32 %conv30, %add21
+  br i1 %cmp31, label %return, label %if.then33
+
+if.then33:                                        ; preds = %if.then27
+  %23 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call34 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %23, i8* getelementptr inbounds ([55 x i8]* @.str9, i64 0, i64 0), i32 %conv30, i32 %add21) #5
+  br label %return
+
+if.then39:                                        ; preds = %if.then24
+  %entries40 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 6
+  %24 = load double** %entries40, align 8, !tbaa !0
+  %25 = bitcast double* %24 to i8*
+  %mul41 = shl nsw i32 %add21, 1
+  %conv42 = sext i32 %mul41 to i64
+  %call43 = call i64 @fread(i8* %25, i64 8, i64 %conv42, %struct._IO_FILE* %fp) #5
+  %conv44 = trunc i64 %call43 to i32
+  %cmp46 = icmp eq i32 %conv44, %mul41
+  br i1 %cmp46, label %return, label %if.then48
+
+if.then48:                                        ; preds = %if.then39
+  %26 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call50 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %26, i8* getelementptr inbounds ([55 x i8]* @.str9, i64 0, i64 0), i32 %conv44, i32 %mul41) #5
+  br label %return
+
+return:                                           ; preds = %if.end7, %if.then39, %if.then27, %if.then24, %if.then48, %if.then33, %if.then5, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then5 ], [ 0, %if.then33 ], [ 0, %if.then48 ], [ 1, %if.then24 ], [ 1, %if.then27 ], [ 1, %if.then39 ], [ 1, %if.end7 ]
+  ret i32 %retval.0
+}

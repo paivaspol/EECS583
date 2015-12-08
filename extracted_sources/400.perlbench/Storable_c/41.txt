@@ -1,34 +1,11 @@
-static SV *retrieve_idx_blessed(pTHX_ stcxt_t *cxt, char *cname)
+SV *net_mstore(pTHX_ SV *sv)
 {
-	I32 idx;
-	char *class;
-	SV **sva;
-	SV *sv;
+	SV *out;
 
-	TRACEME(("retrieve_idx_blessed (#%d)", cxt->tagnum));
-	ASSERT(!cname, ("no bless-into class given here, got %s", cname));
+	TRACEME(("net_mstore"));
 
-	GETMARK(idx);			/* Index coded on a single char? */
-	if (idx & 0x80)
-		RLEN(idx);
+	if (!do_store(aTHX_ (PerlIO*) 0, sv, 0, TRUE, &out))
+		return &PL_sv_undef;
 
-	/*
-	 * Fetch classname in `aclass'
-	 */
-
-	sva = av_fetch(cxt->aclass, idx, FALSE);
-	if (!sva)
-		CROAK(("Class name #%"IVdf" should have been seen already", (IV) idx));
-
-	class = SvPVX(*sva);	/* We know it's a PV, by construction */
-
-	TRACEME(("class ID %d => %s", idx, class));
-
-	/*
-	 * Retrieve object and bless it.
-	 */
-
-	sv = retrieve(aTHX_ cxt, class);	/* First SV which is SEEN will be blessed */
-
-	return sv;
+	return out;
 }

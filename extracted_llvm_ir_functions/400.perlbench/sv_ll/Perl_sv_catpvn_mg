@@ -1,0 +1,16 @@
+define void @Perl_sv_catpvn_mg(%struct.sv* %sv, i8* %ptr, i64 %len) #0 {
+entry:
+  tail call void @Perl_sv_catpvn_flags(%struct.sv* %sv, i8* %ptr, i64 %len, i32 2) #7
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 16384
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @Perl_mg_set(%struct.sv* %sv) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

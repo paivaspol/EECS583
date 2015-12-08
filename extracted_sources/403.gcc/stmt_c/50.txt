@@ -1,12 +1,14 @@
-void
-expand_null_return ()
+int
+expand_exit_something ()
 {
-  rtx last_insn = get_last_insn ();
+  struct nesting *n;
+  last_expr_type = 0;
+  for (n = nesting_stack; n; n = n->all)
+    if (n->exit_label != 0)
+      {
+	expand_goto_internal (NULL_TREE, n->exit_label, NULL_RTX);
+	return 1;
+      }
 
-  /* If this function was declared to return a value, but we
-     didn't, clobber the return registers so that they are not
-     propagated live to the rest of the function.  */
-  clobber_return_register ();
-
-  expand_null_return_1 (last_insn);
+  return 0;
 }

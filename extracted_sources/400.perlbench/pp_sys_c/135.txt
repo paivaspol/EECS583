@@ -1,0 +1,68 @@
+PP(pp_gprotoent)
+{
+#if defined(HAS_GETPROTOBYNAME) || defined(HAS_GETPROTOBYNUMBER) || defined(HAS_GETPROTOENT)
+    dSP;
+    I32 which = PL_op->op_type;
+    register char **elem;
+    register SV *sv;
+#ifndef HAS_GETPROTO_PROTOS /* XXX Do we need individual probes? */
+    struct protoent *getprotobyname(Netdb_name_t);
+    struct protoent *getprotobynumber(int);
+    struct protoent *getprotoent(void);
+#endif
+    struct protoent *pent;
+    STRLEN n_a;
+
+    if (which == OP_GPBYNAME) {
+#ifdef HAS_GETPROTOBYNAME
+        char* name = POPpbytex;
+	pent = PerlSock_getprotobyname(name);
+#else
+	DIE(aTHX_ PL_no_sock_func, "getprotobyname");
+#endif
+    }
+    else if (which == OP_GPBYNUMBER) {
+#ifdef HAS_GETPROTOBYNUMBER
+        int number = POPi;
+	pent = PerlSock_getprotobynumber(number);
+#else
+	DIE(aTHX_ PL_no_sock_func, "getprotobynumber");
+#endif
+    }
+    else
+#ifdef HAS_GETPROTOENT
+	pent = PerlSock_getprotoent();
+#else
+	DIE(aTHX_ PL_no_sock_func, "getprotoent");
+#endif
+
+    EXTEND(SP, 3);
+    if (GIMME != G_ARRAY) {
+	PUSHs(sv = sv_newmortal());
+	if (pent) {
+	    if (which == OP_GPBYNAME)
+		sv_setiv(sv, (IV)pent->p_proto);
+	    else
+		sv_setpv(sv, pent->p_name);
+	}
+	RETURN;
+    }
+
+    if (pent) {
+	PUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	sv_setpv(sv, pent->p_name);
+	PUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	for (elem = pent->p_aliases; elem && *elem; elem++) {
+	    sv_catpv(sv, *elem);
+	    if (elem[1])
+		sv_catpvn(sv, " ", 1);
+	}
+	PUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	sv_setiv(sv, (IV)pent->p_proto);
+    }
+
+    RETURN;
+#else
+    DIE(aTHX_ PL_no_sock_func, "getprotoent");
+#endif
+}

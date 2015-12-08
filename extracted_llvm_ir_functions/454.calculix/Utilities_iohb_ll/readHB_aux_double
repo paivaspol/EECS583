@@ -1,0 +1,360 @@
+define i32 @readHB_aux_double(i8* %filename, i8 signext %AuxType, double* nocapture %b) #0 {
+entry:
+  %Ptrcrd = alloca i32, align 4
+  %Indcrd = alloca i32, align 4
+  %Valcrd = alloca i32, align 4
+  %Rhscrd = alloca i32, align 4
+  %Nrow = alloca i32, align 4
+  %Ncol = alloca i32, align 4
+  %Nnzero = alloca i32, align 4
+  %Nrhs = alloca i32, align 4
+  %Rhsperline = alloca i32, align 4
+  %Rhswidth = alloca i32, align 4
+  %Rhsprec = alloca i32, align 4
+  %Rhsflag = alloca i32, align 4
+  %Title = alloca [73 x i8], align 16
+  %Key = alloca [9 x i8], align 1
+  %Type = alloca [4 x i8], align 1
+  %Rhstype = alloca [4 x i8], align 1
+  %Ptrfmt = alloca [17 x i8], align 16
+  %Indfmt = alloca [17 x i8], align 16
+  %Valfmt = alloca [21 x i8], align 16
+  %Rhsfmt = alloca [21 x i8], align 16
+  %line = alloca [8192 x i8], align 16
+  %0 = getelementptr inbounds [73 x i8]* %Title, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 73, i8* %0) #1
+  %1 = getelementptr inbounds [8192 x i8]* %line, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 8192, i8* %1) #1
+  %call = call %struct._IO_FILE* @fopen(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0)) #8
+  %cmp = icmp eq %struct._IO_FILE* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call1 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([29 x i8]* @.str2, i64 0, i64 0), i8* %filename) #8
+  br label %cleanup
+
+if.end:                                           ; preds = %entry
+  %arraydecay2 = getelementptr inbounds [9 x i8]* %Key, i64 0, i64 0
+  %arraydecay3 = getelementptr inbounds [4 x i8]* %Type, i64 0, i64 0
+  %arraydecay4 = getelementptr inbounds [17 x i8]* %Ptrfmt, i64 0, i64 0
+  %arraydecay5 = getelementptr inbounds [17 x i8]* %Indfmt, i64 0, i64 0
+  %arraydecay6 = getelementptr inbounds [21 x i8]* %Valfmt, i64 0, i64 0
+  %arraydecay7 = getelementptr inbounds [21 x i8]* %Rhsfmt, i64 0, i64 0
+  %arraydecay8 = getelementptr inbounds [4 x i8]* %Rhstype, i64 0, i64 0
+  %call9 = call i32 @readHB_header(%struct._IO_FILE* %call, i8* %0, i8* %arraydecay2, i8* %arraydecay3, i32* %Nrow, i32* %Ncol, i32* %Nnzero, i32* %Nrhs, i8* %arraydecay4, i8* %arraydecay5, i8* %arraydecay6, i8* %arraydecay7, i32* %Ptrcrd, i32* %Indcrd, i32* %Valcrd, i32* %Rhscrd, i8* %arraydecay8) #9
+  %3 = load i32* %Nrhs, align 4, !tbaa !3
+  %cmp10 = icmp slt i32 %3, 1
+  br i1 %cmp10, label %if.then11, label %if.end13
+
+if.then11:                                        ; preds = %if.end
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %5 = call i64 @fwrite(i8* getelementptr inbounds ([66 x i8]* @.str34, i64 0, i64 0), i64 65, i64 1, %struct._IO_FILE* %4)
+  br label %cleanup
+
+if.end13:                                         ; preds = %if.end
+  %6 = load i8* %arraydecay8, align 1, !tbaa !1
+  %cmp14 = icmp eq i8 %6, 70
+  br i1 %cmp14, label %if.end19, label %if.then16
+
+if.then16:                                        ; preds = %if.end13
+  %7 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %8 = call i64 @fwrite(i8* getelementptr inbounds ([78 x i8]* @.str35, i64 0, i64 0), i64 77, i64 1, %struct._IO_FILE* %7)
+  %9 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %10 = call i64 @fwrite(i8* getelementptr inbounds ([40 x i8]* @.str36, i64 0, i64 0), i64 39, i64 1, %struct._IO_FILE* %9)
+  br label %cleanup
+
+if.end19:                                         ; preds = %if.end13
+  %11 = load i8* %arraydecay3, align 1, !tbaa !1
+  %cmp22 = icmp eq i8 %11, 67
+  %12 = load i32* %Nrow, align 4, !tbaa !3
+  %mul = zext i1 %cmp22 to i32
+  %Nentries.0 = shl nsw i32 %12, %mul
+  %arrayidx26 = getelementptr inbounds [4 x i8]* %Rhstype, i64 0, i64 1
+  %13 = load i8* %arrayidx26, align 1, !tbaa !1
+  %cmp28 = icmp eq i8 %13, 71
+  %. = select i1 %cmp28, i32 2, i32 1
+  %arrayidx32 = getelementptr inbounds [4 x i8]* %Rhstype, i64 0, i64 2
+  %14 = load i8* %arrayidx32, align 1, !tbaa !1
+  %cmp34 = icmp eq i8 %14, 88
+  %inc37 = zext i1 %cmp34 to i32
+  %nvecs.1 = add i32 %inc37, %.
+  switch i8 %AuxType, label %if.end59 [
+    i8 71, label %land.lhs.true
+    i8 88, label %land.lhs.true52
+  ]
+
+land.lhs.true:                                    ; preds = %if.end19
+  br i1 %cmp28, label %if.end59, label %if.then46
+
+if.then46:                                        ; preds = %land.lhs.true
+  %15 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %16 = call i64 @fwrite(i8* getelementptr inbounds ([72 x i8]* @.str37, i64 0, i64 0), i64 71, i64 1, %struct._IO_FILE* %15)
+  br label %cleanup
+
+land.lhs.true52:                                  ; preds = %if.end19
+  br i1 %cmp34, label %if.end59, label %if.then57
+
+if.then57:                                        ; preds = %land.lhs.true52
+  %17 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %18 = call i64 @fwrite(i8* getelementptr inbounds ([81 x i8]* @.str38, i64 0, i64 0), i64 80, i64 1, %struct._IO_FILE* %17)
+  br label %cleanup
+
+if.end59:                                         ; preds = %land.lhs.true, %if.end19, %land.lhs.true52
+  call fastcc void @ParseRfmt(i8* %arraydecay7, i32* %Rhsperline, i32* %Rhswidth, i32* %Rhsprec, i32* %Rhsflag) #9
+  %19 = load i32* %Rhsperline, align 4, !tbaa !3
+  %20 = load i32* %Rhswidth, align 4, !tbaa !3
+  %mul62 = mul nsw i32 %20, %19
+  %21 = load i32* %Ptrcrd, align 4, !tbaa !3
+  %22 = load i32* %Indcrd, align 4, !tbaa !3
+  %add = add i32 %22, %21
+  %23 = load i32* %Valcrd, align 4, !tbaa !3
+  %add63 = add i32 %add, %23
+  %cmp64333 = icmp sgt i32 %add63, 0
+  br i1 %cmp64333, label %for.body, label %for.end
+
+for.body:                                         ; preds = %if.end59, %for.body
+  %i.0334 = phi i32 [ %inc68, %for.body ], [ 0, %if.end59 ]
+  %call67 = call i8* @fgets(i8* %1, i32 8192, %struct._IO_FILE* %call) #8
+  %inc68 = add nsw i32 %i.0334, 1
+  %exitcond340 = icmp eq i32 %inc68, %add63
+  br i1 %exitcond340, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %if.end59
+  %AuxType.off = add i8 %AuxType, -70
+  %switch = icmp ult i8 %AuxType.off, 2
+  br i1 %switch, label %for.end.if.end81_crit_edge, label %if.else78
+
+for.end.if.end81_crit_edge:                       ; preds = %for.end
+  %cmp70 = icmp eq i8 %AuxType, 70
+  %.mux = select i1 %cmp70, i32 0, i32 %Nentries.0
+  %sub82.pre = add i32 %nvecs.1, -1
+  %mul83.pre = mul i32 %sub82.pre, %Nentries.0
+  br label %if.end81
+
+if.else78:                                        ; preds = %for.end
+  %sub = add nsw i32 %nvecs.1, -1
+  %mul79 = mul nsw i32 %sub, %Nentries.0
+  br label %if.end81
+
+if.end81:                                         ; preds = %for.end.if.end81_crit_edge, %if.else78
+  %mul83.pre-phi = phi i32 [ %mul83.pre, %for.end.if.end81_crit_edge ], [ %mul79, %if.else78 ]
+  %start.0 = phi i32 [ %.mux, %for.end.if.end81_crit_edge ], [ %mul79, %if.else78 ]
+  %call85 = call i8* @fgets(i8* %1, i32 8192, %struct._IO_FILE* %call) #8
+  %call87 = call i8* @strchr(i8* %1, i32 10) #11
+  %sub.ptr.lhs.cast = ptrtoint i8* %call87 to i64
+  %sub.ptr.rhs.cast = ptrtoint [8192 x i8]* %line to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %conv89 = trunc i64 %sub.ptr.sub to i32
+  %cmp91327 = icmp sgt i32 %start.0, 0
+  br i1 %cmp91327, label %for.body93, label %for.end112
+
+for.body93:                                       ; preds = %if.end81, %if.end108
+  %linel.0330 = phi i32 [ %linel.1, %if.end108 ], [ %conv89, %if.end81 ]
+  %i.1329 = phi i32 [ %inc111, %if.end108 ], [ 0, %if.end81 ]
+  %col.0328 = phi i32 [ %add109, %if.end108 ], [ 0, %if.end81 ]
+  %cmp94 = icmp slt i32 %mul62, %linel.0330
+  %cond = select i1 %cmp94, i32 %mul62, i32 %linel.0330
+  %cmp96 = icmp slt i32 %col.0328, %cond
+  br i1 %cmp96, label %if.end108, label %if.then98
+
+if.then98:                                        ; preds = %for.body93
+  %call100 = call i8* @fgets(i8* %1, i32 8192, %struct._IO_FILE* %call) #8
+  %call102 = call i8* @strchr(i8* %1, i32 10) #11
+  %sub.ptr.lhs.cast104 = ptrtoint i8* %call102 to i64
+  %sub.ptr.sub106 = sub i64 %sub.ptr.lhs.cast104, %sub.ptr.rhs.cast
+  %conv107 = trunc i64 %sub.ptr.sub106 to i32
+  br label %if.end108
+
+if.end108:                                        ; preds = %for.body93, %if.then98
+  %col.1 = phi i32 [ 0, %if.then98 ], [ %col.0328, %for.body93 ]
+  %linel.1 = phi i32 [ %conv107, %if.then98 ], [ %linel.0330, %for.body93 ]
+  %add109 = add nsw i32 %20, %col.1
+  %inc111 = add nsw i32 %i.1329, 1
+  %exitcond339 = icmp eq i32 %inc111, %start.0
+  br i1 %exitcond339, label %for.end112, label %for.body93
+
+for.end112:                                       ; preds = %if.end108, %if.end81
+  %linel.0.lcssa = phi i32 [ %conv89, %if.end81 ], [ %linel.1, %if.end108 ]
+  %col.0.lcssa = phi i32 [ 0, %if.end81 ], [ %add109, %if.end108 ]
+  %24 = load i32* %Rhsflag, align 4, !tbaa !3
+  %cmp113 = icmp eq i32 %24, 68
+  br i1 %cmp113, label %while.cond.preheader, label %if.end120
+
+while.cond.preheader:                             ; preds = %for.end112
+  %call117324 = call i8* @strchr(i8* %1, i32 68) #11
+  %tobool325 = icmp eq i8* %call117324, null
+  br i1 %tobool325, label %if.end120, label %while.body
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %call117326 = phi i8* [ %call117, %while.body ], [ %call117324, %while.cond.preheader ]
+  store i8 69, i8* %call117326, align 1, !tbaa !1
+  %call117 = call i8* @strchr(i8* %1, i32 68) #11
+  %tobool = icmp eq i8* %call117, null
+  br i1 %tobool, label %if.end120, label %while.body
+
+if.end120:                                        ; preds = %while.cond.preheader, %while.body, %for.end112
+  %add121 = add nsw i32 %20, 1
+  %conv122 = sext i32 %add121 to i64
+  %call123 = call noalias i8* @malloc(i64 %conv122) #8
+  %cmp124 = icmp eq i8* %call123, null
+  br i1 %cmp124, label %if.then126, label %if.end127
+
+if.then126:                                       ; preds = %if.end120
+  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([37 x i8]* @.str27, i64 0, i64 0)) #9
+  unreachable
+
+if.end127:                                        ; preds = %if.end120
+  %idx.ext = sext i32 %20 to i64
+  %add.ptr = getelementptr inbounds i8* %call123, i64 %idx.ext
+  store i8 0, i8* %add.ptr, align 1, !tbaa !1
+  %25 = load i32* %Nrhs, align 4, !tbaa !3
+  %cmp129320 = icmp sgt i32 %25, 0
+  br i1 %cmp129320, label %for.cond132.preheader.lr.ph, label %for.end245
+
+for.cond132.preheader.lr.ph:                      ; preds = %if.end127
+  %cmp133309 = icmp sgt i32 %Nentries.0, 0
+  %cmp217314 = icmp sgt i32 %mul83.pre-phi, 0
+  %cmp172 = icmp eq i32 %24, 70
+  %conv201 = trunc i32 %24 to i8
+  br label %for.cond132.preheader
+
+for.cond132.preheader:                            ; preds = %for.cond132.preheader.lr.ph, %for.inc243
+  %rhsi.0323 = phi i32 [ 0, %for.cond132.preheader.lr.ph ], [ %inc244, %for.inc243 ]
+  %linel.2322 = phi i32 [ %linel.0.lcssa, %for.cond132.preheader.lr.ph ], [ %linel.5.lcssa, %for.inc243 ]
+  %col.2321 = phi i32 [ %col.0.lcssa, %for.cond132.preheader.lr.ph ], [ %col.5.lcssa, %for.inc243 ]
+  br i1 %cmp133309, label %for.body135, label %for.cond216.loopexit
+
+for.body135:                                      ; preds = %for.cond132.preheader, %if.end208
+  %indvars.iv336 = phi i64 [ %indvars.iv.next337, %if.end208 ], [ 0, %for.cond132.preheader ]
+  %linel.3312 = phi i32 [ %linel.4, %if.end208 ], [ %linel.2322, %for.cond132.preheader ]
+  %col.3310 = phi i32 [ %add212, %if.end208 ], [ %col.2321, %for.cond132.preheader ]
+  %cmp136 = icmp slt i32 %mul62, %linel.3312
+  %cond141 = select i1 %cmp136, i32 %mul62, i32 %linel.3312
+  %cmp142 = icmp slt i32 %col.3310, %cond141
+  br i1 %cmp142, label %if.end166, label %if.then144
+
+if.then144:                                       ; preds = %for.body135
+  %call146 = call i8* @fgets(i8* %1, i32 8192, %struct._IO_FILE* %call) #8
+  %call148 = call i8* @strchr(i8* %1, i32 10) #11
+  %sub.ptr.lhs.cast150 = ptrtoint i8* %call148 to i64
+  %sub.ptr.sub152 = sub i64 %sub.ptr.lhs.cast150, %sub.ptr.rhs.cast
+  %conv153 = trunc i64 %sub.ptr.sub152 to i32
+  br i1 %cmp113, label %while.cond157.preheader, label %if.end166
+
+while.cond157.preheader:                          ; preds = %if.then144
+  %call159306 = call i8* @strchr(i8* %1, i32 68) #11
+  %tobool160307 = icmp eq i8* %call159306, null
+  br i1 %tobool160307, label %if.end166, label %while.body161
+
+while.body161:                                    ; preds = %while.cond157.preheader, %while.body161
+  %call159308 = phi i8* [ %call159, %while.body161 ], [ %call159306, %while.cond157.preheader ]
+  store i8 69, i8* %call159308, align 1, !tbaa !1
+  %call159 = call i8* @strchr(i8* %1, i32 68) #11
+  %tobool160 = icmp eq i8* %call159, null
+  br i1 %tobool160, label %if.end166, label %while.body161
+
+if.end166:                                        ; preds = %while.cond157.preheader, %while.body161, %if.then144, %for.body135
+  %col.4 = phi i32 [ %col.3310, %for.body135 ], [ 0, %if.then144 ], [ 0, %while.body161 ], [ 0, %while.cond157.preheader ]
+  %linel.4 = phi i32 [ %linel.3312, %for.body135 ], [ %conv153, %if.then144 ], [ %conv153, %while.body161 ], [ %conv153, %while.cond157.preheader ]
+  %idx.ext168 = sext i32 %col.4 to i64
+  %add.ptr169 = getelementptr inbounds [8192 x i8]* %line, i64 0, i64 %idx.ext168
+  %call171 = call i8* @strncpy(i8* %call123, i8* %add.ptr169, i64 %idx.ext) #8
+  br i1 %cmp172, label %if.end208, label %land.lhs.true174
+
+land.lhs.true174:                                 ; preds = %if.end166
+  %call175 = call i8* @strchr(i8* %call123, i32 69) #11
+  %cmp176 = icmp eq i8* %call175, null
+  br i1 %cmp176, label %if.then178, label %if.end208
+
+if.then178:                                       ; preds = %land.lhs.true174
+  %call179 = call i64 @strlen(i8* %call123) #11
+  %conv180 = trunc i64 %call179 to i32
+  %add181 = add i32 %conv180, 1
+  %26 = sext i32 %add181 to i64
+  br label %for.cond182
+
+for.cond182:                                      ; preds = %for.body185, %if.then178
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body185 ], [ %26, %if.then178 ]
+  %j.0 = phi i32 [ %sub186, %for.body185 ], [ %add181, %if.then178 ]
+  %27 = trunc i64 %indvars.iv to i32
+  %cmp183 = icmp sgt i32 %27, -1
+  br i1 %cmp183, label %for.body185, label %if.end208
+
+for.body185:                                      ; preds = %for.cond182
+  %sub186 = add nsw i32 %j.0, -1
+  %idxprom = sext i32 %sub186 to i64
+  %arrayidx187 = getelementptr inbounds i8* %call123, i64 %idxprom
+  %28 = load i8* %arrayidx187, align 1, !tbaa !1
+  %arrayidx189 = getelementptr inbounds i8* %call123, i64 %indvars.iv
+  store i8 %28, i8* %arrayidx189, align 1, !tbaa !1
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  switch i8 %28, label %for.cond182 [
+    i8 43, label %if.then200
+    i8 45, label %if.then200
+  ]
+
+if.then200:                                       ; preds = %for.body185, %for.body185
+  store i8 %conv201, i8* %arrayidx187, align 1, !tbaa !1
+  br label %if.end208
+
+if.end208:                                        ; preds = %for.cond182, %if.end166, %if.then200, %land.lhs.true174
+  %call209 = call double @atof(i8* %call123) #11
+  %arrayidx211 = getelementptr inbounds double* %b, i64 %indvars.iv336
+  store double %call209, double* %arrayidx211, align 8, !tbaa !4
+  %add212 = add nsw i32 %20, %col.4
+  %indvars.iv.next337 = add i64 %indvars.iv336, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next337 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %Nentries.0
+  br i1 %exitcond, label %for.cond216.loopexit, label %for.body135
+
+for.cond216.loopexit:                             ; preds = %if.end208, %for.cond132.preheader
+  %linel.3.lcssa = phi i32 [ %linel.2322, %for.cond132.preheader ], [ %linel.4, %if.end208 ]
+  %col.3.lcssa = phi i32 [ %col.2321, %for.cond132.preheader ], [ %add212, %if.end208 ]
+  br i1 %cmp217314, label %for.body219, label %for.inc243
+
+for.body219:                                      ; preds = %for.cond216.loopexit, %if.end238
+  %linel.5317 = phi i32 [ %linel.6, %if.end238 ], [ %linel.3.lcssa, %for.cond216.loopexit ]
+  %i.3316 = phi i32 [ %inc241, %if.end238 ], [ 0, %for.cond216.loopexit ]
+  %col.5315 = phi i32 [ %add239, %if.end238 ], [ %col.3.lcssa, %for.cond216.loopexit ]
+  %cmp220 = icmp slt i32 %mul62, %linel.5317
+  %cond225 = select i1 %cmp220, i32 %mul62, i32 %linel.5317
+  %cmp226 = icmp slt i32 %col.5315, %cond225
+  br i1 %cmp226, label %if.end238, label %if.then228
+
+if.then228:                                       ; preds = %for.body219
+  %call230 = call i8* @fgets(i8* %1, i32 8192, %struct._IO_FILE* %call) #8
+  %call232 = call i8* @strchr(i8* %1, i32 10) #11
+  %sub.ptr.lhs.cast234 = ptrtoint i8* %call232 to i64
+  %sub.ptr.sub236 = sub i64 %sub.ptr.lhs.cast234, %sub.ptr.rhs.cast
+  %conv237 = trunc i64 %sub.ptr.sub236 to i32
+  br label %if.end238
+
+if.end238:                                        ; preds = %for.body219, %if.then228
+  %col.6 = phi i32 [ 0, %if.then228 ], [ %col.5315, %for.body219 ]
+  %linel.6 = phi i32 [ %conv237, %if.then228 ], [ %linel.5317, %for.body219 ]
+  %add239 = add nsw i32 %20, %col.6
+  %inc241 = add nsw i32 %i.3316, 1
+  %exitcond338 = icmp eq i32 %inc241, %mul83.pre-phi
+  br i1 %exitcond338, label %for.inc243, label %for.body219
+
+for.inc243:                                       ; preds = %if.end238, %for.cond216.loopexit
+  %linel.5.lcssa = phi i32 [ %linel.3.lcssa, %for.cond216.loopexit ], [ %linel.6, %if.end238 ]
+  %col.5.lcssa = phi i32 [ %col.3.lcssa, %for.cond216.loopexit ], [ %add239, %if.end238 ]
+  %inc244 = add nsw i32 %rhsi.0323, 1
+  %29 = load i32* %Nrhs, align 4, !tbaa !3
+  %cmp129 = icmp slt i32 %inc244, %29
+  br i1 %cmp129, label %for.cond132.preheader, label %for.end245
+
+for.end245:                                       ; preds = %for.inc243, %if.end127
+  call void @free(i8* %call123) #8
+  %call246 = call i32 @fclose(%struct._IO_FILE* %call) #8
+  %30 = load i32* %Nrhs, align 4, !tbaa !3
+  br label %cleanup
+
+cleanup:                                          ; preds = %for.end245, %if.then57, %if.then46, %if.then16, %if.then11, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then11 ], [ 0, %if.then16 ], [ 0, %if.then46 ], [ 0, %if.then57 ], [ %30, %for.end245 ]
+  call void @llvm.lifetime.end(i64 8192, i8* %1) #1
+  call void @llvm.lifetime.end(i64 73, i8* %0) #1
+  ret i32 %retval.0
+}

@@ -1,0 +1,92 @@
+define %struct.op* @Perl_newLOOPEX(i32 %type, %struct.op* %label) #0 {
+entry:
+  %n_a = alloca i64, align 8
+  %cmp = icmp eq i32 %type, 189
+  %op_type = getelementptr inbounds %struct.op* %label, i64 0, i32 4
+  %0 = load i16* %op_type, align 2, !tbaa !4
+  br i1 %cmp, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %entry
+  switch i16 %0, label %if.end37 [
+    i16 5, label %cond.true
+    i16 166, label %land.lhs.true29
+  ]
+
+if.then:                                          ; preds = %entry
+  switch i16 %0, label %cond.end20 [
+    i16 1, label %land.lhs.true
+    i16 5, label %cond.true
+  ]
+
+land.lhs.true:                                    ; preds = %if.then
+  %op_flags = getelementptr inbounds %struct.op* %label, i64 0, i32 6
+  %1 = load i8* %op_flags, align 1, !tbaa !1
+  %and = and i8 %1, 8
+  %tobool = icmp eq i8 %and, 0
+  br i1 %tobool, label %cond.end20, label %if.then8
+
+if.then8:                                         ; preds = %land.lhs.true
+  %call = call %struct.op* @Perl_newOP(i32 %type, i32 128) #8
+  br label %if.end
+
+cond.true:                                        ; preds = %if.then, %lor.lhs.false
+  %op_sv = getelementptr inbounds %struct.op* %label, i64 1
+  %2 = bitcast %struct.op* %op_sv to %struct.sv**
+  %3 = load %struct.sv** %2, align 8, !tbaa !3
+  store %struct.sv* %3, %struct.sv** @PL_Sv, align 8, !tbaa !3
+  %sv_flags = getelementptr inbounds %struct.sv* %3, i64 0, i32 2
+  %4 = load i32* %sv_flags, align 4, !tbaa !0
+  %and13 = and i32 %4, 262144
+  %cmp14 = icmp eq i32 %and13, 0
+  br i1 %cmp14, label %cond.false, label %cond.true16
+
+cond.true16:                                      ; preds = %cond.true
+  %sv_any = getelementptr inbounds %struct.sv* %3, i64 0, i32 0
+  %5 = load i8** %sv_any, align 8, !tbaa !3
+  %xpv_cur = getelementptr inbounds i8* %5, i64 8
+  %6 = bitcast i8* %xpv_cur to i64*
+  %7 = load i64* %6, align 8, !tbaa !5
+  store i64 %7, i64* %n_a, align 8, !tbaa !5
+  %xpv_pv = bitcast i8* %5 to i8**
+  %8 = load i8** %xpv_pv, align 8, !tbaa !3
+  br label %cond.end20
+
+cond.false:                                       ; preds = %cond.true
+  %call18 = call i8* @Perl_sv_2pv_flags(%struct.sv* %3, i64* %n_a, i32 2) #7
+  br label %cond.end20
+
+cond.end20:                                       ; preds = %if.then, %land.lhs.true, %cond.true16, %cond.false
+  %cond21 = phi i8* [ %8, %cond.true16 ], [ %call18, %cond.false ], [ getelementptr inbounds ([1 x i8]* @.str35, i64 0, i64 0), %land.lhs.true ], [ getelementptr inbounds ([1 x i8]* @.str35, i64 0, i64 0), %if.then ]
+  %call22 = call i8* @Perl_savepv(i8* %cond21) #7
+  %call23 = call %struct.op* @Perl_newPVOP(i32 %type, i32 0, i8* %call22) #8
+  br label %if.end
+
+if.end:                                           ; preds = %cond.end20, %if.then8
+  %o.0 = phi %struct.op* [ %call, %if.then8 ], [ %call23, %cond.end20 ]
+  call void @Perl_op_free(%struct.op* %label) #8
+  br label %if.end39
+
+land.lhs.true29:                                  ; preds = %lor.lhs.false
+  %op_flags30 = getelementptr inbounds %struct.op* %label, i64 0, i32 6
+  %9 = load i8* %op_flags30, align 1, !tbaa !1
+  %and32 = and i8 %9, 64
+  %tobool33 = icmp eq i8 %and32, 0
+  br i1 %tobool33, label %if.then34, label %if.end37
+
+if.then34:                                        ; preds = %land.lhs.true29
+  %call35 = call %struct.op* @Perl_mod(%struct.op* %label, i32 20) #8
+  %call36 = call %struct.op* @Perl_newUNOP(i32 20, i32 0, %struct.op* %call35) #8
+  br label %if.end37
+
+if.end37:                                         ; preds = %lor.lhs.false, %land.lhs.true29, %if.then34
+  %label.addr.0 = phi %struct.op* [ %label, %land.lhs.true29 ], [ %call36, %if.then34 ], [ %label, %lor.lhs.false ]
+  %call38 = call %struct.op* @Perl_newUNOP(i32 189, i32 64, %struct.op* %label.addr.0) #8
+  br label %if.end39
+
+if.end39:                                         ; preds = %if.end37, %if.end
+  %o.1 = phi %struct.op* [ %o.0, %if.end ], [ %call38, %if.end37 ]
+  %10 = load i32* @PL_hints, align 4, !tbaa !0
+  %or = or i32 %10, 256
+  store i32 %or, i32* @PL_hints, align 4, !tbaa !0
+  ret %struct.op* %o.1
+}

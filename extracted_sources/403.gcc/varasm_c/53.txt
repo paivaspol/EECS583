@@ -1,12 +1,48 @@
-static void
-mark_const_hash_entry (ptr)
-     void *ptr;
+bool
+assemble_integer (x, size, align, force)
+     rtx x;
+     unsigned int size;
+     unsigned int align;
+     int force;
 {
-  struct constant_descriptor *desc = * (struct constant_descriptor **) ptr;
+  int aligned_p;
 
-  while (desc)
+  aligned_p = (align >= MIN (size * BITS_PER_UNIT, BIGGEST_ALIGNMENT));
+
+  /* See if the target hook can handle this kind of object.  */
+  if ((*targetm.asm_out.integer) (x, size, aligned_p))
+    return true;
+
+  /* If the object is a multi-byte one, try splitting it up.  Split
+     it into words it if is multi-word, otherwise split it into bytes.  */
+  if (size > 1)
     {
-      ggc_mark_rtx (desc->rtl);
-      desc = desc->next;
+      enum machine_mode omode, imode;
+      unsigned int subalign;
+      unsigned int subsize, i;
+
+      subsize = size > UNITS_PER_WORD? UNITS_PER_WORD : 1;
+      subalign = MIN (align, subsize * BITS_PER_UNIT);
+      omode = mode_for_size (subsize * BITS_PER_UNIT, MODE_INT, 0);
+      imode = mode_for_size (size * BITS_PER_UNIT, MODE_INT, 0);
+
+      for (i = 0; i < size; i += subsize)
+	{
+	  rtx partial = simplify_subreg (omode, x, imode, i);
+	  if (!partial || !assemble_integer (partial, subsize, subalign, 0))
+	    break;
+	}
+      if (i == size)
+	return true;
+
+      /* If we've printed some of it, but not all of it, there's no going
+	 back now.  */
+      if (i > 0)
+	abort ();
     }
+
+  if (force)
+    abort ();
+
+  return false;
 }

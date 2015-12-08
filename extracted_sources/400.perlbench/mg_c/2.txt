@@ -1,24 +1,71 @@
 int
-Perl_mg_set(pTHX_ SV *sv)
+Perl_mg_get(pTHX_ SV *sv)
 {
-    I32 mgs_ix;
-    MAGIC* mg;
-    MAGIC* nextmg;
+    int have_new = 0;
+    MAGIC *newmg, *head, *cur, *mg;
+    I32 mgs_ix = SSNEW(sizeof(MGS));
+    int was_temp = SvTEMP(sv);
+    /* guard against sv having being freed midway by holding a private
+       reference. */
 
-    mgs_ix = SSNEW(sizeof(MGS));
-    save_magic(mgs_ix, sv);
-
-    for (mg = SvMAGIC(sv); mg; mg = nextmg) {
-	MGVTBL* vtbl = mg->mg_virtual;
-	nextmg = mg->mg_moremagic;	/* it may delete itself */
-	if (mg->mg_flags & MGf_GSKIP) {
-	    mg->mg_flags &= ~MGf_GSKIP;	/* setting requires another read */
-	    (SSPTR(mgs_ix, MGS*))->mgs_flags = 0;
-	}
-	if (vtbl && vtbl->svt_set)
-	    CALL_FPTR(vtbl->svt_set)(aTHX_ sv, mg);
+    /* sv_2mortal has this side effect of turning on the TEMP flag, which can
+       cause the SV's buffer to get stolen (and maybe other stuff).
+       So restore it.
+    */
+    sv_2mortal(SvREFCNT_inc(sv));
+    if (!was_temp) {
+	SvTEMP_off(sv);
     }
 
-    restore_magic(aTHX_ INT2PTR(void*, (IV)mgs_ix));
+    save_magic(mgs_ix, sv);
+
+    /* We must call svt_get(sv, mg) for each valid entry in the linked
+       list of magic. svt_get() may delete the current entry, add new
+       magic to the head of the list, or upgrade the SV. AMS 20010810 */
+
+    newmg = cur = head = mg = SvMAGIC(sv);
+    while (mg) {
+	MGVTBL *vtbl = mg->mg_virtual;
+
+	if (!(mg->mg_flags & MGf_GSKIP) && vtbl && vtbl->svt_get) {
+	    CALL_FPTR(vtbl->svt_get)(aTHX_ sv, mg);
+
+	    /* guard against magic having been deleted - eg FETCH calling
+	     * untie */
+	    if (!SvMAGIC(sv))
+		break;
+
+	    /* Don't restore the flags for this entry if it was deleted. */
+	    if (mg->mg_flags & MGf_GSKIP)
+		(SSPTR(mgs_ix, MGS *))->mgs_flags = 0;
+	}
+
+	mg = mg->mg_moremagic;
+
+	if (have_new) {
+	    /* Have we finished with the new entries we saw? Start again
+	       where we left off (unless there are more new entries). */
+	    if (mg == head) {
+		have_new = 0;
+		mg   = cur;
+		head = newmg;
+	    }
+	}
+
+	/* Were any new entries added? */
+	if (!have_new && (newmg = SvMAGIC(sv)) != head) {
+	    have_new = 1;
+	    cur = mg;
+	    mg  = newmg;
+	}
+    }
+
+    restore_magic(aTHX_ INT2PTR(void *, (IV)mgs_ix));
+
+    if (SvREFCNT(sv) == 1) {
+	/* We hold the last reference to this SV, which implies that the
+	   SV was deleted as a side effect of the routines we called.  */
+	SvOK_off(sv);
+    }
     return 0;
 }

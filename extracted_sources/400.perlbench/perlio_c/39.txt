@@ -1,39 +1,40 @@
-void
-PerlIOStdio_set_ptrcnt(pTHX_ PerlIO *f, STDCHAR * ptr, SSize_t cnt)
+int
+Perl_PerlIO_flush(pTHX_ PerlIO *f)
 {
-#if defined(STDIO_PTR_LVALUE) || defined(STDIO_PTR_LVAL_SETS_CNT) /* SPEC_CPU */
-    FILE *stdio = PerlIOSelf(f, PerlIOStdio)->stdio;
-#endif /* SPEC_CPU */
-    if (ptr != NULL) {
-#ifdef STDIO_PTR_LVALUE
-	PerlSIO_set_ptr(stdio, (void*)ptr); /* LHS STDCHAR* cast non-portable */
-#ifdef STDIO_PTR_LVAL_SETS_CNT
-	if (PerlSIO_get_cnt(stdio) != (cnt)) {
-	    assert(PerlSIO_get_cnt(stdio) == (cnt));
+    if (f) {
+	if (*f) {
+	    PerlIO_funcs *tab = PerlIOBase(f)->tab;
+
+	    if (tab && tab->Flush)
+		return (*tab->Flush) (aTHX_ f);
+	    else
+		 return 0; /* If no Flush defined, silently succeed. */
 	}
-#endif
-#if (!defined(STDIO_PTR_LVAL_NOCHANGE_CNT))
-	/*
-	 * Setting ptr _does_ change cnt - we are done
-	 */
-	return;
-#endif
-#else                           /* STDIO_PTR_LVALUE */
-	PerlProc_abort();
-#endif                          /* STDIO_PTR_LVALUE */
+	else {
+	    PerlIO_debug("Cannot flush f=%p\n", (void*)f);
+	    SETERRNO(EBADF, SS_IVCHAN);
+	    return -1;
+	}
     }
-    /*
-     * Now (or only) set cnt
-     */
-#ifdef STDIO_CNT_LVALUE
-    PerlSIO_set_cnt(stdio, cnt);
-#else                           /* STDIO_CNT_LVALUE */
-#if (defined(STDIO_PTR_LVALUE) && defined(STDIO_PTR_LVAL_SETS_CNT))
-    PerlSIO_set_ptr(stdio,
-		    PerlSIO_get_ptr(stdio) + (PerlSIO_get_cnt(stdio) -
-					      cnt));
-#else                           /* STDIO_PTR_LVAL_SETS_CNT */
-    PerlProc_abort();
-#endif                          /* STDIO_PTR_LVAL_SETS_CNT */
-#endif                          /* STDIO_CNT_LVALUE */
+    else {
+	/*
+	 * Is it good API design to do flush-all on NULL, a potentially
+	 * errorneous input? Maybe some magical value (PerlIO*
+	 * PERLIO_FLUSH_ALL = (PerlIO*)-1;)? Yes, stdio does similar
+	 * things on fflush(NULL), but should we be bound by their design
+	 * decisions? --jhi
+	 */
+	PerlIO **table = &PL_perlio;
+	int code = 0;
+	while ((f = *table)) {
+	    int i;
+	    table = (PerlIO **) (f++);
+	    for (i = 1; i < PERLIO_TABLE_SIZE; i++) {
+		if (*f && PerlIO_flush(f) != 0)
+		    code = -1;
+		f++;
+	    }
+	}
+	return code;
+    }
 }

@@ -1,0 +1,25 @@
+void
+Perl_pad_swipe(pTHX_ PADOFFSET po, bool refadjust)
+{
+    ASSERT_CURPAD_LEGAL("pad_swipe");
+    if (!PL_curpad)
+	return;
+    if (AvARRAY(PL_comppad) != PL_curpad)
+	Perl_croak(aTHX_ "panic: pad_swipe curpad");
+    if (!po)
+	Perl_croak(aTHX_ "panic: pad_swipe po");
+
+    DEBUG_X(PerlIO_printf(Perl_debug_log,
+		"Pad 0x%"UVxf"[0x%"UVxf"] swipe:   %ld\n",
+		PTR2UV(PL_comppad), PTR2UV(PL_curpad), (long)po));
+
+    if (PL_curpad[po])
+	SvPADTMP_off(PL_curpad[po]);
+    if (refadjust)
+	SvREFCNT_dec(PL_curpad[po]);
+
+    PL_curpad[po] = NEWSV(1107,0);
+    SvPADTMP_on(PL_curpad[po]);
+    if ((I32)po < PL_padix)
+	PL_padix = po - 1;
+}

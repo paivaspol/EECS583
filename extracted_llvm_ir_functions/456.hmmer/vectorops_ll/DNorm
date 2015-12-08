@@ -1,0 +1,51 @@
+define void @DNorm(double* nocapture %vec, i32 %n) #0 {
+entry:
+  %cmp4.i = icmp sgt i32 %n, 0
+  br i1 %cmp4.i, label %for.body.i, label %if.end
+
+for.cond2.preheader:                              ; preds = %DSum.exit
+  br i1 %cmp4.i, label %for.body4.lr.ph, label %if.end
+
+for.body4.lr.ph:                                  ; preds = %for.cond2.preheader
+  %conv = sitofp i32 %n to double
+  %div5 = fdiv double 1.000000e+00, %conv
+  br label %for.body4
+
+for.body.i:                                       ; preds = %entry, %for.body.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %entry ]
+  %sum.05.i = phi double [ %add.i, %for.body.i ], [ 0.000000e+00, %entry ]
+  %arrayidx.i = getelementptr inbounds double* %vec, i64 %indvars.iv.i
+  %0 = load double* %arrayidx.i, align 8, !tbaa !0
+  %add.i = fadd double %sum.05.i, %0
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv32 = trunc i64 %indvars.iv.next.i to i32
+  %exitcond33 = icmp eq i32 %lftr.wideiv32, %n
+  br i1 %exitcond33, label %DSum.exit, label %for.body.i
+
+DSum.exit:                                        ; preds = %for.body.i
+  %cmp = fcmp une double %add.i, 0.000000e+00
+  br i1 %cmp, label %for.body, label %for.cond2.preheader
+
+for.body:                                         ; preds = %DSum.exit, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %DSum.exit ]
+  %arrayidx = getelementptr inbounds double* %vec, i64 %indvars.iv
+  %1 = load double* %arrayidx, align 8, !tbaa !0
+  %div = fdiv double %1, %add.i
+  store double %div, double* %arrayidx, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %if.end, label %for.body
+
+for.body4:                                        ; preds = %for.body4, %for.body4.lr.ph
+  %indvars.iv28 = phi i64 [ 0, %for.body4.lr.ph ], [ %indvars.iv.next29, %for.body4 ]
+  %arrayidx7 = getelementptr inbounds double* %vec, i64 %indvars.iv28
+  store double %div5, double* %arrayidx7, align 8, !tbaa !0
+  %indvars.iv.next29 = add i64 %indvars.iv28, 1
+  %lftr.wideiv30 = trunc i64 %indvars.iv.next29 to i32
+  %exitcond31 = icmp eq i32 %lftr.wideiv30, %n
+  br i1 %exitcond31, label %if.end, label %for.body4
+
+if.end:                                           ; preds = %entry, %for.cond2.preheader, %for.body4, %for.body
+  ret void
+}

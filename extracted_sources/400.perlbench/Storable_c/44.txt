@@ -1,53 +1,45 @@
-static SV *retrieve_ref(pTHX_ stcxt_t *cxt, char *cname)
+static SV *retrieve_blessed(pTHX_ stcxt_t *cxt, char *cname)
 {
-	SV *rv;
+	I32 len;
 	SV *sv;
+	char buf[LG_BLESS + 1];		/* Avoid malloc() if possible */
+	char *class = buf;
 
-	TRACEME(("retrieve_ref (#%d)", cxt->tagnum));
-
-	/*
-	 * We need to create the SV that holds the reference to the yet-to-retrieve
-	 * object now, so that we may record the address in the seen table.
-	 * Otherwise, if the object to retrieve references us, we won't be able
-	 * to resolve the SX_OBJECT we'll see at that point! Hence we cannot
-	 * do the retrieve first and use rv = newRV(sv) since it will be too late
-	 * for SEEN() recording.
-	 */
-
-	rv = NEWSV(10002, 0);
-	SEEN(rv, cname, 0);		/* Will return if rv is null */
-	sv = retrieve(aTHX_ cxt, 0);	/* Retrieve <object> */
-	if (!sv)
-		return (SV *) 0;	/* Failed */
+	TRACEME(("retrieve_blessed (#%d)", cxt->tagnum));
+	ASSERT(!cname, ("no bless-into class given here, got %s", cname));
 
 	/*
-	 * WARNING: breaks RV encapsulation.
+	 * Decode class name length and read that name.
 	 *
-	 * Now for the tricky part. We have to upgrade our existing SV, so that
-	 * it is now an RV on sv... Again, we cheat by duplicating the code
-	 * held in newSVrv(), since we already got our SV from retrieve().
-	 *
-	 * We don't say:
-	 *
-	 *		SvRV(rv) = SvREFCNT_inc(sv);
-	 *
-	 * here because the reference count we got from retrieve() above is
-	 * already correct: if the object was retrieved from the file, then
-	 * its reference count is one. Otherwise, if it was retrieved via
-	 * an SX_OBJECT indication, a ref count increment was done.
+	 * Short classnames have two advantages: their length is stored on one
+	 * single byte, and the string can be read on the stack.
 	 */
 
-	if (cname) {
-		/* No need to do anything, as rv will already be PVMG.  */
-		assert (SvTYPE(rv) >= SVt_RV);
-	} else {
-		sv_upgrade(rv, SVt_RV);
+	GETMARK(len);			/* Length coded on a single char? */
+	if (len & 0x80) {
+		RLEN(len);
+		TRACEME(("** allocating %d bytes for class name", len+1));
+		New(10003, class, len+1, char);
 	}
+	READ(class, len);
+	class[len] = '\0';		/* Mark string end */
 
-	SvRV(rv) = sv;				/* $rv = \$sv */
-	SvROK_on(rv);
+	/*
+	 * It's a new classname, otherwise it would have been an SX_IX_BLESS.
+	 */
 
-	TRACEME(("ok (retrieve_ref at 0x%"UVxf")", PTR2UV(rv)));
+	TRACEME(("new class name \"%s\" will bear ID = %d", class, cxt->classnum));
 
-	return rv;
+	if (!av_store(cxt->aclass, cxt->classnum++, newSVpvn(class, len)))
+		return (SV *) 0;
+
+	/*
+	 * Retrieve object and bless it.
+	 */
+
+	sv = retrieve(aTHX_ cxt, class);	/* First SV which is SEEN will be blessed */
+	if (class != buf)
+		Safefree(class);
+
+	return sv;
 }

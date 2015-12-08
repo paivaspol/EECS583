@@ -1,5 +1,15 @@
-void
-Perl_gv_fullname3(pTHX_ SV *sv, GV *gv, const char *prefix)
+GV *
+Perl_gv_IOadd(pTHX_ register GV *gv)
 {
-    gv_fullname4(sv, gv, prefix, TRUE);
+    if (!gv || SvTYPE((SV*)gv) != SVt_PVGV)
+	Perl_croak(aTHX_ "Bad symbol for filehandle");
+    if (!GvIOp(gv)) {
+#ifdef GV_UNIQUE_CHECK
+        if (GvUNIQUE(gv)) {
+            Perl_croak(aTHX_ "Bad symbol for filehandle (GV is unique)");
+        }
+#endif
+	GvIOp(gv) = newIO();
+    }
+    return gv;
 }

@@ -1,0 +1,20 @@
+define void @PerlIOBase_setlinebuf(%struct._PerlIO** %f) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %1 = load i32* %flags, align 4, !tbaa !0
+  %or = or i32 %1, 524288
+  store i32 %or, i32* %flags, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %entry, %if.then
+  ret void
+}

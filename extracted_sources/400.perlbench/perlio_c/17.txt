@@ -1,5 +1,11 @@
-int
-Perl_PerlIO_error(pTHX_ PerlIO *f)
+static int
+perlio_mg_get(pTHX_ SV *sv, MAGIC *mg)
 {
-     Perl_PerlIO_or_Base(f, Error, error, -1, (aTHX_ f));
+    if (SvROK(sv)) {
+	IO *io = GvIOn((GV *) SvRV(sv));
+	PerlIO *ifp = IoIFP(io);
+	PerlIO *ofp = IoOFP(io);
+	Perl_warn(aTHX_ "get %" SVf " %p %p %p", sv, io, ifp, ofp);
+    }
+    return 0;
 }

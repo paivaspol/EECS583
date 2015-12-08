@@ -1,19 +1,18 @@
-int
-Perl_magic_getnkeys(pTHX_ SV *sv, MAGIC *mg)
+void
+Perl_csighandler_init(void)
 {
-    HV *hv = (HV*)LvTARG(sv);
-    I32 i = 0;
+    int sig;
+    if (sig_handlers_initted) return;
 
-    if (hv) {
-         (void) hv_iterinit(hv);
-         if (! SvTIED_mg((SV*)hv, PERL_MAGIC_tied))
-	     i = HvKEYS(hv);
-         else {
-	     while (hv_iternext(hv))
-	         i++;
-         }
+    for (sig = 1; sig < SIG_SIZE; sig++) {
+#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
+        dTHX;
+        sig_defaulting[sig] = 1;
+        (void) rsignal(sig, PL_csighandlerp);
+#endif
+#ifdef FAKE_PERSISTENT_SIGNAL_HANDLERS
+        sig_ignoring[sig] = 0;
+#endif
     }
-
-    sv_setiv(sv, (IV)i);
-    return 0;
+    sig_handlers_initted = 1;
 }

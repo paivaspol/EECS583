@@ -1,0 +1,43 @@
+define %struct._Graph* @Graph_compress2(%struct._Graph* %g, %struct._IV* %mapIV, i32 %coarseType) #0 {
+entry:
+  %cmp = icmp eq %struct._Graph* %g, null
+  %cmp1 = icmp eq %struct._IV* %mapIV, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %nvtx = getelementptr inbounds %struct._Graph* %g, i64 0, i32 1
+  %0 = load i32* %nvtx, align 4, !tbaa !0
+  %call = tail call i32 @IV_size(%struct._IV* %mapIV) #4
+  %cmp3 = icmp ne i32 %0, %call
+  %1 = icmp ugt i32 %coarseType, 3
+  %or.cond32 = or i1 %cmp3, %1
+  br i1 %or.cond32, label %if.then, label %if.end16
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), %struct._Graph* %g, %struct._IV* %mapIV, i32 %coarseType) #4
+  br i1 %cmp, label %if.end, label %if.then10
+
+if.then10:                                        ; preds = %if.then
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call11 = tail call i32 @Graph_writeStats(%struct._Graph* %g, %struct._IO_FILE* %3) #4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then10
+  br i1 %cmp1, label %if.end15, label %if.then13
+
+if.then13:                                        ; preds = %if.end
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call14 = tail call i32 @IV_writeStats(%struct._IV* %mapIV, %struct._IO_FILE* %4) #4
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.end, %if.then13
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end16:                                         ; preds = %lor.lhs.false2
+  %call17 = tail call i32* @IV_entries(%struct._IV* %mapIV) #4
+  %call18 = tail call %struct._Graph* @Graph_compress(%struct._Graph* %g, i32* %call17, i32 %coarseType) #6
+  ret %struct._Graph* %call18
+}

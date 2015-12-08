@@ -1,7 +1,29 @@
-static void split_idef(FILE *log,t_idef *idef,t_commrec *cr)
+static void split_ilist(FILE *log,t_ilist *il,t_commrec *cr)
 {
-  int i;
+  t_iatom *ia;
+  int     i,start,end,nr;
   
-  for(i=0; (i<F_NRE); i++)
-    split_ilist(log,&idef->il[i],cr);
+  if (cr->nodeid == 0)
+    start=0;
+  else
+    start=il->multinr[cr->nodeid-1];
+  end=il->multinr[cr->nodeid];
+  
+  nr=end-start;
+  if (nr < 0)
+    fatal_error(0,"Negative number of atoms (%d) on node %d\n"
+		"You have probably not used the same value for -np with grompp"
+		" and mdrun",
+		nr,cr->nodeid);
+  snew(ia,nr);
+
+  for(i=0; (i<nr); i++)
+    ia[i]=il->iatoms[start+i];
+
+  sfree(il->iatoms);
+  il->iatoms=ia;
+  
+  for(i=0; (i<MAXNODES); i++)
+    il->multinr[i]=nr;
+  il->nr=nr;
 }

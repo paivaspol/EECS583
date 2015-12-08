@@ -1,20 +1,77 @@
-void
-Perl_init_debugger(pTHX)
+STATIC struct perl_thread *
+S_init_main_thread(pTHX)
 {
-    HV *ostash = PL_curstash;
+#if !defined(PERL_IMPLICIT_CONTEXT)
+    struct perl_thread *thr;
+#endif
+    XPV *xpv;
 
-    PL_curstash = PL_debstash;
-    PL_dbargs = GvAV(gv_AVadd((gv_fetchpv("DB::args", GV_ADDMULTI, SVt_PVAV))));
-    AvREAL_off(PL_dbargs);
-    PL_DBgv = gv_fetchpv("DB::DB", GV_ADDMULTI, SVt_PVGV);
-    PL_DBline = gv_fetchpv("DB::dbline", GV_ADDMULTI, SVt_PVAV);
-    PL_DBsub = gv_HVadd(gv_fetchpv("DB::sub", GV_ADDMULTI, SVt_PVHV));
-    sv_upgrade(GvSV(PL_DBsub), SVt_IV);	/* IVX accessed if PERLDB_SUB_NN */
-    PL_DBsingle = GvSV((gv_fetchpv("DB::single", GV_ADDMULTI, SVt_PV)));
-    sv_setiv(PL_DBsingle, 0);
-    PL_DBtrace = GvSV((gv_fetchpv("DB::trace", GV_ADDMULTI, SVt_PV)));
-    sv_setiv(PL_DBtrace, 0);
-    PL_DBsignal = GvSV((gv_fetchpv("DB::signal", GV_ADDMULTI, SVt_PV)));
-    sv_setiv(PL_DBsignal, 0);
-    PL_curstash = ostash;
+    Newz(53, thr, 1, struct perl_thread);
+    PL_curcop = &PL_compiling;
+    thr->interp = PERL_GET_INTERP;
+    thr->cvcache = newHV();
+    thr->threadsv = newAV();
+    /* thr->threadsvp is set when find_threadsv is called */
+    thr->specific = newAV();
+    thr->flags = THRf_R_JOINABLE;
+    MUTEX_INIT(&thr->mutex);
+    /* Handcraft thrsv similarly to mess_sv */
+    New(53, PL_thrsv, 1, SV);
+    Newz(53, xpv, 1, XPV);
+    SvFLAGS(PL_thrsv) = SVt_PV;
+    SvANY(PL_thrsv) = (void*)xpv;
+    SvREFCNT(PL_thrsv) = 1 << 30;	/* practically infinite */
+    SvPVX(PL_thrsv) = (char*)thr;
+    SvCUR_set(PL_thrsv, sizeof(thr));
+    SvLEN_set(PL_thrsv, sizeof(thr));
+    *SvEND(PL_thrsv) = '\0';	/* in the trailing_nul field */
+    thr->oursv = PL_thrsv;
+    PL_chopset = " \n-";
+    PL_dumpindent = 4;
+
+    MUTEX_LOCK(&PL_threads_mutex);
+    PL_nthreads++;
+    thr->tid = 0;
+    thr->next = thr;
+    thr->prev = thr;
+    thr->thr_done = 0;
+    MUTEX_UNLOCK(&PL_threads_mutex);
+
+#ifdef HAVE_THREAD_INTERN
+    Perl_init_thread_intern(thr);
+#endif
+
+#ifdef SET_THREAD_SELF
+    SET_THREAD_SELF(thr);
+#else
+    thr->self = pthread_self();
+#endif /* SET_THREAD_SELF */
+    PERL_SET_THX(thr);
+
+    /*
+     * These must come after the thread self setting
+     * because sv_setpvn does SvTAINT and the taint
+     * fields thread selfness being set.
+     */
+    PL_toptarget = NEWSV(0,0);
+    sv_upgrade(PL_toptarget, SVt_PVFM);
+    sv_setpvn(PL_toptarget, "", 0);
+    PL_bodytarget = NEWSV(0,0);
+    sv_upgrade(PL_bodytarget, SVt_PVFM);
+    sv_setpvn(PL_bodytarget, "", 0);
+    PL_formtarget = PL_bodytarget;
+    thr->errsv = newSVpvn("", 0);
+    (void) find_threadsv("@");	/* Ensure $@ is initialised early */
+
+    PL_maxscream = -1;
+    PL_peepp = MEMBER_TO_FPTR(Perl_peep);
+    PL_regcompp = MEMBER_TO_FPTR(Perl_pregcomp);
+    PL_regexecp = MEMBER_TO_FPTR(Perl_regexec_flags);
+    PL_regint_start = MEMBER_TO_FPTR(Perl_re_intuit_start);
+    PL_regint_string = MEMBER_TO_FPTR(Perl_re_intuit_string);
+    PL_regfree = MEMBER_TO_FPTR(Perl_pregfree);
+    PL_regindent = 0;
+    PL_reginterp_cnt = 0;
+
+    return thr;
 }

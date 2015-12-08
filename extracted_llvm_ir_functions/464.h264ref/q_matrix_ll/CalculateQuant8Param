@@ -1,0 +1,198 @@
+define void @CalculateQuant8Param() #0 {
+entry:
+  %present = alloca i64, align 8
+  %tmpcast = bitcast i64* %present to [2 x i32]*
+  %0 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !3
+  %seq_scaling_matrix_present_flag = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %0, i64 0, i32 9
+  %1 = load i32* %seq_scaling_matrix_present_flag, align 4, !tbaa !1
+  %tobool = icmp eq i32 %1, 0
+  br i1 %tobool, label %land.lhs.true, label %for.cond.preheader
+
+land.lhs.true:                                    ; preds = %entry
+  %2 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !3
+  %pic_scaling_matrix_present_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %2, i64 0, i32 5
+  %3 = load i32* %pic_scaling_matrix_present_flag, align 4, !tbaa !1
+  %tobool1 = icmp eq i32 %3, 0
+  br i1 %tobool1, label %for.cond28.preheader, label %if.else.if.end_crit_edge
+
+if.else.if.end_crit_edge:                         ; preds = %land.lhs.true
+  br label %if.end
+
+for.cond.preheader:                               ; preds = %entry
+  %scevgep409 = getelementptr %struct.seq_parameter_set_rbsp_t* %0, i64 0, i32 10, i64 6
+  %4 = bitcast i32* %scevgep409 to i64*
+  %5 = load i64* %4, align 4
+  br label %if.end
+
+if.end:                                           ; preds = %if.else.if.end_crit_edge, %for.cond.preheader
+  %storemerge = phi i64 [ %5, %for.cond.preheader ], [ 0, %if.else.if.end_crit_edge ]
+  store i64 %storemerge, i64* %present, align 8
+  %6 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !3
+  %pic_scaling_matrix_present_flag7 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %6, i64 0, i32 5
+  %7 = load i32* %pic_scaling_matrix_present_flag7, align 4, !tbaa !1
+  %tobool8 = icmp eq i32 %7, 0
+  br i1 %tobool8, label %for.cond93.preheader, label %for.body12
+
+for.cond93.preheader:                             ; preds = %for.body12, %if.end
+  %8 = load i64* %present, align 8
+  %9 = trunc i64 %8 to i32
+  %tobool105 = icmp ne i32 %9, 0
+  %10 = load i16* getelementptr inbounds ([2 x i16]* @UseDefaultScalingMatrix8x8Flag, i64 0, i64 0), align 2, !tbaa !4
+  %tobool106 = icmp eq i16 %10, 0
+  %or.cond = and i1 %tobool105, %tobool106
+  %tobool175 = icmp ugt i64 %8, 4294967295
+  %11 = load i16* getelementptr inbounds ([2 x i16]* @UseDefaultScalingMatrix8x8Flag, i64 0, i64 1), align 2, !tbaa !4
+  %tobool178 = icmp eq i16 %11, 0
+  %or.cond357 = and i1 %tobool175, %tobool178
+  br label %for.cond96.preheader
+
+for.body12:                                       ; preds = %if.end, %for.body12
+  %indvars.iv398 = phi i64 [ %indvars.iv.next399, %for.body12 ], [ 0, %if.end ]
+  %12 = add nsw i64 %indvars.iv398, 6
+  %arrayidx15 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %6, i64 0, i32 6, i64 %12
+  %13 = load i32* %arrayidx15, align 4, !tbaa !0
+  %arrayidx17 = getelementptr inbounds [2 x i32]* %tmpcast, i64 0, i64 %indvars.iv398
+  %14 = load i32* %arrayidx17, align 4, !tbaa !0
+  %or = or i32 %14, %13
+  store i32 %or, i32* %arrayidx17, align 4, !tbaa !0
+  %indvars.iv.next399 = add i64 %indvars.iv398, 1
+  %lftr.wideiv401 = trunc i64 %indvars.iv.next399 to i32
+  %exitcond402 = icmp eq i32 %lftr.wideiv401, 2
+  br i1 %exitcond402, label %for.cond93.preheader, label %for.body12
+
+for.cond28.preheader:                             ; preds = %land.lhs.true, %for.inc89
+  %indvars.iv380 = phi i64 [ %indvars.iv.next381, %for.inc89 ], [ 0, %land.lhs.true ]
+  br label %for.cond31.preheader
+
+for.cond31.preheader:                             ; preds = %for.inc86, %for.cond28.preheader
+  %indvars.iv376 = phi i64 [ 0, %for.cond28.preheader ], [ %indvars.iv.next377, %for.inc86 ]
+  %scevgep372 = getelementptr [6 x [8 x [8 x i32]]]* @LevelScale8x8Luma_Inter, i64 0, i64 %indvars.iv380, i64 %indvars.iv376, i64 0
+  %scevgep372373 = bitcast i32* %scevgep372 to i8*
+  %scevgep374 = getelementptr [6 x [8 x [8 x i32]]]* @quant_coef8, i64 0, i64 %indvars.iv380, i64 %indvars.iv376, i64 0
+  %scevgep374375 = bitcast i32* %scevgep374 to i8*
+  %scevgep = getelementptr [6 x [8 x [8 x i32]]]* @LevelScale8x8Luma_Intra, i64 0, i64 %indvars.iv380, i64 %indvars.iv376, i64 0
+  %scevgep369 = bitcast i32* %scevgep to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %scevgep369, i8* %scevgep374375, i64 32, i32 4, i1 false)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %scevgep372373, i8* %scevgep374375, i64 32, i32 4, i1 false)
+  br label %for.body33
+
+for.body33:                                       ; preds = %for.body33, %for.cond31.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond31.preheader ], [ %indvars.iv.next, %for.body33 ]
+  %arrayidx51 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @dequant_coef8, i64 0, i64 %indvars.iv380, i64 %indvars.iv376, i64 %indvars.iv
+  %15 = load i32* %arrayidx51, align 4, !tbaa !0
+  %shl = shl i32 %15, 4
+  %arrayidx57 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @InvLevelScale8x8Luma_Intra, i64 0, i64 %indvars.iv380, i64 %indvars.iv376, i64 %indvars.iv
+  store i32 %shl, i32* %arrayidx57, align 4, !tbaa !0
+  %arrayidx82 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @InvLevelScale8x8Luma_Inter, i64 0, i64 %indvars.iv380, i64 %indvars.iv376, i64 %indvars.iv
+  store i32 %shl, i32* %arrayidx82, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 8
+  br i1 %exitcond, label %for.inc86, label %for.body33
+
+for.inc86:                                        ; preds = %for.body33
+  %indvars.iv.next377 = add i64 %indvars.iv376, 1
+  %lftr.wideiv378 = trunc i64 %indvars.iv.next377 to i32
+  %exitcond379 = icmp eq i32 %lftr.wideiv378, 8
+  br i1 %exitcond379, label %for.inc89, label %for.cond31.preheader
+
+for.inc89:                                        ; preds = %for.inc86
+  %indvars.iv.next381 = add i64 %indvars.iv380, 1
+  %lftr.wideiv382 = trunc i64 %indvars.iv.next381 to i32
+  %exitcond383 = icmp eq i32 %lftr.wideiv382, 6
+  br i1 %exitcond383, label %if.end257, label %for.cond28.preheader
+
+for.cond96.preheader:                             ; preds = %for.inc254, %for.cond93.preheader
+  %indvars.iv394 = phi i64 [ 0, %for.cond93.preheader ], [ %indvars.iv.next395, %for.inc254 ]
+  br label %for.cond99.preheader
+
+for.cond99.preheader:                             ; preds = %for.inc251, %for.cond96.preheader
+  %indvars.iv390 = phi i64 [ 0, %for.cond96.preheader ], [ %indvars.iv.next391, %for.inc251 ]
+  br label %for.body101
+
+for.body101:                                      ; preds = %for.inc248, %for.cond99.preheader
+  %indvars.iv384 = phi i64 [ 0, %for.cond99.preheader ], [ %indvars.iv.next385, %for.inc248 ]
+  %16 = shl i64 %indvars.iv384, 3
+  %17 = add nsw i64 %16, %indvars.iv390
+  %arrayidx145 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @quant_coef8, i64 0, i64 %indvars.iv394, i64 %indvars.iv390, i64 %indvars.iv384
+  %18 = load i32* %arrayidx145, align 4, !tbaa !0
+  %shl146 = shl i32 %18, 4
+  br i1 %or.cond, label %if.else139, label %if.then107
+
+if.then107:                                       ; preds = %for.body101
+  %arrayidx116 = getelementptr inbounds [64 x i16]* @Quant8_intra_default, i64 0, i64 %17
+  %19 = load i16* %arrayidx116, align 2, !tbaa !4
+  %conv117 = sext i16 %19 to i32
+  %div = sdiv i32 %shl146, %conv117
+  %arrayidx123 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @LevelScale8x8Luma_Intra, i64 0, i64 %indvars.iv394, i64 %indvars.iv390, i64 %indvars.iv384
+  store i32 %div, i32* %arrayidx123, align 4, !tbaa !0
+  %arrayidx129 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @dequant_coef8, i64 0, i64 %indvars.iv394, i64 %indvars.iv390, i64 %indvars.iv384
+  %20 = load i32* %arrayidx129, align 4, !tbaa !0
+  %mul = mul nsw i32 %conv117, %20
+  %arrayidx138 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @InvLevelScale8x8Luma_Intra, i64 0, i64 %indvars.iv394, i64 %indvars.iv390, i64 %indvars.iv384
+  store i32 %mul, i32* %arrayidx138, align 4, !tbaa !0
+  br label %if.end173
+
+if.else139:                                       ; preds = %for.body101
+  %arrayidx148 = getelementptr inbounds [2 x [64 x i16]]* @ScalingList8x8, i64 0, i64 0, i64 %17
+  %21 = load i16* %arrayidx148, align 2, !tbaa !4
+  %conv149 = sext i16 %21 to i32
+  %div150 = sdiv i32 %shl146, %conv149
+  %arrayidx156 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @LevelScale8x8Luma_Intra, i64 0, i64 %indvars.iv394, i64 %indvars.iv390, i64 %indvars.iv384
+  store i32 %div150, i32* %arrayidx156, align 4, !tbaa !0
+  %arrayidx162 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @dequant_coef8, i64 0, i64 %indvars.iv394, i64 %indvars.iv390, i64 %indvars.iv384
+  %22 = load i32* %arrayidx162, align 4, !tbaa !0
+  %mul166 = mul nsw i32 %conv149, %22
+  %arrayidx172 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @InvLevelScale8x8Luma_Intra, i64 0, i64 %indvars.iv394, i64 %indvars.iv390, i64 %indvars.iv384
+  store i32 %mul166, i32* %arrayidx172, align 4, !tbaa !0
+  br label %if.end173
+
+if.end173:                                        ; preds = %if.else139, %if.then107
+  %23 = phi i32 [ %22, %if.else139 ], [ %20, %if.then107 ]
+  br i1 %or.cond357, label %if.else213, label %if.then179
+
+if.then179:                                       ; preds = %if.end173
+  %arrayidx188 = getelementptr inbounds [64 x i16]* @Quant8_inter_default, i64 0, i64 %17
+  %24 = load i16* %arrayidx188, align 2, !tbaa !4
+  %conv189 = sext i16 %24 to i32
+  %div190 = sdiv i32 %shl146, %conv189
+  %arrayidx196 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @LevelScale8x8Luma_Inter, i64 0, i64 %indvars.iv394, i64 %indvars.iv390, i64 %indvars.iv384
+  store i32 %div190, i32* %arrayidx196, align 4, !tbaa !0
+  %mul206 = mul nsw i32 %conv189, %23
+  %arrayidx212 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @InvLevelScale8x8Luma_Inter, i64 0, i64 %indvars.iv394, i64 %indvars.iv390, i64 %indvars.iv384
+  store i32 %mul206, i32* %arrayidx212, align 4, !tbaa !0
+  br label %for.inc248
+
+if.else213:                                       ; preds = %if.end173
+  %arrayidx222 = getelementptr inbounds [2 x [64 x i16]]* @ScalingList8x8, i64 0, i64 1, i64 %17
+  %25 = load i16* %arrayidx222, align 2, !tbaa !4
+  %conv223 = sext i16 %25 to i32
+  %div224 = sdiv i32 %shl146, %conv223
+  %arrayidx230 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @LevelScale8x8Luma_Inter, i64 0, i64 %indvars.iv394, i64 %indvars.iv390, i64 %indvars.iv384
+  store i32 %div224, i32* %arrayidx230, align 4, !tbaa !0
+  %mul240 = mul nsw i32 %conv223, %23
+  %arrayidx246 = getelementptr inbounds [6 x [8 x [8 x i32]]]* @InvLevelScale8x8Luma_Inter, i64 0, i64 %indvars.iv394, i64 %indvars.iv390, i64 %indvars.iv384
+  store i32 %mul240, i32* %arrayidx246, align 4, !tbaa !0
+  br label %for.inc248
+
+for.inc248:                                       ; preds = %if.then179, %if.else213
+  %indvars.iv.next385 = add i64 %indvars.iv384, 1
+  %lftr.wideiv388 = trunc i64 %indvars.iv.next385 to i32
+  %exitcond389 = icmp eq i32 %lftr.wideiv388, 8
+  br i1 %exitcond389, label %for.inc251, label %for.body101
+
+for.inc251:                                       ; preds = %for.inc248
+  %indvars.iv.next391 = add i64 %indvars.iv390, 1
+  %lftr.wideiv392 = trunc i64 %indvars.iv.next391 to i32
+  %exitcond393 = icmp eq i32 %lftr.wideiv392, 8
+  br i1 %exitcond393, label %for.inc254, label %for.cond99.preheader
+
+for.inc254:                                       ; preds = %for.inc251
+  %indvars.iv.next395 = add i64 %indvars.iv394, 1
+  %lftr.wideiv396 = trunc i64 %indvars.iv.next395 to i32
+  %exitcond397 = icmp eq i32 %lftr.wideiv396, 6
+  br i1 %exitcond397, label %if.end257, label %for.cond96.preheader
+
+if.end257:                                        ; preds = %for.inc254, %for.inc89
+  ret void
+}

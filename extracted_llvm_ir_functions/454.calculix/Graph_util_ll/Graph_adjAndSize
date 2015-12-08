@@ -1,0 +1,42 @@
+define void @Graph_adjAndSize(%struct._Graph* %g, i32 %jvtx, i32* %psize, i32** %padj) #0 {
+entry:
+  %cmp = icmp eq %struct._Graph* %g, null
+  %cmp1 = icmp slt i32 %jvtx, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %nvtx = getelementptr inbounds %struct._Graph* %g, i64 0, i32 1
+  %0 = load i32* %nvtx, align 4, !tbaa !0
+  %nvbnd = getelementptr inbounds %struct._Graph* %g, i64 0, i32 2
+  %1 = load i32* %nvbnd, align 4, !tbaa !0
+  %add = add nsw i32 %1, %0
+  %cmp3 = icmp sle i32 %add, %jvtx
+  %cmp5 = icmp eq i32* %psize, null
+  %or.cond29 = or i1 %cmp3, %cmp5
+  %cmp7 = icmp eq i32** %padj, null
+  %or.cond30 = or i1 %or.cond29, %cmp7
+  br i1 %or.cond30, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([59 x i8]* @.str1, i64 0, i64 0), %struct._Graph* %g, i32 %jvtx, i32* %psize, i32** %padj) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %adjIVL = getelementptr inbounds %struct._Graph* %g, i64 0, i32 6
+  %3 = load %struct._IVL** %adjIVL, align 8, !tbaa !3
+  %cmp8 = icmp eq %struct._IVL* %3, null
+  br i1 %cmp8, label %if.then9, label %if.end11
+
+if.then9:                                         ; preds = %if.end
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([67 x i8]* @.str2, i64 0, i64 0), %struct._Graph* %g, i32 %jvtx, i32* %psize, i32** %padj) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end11:                                         ; preds = %if.end
+  tail call void @IVL_listAndSize(%struct._IVL* %3, i32 %jvtx, i32* %psize, i32** %padj) #4
+  ret void
+}

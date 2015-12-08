@@ -1,8 +1,121 @@
 int
-Perl_magic_getpack(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_setsig(pTHX_ SV *sv, MAGIC *mg)
 {
-    if (mg->mg_ptr)
-	mg->mg_flags |= MGf_GSKIP;
-    magic_methpack(sv,mg,"FETCH");
+    register char *s;
+    I32 i;
+    SV** svp = 0;
+    /* Need to be careful with SvREFCNT_dec(), because that can have side
+     * effects (due to closures). We must make sure that the new disposition
+     * is in place before it is called.
+     */
+    SV* to_dec = 0;
+    STRLEN len;
+#ifdef HAS_SIGPROCMASK
+    sigset_t set, save;
+    SV* save_sv;
+#endif
+
+    s = MgPV(mg,len);
+    if (*s == '_') {
+	if (strEQ(s,"__DIE__"))
+	    svp = &PL_diehook;
+	else if (strEQ(s,"__WARN__"))
+	    svp = &PL_warnhook;
+	else
+	    Perl_croak(aTHX_ "No such hook: %s", s);
+	i = 0;
+	if (*svp) {
+	    to_dec = *svp;
+	    *svp = 0;
+	}
+    }
+    else {
+	i = whichsig(s);	/* ...no, a brick */
+	if (i < 0) {
+	    if (ckWARN(WARN_SIGNAL))
+		Perl_warner(aTHX_ packWARN(WARN_SIGNAL), "No such signal: SIG%s", s);
+	    return 0;
+	}
+#ifdef HAS_SIGPROCMASK
+	/* Avoid having the signal arrive at a bad time, if possible. */
+	sigemptyset(&set);
+	sigaddset(&set,i);
+	sigprocmask(SIG_BLOCK, &set, &save);
+	ENTER;
+	save_sv = newSVpv((char *)(&save), sizeof(sigset_t));
+	SAVEFREESV(save_sv);
+	SAVEDESTRUCTOR_X(restore_sigmask, save_sv);
+#endif
+	PERL_ASYNC_CHECK();
+#if defined(FAKE_PERSISTENT_SIGNAL_HANDLERS) || defined(FAKE_DEFAULT_SIGNAL_HANDLERS)
+	if (!sig_handlers_initted) Perl_csighandler_init();
+#endif
+#ifdef FAKE_PERSISTENT_SIGNAL_HANDLERS
+	sig_ignoring[i] = 0;
+#endif
+#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
+	sig_defaulting[i] = 0;
+#endif
+	SvREFCNT_dec(PL_psig_name[i]);
+	to_dec = PL_psig_ptr[i];
+	PL_psig_ptr[i] = SvREFCNT_inc(sv);
+	SvTEMP_off(sv); /* Make sure it doesn't go away on us */
+	PL_psig_name[i] = newSVpvn(s, len);
+	SvREADONLY_on(PL_psig_name[i]);
+    }
+    if (SvTYPE(sv) == SVt_PVGV || SvROK(sv)) {
+	if (i) {
+	    (void)rsignal(i, PL_csighandlerp);
+#ifdef HAS_SIGPROCMASK
+	    LEAVE;
+#endif
+	}
+	else
+	    *svp = SvREFCNT_inc(sv);
+	if(to_dec)
+	    SvREFCNT_dec(to_dec);
+	return 0;
+    }
+    s = SvPV_force(sv,len);
+    if (strEQ(s,"IGNORE")) {
+	if (i) {
+#ifdef FAKE_PERSISTENT_SIGNAL_HANDLERS
+	    sig_ignoring[i] = 1;
+	    (void)rsignal(i, PL_csighandlerp);
+#else
+	    (void)rsignal(i, SIG_IGN);
+#endif
+	}
+    }
+    else if (strEQ(s,"DEFAULT") || !*s) {
+	if (i)
+#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
+	  {
+	    sig_defaulting[i] = 1;
+	    (void)rsignal(i, PL_csighandlerp);
+	  }
+#else
+	    (void)rsignal(i, SIG_DFL);
+#endif
+    }
+    else {
+	/*
+	 * We should warn if HINT_STRICT_REFS, but without
+	 * access to a known hint bit in a known OP, we can't
+	 * tell whether HINT_STRICT_REFS is in force or not.
+	 */
+	if (!strchr(s,':') && !strchr(s,'\''))
+	    sv_insert(sv, 0, 0, "main::", 6);
+	if (i)
+	    (void)rsignal(i, PL_csighandlerp);
+	else
+	    *svp = SvREFCNT_inc(sv);
+    }
+#ifdef HAS_SIGPROCMASK
+    if(i)
+	LEAVE;
+#endif
+    if(to_dec)
+	SvREFCNT_dec(to_dec);
     return 0;
 }

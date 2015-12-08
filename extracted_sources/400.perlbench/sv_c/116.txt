@@ -1,0 +1,27 @@
+SV *
+Perl_newSVpvn_share(pTHX_ const char *src, I32 len, U32 hash)
+{
+    register SV *sv;
+    bool is_utf8 = FALSE;
+    if (len < 0) {
+	STRLEN tmplen = -len;
+        is_utf8 = TRUE;
+	/* See the note in hv.c:hv_fetch() --jhi */
+	src = (char*)bytes_from_utf8((U8*)src, &tmplen, &is_utf8);
+	len = tmplen;
+    }
+    if (!hash)
+	PERL_HASH(hash, src, len);
+    new_SV(sv);
+    sv_upgrade(sv, SVt_PVIV);
+    SvPVX(sv) = sharepvn(src, is_utf8?-len:len, hash);
+    SvCUR(sv) = len;
+    SvUVX(sv) = hash;
+    SvLEN(sv) = 0;
+    SvREADONLY_on(sv);
+    SvFAKE_on(sv);
+    SvPOK_on(sv);
+    if (is_utf8)
+        SvUTF8_on(sv);
+    return sv;
+}

@@ -1,0 +1,51 @@
+define %struct.op* @Perl_vdie(i8* %pat, [1 x %struct.__va_list_tag]* %args) #0 {
+entry:
+  %msglen = alloca i64, align 8
+  %utf8 = alloca i32, align 4
+  %0 = load volatile i32* @PL_in_eval, align 4, !tbaa !3
+  store i32 0, i32* %utf8, align 4, !tbaa !3
+  %call = call i8* @S_vdie_croak_common(i8* %pat, [1 x %struct.__va_list_tag]* %args, i64* %msglen, i32* %utf8) #9
+  %1 = load i64* %msglen, align 8, !tbaa !4
+  %call1 = call %struct.op* @Perl_die_where(i8* %call, i64 %1) #8
+  store %struct.op* %call1, %struct.op** @PL_restartop, align 8, !tbaa !2
+  %2 = load i32* %utf8, align 4, !tbaa !3
+  %3 = load %struct.gv** @PL_errgv, align 8, !tbaa !2
+  %sv_any = getelementptr inbounds %struct.gv* %3, i64 0, i32 0
+  %4 = load %struct.xpvgv** %sv_any, align 8, !tbaa !2
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %4, i64 0, i32 7
+  %5 = load %struct.gp** %xgv_gp, align 8, !tbaa !2
+  %gp_sv = getelementptr inbounds %struct.gp* %5, i64 0, i32 0
+  %6 = load %struct.sv** %gp_sv, align 8, !tbaa !2
+  %sv_flags = getelementptr inbounds %struct.sv* %6, i64 0, i32 2
+  %7 = load i32* %sv_flags, align 4, !tbaa !3
+  %or = or i32 %7, %2
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !3
+  %tobool = icmp ne %struct.op* %call1, null
+  %tobool2 = icmp eq i32 %0, 0
+  %or.cond = or i1 %tobool, %tobool2
+  %8 = load %struct.jmpenv** @PL_top_env, align 8, !tbaa !2
+  %je_prev = getelementptr inbounds %struct.jmpenv* %8, i64 0, i32 1
+  %9 = load %struct.jmpenv** %je_prev, align 8, !tbaa !2
+  %tobool3 = icmp eq %struct.jmpenv* %9, null
+  br i1 %or.cond, label %lor.lhs.false, label %if.then
+
+lor.lhs.false:                                    ; preds = %entry
+  br i1 %tobool3, label %if.end9, label %if.then6
+
+if.then:                                          ; preds = %entry
+  br i1 %tobool3, label %if.end, label %if.then6
+
+if.then6:                                         ; preds = %lor.lhs.false, %if.then
+  %arraydecay = getelementptr inbounds %struct.jmpenv* %8, i64 0, i32 0, i64 0
+  call void @siglongjmp(%struct.__jmp_buf_tag* %arraydecay, i32 3) #10
+  unreachable
+
+if.end:                                           ; preds = %if.then
+  %call7 = call %struct._PerlIO** @Perl_PerlIO_stderr() #8
+  %call8 = call i32 (%struct._PerlIO**, i8*, ...)* @PerlIO_printf(%struct._PerlIO** %call7, i8* getelementptr inbounds ([16 x i8]* @.str9, i64 0, i64 0)) #8
+  call void @exit(i32 1) #10
+  unreachable
+
+if.end9:                                          ; preds = %lor.lhs.false
+  ret %struct.op* %call1
+}

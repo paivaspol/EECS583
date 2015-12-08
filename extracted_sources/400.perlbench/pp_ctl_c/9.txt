@@ -1,0 +1,31 @@
+PP(pp_grepstart)
+{
+    dSP;
+    SV *src;
+
+    if (PL_stack_base + *PL_markstack_ptr == SP) {
+	(void)POPMARK;
+	if (GIMME_V == G_SCALAR)
+	    XPUSHs(sv_2mortal(newSViv(0)));
+	RETURNOP(PL_op->op_next->op_next);
+    }
+    PL_stack_sp = PL_stack_base + *PL_markstack_ptr + 1;
+    pp_pushmark();				/* push dst */
+    pp_pushmark();				/* push src */
+    ENTER;					/* enter outer scope */
+
+    SAVETMPS;
+    /* SAVE_DEFSV does *not* suffice here for USE_5005THREADS */
+    SAVESPTR(DEFSV);
+    ENTER;					/* enter inner scope */
+    SAVEVPTR(PL_curpm);
+
+    src = PL_stack_base[*PL_markstack_ptr];
+    SvTEMP_off(src);
+    DEFSV = src;
+
+    PUTBACK;
+    if (PL_op->op_type == OP_MAPSTART)
+	pp_pushmark();			/* push top */
+    return ((LOGOP*)PL_op->op_next)->op_other;
+}

@@ -1,0 +1,37 @@
+define double @DV_entry(%struct._DV* %dv, i32 %loc) #0 {
+entry:
+  %cmp = icmp eq %struct._DV* %dv, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
+  %0 = load double** %vec, align 8, !tbaa !0
+  %cmp1 = icmp eq double* %0, null
+  br i1 %cmp1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([42 x i8]* @.str3, i64 0, i64 0), %struct._DV* %dv) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false
+  %cmp2 = icmp slt i32 %loc, 0
+  br i1 %cmp2, label %return, label %lor.lhs.false3
+
+lor.lhs.false3:                                   ; preds = %if.end
+  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0
+  %2 = load i32* %size, align 4, !tbaa !3
+  %cmp4 = icmp sgt i32 %2, %loc
+  br i1 %cmp4, label %if.else, label %return
+
+if.else:                                          ; preds = %lor.lhs.false3
+  %idxprom = sext i32 %loc to i64
+  %arrayidx = getelementptr inbounds double* %0, i64 %idxprom
+  %3 = load double* %arrayidx, align 8, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %if.end, %lor.lhs.false3, %if.else
+  %retval.0 = phi double [ %3, %if.else ], [ 0.000000e+00, %lor.lhs.false3 ], [ 0.000000e+00, %if.end ]
+  ret double %retval.0
+}

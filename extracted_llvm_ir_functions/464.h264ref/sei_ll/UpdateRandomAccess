@@ -1,0 +1,19 @@
+define void @UpdateRandomAccess() #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %1 = load i32* %type, align 4, !tbaa !3
+  %cmp = icmp eq i32 %1, 2
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  store i8 0, i8* getelementptr inbounds (%struct.randomaccess_information_struct* @seiRandomAccess, i64 0, i32 0), align 8, !tbaa !1
+  store i8 1, i8* getelementptr inbounds (%struct.randomaccess_information_struct* @seiRandomAccess, i64 0, i32 1), align 1, !tbaa !1
+  store i8 0, i8* getelementptr inbounds (%struct.randomaccess_information_struct* @seiRandomAccess, i64 0, i32 2), align 2, !tbaa !1
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %storemerge = phi i32 [ 1, %if.then ], [ 0, %entry ]
+  store i32 %storemerge, i32* @seiHasRandomAccess_info, align 4, !tbaa !1
+  ret void
+}

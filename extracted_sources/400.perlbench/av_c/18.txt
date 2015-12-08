@@ -1,0 +1,13 @@
+STATIC I32
+S_avhv_index(pTHX_ AV *av, SV *keysv, U32 hash)
+{
+    HV *keys;
+    HE *he;
+    STRLEN n_a;
+
+    keys = avhv_keys(av);
+    he = hv_fetch_ent(keys, keysv, FALSE, hash);
+    if (!he)
+        Perl_croak(aTHX_ "No such pseudo-hash field \"%s\"", SvPV(keysv,n_a));
+    return avhv_index_sv(HeVAL(he));
+}

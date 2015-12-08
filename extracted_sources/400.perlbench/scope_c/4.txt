@@ -1,6 +1,9 @@
 void
-Perl_pop_scope(pTHX)
+Perl_push_return(pTHX_ OP *retop)
 {
-    I32 oldsave = PL_scopestack[--PL_scopestack_ix];
-    LEAVE_SCOPE(oldsave);
+    if (PL_retstack_ix == PL_retstack_max) {
+	PL_retstack_max = GROW(PL_retstack_max);
+	Renew(PL_retstack, PL_retstack_max, OP*);
+    }
+    PL_retstack[PL_retstack_ix++] = retop;
 }

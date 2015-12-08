@@ -1,0 +1,190 @@
+define i32 @nk_attacked(i32 %square, i32 %color) #0 {
+entry:
+  %and = and i32 %color, 1
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %for.body60, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv236 = phi i64 [ %indvars.iv.next237, %for.inc ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds [4 x i32]* @nk_attacked.bishop_o, i64 0, i64 %indvars.iv236
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %add = add nsw i32 %0, %square
+  %idxprom1 = sext i32 %add to i64
+  %arrayidx2 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom1
+  %1 = load i32* %arrayidx2, align 4, !tbaa !0
+  switch i32 %1, label %while.body [
+    i32 1, label %land.lhs.true
+    i32 0, label %for.inc
+  ]
+
+land.lhs.true:                                    ; preds = %for.body
+  %and4 = and i64 %indvars.iv236, 1
+  %tobool5 = icmp eq i64 %and4, 0
+  br i1 %tobool5, label %while.body, label %return
+
+while.body:                                       ; preds = %for.body, %land.lhs.true, %if.end14
+  %basq.0215 = phi i32 [ %4, %if.end14 ], [ 1, %land.lhs.true ], [ %1, %for.body ]
+  %a_sq.0214 = phi i32 [ %add15, %if.end14 ], [ %add, %land.lhs.true ], [ %add, %for.body ]
+  %2 = and i32 %basq.0215, -3
+  %3 = icmp eq i32 %2, 9
+  br i1 %3, label %return, label %if.end11
+
+if.end11:                                         ; preds = %while.body
+  %cmp12 = icmp eq i32 %basq.0215, 13
+  br i1 %cmp12, label %if.end14, label %for.inc
+
+if.end14:                                         ; preds = %if.end11
+  %add15 = add nsw i32 %a_sq.0214, %0
+  %idxprom16 = sext i32 %add15 to i64
+  %arrayidx17 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom16
+  %4 = load i32* %arrayidx17, align 4, !tbaa !0
+  %cmp7 = icmp eq i32 %4, 0
+  br i1 %cmp7, label %for.inc, label %while.body
+
+for.inc:                                          ; preds = %for.body, %if.end14, %if.end11
+  %indvars.iv.next237 = add i64 %indvars.iv236, 1
+  %5 = trunc i64 %indvars.iv.next237 to i32
+  %cmp = icmp slt i32 %5, 4
+  br i1 %cmp, label %for.body, label %for.body20
+
+for.cond18:                                       ; preds = %for.body20
+  %6 = trunc i64 %indvars.iv.next232 to i32
+  %cmp19 = icmp slt i32 %6, 8
+  br i1 %cmp19, label %for.body20, label %for.body34
+
+for.body20:                                       ; preds = %for.inc, %for.cond18
+  %indvars.iv231 = phi i64 [ %indvars.iv.next232, %for.cond18 ], [ 0, %for.inc ]
+  %arrayidx22 = getelementptr inbounds [8 x i32]* @nk_attacked.knight_o, i64 0, i64 %indvars.iv231
+  %7 = load i32* %arrayidx22, align 4, !tbaa !0
+  %add23 = add nsw i32 %7, %square
+  %idxprom24 = sext i32 %add23 to i64
+  %arrayidx25 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom24
+  %8 = load i32* %arrayidx25, align 4, !tbaa !0
+  %cmp26 = icmp eq i32 %8, 3
+  %indvars.iv.next232 = add i64 %indvars.iv231, 1
+  br i1 %cmp26, label %return, label %for.cond18
+
+for.body34:                                       ; preds = %for.cond18, %for.inc55
+  %indvars.iv229 = phi i64 [ %indvars.iv.next230, %for.inc55 ], [ 0, %for.cond18 ]
+  %arrayidx36 = getelementptr inbounds [4 x i32]* @nk_attacked.rook_o, i64 0, i64 %indvars.iv229
+  %9 = load i32* %arrayidx36, align 4, !tbaa !0
+  %10 = add i32 %9, %square
+  %11 = sext i32 %10 to i64
+  %12 = sext i32 %9 to i64
+  br label %while.cond40
+
+while.cond40:                                     ; preds = %if.end50, %for.body34
+  %indvars.iv226 = phi i64 [ %indvars.iv.next227, %if.end50 ], [ %11, %for.body34 ]
+  %basq.1.in = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv226
+  %basq.1 = load i32* %basq.1.in, align 4
+  switch i32 %basq.1, label %for.inc55 [
+    i32 13, label %if.end50
+    i32 9, label %return
+    i32 7, label %return
+  ]
+
+if.end50:                                         ; preds = %while.cond40
+  %indvars.iv.next227 = add i64 %indvars.iv226, %12
+  br label %while.cond40
+
+for.inc55:                                        ; preds = %while.cond40
+  %indvars.iv.next230 = add i64 %indvars.iv229, 1
+  %13 = trunc i64 %indvars.iv.next230 to i32
+  %cmp33 = icmp slt i32 %13, 4
+  br i1 %cmp33, label %for.body34, label %return
+
+for.body60:                                       ; preds = %entry, %for.inc87
+  %indvars.iv224 = phi i64 [ %indvars.iv.next225, %for.inc87 ], [ 0, %entry ]
+  %arrayidx62 = getelementptr inbounds [4 x i32]* @nk_attacked.bishop_o, i64 0, i64 %indvars.iv224
+  %14 = load i32* %arrayidx62, align 4, !tbaa !0
+  %add63 = add nsw i32 %14, %square
+  %idxprom64 = sext i32 %add63 to i64
+  %arrayidx65 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom64
+  %15 = load i32* %arrayidx65, align 4, !tbaa !0
+  %cmp66 = icmp eq i32 %15, 2
+  br i1 %cmp66, label %land.lhs.true67, label %while.cond72
+
+land.lhs.true67:                                  ; preds = %for.body60
+  %and68 = and i64 %indvars.iv224, 1
+  %tobool69 = icmp eq i64 %and68, 0
+  br i1 %tobool69, label %return, label %while.cond72
+
+while.cond72:                                     ; preds = %land.lhs.true67, %for.body60, %if.end82
+  %a_sq.2 = phi i32 [ %add83, %if.end82 ], [ %add63, %for.body60 ], [ %add63, %land.lhs.true67 ]
+  %basq.2 = phi i32 [ %16, %if.end82 ], [ %15, %for.body60 ], [ 2, %land.lhs.true67 ]
+  switch i32 %basq.2, label %for.inc87 [
+    i32 13, label %if.end82
+    i32 12, label %return
+    i32 10, label %return
+  ]
+
+if.end82:                                         ; preds = %while.cond72
+  %add83 = add nsw i32 %a_sq.2, %14
+  %idxprom84 = sext i32 %add83 to i64
+  %arrayidx85 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom84
+  %16 = load i32* %arrayidx85, align 4, !tbaa !0
+  br label %while.cond72
+
+for.inc87:                                        ; preds = %while.cond72
+  %indvars.iv.next225 = add i64 %indvars.iv224, 1
+  %17 = trunc i64 %indvars.iv.next225 to i32
+  %cmp59 = icmp slt i32 %17, 4
+  br i1 %cmp59, label %for.body60, label %for.body92
+
+for.cond90:                                       ; preds = %for.body92
+  %18 = trunc i64 %indvars.iv.next220 to i32
+  %cmp91 = icmp slt i32 %18, 8
+  br i1 %cmp91, label %for.body92, label %for.body106
+
+for.body92:                                       ; preds = %for.inc87, %for.cond90
+  %indvars.iv219 = phi i64 [ %indvars.iv.next220, %for.cond90 ], [ 0, %for.inc87 ]
+  %arrayidx94 = getelementptr inbounds [8 x i32]* @nk_attacked.knight_o, i64 0, i64 %indvars.iv219
+  %19 = load i32* %arrayidx94, align 4, !tbaa !0
+  %add95 = add nsw i32 %19, %square
+  %idxprom96 = sext i32 %add95 to i64
+  %arrayidx97 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom96
+  %20 = load i32* %arrayidx97, align 4, !tbaa !0
+  %cmp98 = icmp eq i32 %20, 4
+  %indvars.iv.next220 = add i64 %indvars.iv219, 1
+  br i1 %cmp98, label %return, label %for.cond90
+
+for.body106:                                      ; preds = %for.cond90, %for.inc129
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc129 ], [ 0, %for.cond90 ]
+  %arrayidx108 = getelementptr inbounds [4 x i32]* @nk_attacked.rook_o, i64 0, i64 %indvars.iv
+  %21 = load i32* %arrayidx108, align 4, !tbaa !0
+  %add111 = add nsw i32 %21, %square
+  %idxprom112.pn194 = sext i32 %add111 to i64
+  %basq.3.in195 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom112.pn194
+  %basq.3196 = load i32* %basq.3.in195, align 4
+  %cmp115197 = icmp eq i32 %basq.3196, 0
+  br i1 %cmp115197, label %for.inc129, label %while.body116
+
+while.cond114:                                    ; preds = %if.end121
+  %idxprom112.pn = sext i32 %add125 to i64
+  %basq.3.in = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom112.pn
+  %basq.3 = load i32* %basq.3.in, align 4
+  %cmp115 = icmp eq i32 %basq.3, 0
+  br i1 %cmp115, label %for.inc129, label %while.body116
+
+while.body116:                                    ; preds = %for.body106, %while.cond114
+  %basq.3199 = phi i32 [ %basq.3, %while.cond114 ], [ %basq.3196, %for.body106 ]
+  %a_sq.3198 = phi i32 [ %add125, %while.cond114 ], [ %add111, %for.body106 ]
+  %22 = and i32 %basq.3199, -3
+  %23 = icmp eq i32 %22, 8
+  br i1 %23, label %return, label %if.end121
+
+if.end121:                                        ; preds = %while.body116
+  %cmp122 = icmp eq i32 %basq.3199, 13
+  %add125 = add nsw i32 %a_sq.3198, %21
+  br i1 %cmp122, label %while.cond114, label %for.inc129
+
+for.inc129:                                       ; preds = %while.cond114, %if.end121, %for.body106
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %24 = trunc i64 %indvars.iv.next to i32
+  %cmp105 = icmp slt i32 %24, 4
+  br i1 %cmp105, label %for.body106, label %return
+
+return:                                           ; preds = %land.lhs.true, %while.body, %for.body20, %for.inc55, %while.cond40, %while.cond40, %land.lhs.true67, %while.cond72, %while.cond72, %for.body92, %for.inc129, %while.body116
+  %retval.0 = phi i32 [ 1, %while.body116 ], [ 0, %for.inc129 ], [ 1, %for.body92 ], [ 1, %while.cond72 ], [ 1, %while.cond72 ], [ 1, %land.lhs.true67 ], [ 1, %while.cond40 ], [ 1, %while.cond40 ], [ 0, %for.inc55 ], [ 1, %for.body20 ], [ 1, %while.body ], [ 1, %land.lhs.true ]
+  ret i32 %retval.0
+}

@@ -1,8 +1,10 @@
-int
-returnjump_p (insn)
-     rtx insn;
+static int
+returnjump_p_1 (loc, data)
+     rtx *loc;
+     void *data ATTRIBUTE_UNUSED;
 {
-  if (GET_CODE (insn) != JUMP_INSN)
-    return 0;
-  return for_each_rtx (&PATTERN (insn), returnjump_p_1, NULL);
+  rtx x = *loc;
+
+  return x && (GET_CODE (x) == RETURN
+	       || (GET_CODE (x) == SET && SET_IS_RETURN_P (x)));
 }

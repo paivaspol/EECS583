@@ -1,0 +1,168 @@
+define void @getNonAffNeighbour(i32 %curr_mb_nr, i32 %xN, i32 %yN, i32 %luma, %struct.pix_pos* nocapture %pix) #1 {
+entry:
+  %idxprom = zext i32 %curr_mb_nr to i64
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %1 = load %struct.macroblock** %mb_data, align 8, !tbaa !0
+  %tobool = icmp ne i32 %luma, 0
+  br i1 %tobool, label %if.end, label %if.else
+
+if.else:                                          ; preds = %entry
+  %mb_cr_size_x = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 161
+  %2 = load i32* %mb_cr_size_x, align 4, !tbaa !3
+  %mb_cr_size_y = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 162
+  %3 = load i32* %mb_cr_size_y, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.else
+  %maxW.0 = phi i32 [ %2, %if.else ], [ 16, %entry ]
+  %maxH.0 = phi i32 [ %3, %if.else ], [ 16, %entry ]
+  %cmp1 = icmp slt i32 %yN, 0
+  %4 = and i32 %yN, %xN
+  %5 = icmp slt i32 %4, 0
+  br i1 %5, label %if.then2, label %if.else3
+
+if.then2:                                         ; preds = %if.end
+  %mbAddrD = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 26
+  %6 = load i32* %mbAddrD, align 4, !tbaa !3
+  %mb_addr = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  store i32 %6, i32* %mb_addr, align 4, !tbaa !3
+  %mbAvailD = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 30
+  %7 = load i32* %mbAvailD, align 4, !tbaa !3
+  %available = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0
+  store i32 %7, i32* %available, align 4, !tbaa !3
+  br label %if.end45
+
+if.else3:                                         ; preds = %if.end
+  %cmp = icmp slt i32 %xN, 0
+  %cmp6 = icmp sgt i32 %yN, -1
+  %or.cond132 = and i1 %cmp, %cmp6
+  %cmp8 = icmp sgt i32 %maxH.0, %yN
+  %or.cond133 = and i1 %or.cond132, %cmp8
+  br i1 %or.cond133, label %if.then9, label %if.else12
+
+if.then9:                                         ; preds = %if.else3
+  %mbAddrA = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 23
+  %8 = load i32* %mbAddrA, align 4, !tbaa !3
+  %mb_addr10 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  store i32 %8, i32* %mb_addr10, align 4, !tbaa !3
+  %mbAvailA = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 27
+  %9 = load i32* %mbAvailA, align 4, !tbaa !3
+  %available11 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0
+  store i32 %9, i32* %available11, align 4, !tbaa !3
+  br label %if.end45
+
+if.else12:                                        ; preds = %if.else3
+  %cmp13 = icmp sgt i32 %xN, -1
+  %cmp15 = icmp sgt i32 %maxW.0, %xN
+  %or.cond134 = and i1 %cmp13, %cmp15
+  %or.cond135 = and i1 %or.cond134, %cmp1
+  br i1 %or.cond135, label %if.then18, label %if.else21
+
+if.then18:                                        ; preds = %if.else12
+  %mbAddrB = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 24
+  %10 = load i32* %mbAddrB, align 4, !tbaa !3
+  %mb_addr19 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  store i32 %10, i32* %mb_addr19, align 4, !tbaa !3
+  %mbAvailB = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 28
+  %11 = load i32* %mbAvailB, align 4, !tbaa !3
+  %available20 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0
+  store i32 %11, i32* %available20, align 4, !tbaa !3
+  br label %if.end45
+
+if.else21:                                        ; preds = %if.else12
+  %or.cond137 = and i1 %or.cond134, %cmp6
+  %or.cond138 = and i1 %or.cond137, %cmp8
+  br i1 %or.cond138, label %if.end45.thread141, label %if.else32
+
+if.end45.thread141:                               ; preds = %if.else21
+  %mb_addr30 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  store i32 %curr_mb_nr, i32* %mb_addr30, align 4, !tbaa !3
+  %available31 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0
+  store i32 1, i32* %available31, align 4, !tbaa !3
+  br label %if.then49
+
+if.else32:                                        ; preds = %if.else21
+  %cmp33 = icmp sle i32 %maxW.0, %xN
+  %or.cond139 = and i1 %cmp33, %cmp1
+  br i1 %or.cond139, label %if.then36, label %if.end45.thread
+
+if.then36:                                        ; preds = %if.else32
+  %mbAddrC = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 25
+  %12 = load i32* %mbAddrC, align 4, !tbaa !3
+  %mb_addr37 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  store i32 %12, i32* %mb_addr37, align 4, !tbaa !3
+  %mbAvailC = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 29
+  %13 = load i32* %mbAvailC, align 4, !tbaa !3
+  %available38 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0
+  store i32 %13, i32* %available38, align 4, !tbaa !3
+  br label %if.end45
+
+if.end45.thread:                                  ; preds = %if.else32
+  %available40 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0
+  store i32 0, i32* %available40, align 4, !tbaa !3
+  br label %lor.lhs.false
+
+if.end45:                                         ; preds = %if.then9, %if.then36, %if.then18, %if.then2
+  %14 = phi i32 [ %9, %if.then9 ], [ %13, %if.then36 ], [ %11, %if.then18 ], [ %7, %if.then2 ]
+  %tobool47 = icmp eq i32 %14, 0
+  br i1 %tobool47, label %lor.lhs.false, label %if.then49
+
+lor.lhs.false:                                    ; preds = %if.end45.thread, %if.end45
+  %DeblockCall = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 143
+  %15 = load i32* %DeblockCall, align 4, !tbaa !3
+  %tobool48 = icmp eq i32 %15, 0
+  br i1 %tobool48, label %if.end76, label %if.then49
+
+if.then49:                                        ; preds = %lor.lhs.false, %if.end45, %if.end45.thread141
+  %add = add nsw i32 %maxW.0, %xN
+  %rem = srem i32 %add, %maxW.0
+  %x = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2
+  store i32 %rem, i32* %x, align 4, !tbaa !3
+  %add50 = add nsw i32 %maxH.0, %yN
+  %rem51 = srem i32 %add50, %maxH.0
+  %y = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3
+  store i32 %rem51, i32* %y, align 4, !tbaa !3
+  %mb_addr52 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  %16 = load i32* %mb_addr52, align 4, !tbaa !3
+  %pos_x = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 4
+  %pos_y = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 5
+  tail call void @get_mb_block_pos(i32 %16, i32* %pos_x, i32* %pos_y) #5
+  %17 = load i32* %pos_x, align 4, !tbaa !3
+  %mul.i = shl nsw i32 %17, 4
+  store i32 %mul.i, i32* %pos_x, align 4, !tbaa !3
+  %18 = load i32* %pos_y, align 4, !tbaa !3
+  %mul1.i = shl nsw i32 %18, 4
+  store i32 %mul1.i, i32* %pos_y, align 4, !tbaa !3
+  br i1 %tobool, label %if.then54, label %if.else61
+
+if.then54:                                        ; preds = %if.then49
+  %19 = load i32* %x, align 4, !tbaa !3
+  %add57 = add nsw i32 %mul.i, %19
+  store i32 %add57, i32* %pos_x, align 4, !tbaa !3
+  %20 = load i32* %y, align 4, !tbaa !3
+  %add60 = add nsw i32 %mul1.i, %20
+  store i32 %add60, i32* %pos_y, align 4, !tbaa !3
+  br label %if.end76
+
+if.else61:                                        ; preds = %if.then49
+  %21 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %mb_cr_size_x63 = getelementptr inbounds %struct.ImageParameters* %21, i64 0, i32 161
+  %22 = load i32* %mb_cr_size_x63, align 4, !tbaa !3
+  %div = sdiv i32 16, %22
+  %div64 = sdiv i32 %mul.i, %div
+  %23 = load i32* %x, align 4, !tbaa !3
+  %add66 = add nsw i32 %23, %div64
+  store i32 %add66, i32* %pos_x, align 4, !tbaa !3
+  %mb_cr_size_y69 = getelementptr inbounds %struct.ImageParameters* %21, i64 0, i32 162
+  %24 = load i32* %mb_cr_size_y69, align 4, !tbaa !3
+  %div70 = sdiv i32 16, %24
+  %div71 = sdiv i32 %mul1.i, %div70
+  %25 = load i32* %y, align 4, !tbaa !3
+  %add73 = add nsw i32 %25, %div71
+  store i32 %add73, i32* %pos_y, align 4, !tbaa !3
+  br label %if.end76
+
+if.end76:                                         ; preds = %lor.lhs.false, %if.then54, %if.else61
+  ret void
+}

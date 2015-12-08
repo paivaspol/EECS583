@@ -1,0 +1,124 @@
+define noalias %struct._IP** @FrontMtx_forwardSetup(%struct._FrontMtx* %frontmtx, i32 %msglvl, %struct._IO_FILE* nocapture %msgFile) #0 {
+entry:
+  %nadj = alloca i32, align 4
+  %adj = alloca i32*, align 8
+  %call = call i32 @FrontMtx_nLowerBlocks(%struct._FrontMtx* %frontmtx) #5
+  %call1 = call i32 @FrontMtx_nfront(%struct._FrontMtx* %frontmtx) #5
+  %add = add i32 %call1, 2
+  %cmp = icmp sgt i32 %add, 0
+  br i1 %cmp, label %if.then, label %if.else11
+
+if.then:                                          ; preds = %entry
+  %conv = sext i32 %add to i64
+  %mul = shl nsw i64 %conv, 3
+  %call3 = call noalias i8* @malloc(i64 %mul) #5
+  %0 = bitcast i8* %call3 to %struct._IP**
+  %cmp4 = icmp eq i8* %call3, null
+  br i1 %cmp4, label %if.then6, label %if.end22
+
+if.then6:                                         ; preds = %if.then
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call10 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), i64 %mul, i32 1029, i8* getelementptr inbounds ([88 x i8]* @.str3, i64 0, i64 0)) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.else11:                                        ; preds = %entry
+  %cmp13 = icmp eq i32 %add, 0
+  br i1 %cmp13, label %if.end22, label %if.else16
+
+if.else16:                                        ; preds = %if.else11
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %conv18 = sext i32 %add to i64
+  %mul19 = shl nsw i64 %conv18, 3
+  %call20 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([47 x i8]* @.str4, i64 0, i64 0), i64 %mul19, i32 1029, i8* getelementptr inbounds ([88 x i8]* @.str3, i64 0, i64 0)) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end22:                                         ; preds = %if.else11, %if.then
+  %heads.0 = phi %struct._IP** [ %0, %if.then ], [ null, %if.else11 ]
+  %add23 = add i32 %call1, 1
+  %cmp24113 = icmp slt i32 %add23, 0
+  br i1 %cmp24113, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.end22
+  %heads.0118 = bitcast %struct._IP** %heads.0 to i8*
+  %3 = zext i32 %add23 to i64
+  %4 = shl nuw nsw i64 %3, 3
+  %5 = add i64 %4, 8
+  call void @llvm.memset.p0i8.i64(i8* %heads.0118, i8 0, i64 %5, i32 8, i1 false)
+  br label %for.end
+
+for.end:                                          ; preds = %for.body.lr.ph, %if.end22
+  %call26 = call %struct._IP* @IP_init(i32 %call, i32 1) #5
+  %idxprom28 = sext i32 %add23 to i64
+  %arrayidx29 = getelementptr inbounds %struct._IP** %heads.0, i64 %idxprom28
+  store %struct._IP* %call26, %struct._IP** %arrayidx29, align 8, !tbaa !3
+  %idxprom30 = sext i32 %call1 to i64
+  %arrayidx31 = getelementptr inbounds %struct._IP** %heads.0, i64 %idxprom30
+  store %struct._IP* %call26, %struct._IP** %arrayidx31, align 8, !tbaa !3
+  %cmp33111 = icmp sgt i32 %call1, 0
+  br i1 %cmp33111, label %for.body35.lr.ph, label %for.end71
+
+for.body35.lr.ph:                                 ; preds = %for.end
+  %cmp54 = icmp sgt i32 %msglvl, 3
+  br label %for.body35
+
+for.body35:                                       ; preds = %for.inc69, %for.body35.lr.ph
+  %J.1112 = phi i32 [ 0, %for.body35.lr.ph ], [ %inc70, %for.inc69 ]
+  call void @FrontMtx_lowerAdjFronts(%struct._FrontMtx* %frontmtx, i32 %J.1112, i32* %nadj, i32** %adj) #5
+  %6 = load i32* %nadj, align 4, !tbaa !0
+  %cmp37109 = icmp sgt i32 %6, 0
+  br i1 %cmp37109, label %for.body39, label %for.inc69
+
+for.body39:                                       ; preds = %for.inc66, %for.body35
+  %indvars.iv = phi i64 [ 0, %for.body35 ], [ %indvars.iv.next, %for.inc66 ]
+  %7 = load i32** %adj, align 8, !tbaa !3
+  %arrayidx41 = getelementptr inbounds i32* %7, i64 %indvars.iv
+  %8 = load i32* %arrayidx41, align 4, !tbaa !0
+  %cmp42 = icmp sgt i32 %8, %J.1112
+  br i1 %cmp42, label %if.then44, label %for.inc66
+
+if.then44:                                        ; preds = %for.body39
+  %9 = load %struct._IP** %arrayidx31, align 8, !tbaa !3
+  %next = getelementptr inbounds %struct._IP* %9, i64 0, i32 1
+  %10 = load %struct._IP** %next, align 8, !tbaa !3
+  store %struct._IP* %10, %struct._IP** %arrayidx31, align 8, !tbaa !3
+  %val = getelementptr inbounds %struct._IP* %9, i64 0, i32 0
+  store i32 %J.1112, i32* %val, align 4, !tbaa !0
+  %idxprom49 = sext i32 %8 to i64
+  %arrayidx50 = getelementptr inbounds %struct._IP** %heads.0, i64 %idxprom49
+  %11 = load %struct._IP** %arrayidx50, align 8, !tbaa !3
+  store %struct._IP* %11, %struct._IP** %next, align 8, !tbaa !3
+  store %struct._IP* %9, %struct._IP** %arrayidx50, align 8, !tbaa !3
+  br i1 %cmp54, label %if.then56, label %for.inc66
+
+if.then56:                                        ; preds = %if.then44
+  %cmp58 = icmp eq %struct._IP* %11, null
+  br i1 %cmp58, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %if.then56
+  %val61 = getelementptr inbounds %struct._IP* %11, i64 0, i32 0
+  %12 = load i32* %val61, align 4, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then56, %cond.false
+  %cond = phi i32 [ %12, %cond.false ], [ -1, %if.then56 ]
+  %call62 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([31 x i8]* @.str29, i64 0, i64 0), i32 %8, i32 %J.1112, i32 %8, i32 %cond) #5
+  %call63 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %for.inc66
+
+for.inc66:                                        ; preds = %if.then44, %for.body39, %cond.end
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %13 = load i32* %nadj, align 4, !tbaa !0
+  %14 = trunc i64 %indvars.iv.next to i32
+  %cmp37 = icmp slt i32 %14, %13
+  br i1 %cmp37, label %for.body39, label %for.inc69
+
+for.inc69:                                        ; preds = %for.inc66, %for.body35
+  %inc70 = add nsw i32 %J.1112, 1
+  %exitcond = icmp eq i32 %inc70, %call1
+  br i1 %exitcond, label %for.end71, label %for.body35
+
+for.end71:                                        ; preds = %for.inc69, %for.end
+  ret %struct._IP** %heads.0
+}

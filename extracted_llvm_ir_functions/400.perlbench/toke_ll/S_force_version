@@ -1,0 +1,102 @@
+define internal fastcc i8* @S_force_version(i8* %s, i32 %guessing) #0 {
+entry:
+  %call = tail call fastcc i8* @S_skipspace(i8* %s) #7
+  %0 = load i8* %call, align 1, !tbaa !1
+  %cmp = icmp eq i8 %0, 118
+  %incdec.ptr = getelementptr inbounds i8* %call, i64 1
+  %incdec.ptr.call = select i1 %cmp, i8* %incdec.ptr, i8* %call
+  %1 = load i8* %incdec.ptr.call, align 1, !tbaa !1
+  %.off = add i8 %1, -48
+  %2 = icmp ult i8 %.off, 10
+  br i1 %2, label %while.cond, label %if.end75
+
+while.cond:                                       ; preds = %entry, %while.body
+  %3 = phi i8 [ %.pre, %while.body ], [ %1, %entry ]
+  %d.1 = phi i8* [ %incdec.ptr22, %while.body ], [ %incdec.ptr.call, %entry ]
+  %.off104 = add i8 %3, -48
+  %4 = icmp ult i8 %.off104, 10
+  br i1 %4, label %while.body, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %while.cond
+  switch i8 %3, label %if.else [
+    i8 95, label %while.body
+    i8 46, label %while.body
+    i8 59, label %if.then51
+    i8 32, label %if.then51
+    i8 9, label %if.then51
+    i8 10, label %if.then51
+    i8 13, label %if.then51
+    i8 12, label %if.then51
+    i8 125, label %if.then51
+    i8 0, label %if.then51
+  ]
+
+while.body:                                       ; preds = %lor.lhs.false, %lor.lhs.false, %while.cond
+  %incdec.ptr22 = getelementptr inbounds i8* %d.1, i64 1
+  %.pre = load i8* %incdec.ptr22, align 1, !tbaa !1
+  br label %while.cond
+
+if.then51:                                        ; preds = %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false, %lor.lhs.false
+  %call52 = tail call i8* @Perl_scan_num(i8* %call, %union.YYSTYPE* @PL_yylval) #7
+  %5 = load %struct.op** bitcast (%union.YYSTYPE* @PL_yylval to %struct.op**), align 8, !tbaa !0
+  %op_sv = getelementptr inbounds %struct.op* %5, i64 1
+  %6 = bitcast %struct.op* %op_sv to %struct.sv**
+  %7 = load %struct.sv** %6, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %7, i64 0, i32 2
+  %8 = load i32* %sv_flags, align 4, !tbaa !3
+  %9 = and i32 %8, 458752
+  %10 = icmp eq i32 %9, 262144
+  br i1 %10, label %if.then58, label %if.end75
+
+if.then58:                                        ; preds = %if.then51
+  %and60 = and i32 %8, 254
+  %cmp61 = icmp ugt i32 %and60, 5
+  br i1 %cmp61, label %lor.end67, label %lor.rhs63
+
+lor.rhs63:                                        ; preds = %if.then58
+  %call64 = tail call signext i8 @Perl_sv_upgrade(%struct.sv* %7, i32 6) #6
+  br label %lor.end67
+
+lor.end67:                                        ; preds = %lor.rhs63, %if.then58
+  %call68 = tail call double @Perl_str_to_version(%struct.sv* %7) #7
+  %sv_any = getelementptr inbounds %struct.sv* %7, i64 0, i32 0
+  %11 = load i8** %sv_any, align 8, !tbaa !0
+  %xnv_nv = getelementptr inbounds i8* %11, i64 32
+  %12 = bitcast i8* %xnv_nv to double*
+  store double %call68, double* %12, align 8, !tbaa !6
+  %13 = load i32* %sv_flags, align 4, !tbaa !3
+  %or = or i32 %13, 33685504
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end75
+
+if.else:                                          ; preds = %lor.lhs.false
+  %tobool71 = icmp eq i32 %guessing, 0
+  br i1 %tobool71, label %if.end75, label %return
+
+if.end75:                                         ; preds = %if.then51, %if.else, %lor.end67, %entry
+  %s.addr.0 = phi i8* [ %call52, %lor.end67 ], [ %call52, %if.then51 ], [ %call, %if.else ], [ %call, %entry ]
+  %version.0 = phi %struct.op* [ %5, %lor.end67 ], [ %5, %if.then51 ], [ null, %if.else ], [ null, %entry ]
+  %14 = load i32* @PL_nexttoke, align 4, !tbaa !3
+  %idxprom = sext i32 %14 to i64
+  %15 = getelementptr inbounds [5 x %union.YYSTYPE]* @PL_nextval, i64 0, i64 %idxprom, i32 0
+  %version.0.c = bitcast %struct.op* %version.0 to i8*
+  store i8* %version.0.c, i8** %15, align 8, !tbaa !0
+  %arrayidx.i = getelementptr inbounds [5 x i32]* @PL_nexttype, i64 0, i64 %idxprom
+  store i32 257, i32* %arrayidx.i, align 4, !tbaa !3
+  %inc.i = add nsw i32 %14, 1
+  store i32 %inc.i, i32* @PL_nexttoke, align 4, !tbaa !3
+  %16 = load i32* @PL_lex_state, align 4, !tbaa !3
+  %cmp.i = icmp eq i32 %16, 0
+  br i1 %cmp.i, label %return, label %if.then.i
+
+if.then.i:                                        ; preds = %if.end75
+  store i32 %16, i32* @PL_lex_defer, align 4, !tbaa !3
+  %17 = load i32* @PL_expect, align 4, !tbaa !3
+  store i32 %17, i32* @PL_lex_expect, align 4, !tbaa !3
+  store i32 0, i32* @PL_lex_state, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.then.i, %if.end75, %if.else
+  %retval.0 = phi i8* [ %call, %if.else ], [ %s.addr.0, %if.end75 ], [ %s.addr.0, %if.then.i ]
+  ret i8* %retval.0
+}

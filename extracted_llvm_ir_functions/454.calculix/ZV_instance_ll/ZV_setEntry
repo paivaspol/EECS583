@@ -1,0 +1,52 @@
+define void @ZV_setEntry(%struct._ZV* %dv, i32 %loc, double %real, double %imag) #0 {
+entry:
+  %cmp = icmp eq %struct._ZV* %dv, null
+  %cmp1 = icmp slt i32 %loc, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([54 x i8]* @.str9, i64 0, i64 0), %struct._ZV* %dv, i32 %loc, double %real, double %imag) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %maxsize = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 1
+  %1 = load i32* %maxsize, align 4, !tbaa !3
+  %cmp2 = icmp sgt i32 %1, %loc
+  br i1 %cmp2, label %if.end11, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  %cmp5 = icmp slt i32 %1, 10
+  %.mul = select i1 %cmp5, i32 10, i32 %1
+  %cmp8 = icmp sgt i32 %.mul, %loc
+  %add = add nsw i32 %loc, 1
+  %.mul.add = select i1 %cmp8, i32 %.mul, i32 %add
+  tail call void @ZV_setMaxsize(%struct._ZV* %dv, i32 %.mul.add) #4
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.end, %if.then3
+  %size = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 0
+  %2 = load i32* %size, align 4, !tbaa !3
+  %cmp12 = icmp sgt i32 %2, %loc
+  br i1 %cmp12, label %if.end16, label %if.then13
+
+if.then13:                                        ; preds = %if.end11
+  %add14 = add nsw i32 %loc, 1
+  store i32 %add14, i32* %size, align 4, !tbaa !3
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.end11, %if.then13
+  %mul17 = shl nsw i32 %loc, 1
+  %idxprom = sext i32 %mul17 to i64
+  %vec = getelementptr inbounds %struct._ZV* %dv, i64 0, i32 3
+  %3 = load double** %vec, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds double* %3, i64 %idxprom
+  store double %real, double* %arrayidx, align 8, !tbaa !4
+  %add1943 = or i32 %mul17, 1
+  %idxprom20 = sext i32 %add1943 to i64
+  %arrayidx22 = getelementptr inbounds double* %3, i64 %idxprom20
+  store double %imag, double* %arrayidx22, align 8, !tbaa !4
+  ret void
+}

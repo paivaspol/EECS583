@@ -1,0 +1,38 @@
+define void @Network_setMessageInfo(%struct._Network* %network, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
+entry:
+  %cmp = icmp eq %struct._Network* %network, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([62 x i8]* @.str4, i64 0, i64 0), %struct._Network* null, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp sgt i32 %msglvl, -1
+  br i1 %cmp1, label %if.then2, label %if.end4
+
+if.then2:                                         ; preds = %if.end
+  %msglvl3 = getelementptr inbounds %struct._Network* %network, i64 0, i32 6
+  store i32 %msglvl, i32* %msglvl3, align 4, !tbaa !3
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.then2, %if.end
+  %cmp5 = icmp eq %struct._IO_FILE* %msgFile, null
+  br i1 %cmp5, label %if.else, label %if.then6
+
+if.then6:                                         ; preds = %if.end4
+  %msgFile7 = getelementptr inbounds %struct._Network* %network, i64 0, i32 7
+  store %struct._IO_FILE* %msgFile, %struct._IO_FILE** %msgFile7, align 8, !tbaa !0
+  br label %if.end9
+
+if.else:                                          ; preds = %if.end4
+  %1 = load %struct._IO_FILE** @stdout, align 8, !tbaa !0
+  %msgFile8 = getelementptr inbounds %struct._Network* %network, i64 0, i32 7
+  store %struct._IO_FILE* %1, %struct._IO_FILE** %msgFile8, align 8, !tbaa !0
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.else, %if.then6
+  ret void
+}

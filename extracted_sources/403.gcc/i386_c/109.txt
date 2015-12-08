@@ -1,85 +1,64 @@
 void
-ix86_expand_binary_operator (code, mode, operands)
-     enum rtx_code code;
+ix86_expand_move (mode, operands)
      enum machine_mode mode;
      rtx operands[];
 {
-  int matching_memory;
-  rtx src1, src2, dst, op, clob;
+  int strict = (reload_in_progress || reload_completed);
+  rtx insn;
 
-  dst = operands[0];
-  src1 = operands[1];
-  src2 = operands[2];
-
-  /* Recognize <var1> = <value> <op> <var1> for commutative operators */
-  if (GET_RTX_CLASS (code) == 'c'
-      && (rtx_equal_p (dst, src2)
-	  || immediate_operand (src1, mode)))
+  if (flag_pic && mode == Pmode && symbolic_operand (operands[1], Pmode))
     {
-      rtx temp = src1;
-      src1 = src2;
-      src2 = temp;
-    }
+      /* Emit insns to move operands[1] into operands[0].  */
 
-  /* If the destination is memory, and we do not have matching source
-     operands, do things in registers.  */
-  matching_memory = 0;
-  if (GET_CODE (dst) == MEM)
-    {
-      if (rtx_equal_p (dst, src1))
-	matching_memory = 1;
-      else if (GET_RTX_CLASS (code) == 'c'
-	       && rtx_equal_p (dst, src2))
-	matching_memory = 2;
+      if (GET_CODE (operands[0]) == MEM)
+	operands[1] = force_reg (Pmode, operands[1]);
       else
-	dst = gen_reg_rtx (mode);
-    }
-
-  /* Both source operands cannot be in memory.  */
-  if (GET_CODE (src1) == MEM && GET_CODE (src2) == MEM)
-    {
-      if (matching_memory != 2)
-	src2 = force_reg (mode, src2);
-      else
-	src1 = force_reg (mode, src1);
-    }
-
-  /* If the operation is not commutable, source 1 cannot be a constant
-     or non-matching memory.  */
-  if ((CONSTANT_P (src1)
-       || (!matching_memory && GET_CODE (src1) == MEM))
-      && GET_RTX_CLASS (code) != 'c')
-    src1 = force_reg (mode, src1);
-
-  /* If optimizing, copy to regs to improve CSE */
-  if (optimize && ! no_new_pseudos)
-    {
-      if (GET_CODE (dst) == MEM)
-	dst = gen_reg_rtx (mode);
-      if (GET_CODE (src1) == MEM)
-	src1 = force_reg (mode, src1);
-      if (GET_CODE (src2) == MEM)
-	src2 = force_reg (mode, src2);
-    }
-
-  /* Emit the instruction.  */
-
-  op = gen_rtx_SET (VOIDmode, dst, gen_rtx_fmt_ee (code, mode, src1, src2));
-  if (reload_in_progress)
-    {
-      /* Reload doesn't know about the flags register, and doesn't know that
-         it doesn't want to clobber it.  We can only do this with PLUS.  */
-      if (code != PLUS)
-	abort ();
-      emit_insn (op);
+	{
+	  rtx temp = operands[0];
+	  if (GET_CODE (temp) != REG)
+	    temp = gen_reg_rtx (Pmode);
+	  temp = legitimize_pic_address (operands[1], temp);
+	  if (temp == operands[0])
+	    return;
+	  operands[1] = temp;
+	}
     }
   else
     {
-      clob = gen_rtx_CLOBBER (VOIDmode, gen_rtx_REG (CCmode, FLAGS_REG));
-      emit_insn (gen_rtx_PARALLEL (VOIDmode, gen_rtvec (2, op, clob)));
+      if (GET_CODE (operands[0]) == MEM
+	  && (PUSH_ROUNDING (GET_MODE_SIZE (mode)) != GET_MODE_SIZE (mode)
+	      || !push_operand (operands[0], mode))
+	  && GET_CODE (operands[1]) == MEM)
+	operands[1] = force_reg (mode, operands[1]);
+
+      if (push_operand (operands[0], mode)
+	  && ! general_no_elim_operand (operands[1], mode))
+	operands[1] = copy_to_mode_reg (mode, operands[1]);
+
+      /* Force large constants in 64bit compilation into register
+	 to get them CSEed.  */
+      if (TARGET_64BIT && mode == DImode
+	  && immediate_operand (operands[1], mode)
+	  && !x86_64_zero_extended_value (operands[1])
+	  && !register_operand (operands[0], mode)
+	  && optimize && !reload_completed && !reload_in_progress)
+	operands[1] = copy_to_mode_reg (mode, operands[1]);
+
+      if (FLOAT_MODE_P (mode))
+	{
+	  /* If we are loading a floating point constant to a register,
+	     force the value to memory now, since we'll get better code
+	     out the back end.  */
+
+	  if (strict)
+	    ;
+	  else if (GET_CODE (operands[1]) == CONST_DOUBLE
+		   && register_operand (operands[0], mode))
+	    operands[1] = validize_mem (force_const_mem (mode, operands[1]));
+	}
     }
 
-  /* Fix up the destination if needed.  */
-  if (dst != operands[0])
-    emit_move_insn (operands[0], dst);
+  insn = gen_rtx_SET (VOIDmode, operands[0], operands[1]);
+
+  emit_insn (insn);
 }

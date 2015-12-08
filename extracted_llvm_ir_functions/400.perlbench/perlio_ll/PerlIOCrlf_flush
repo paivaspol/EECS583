@@ -1,0 +1,19 @@
+define i64 @PerlIOCrlf_flush(%struct._PerlIO** %f) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %nl = getelementptr inbounds %struct._PerlIO* %0, i64 3
+  %1 = bitcast %struct._PerlIO* %nl to i8**
+  %2 = load i8** %1, align 8, !tbaa !3
+  %tobool = icmp eq i8* %2, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  store i8 13, i8* %2, align 1, !tbaa !1
+  %3 = getelementptr inbounds %struct._PerlIO* %nl, i64 0, i32 0
+  store %struct._PerlIO* null, %struct._PerlIO** %3, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %call = tail call i64 @PerlIOBuf_flush(%struct._PerlIO** %f) #10
+  ret i64 %call
+}

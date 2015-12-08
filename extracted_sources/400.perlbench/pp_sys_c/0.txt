@@ -1,9 +1,59 @@
-void
-Perl_setdefout(pTHX_ GV *gv)
+STATIC int
+S_emulate_eaccess(pTHX_ const char* path, Mode_t mode)
 {
-    if (gv)
-	(void)SvREFCNT_inc(gv);
-    if (PL_defoutgv)
-	SvREFCNT_dec(PL_defoutgv);
-    PL_defoutgv = gv;
+    Uid_t ruid = getuid();
+    Uid_t euid = geteuid();
+    Gid_t rgid = getgid();
+    Gid_t egid = getegid();
+    int res;
+
+    LOCK_CRED_MUTEX;
+#if !defined(HAS_SETREUID) && !defined(HAS_SETRESUID)
+    Perl_croak(aTHX_ "switching effective uid is not implemented");
+#else
+#ifdef HAS_SETREUID
+    if (setreuid(euid, ruid))
+#else
+#ifdef HAS_SETRESUID
+    if (setresuid(euid, ruid, (Uid_t)-1))
+#endif
+#endif
+	Perl_croak(aTHX_ "entering effective uid failed");
+#endif
+
+#if !defined(HAS_SETREGID) && !defined(HAS_SETRESGID)
+    Perl_croak(aTHX_ "switching effective gid is not implemented");
+#else
+#ifdef HAS_SETREGID
+    if (setregid(egid, rgid))
+#else
+#ifdef HAS_SETRESGID
+    if (setresgid(egid, rgid, (Gid_t)-1))
+#endif
+#endif
+	Perl_croak(aTHX_ "entering effective gid failed");
+#endif
+
+    res = access(path, mode);
+
+#ifdef HAS_SETREUID
+    if (setreuid(ruid, euid))
+#else
+#ifdef HAS_SETRESUID
+    if (setresuid(ruid, euid, (Uid_t)-1))
+#endif
+#endif
+	Perl_croak(aTHX_ "leaving effective uid failed");
+
+#ifdef HAS_SETREGID
+    if (setregid(rgid, egid))
+#else
+#ifdef HAS_SETRESGID
+    if (setresgid(rgid, egid, (Gid_t)-1))
+#endif
+#endif
+	Perl_croak(aTHX_ "leaving effective gid failed");
+    UNLOCK_CRED_MUTEX;
+
+    return res;
 }

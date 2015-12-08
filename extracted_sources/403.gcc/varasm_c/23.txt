@@ -1,9 +1,51 @@
-void
-make_var_volatile (var)
-     tree var;
+int
+decode_reg_name (asmspec)
+  const char *asmspec;
 {
-  if (GET_CODE (DECL_RTL (var)) != MEM)
-    abort ();
+  if (asmspec != 0)
+    {
+      int i;
 
-  MEM_VOLATILE_P (DECL_RTL (var)) = 1;
+      /* Get rid of confusing prefixes.  */
+      asmspec = strip_reg_name (asmspec);
+
+      /* Allow a decimal number as a "register name".  */
+      for (i = strlen (asmspec) - 1; i >= 0; i--)
+	if (! ISDIGIT (asmspec[i]))
+	  break;
+      if (asmspec[0] != 0 && i < 0)
+	{
+	  i = atoi (asmspec);
+	  if (i < FIRST_PSEUDO_REGISTER && i >= 0)
+	    return i;
+	  else
+	    return -2;
+	}
+
+      for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+	if (reg_names[i][0]
+	    && ! strcmp (asmspec, strip_reg_name (reg_names[i])))
+	  return i;
+
+#ifdef ADDITIONAL_REGISTER_NAMES
+      {
+	static const struct { const char *const name; const int number; } table[]
+	  = ADDITIONAL_REGISTER_NAMES;
+
+	for (i = 0; i < (int) ARRAY_SIZE (table); i++)
+	  if (! strcmp (asmspec, table[i].name))
+	    return table[i].number;
+      }
+#endif /* ADDITIONAL_REGISTER_NAMES */
+
+      if (!strcmp (asmspec, "memory"))
+	return -4;
+
+      if (!strcmp (asmspec, "cc"))
+	return -3;
+
+      return -2;
+    }
+
+  return -1;
 }

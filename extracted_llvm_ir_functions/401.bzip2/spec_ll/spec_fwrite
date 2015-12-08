@@ -1,0 +1,49 @@
+define i32 @spec_fwrite(i8* %buf, i32 %size, i32 %num, i32 %fd) #0 {
+entry:
+  %0 = load i32* @dbglvl, align 4, !tbaa !3
+  %cmp = icmp sgt i32 %0, 4
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([31 x i8]* @.str20, i64 0, i64 0), i8* %buf, i32 %size, i32 %num, i32 %fd) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %cmp1 = icmp sgt i32 %fd, 3
+  br i1 %cmp1, label %if.then2, label %if.end4
+
+if.then2:                                         ; preds = %if.end
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([36 x i8]* @.str21, i64 0, i64 0), i32 %fd) #8
+  tail call void @exit(i32 0) #9
+  unreachable
+
+if.end4:                                          ; preds = %if.end
+  %idxprom = sext i32 %fd to i64
+  %pos = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 2
+  %2 = load i32* %pos, align 8, !tbaa !3
+  %idxprom5 = sext i32 %2 to i64
+  %buf8 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 3
+  %3 = load i8** %buf8, align 8, !tbaa !4
+  %arrayidx9 = getelementptr inbounds i8* %3, i64 %idxprom5
+  %mul = mul nsw i32 %num, %size
+  %conv = sext i32 %mul to i64
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arrayidx9, i8* %buf, i64 %conv, i32 1, i1 false)
+  %len = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 1
+  %4 = load i32* %len, align 4, !tbaa !3
+  %add = add nsw i32 %4, %mul
+  store i32 %add, i32* %len, align 4, !tbaa !3
+  %5 = load i32* %pos, align 8, !tbaa !3
+  %add17 = add nsw i32 %5, %mul
+  store i32 %add17, i32* %pos, align 8, !tbaa !3
+  %6 = load i32* @dbglvl, align 4, !tbaa !3
+  %cmp18 = icmp sgt i32 %6, 4
+  br i1 %cmp18, label %if.then20, label %if.end22
+
+if.then20:                                        ; preds = %if.end4
+  %call21 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str11, i64 0, i64 0), i32 %num) #8
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.then20, %if.end4
+  ret i32 %num
+}

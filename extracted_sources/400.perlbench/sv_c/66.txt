@@ -1,9 +1,12 @@
 void
-Perl_sv_catpvf_mg_nocontext(SV *sv, const char* pat, ...)
+Perl_sv_copypv(pTHX_ SV *dsv, register SV *ssv)
 {
-    dTHX;
-    va_list args;
-    va_start(args, pat);
-    sv_vcatpvf_mg(sv, pat, &args);
-    va_end(args);
+    STRLEN len;
+    char *s;
+    s = SvPV(ssv,len);
+    sv_setpvn(dsv,s,len);
+    if (SvUTF8(ssv))
+	SvUTF8_on(dsv);
+    else
+	SvUTF8_off(dsv);
 }

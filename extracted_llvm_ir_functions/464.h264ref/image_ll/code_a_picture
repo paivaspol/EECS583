@@ -1,0 +1,180 @@
+define void @code_a_picture(%struct.Picture* %pic) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %currentPicture = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 49
+  store %struct.Picture* %pic, %struct.Picture** %currentPicture, align 8, !tbaa !0
+  %1 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %number = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 0
+  %2 = load i32* %number, align 4, !tbaa !3
+  %3 = load i32* @start_frame_no_in_this_IGOP, align 4, !tbaa !3
+  %tobool = icmp eq i32 %2, %3
+  br i1 %tobool, label %land.lhs.true, label %lor.rhs
+
+land.lhs.true:                                    ; preds = %entry
+  %structure = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 7
+  %4 = load i32* %structure, align 4, !tbaa !3
+  %cmp = icmp eq i32 %4, 2
+  br i1 %cmp, label %lor.rhs, label %lor.end
+
+lor.rhs:                                          ; preds = %entry, %land.lhs.true
+  %5 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %idr_enable = getelementptr inbounds %struct.InputParameters* %5, i64 0, i32 32
+  %6 = load i32* %idr_enable, align 4, !tbaa !3
+  %tobool1 = icmp eq i32 %6, 0
+  br i1 %tobool1, label %lor.end, label %land.lhs.true2
+
+land.lhs.true2:                                   ; preds = %lor.rhs
+  %type = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 6
+  %7 = load i32* %type, align 4, !tbaa !3
+  %.off = add i32 %7, -2
+  %switch = icmp ult i32 %.off, 3
+  br i1 %switch, label %land.rhs, label %lor.end
+
+land.rhs:                                         ; preds = %land.lhs.true2
+  %structure9 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 7
+  %8 = load i32* %structure9, align 4, !tbaa !3
+  %lnot = icmp ne i32 %8, 2
+  br label %lor.end
+
+lor.end:                                          ; preds = %land.lhs.true2, %lor.rhs, %land.rhs, %land.lhs.true
+  %9 = phi i1 [ true, %land.lhs.true ], [ false, %lor.rhs ], [ %lnot, %land.rhs ], [ false, %land.lhs.true2 ]
+  %lor.ext = zext i1 %9 to i32
+  %currentPicture11 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 49
+  %10 = load %struct.Picture** %currentPicture11, align 8, !tbaa !0
+  %idr_flag = getelementptr inbounds %struct.Picture* %10, i64 0, i32 1
+  store i32 %lor.ext, i32* %idr_flag, align 4, !tbaa !3
+  %no_slices = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 0
+  store i32 0, i32* %no_slices, align 4, !tbaa !3
+  %distortion_y = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 4
+  store float 0.000000e+00, float* %distortion_y, align 4, !tbaa !5
+  %distortion_v = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 6
+  store float 0.000000e+00, float* %distortion_v, align 4, !tbaa !5
+  %distortion_u = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 5
+  store float 0.000000e+00, float* %distortion_u, align 4, !tbaa !5
+  tail call void (...)* @RandomIntraNewPicture() #7
+  %11 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %slice_group_change_cycle = getelementptr inbounds %struct.ImageParameters* %11, i64 0, i32 147
+  store i32 1, i32* %slice_group_change_cycle, align 4, !tbaa !3
+  %12 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !0
+  %13 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !0
+  %call = tail call i32 @FmoInit(%struct.ImageParameters* %11, %struct.pic_parameter_set_rbsp_t* %12, %struct.seq_parameter_set_rbsp_t* %13) #7
+  %call12 = tail call i32 (...)* @FmoStartPicture() #7
+  tail call void (...)* @CalculateQuantParam() #7
+  tail call void (...)* @CalculateOffsetParam() #7
+  %14 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %AllowTransform8x8 = getelementptr inbounds %struct.InputParameters* %14, i64 0, i32 123
+  %15 = load i32* %AllowTransform8x8, align 4, !tbaa !3
+  %tobool13 = icmp eq i32 %15, 0
+  br i1 %tobool13, label %while.cond.preheader, label %if.then
+
+if.then:                                          ; preds = %lor.end
+  tail call void (...)* @CalculateQuant8Param() #7
+  tail call void (...)* @CalculateOffset8Param() #7
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.then, %lor.end
+  %16 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %total_number_mb50 = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 4
+  %17 = load i32* %total_number_mb50, align 4, !tbaa !3
+  %cmp1451 = icmp sgt i32 %17, 0
+  br i1 %cmp1451, label %while.cond15.preheader, label %while.end22
+
+while.cond15.preheader:                           ; preds = %while.cond.preheader, %while.end
+  %SliceGroup.053 = phi i32 [ %inc21, %while.end ], [ 0, %while.cond.preheader ]
+  %NumberOfCodedMBs.052 = phi i32 [ %NumberOfCodedMBs.1.lcssa, %while.end ], [ 0, %while.cond.preheader ]
+  %call1647 = tail call i32 @FmoSliceGroupCompletelyCoded(i32 %SliceGroup.053) #7
+  %lnot1848 = icmp eq i32 %call1647, 0
+  br i1 %lnot1848, label %while.body19, label %while.end
+
+while.body19:                                     ; preds = %while.cond15.preheader, %while.body19
+  %NumberOfCodedMBs.149 = phi i32 [ %add, %while.body19 ], [ %NumberOfCodedMBs.052, %while.cond15.preheader ]
+  %call20 = tail call i32 @encode_one_slice(i32 %SliceGroup.053, %struct.Picture* %pic) #7
+  %add = add nsw i32 %call20, %NumberOfCodedMBs.149
+  %18 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %18, i64 0, i32 3
+  %19 = load i32* %current_mb_nr, align 4, !tbaa !3
+  tail call void @FmoSetLastMacroblockInSlice(i32 %19) #7
+  %20 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %current_slice_nr = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 5
+  %21 = load i32* %current_slice_nr, align 4, !tbaa !3
+  %inc = add nsw i32 %21, 1
+  store i32 %inc, i32* %current_slice_nr, align 4, !tbaa !3
+  %22 = load %struct.StatParameters** @stats, align 8, !tbaa !0
+  %bit_slice = getelementptr inbounds %struct.StatParameters* %22, i64 0, i32 6
+  store i32 0, i32* %bit_slice, align 4, !tbaa !3
+  %call16 = tail call i32 @FmoSliceGroupCompletelyCoded(i32 %SliceGroup.053) #7
+  %lnot18 = icmp eq i32 %call16, 0
+  br i1 %lnot18, label %while.body19, label %while.end
+
+while.end:                                        ; preds = %while.body19, %while.cond15.preheader
+  %NumberOfCodedMBs.1.lcssa = phi i32 [ %NumberOfCodedMBs.052, %while.cond15.preheader ], [ %add, %while.body19 ]
+  %inc21 = add nsw i32 %SliceGroup.053, 1
+  %23 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %total_number_mb = getelementptr inbounds %struct.ImageParameters* %23, i64 0, i32 4
+  %24 = load i32* %total_number_mb, align 4, !tbaa !3
+  %cmp14 = icmp slt i32 %NumberOfCodedMBs.1.lcssa, %24
+  br i1 %cmp14, label %while.cond15.preheader, label %while.end22
+
+while.end22:                                      ; preds = %while.end, %while.cond.preheader
+  %call23 = tail call i32 (...)* @FmoEndPicture() #7
+  %25 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %rdopt = getelementptr inbounds %struct.InputParameters* %25, i64 0, i32 85
+  %26 = load i32* %rdopt, align 4, !tbaa !3
+  %cmp24 = icmp eq i32 %26, 2
+  br i1 %cmp24, label %land.lhs.true25, label %if.end31
+
+land.lhs.true25:                                  ; preds = %while.end22
+  %27 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %type26 = getelementptr inbounds %struct.ImageParameters* %27, i64 0, i32 6
+  %28 = load i32* %type26, align 4, !tbaa !3
+  %cmp27 = icmp eq i32 %28, 1
+  br i1 %cmp27, label %if.end31, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %land.lhs.true25
+  %NoOfDecoders44 = getelementptr inbounds %struct.InputParameters* %25, i64 0, i32 97
+  %29 = load i32* %NoOfDecoders44, align 4, !tbaa !3
+  %cmp2945 = icmp sgt i32 %29, 0
+  br i1 %cmp2945, label %for.body, label %if.end31
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body.for.body_crit_edge
+  %30 = phi %struct.ImageParameters* [ %.pre, %for.body.for.body_crit_edge ], [ %27, %for.cond.preheader ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body.for.body_crit_edge ], [ 0, %for.cond.preheader ]
+  %31 = load %struct.Decoders** @decs, align 8, !tbaa !0
+  %decY_best = getelementptr inbounds %struct.Decoders* %31, i64 0, i32 3
+  %32 = load i16**** %decY_best, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i16*** %32, i64 %indvars.iv
+  %33 = load i16*** %arrayidx, align 8, !tbaa !0
+  tail call void @DeblockFrame(%struct.ImageParameters* %30, i16** %33, i16*** null) #7
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %34 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %NoOfDecoders = getelementptr inbounds %struct.InputParameters* %34, i64 0, i32 97
+  %35 = load i32* %NoOfDecoders, align 4, !tbaa !3
+  %36 = trunc i64 %indvars.iv.next to i32
+  %cmp29 = icmp slt i32 %36, %35
+  br i1 %cmp29, label %for.body.for.body_crit_edge, label %if.end31
+
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %.pre = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  br label %for.body
+
+if.end31:                                         ; preds = %for.cond.preheader, %for.body, %while.end22, %land.lhs.true25
+  %37 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %38 = load %struct.storable_picture** @enc_picture, align 8, !tbaa !0
+  %imgY = getelementptr inbounds %struct.storable_picture* %38, i64 0, i32 25
+  %39 = load i16*** %imgY, align 8, !tbaa !0
+  %imgUV = getelementptr inbounds %struct.storable_picture* %38, i64 0, i32 30
+  %40 = load i16**** %imgUV, align 8, !tbaa !0
+  tail call void @DeblockFrame(%struct.ImageParameters* %37, i16** %39, i16*** %40) #7
+  %41 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %MbaffFrameFlag = getelementptr inbounds %struct.ImageParameters* %41, i64 0, i32 90
+  %42 = load i32* %MbaffFrameFlag, align 4, !tbaa !3
+  %tobool32 = icmp eq i32 %42, 0
+  br i1 %tobool32, label %if.end34, label %if.then33
+
+if.then33:                                        ; preds = %if.end31
+  tail call void @MbAffPostProc() #8
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.end31, %if.then33
+  ret void
+}

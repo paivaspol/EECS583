@@ -1,15 +1,7 @@
-int
-PerlIO_has_base(PerlIO *f)
+SV *
+PerlIO_tab_sv(pTHX_ PerlIO_funcs *tab)
 {
-     if (PerlIOValid(f)) {
-	  PerlIO_funcs *tab = PerlIOBase(f)->tab;
-
-	  if (tab)
-	       return (tab->Get_base != NULL);
-	  SETERRNO(EINVAL, LIB_INVARG);
-     }
-     else
-	  SETERRNO(EBADF, SS_IVCHAN);
-
-     return 0;
+    HV *stash = gv_stashpv("PerlIO::Layer", TRUE);
+    SV *sv = sv_bless(newRV_noinc(newSViv(PTR2IV(tab))), stash);
+    return sv;
 }

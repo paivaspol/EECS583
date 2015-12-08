@@ -1,0 +1,43 @@
+define float @BKL_eval(%struct._BKL* %bkl, i32 %Sweight, i32 %Bweight, i32 %Wweight) #0 {
+entry:
+  %cmp = icmp eq %struct._BKL* %bkl, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str, i64 0, i64 0), %struct._BKL* null) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp sgt i32 %Bweight, %Wweight
+  %Wweight.Bweight = select i1 %cmp1, i32 %Wweight, i32 %Bweight
+  %cmp4 = icmp eq i32 %Wweight.Bweight, 0
+  br i1 %cmp4, label %if.then5, label %if.else8
+
+if.then5:                                         ; preds = %if.end
+  %totweight = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 4
+  %1 = load i32* %totweight, align 4, !tbaa !3
+  %conv = sitofp i32 %1 to float
+  %mul = fmul float %conv, %conv
+  br label %if.end16
+
+if.else8:                                         ; preds = %if.end
+  %Bweight.Wweight = select i1 %cmp1, i32 %Bweight, i32 %Wweight
+  %conv9 = sitofp i32 %Sweight to double
+  %alpha = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 13
+  %2 = load float* %alpha, align 4, !tbaa !4
+  %conv10 = sitofp i32 %Bweight.Wweight to float
+  %mul11 = fmul float %conv10, %2
+  %conv12 = sitofp i32 %Wweight.Bweight to float
+  %div = fdiv float %mul11, %conv12
+  %conv13 = fpext float %div to double
+  %add = fadd double %conv13, 1.000000e+00
+  %mul14 = fmul double %conv9, %add
+  %conv15 = fptrunc double %mul14 to float
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.else8, %if.then5
+  %cost.0 = phi float [ %mul, %if.then5 ], [ %conv15, %if.else8 ]
+  ret float %cost.0
+}

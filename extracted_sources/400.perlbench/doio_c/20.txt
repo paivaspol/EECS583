@@ -1,0 +1,52 @@
+bool
+Perl_cando(pTHX_ Mode_t mode, Uid_t effective, register Stat_t *statbufp)
+/* Note: we use `effective' both for uids and gids.
+ * Here we are betting on Uid_t being equal or wider than Gid_t.  */
+{
+#ifdef DOSISH
+    /* [Comments and code from Len Reed]
+     * MS-DOS "user" is similar to UNIX's "superuser," but can't write
+     * to write-protected files.  The execute permission bit is set
+     * by the Miscrosoft C library stat() function for the following:
+     *		.exe files
+     *		.com files
+     *		.bat files
+     *		directories
+     * All files and directories are readable.
+     * Directories and special files, e.g. "CON", cannot be
+     * write-protected.
+     * [Comment by Tom Dinger -- a directory can have the write-protect
+     *		bit set in the file system, but DOS permits changes to
+     *		the directory anyway.  In addition, all bets are off
+     *		here for networked software, such as Novell and
+     *		Sun's PC-NFS.]
+     */
+
+     /* Atari stat() does pretty much the same thing. we set x_bit_set_in_stat
+      * too so it will actually look into the files for magic numbers
+      */
+     return (mode & statbufp->st_mode) ? TRUE : FALSE;
+
+#else /* ! DOSISH */
+    if ((effective ? PL_euid : PL_uid) == 0) {	/* root is special */
+	if (mode == S_IXUSR) {
+	    if (statbufp->st_mode & 0111 || S_ISDIR(statbufp->st_mode))
+		return TRUE;
+	}
+	else
+	    return TRUE;		/* root reads and writes anything */
+	return FALSE;
+    }
+    if (statbufp->st_uid == (effective ? PL_euid : PL_uid) ) {
+	if (statbufp->st_mode & mode)
+	    return TRUE;	/* ok as "user" */
+    }
+    else if (ingroup(statbufp->st_gid,effective)) {
+	if (statbufp->st_mode & mode >> 3)
+	    return TRUE;	/* ok as "group" */
+    }
+    else if (statbufp->st_mode & mode >> 6)
+	return TRUE;	/* ok as "other" */
+    return FALSE;
+#endif /* ! DOSISH */
+}

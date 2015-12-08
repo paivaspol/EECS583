@@ -1,0 +1,27 @@
+OP *
+Perl_ck_delete(pTHX_ OP *o)
+{
+    o = ck_fun(o);
+    o->op_private = 0;
+    if (o->op_flags & OPf_KIDS) {
+	OP *kid = cUNOPo->op_first;
+	switch (kid->op_type) {
+	case OP_ASLICE:
+	    o->op_flags |= OPf_SPECIAL;
+	    /* FALL THROUGH */
+	case OP_HSLICE:
+	    o->op_private |= OPpSLICE;
+	    break;
+	case OP_AELEM:
+	    o->op_flags |= OPf_SPECIAL;
+	    /* FALL THROUGH */
+	case OP_HELEM:
+	    break;
+	default:
+	    Perl_croak(aTHX_ "%s argument is not a HASH or ARRAY element or slice",
+		  OP_DESC(o));
+	}
+	op_null(kid);
+    }
+    return o;
+}

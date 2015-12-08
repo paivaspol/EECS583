@@ -1,0 +1,39 @@
+void
+Perl_vload_module(pTHX_ U32 flags, SV *name, SV *ver, va_list *args)
+{
+    OP *modname, *veop, *imop;
+
+    modname = newSVOP(OP_CONST, 0, name);
+    modname->op_private |= OPpCONST_BARE;
+    if (ver) {
+	veop = newSVOP(OP_CONST, 0, ver);
+    }
+    else
+	veop = Nullop;
+    if (flags & PERL_LOADMOD_NOIMPORT) {
+	imop = sawparens(newNULLLIST());
+    }
+    else if (flags & PERL_LOADMOD_IMPORT_OPS) {
+	imop = va_arg(*args, OP*);
+    }
+    else {
+	SV *sv;
+	imop = Nullop;
+	sv = va_arg(*args, SV*);
+	while (sv) {
+	    imop = append_elem(OP_LIST, imop, newSVOP(OP_CONST, 0, sv));
+	    sv = va_arg(*args, SV*);
+	}
+    }
+    {
+	line_t ocopline = PL_copline;
+	COP *ocurcop = PL_curcop;
+	int oexpect = PL_expect;
+
+	utilize(!(flags & PERL_LOADMOD_DENY), start_subparse(FALSE, 0),
+		veop, modname, imop);
+	PL_expect = oexpect;
+	PL_copline = ocopline;
+	PL_curcop = ocurcop;
+    }
+}

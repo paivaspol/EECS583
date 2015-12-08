@@ -1,17 +1,11 @@
-void
-Perl_cond_wait(pTHX_ perl_cond *cp)
+int
+Perl_rsignal_restore(pTHX_ int signo, Sigsave_t *save)
 {
-    perl_cond cond;
+#ifdef USE_ITHREADS
+    /* only "parent" interpreter can diddle signals */
+    if (PL_curinterp != aTHX)
+	return -1;
+#endif
 
-    if (thr->i.next_run == thr)
-	Perl_croak(aTHX_ "panic: perl_cond_wait called by last runnable thread");
-
-    New(666, cond, 1, struct perl_wait_queue);
-    cond->thread = thr;
-    cond->next = *cp;
-    *cp = cond;
-    thr->i.wait_queue = cond;
-    /* Remove ourselves from runnable queue */
-    thr->i.next_run->i.prev_run = thr->i.prev_run;
-    thr->i.prev_run->i.next_run = thr->i.next_run;
+    return sigaction(signo, save, (struct sigaction *)NULL);
 }

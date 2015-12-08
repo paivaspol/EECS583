@@ -1,0 +1,64 @@
+bool
+Perl_do_print(pTHX_ register SV *sv, PerlIO *fp)
+{
+    register char *tmps;
+    STRLEN len;
+
+    /* assuming fp is checked earlier */
+    if (!sv)
+	return TRUE;
+    if (PL_ofmt) {
+	if (SvGMAGICAL(sv))
+	    mg_get(sv);
+        if (SvIOK(sv) && SvIVX(sv) != 0) {
+	    PerlIO_printf(fp, PL_ofmt, (NV)SvIVX(sv));
+	    return !PerlIO_error(fp);
+	}
+	if (  (SvNOK(sv) && SvNVX(sv) != 0.0)
+	   || (looks_like_number(sv) && sv_2nv(sv) != 0.0) ) {
+	    PerlIO_printf(fp, PL_ofmt, SvNVX(sv));
+	    return !PerlIO_error(fp);
+	}
+    }
+    switch (SvTYPE(sv)) {
+    case SVt_NULL:
+	if (ckWARN(WARN_UNINITIALIZED))
+	    report_uninit();
+	return TRUE;
+    case SVt_IV:
+	if (SvIOK(sv)) {
+	    if (SvGMAGICAL(sv))
+		mg_get(sv);
+	    if (SvIsUV(sv))
+		PerlIO_printf(fp, "%"UVuf, (UV)SvUVX(sv));
+	    else
+		PerlIO_printf(fp, "%"IVdf, (IV)SvIVX(sv));
+	    return !PerlIO_error(fp);
+	}
+	/* FALL THROUGH */
+    default:
+	if (PerlIO_isutf8(fp)) {
+	    if (!SvUTF8(sv))
+		sv_utf8_upgrade_flags(sv = sv_mortalcopy(sv),
+				      SV_GMAGIC|SV_UTF8_NO_ENCODING);
+	}
+	else if (DO_UTF8(sv)) {
+	    if (!sv_utf8_downgrade((sv = sv_mortalcopy(sv)), TRUE)
+		&& ckWARN_d(WARN_UTF8))
+	    {
+		Perl_warner(aTHX_ packWARN(WARN_UTF8), "Wide character in print");
+	    }
+	}
+	tmps = SvPV(sv, len);
+	break;
+    }
+    /* To detect whether the process is about to overstep its
+     * filesize limit we would need getrlimit().  We could then
+     * also transparently raise the limit with setrlimit() --
+     * but only until the system hard limit/the filesystem limit,
+     * at which we would get EPERM.  Note that when using buffered
+     * io the write failure can be delayed until the flush/close. --jhi */
+    if (len && (PerlIO_write(fp,tmps,len) == 0))
+	return FALSE;
+    return !PerlIO_error(fp);
+}

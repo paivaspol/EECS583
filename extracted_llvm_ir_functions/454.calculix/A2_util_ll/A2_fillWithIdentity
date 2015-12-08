@@ -1,0 +1,102 @@
+define void @A2_fillWithIdentity(%struct._A2* %a) #0 {
+entry:
+  %cmp = icmp eq %struct._A2* %a, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %n1 = getelementptr inbounds %struct._A2* %a, i64 0, i32 1
+  %0 = load i32* %n1, align 4, !tbaa !3
+  %cmp1 = icmp slt i32 %0, 1
+  br i1 %cmp1, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %lor.lhs.false
+  %n2 = getelementptr inbounds %struct._A2* %a, i64 0, i32 2
+  %1 = load i32* %n2, align 4, !tbaa !3
+  %cmp3 = icmp eq i32 %0, %1
+  br i1 %cmp3, label %lor.lhs.false4, label %if.then
+
+lor.lhs.false4:                                   ; preds = %lor.lhs.false2
+  %inc15 = getelementptr inbounds %struct._A2* %a, i64 0, i32 3
+  %2 = load i32* %inc15, align 4, !tbaa !3
+  %cmp6 = icmp slt i32 %2, 1
+  br i1 %cmp6, label %if.then, label %lor.lhs.false7
+
+lor.lhs.false7:                                   ; preds = %lor.lhs.false4
+  %inc28 = getelementptr inbounds %struct._A2* %a, i64 0, i32 4
+  %3 = load i32* %inc28, align 4, !tbaa !3
+  %cmp9 = icmp slt i32 %3, 1
+  br i1 %cmp9, label %if.then, label %lor.lhs.false10
+
+lor.lhs.false10:                                  ; preds = %lor.lhs.false7
+  %cmp11 = icmp eq i32 %2, 1
+  %cmp12 = icmp eq i32 %3, 1
+  %or.cond = or i1 %cmp11, %cmp12
+  br i1 %or.cond, label %lor.lhs.false13, label %if.then
+
+lor.lhs.false13:                                  ; preds = %lor.lhs.false10
+  %entries14 = getelementptr inbounds %struct._A2* %a, i64 0, i32 6
+  %4 = load double** %entries14, align 8, !tbaa !0
+  %cmp15 = icmp eq double* %4, null
+  br i1 %cmp15, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false10, %lor.lhs.false2, %lor.lhs.false13, %lor.lhs.false7, %lor.lhs.false4, %lor.lhs.false, %entry
+  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([53 x i8]* @.str38, i64 0, i64 0), %struct._A2* %a) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false13
+  %type = getelementptr inbounds %struct._A2* %a, i64 0, i32 0
+  %6 = load i32* %type, align 4, !tbaa !3
+  %.off = add i32 %6, -1
+  %switch = icmp ult i32 %.off, 2
+  br i1 %switch, label %if.end23, label %if.then20
+
+if.then20:                                        ; preds = %if.end
+  %7 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call22 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([96 x i8]* @.str39, i64 0, i64 0), %struct._A2* %a, i32 %6) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end23:                                         ; preds = %if.end
+  tail call void @A2_zero(%struct._A2* %a) #7
+  %cmp2559 = icmp sgt i32 %0, 0
+  br i1 %cmp2559, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end23
+  %cond = select i1 %cmp11, i32 %3, i32 %2
+  %8 = load i32* %type, align 4, !tbaa !3
+  %add = add nsw i32 %cond, 1
+  %9 = sext i32 %add to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %j.060 = phi i32 [ 0, %for.body.lr.ph ], [ %inc36, %for.inc ]
+  switch i32 %8, label %for.inc [
+    i32 1, label %if.then28
+    i32 2, label %if.then31
+  ]
+
+if.then28:                                        ; preds = %for.body
+  %arrayidx = getelementptr inbounds double* %4, i64 %indvars.iv
+  store double 1.000000e+00, double* %arrayidx, align 8, !tbaa !4
+  br label %for.inc
+
+if.then31:                                        ; preds = %for.body
+  %10 = trunc i64 %indvars.iv to i32
+  %mul = shl nsw i32 %10, 1
+  %idxprom32 = sext i32 %mul to i64
+  %arrayidx33 = getelementptr inbounds double* %4, i64 %idxprom32
+  store double 1.000000e+00, double* %arrayidx33, align 8, !tbaa !4
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then28, %if.then31
+  %inc36 = add nsw i32 %j.060, 1
+  %indvars.iv.next = add i64 %indvars.iv, %9
+  %exitcond = icmp eq i32 %inc36, %0
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %if.end23
+  ret void
+}

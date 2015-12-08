@@ -1,0 +1,25 @@
+void
+Perl_av_push(pTHX_ register AV *av, SV *val)
+{             
+    MAGIC *mg;
+    if (!av)
+	return;
+    if (SvREADONLY(av))
+	Perl_croak(aTHX_ PL_no_modify);
+
+    if ((mg = SvTIED_mg((SV*)av, PERL_MAGIC_tied))) {
+	dSP;
+	PUSHSTACKi(PERLSI_MAGIC);
+	PUSHMARK(SP);
+	EXTEND(SP,2);
+	PUSHs(SvTIED_obj((SV*)av, mg));
+	PUSHs(val);
+	PUTBACK;
+	ENTER;
+	call_method("PUSH", G_SCALAR|G_DISCARD);
+	LEAVE;
+	POPSTACK;
+	return;
+    }
+    av_store(av,AvFILLp(av)+1,val);
+}

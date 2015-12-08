@@ -1,0 +1,66 @@
+define i32 @PerlIO_vsprintf(i8* nocapture %s, i32 %n, i8* nocapture %fmt, %struct.__va_list_tag* %ap) #1 {
+entry:
+  %call = tail call i32 @vsprintf(i8* %s, i8* %fmt, %struct.__va_list_tag* %ap) #9
+  %cmp = icmp sgt i32 %n, -1
+  br i1 %cmp, label %if.then, label %if.end22
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i64 @strlen(i8* %s) #9
+  %conv = sext i32 %n to i64
+  %cmp2 = icmp ult i64 %call1, %conv
+  br i1 %cmp2, label %if.end22, label %if.then4
+
+if.then4:                                         ; preds = %if.then
+  %0 = load %struct.gv** @PL_stderrgv, align 8, !tbaa !3
+  %tobool = icmp eq %struct.gv* %0, null
+  br i1 %tobool, label %cond.false, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then4
+  %sv_flags = getelementptr inbounds %struct.gv* %0, i64 0, i32 2
+  %1 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %1, 255
+  %cmp5 = icmp eq i32 %and, 13
+  br i1 %cmp5, label %land.lhs.true7, label %cond.false
+
+land.lhs.true7:                                   ; preds = %land.lhs.true
+  %sv_any = getelementptr inbounds %struct.gv* %0, i64 0, i32 0
+  %2 = load %struct.xpvgv** %sv_any, align 8, !tbaa !3
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %2, i64 0, i32 7
+  %3 = load %struct.gp** %xgv_gp, align 8, !tbaa !3
+  %gp_io = getelementptr inbounds %struct.gp* %3, i64 0, i32 2
+  %4 = load %struct.io** %gp_io, align 8, !tbaa !3
+  %tobool8 = icmp eq %struct.io* %4, null
+  br i1 %tobool8, label %cond.false, label %land.lhs.true9
+
+land.lhs.true9:                                   ; preds = %land.lhs.true7
+  %sv_any13 = getelementptr inbounds %struct.io* %4, i64 0, i32 0
+  %5 = load %struct.xpvio** %sv_any13, align 8, !tbaa !3
+  %xio_ofp = getelementptr inbounds %struct.xpvio* %5, i64 0, i32 8
+  %6 = load %struct._PerlIO*** %xio_ofp, align 8, !tbaa !3
+  %tobool14 = icmp eq %struct._PerlIO** %6, null
+  br i1 %tobool14, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %land.lhs.true9, %land.lhs.true7, %if.then4, %land.lhs.true
+  %7 = load %struct._PerlIO*** @PL_perlio, align 8, !tbaa !3
+  %tobool.i = icmp eq %struct._PerlIO** %7, null
+  br i1 %tobool.i, label %if.then.i, label %Perl_PerlIO_stderr.exit
+
+if.then.i:                                        ; preds = %cond.false
+  tail call void @PerlIO_stdstreams() #9
+  %.pre.i = load %struct._PerlIO*** @PL_perlio, align 8, !tbaa !3
+  br label %Perl_PerlIO_stderr.exit
+
+Perl_PerlIO_stderr.exit:                          ; preds = %cond.false, %if.then.i
+  %8 = phi %struct._PerlIO** [ %7, %cond.false ], [ %.pre.i, %if.then.i ]
+  %arrayidx.i = getelementptr inbounds %struct._PerlIO** %8, i64 3
+  br label %cond.end
+
+cond.end:                                         ; preds = %land.lhs.true9, %Perl_PerlIO_stderr.exit
+  %cond = phi %struct._PerlIO** [ %arrayidx.i, %Perl_PerlIO_stderr.exit ], [ %6, %land.lhs.true9 ]
+  %call1.i = tail call i64 @Perl_PerlIO_write(%struct._PerlIO** %cond, i8* getelementptr inbounds ([45 x i8]* @.str48, i64 0, i64 0), i64 44) #9
+  tail call void @Perl_my_exit(i32 1) #9
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.then, %cond.end, %entry
+  ret i32 %call
+}

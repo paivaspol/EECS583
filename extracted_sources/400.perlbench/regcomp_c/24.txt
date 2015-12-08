@@ -1,0 +1,70 @@
+STATIC regnode *
+S_dumpuntil(pTHX_ regnode *start, regnode *node, regnode *last, SV* sv, I32 l)
+{
+    register U8 op = EXACT;	/* Arbitrary non-END op. */
+    register regnode *next;
+
+    while (op != END && (!last || node < last)) {
+	/* While that wasn't END last time... */
+
+	NODE_ALIGN(node);
+	op = OP(node);
+	if (op == CLOSE)
+	    l--;	
+	next = regnext(node);
+	/* Where, what. */
+	if (OP(node) == OPTIMIZED)
+	    goto after_print;
+	regprop(sv, node);
+	PerlIO_printf(Perl_debug_log, "%4"IVdf":%*s%s", (IV)(node - start),
+		      (int)(2*l + 1), "", SvPVX(sv));
+	if (next == NULL)		/* Next ptr. */
+	    PerlIO_printf(Perl_debug_log, "(0)");
+	else
+	    PerlIO_printf(Perl_debug_log, "(%"IVdf")", (IV)(next - start));
+	(void)PerlIO_putc(Perl_debug_log, '\n');
+      after_print:
+	if (PL_regkind[(U8)op] == BRANCHJ) {
+	    register regnode *nnode = (OP(next) == LONGJMP
+				       ? regnext(next)
+				       : next);
+	    if (last && nnode > last)
+		nnode = last;
+	    node = dumpuntil(start, NEXTOPER(NEXTOPER(node)), nnode, sv, l + 1);
+	}
+	else if (PL_regkind[(U8)op] == BRANCH) {
+	    node = dumpuntil(start, NEXTOPER(node), next, sv, l + 1);
+	}
+	else if ( op == CURLY) {   /* `next' might be very big: optimizer */
+	    node = dumpuntil(start, NEXTOPER(node) + EXTRA_STEP_2ARGS,
+			     NEXTOPER(node) + EXTRA_STEP_2ARGS + 1, sv, l + 1);
+	}
+	else if (PL_regkind[(U8)op] == CURLY && op != CURLYX) {
+	    node = dumpuntil(start, NEXTOPER(node) + EXTRA_STEP_2ARGS,
+			     next, sv, l + 1);
+	}
+	else if ( op == PLUS || op == STAR) {
+	    node = dumpuntil(start, NEXTOPER(node), NEXTOPER(node) + 1, sv, l + 1);
+	}
+	else if (op == ANYOF) {
+	    /* arglen 1 + class block */
+	    node += 1 + ((ANYOF_FLAGS(node) & ANYOF_LARGE)
+		    ? ANYOF_CLASS_SKIP : ANYOF_SKIP);
+	    node = NEXTOPER(node);
+	}
+	else if (PL_regkind[(U8)op] == EXACT) {
+            /* Literal string, where present. */
+	    node += NODE_SZ_STR(node) - 1;
+	    node = NEXTOPER(node);
+	}
+	else {
+	    node = NEXTOPER(node);
+	    node += regarglen[(U8)op];
+	}
+	if (op == CURLYX || op == OPEN)
+	    l++;
+	else if (op == WHILEM)
+	    l--;
+    }
+    return node;
+}

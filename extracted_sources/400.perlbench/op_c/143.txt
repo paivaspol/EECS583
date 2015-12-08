@@ -1,0 +1,68 @@
+STATIC void
+S_simplify_sort(pTHX_ OP *o)
+{
+    register OP *kid = cLISTOPo->op_first->op_sibling;	/* get past pushmark */
+    OP *k;
+    int descending;
+    GV *gv;
+    const char *gvname;
+    if (!(o->op_flags & OPf_STACKED))
+	return;
+    GvMULTI_on(gv_fetchpv("a", TRUE, SVt_PV));
+    GvMULTI_on(gv_fetchpv("b", TRUE, SVt_PV));
+    kid = kUNOP->op_first;				/* get past null */
+    if (kid->op_type != OP_SCOPE)
+	return;
+    kid = kLISTOP->op_last;				/* get past scope */
+    switch(kid->op_type) {
+	case OP_NCMP:
+	case OP_I_NCMP:
+	case OP_SCMP:
+	    break;
+	default:
+	    return;
+    }
+    k = kid;						/* remember this node*/
+    if (kBINOP->op_first->op_type != OP_RV2SV)
+	return;
+    kid = kBINOP->op_first;				/* get past cmp */
+    if (kUNOP->op_first->op_type != OP_GV)
+	return;
+    kid = kUNOP->op_first;				/* get past rv2sv */
+    gv = kGVOP_gv;
+    if (GvSTASH(gv) != PL_curstash)
+	return;
+    gvname = GvNAME(gv);
+    if (*gvname == 'a' && gvname[1] == '\0')
+	descending = 0;
+    else if (*gvname == 'b' && gvname[1] == '\0')
+	descending = 1;
+    else
+	return;
+
+    kid = k;						/* back to cmp */
+    if (kBINOP->op_last->op_type != OP_RV2SV)
+	return;
+    kid = kBINOP->op_last;				/* down to 2nd arg */
+    if (kUNOP->op_first->op_type != OP_GV)
+	return;
+    kid = kUNOP->op_first;				/* get past rv2sv */
+    gv = kGVOP_gv;
+    if (GvSTASH(gv) != PL_curstash)
+	return;
+    gvname = GvNAME(gv);
+    if ( descending
+	 ? !(*gvname == 'a' && gvname[1] == '\0')
+	 : !(*gvname == 'b' && gvname[1] == '\0'))
+	return;
+    o->op_flags &= ~(OPf_STACKED | OPf_SPECIAL);
+    if (descending)
+	o->op_private |= OPpSORT_DESCEND;
+    if (k->op_type == OP_NCMP)
+	o->op_private |= OPpSORT_NUMERIC;
+    if (k->op_type == OP_I_NCMP)
+	o->op_private |= OPpSORT_NUMERIC | OPpSORT_INTEGER;
+    kid = cLISTOPo->op_first->op_sibling;
+    cLISTOPo->op_first->op_sibling = kid->op_sibling; /* bypass old block */
+    op_free(kid);				      /* then delete it */
+}

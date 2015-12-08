@@ -1,128 +1,14 @@
 void
-expand_end_bindings (vars, mark_ends, dont_jump_in)
+warn_about_unused_variables (vars)
      tree vars;
-     int mark_ends;
-     int dont_jump_in;
 {
-  struct nesting *thisblock = block_stack;
+  tree decl;
 
-  /* If any of the variables in this scope were not used, warn the
-     user.  */
-  warn_about_unused_variables (vars);
-
-  if (thisblock->exit_label)
-    {
-      do_pending_stack_adjust ();
-      emit_label (thisblock->exit_label);
-    }
-
-  /* If necessary, make handlers for nonlocal gotos taking
-     place in the function calls in this block.  */
-  if (function_call_count != thisblock->data.block.n_function_calls
-      && nonlocal_labels
-      /* Make handler for outermost block
-	 if there were any nonlocal gotos to this function.  */
-      && (thisblock->next == 0 ? current_function_has_nonlocal_label
-	  /* Make handler for inner block if it has something
-	     special to do when you jump out of it.  */
-	  : (thisblock->data.block.cleanups != 0
-	     || thisblock->data.block.stack_level != 0)))
-    expand_nl_goto_receivers (thisblock);
-
-  /* Don't allow jumping into a block that has a stack level.
-     Cleanups are allowed, though.  */
-  if (dont_jump_in
-      || thisblock->data.block.stack_level != 0)
-    {
-      struct label_chain *chain;
-
-      /* Any labels in this block are no longer valid to go to.
-	 Mark them to cause an error message.  */
-      for (chain = thisblock->data.block.label_chain; chain; chain = chain->next)
-	{
-	  DECL_TOO_LATE (chain->label) = 1;
-	  /* If any goto without a fixup came to this label,
-	     that must be an error, because gotos without fixups
-	     come from outside all saved stack-levels.  */
-	  if (TREE_ADDRESSABLE (chain->label))
-	    error_with_decl (chain->label,
-			     "label `%s' used before containing binding contour");
-	}
-    }
-
-  /* Restore stack level in effect before the block
-     (only if variable-size objects allocated).  */
-  /* Perform any cleanups associated with the block.  */
-
-  if (thisblock->data.block.stack_level != 0
-      || thisblock->data.block.cleanups != 0)
-    {
-      int reachable;
-      rtx insn;
-
-      /* Don't let cleanups affect ({...}) constructs.  */
-      int old_expr_stmts_for_value = expr_stmts_for_value;
-      rtx old_last_expr_value = last_expr_value;
-      tree old_last_expr_type = last_expr_type;
-      expr_stmts_for_value = 0;
-
-      /* Only clean up here if this point can actually be reached.  */
-      insn = get_last_insn ();
-      if (GET_CODE (insn) == NOTE)
-	insn = prev_nonnote_insn (insn);
-      reachable = (! insn || GET_CODE (insn) != BARRIER);
-
-      /* Do the cleanups.  */
-      expand_cleanups (thisblock->data.block.cleanups, NULL_TREE, 0, reachable);
-      if (reachable)
-	do_pending_stack_adjust ();
-
-      expr_stmts_for_value = old_expr_stmts_for_value;
-      last_expr_value = old_last_expr_value;
-      last_expr_type = old_last_expr_type;
-
-      /* Restore the stack level.  */
-
-      if (reachable && thisblock->data.block.stack_level != 0)
-	{
-	  emit_stack_restore (thisblock->next ? SAVE_BLOCK : SAVE_FUNCTION,
-			      thisblock->data.block.stack_level, NULL_RTX);
-	  if (nonlocal_goto_handler_slots != 0)
-	    emit_stack_save (SAVE_NONLOCAL, &nonlocal_goto_stack_level,
-			     NULL_RTX);
-	}
-
-      /* Any gotos out of this block must also do these things.
-	 Also report any gotos with fixups that came to labels in this
-	 level.  */
-      fixup_gotos (thisblock,
-		   thisblock->data.block.stack_level,
-		   thisblock->data.block.cleanups,
-		   thisblock->data.block.first_insn,
-		   dont_jump_in);
-    }
-
-  /* Mark the beginning and end of the scope if requested.
-     We do this now, after running cleanups on the variables
-     just going out of scope, so they are in scope for their cleanups.  */
-
-  if (mark_ends)
-    {
-      rtx note = emit_note (NULL, NOTE_INSN_BLOCK_END);
-      NOTE_BLOCK (note) = NOTE_BLOCK (thisblock->data.block.first_insn);
-    }
-  else
-    /* Get rid of the beginning-mark if we don't make an end-mark.  */
-    NOTE_LINE_NUMBER (thisblock->data.block.first_insn) = NOTE_INSN_DELETED;
-
-  /* Restore the temporary level of TARGET_EXPRs.  */
-  target_temp_slot_level = thisblock->data.block.block_target_temp_slot_level;
-
-  /* Restore block_stack level for containing block.  */
-
-  stack_block_stack = thisblock->data.block.innermost_stack_block;
-  POPSTACK (block_stack);
-
-  /* Pop the stack slot nesting and free any slots at this level.  */
-  pop_temp_slots ();
+  if (warn_unused_variable)
+    for (decl = vars; decl; decl = TREE_CHAIN (decl))
+      if (TREE_CODE (decl) == VAR_DECL
+	  && ! TREE_USED (decl)
+	  && ! DECL_IN_SYSTEM_HEADER (decl)
+	  && DECL_NAME (decl) && ! DECL_ARTIFICIAL (decl))
+	warning_with_decl (decl, "unused variable `%s'");
 }

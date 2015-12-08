@@ -1,0 +1,17 @@
+I32
+Perl_cast_i32(pTHX_ NV f)
+{
+  if (f < I32_MAX_P1)
+    return f < I32_MIN ? I32_MIN : (I32) f;
+  if (f < U32_MAX_P1) {
+#if CASTFLAGS & 2
+    if (f < U32_MAX_P1_HALF)
+      return (I32)(U32) f;
+    f -= U32_MAX_P1_HALF;
+    return (I32)(((U32) f) | (1 + U32_MAX >> 1));
+#else
+    return (I32)(U32) f;
+#endif
+  }
+  return f > 0 ? (I32)U32_MAX : 0 /* NaN */;
+}

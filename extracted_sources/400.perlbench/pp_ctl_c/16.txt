@@ -1,0 +1,33 @@
+STATIC I32
+S_dopoptolabel(pTHX_ char *label)
+{
+    register I32 i;
+    register PERL_CONTEXT *cx;
+
+    for (i = cxstack_ix; i >= 0; i--) {
+	cx = &cxstack[i];
+	switch (CxTYPE(cx)) {
+	case CXt_SUBST:
+	case CXt_SUB:
+	case CXt_FORMAT:
+	case CXt_EVAL:
+	case CXt_NULL:
+	    if (ckWARN(WARN_EXITING))
+		Perl_warner(aTHX_ packWARN(WARN_EXITING), "Exiting %s via %s",
+			context_name[CxTYPE(cx)], OP_NAME(PL_op));
+	    if (CxTYPE(cx) == CXt_NULL)
+		return -1;
+	    break;
+	case CXt_LOOP:
+	    if (!cx->blk_loop.label ||
+	      strNE(label, cx->blk_loop.label) ) {
+		DEBUG_l(Perl_deb(aTHX_ "(Skipping label #%ld %s)\n",
+			(long)i, cx->blk_loop.label));
+		continue;
+	    }
+	    DEBUG_l( Perl_deb(aTHX_ "(Found label #%ld %s)\n", (long)i, label));
+	    return i;
+	}
+    }
+    return i;
+}

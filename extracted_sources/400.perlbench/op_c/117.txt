@@ -1,0 +1,14 @@
+OP *
+Perl_ck_exec(pTHX_ OP *o)
+{
+    OP *kid;
+    if (o->op_flags & OPf_STACKED) {
+	o = ck_fun(o);
+	kid = cUNOPo->op_first->op_sibling;
+	if (kid->op_type == OP_RV2GV)
+	    op_null(kid);
+    }
+    else
+	o = listkids(o);
+    return o;
+}

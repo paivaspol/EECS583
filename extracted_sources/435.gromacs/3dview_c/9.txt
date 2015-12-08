@@ -1,39 +1,23 @@
-void rotate_3d(t_3dview *view,int axis,bool bPositive)
+bool zoom_3d(t_3dview *view,real fac)
 {
-  static bool bFirst=TRUE;
-  static mat4 RotP[DIM];
-  static mat4 RotM[DIM];
-  int  i,j;
-  mat4 m4;
+  real dr;
+  real bm,dr1,dr2;
+  int  i;
 
-  if (bFirst) {
-    real rot=DEG2RAD*15;
-
-    for(i=0; (i<DIM); i++) {
-      rotate(i,        rot ,RotP[i]);
-      rotate(i,(real)(-rot),RotM[i]);
-#ifdef DEBUG
-      print_m4(debug,"RotP",RotP[i]);
-      print_m4(debug,"RotM",RotM[i]);
-#endif
-    }
+  dr2=0;
+  for(i=0; (i<DIM); i++) {
+    dr=view->eye[i];
+    dr2+=dr*dr;
+  }
+  dr1=sqrt(dr2);
+  if (fac < 1) {
+    bm=max(norm(view->box[XX]),max(norm(view->box[YY]),norm(view->box[ZZ])));
+    if (dr1*fac < 1.1*bm) /* Don't come to close */
+      return FALSE;
   }
 
-  /*
-    if (bPositive)
-    m4_op(RotP[axis],view->eye,v4);
-    else
-    m4_op(RotM[axis],view->eye,v4);
-    for(i=0; (i<DIM); i++)
-    view->eye[i]=v4[i];
-    */
-  if (bPositive)
-    mult_matrix(m4,view->Rot,RotP[axis]);
-  else
-    mult_matrix(m4,view->Rot,RotM[axis]);
-  for(i=0; (i<N); i++)
-    for(j=0; (j<N); j++)
-    view->Rot[i][j]=m4[i][j];
-
+  for(i=0; (i<DIM); i++)
+    view->eye[i]*=fac;
   calculate_view(view);
+  return TRUE;
 }

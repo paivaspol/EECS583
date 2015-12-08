@@ -1,0 +1,55 @@
+define i32 @Graph_sizeOf(%struct._Graph* %g) #0 {
+entry:
+  %cmp = icmp eq %struct._Graph* %g, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str6, i64 0, i64 0), %struct._Graph* null) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %vwghts = getelementptr inbounds %struct._Graph* %g, i64 0, i32 7
+  %1 = load i32** %vwghts, align 8, !tbaa !3
+  %cmp1 = icmp eq i32* %1, null
+  br i1 %cmp1, label %if.end6, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %nvtx = getelementptr inbounds %struct._Graph* %g, i64 0, i32 1
+  %2 = load i32* %nvtx, align 4, !tbaa !0
+  %nvbnd = getelementptr inbounds %struct._Graph* %g, i64 0, i32 2
+  %3 = load i32* %nvbnd, align 4, !tbaa !0
+  %add = add nsw i32 %3, %2
+  %mul = shl i32 %add, 2
+  %add4 = add i32 %mul, 48
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end, %if.then2
+  %nbytes.0 = phi i32 [ %add4, %if.then2 ], [ 48, %if.end ]
+  %adjIVL = getelementptr inbounds %struct._Graph* %g, i64 0, i32 6
+  %4 = load %struct._IVL** %adjIVL, align 8, !tbaa !3
+  %cmp7 = icmp eq %struct._IVL* %4, null
+  br i1 %cmp7, label %if.end13, label %if.then9
+
+if.then9:                                         ; preds = %if.end6
+  %call11 = tail call i32 @IVL_sizeOf(%struct._IVL* %4) #4
+  %add12 = add nsw i32 %call11, %nbytes.0
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.end6, %if.then9
+  %nbytes.1 = phi i32 [ %add12, %if.then9 ], [ %nbytes.0, %if.end6 ]
+  %ewghtIVL = getelementptr inbounds %struct._Graph* %g, i64 0, i32 8
+  %5 = load %struct._IVL** %ewghtIVL, align 8, !tbaa !3
+  %cmp14 = icmp eq %struct._IVL* %5, null
+  br i1 %cmp14, label %if.end20, label %if.then16
+
+if.then16:                                        ; preds = %if.end13
+  %call18 = tail call i32 @IVL_sizeOf(%struct._IVL* %5) #4
+  %add19 = add nsw i32 %call18, %nbytes.1
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.end13, %if.then16
+  %nbytes.2 = phi i32 [ %add19, %if.then16 ], [ %nbytes.1, %if.end13 ]
+  ret i32 %nbytes.2
+}

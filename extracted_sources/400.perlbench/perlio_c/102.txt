@@ -1,0 +1,14 @@
+IV
+PerlIOPending_pushed(pTHX_ PerlIO *f, const char *mode, SV *arg, PerlIO_funcs *tab)
+{
+    IV code = PerlIOBase_pushed(aTHX_ f, mode, arg, tab);
+    PerlIOl *l = PerlIOBase(f);
+    /*
+     * Our PerlIO_fast_gets must match what we are pushed on, or sv_gets()
+     * etc. get muddled when it changes mid-string when we auto-pop.
+     */
+    l->flags = (l->flags & ~(PERLIO_F_FASTGETS | PERLIO_F_UTF8)) |
+	(PerlIOBase(PerlIONext(f))->
+	 flags & (PERLIO_F_FASTGETS | PERLIO_F_UTF8));
+    return code;
+}

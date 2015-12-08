@@ -1,11 +1,8 @@
 void
-Perl_atfork_unlock(void)
+Perl_warn(pTHX_ const char *pat, ...)
 {
-#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
-    /* locks must be released in same order as in atfork_lock() */
-#  ifdef MYMALLOC
-    MUTEX_UNLOCK(&PL_malloc_mutex);
-#  endif
-    OP_REFCNT_UNLOCK;
-#endif
+    va_list args;
+    va_start(args, pat);
+    vwarn(pat, &args);
+    va_end(args);
 }

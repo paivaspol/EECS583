@@ -1,0 +1,54 @@
+define i32 @PerlIO_setpos(%struct._PerlIO** %f, %struct.sv* %pos) #1 {
+entry:
+  %len = alloca i64, align 8
+  %sv_flags = getelementptr inbounds %struct.sv* %pos, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %0, 118423552
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end8, label %if.then
+
+if.then:                                          ; preds = %entry
+  %and2 = and i32 %0, 262144
+  %cmp = icmp eq i32 %and2, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.then
+  %sv_any = getelementptr inbounds %struct.sv* %pos, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !3
+  %xpv_cur = getelementptr inbounds i8* %1, i64 8
+  %2 = bitcast i8* %xpv_cur to i64*
+  %3 = load i64* %2, align 8, !tbaa !4
+  store i64 %3, i64* %len, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %1 to i8**
+  %4 = load i8** %xpv_pv, align 8, !tbaa !3
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.then
+  %call = call i8* @Perl_sv_2pv_flags(%struct.sv* %pos, i64* %len, i32 2) #9
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %4, %cond.true ], [ %call, %cond.false ]
+  %5 = bitcast i8* %cond to i64*
+  %tobool4 = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool4, label %if.end8, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %cond.end
+  %6 = load i64* %len, align 8, !tbaa !4
+  %cmp5 = icmp eq i64 %6, 8
+  br i1 %cmp5, label %if.then6, label %if.end8
+
+if.then6:                                         ; preds = %land.lhs.true
+  %7 = load i64* %5, align 8, !tbaa !4
+  %call7 = call i32 @Perl_PerlIO_seek(%struct._PerlIO** %f, i64 %7, i32 0) #10
+  br label %return
+
+if.end8:                                          ; preds = %cond.end, %entry, %land.lhs.true
+  %call9 = call i32* @__errno_location() #9
+  store i32 22, i32* %call9, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end8, %if.then6
+  %retval.0 = phi i32 [ %call7, %if.then6 ], [ -1, %if.end8 ]
+  ret i32 %retval.0
+}

@@ -1,6 +1,8 @@
 int
-Perl_magic_getarylen(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_getpack(pTHX_ SV *sv, MAGIC *mg)
 {
-    sv_setiv(sv, AvFILL((AV*)mg->mg_obj) + PL_curcop->cop_arybase);
+    if (mg->mg_ptr)
+	mg->mg_flags |= MGf_GSKIP;
+    magic_methpack(sv,mg,"FETCH");
     return 0;
 }

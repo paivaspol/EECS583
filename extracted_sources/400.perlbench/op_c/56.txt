@@ -1,0 +1,33 @@
+OP *
+Perl_newLISTOP(pTHX_ I32 type, I32 flags, OP *first, OP *last)
+{
+    LISTOP *listop;
+
+    NewOp(1101, listop, 1, LISTOP);
+
+    listop->op_type = (OPCODE)type;
+    listop->op_ppaddr = PL_ppaddr[type];
+    if (first || last)
+	flags |= OPf_KIDS;
+    listop->op_flags = (U8)flags;
+
+    if (!last && first)
+	last = first;
+    else if (!first && last)
+	first = last;
+    else if (first)
+	first->op_sibling = last;
+    listop->op_first = first;
+    listop->op_last = last;
+    if (type == OP_LIST) {
+	OP* pushop;
+	pushop = newOP(OP_PUSHMARK, 0);
+	pushop->op_sibling = first;
+	listop->op_first = pushop;
+	listop->op_flags |= OPf_KIDS;
+	if (!last)
+	    listop->op_last = pushop;
+    }
+
+    return CHECKOP(type, listop);
+}

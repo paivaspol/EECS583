@@ -1,0 +1,252 @@
+PP(pp_match)
+{
+    dSP; dTARG;
+    register PMOP *pm = cPMOP;
+    PMOP *dynpm = pm;
+    register char *t;
+    register char *s;
+    char *strend;
+    I32 global;
+    I32 r_flags = REXEC_CHECKED;
+    char *truebase;			/* Start of string  */
+    register REGEXP *rx = PM_GETRE(pm);
+    bool rxtainted;
+    I32 gimme = GIMME;
+    STRLEN len;
+    I32 minmatch = 0;
+    I32 oldsave = PL_savestack_ix;
+    I32 update_minmatch = 1;
+    I32 had_zerolen = 0;
+
+    if (PL_op->op_flags & OPf_STACKED)
+	TARG = POPs;
+    else {
+	TARG = DEFSV;
+	EXTEND(SP,1);
+    }
+
+    PUTBACK;				/* EVAL blocks need stack_sp. */
+    s = SvPV(TARG, len);
+    strend = s + len;
+    if (!s)
+	DIE(aTHX_ "panic: pp_match");
+    rxtainted = ((pm->op_pmdynflags & PMdf_TAINTED) ||
+		 (PL_tainted && (pm->op_pmflags & PMf_RETAINT)));
+    TAINT_NOT;
+
+    RX_MATCH_UTF8_set(rx, DO_UTF8(TARG));
+
+    /* PMdf_USED is set after a ?? matches once */
+    if (pm->op_pmdynflags & PMdf_USED) {
+      failure:
+	if (gimme == G_ARRAY)
+	    RETURN;
+	RETPUSHNO;
+    }
+
+    /* empty pattern special-cased to use last successful pattern if possible */
+    if (!rx->prelen && PL_curpm) {
+	pm = PL_curpm;
+	rx = PM_GETRE(pm);
+    }
+
+    if (rx->minlen > (I32)len)
+	goto failure;
+
+    truebase = t = s;
+
+    /* XXXX What part of this is needed with true \G-support? */
+    if ((global = dynpm->op_pmflags & PMf_GLOBAL)) {
+	rx->startp[0] = -1;
+	if (SvTYPE(TARG) >= SVt_PVMG && SvMAGIC(TARG)) {
+	    MAGIC* mg = mg_find(TARG, PERL_MAGIC_regex_global);
+	    if (mg && mg->mg_len >= 0) {
+		if (!(rx->reganch & ROPT_GPOS_SEEN))
+		    rx->endp[0] = rx->startp[0] = mg->mg_len;
+		else if (rx->reganch & ROPT_ANCH_GPOS) {
+		    r_flags |= REXEC_IGNOREPOS;
+		    rx->endp[0] = rx->startp[0] = mg->mg_len;
+		}
+		minmatch = (mg->mg_flags & MGf_MINMATCH);
+		update_minmatch = 0;
+	    }
+	}
+    }
+    if ((!global && rx->nparens)
+	    || SvTEMP(TARG) || PL_sawampersand)
+	r_flags |= REXEC_COPY_STR;
+    if (SvSCREAM(TARG))
+	r_flags |= REXEC_SCREAM;
+
+    if (pm->op_pmflags & (PMf_MULTILINE|PMf_SINGLELINE)) {
+	SAVEINT(PL_multiline);
+	PL_multiline = pm->op_pmflags & PMf_MULTILINE;
+    }
+
+play_it_again:
+    if (global && rx->startp[0] != -1) {
+	t = s = rx->endp[0] + truebase;
+	if ((s + rx->minlen) > strend)
+	    goto nope;
+	if (update_minmatch++)
+	    minmatch = had_zerolen;
+    }
+    if (rx->reganch & RE_USE_INTUIT &&
+	DO_UTF8(TARG) == ((rx->reganch & ROPT_UTF8) != 0)) {
+	PL_bostr = truebase;
+	s = CALLREG_INTUIT_START(aTHX_ rx, TARG, s, strend, r_flags, NULL);
+
+	if (!s)
+	    goto nope;
+	if ( (rx->reganch & ROPT_CHECK_ALL)
+	     && !PL_sawampersand
+	     && ((rx->reganch & ROPT_NOSCAN)
+		 || !((rx->reganch & RE_INTUIT_TAIL)
+		      && (r_flags & REXEC_SCREAM)))
+	     && !SvROK(TARG))	/* Cannot trust since INTUIT cannot guess ^ */
+	    goto yup;
+    }
+    if (CALLREGEXEC(aTHX_ rx, s, strend, truebase, minmatch, TARG, NULL, r_flags))
+    {
+	PL_curpm = pm;
+	if (dynpm->op_pmflags & PMf_ONCE)
+	    dynpm->op_pmdynflags |= PMdf_USED;
+	goto gotcha;
+    }
+    else
+	goto ret_no;
+    /*NOTREACHED*/
+
+  gotcha:
+    if (rxtainted)
+	RX_MATCH_TAINTED_on(rx);
+    TAINT_IF(RX_MATCH_TAINTED(rx));
+    if (gimme == G_ARRAY) {
+	I32 nparens, i, len;
+
+	nparens = rx->nparens;
+	if (global && !nparens)
+	    i = 1;
+	else
+	    i = 0;
+	SPAGAIN;			/* EVAL blocks could move the stack. */
+	EXTEND(SP, nparens + i);
+	EXTEND_MORTAL(nparens + i);
+	for (i = !i; i <= nparens; i++) {
+	    PUSHs(sv_newmortal());
+	    /*SUPPRESS 560*/
+	    if ((rx->startp[i] != -1) && rx->endp[i] != -1 ) {
+		len = rx->endp[i] - rx->startp[i];
+		s = rx->startp[i] + truebase;
+	        if (rx->endp[i] < 0 || rx->startp[i] < 0 ||
+		    len < 0 || len > strend - s)
+		    DIE(aTHX_ "panic: pp_match start/end pointers");
+		sv_setpvn(*SP, s, len);
+		if (DO_UTF8(TARG) && is_utf8_string((U8*)s, len))
+		    SvUTF8_on(*SP);
+	    }
+	}
+	if (global) {
+	    if (dynpm->op_pmflags & PMf_CONTINUE) {
+		MAGIC* mg = 0;
+		if (SvTYPE(TARG) >= SVt_PVMG && SvMAGIC(TARG))
+		    mg = mg_find(TARG, PERL_MAGIC_regex_global);
+		if (!mg) {
+		    sv_magic(TARG, (SV*)0, PERL_MAGIC_regex_global, Nullch, 0);
+		    mg = mg_find(TARG, PERL_MAGIC_regex_global);
+		}
+		if (rx->startp[0] != -1) {
+		    mg->mg_len = rx->endp[0];
+		    if (rx->startp[0] == rx->endp[0])
+			mg->mg_flags |= MGf_MINMATCH;
+		    else
+			mg->mg_flags &= ~MGf_MINMATCH;
+		}
+	    }
+	    had_zerolen = (rx->startp[0] != -1
+			   && rx->startp[0] == rx->endp[0]);
+	    PUTBACK;			/* EVAL blocks may use stack */
+	    r_flags |= REXEC_IGNOREPOS | REXEC_NOT_FIRST;
+	    goto play_it_again;
+	}
+	else if (!nparens)
+	    XPUSHs(&PL_sv_yes);
+	LEAVE_SCOPE(oldsave);
+	RETURN;
+    }
+    else {
+	if (global) {
+	    MAGIC* mg = 0;
+	    if (SvTYPE(TARG) >= SVt_PVMG && SvMAGIC(TARG))
+		mg = mg_find(TARG, PERL_MAGIC_regex_global);
+	    if (!mg) {
+		sv_magic(TARG, (SV*)0, PERL_MAGIC_regex_global, Nullch, 0);
+		mg = mg_find(TARG, PERL_MAGIC_regex_global);
+	    }
+	    if (rx->startp[0] != -1) {
+		mg->mg_len = rx->endp[0];
+		if (rx->startp[0] == rx->endp[0])
+		    mg->mg_flags |= MGf_MINMATCH;
+		else
+		    mg->mg_flags &= ~MGf_MINMATCH;
+	    }
+	}
+	LEAVE_SCOPE(oldsave);
+	RETPUSHYES;
+    }
+
+yup:					/* Confirmed by INTUIT */
+    if (rxtainted)
+	RX_MATCH_TAINTED_on(rx);
+    TAINT_IF(RX_MATCH_TAINTED(rx));
+    PL_curpm = pm;
+    if (dynpm->op_pmflags & PMf_ONCE)
+	dynpm->op_pmdynflags |= PMdf_USED;
+    if (RX_MATCH_COPIED(rx))
+	Safefree(rx->subbeg);
+    RX_MATCH_COPIED_off(rx);
+    rx->subbeg = Nullch;
+    if (global) {
+	rx->subbeg = truebase;
+	rx->startp[0] = s - truebase;
+	if (RX_MATCH_UTF8(rx)) {
+	    char *t = (char*)utf8_hop((U8*)s, rx->minlen);
+	    rx->endp[0] = t - truebase;
+	}
+	else {
+	    rx->endp[0] = s - truebase + rx->minlen;
+	}
+	rx->sublen = strend - truebase;
+	goto gotcha;
+    }
+    if (PL_sawampersand) {
+	I32 off;
+
+	rx->subbeg = savepvn(t, strend - t);
+	rx->sublen = strend - t;
+	RX_MATCH_COPIED_on(rx);
+	off = rx->startp[0] = s - t;
+	rx->endp[0] = off + rx->minlen;
+    }
+    else {			/* startp/endp are used by @- @+. */
+	rx->startp[0] = s - truebase;
+	rx->endp[0] = s - truebase + rx->minlen;
+    }
+    rx->nparens = rx->lastparen = rx->lastcloseparen = 0;	/* used by @-, @+, and $^N */
+    LEAVE_SCOPE(oldsave);
+    RETPUSHYES;
+
+nope:
+ret_no:
+    if (global && !(dynpm->op_pmflags & PMf_CONTINUE)) {
+	if (SvTYPE(TARG) >= SVt_PVMG && SvMAGIC(TARG)) {
+	    MAGIC* mg = mg_find(TARG, PERL_MAGIC_regex_global);
+	    if (mg)
+		mg->mg_len = -1;
+	}
+    }
+    LEAVE_SCOPE(oldsave);
+    if (gimme == G_ARRAY)
+	RETURN;
+    RETPUSHNO;
+}

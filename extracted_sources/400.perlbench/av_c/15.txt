@@ -1,0 +1,76 @@
+SV *
+Perl_av_delete(pTHX_ AV *av, I32 key, I32 flags)
+{
+    SV *sv;
+
+    if (!av)
+	return Nullsv;
+    if (SvREADONLY(av))
+	Perl_croak(aTHX_ PL_no_modify);
+
+    if (SvRMAGICAL(av)) {
+        MAGIC *tied_magic = mg_find((SV*)av, PERL_MAGIC_tied);
+        SV **svp;
+        if ((tied_magic || mg_find((SV*)av, PERL_MAGIC_regdata))) {
+            /* Handle negative array indices 20020222 MJD */
+            if (key < 0) {
+                unsigned adjust_index = 1;
+                if (tied_magic) {
+                    SV **negative_indices_glob = 
+                        hv_fetch(SvSTASH(SvRV(SvTIED_obj((SV *)av, 
+                                                         tied_magic))), 
+                                 NEGATIVE_INDICES_VAR, 16, 0);
+                    if (negative_indices_glob
+                        && SvTRUE(GvSV(*negative_indices_glob)))
+                        adjust_index = 0;
+                }
+                if (adjust_index) {
+                    key += AvFILL(av) + 1;
+                    if (key < 0)
+                        return Nullsv;
+                }
+            }
+            svp = av_fetch(av, key, TRUE);
+            if (svp) {
+                sv = *svp;
+                mg_clear(sv);
+                if (mg_find(sv, PERL_MAGIC_tiedelem)) {
+                    sv_unmagic(sv, PERL_MAGIC_tiedelem); /* No longer an element */
+                    return sv;
+                }
+                return Nullsv;     
+            }
+        }
+    }
+
+    if (key < 0) {
+	key += AvFILL(av) + 1;
+	if (key < 0)
+	    return Nullsv;
+    }
+
+    if (key > AvFILLp(av))
+	return Nullsv;
+    else {
+	if (!AvREAL(av) && AvREIFY(av))
+	    av_reify(av);
+	sv = AvARRAY(av)[key];
+	if (key == AvFILLp(av)) {
+	    AvARRAY(av)[key] = &PL_sv_undef;
+	    do {
+		AvFILLp(av)--;
+	    } while (--key >= 0 && AvARRAY(av)[key] == &PL_sv_undef);
+	}
+	else
+	    AvARRAY(av)[key] = &PL_sv_undef;
+	if (SvSMAGICAL(av))
+	    mg_set((SV*)av);
+    }
+    if (flags & G_DISCARD) {
+	SvREFCNT_dec(sv);
+	sv = Nullsv;
+    }
+    else if (AvREAL(av))
+	sv = sv_2mortal(sv);
+    return sv;
+}

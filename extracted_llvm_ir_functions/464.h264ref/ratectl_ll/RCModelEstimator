@@ -1,0 +1,192 @@
+define void @RCModelEstimator(i32 %n_windowSize) #0 {
+entry:
+  %cmp159 = icmp sgt i32 %n_windowSize, 0
+  br i1 %cmp159, label %for.body, label %for.end.thread
+
+for.end.thread:                                   ; preds = %entry
+  store double 0.000000e+00, double* @m_X2, align 8, !tbaa !4
+  store double 0.000000e+00, double* @m_X1, align 8, !tbaa !4
+  br label %if.end90
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv171 = phi i64 [ %indvars.iv.next172, %for.body ], [ 0, %entry ]
+  %n_realSize.0161 = phi i32 [ %n_realSize.0.dec, %for.body ], [ %n_windowSize, %entry ]
+  %arrayidx = getelementptr inbounds [21 x i32]* @m_rgRejected, i64 0, i64 %indvars.iv171
+  %0 = load i32* %arrayidx, align 4, !tbaa !1
+  %not.tobool = icmp ne i32 %0, 0
+  %dec = sext i1 %not.tobool to i32
+  %n_realSize.0.dec = add nsw i32 %dec, %n_realSize.0161
+  %indvars.iv.next172 = add i64 %indvars.iv171, 1
+  %lftr.wideiv173 = trunc i64 %indvars.iv.next172 to i32
+  %exitcond174 = icmp eq i32 %lftr.wideiv173, %n_windowSize
+  br i1 %exitcond174, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  store double 0.000000e+00, double* @m_X2, align 8, !tbaa !4
+  store double 0.000000e+00, double* @m_X1, align 8, !tbaa !4
+  br i1 %cmp159, label %for.body3, label %if.end90
+
+for.cond14.preheader:                             ; preds = %for.inc11
+  br i1 %cmp159, label %for.body16.lr.ph, label %if.end90
+
+for.body16.lr.ph:                                 ; preds = %for.cond14.preheader
+  %conv = sitofp i32 %n_realSize.0.dec to double
+  br label %for.body16
+
+for.body3:                                        ; preds = %for.end, %for.inc11
+  %indvars.iv167 = phi i64 [ %indvars.iv.next168, %for.inc11 ], [ 0, %for.end ]
+  %oneSampleQ.0157 = phi double [ %oneSampleQ.1, %for.inc11 ], [ undef, %for.end ]
+  %arrayidx5 = getelementptr inbounds [21 x i32]* @m_rgRejected, i64 0, i64 %indvars.iv167
+  %1 = load i32* %arrayidx5, align 4, !tbaa !1
+  %tobool6 = icmp eq i32 %1, 0
+  br i1 %tobool6, label %if.then7, label %for.inc11
+
+if.then7:                                         ; preds = %for.body3
+  %arrayidx9 = getelementptr inbounds [21 x double]* @m_rgQp, i64 0, i64 %indvars.iv167
+  %2 = load double* %arrayidx9, align 8, !tbaa !4
+  br label %for.inc11
+
+for.inc11:                                        ; preds = %for.body3, %if.then7
+  %oneSampleQ.1 = phi double [ %oneSampleQ.0157, %for.body3 ], [ %2, %if.then7 ]
+  %indvars.iv.next168 = add i64 %indvars.iv167, 1
+  %lftr.wideiv169 = trunc i64 %indvars.iv.next168 to i32
+  %exitcond170 = icmp eq i32 %lftr.wideiv169, %n_windowSize
+  br i1 %exitcond170, label %for.cond14.preheader, label %for.body3
+
+for.body16:                                       ; preds = %for.inc34, %for.body16.lr.ph
+  %3 = phi double [ 0.000000e+00, %for.body16.lr.ph ], [ %7, %for.inc34 ]
+  %indvars.iv163 = phi i64 [ 0, %for.body16.lr.ph ], [ %indvars.iv.next164, %for.inc34 ]
+  %estimateX2.0153 = phi i32 [ 0, %for.body16.lr.ph ], [ %estimateX2.1, %for.inc34 ]
+  %arrayidx18 = getelementptr inbounds [21 x double]* @m_rgQp, i64 0, i64 %indvars.iv163
+  %4 = load double* %arrayidx18, align 8, !tbaa !4
+  %cmp19 = fcmp une double %4, %oneSampleQ.1
+  %arrayidx21 = getelementptr inbounds [21 x i32]* @m_rgRejected, i64 0, i64 %indvars.iv163
+  %5 = load i32* %arrayidx21, align 4, !tbaa !1
+  br i1 %cmp19, label %land.lhs.true, label %if.end24
+
+land.lhs.true:                                    ; preds = %for.body16
+  %tobool22 = icmp eq i32 %5, 0
+  %.estimateX2.0 = select i1 %tobool22, i32 1, i32 %estimateX2.0153
+  br label %if.end24
+
+if.end24:                                         ; preds = %for.body16, %land.lhs.true
+  %estimateX2.1 = phi i32 [ %.estimateX2.0, %land.lhs.true ], [ %estimateX2.0153, %for.body16 ]
+  %tobool27 = icmp eq i32 %5, 0
+  br i1 %tobool27, label %if.then28, label %for.inc34
+
+if.then28:                                        ; preds = %if.end24
+  %arrayidx32 = getelementptr inbounds [21 x double]* @m_rgRp, i64 0, i64 %indvars.iv163
+  %6 = load double* %arrayidx32, align 8, !tbaa !4
+  %mul = fmul double %4, %6
+  %div = fdiv double %mul, %conv
+  %add = fadd double %div, %3
+  store double %add, double* @m_X1, align 8, !tbaa !4
+  br label %for.inc34
+
+for.inc34:                                        ; preds = %if.end24, %if.then28
+  %7 = phi double [ %3, %if.end24 ], [ %add, %if.then28 ]
+  %indvars.iv.next164 = add i64 %indvars.iv163, 1
+  %lftr.wideiv165 = trunc i64 %indvars.iv.next164 to i32
+  %exitcond166 = icmp eq i32 %lftr.wideiv165, %n_windowSize
+  br i1 %exitcond166, label %for.end36, label %for.body16
+
+for.end36:                                        ; preds = %for.inc34
+  %cmp37 = icmp slt i32 %n_realSize.0.dec, 1
+  %tobool40 = icmp eq i32 %estimateX2.1, 0
+  %or.cond = or i1 %cmp37, %tobool40
+  br i1 %or.cond, label %if.end90, label %for.cond42.preheader
+
+for.cond42.preheader:                             ; preds = %for.end36
+  br i1 %cmp159, label %for.body45, label %for.end74
+
+for.body45:                                       ; preds = %for.cond42.preheader, %for.inc72
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc72 ], [ 0, %for.cond42.preheader ]
+  %b1.0145 = phi double [ %b1.1, %for.inc72 ], [ 0.000000e+00, %for.cond42.preheader ]
+  %b0.0144 = phi double [ %b0.1, %for.inc72 ], [ 0.000000e+00, %for.cond42.preheader ]
+  %a11.0143 = phi double [ %a11.1, %for.inc72 ], [ 0.000000e+00, %for.cond42.preheader ]
+  %a10.0142 = phi double [ %a10.1, %for.inc72 ], [ 0.000000e+00, %for.cond42.preheader ]
+  %a01.0141 = phi double [ %a01.1, %for.inc72 ], [ 0.000000e+00, %for.cond42.preheader ]
+  %a00.0140 = phi double [ %a00.1, %for.inc72 ], [ 0.000000e+00, %for.cond42.preheader ]
+  %arrayidx47 = getelementptr inbounds [21 x i32]* @m_rgRejected, i64 0, i64 %indvars.iv
+  %8 = load i32* %arrayidx47, align 4, !tbaa !1
+  %tobool48 = icmp eq i32 %8, 0
+  br i1 %tobool48, label %if.then49, label %for.inc72
+
+if.then49:                                        ; preds = %for.body45
+  %add50 = fadd double %a00.0140, 1.000000e+00
+  %arrayidx52 = getelementptr inbounds [21 x double]* @m_rgQp, i64 0, i64 %indvars.iv
+  %9 = load double* %arrayidx52, align 8, !tbaa !4
+  %div53 = fdiv double 1.000000e+00, %9
+  %add54 = fadd double %a01.0141, %div53
+  %mul59 = fmul double %9, %9
+  %div60 = fdiv double 1.000000e+00, %mul59
+  %add61 = fadd double %a11.0143, %div60
+  %arrayidx65 = getelementptr inbounds [21 x double]* @m_rgRp, i64 0, i64 %indvars.iv
+  %10 = load double* %arrayidx65, align 8, !tbaa !4
+  %mul66 = fmul double %9, %10
+  %add67 = fadd double %b0.0144, %mul66
+  %add70 = fadd double %b1.0145, %10
+  br label %for.inc72
+
+for.inc72:                                        ; preds = %for.body45, %if.then49
+  %a00.1 = phi double [ %a00.0140, %for.body45 ], [ %add50, %if.then49 ]
+  %a01.1 = phi double [ %a01.0141, %for.body45 ], [ %add54, %if.then49 ]
+  %a10.1 = phi double [ %a10.0142, %for.body45 ], [ %add54, %if.then49 ]
+  %a11.1 = phi double [ %a11.0143, %for.body45 ], [ %add61, %if.then49 ]
+  %b0.1 = phi double [ %b0.0144, %for.body45 ], [ %add67, %if.then49 ]
+  %b1.1 = phi double [ %b1.0145, %for.body45 ], [ %add70, %if.then49 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n_windowSize
+  br i1 %exitcond, label %for.end74, label %for.body45
+
+for.end74:                                        ; preds = %for.inc72, %for.cond42.preheader
+  %b1.0.lcssa = phi double [ 0.000000e+00, %for.cond42.preheader ], [ %b1.1, %for.inc72 ]
+  %b0.0.lcssa = phi double [ 0.000000e+00, %for.cond42.preheader ], [ %b0.1, %for.inc72 ]
+  %a11.0.lcssa = phi double [ 0.000000e+00, %for.cond42.preheader ], [ %a11.1, %for.inc72 ]
+  %a10.0.lcssa = phi double [ 0.000000e+00, %for.cond42.preheader ], [ %a10.1, %for.inc72 ]
+  %a01.0.lcssa = phi double [ 0.000000e+00, %for.cond42.preheader ], [ %a01.1, %for.inc72 ]
+  %a00.0.lcssa = phi double [ 0.000000e+00, %for.cond42.preheader ], [ %a00.1, %for.inc72 ]
+  %mul75 = fmul double %a00.0.lcssa, %a11.0.lcssa
+  %mul76 = fmul double %a01.0.lcssa, %a10.0.lcssa
+  %sub = fsub double %mul75, %mul76
+  %call = tail call double @fabs(double %sub) #8
+  %cmp77 = fcmp ogt double %call, 1.000000e-06
+  br i1 %cmp77, label %if.then79, label %if.else
+
+if.then79:                                        ; preds = %for.end74
+  %mul80 = fmul double %a11.0.lcssa, %b0.0.lcssa
+  %mul81 = fmul double %a01.0.lcssa, %b1.0.lcssa
+  %sub82 = fsub double %mul80, %mul81
+  %div83 = fdiv double %sub82, %sub
+  store double %div83, double* @m_X1, align 8, !tbaa !4
+  %mul84 = fmul double %a00.0.lcssa, %b1.0.lcssa
+  %mul85 = fmul double %a10.0.lcssa, %b0.0.lcssa
+  %sub86 = fsub double %mul84, %mul85
+  %div87 = fdiv double %sub86, %sub
+  store double %div87, double* @m_X2, align 8, !tbaa !4
+  br label %if.end90
+
+if.else:                                          ; preds = %for.end74
+  %div88 = fdiv double %b0.0.lcssa, %a00.0.lcssa
+  store double %div88, double* @m_X1, align 8, !tbaa !4
+  store double 0.000000e+00, double* @m_X2, align 8, !tbaa !4
+  br label %if.end90
+
+if.end90:                                         ; preds = %for.end, %for.end.thread, %for.cond14.preheader, %for.end36, %if.then79, %if.else
+  %11 = phi double [ 0.000000e+00, %for.end36 ], [ %div87, %if.then79 ], [ 0.000000e+00, %if.else ], [ 0.000000e+00, %for.cond14.preheader ], [ 0.000000e+00, %for.end.thread ], [ 0.000000e+00, %for.end ]
+  %12 = phi double [ %7, %for.end36 ], [ %div83, %if.then79 ], [ %div88, %if.else ], [ 0.000000e+00, %for.cond14.preheader ], [ 0.000000e+00, %for.end.thread ], [ 0.000000e+00, %for.end ]
+  %13 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %type = getelementptr inbounds %struct.ImageParameters* %13, i64 0, i32 6
+  %14 = load i32* %type, align 4, !tbaa !3
+  %cmp91 = icmp eq i32 %14, 0
+  br i1 %cmp91, label %if.then93, label %if.end94
+
+if.then93:                                        ; preds = %if.end90
+  store double %12, double* @Pm_X1, align 8, !tbaa !4
+  store double %11, double* @Pm_X2, align 8, !tbaa !4
+  br label %if.end94
+
+if.end94:                                         ; preds = %if.then93, %if.end90
+  ret void
+}

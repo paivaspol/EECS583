@@ -1,0 +1,80 @@
+define i32 @Perl_magic_killbackrefs(%struct.sv* nocapture %sv, %struct.magic* nocapture %mg) #0 {
+entry:
+  %mg_obj = getelementptr inbounds %struct.magic* %mg, i64 0, i32 5
+  %0 = load %struct.sv** %mg_obj, align 8, !tbaa !0
+  %sv_any = bitcast %struct.sv* %0 to %struct.xpvav**
+  %1 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_array = getelementptr inbounds %struct.xpvav* %1, i64 0, i32 0
+  %2 = load i8** %xav_array, align 8, !tbaa !0
+  %3 = bitcast i8* %2 to %struct.sv**
+  %xav_fill = getelementptr inbounds %struct.xpvav* %1, i64 0, i32 1
+  %4 = load i64* %xav_fill, align 8, !tbaa !4
+  %conv = trunc i64 %4 to i32
+  %cmp48 = icmp sgt i32 %conv, -1
+  br i1 %cmp48, label %while.body.lr.ph, label %while.end
+
+while.body.lr.ph:                                 ; preds = %entry
+  %sext = shl i64 %4, 32
+  %5 = ashr exact i64 %sext, 32
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end29
+  %indvars.iv = phi i64 [ %5, %while.body.lr.ph ], [ %indvars.iv.next, %if.end29 ]
+  %arrayidx = getelementptr inbounds %struct.sv** %3, i64 %indvars.iv
+  %6 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %tobool = icmp eq %struct.sv* %6, null
+  br i1 %tobool, label %if.end29, label %if.then
+
+if.then:                                          ; preds = %while.body
+  %sv_flags = getelementptr inbounds %struct.sv* %6, i64 0, i32 2
+  %7 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %7, -2146959360
+  %cmp5 = icmp eq i32 %and, -2146959360
+  br i1 %cmp5, label %if.end, label %if.then7
+
+if.then7:                                         ; preds = %if.then
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([26 x i8]* @.str33, i64 0, i64 0)) #7
+  %.pre = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then7, %if.then
+  %8 = phi %struct.sv* [ %.pre, %if.then7 ], [ %6, %if.then ]
+  %sv_any10 = getelementptr inbounds %struct.sv* %8, i64 0, i32 0
+  %9 = load i8** %sv_any10, align 8, !tbaa !0
+  %xrv_rv = bitcast i8* %9 to %struct.sv**
+  store %struct.sv* null, %struct.sv** %xrv_rv, align 8, !tbaa !0
+  %10 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %sv_flags13 = getelementptr inbounds %struct.sv* %10, i64 0, i32 2
+  %11 = load i32* %sv_flags13, align 4, !tbaa !3
+  %and14 = and i32 %11, 1223753727
+  store i32 %and14, i32* %sv_flags13, align 4, !tbaa !3
+  %and18 = and i32 %11, 2097152
+  %tobool19 = icmp eq i32 %and18, 0
+  br i1 %tobool19, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %if.end
+  %call = tail call i32 @Perl_sv_backoff(%struct.sv* %10) #7
+  %.pre50 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %sv_flags25.phi.trans.insert = getelementptr inbounds %struct.sv* %.pre50, i64 0, i32 2
+  %.pre51 = load i32* %sv_flags25.phi.trans.insert, align 4, !tbaa !3
+  br label %land.end
+
+land.end:                                         ; preds = %if.end, %land.rhs
+  %12 = phi i32 [ %and14, %if.end ], [ %.pre51, %land.rhs ]
+  %13 = phi %struct.sv* [ %10, %if.end ], [ %.pre50, %land.rhs ]
+  %sv_flags25 = getelementptr inbounds %struct.sv* %13, i64 0, i32 2
+  %and26 = and i32 %12, 2146959359
+  store i32 %and26, i32* %sv_flags25, align 4, !tbaa !3
+  store %struct.sv* null, %struct.sv** %arrayidx, align 8, !tbaa !0
+  br label %if.end29
+
+if.end29:                                         ; preds = %while.body, %land.end
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %14 = trunc i64 %indvars.iv to i32
+  %cmp = icmp sgt i32 %14, 0
+  br i1 %cmp, label %while.body, label %while.end
+
+while.end:                                        ; preds = %if.end29, %entry
+  tail call void @Perl_sv_free(%struct.sv* %0) #7
+  ret i32 0
+}

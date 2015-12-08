@@ -1,0 +1,563 @@
+define internal fastcc void @S_qsortsvu(%struct.sv** %array, i64 %num_elts, i32 (%struct.sv*, %struct.sv*)* nocapture %compare) #0 {
+entry:
+  %partition_stack = alloca [32 x %struct.partition_stack_entry], align 16
+  %0 = bitcast [32 x %struct.partition_stack_entry]* %partition_stack to i8*
+  call void @llvm.lifetime.start(i64 384, i8* %0) #3
+  %cmp = icmp ult i64 %num_elts, 2
+  br i1 %cmp, label %cleanup, label %if.end
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp ugt i64 %num_elts, 255
+  br i1 %cmp1, label %for.body, label %if.end8
+
+for.body:                                         ; preds = %if.end, %for.body
+  %n.0862 = phi i64 [ %dec, %for.body ], [ %num_elts, %if.end ]
+  %dec = add i64 %n.0862, -1
+  %conv = uitofp i64 %n.0862 to double
+  %call = call double @spec_rand() #4
+  %mul = fmul double %conv, %call
+  %conv4 = fptoui double %mul to i64
+  %arrayidx = getelementptr inbounds %struct.sv** %array, i64 %conv4
+  %1 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %arrayidx5 = getelementptr inbounds %struct.sv** %array, i64 %dec
+  %2 = load %struct.sv** %arrayidx5, align 8, !tbaa !0
+  store %struct.sv* %2, %struct.sv** %arrayidx, align 8, !tbaa !0
+  store %struct.sv* %1, %struct.sv** %arrayidx5, align 8, !tbaa !0
+  %cmp3 = icmp ugt i64 %dec, 1
+  br i1 %cmp3, label %for.body, label %if.end8
+
+if.end8:                                          ; preds = %for.body, %if.end
+  %sub = add i64 %num_elts, 4294967295
+  %conv9 = trunc i64 %sub to i32
+  br label %for.cond10.outer.outer
+
+for.cond10.outer.outer:                           ; preds = %if.end471, %if.end407, %if.end393, %if.end8
+  %qsort_break_even.0.ph.ph = phi i32 [ 6, %if.end8 ], [ %qsort_break_even.1, %if.end393 ], [ %56, %if.end407 ], [ %67, %if.end471 ]
+  %part_right.0.ph.ph = phi i32 [ %conv9, %if.end8 ], [ %part_right.1, %if.end393 ], [ %55, %if.end407 ], [ %66, %if.end471 ]
+  %part_left.0.ph.ph = phi i32 [ 0, %if.end8 ], [ %part_left.1, %if.end393 ], [ %54, %if.end407 ], [ %65, %if.end471 ]
+  %next_stack_entry.0.ph.ph = phi i32 [ 0, %if.end8 ], [ %inc394, %if.end393 ], [ %dec408, %if.end407 ], [ %dec472, %if.end471 ]
+  %sub11856870 = sub nsw i32 %part_right.0.ph.ph, %part_left.0.ph.ph
+  %cmp12857871 = icmp slt i32 %sub11856870, %qsort_break_even.0.ph.ph
+  br i1 %cmp12857871, label %for.cond422.preheader, label %if.then14.lr.ph
+
+for.cond10.outer:                                 ; preds = %if.then363
+  %sub11856 = sub nsw i32 %sub396, %part_left.0859
+  %cmp12857 = icmp slt i32 %sub11856, %qsort_break_even.1
+  br i1 %cmp12857, label %for.cond422.preheader, label %if.then14.lr.ph
+
+if.then14.lr.ph:                                  ; preds = %for.cond10.outer.outer, %for.cond10.outer
+  %part_left.0.ph874 = phi i32 [ %part_left.0859, %for.cond10.outer ], [ %part_left.0.ph.ph, %for.cond10.outer.outer ]
+  %part_right.0.ph873 = phi i32 [ %sub396, %for.cond10.outer ], [ %part_right.0.ph.ph, %for.cond10.outer.outer ]
+  %qsort_break_even.0.ph872 = phi i32 [ %qsort_break_even.1, %for.cond10.outer ], [ %qsort_break_even.0.ph.ph, %for.cond10.outer.outer ]
+  br label %if.then14
+
+for.cond10:                                       ; preds = %if.else398
+  %sub11 = sub nsw i32 %part_right.0.ph873, %add402
+  %cmp12 = icmp slt i32 %sub11, %qsort_break_even.1
+  br i1 %cmp12, label %for.cond422.preheader, label %if.then14
+
+for.cond422.preheader:                            ; preds = %for.cond10.outer.outer, %for.cond10.outer, %for.cond10
+  %part_right.0.ph866 = phi i32 [ %part_right.0.ph873, %for.cond10 ], [ %part_right.0.ph.ph, %for.cond10.outer.outer ], [ %sub396, %for.cond10.outer ]
+  %part_left.0.lcssa = phi i32 [ %add402, %for.cond10 ], [ %part_left.0.ph.ph, %for.cond10.outer.outer ], [ %part_left.0859, %for.cond10.outer ]
+  %cmp423836 = icmp slt i32 %part_left.0.lcssa, %part_right.0.ph866
+  br i1 %cmp423836, label %for.cond428.preheader.lr.ph, label %for.end467
+
+for.cond428.preheader.lr.ph:                      ; preds = %for.cond422.preheader
+  %3 = sext i32 %part_left.0.lcssa to i64
+  br label %for.cond428.preheader
+
+if.then14:                                        ; preds = %if.then14.lr.ph, %for.cond10
+  %part_left.0859 = phi i32 [ %part_left.0.ph874, %if.then14.lr.ph ], [ %add402, %for.cond10 ]
+  %qsort_break_even.0858 = phi i32 [ %qsort_break_even.0.ph872, %if.then14.lr.ph ], [ %qsort_break_even.1, %for.cond10 ]
+  %add = add nsw i32 %part_left.0859, %part_right.0.ph873
+  %div = sdiv i32 %add, 2
+  %sub15 = add nsw i32 %div, -1
+  %add16 = add nsw i32 %div, 1
+  %idxprom = sext i32 %sub15 to i64
+  %arrayidx17 = getelementptr inbounds %struct.sv** %array, i64 %idxprom
+  %4 = load %struct.sv** %arrayidx17, align 8, !tbaa !0
+  %idxprom18 = sext i32 %div to i64
+  %arrayidx19 = getelementptr inbounds %struct.sv** %array, i64 %idxprom18
+  %5 = load %struct.sv** %arrayidx19, align 8, !tbaa !0
+  %call20 = call i32 %compare(%struct.sv* %4, %struct.sv* %5) #4
+  %cmp21 = icmp slt i32 %call20, 0
+  br i1 %cmp21, label %if.then23, label %if.else84
+
+if.then23:                                        ; preds = %if.then14
+  %6 = load %struct.sv** %arrayidx19, align 8, !tbaa !0
+  %idxprom26 = sext i32 %add16 to i64
+  %arrayidx27 = getelementptr inbounds %struct.sv** %array, i64 %idxprom26
+  %7 = load %struct.sv** %arrayidx27, align 8, !tbaa !0
+  %call28 = call i32 %compare(%struct.sv* %6, %struct.sv* %7) #4
+  %cmp29 = icmp eq i32 %call28, 0
+  br i1 %cmp29, label %if.end199, label %if.else
+
+if.else:                                          ; preds = %if.then23
+  %cmp32 = icmp sgt i32 %call28, 0
+  br i1 %cmp32, label %if.then34, label %if.end199
+
+if.then34:                                        ; preds = %if.else
+  %8 = load %struct.sv** %arrayidx17, align 8, !tbaa !0
+  %9 = load %struct.sv** %arrayidx27, align 8, !tbaa !0
+  %call39 = call i32 %compare(%struct.sv* %8, %struct.sv* %9) #4
+  %cmp40 = icmp slt i32 %call39, 0
+  br i1 %cmp40, label %if.then42, label %if.else52
+
+if.then42:                                        ; preds = %if.then34
+  %10 = load %struct.sv** %arrayidx19, align 8, !tbaa !0
+  %11 = load %struct.sv** %arrayidx27, align 8, !tbaa !0
+  store %struct.sv* %11, %struct.sv** %arrayidx19, align 8, !tbaa !0
+  store %struct.sv* %10, %struct.sv** %arrayidx27, align 8, !tbaa !0
+  br label %if.end199
+
+if.else52:                                        ; preds = %if.then34
+  %cmp53 = icmp eq i32 %call39, 0
+  %12 = load %struct.sv** %arrayidx19, align 8, !tbaa !0
+  br i1 %cmp53, label %if.then55, label %if.else66
+
+if.then55:                                        ; preds = %if.else52
+  %13 = load %struct.sv** %arrayidx27, align 8, !tbaa !0
+  store %struct.sv* %13, %struct.sv** %arrayidx19, align 8, !tbaa !0
+  store %struct.sv* %12, %struct.sv** %arrayidx27, align 8, !tbaa !0
+  br label %if.end199
+
+if.else66:                                        ; preds = %if.else52
+  %14 = load %struct.sv** %arrayidx17, align 8, !tbaa !0
+  store %struct.sv* %14, %struct.sv** %arrayidx19, align 8, !tbaa !0
+  %15 = load %struct.sv** %arrayidx27, align 8, !tbaa !0
+  store %struct.sv* %15, %struct.sv** %arrayidx17, align 8, !tbaa !0
+  store %struct.sv* %12, %struct.sv** %arrayidx27, align 8, !tbaa !0
+  br label %if.end199
+
+if.else84:                                        ; preds = %if.then14
+  %cmp85 = icmp eq i32 %call20, 0
+  %16 = load %struct.sv** %arrayidx19, align 8, !tbaa !0
+  %idxprom90 = sext i32 %add16 to i64
+  %arrayidx91 = getelementptr inbounds %struct.sv** %array, i64 %idxprom90
+  %17 = load %struct.sv** %arrayidx91, align 8, !tbaa !0
+  %call92 = call i32 %compare(%struct.sv* %16, %struct.sv* %17) #4
+  %cmp93 = icmp slt i32 %call92, 0
+  br i1 %cmp85, label %if.then87, label %if.else116
+
+if.then87:                                        ; preds = %if.else84
+  br i1 %cmp93, label %if.end199, label %if.else97
+
+if.else97:                                        ; preds = %if.then87
+  %cmp98 = icmp eq i32 %call92, 0
+  br i1 %cmp98, label %if.end199, label %if.else103
+
+if.else103:                                       ; preds = %if.else97
+  %18 = load %struct.sv** %arrayidx17, align 8, !tbaa !0
+  %19 = load %struct.sv** %arrayidx91, align 8, !tbaa !0
+  store %struct.sv* %19, %struct.sv** %arrayidx17, align 8, !tbaa !0
+  store %struct.sv* %18, %struct.sv** %arrayidx91, align 8, !tbaa !0
+  br label %if.end199
+
+if.else116:                                       ; preds = %if.else84
+  br i1 %cmp93, label %if.then124, label %if.else172
+
+if.then124:                                       ; preds = %if.else116
+  %20 = load %struct.sv** %arrayidx17, align 8, !tbaa !0
+  %21 = load %struct.sv** %arrayidx91, align 8, !tbaa !0
+  %call129 = call i32 %compare(%struct.sv* %20, %struct.sv* %21) #4
+  %cmp130 = icmp slt i32 %call129, 0
+  br i1 %cmp130, label %if.then132, label %if.else142
+
+if.then132:                                       ; preds = %if.then124
+  %22 = load %struct.sv** %arrayidx17, align 8, !tbaa !0
+  %23 = load %struct.sv** %arrayidx19, align 8, !tbaa !0
+  store %struct.sv* %23, %struct.sv** %arrayidx17, align 8, !tbaa !0
+  store %struct.sv* %22, %struct.sv** %arrayidx19, align 8, !tbaa !0
+  br label %if.end199
+
+if.else142:                                       ; preds = %if.then124
+  %cmp143 = icmp eq i32 %call129, 0
+  %24 = load %struct.sv** %arrayidx17, align 8, !tbaa !0
+  %25 = load %struct.sv** %arrayidx19, align 8, !tbaa !0
+  store %struct.sv* %25, %struct.sv** %arrayidx17, align 8, !tbaa !0
+  br i1 %cmp143, label %if.then145, label %if.else156
+
+if.then145:                                       ; preds = %if.else142
+  store %struct.sv* %24, %struct.sv** %arrayidx19, align 8, !tbaa !0
+  br label %if.end199
+
+if.else156:                                       ; preds = %if.else142
+  %26 = load %struct.sv** %arrayidx91, align 8, !tbaa !0
+  store %struct.sv* %26, %struct.sv** %arrayidx19, align 8, !tbaa !0
+  store %struct.sv* %24, %struct.sv** %arrayidx91, align 8, !tbaa !0
+  br label %if.end199
+
+if.else172:                                       ; preds = %if.else116
+  %cmp173 = icmp eq i32 %call92, 0
+  %27 = load %struct.sv** %arrayidx17, align 8, !tbaa !0
+  %28 = load %struct.sv** %arrayidx91, align 8, !tbaa !0
+  store %struct.sv* %28, %struct.sv** %arrayidx17, align 8, !tbaa !0
+  store %struct.sv* %27, %struct.sv** %arrayidx91, align 8, !tbaa !0
+  %dec185.div = select i1 %cmp173, i32 %sub15, i32 %div
+  br label %if.end199
+
+if.end199:                                        ; preds = %if.else97, %if.then87, %if.else172, %if.then23, %if.else103, %if.then132, %if.else156, %if.then145, %if.then42, %if.else66, %if.then55, %if.else
+  %swapped.0 = phi i32 [ 1, %if.then42 ], [ 1, %if.then55 ], [ 1, %if.else66 ], [ 0, %if.else ], [ 1, %if.else103 ], [ 1, %if.then132 ], [ 1, %if.then145 ], [ 1, %if.else156 ], [ 0, %if.then23 ], [ 1, %if.else172 ], [ 0, %if.then87 ], [ 0, %if.else97 ]
+  %pc_left.0 = phi i32 [ %div, %if.then42 ], [ %sub15, %if.then55 ], [ %div, %if.else66 ], [ %div, %if.else ], [ %div, %if.else103 ], [ %div, %if.then132 ], [ %div, %if.then145 ], [ %div, %if.else156 ], [ %div, %if.then23 ], [ %dec185.div, %if.else172 ], [ %sub15, %if.then87 ], [ %sub15, %if.else97 ]
+  %pc_right.0 = phi i32 [ %div, %if.then42 ], [ %div, %if.then55 ], [ %div, %if.else66 ], [ %div, %if.else ], [ %add16, %if.else103 ], [ %div, %if.then132 ], [ %add16, %if.then145 ], [ %div, %if.else156 ], [ %add16, %if.then23 ], [ %div, %if.else172 ], [ %div, %if.then87 ], [ %add16, %if.else97 ]
+  %dec200 = add nsw i32 %div, -2
+  %inc201 = add nsw i32 %div, 2
+  br label %while.cond.outer.outer
+
+while.cond.outer.outer:                           ; preds = %if.end348, %if.end314, %if.then217, %if.then221, %if.end199
+  %swapped.1.ph.ph = phi i32 [ %swapped.0, %if.end199 ], [ %inc291, %if.end314 ], [ %inc325, %if.end348 ], [ %inc222, %if.then221 ], [ %swapped.1.ph, %if.then217 ]
+  %pc_left.1.ph.ph = phi i32 [ %pc_left.0, %if.end199 ], [ %dec287, %if.end314 ], [ %inc349, %if.end348 ], [ %dec218, %if.then221 ], [ %dec218, %if.then217 ]
+  %pc_right.1.ph.ph = phi i32 [ %pc_right.0, %if.end199 ], [ %dec315, %if.end314 ], [ %inc321, %if.end348 ], [ %pc_right.1.ph, %if.then221 ], [ %pc_right.1.ph, %if.then217 ]
+  %u_right.0.ph.ph = phi i32 [ %dec200, %if.end199 ], [ %dec316, %if.end314 ], [ %u_right.0822, %if.end348 ], [ %dec213, %if.then221 ], [ %dec213, %if.then217 ]
+  %u_left.0.ph.ph = phi i32 [ %inc201, %if.end199 ], [ %u_left.1792, %if.end314 ], [ %inc350, %if.end348 ], [ %u_left.0.ph, %if.then221 ], [ %u_left.0.ph, %if.then217 ]
+  %idxprom207 = sext i32 %pc_left.1.ph.ph to i64
+  %arrayidx208 = getelementptr inbounds %struct.sv** %array, i64 %idxprom207
+  br label %while.cond.outer
+
+while.cond.outer:                                 ; preds = %while.cond.outer.outer, %if.then274
+  %swapped.1.ph = phi i32 [ %inc275, %if.then274 ], [ %swapped.1.ph.ph, %while.cond.outer.outer ]
+  %pc_right.1.ph = phi i32 [ %pc_right.2.ph806, %if.then274 ], [ %pc_right.1.ph.ph, %while.cond.outer.outer ]
+  %u_right.0.ph = phi i32 [ %dec284, %if.then274 ], [ %u_right.0.ph.ph, %while.cond.outer.outer ]
+  %u_left.0.ph = phi i32 [ %inc285, %if.then274 ], [ %u_left.0.ph.ph, %while.cond.outer.outer ]
+  %cmp203825 = icmp slt i32 %u_right.0.ph, %part_left.0859
+  br i1 %cmp203825, label %while.cond236.preheader, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %while.cond.outer
+  %29 = sext i32 %u_right.0.ph to i64
+  br label %while.body
+
+while.cond:                                       ; preds = %while.body
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %30 = trunc i64 %indvars.iv to i32
+  %cmp203 = icmp sgt i32 %30, %part_left.0859
+  br i1 %cmp203, label %while.body, label %while.cond236.preheader
+
+while.cond236.preheader:                          ; preds = %while.cond.outer, %while.cond, %if.else214
+  %cmp203824 = phi i1 [ true, %if.else214 ], [ false, %while.cond ], [ false, %while.cond.outer ]
+  %u_right.0822 = phi i32 [ %u_right.0826, %if.else214 ], [ %dec213, %while.cond ], [ %u_right.0.ph, %while.cond.outer ]
+  %cmp237795812 = icmp sgt i32 %u_left.0.ph, %part_right.0.ph873
+  br i1 %cmp237795812, label %while.end271, label %while.body239.lr.ph.lr.ph
+
+while.body239.lr.ph.lr.ph:                        ; preds = %while.cond236.preheader
+  %31 = sext i32 %pc_right.1.ph to i64
+  br label %while.body239.lr.ph
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond
+  %indvars.iv = phi i64 [ %29, %while.body.lr.ph ], [ %indvars.iv.next, %while.cond ]
+  %u_right.0826 = phi i32 [ %u_right.0.ph, %while.body.lr.ph ], [ %dec213, %while.cond ]
+  %arrayidx206 = getelementptr inbounds %struct.sv** %array, i64 %indvars.iv
+  %32 = load %struct.sv** %arrayidx206, align 8, !tbaa !0
+  %33 = load %struct.sv** %arrayidx208, align 8, !tbaa !0
+  %call209 = call i32 %compare(%struct.sv* %32, %struct.sv* %33) #4
+  %cmp210 = icmp slt i32 %call209, 0
+  %dec213 = add nsw i32 %u_right.0826, -1
+  br i1 %cmp210, label %while.cond, label %if.else214
+
+if.else214:                                       ; preds = %while.body
+  %cmp215 = icmp eq i32 %call209, 0
+  br i1 %cmp215, label %if.then217, label %while.cond236.preheader
+
+if.then217:                                       ; preds = %if.else214
+  %dec218 = add nsw i32 %pc_left.1.ph.ph, -1
+  %cmp219 = icmp eq i32 %dec218, %u_right.0826
+  br i1 %cmp219, label %while.cond.outer.outer, label %if.then221
+
+if.then221:                                       ; preds = %if.then217
+  %inc222 = add nsw i32 %swapped.1.ph, 1
+  %34 = load %struct.sv** %arrayidx206, align 8, !tbaa !0
+  %idxprom225 = sext i32 %dec218 to i64
+  %arrayidx226 = getelementptr inbounds %struct.sv** %array, i64 %idxprom225
+  %35 = load %struct.sv** %arrayidx226, align 8, !tbaa !0
+  store %struct.sv* %35, %struct.sv** %arrayidx206, align 8, !tbaa !0
+  store %struct.sv* %34, %struct.sv** %arrayidx226, align 8, !tbaa !0
+  br label %while.cond.outer.outer
+
+while.cond236:                                    ; preds = %while.body239
+  %indvars.iv.next890 = add i64 %indvars.iv889, 1
+  %36 = trunc i64 %indvars.iv889 to i32
+  %cmp237 = icmp slt i32 %36, %part_right.0.ph873
+  br i1 %cmp237, label %while.body239, label %while.end271
+
+while.body239:                                    ; preds = %while.body239.lr.ph, %while.cond236
+  %indvars.iv889 = phi i64 [ %42, %while.body239.lr.ph ], [ %indvars.iv.next890, %while.cond236 ]
+  %u_left.1796 = phi i32 [ %u_left.1.ph815, %while.body239.lr.ph ], [ %inc248, %while.cond236 ]
+  %37 = load %struct.sv** %arrayidx241, align 8, !tbaa !0
+  %arrayidx243 = getelementptr inbounds %struct.sv** %array, i64 %indvars.iv889
+  %38 = load %struct.sv** %arrayidx243, align 8, !tbaa !0
+  %call244 = call i32 %compare(%struct.sv* %37, %struct.sv* %38) #4
+  %cmp245 = icmp slt i32 %call244, 0
+  %inc248 = add nsw i32 %u_left.1796, 1
+  br i1 %cmp245, label %while.cond236, label %if.else249
+
+if.else249:                                       ; preds = %while.body239
+  %cmp250 = icmp eq i32 %call244, 0
+  br i1 %cmp250, label %if.then252, label %while.end271
+
+if.then252:                                       ; preds = %if.else249
+  %indvars.iv.next899 = add i64 %indvars.iv898, 1
+  %inc253 = add nsw i32 %pc_right.2.ph814, 1
+  %39 = trunc i64 %indvars.iv.next899 to i32
+  %cmp254 = icmp eq i32 %39, %u_left.1796
+  br i1 %cmp254, label %if.end266, label %if.then256
+
+if.then256:                                       ; preds = %if.then252
+  %inc257 = add nsw i32 %swapped.3.ph813, 1
+  %arrayidx259 = getelementptr inbounds %struct.sv** %array, i64 %indvars.iv.next899
+  %40 = load %struct.sv** %arrayidx259, align 8, !tbaa !0
+  %41 = load %struct.sv** %arrayidx243, align 8, !tbaa !0
+  store %struct.sv* %41, %struct.sv** %arrayidx259, align 8, !tbaa !0
+  store %struct.sv* %40, %struct.sv** %arrayidx243, align 8, !tbaa !0
+  br label %if.end266
+
+if.end266:                                        ; preds = %if.then252, %if.then256
+  %swapped.4 = phi i32 [ %inc257, %if.then256 ], [ %swapped.3.ph813, %if.then252 ]
+  %cmp237795 = icmp slt i32 %u_left.1796, %part_right.0.ph873
+  br i1 %cmp237795, label %while.body239.lr.ph, label %while.end271
+
+while.body239.lr.ph:                              ; preds = %while.body239.lr.ph.lr.ph, %if.end266
+  %indvars.iv898 = phi i64 [ %31, %while.body239.lr.ph.lr.ph ], [ %indvars.iv.next899, %if.end266 ]
+  %u_left.1.ph815 = phi i32 [ %u_left.0.ph, %while.body239.lr.ph.lr.ph ], [ %inc248, %if.end266 ]
+  %pc_right.2.ph814 = phi i32 [ %pc_right.1.ph, %while.body239.lr.ph.lr.ph ], [ %inc253, %if.end266 ]
+  %swapped.3.ph813 = phi i32 [ %swapped.1.ph, %while.body239.lr.ph.lr.ph ], [ %swapped.4, %if.end266 ]
+  %arrayidx241 = getelementptr inbounds %struct.sv** %array, i64 %indvars.iv898
+  %42 = sext i32 %u_left.1.ph815 to i64
+  br label %while.body239
+
+while.end271:                                     ; preds = %if.else249, %while.cond236, %if.end266, %while.cond236.preheader
+  %pc_right.2.ph806 = phi i32 [ %pc_right.2.ph814, %while.cond236 ], [ %pc_right.1.ph, %while.cond236.preheader ], [ %inc253, %if.end266 ], [ %pc_right.2.ph814, %if.else249 ]
+  %swapped.3.ph802 = phi i32 [ %swapped.3.ph813, %while.cond236 ], [ %swapped.1.ph, %while.cond236.preheader ], [ %swapped.4, %if.end266 ], [ %swapped.3.ph813, %if.else249 ]
+  %cmp237794 = phi i1 [ false, %while.cond236 ], [ false, %while.cond236.preheader ], [ false, %if.end266 ], [ true, %if.else249 ]
+  %u_left.1792 = phi i32 [ %inc248, %while.cond236 ], [ %u_left.0.ph, %while.cond236.preheader ], [ %inc248, %if.end266 ], [ %u_left.1796, %if.else249 ]
+  br i1 %cmp203824, label %if.then272, label %if.else318
+
+if.then272:                                       ; preds = %while.end271
+  br i1 %cmp237794, label %if.then274, label %if.else286
+
+if.then274:                                       ; preds = %if.then272
+  %inc275 = add nsw i32 %swapped.3.ph802, 1
+  %idxprom276 = sext i32 %u_right.0822 to i64
+  %arrayidx277 = getelementptr inbounds %struct.sv** %array, i64 %idxprom276
+  %43 = load %struct.sv** %arrayidx277, align 8, !tbaa !0
+  %idxprom278 = sext i32 %u_left.1792 to i64
+  %arrayidx279 = getelementptr inbounds %struct.sv** %array, i64 %idxprom278
+  %44 = load %struct.sv** %arrayidx279, align 8, !tbaa !0
+  store %struct.sv* %44, %struct.sv** %arrayidx277, align 8, !tbaa !0
+  store %struct.sv* %43, %struct.sv** %arrayidx279, align 8, !tbaa !0
+  %dec284 = add nsw i32 %u_right.0822, -1
+  %inc285 = add nsw i32 %u_left.1792, 1
+  br label %while.cond.outer
+
+if.else286:                                       ; preds = %if.then272
+  %dec287 = add nsw i32 %pc_left.1.ph.ph, -1
+  %cmp288 = icmp eq i32 %dec287, %u_right.0822
+  %inc291 = add nsw i32 %swapped.3.ph802, 1
+  %idxprom292 = sext i32 %u_right.0822 to i64
+  %arrayidx293 = getelementptr inbounds %struct.sv** %array, i64 %idxprom292
+  %45 = load %struct.sv** %arrayidx293, align 8, !tbaa !0
+  br i1 %cmp288, label %if.then290, label %if.else300
+
+if.then290:                                       ; preds = %if.else286
+  %idxprom294 = sext i32 %pc_right.2.ph806 to i64
+  %arrayidx295 = getelementptr inbounds %struct.sv** %array, i64 %idxprom294
+  %46 = load %struct.sv** %arrayidx295, align 8, !tbaa !0
+  store %struct.sv* %46, %struct.sv** %arrayidx293, align 8, !tbaa !0
+  store %struct.sv* %45, %struct.sv** %arrayidx295, align 8, !tbaa !0
+  br label %if.end314
+
+if.else300:                                       ; preds = %if.else286
+  %idxprom304 = sext i32 %dec287 to i64
+  %arrayidx305 = getelementptr inbounds %struct.sv** %array, i64 %idxprom304
+  %47 = load %struct.sv** %arrayidx305, align 8, !tbaa !0
+  store %struct.sv* %47, %struct.sv** %arrayidx293, align 8, !tbaa !0
+  %idxprom308 = sext i32 %pc_right.2.ph806 to i64
+  %arrayidx309 = getelementptr inbounds %struct.sv** %array, i64 %idxprom308
+  %48 = load %struct.sv** %arrayidx309, align 8, !tbaa !0
+  store %struct.sv* %48, %struct.sv** %arrayidx305, align 8, !tbaa !0
+  store %struct.sv* %45, %struct.sv** %arrayidx309, align 8, !tbaa !0
+  br label %if.end314
+
+if.end314:                                        ; preds = %if.else300, %if.then290
+  %dec315 = add nsw i32 %pc_right.2.ph806, -1
+  %dec316 = add nsw i32 %u_right.0822, -1
+  br label %while.cond.outer.outer
+
+if.else318:                                       ; preds = %while.end271
+  br i1 %cmp237794, label %if.then320, label %for.end354
+
+if.then320:                                       ; preds = %if.else318
+  %inc321 = add nsw i32 %pc_right.2.ph806, 1
+  %cmp322 = icmp eq i32 %inc321, %u_left.1792
+  %inc325 = add nsw i32 %swapped.3.ph802, 1
+  br i1 %cmp322, label %if.then324, label %if.else334
+
+if.then324:                                       ; preds = %if.then320
+  %idxprom326 = sext i32 %u_left.1792 to i64
+  %arrayidx327 = getelementptr inbounds %struct.sv** %array, i64 %idxprom326
+  %49 = load %struct.sv** %arrayidx327, align 8, !tbaa !0
+  %50 = load %struct.sv** %arrayidx208, align 8, !tbaa !0
+  store %struct.sv* %50, %struct.sv** %arrayidx327, align 8, !tbaa !0
+  store %struct.sv* %49, %struct.sv** %arrayidx208, align 8, !tbaa !0
+  br label %if.end348
+
+if.else334:                                       ; preds = %if.then320
+  %idxprom336 = sext i32 %inc321 to i64
+  %arrayidx337 = getelementptr inbounds %struct.sv** %array, i64 %idxprom336
+  %51 = load %struct.sv** %arrayidx337, align 8, !tbaa !0
+  %52 = load %struct.sv** %arrayidx208, align 8, !tbaa !0
+  store %struct.sv* %52, %struct.sv** %arrayidx337, align 8, !tbaa !0
+  %idxprom342 = sext i32 %u_left.1792 to i64
+  %arrayidx343 = getelementptr inbounds %struct.sv** %array, i64 %idxprom342
+  %53 = load %struct.sv** %arrayidx343, align 8, !tbaa !0
+  store %struct.sv* %53, %struct.sv** %arrayidx208, align 8, !tbaa !0
+  store %struct.sv* %51, %struct.sv** %arrayidx343, align 8, !tbaa !0
+  br label %if.end348
+
+if.end348:                                        ; preds = %if.else334, %if.then324
+  %inc349 = add nsw i32 %pc_left.1.ph.ph, 1
+  %inc350 = add nsw i32 %u_left.1792, 1
+  br label %while.cond.outer.outer
+
+for.end354:                                       ; preds = %if.else318
+  %cmp355 = icmp slt i32 %swapped.3.ph802, 3
+  %mul358 = shl nsw i32 %qsort_break_even.0858, 1
+  %qsort_break_even.1 = select i1 %cmp355, i32 %mul358, i32 6
+  %cmp361 = icmp slt i32 %part_left.0859, %pc_left.1.ph.ph
+  %cmp364 = icmp slt i32 %pc_right.2.ph806, %part_right.0.ph873
+  br i1 %cmp361, label %if.then363, label %if.else398
+
+if.then363:                                       ; preds = %for.end354
+  %sub396 = add nsw i32 %pc_left.1.ph.ph, -1
+  br i1 %cmp364, label %if.then366, label %for.cond10.outer
+
+if.then366:                                       ; preds = %if.then363
+  %sub367 = sub nsw i32 %part_right.0.ph873, %pc_right.2.ph806
+  %sub368 = sub nsw i32 %pc_left.1.ph.ph, %part_left.0859
+  %cmp369 = icmp sgt i32 %sub367, %sub368
+  br i1 %cmp369, label %if.then371, label %if.else381
+
+if.then371:                                       ; preds = %if.then366
+  %add372 = add nsw i32 %pc_right.2.ph806, 1
+  %idxprom373 = sext i32 %next_stack_entry.0.ph.ph to i64
+  %left = getelementptr inbounds [32 x %struct.partition_stack_entry]* %partition_stack, i64 0, i64 %idxprom373, i32 0
+  store i32 %add372, i32* %left, align 4, !tbaa !3
+  %right = getelementptr inbounds [32 x %struct.partition_stack_entry]* %partition_stack, i64 0, i64 %idxprom373, i32 1
+  store i32 %part_right.0.ph873, i32* %right, align 4, !tbaa !3
+  %qsort_break_even379 = getelementptr inbounds [32 x %struct.partition_stack_entry]* %partition_stack, i64 0, i64 %idxprom373, i32 2
+  store i32 %qsort_break_even.1, i32* %qsort_break_even379, align 4, !tbaa !3
+  br label %if.end393
+
+if.else381:                                       ; preds = %if.then366
+  %idxprom382 = sext i32 %next_stack_entry.0.ph.ph to i64
+  %left384 = getelementptr inbounds [32 x %struct.partition_stack_entry]* %partition_stack, i64 0, i64 %idxprom382, i32 0
+  store i32 %part_left.0859, i32* %left384, align 4, !tbaa !3
+  %right388 = getelementptr inbounds [32 x %struct.partition_stack_entry]* %partition_stack, i64 0, i64 %idxprom382, i32 1
+  store i32 %sub396, i32* %right388, align 4, !tbaa !3
+  %qsort_break_even391 = getelementptr inbounds [32 x %struct.partition_stack_entry]* %partition_stack, i64 0, i64 %idxprom382, i32 2
+  store i32 %qsort_break_even.1, i32* %qsort_break_even391, align 4, !tbaa !3
+  %add392 = add nsw i32 %pc_right.2.ph806, 1
+  br label %if.end393
+
+if.end393:                                        ; preds = %if.else381, %if.then371
+  %part_right.1 = phi i32 [ %sub396, %if.then371 ], [ %part_right.0.ph873, %if.else381 ]
+  %part_left.1 = phi i32 [ %part_left.0859, %if.then371 ], [ %add392, %if.else381 ]
+  %inc394 = add nsw i32 %next_stack_entry.0.ph.ph, 1
+  br label %for.cond10.outer.outer
+
+if.else398:                                       ; preds = %for.end354
+  %add402 = add nsw i32 %pc_right.2.ph806, 1
+  br i1 %cmp364, label %for.cond10, label %if.else403
+
+if.else403:                                       ; preds = %if.else398
+  %cmp404 = icmp eq i32 %next_stack_entry.0.ph.ph, 0
+  br i1 %cmp404, label %cleanup, label %if.end407
+
+if.end407:                                        ; preds = %if.else403
+  %dec408 = add nsw i32 %next_stack_entry.0.ph.ph, -1
+  %idxprom409 = sext i32 %dec408 to i64
+  %left411 = getelementptr inbounds [32 x %struct.partition_stack_entry]* %partition_stack, i64 0, i64 %idxprom409, i32 0
+  %54 = load i32* %left411, align 4, !tbaa !3
+  %right414 = getelementptr inbounds [32 x %struct.partition_stack_entry]* %partition_stack, i64 0, i64 %idxprom409, i32 1
+  %55 = load i32* %right414, align 4, !tbaa !3
+  %qsort_break_even417 = getelementptr inbounds [32 x %struct.partition_stack_entry]* %partition_stack, i64 0, i64 %idxprom409, i32 2
+  %56 = load i32* %qsort_break_even417, align 4, !tbaa !3
+  br label %for.cond10.outer.outer
+
+for.cond428.preheader:                            ; preds = %for.cond428.preheader.lr.ph, %for.cond422.backedge
+  %indvars.iv943 = phi i64 [ %3, %for.cond428.preheader.lr.ph ], [ %indvars.iv.next944, %for.cond422.backedge ]
+  %i.0838.in = phi i32 [ %part_left.0.lcssa, %for.cond428.preheader.lr.ph ], [ %i.0838, %for.cond422.backedge ]
+  %indvars.iv.next944 = add i64 %indvars.iv943, 1
+  %i.0838 = add nsw i32 %i.0838.in, 1
+  %arrayidx433 = getelementptr inbounds %struct.sv** %array, i64 %indvars.iv.next944
+  %cmp429830 = icmp slt i32 %i.0838.in, %part_left.0.lcssa
+  br i1 %cmp429830, label %for.end442, label %for.body431
+
+for.cond428:                                      ; preds = %for.body431
+  %57 = trunc i64 %indvars.iv934 to i32
+  %cmp429 = icmp sgt i32 %57, %part_left.0.lcssa
+  %indvars.iv.next935 = add i64 %indvars.iv934, -1
+  br i1 %cmp429, label %for.body431, label %for.end442
+
+for.body431:                                      ; preds = %for.cond428.preheader, %for.cond428
+  %indvars.iv934 = phi i64 [ %indvars.iv.next935, %for.cond428 ], [ %indvars.iv943, %for.cond428.preheader ]
+  %j426.0831 = phi i32 [ %dec441, %for.cond428 ], [ %i.0838.in, %for.cond428.preheader ]
+  %58 = load %struct.sv** %arrayidx433, align 8, !tbaa !0
+  %arrayidx435 = getelementptr inbounds %struct.sv** %array, i64 %indvars.iv934
+  %59 = load %struct.sv** %arrayidx435, align 8, !tbaa !0
+  %call436 = call i32 %compare(%struct.sv* %58, %struct.sv* %59) #4
+  %cmp437 = icmp sgt i32 %call436, -1
+  %dec441 = add nsw i32 %j426.0831, -1
+  br i1 %cmp437, label %for.end442, label %for.cond428
+
+for.end442:                                       ; preds = %for.cond428, %for.body431, %for.cond428.preheader
+  %j426.0.lcssa = phi i32 [ %i.0838.in, %for.cond428.preheader ], [ %j426.0831, %for.body431 ], [ %dec441, %for.cond428 ]
+  %inc443 = add nsw i32 %j426.0.lcssa, 1
+  %60 = trunc i64 %indvars.iv.next944 to i32
+  %cmp444 = icmp eq i32 %inc443, %60
+  br i1 %cmp444, label %for.cond422.backedge, label %if.then446
+
+for.cond422.backedge:                             ; preds = %for.end442, %for.end461
+  %cmp423 = icmp slt i32 %60, %part_right.0.ph866
+  br i1 %cmp423, label %for.cond428.preheader, label %for.end467
+
+if.then446:                                       ; preds = %for.end442
+  %61 = load %struct.sv** %arrayidx433, align 8, !tbaa !0
+  %cmp451833 = icmp slt i32 %i.0838.in, %inc443
+  br i1 %cmp451833, label %for.end461, label %for.body453
+
+for.body453:                                      ; preds = %if.then446, %for.body453
+  %indvars.iv939 = phi i64 [ %indvars.iv.next940, %for.body453 ], [ %indvars.iv943, %if.then446 ]
+  %arrayidx455 = getelementptr inbounds %struct.sv** %array, i64 %indvars.iv939
+  %62 = load %struct.sv** %arrayidx455, align 8, !tbaa !0
+  %63 = add nsw i64 %indvars.iv939, 1
+  %arrayidx458 = getelementptr inbounds %struct.sv** %array, i64 %63
+  store %struct.sv* %62, %struct.sv** %arrayidx458, align 8, !tbaa !0
+  %64 = trunc i64 %indvars.iv939 to i32
+  %cmp451 = icmp sgt i32 %64, %inc443
+  %indvars.iv.next940 = add i64 %indvars.iv939, -1
+  br i1 %cmp451, label %for.body453, label %for.end461
+
+for.end461:                                       ; preds = %for.body453, %if.then446
+  %idxprom462 = sext i32 %inc443 to i64
+  %arrayidx463 = getelementptr inbounds %struct.sv** %array, i64 %idxprom462
+  store %struct.sv* %61, %struct.sv** %arrayidx463, align 8, !tbaa !0
+  br label %for.cond422.backedge
+
+for.end467:                                       ; preds = %for.cond422.backedge, %for.cond422.preheader
+  %cmp468 = icmp eq i32 %next_stack_entry.0.ph.ph, 0
+  br i1 %cmp468, label %cleanup, label %if.end471
+
+if.end471:                                        ; preds = %for.end467
+  %dec472 = add nsw i32 %next_stack_entry.0.ph.ph, -1
+  %idxprom473 = sext i32 %dec472 to i64
+  %left475 = getelementptr inbounds [32 x %struct.partition_stack_entry]* %partition_stack, i64 0, i64 %idxprom473, i32 0
+  %65 = load i32* %left475, align 4, !tbaa !3
+  %right478 = getelementptr inbounds [32 x %struct.partition_stack_entry]* %partition_stack, i64 0, i64 %idxprom473, i32 1
+  %66 = load i32* %right478, align 4, !tbaa !3
+  %qsort_break_even481 = getelementptr inbounds [32 x %struct.partition_stack_entry]* %partition_stack, i64 0, i64 %idxprom473, i32 2
+  %67 = load i32* %qsort_break_even481, align 4, !tbaa !3
+  br label %for.cond10.outer.outer
+
+cleanup:                                          ; preds = %if.else403, %for.end467, %entry
+  call void @llvm.lifetime.end(i64 384, i8* %0) #3
+  ret void
+}

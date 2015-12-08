@@ -1,0 +1,45 @@
+OP *
+Perl_ck_require(pTHX_ OP *o)
+{
+    GV* gv;
+
+    if (o->op_flags & OPf_KIDS) {	/* Shall we supply missing .pm? */
+	SVOP *kid = (SVOP*)cUNOPo->op_first;
+
+	if (kid->op_type == OP_CONST && (kid->op_private & OPpCONST_BARE)) {
+	    char *s;
+	    for (s = SvPVX(kid->op_sv); *s; s++) {
+		if (*s == ':' && s[1] == ':') {
+		    *s = '/';
+		    Move(s+2, s+1, strlen(s+2)+1, char);
+		    --SvCUR(kid->op_sv);
+		}
+	    }
+	    if (SvREADONLY(kid->op_sv)) {
+		SvREADONLY_off(kid->op_sv);
+		sv_catpvn(kid->op_sv, ".pm", 3);
+		SvREADONLY_on(kid->op_sv);
+	    }
+	    else
+		sv_catpvn(kid->op_sv, ".pm", 3);
+	}
+    }
+
+    /* handle override, if any */
+    gv = gv_fetchpv("require", FALSE, SVt_PVCV);
+    if (!(gv && GvCVu(gv) && GvIMPORTED_CV(gv)))
+	gv = gv_fetchpv("CORE::GLOBAL::require", FALSE, SVt_PVCV);
+
+    if (gv && GvCVu(gv) && GvIMPORTED_CV(gv)) {
+	OP *kid = cUNOPo->op_first;
+	cUNOPo->op_first = 0;
+	op_free(o);
+	return ck_subr(newUNOP(OP_ENTERSUB, OPf_STACKED,
+			       append_elem(OP_LIST, kid,
+					   scalar(newUNOP(OP_RV2CV, 0,
+							  newGVOP(OP_GV, 0,
+								  gv))))));
+    }
+
+    return ck_fun(o);
+}

@@ -1,9 +1,16 @@
-void
-Perl_report_uninit(pTHX)
+static void
+do_clean_named_objs(pTHX_ SV *sv)
 {
-    if (PL_op)
-	Perl_warner(aTHX_ packWARN(WARN_UNINITIALIZED), PL_warn_uninit,
-		    " in ", OP_DESC(PL_op));
-    else
-	Perl_warner(aTHX_ packWARN(WARN_UNINITIALIZED), PL_warn_uninit, "", "");
+    if (SvTYPE(sv) == SVt_PVGV && GvGP(sv)) {
+	if ( SvOBJECT(GvSV(sv)) ||
+	     (GvAV(sv) && SvOBJECT(GvAV(sv))) ||
+	     (GvHV(sv) && SvOBJECT(GvHV(sv))) ||
+	     (GvIO(sv) && SvOBJECT(GvIO(sv))) ||
+	     (GvCV(sv) && SvOBJECT(GvCV(sv))) )
+	{
+	    DEBUG_D((PerlIO_printf(Perl_debug_log, "Cleaning named glob object:\n "), sv_dump(sv)));
+	    SvFLAGS(sv) |= SVf_BREAK;
+	    SvREFCNT_dec(sv);
+	}
+    }
 }

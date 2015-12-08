@@ -1,0 +1,46 @@
+define void @store_contexts() #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %1 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %context_init_method = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 121
+  %2 = load i32* %context_init_method, align 4, !tbaa !3
+  %tobool = icmp eq i32 %2, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
+  %3 = load %struct.Slice** %currentSlice, align 8, !tbaa !0
+  %start_mb_nr = getelementptr inbounds %struct.Slice* %3, i64 0, i32 3
+  %4 = load i32* @num_mb_per_slice, align 4, !tbaa !3
+  %5 = load i32* %start_mb_nr, align 4, !tbaa !3
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %field_picture = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 100
+  %div = sdiv i32 %5, %4
+  %6 = load i32* %type, align 4, !tbaa !3
+  %7 = load i32* %field_picture, align 4, !tbaa !3
+  %idxprom = sext i32 %div to i64
+  %idxprom1 = sext i32 %6 to i64
+  %idxprom2 = sext i32 %7 to i64
+  %8 = load i32**** @initialized, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32*** %8, i64 %idxprom2
+  %9 = load i32*** %arrayidx, align 8, !tbaa !0
+  %arrayidx3 = getelementptr inbounds i32** %9, i64 %idxprom1
+  %10 = load i32** %arrayidx3, align 8, !tbaa !0
+  %arrayidx4 = getelementptr inbounds i32* %10, i64 %idxprom
+  store i32 1, i32* %arrayidx4, align 4, !tbaa !3
+  %11 = load i32**** @model_number, align 8, !tbaa !0
+  %arrayidx7 = getelementptr inbounds i32*** %11, i64 %idxprom2
+  %12 = load i32*** %arrayidx7, align 8, !tbaa !0
+  %arrayidx8 = getelementptr inbounds i32** %12, i64 %idxprom1
+  %13 = load i32** %arrayidx8, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds i32* %13, i64 %idxprom
+  %mot_ctx = getelementptr inbounds %struct.Slice* %3, i64 0, i32 7
+  %14 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !tbaa !0
+  %tex_ctx = getelementptr inbounds %struct.Slice* %3, i64 0, i32 8
+  %15 = load %struct.TextureInfoContexts** %tex_ctx, align 8, !tbaa !0
+  tail call void @GetCtxModelNumber(i32* %add.ptr, %struct.MotionInfoContexts* %14, %struct.TextureInfoContexts* %15) #5
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

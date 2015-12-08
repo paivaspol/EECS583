@@ -1,9 +1,11 @@
-void
-Perl_push_return(pTHX_ OP *retop)
+SV**
+Perl_stack_grow(pTHX_ SV **sp, SV **p, int n)
 {
-    if (PL_retstack_ix == PL_retstack_max) {
-	PL_retstack_max = GROW(PL_retstack_max);
-	Renew(PL_retstack, PL_retstack_max, OP*);
-    }
-    PL_retstack[PL_retstack_ix++] = retop;
+    PL_stack_sp = sp;
+#ifndef STRESS_REALLOC
+    av_extend(PL_curstack, (p - PL_stack_base) + (n) + 128);
+#else
+    av_extend(PL_curstack, (p - PL_stack_base) + (n) + 1);
+#endif
+    return PL_stack_sp;
 }

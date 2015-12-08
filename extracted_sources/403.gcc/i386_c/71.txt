@@ -1,15 +1,10 @@
 int
-standard_80387_constant_p (x)
-     rtx x;
+long_memory_operand (op, mode)
+     register rtx op;
+     enum machine_mode mode;
 {
-  if (GET_CODE (x) != CONST_DOUBLE || !FLOAT_MODE_P (GET_MODE (x)))
-    return -1;
-  /* Note that on the 80387, other constants, such as pi, that we should support
-     too.  On some machines, these are much slower to load as standard constant,
-     than to load from doubles in memory.  */
-  if (x == CONST0_RTX (GET_MODE (x)))
-    return 1;
-  if (x == CONST1_RTX (GET_MODE (x)))
-    return 2;
-  return 0;
+  if (! memory_operand (op, mode))
+    return 0;
+
+  return memory_address_length (op) != 0;
 }

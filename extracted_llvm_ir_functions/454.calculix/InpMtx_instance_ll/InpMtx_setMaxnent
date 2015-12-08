@@ -1,0 +1,46 @@
+define void @InpMtx_setMaxnent(%struct._InpMtx* %inpmtx, i32 %newmaxnent) #0 {
+entry:
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null
+  %cmp1 = icmp slt i32 %newmaxnent, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str22, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %newmaxnent) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %maxnent = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 3
+  %1 = load i32* %maxnent, align 4, !tbaa !3
+  %cmp2 = icmp eq i32 %1, %newmaxnent
+  br i1 %cmp2, label %if.end12, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  %ivec1IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 6
+  tail call void @IV_setMaxsize(%struct._IV* %ivec1IV, i32 %newmaxnent) #4
+  %ivec2IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 7
+  tail call void @IV_setMaxsize(%struct._IV* %ivec2IV, i32 %newmaxnent) #4
+  %inputMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2
+  %2 = load i32* %inputMode, align 4, !tbaa !3
+  switch i32 %2, label %if.end12 [
+    i32 1, label %if.then5
+    i32 2, label %if.then8
+  ]
+
+if.then5:                                         ; preds = %if.then3
+  %dvecDV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8
+  tail call void @DV_setMaxsize(%struct._DV* %dvecDV, i32 %newmaxnent) #4
+  br label %if.end12
+
+if.then8:                                         ; preds = %if.then3
+  %dvecDV9 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8
+  %mul = shl nsw i32 %newmaxnent, 1
+  tail call void @DV_setMaxsize(%struct._DV* %dvecDV9, i32 %mul) #4
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.then3, %if.end, %if.then5, %if.then8
+  store i32 %newmaxnent, i32* %maxnent, align 4, !tbaa !3
+  ret void
+}

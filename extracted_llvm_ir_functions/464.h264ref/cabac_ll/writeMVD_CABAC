@@ -1,0 +1,201 @@
+define void @writeMVD_CABAC(%struct.syntaxelement* nocapture %se, %struct.EncodingEnvironment* %eep_dp) #0 {
+entry:
+  %block_a = alloca %struct.pix_pos, align 4
+  %block_b = alloca %struct.pix_pos, align 4
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %subblock_x = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 18
+  %1 = load i32* %subblock_x, align 4, !tbaa !0
+  %subblock_y = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 19
+  %2 = load i32* %subblock_y, align 4, !tbaa !0
+  %value2 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2
+  %3 = load i32* %value2, align 4, !tbaa !0
+  %and = and i32 %3, 1
+  %shr = ashr i32 %3, 1
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
+  %4 = load %struct.Slice** %currentSlice, align 8, !tbaa !3
+  %mot_ctx = getelementptr inbounds %struct.Slice* %4, i64 0, i32 7
+  %5 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !tbaa !3
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  %6 = load i32* %current_mb_nr, align 4, !tbaa !0
+  %idxprom = sext i32 %6 to i64
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %7 = load %struct.macroblock** %mb_data, align 8, !tbaa !3
+  call void @getLuma4x4Neighbour(i32 %6, i32 %1, i32 %2, i32 -1, i32 0, %struct.pix_pos* %block_a) #5
+  %8 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %current_mb_nr3 = getelementptr inbounds %struct.ImageParameters* %8, i64 0, i32 3
+  %9 = load i32* %current_mb_nr3, align 4, !tbaa !0
+  call void @getLuma4x4Neighbour(i32 %9, i32 %1, i32 %2, i32 0, i32 -1, %struct.pix_pos* %block_b) #5
+  %available = getelementptr inbounds %struct.pix_pos* %block_b, i64 0, i32 0
+  %10 = load i32* %available, align 4, !tbaa !0
+  %tobool = icmp eq i32 %10, 0
+  br i1 %tobool, label %if.end70, label %if.then
+
+if.then:                                          ; preds = %entry
+  %idxprom4 = sext i32 %shr to i64
+  %x = getelementptr inbounds %struct.pix_pos* %block_b, i64 0, i32 2
+  %11 = load i32* %x, align 4, !tbaa !0
+  %idxprom5 = sext i32 %11 to i64
+  %y = getelementptr inbounds %struct.pix_pos* %block_b, i64 0, i32 3
+  %12 = load i32* %y, align 4, !tbaa !0
+  %idxprom6 = sext i32 %12 to i64
+  %idxprom7227 = zext i32 %and to i64
+  %mb_addr = getelementptr inbounds %struct.pix_pos* %block_b, i64 0, i32 1
+  %13 = load i32* %mb_addr, align 4, !tbaa !0
+  %idxprom8 = sext i32 %13 to i64
+  %14 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %mb_data9 = getelementptr inbounds %struct.ImageParameters* %14, i64 0, i32 51
+  %15 = load %struct.macroblock** %mb_data9, align 8, !tbaa !3
+  %arrayidx14 = getelementptr inbounds %struct.macroblock* %15, i64 %idxprom8, i32 9, i64 %idxprom7227, i64 %idxprom6, i64 %idxprom5, i64 %idxprom4
+  %16 = load i32* %arrayidx14, align 4, !tbaa !0
+  %cmp = icmp slt i32 %16, 0
+  %sub = sub nsw i32 0, %16
+  %cond = select i1 %cmp, i32 %sub, i32 %16
+  %MbaffFrameFlag = getelementptr inbounds %struct.ImageParameters* %14, i64 0, i32 90
+  %17 = load i32* %MbaffFrameFlag, align 4, !tbaa !0
+  %tobool45 = icmp ne i32 %17, 0
+  %cmp46 = icmp eq i32 %shr, 1
+  %or.cond = and i1 %tobool45, %cmp46
+  br i1 %or.cond, label %if.then47, label %if.end70
+
+if.then47:                                        ; preds = %if.then
+  %mb_field = getelementptr inbounds %struct.macroblock* %7, i64 %idxprom, i32 22
+  %18 = load i32* %mb_field, align 4, !tbaa !0
+  switch i32 %18, label %if.end70 [
+    i32 0, label %land.lhs.true49
+    i32 1, label %land.lhs.true59
+  ]
+
+land.lhs.true49:                                  ; preds = %if.then47
+  %mb_field54 = getelementptr inbounds %struct.macroblock* %15, i64 %idxprom8, i32 22
+  %19 = load i32* %mb_field54, align 4, !tbaa !0
+  %cmp55 = icmp eq i32 %19, 1
+  %mul = zext i1 %cmp55 to i32
+  %mul.cond = shl nsw i32 %cond, %mul
+  br label %if.end70
+
+land.lhs.true59:                                  ; preds = %if.then47
+  %mb_field64 = getelementptr inbounds %struct.macroblock* %15, i64 %idxprom8, i32 22
+  %20 = load i32* %mb_field64, align 4, !tbaa !0
+  %cmp65 = icmp eq i32 %20, 0
+  br i1 %cmp65, label %if.then66, label %if.end70
+
+if.then66:                                        ; preds = %land.lhs.true59
+  %div = sdiv i32 %cond, 2
+  br label %if.end70
+
+if.end70:                                         ; preds = %land.lhs.true49, %if.then47, %entry, %if.then, %land.lhs.true59, %if.then66
+  %b.0 = phi i32 [ %div, %if.then66 ], [ %cond, %land.lhs.true59 ], [ %cond, %if.then ], [ 0, %entry ], [ %mul.cond, %land.lhs.true49 ], [ %cond, %if.then47 ]
+  %available71 = getelementptr inbounds %struct.pix_pos* %block_a, i64 0, i32 0
+  %21 = load i32* %available71, align 4, !tbaa !0
+  %tobool72 = icmp eq i32 %21, 0
+  br i1 %tobool72, label %if.end157, label %if.then73
+
+if.then73:                                        ; preds = %if.end70
+  %idxprom74 = sext i32 %shr to i64
+  %x75 = getelementptr inbounds %struct.pix_pos* %block_a, i64 0, i32 2
+  %22 = load i32* %x75, align 4, !tbaa !0
+  %idxprom76 = sext i32 %22 to i64
+  %y77 = getelementptr inbounds %struct.pix_pos* %block_a, i64 0, i32 3
+  %23 = load i32* %y77, align 4, !tbaa !0
+  %idxprom78 = sext i32 %23 to i64
+  %idxprom79226 = zext i32 %and to i64
+  %mb_addr80 = getelementptr inbounds %struct.pix_pos* %block_a, i64 0, i32 1
+  %24 = load i32* %mb_addr80, align 4, !tbaa !0
+  %idxprom81 = sext i32 %24 to i64
+  %25 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %mb_data82 = getelementptr inbounds %struct.ImageParameters* %25, i64 0, i32 51
+  %26 = load %struct.macroblock** %mb_data82, align 8, !tbaa !3
+  %arrayidx88 = getelementptr inbounds %struct.macroblock* %26, i64 %idxprom81, i32 9, i64 %idxprom79226, i64 %idxprom78, i64 %idxprom76, i64 %idxprom74
+  %27 = load i32* %arrayidx88, align 4, !tbaa !0
+  %cmp89 = icmp slt i32 %27, 0
+  %sub106 = sub nsw i32 0, %27
+  %cond124 = select i1 %cmp89, i32 %sub106, i32 %27
+  %MbaffFrameFlag125 = getelementptr inbounds %struct.ImageParameters* %25, i64 0, i32 90
+  %28 = load i32* %MbaffFrameFlag125, align 4, !tbaa !0
+  %tobool126 = icmp ne i32 %28, 0
+  %cmp128 = icmp eq i32 %shr, 1
+  %or.cond228 = and i1 %tobool126, %cmp128
+  br i1 %or.cond228, label %if.then129, label %if.end157
+
+if.then129:                                       ; preds = %if.then73
+  %mb_field130 = getelementptr inbounds %struct.macroblock* %7, i64 %idxprom, i32 22
+  %29 = load i32* %mb_field130, align 4, !tbaa !0
+  switch i32 %29, label %if.end157 [
+    i32 0, label %land.lhs.true132
+    i32 1, label %land.lhs.true144
+  ]
+
+land.lhs.true132:                                 ; preds = %if.then129
+  %mb_field137 = getelementptr inbounds %struct.macroblock* %26, i64 %idxprom81, i32 22
+  %30 = load i32* %mb_field137, align 4, !tbaa !0
+  %cmp138 = icmp eq i32 %30, 1
+  %mul140 = zext i1 %cmp138 to i32
+  %mul140.cond124 = shl nsw i32 %cond124, %mul140
+  br label %if.end157
+
+land.lhs.true144:                                 ; preds = %if.then129
+  %mb_field149 = getelementptr inbounds %struct.macroblock* %26, i64 %idxprom81, i32 22
+  %31 = load i32* %mb_field149, align 4, !tbaa !0
+  %cmp150 = icmp eq i32 %31, 0
+  br i1 %cmp150, label %if.then151, label %if.end157
+
+if.then151:                                       ; preds = %land.lhs.true144
+  %div152 = sdiv i32 %cond124, 2
+  br label %if.end157
+
+if.end157:                                        ; preds = %land.lhs.true132, %if.then129, %if.end70, %if.then73, %land.lhs.true144, %if.then151
+  %a.0 = phi i32 [ %div152, %if.then151 ], [ %cond124, %land.lhs.true144 ], [ %cond124, %if.then73 ], [ 0, %if.end70 ], [ %mul140.cond124, %land.lhs.true132 ], [ %cond124, %if.then129 ]
+  %add = add nsw i32 %a.0, %b.0
+  %cmp158 = icmp slt i32 %add, 3
+  br i1 %cmp158, label %if.then159, label %if.else161
+
+if.then159:                                       ; preds = %if.end157
+  %mul160 = mul nsw i32 %shr, 5
+  br label %if.end170
+
+if.else161:                                       ; preds = %if.end157
+  %cmp162 = icmp sgt i32 %add, 32
+  %mul164 = mul nsw i32 %shr, 5
+  br i1 %cmp162, label %if.then163, label %if.else166
+
+if.then163:                                       ; preds = %if.else161
+  %add165 = add nsw i32 %mul164, 3
+  br label %if.end170
+
+if.else166:                                       ; preds = %if.else161
+  %add168 = add nsw i32 %mul164, 2
+  br label %if.end170
+
+if.end170:                                        ; preds = %if.then163, %if.else166, %if.then159
+  %act_ctx.0 = phi i32 [ %mul160, %if.then159 ], [ %add165, %if.then163 ], [ %add168, %if.else166 ]
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
+  %32 = load i32* %value1, align 4, !tbaa !0
+  %context = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 6
+  store i32 %act_ctx.0, i32* %context, align 4, !tbaa !0
+  %cmp171 = icmp slt i32 %32, 0
+  %sub173 = sub nsw i32 0, %32
+  %cond176 = select i1 %cmp171, i32 %sub173, i32 %32
+  %cmp177 = icmp eq i32 %cond176, 0
+  %idxprom179 = sext i32 %act_ctx.0 to i64
+  %arrayidx181 = getelementptr inbounds %struct.MotionInfoContexts* %5, i64 0, i32 2, i64 0, i64 %idxprom179
+  br i1 %cmp177, label %if.then178, label %if.else182
+
+if.then178:                                       ; preds = %if.end170
+  call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx181) #5
+  br label %if.end193
+
+if.else182:                                       ; preds = %if.end170
+  call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx181) #5
+  %dec = add nsw i32 %cond176, -1
+  %mul187 = mul nsw i32 %shr, 5
+  %idx.ext = sext i32 %mul187 to i64
+  %add.ptr = getelementptr inbounds %struct.MotionInfoContexts* %5, i64 0, i32 2, i64 1, i64 %idx.ext
+  call void @unary_exp_golomb_mv_encode(%struct.EncodingEnvironment* %eep_dp, i32 %dec, %struct.BiContextType* %add.ptr, i32 3) #7
+  %.lobit = lshr i32 %32, 31
+  %33 = trunc i32 %.lobit to i16
+  call void @biari_encode_symbol_eq_prob(%struct.EncodingEnvironment* %eep_dp, i16 signext %33) #5
+  br label %if.end193
+
+if.end193:                                        ; preds = %if.else182, %if.then178
+  ret void
+}

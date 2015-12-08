@@ -1,0 +1,18 @@
+define i32 @Perl_PerlIO_close(%struct._PerlIO** %f) #1 {
+entry:
+  %call = tail call i32 @PerlIO__close(%struct._PerlIO** %f) #10
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %while.end, label %land.rhs
+
+land.rhs:                                         ; preds = %while.body, %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %while.end, label %while.body
+
+while.body:                                       ; preds = %land.rhs
+  tail call void @PerlIO_pop(%struct._PerlIO** %f) #10
+  br label %land.rhs
+
+while.end:                                        ; preds = %land.rhs, %entry
+  ret i32 %call
+}

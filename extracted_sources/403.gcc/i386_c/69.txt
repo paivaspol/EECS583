@@ -1,10 +1,15 @@
 int
-long_memory_operand (op, mode)
+memory_displacement_operand (op, mode)
      register rtx op;
      enum machine_mode mode;
 {
+  struct ix86_address parts;
+
   if (! memory_operand (op, mode))
     return 0;
 
-  return memory_address_length (op) != 0;
+  if (! ix86_decompose_address (XEXP (op, 0), &parts))
+    abort ();
+
+  return parts.disp != NULL_RTX;
 }

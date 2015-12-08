@@ -1,0 +1,54 @@
+STATIC void
+S_reginsert(pTHX_ RExC_state_t *pRExC_state, U8 op, regnode *opnd)
+{
+    register regnode *src;
+    register regnode *dst;
+    register regnode *place;
+    register int offset = regarglen[(U8)op];
+
+/* (PL_regkind[(U8)op] == CURLY ? EXTRA_STEP_2ARGS : 0); */
+
+    if (SIZE_ONLY) {
+	RExC_size += NODE_STEP_REGNODE + offset;
+	return;
+    }
+
+    src = RExC_emit;
+    RExC_emit += NODE_STEP_REGNODE + offset;
+    dst = RExC_emit;
+    while (src > opnd) {
+	StructCopy(--src, --dst, regnode);
+        if (RExC_offsets) {     /* MJD 20010112 */
+	    MJD_OFFSET_DEBUG(("%s(%d): (op %s) %s copy %u -> %u (max %u).\n",
+                  "reg_insert",
+		  __LINE__,
+		  reg_name[op],
+                  dst - RExC_emit_start > RExC_offsets[0] 
+                  ? "Overwriting end of array!\n" : "OK",
+                  src - RExC_emit_start,
+                  dst - RExC_emit_start,
+                  RExC_offsets[0])); 
+	    Set_Node_Offset_To_R(dst-RExC_emit_start, Node_Offset(src));
+	    Set_Node_Length_To_R(dst-RExC_emit_start, Node_Length(src));
+        }
+    }
+    
+
+    place = opnd;		/* Op node, where operand used to be. */
+    if (RExC_offsets) {         /* MJD */
+	MJD_OFFSET_DEBUG(("%s(%d): (op %s) %s %u <- %u (max %u).\n", 
+              "reginsert",
+	      __LINE__,
+	      reg_name[op],
+              place - RExC_emit_start > RExC_offsets[0] 
+              ? "Overwriting end of array!\n" : "OK",
+              place - RExC_emit_start,
+              RExC_parse - RExC_start,
+              RExC_offsets[0])); 
+	Set_Node_Offset(place, RExC_parse);
+	Set_Node_Length(place, 1);
+    }
+    src = NEXTOPER(place);
+    FILL_ADVANCE_NODE(place, op);
+    Zero(src, offset, regnode);
+}

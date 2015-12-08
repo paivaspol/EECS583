@@ -1,44 +1,6 @@
 void
-Perl_rvpv_dup(pTHX_ SV *dstr, SV *sstr, CLONE_PARAMS* param)
+Perl_sv_usepvn_mg(pTHX_ register SV *sv, register char *ptr, register STRLEN len)
 {
-    if (SvROK(sstr)) {
-        SvRV(dstr) = SvWEAKREF(sstr)
-		     ? sv_dup(SvRV(sstr), param)
-		     : sv_dup_inc(SvRV(sstr), param);
-    }
-    else if (SvPVX(sstr)) {
-	/* Has something there */
-	if (SvLEN(sstr)) {
-	    /* Normal PV - clone whole allocated space */
-	    SvPVX(dstr) = SAVEPVN(SvPVX(sstr), SvLEN(sstr)-1);
-	}
-	else {
-	    /* Special case - not normally malloced for some reason */
-	    if (SvREADONLY(sstr) && SvFAKE(sstr)) {
-		/* A "shared" PV - clone it as unshared string */
-                if(SvPADTMP(sstr)) {
-                    /* However, some of them live in the pad
-                       and they should not have these flags
-                       turned off */
-
-                    SvPVX(dstr) = sharepvn(SvPVX(sstr), SvCUR(sstr),
-                                           SvUVX(sstr));
-                    SvUVX(dstr) = SvUVX(sstr);
-                } else {
-
-                    SvPVX(dstr) = SAVEPVN(SvPVX(sstr), SvCUR(sstr));
-                    SvFAKE_off(dstr);
-                    SvREADONLY_off(dstr);
-                }
-	    }
-	    else {
-		/* Some other special case - random pointer */
-		SvPVX(dstr) = SvPVX(sstr);		
-            }
-	}
-    }
-    else {
-	/* Copy the Null */
-	SvPVX(dstr) = SvPVX(sstr);
-    }
+    sv_usepvn(sv,ptr,len);
+    SvSETMAGIC(sv);
 }

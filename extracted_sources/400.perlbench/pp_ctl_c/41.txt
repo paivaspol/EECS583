@@ -1,0 +1,25 @@
+PP(pp_redo)
+{
+    I32 cxix;
+    register PERL_CONTEXT *cx;
+    I32 oldsave;
+
+    if (PL_op->op_flags & OPf_SPECIAL) {
+	cxix = dopoptoloop(cxstack_ix);
+	if (cxix < 0)
+	    DIE(aTHX_ "Can't \"redo\" outside a loop block");
+    }
+    else {
+	cxix = dopoptolabel(cPVOP->op_pv);
+	if (cxix < 0)
+	    DIE(aTHX_ "Label not found for \"redo %s\"", cPVOP->op_pv);
+    }
+    if (cxix < cxstack_ix)
+	dounwind(cxix);
+
+    TOPBLOCK(cx);
+    oldsave = PL_scopestack[PL_scopestack_ix - 1];
+    LEAVE_SCOPE(oldsave);
+    FREETMPS;
+    return cx->blk_loop.redo_op;
+}

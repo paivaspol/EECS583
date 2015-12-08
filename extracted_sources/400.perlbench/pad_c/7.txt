@@ -1,58 +1,176 @@
-void
-Perl_pad_tidy(pTHX_ padtidy_type type)
+STATIC PADOFFSET
+S_pad_findlex(pTHX_ char *name, PADOFFSET newoff, CV* innercv)
 {
-    PADOFFSET ix;
+    CV *cv;
+    I32 off = 0;
+    SV *sv;
+    CV* startcv;
+    U32 seq;
+    I32 depth;
+    AV *oldpad;
+    SV *oldsv;
+    AV *curlist;
 
-    ASSERT_CURPAD_ACTIVE("pad_tidy");
-    /* extend curpad to match namepad */
-    if (AvFILLp(PL_comppad_name) < AvFILLp(PL_comppad))
-	av_store(PL_comppad_name, AvFILLp(PL_comppad), Nullsv);
+    ASSERT_CURPAD_ACTIVE("pad_findlex");
+    DEBUG_Xv(PerlIO_printf(Perl_debug_log,
+	"Pad findlex: \"%s\" off=%ld startcv=0x%"UVxf"\n",
+	    name, (long)newoff, PTR2UV(innercv))
+    );
 
-    if (type == padtidy_SUBCLONE) {
-	SV **namep = AvARRAY(PL_comppad_name);
-	for (ix = AvFILLp(PL_comppad); ix > 0; ix--) {
-	    SV *namesv;
+    seq = CvOUTSIDE_SEQ(innercv);
+    startcv = CvOUTSIDE(innercv);
 
-	    if (SvIMMORTAL(PL_curpad[ix]) || IS_PADGV(PL_curpad[ix]) || IS_PADCONST(PL_curpad[ix]))
+    for (cv = startcv; cv; seq = CvOUTSIDE_SEQ(cv), cv = CvOUTSIDE(cv)) {
+	SV **svp;
+	AV *curname;
+	I32 fake_off = 0;
+
+	DEBUG_Xv(PerlIO_printf(Perl_debug_log,
+	    "             searching: cv=0x%"UVxf" seq=%d\n",
+	    PTR2UV(cv), (int) seq )
+	);
+
+	curlist = CvPADLIST(cv);
+	if (!curlist)
+	    continue; /* an undef CV */
+	svp = av_fetch(curlist, 0, FALSE);
+	if (!svp || *svp == &PL_sv_undef)
+	    continue;
+	curname = (AV*)*svp;
+	svp = AvARRAY(curname);
+
+	depth = CvDEPTH(cv);
+	for (off = AvFILLp(curname); off > 0; off--) {
+	    sv = svp[off];
+	    if (!sv || sv == &PL_sv_undef || !strEQ(SvPVX(sv), name))
 		continue;
-	    /*
-	     * The only things that a clonable function needs in its
-	     * pad are references to outer lexicals and anonymous subs.
-	     * The rest are created anew during cloning.
-	     */
-	    if (!((namesv = namep[ix]) != Nullsv &&
-		  namesv != &PL_sv_undef &&
-		  (SvFAKE(namesv) ||
-		   *SvPVX(namesv) == '&')))
+	    if (SvFAKE(sv)) {
+		/* we'll use this later if we don't find a real entry */
+		fake_off = off;
+		continue;
+	    }
+	    else {
+		if (   seq >  U_32(SvNVX(sv))	/* min */
+		    && seq <= (U32)SvIVX(sv)	/* max */
+		    && !(newoff && !depth) /* ignore inactive when cloning */
+		)
+		    goto found;
+	    }
+	}
+
+	/* no real entry - but did we find a fake one? */
+	if (fake_off) {
+	    if (newoff && !depth)
+		return 0; /* don't clone from inactive stack frame */
+	    off = fake_off;
+	    sv = svp[off];
+	    goto found;
+	}
+    }
+    return 0;
+
+found:
+
+    if (!depth) 
+	depth = 1;
+
+    oldpad = (AV*)AvARRAY(curlist)[depth];
+    oldsv = *av_fetch(oldpad, off, TRUE);
+
+#ifdef DEBUGGING
+    if (SvFAKE(sv))
+	DEBUG_Xv(PerlIO_printf(Perl_debug_log,
+		"             matched:   offset %ld"
+		    " FAKE, sv=0x%"UVxf"\n",
+		(long)off,
+		PTR2UV(oldsv)
+	    )
+	);
+    else
+	DEBUG_Xv(PerlIO_printf(Perl_debug_log,
+		"             matched:   offset %ld"
+		    " (%lu,%lu), sv=0x%"UVxf"\n",
+		(long)off,
+		(unsigned long)U_32(SvNVX(sv)),
+		(unsigned long)SvIVX(sv),
+		PTR2UV(oldsv)
+	    )
+	);
+#endif
+
+    if (!newoff) {		/* Not a mere clone operation. */
+	newoff = pad_add_name(
+	    SvPVX(sv),
+	    (SvFLAGS(sv) & SVpad_TYPED) ? SvSTASH(sv) : Nullhv,
+	    (SvFLAGS(sv) & SVpad_OUR)   ? GvSTASH(sv) : Nullhv,
+	    1  /* fake */
+	);
+
+	if (CvANON(PL_compcv) || SvTYPE(PL_compcv) == SVt_PVFM) {
+	    /* "It's closures all the way down." */
+	    CvCLONE_on(PL_compcv);
+	    if (cv == startcv) {
+		if (CvANON(PL_compcv))
+		    oldsv = Nullsv; /* no need to keep ref */
+	    }
+	    else {
+		CV *bcv;
+		for (bcv = startcv;
+		     bcv && bcv != cv && !CvCLONE(bcv);
+		     bcv = CvOUTSIDE(bcv))
+		{
+		    if (CvANON(bcv)) {
+			/* install the missing pad entry in intervening
+			 * nested subs and mark them cloneable. */
+			AV *ocomppad_name = PL_comppad_name;
+			PAD *ocomppad = PL_comppad;
+			AV *padlist = CvPADLIST(bcv);
+			PL_comppad_name = (AV*)AvARRAY(padlist)[0];
+			PL_comppad = (AV*)AvARRAY(padlist)[1];
+			PL_curpad = AvARRAY(PL_comppad);
+			pad_add_name(
+			    SvPVX(sv),
+			    (SvFLAGS(sv) & SVpad_TYPED)
+				? SvSTASH(sv) : Nullhv,
+			    (SvFLAGS(sv) & SVpad_OUR)
+				? GvSTASH(sv) : Nullhv,
+			    1  /* fake */
+			);
+
+			PL_comppad_name = ocomppad_name;
+			PL_comppad = ocomppad;
+			PL_curpad = ocomppad ?
+				AvARRAY(ocomppad) : Null(SV **);
+			CvCLONE_on(bcv);
+		    }
+		    else {
+			if (ckWARN(WARN_CLOSURE)
+			    && !CvUNIQUE(bcv) && !CvUNIQUE(cv))
+			{
+			    Perl_warner(aTHX_ packWARN(WARN_CLOSURE),
+			      "Variable \"%s\" may be unavailable",
+				 name);
+			}
+			break;
+		    }
+		}
+	    }
+	}
+	else if (!CvUNIQUE(PL_compcv)) {
+	    if (ckWARN(WARN_CLOSURE) && !SvFAKE(sv) && !CvUNIQUE(cv)
+		&& !(SvFLAGS(sv) & SVpad_OUR))
 	    {
-		SvREFCNT_dec(PL_curpad[ix]);
-		PL_curpad[ix] = Nullsv;
+		Perl_warner(aTHX_ packWARN(WARN_CLOSURE),
+		    "Variable \"%s\" will not stay shared", name);
 	    }
 	}
     }
-    else if (type == padtidy_SUB) {
-	/* XXX DAPM this same bit of code keeps appearing !!! Rationalise? */
-	AV *av = newAV();			/* Will be @_ */
-	av_extend(av, 0);
-	av_store(PL_comppad, 0, (SV*)av);
-	AvFLAGS(av) = AVf_REIFY;
-    }
-
-    /* XXX DAPM rationalise these two similar branches */
-
-    if (type == padtidy_SUB) {
-	for (ix = AvFILLp(PL_comppad); ix > 0; ix--) {
-	    if (SvIMMORTAL(PL_curpad[ix]) || IS_PADGV(PL_curpad[ix]) || IS_PADCONST(PL_curpad[ix]))
-		continue;
-	    if (!SvPADMY(PL_curpad[ix]))
-		SvPADTMP_on(PL_curpad[ix]);
-	}
-    }
-    else if (type == padtidy_FORMAT) {
-	for (ix = AvFILLp(PL_comppad); ix > 0; ix--) {
-	    if (!SvPADMY(PL_curpad[ix]) && !SvIMMORTAL(PL_curpad[ix]))
-		SvPADTMP_on(PL_curpad[ix]);
-	}
-    }
-    PL_curpad = AvARRAY(PL_comppad);
+    av_store(PL_comppad, newoff, SvREFCNT_inc(oldsv));
+    ASSERT_CURPAD_ACTIVE("pad_findlex 2");
+    DEBUG_Xv(PerlIO_printf(Perl_debug_log,
+		"Pad findlex: set offset %ld to sv 0x%"UVxf"\n",
+		(long)newoff, PTR2UV(oldsv)
+	    )
+    );
+    return newoff;
 }

@@ -1,24 +1,12 @@
-static int
-add_ttypes_entry (ttypes_hash, type)
-     htab_t ttypes_hash;
-     tree type;
+static hashval_t
+ehspec_filter_hash (pentry)
+     const PTR pentry;
 {
-  struct ttypes_filter **slot, *n;
+  const struct ttypes_filter *entry = (const struct ttypes_filter *) pentry;
+  hashval_t h = 0;
+  tree list;
 
-  slot = (struct ttypes_filter **)
-    htab_find_slot_with_hash (ttypes_hash, type, TYPE_HASH (type), INSERT);
-
-  if ((n = *slot) == NULL)
-    {
-      /* Filter value is a 1 based table index.  */
-
-      n = (struct ttypes_filter *) xmalloc (sizeof (*n));
-      n->t = type;
-      n->filter = VARRAY_ACTIVE_SIZE (cfun->eh->ttype_data) + 1;
-      *slot = n;
-
-      VARRAY_PUSH_TREE (cfun->eh->ttype_data, type);
-    }
-
-  return n->filter;
+  for (list = entry->t; list ; list = TREE_CHAIN (list))
+    h = (h << 5) + (h >> 27) + TYPE_HASH (TREE_VALUE (list));
+  return h;
 }

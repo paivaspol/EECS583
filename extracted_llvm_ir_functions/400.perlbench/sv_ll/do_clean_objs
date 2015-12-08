@@ -1,0 +1,44 @@
+define internal void @do_clean_objs(%struct.sv* %sv) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 524288
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end15, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xrv_rv = bitcast i8* %1 to %struct.sv**
+  %2 = load %struct.sv** %xrv_rv, align 8, !tbaa !0
+  %sv_flags1 = getelementptr inbounds %struct.sv* %2, i64 0, i32 2
+  %3 = load i32* %sv_flags1, align 4, !tbaa !3
+  %and2 = and i32 %3, 4096
+  %tobool3 = icmp eq i32 %and2, 0
+  br i1 %tobool3, label %if.end15, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %and5 = and i32 %0, -2146959360
+  %cmp = icmp eq i32 %and5, -2146959360
+  br i1 %cmp, label %if.then6, label %if.else
+
+if.then6:                                         ; preds = %if.then
+  tail call fastcc void @S_sv_del_backref(%struct.sv* %sv) #7
+  %4 = load i32* %sv_flags, align 4, !tbaa !3
+  %and8 = and i32 %4, 2146959359
+  store i32 %and8, i32* %sv_flags, align 4, !tbaa !3
+  %5 = load i8** %sv_any, align 8, !tbaa !0
+  %xrv_rv10 = bitcast i8* %5 to %struct.sv**
+  store %struct.sv* null, %struct.sv** %xrv_rv10, align 8, !tbaa !0
+  br label %if.end15
+
+if.else:                                          ; preds = %if.then
+  %and12 = and i32 %0, -268959745
+  store i32 %and12, i32* %sv_flags, align 4, !tbaa !3
+  store %struct.sv* null, %struct.sv** %xrv_rv, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %2) #7
+  br label %if.end15
+
+if.end15:                                         ; preds = %land.lhs.true, %entry, %if.then6, %if.else
+  ret void
+}

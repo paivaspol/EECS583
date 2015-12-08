@@ -1,0 +1,14 @@
+SV *
+Perl_hv_iterval(pTHX_ HV *hv, register HE *entry)
+{
+    if (SvRMAGICAL(hv)) {
+	if (mg_find((SV*)hv, PERL_MAGIC_tied)) {
+	    SV* sv = sv_newmortal();
+	    if (HeKLEN(entry) == HEf_SVKEY)
+		mg_copy((SV*)hv, sv, (char*)HeKEY_sv(entry), HEf_SVKEY);
+	    else mg_copy((SV*)hv, sv, HeKEY(entry), HeKLEN(entry));
+	    return sv;
+	}
+    }
+    return HeVAL(entry);
+}

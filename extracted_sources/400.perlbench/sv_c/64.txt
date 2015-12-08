@@ -1,6 +1,18 @@
-void
-Perl_sv_vsetpvf_mg(pTHX_ SV *sv, const char* pat, va_list* args)
+STATIC UV
+S_asUV(pTHX_ SV *sv)
 {
-    sv_vsetpvfn(sv, pat, strlen(pat), args, Null(SV**), 0, Null(bool*));
-    SvSETMAGIC(sv);
+    UV value;
+    int numtype = grok_number(SvPVX(sv), SvCUR(sv), &value);
+
+    if ((numtype & (IS_NUMBER_IN_UV | IS_NUMBER_NOT_INT))
+	== IS_NUMBER_IN_UV) {
+	/* It's definitely an integer */
+	if (!(numtype & IS_NUMBER_NEG))
+	    return value;
+    }
+    if (!numtype) {
+	if (ckWARN(WARN_NUMERIC))
+	    not_a_number(sv);
+    }
+    return U_V(Atof(SvPVX(sv)));
 }

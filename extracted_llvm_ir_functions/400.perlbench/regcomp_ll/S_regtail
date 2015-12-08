@@ -1,0 +1,42 @@
+define internal fastcc void @S_regtail(%struct.RExC_state_t* nocapture %pRExC_state, %struct.regnode* %p, %struct.regnode* %val) #0 {
+entry:
+  %emit = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %0 = load %struct.regnode** %emit, align 8, !tbaa !0
+  %cmp = icmp eq %struct.regnode* %0, @PL_regdummy
+  br i1 %cmp, label %if.end10, label %for.cond
+
+for.cond:                                         ; preds = %entry, %for.cond
+  %scan.0 = phi %struct.regnode* [ %call, %for.cond ], [ %p, %entry ]
+  %call = tail call %struct.regnode* @Perl_regnext(%struct.regnode* %scan.0) #9
+  %cmp1 = icmp eq %struct.regnode* %call, null
+  br i1 %cmp1, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.cond
+  %type = getelementptr inbounds %struct.regnode* %scan.0, i64 0, i32 1
+  %1 = load i8* %type, align 1, !tbaa !1
+  %idxprom = zext i8 %1 to i64
+  %2 = lshr i64 1277896394266378240, %idxprom
+  %3 = and i64 %2, 1
+  %tobool = icmp eq i64 %3, 0
+  %sub.ptr.lhs.cast = ptrtoint %struct.regnode* %val to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.regnode* %scan.0 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %sub.ptr.div = ashr exact i64 %sub.ptr.sub, 2
+  br i1 %tobool, label %if.else, label %if.then4
+
+if.then4:                                         ; preds = %for.end
+  %conv = trunc i64 %sub.ptr.div to i32
+  %arg1 = getelementptr inbounds %struct.regnode* %scan.0, i64 1
+  %4 = bitcast %struct.regnode* %arg1 to i32*
+  store i32 %conv, i32* %4, align 4, !tbaa !3
+  br label %if.end10
+
+if.else:                                          ; preds = %for.end
+  %conv9 = trunc i64 %sub.ptr.div to i16
+  %next_off = getelementptr inbounds %struct.regnode* %scan.0, i64 0, i32 2
+  store i16 %conv9, i16* %next_off, align 2, !tbaa !4
+  br label %if.end10
+
+if.end10:                                         ; preds = %entry, %if.else, %if.then4
+  ret void
+}

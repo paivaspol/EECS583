@@ -1,0 +1,34 @@
+define i8* @FileTail(i8* %file, i32 %noextension) #0 {
+entry:
+  %call = tail call i8* @strrchr(i8* %file, i32 47) #5
+  %call1 = tail call i64 @strlen(i8* %file) #5
+  %add = add i64 %call1, 1
+  %call2 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 105, i64 %add) #6
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call3 = tail call i8* @strcpy(i8* %call2, i8* %file) #6
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %add.ptr = getelementptr inbounds i8* %call, i64 1
+  %call4 = tail call i8* @strcpy(i8* %call2, i8* %add.ptr) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %tobool = icmp eq i32 %noextension, 0
+  br i1 %tobool, label %if.end10, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %call6 = tail call i8* @strrchr(i8* %call2, i32 46) #5
+  %cmp7 = icmp eq i8* %call6, null
+  br i1 %cmp7, label %if.end10, label %if.then8
+
+if.then8:                                         ; preds = %if.then5
+  store i8 0, i8* %call6, align 1, !tbaa !0
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.then5, %if.end, %if.then8
+  ret i8* %call2
+}

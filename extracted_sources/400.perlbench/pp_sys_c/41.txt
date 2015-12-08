@@ -1,0 +1,64 @@
+PP(pp_sockpair)
+{
+#if defined (HAS_SOCKETPAIR) || (defined (HAS_SOCKET) && defined(SOCK_DGRAM) && defined(AF_INET) && defined(PF_INET))
+    dSP;
+    GV *gv1;
+    GV *gv2;
+    register IO *io1;
+    register IO *io2;
+    int protocol = POPi;
+    int type = POPi;
+    int domain = POPi;
+    int fd[2];
+
+    gv2 = (GV*)POPs;
+    gv1 = (GV*)POPs;
+    io1 = gv1 ? GvIOn(gv1) : NULL;
+    io2 = gv2 ? GvIOn(gv2) : NULL;
+    if (!gv1 || !gv2 || !io1 || !io2) {
+	if (ckWARN2(WARN_UNOPENED,WARN_CLOSED)) {
+	    if (!gv1 || !io1)
+		report_evil_fh(gv1, io1, PL_op->op_type);
+	    if (!gv2 || !io2)
+		report_evil_fh(gv1, io2, PL_op->op_type);
+	}
+	if (IoIFP(io1))
+	    do_close(gv1, FALSE);
+	if (IoIFP(io2))
+	    do_close(gv2, FALSE);
+	RETPUSHUNDEF;
+    }
+
+    if (IoIFP(io1))
+	do_close(gv1, FALSE);
+    if (IoIFP(io2))
+	do_close(gv2, FALSE);
+
+    TAINT_PROPER("socketpair");
+    if (PerlSock_socketpair(domain, type, protocol, fd) < 0)
+	RETPUSHUNDEF;
+    IoIFP(io1) = PerlIO_fdopen(fd[0], "r"SOCKET_OPEN_MODE);
+    IoOFP(io1) = PerlIO_fdopen(fd[0], "w"SOCKET_OPEN_MODE);
+    IoTYPE(io1) = IoTYPE_SOCKET;
+    IoIFP(io2) = PerlIO_fdopen(fd[1], "r"SOCKET_OPEN_MODE);
+    IoOFP(io2) = PerlIO_fdopen(fd[1], "w"SOCKET_OPEN_MODE);
+    IoTYPE(io2) = IoTYPE_SOCKET;
+    if (!IoIFP(io1) || !IoOFP(io1) || !IoIFP(io2) || !IoOFP(io2)) {
+	if (IoIFP(io1)) PerlIO_close(IoIFP(io1));
+	if (IoOFP(io1)) PerlIO_close(IoOFP(io1));
+	if (!IoIFP(io1) && !IoOFP(io1)) PerlLIO_close(fd[0]);
+	if (IoIFP(io2)) PerlIO_close(IoIFP(io2));
+	if (IoOFP(io2)) PerlIO_close(IoOFP(io2));
+	if (!IoIFP(io2) && !IoOFP(io2)) PerlLIO_close(fd[1]);
+	RETPUSHUNDEF;
+    }
+#if defined(HAS_FCNTL) && defined(F_SETFD)
+    fcntl(fd[0],F_SETFD,fd[0] > PL_maxsysfd);	/* ensure close-on-exec */
+    fcntl(fd[1],F_SETFD,fd[1] > PL_maxsysfd);	/* ensure close-on-exec */
+#endif
+
+    RETPUSHYES;
+#else
+    DIE(aTHX_ PL_no_sock_func, "socketpair");
+#endif
+}

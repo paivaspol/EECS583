@@ -1,18 +1,5 @@
 int
-Perl_magic_getpos(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_clearpack(pTHX_ SV *sv, MAGIC *mg)
 {
-    SV* lsv = LvTARG(sv);
-
-    if (SvTYPE(lsv) >= SVt_PVMG && SvMAGIC(lsv)) {
-	mg = mg_find(lsv, PERL_MAGIC_regex_global);
-	if (mg && mg->mg_len >= 0) {
-	    I32 i = mg->mg_len;
-	    if (DO_UTF8(lsv))
-		sv_pos_b2u(lsv, &i);
-	    sv_setiv(sv, i + PL_curcop->cop_arybase);
-	    return 0;
-	}
-    }
-    SvOK_off(sv);
-    return 0;
+    return magic_methpack(sv,mg,"DELETE");
 }

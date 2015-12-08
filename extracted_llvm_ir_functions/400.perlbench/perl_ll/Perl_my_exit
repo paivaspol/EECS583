@@ -1,0 +1,29 @@
+define void @Perl_my_exit(i32 %status) #0 {
+entry:
+  switch i32 %status, label %sw.default [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb1
+  ]
+
+sw.bb:                                            ; preds = %entry
+  store i32 0, i32* @PL_statusvalue, align 4, !tbaa !3
+  br label %sw.epilog
+
+sw.bb1:                                           ; preds = %entry
+  store i32 1, i32* @PL_statusvalue, align 4, !tbaa !3
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %entry
+  store i32 %status, i32* @PL_statusvalue, align 4, !tbaa !3
+  %cmp = icmp eq i32 %status, -1
+  br i1 %cmp, label %sw.epilog, label %if.then
+
+if.then:                                          ; preds = %sw.default
+  %and = and i32 %status, 65535
+  store i32 %and, i32* @PL_statusvalue, align 4, !tbaa !3
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %sw.default, %if.then, %sw.bb1, %sw.bb
+  tail call fastcc void @S_my_exit_jump() #8
+  ret void
+}

@@ -1,11 +1,9 @@
 void
-assemble_asm (string)
-     tree string;
+make_var_volatile (var)
+     tree var;
 {
-  app_enable ();
+  if (GET_CODE (DECL_RTL (var)) != MEM)
+    abort ();
 
-  if (TREE_CODE (string) == ADDR_EXPR)
-    string = TREE_OPERAND (string, 0);
-
-  fprintf (asm_out_file, "\t%s\n", TREE_STRING_POINTER (string));
+  MEM_VOLATILE_P (DECL_RTL (var)) = 1;
 }

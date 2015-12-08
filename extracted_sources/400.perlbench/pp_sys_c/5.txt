@@ -1,0 +1,30 @@
+PP(pp_warn)
+{
+    dSP; dMARK;
+    SV *tmpsv;
+    char *tmps;
+    STRLEN len;
+    if (SP - MARK != 1) {
+	dTARGET;
+	do_join(TARG, &PL_sv_no, MARK, SP);
+	tmpsv = TARG;
+	SP = MARK + 1;
+    }
+    else {
+	tmpsv = TOPs;
+    }
+    tmps = SvPV(tmpsv, len);
+    if ((!tmps || !len) && PL_errgv) {
+  	SV *error = ERRSV;
+	(void)SvUPGRADE(error, SVt_PV);
+	if (SvPOK(error) && SvCUR(error))
+	    sv_catpv(error, "\t...caught");
+	tmpsv = error;
+	tmps = SvPV(tmpsv, len);
+    }
+    if (!tmps || !len)
+	tmpsv = sv_2mortal(newSVpvn("Warning: something's wrong", 26));
+
+    Perl_warn(aTHX_ "%"SVf, tmpsv);
+    RETSETYES;
+}

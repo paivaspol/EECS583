@@ -1,0 +1,42 @@
+PP(pp_aslice)
+{
+    dSP; dMARK; dORIGMARK;
+    register SV** svp;
+    register AV* av = (AV*)POPs;
+    register I32 lval = (PL_op->op_flags & OPf_MOD || LVRET);
+    I32 arybase = PL_curcop->cop_arybase;
+    I32 elem;
+
+    if (SvTYPE(av) == SVt_PVAV) {
+	if (lval && PL_op->op_private & OPpLVAL_INTRO) {
+	    I32 max = -1;
+	    for (svp = MARK + 1; svp <= SP; svp++) {
+		elem = SvIVx(*svp);
+		if (elem > max)
+		    max = elem;
+	    }
+	    if (max > AvMAX(av))
+		av_extend(av, max);
+	}
+	while (++MARK <= SP) {
+	    elem = SvIVx(*MARK);
+
+	    if (elem > 0)
+		elem -= arybase;
+	    svp = av_fetch(av, elem, lval);
+	    if (lval) {
+		if (!svp || *svp == &PL_sv_undef)
+		    DIE(aTHX_ PL_no_aelem, elem);
+		if (PL_op->op_private & OPpLVAL_INTRO)
+		    save_aelem(av, elem, svp);
+	    }
+	    *MARK = svp ? *svp : &PL_sv_undef;
+	}
+    }
+    if (GIMME != G_ARRAY) {
+	MARK = ORIGMARK;
+	*++MARK = SP > ORIGMARK ? *SP : &PL_sv_undef;
+	SP = MARK;
+    }
+    RETURN;
+}

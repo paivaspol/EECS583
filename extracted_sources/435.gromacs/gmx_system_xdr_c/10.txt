@@ -1,8 +1,24 @@
-static bool_t
-xdrstdio_putbytes (XDR *xdrs, char *addr, unsigned int len)
+bool_t
+xdr_u_short (XDR *xdrs, unsigned short *usp)
 {
-  if ((len != 0) && (fwrite (addr, (int) len, 1,
-			     (FILE *) xdrs->x_private) != 1))
-    return FALSE;
-  return TRUE;
+  unsigned long l;
+
+  switch (xdrs->x_op)
+    {
+    case XDR_ENCODE:
+      l = (unsigned long) * usp;
+      return xdr_putlong (xdrs, (long *)&l);
+
+    case XDR_DECODE:
+      if (!xdr_getlong (xdrs, (long *)&l))
+	{
+	  return FALSE;
+	}
+      *usp = (unsigned short) l;
+      return TRUE;
+
+    case XDR_FREE:
+      return TRUE;
+    }
+  return FALSE;
 }

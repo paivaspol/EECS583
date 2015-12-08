@@ -1,0 +1,18 @@
+PP(pp_pack)
+{
+    dSP; dMARK; dORIGMARK; dTARGET;
+    register SV *cat = TARG;
+    STRLEN fromlen;
+    register char *pat = SvPVx(*++MARK, fromlen);
+    register char *patend = pat + fromlen;
+
+    MARK++;
+    sv_setpvn(cat, "", 0);
+
+    packlist(cat, pat, patend, MARK, SP + 1);
+
+    SvSETMAGIC(cat);
+    SP = ORIGMARK;
+    PUSHs(cat);
+    RETURN;
+}

@@ -1,15 +1,6 @@
 int
-Perl_magic_settaint(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_getarylen(pTHX_ SV *sv, MAGIC *mg)
 {
-    if (PL_localizing) {
-	if (PL_localizing == 1)
-	    mg->mg_len <<= 1;
-	else
-	    mg->mg_len >>= 1;
-    }
-    else if (PL_tainted)
-	mg->mg_len |= 1;
-    else
-	mg->mg_len &= ~1;
+    sv_setiv(sv, AvFILL((AV*)mg->mg_obj) + PL_curcop->cop_arybase);
     return 0;
 }

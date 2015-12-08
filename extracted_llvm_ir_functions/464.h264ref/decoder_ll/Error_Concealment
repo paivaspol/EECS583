@@ -1,0 +1,53 @@
+define void @Error_Concealment(i16** nocapture %inY, i8** nocapture %s_map, i16*** nocapture %refY) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %height = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 15
+  %1 = load i32* %height, align 4, !tbaa !3
+  %div = sdiv i32 %1, 16
+  %width = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 13
+  %2 = load i32* %width, align 4, !tbaa !3
+  %div1 = sdiv i32 %2, 16
+  %cmp19 = icmp sgt i32 %1, 15
+  br i1 %cmp19, label %for.cond2.preheader.lr.ph, label %for.end9
+
+for.cond2.preheader.lr.ph:                        ; preds = %entry
+  %cmp317 = icmp sgt i32 %2, 15
+  br label %for.cond2.preheader
+
+for.cond2.preheader:                              ; preds = %for.cond2.preheader.lr.ph, %for.inc7
+  %indvars.iv21 = phi i64 [ 0, %for.cond2.preheader.lr.ph ], [ %indvars.iv.next22, %for.inc7 ]
+  br i1 %cmp317, label %for.body4.lr.ph, label %for.inc7
+
+for.body4.lr.ph:                                  ; preds = %for.cond2.preheader
+  %arrayidx = getelementptr inbounds i8** %s_map, i64 %indvars.iv21
+  br label %for.body4
+
+for.body4:                                        ; preds = %for.inc, %for.body4.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body4.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %3 = load i8** %arrayidx, align 8, !tbaa !0
+  %arrayidx6 = getelementptr inbounds i8* %3, i64 %indvars.iv
+  %4 = load i8* %arrayidx6, align 1, !tbaa !1
+  %tobool = icmp eq i8 %4, 0
+  br i1 %tobool, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body4
+  %5 = trunc i64 %indvars.iv to i32
+  %6 = trunc i64 %indvars.iv21 to i32
+  tail call void @Conceal_Error(i16** %inY, i32 %6, i32 %5, i16*** %refY, i8** %s_map) #5
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body4, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %7 = trunc i64 %indvars.iv.next to i32
+  %cmp3 = icmp slt i32 %7, %div1
+  br i1 %cmp3, label %for.body4, label %for.inc7
+
+for.inc7:                                         ; preds = %for.inc, %for.cond2.preheader
+  %indvars.iv.next22 = add i64 %indvars.iv21, 1
+  %8 = trunc i64 %indvars.iv.next22 to i32
+  %cmp = icmp slt i32 %8, %div
+  br i1 %cmp, label %for.cond2.preheader, label %for.end9
+
+for.end9:                                         ; preds = %for.inc7, %entry
+  ret void
+}

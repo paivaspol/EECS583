@@ -1,0 +1,82 @@
+PP(pp_uc)
+{
+    dSP;
+    SV *sv = TOPs;
+    register U8 *s;
+    STRLEN len;
+
+    SvGETMAGIC(sv);
+    if (DO_UTF8(sv)) {
+	dTARGET;
+	STRLEN ulen;
+	register U8 *d;
+	U8 *send;
+	U8 tmpbuf[UTF8_MAXBYTES+1];
+
+	s = (U8*)SvPV_nomg(sv,len);
+	if (!len) {
+	    SvUTF8_off(TARG);				/* decontaminate */
+	    sv_setpvn(TARG, "", 0);
+	    SETs(TARG);
+	}
+	else {
+	    STRLEN min = len + 1;
+
+	    (void)SvUPGRADE(TARG, SVt_PV);
+	    SvGROW(TARG, min);
+	    (void)SvPOK_only(TARG);
+	    d = (U8*)SvPVX(TARG);
+	    send = s + len;
+	    while (s < send) {
+		STRLEN u = UTF8SKIP(s);
+
+		toUPPER_utf8(s, tmpbuf, &ulen);
+		if (ulen > u && (SvLEN(TARG) < (min += ulen - u))) {
+		    /* If the eventually required minimum size outgrows
+		     * the available space, we need to grow. */
+		    UV o = d - (U8*)SvPVX(TARG);
+
+		    /* If someone uppercases one million U+03B0s we
+		     * SvGROW() one million times.  Or we could try
+		     * guessing how much to allocate without allocating
+		     * too much. Such is life. */
+		    SvGROW(TARG, min);
+		    d = (U8*)SvPVX(TARG) + o;
+		}
+		Copy(tmpbuf, d, ulen, U8);
+		d += ulen;
+		s += u;
+	    }
+	    *d = '\0';
+	    SvUTF8_on(TARG);
+	    SvCUR_set(TARG, d - (U8*)SvPVX(TARG));
+	    SETs(TARG);
+	}
+    }
+    else {
+	if (!SvPADTMP(sv) || SvREADONLY(sv)) {
+	    dTARGET;
+	    SvUTF8_off(TARG);				/* decontaminate */
+	    sv_setsv_nomg(TARG, sv);
+	    sv = TARG;
+	    SETs(sv);
+	}
+	s = (U8*)SvPV_force_nomg(sv, len);
+	if (len) {
+	    register U8 *send = s + len;
+
+	    if (IN_LOCALE_RUNTIME) {
+		TAINT;
+		SvTAINTED_on(sv);
+		for (; s < send; s++)
+		    *s = toUPPER_LC(*s);
+	    }
+	    else {
+		for (; s < send; s++)
+		    *s = toUPPER(*s);
+	    }
+	}
+    }
+    SvSETMAGIC(sv);
+    RETURN;
+}

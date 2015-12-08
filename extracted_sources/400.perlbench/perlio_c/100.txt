@@ -1,0 +1,11 @@
+IV
+PerlIOPending_flush(pTHX_ PerlIO *f)
+{
+    PerlIOBuf *b = PerlIOSelf(f, PerlIOBuf);
+    if (b->buf && b->buf != (STDCHAR *) & b->oneword) {
+	Safefree(b->buf);
+	b->buf = NULL;
+    }
+    PerlIO_pop(aTHX_ f);
+    return 0;
+}

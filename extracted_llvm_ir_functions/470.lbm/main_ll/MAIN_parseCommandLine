@@ -1,0 +1,95 @@
+define void @MAIN_parseCommandLine(i32 %nArgs, i8** nocapture %arg, %struct.MAIN_Param* nocapture %param) #0 {
+entry:
+  %fileStat = alloca %struct.stat, align 8
+  %0 = bitcast %struct.stat* %fileStat to i8*
+  call void @llvm.lifetime.start(i64 144, i8* %0) #3
+  %nArgs.off = add i32 %nArgs, -5
+  %1 = icmp ugt i32 %nArgs.off, 1
+  br i1 %1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %puts = call i32 @puts(i8* getelementptr inbounds ([108 x i8]* @str, i64 0, i64 0))
+  call void @exit(i32 1) #8
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds i8** %arg, i64 1
+  %2 = load i8** %arrayidx, align 8, !tbaa !3
+  %call2 = call i32 @atoi(i8* %2) #9
+  %nTimeSteps = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 0
+  store i32 %call2, i32* %nTimeSteps, align 4, !tbaa !0
+  %arrayidx3 = getelementptr inbounds i8** %arg, i64 2
+  %3 = load i8** %arrayidx3, align 8, !tbaa !3
+  %resultFilename = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 1
+  store i8* %3, i8** %resultFilename, align 8, !tbaa !3
+  %arrayidx4 = getelementptr inbounds i8** %arg, i64 3
+  %4 = load i8** %arrayidx4, align 8, !tbaa !3
+  %call5 = call i32 @atoi(i8* %4) #9
+  %action = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 2
+  store i32 %call5, i32* %action, align 4, !tbaa !1
+  %arrayidx6 = getelementptr inbounds i8** %arg, i64 4
+  %5 = load i8** %arrayidx6, align 8, !tbaa !3
+  %call7 = call i32 @atoi(i8* %5) #9
+  %simType = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 3
+  store i32 %call7, i32* %simType, align 4, !tbaa !1
+  %cmp8 = icmp eq i32 %nArgs, 6
+  br i1 %cmp8, label %if.then9, label %if.else
+
+if.then9:                                         ; preds = %if.end
+  %arrayidx10 = getelementptr inbounds i8** %arg, i64 5
+  %6 = load i8** %arrayidx10, align 8, !tbaa !3
+  %obstacleFilename = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 4
+  store i8* %6, i8** %obstacleFilename, align 8, !tbaa !3
+  %call12 = call i32 @stat(i8* %6, %struct.stat* %fileStat) #7
+  %cmp13 = icmp eq i32 %call12, 0
+  br i1 %cmp13, label %if.end17, label %if.then14
+
+if.then14:                                        ; preds = %if.then9
+  %7 = load i8** %obstacleFilename, align 8, !tbaa !3
+  %call16 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([55 x i8]* @.str2, i64 0, i64 0), i8* %7) #7
+  call void @exit(i32 1) #8
+  unreachable
+
+if.end17:                                         ; preds = %if.then9
+  %st_size = getelementptr inbounds %struct.stat* %fileStat, i64 0, i32 8
+  %8 = load i64* %st_size, align 8, !tbaa !4
+  %cmp18 = icmp eq i64 %8, 1313130
+  br i1 %cmp18, label %if.end17.if.end25_crit_edge, label %if.then19
+
+if.end17.if.end25_crit_edge:                      ; preds = %if.end17
+  %.pre = load i32* %action, align 4, !tbaa !1
+  br label %if.end25
+
+if.then19:                                        ; preds = %if.end17
+  %9 = load i8** %obstacleFilename, align 8, !tbaa !3
+  %conv = trunc i64 %8 to i32
+  %call22 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([82 x i8]* @.str3, i64 0, i64 0), i8* %9, i32 %conv, i32 1313130) #7
+  call void @exit(i32 1) #8
+  unreachable
+
+if.else:                                          ; preds = %if.end
+  %obstacleFilename24 = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 4
+  store i8* null, i8** %obstacleFilename24, align 8, !tbaa !3
+  br label %if.end25
+
+if.end25:                                         ; preds = %if.end17.if.end25_crit_edge, %if.else
+  %10 = phi i32 [ %.pre, %if.end17.if.end25_crit_edge ], [ %call5, %if.else ]
+  %cmp27 = icmp eq i32 %10, 1
+  br i1 %cmp27, label %land.lhs.true, label %if.end36
+
+land.lhs.true:                                    ; preds = %if.end25
+  %11 = load i8** %resultFilename, align 8, !tbaa !3
+  %call30 = call i32 @stat(i8* %11, %struct.stat* %fileStat) #7
+  %cmp31 = icmp eq i32 %call30, 0
+  br i1 %cmp31, label %if.end36, label %if.then33
+
+if.then33:                                        ; preds = %land.lhs.true
+  %12 = load i8** %resultFilename, align 8, !tbaa !3
+  %call35 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i8* %12) #7
+  call void @exit(i32 1) #8
+  unreachable
+
+if.end36:                                         ; preds = %land.lhs.true, %if.end25
+  call void @llvm.lifetime.end(i64 144, i8* %0) #3
+  ret void
+}

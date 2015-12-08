@@ -1,0 +1,76 @@
+define internal fastcc i32 @copy_alignment_line(i8* nocapture %aseq, i32 %apos, i32 %name_rcol, i8* nocapture %buffer, i32 %lcol, i32 %rcol) #0 {
+entry:
+  %idx.ext = sext i32 %apos to i64
+  %add.ptr = getelementptr inbounds i8* %aseq, i64 %idx.ext
+  %cmp6 = icmp sgt i32 %lcol, 0
+  br i1 %cmp6, label %for.body, label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.body, %entry
+  %s2.0.lcssa = phi i8* [ %buffer, %entry ], [ %s2.0.incdec.ptr, %for.body ]
+  %cmp21 = icmp sgt i32 %lcol, %rcol
+  br i1 %cmp21, label %return, label %for.body3
+
+for.body:                                         ; preds = %entry, %for.body
+  %i.08 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %s2.07 = phi i8* [ %s2.0.incdec.ptr, %for.body ], [ %buffer, %entry ]
+  %0 = load i8* %s2.07, align 1, !tbaa !1
+  %tobool = icmp eq i8 %0, 0
+  %incdec.ptr = getelementptr inbounds i8* %s2.07, i64 1
+  %s2.0.incdec.ptr = select i1 %tobool, i8* %s2.07, i8* %incdec.ptr
+  %inc = add nsw i32 %i.08, 1
+  %exitcond = icmp eq i32 %inc, %lcol
+  br i1 %exitcond, label %for.cond1.preheader, label %for.body
+
+for.body3:                                        ; preds = %for.cond1.preheader, %if.end26
+  %i.15 = phi i32 [ %inc33, %if.end26 ], [ %lcol, %for.cond1.preheader ]
+  %s2.24 = phi i8* [ %s2.2.incdec.ptr30, %if.end26 ], [ %s2.0.lcssa, %for.cond1.preheader ]
+  %s1.02 = phi i8* [ %incdec.ptr27, %if.end26 ], [ %add.ptr, %for.cond1.preheader ]
+  %1 = load i8* %s2.24, align 1, !tbaa !1
+  %cmp4 = icmp eq i8 %1, 9
+  br i1 %cmp4, label %if.then6, label %if.end7
+
+if.then6:                                         ; preds = %for.body3
+  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([73 x i8]* @.str33, i64 0, i64 0)) #6
+  br label %return
+
+if.end7:                                          ; preds = %for.body3
+  %cmp8 = icmp sgt i32 %i.15, %name_rcol
+  br i1 %cmp8, label %if.else, label %if.then10
+
+if.then10:                                        ; preds = %if.end7
+  store i8 46, i8* %s1.02, align 1, !tbaa !1
+  br label %if.end26
+
+if.else:                                          ; preds = %if.end7
+  switch i8 %1, label %if.else23 [
+    i8 0, label %if.then17
+    i8 10, label %if.then17
+    i8 32, label %if.then22
+  ]
+
+if.then17:                                        ; preds = %if.else, %if.else
+  store i8 46, i8* %s1.02, align 1, !tbaa !1
+  br label %if.end26
+
+if.then22:                                        ; preds = %if.else
+  store i8 46, i8* %s1.02, align 1, !tbaa !1
+  br label %if.end26
+
+if.else23:                                        ; preds = %if.else
+  store i8 %1, i8* %s1.02, align 1, !tbaa !1
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.then17, %if.else23, %if.then22, %if.then10
+  %incdec.ptr27 = getelementptr inbounds i8* %s1.02, i64 1
+  %2 = load i8* %s2.24, align 1, !tbaa !1
+  %tobool28 = icmp eq i8 %2, 0
+  %incdec.ptr30 = getelementptr inbounds i8* %s2.24, i64 1
+  %s2.2.incdec.ptr30 = select i1 %tobool28, i8* %s2.24, i8* %incdec.ptr30
+  %inc33 = add nsw i32 %i.15, 1
+  %cmp2 = icmp slt i32 %i.15, %rcol
+  br i1 %cmp2, label %for.body3, label %return
+
+return:                                           ; preds = %for.cond1.preheader, %if.end26, %if.then6
+  %retval.0 = phi i32 [ 0, %if.then6 ], [ 1, %if.end26 ], [ 1, %for.cond1.preheader ]
+  ret i32 %retval.0
+}

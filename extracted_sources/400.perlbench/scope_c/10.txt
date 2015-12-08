@@ -1,8 +1,6 @@
 void
-Perl_save_generic_svref(pTHX_ SV **sptr)
+Perl_savestack_grow_cnt(pTHX_ I32 need)
 {
-    SSCHECK(3);
-    SSPUSHPTR(sptr);
-    SSPUSHPTR(SvREFCNT_inc(*sptr));
-    SSPUSHINT(SAVEt_GENERIC_SVREF);
+    PL_savestack_max = PL_savestack_ix + need;
+    Renew(PL_savestack, PL_savestack_max, ANY);
 }

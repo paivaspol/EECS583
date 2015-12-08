@@ -1,0 +1,18 @@
+PP(pp_sleep)
+{
+    dSP; dTARGET;
+    I32 duration;
+    Time_t lasttime;
+    Time_t when;
+
+    (void)time(&lasttime);
+    if (MAXARG < 1)
+	PerlProc_pause();
+    else {
+	duration = POPi;
+	PerlProc_sleep((unsigned int)duration);
+    }
+    (void)time(&when);
+    XPUSHi(when - lasttime);
+    RETURN;
+}

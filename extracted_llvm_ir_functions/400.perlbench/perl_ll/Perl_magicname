@@ -1,0 +1,20 @@
+define void @Perl_magicname(i8* %sym, i8* %name, i32 %namlen) #0 {
+entry:
+  %call = tail call %struct.gv* @Perl_gv_fetchpv(i8* %sym, i32 1, i32 4) #7
+  %tobool = icmp eq %struct.gv* %call, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.gv* %call, i64 0, i32 0
+  %0 = load %struct.xpvgv** %sv_any, align 8, !tbaa !0
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %0, i64 0, i32 7
+  %1 = load %struct.gp** %xgv_gp, align 8, !tbaa !0
+  %gp_sv = getelementptr inbounds %struct.gp* %1, i64 0, i32 0
+  %2 = load %struct.sv** %gp_sv, align 8, !tbaa !0
+  %3 = bitcast %struct.gv* %call to %struct.sv*
+  tail call void @Perl_sv_magic(%struct.sv* %2, %struct.sv* %3, i32 0, i8* %name, i32 %namlen) #7
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

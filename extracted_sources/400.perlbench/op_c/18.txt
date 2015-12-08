@@ -1,24 +1,15 @@
-void
-Perl_cv_ckproto(pTHX_ CV *cv, GV *gv, char *p)
+STATIC OP *
+S_scalarboolean(pTHX_ OP *o)
 {
-    if (((!p != !SvPOK(cv)) || (p && strNE(p, SvPVX(cv)))) && ckWARN_d(WARN_PROTOTYPE)) {
-	SV* msg = sv_newmortal();
-	SV* name = Nullsv;
+    if (o->op_type == OP_SASSIGN && cBINOPo->op_first->op_type == OP_CONST) {
+	if (ckWARN(WARN_SYNTAX)) {
+	    line_t oldline = CopLINE(PL_curcop);
 
-	if (gv)
-	    gv_efullname3(name = sv_newmortal(), gv, Nullch);
-	sv_setpv(msg, "Prototype mismatch:");
-	if (name)
-	    Perl_sv_catpvf(aTHX_ msg, " sub %"SVf, name);
-	if (SvPOK(cv))
-	    Perl_sv_catpvf(aTHX_ msg, " (%"SVf")", (SV *)cv);
-	else
-	    Perl_sv_catpv(aTHX_ msg, ": none");
-	sv_catpv(msg, " vs ");
-	if (p)
-	    Perl_sv_catpvf(aTHX_ msg, "(%s)", p);
-	else
-	    sv_catpv(msg, "none");
-	Perl_warner(aTHX_ packWARN(WARN_PROTOTYPE), "%"SVf, msg);
+	    if (PL_copline != NOLINE)
+		CopLINE_set(PL_curcop, PL_copline);
+	    Perl_warner(aTHX_ packWARN(WARN_SYNTAX), "Found = in conditional, should be ==");
+	    CopLINE_set(PL_curcop, oldline);
+	}
     }
+    return scalar(o);
 }

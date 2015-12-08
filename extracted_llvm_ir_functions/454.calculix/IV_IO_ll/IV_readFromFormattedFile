@@ -1,0 +1,46 @@
+define i32 @IV_readFromFormattedFile(%struct._IV* %iv, %struct._IO_FILE* %fp) #0 {
+entry:
+  %size = alloca i32, align 4
+  %cmp = icmp eq %struct._IV* %iv, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str6, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp) #5
+  br label %return
+
+if.end:                                           ; preds = %entry
+  call void @IV_clearData(%struct._IV* %iv) #5
+  %call2 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i32* %size) #5
+  %cmp3 = icmp eq i32 %call2, 1
+  br i1 %cmp3, label %if.end6, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call5 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([65 x i8]* @.str8, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp, i32 %call2, i32 1) #5
+  br label %return
+
+if.end6:                                          ; preds = %if.end
+  %2 = load i32* %size, align 4, !tbaa !3
+  call void @IV_init(%struct._IV* %iv, i32 %2, i32* null) #5
+  %3 = load i32* %size, align 4, !tbaa !3
+  %size7 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
+  store i32 %3, i32* %size7, align 4, !tbaa !3
+  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
+  %4 = load i32** %vec, align 8, !tbaa !0
+  %call8 = call i32 @IVfscanf(%struct._IO_FILE* %fp, i32 %3, i32* %4) #5
+  %5 = load i32* %size, align 4, !tbaa !3
+  %cmp9 = icmp eq i32 %call8, %5
+  br i1 %cmp9, label %return, label %if.then10
+
+if.then10:                                        ; preds = %if.end6
+  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call11 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([65 x i8]* @.str8, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp, i32 %call8, i32 %5) #5
+  br label %return
+
+return:                                           ; preds = %if.end6, %if.then10, %if.then4, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then4 ], [ 0, %if.then10 ], [ 1, %if.end6 ]
+  ret i32 %retval.0
+}

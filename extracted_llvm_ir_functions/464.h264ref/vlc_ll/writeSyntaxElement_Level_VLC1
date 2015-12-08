@@ -1,0 +1,88 @@
+define i32 @writeSyntaxElement_Level_VLC1(%struct.syntaxelement* nocapture %se, %struct.datapartition* nocapture %this_dataPart) #0 {
+entry:
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
+  %0 = load i32* %value1, align 4, !tbaa !0
+  %ispos = icmp sgt i32 %0, -1
+  %neg = sub i32 0, %0
+  %1 = select i1 %ispos, i32 %0, i32 %neg
+  %.lobit = lshr i32 %0, 31
+  %cmp1 = icmp slt i32 %1, 8
+  br i1 %cmp1, label %if.end15, label %if.else
+
+if.else:                                          ; preds = %entry
+  %cmp2 = icmp slt i32 %1, 16
+  %len4 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
+  br i1 %cmp2, label %if.then3, label %if.else8
+
+if.then3:                                         ; preds = %if.else
+  store i32 19, i32* %len4, align 4, !tbaa !0
+  %sub5 = shl i32 %1, 1
+  %shl = add i32 %sub5, -16
+  %or = or i32 %.lobit, %shl
+  %or6 = or i32 %or, 16
+  %inf7 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4
+  store i32 %or6, i32* %inf7, align 4, !tbaa !0
+  br label %if.end15.thread
+
+if.else8:                                         ; preds = %if.else
+  store i32 28, i32* %len4, align 4, !tbaa !0
+  %sub10 = shl i32 %1, 1
+  %shl11 = add i32 %sub10, -32
+  %or12 = or i32 %.lobit, %shl11
+  %or13 = or i32 %or12, 4096
+  %inf14 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4
+  store i32 %or13, i32* %inf14, align 4, !tbaa !0
+  br label %if.end15.thread
+
+if.end15.thread:                                  ; preds = %if.then3, %if.else8
+  %.ph = phi i32 [ %or6, %if.then3 ], [ %or13, %if.else8 ]
+  %.ph32 = phi i32 [ 19, %if.then3 ], [ 28, %if.else8 ]
+  %len.i33 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
+  %bitpattern.i34 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5
+  store i32 0, i32* %bitpattern.i34, align 4, !tbaa !0
+  br label %while.body.lr.ph.i
+
+if.end15:                                         ; preds = %entry
+  %mul = shl nsw i32 %1, 1
+  %add = or i32 %mul, %.lobit
+  %sub = add nsw i32 %add, -1
+  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
+  store i32 %sub, i32* %len, align 4, !tbaa !0
+  %inf = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4
+  store i32 1, i32* %inf, align 4, !tbaa !0
+  %len.i = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
+  %bitpattern.i = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5
+  store i32 0, i32* %bitpattern.i, align 4, !tbaa !0
+  %cmp10.i = icmp sgt i32 %sub, 0
+  br i1 %cmp10.i, label %while.body.lr.ph.i, label %symbol2vlc.exit
+
+while.body.lr.ph.i:                               ; preds = %if.end15.thread, %if.end15
+  %bitpattern.i38 = phi i32* [ %bitpattern.i34, %if.end15.thread ], [ %bitpattern.i, %if.end15 ]
+  %len.i37 = phi i32* [ %len.i33, %if.end15.thread ], [ %len.i, %if.end15 ]
+  %2 = phi i32 [ %.ph32, %if.end15.thread ], [ %sub, %if.end15 ]
+  %3 = phi i32 [ %.ph, %if.end15.thread ], [ 1, %if.end15 ]
+  br label %while.body.i
+
+while.body.i:                                     ; preds = %while.body.i, %while.body.lr.ph.i
+  %dec12.in.i = phi i32 [ %2, %while.body.lr.ph.i ], [ %dec12.i, %while.body.i ]
+  %storemerge11.i = phi i32 [ 0, %while.body.lr.ph.i ], [ %or.i, %while.body.i ]
+  %dec12.i = add nsw i32 %dec12.in.i, -1
+  %shl.i = shl i32 %storemerge11.i, 1
+  %shr8.i = lshr i32 %3, %dec12.i
+  %and.i = and i32 %shr8.i, 1
+  %or.i = or i32 %and.i, %shl.i
+  %cmp.i = icmp sgt i32 %dec12.i, 0
+  br i1 %cmp.i, label %while.body.i, label %while.cond.while.end_crit_edge.i
+
+while.cond.while.end_crit_edge.i:                 ; preds = %while.body.i
+  store i32 %or.i, i32* %bitpattern.i38, align 4, !tbaa !0
+  br label %symbol2vlc.exit
+
+symbol2vlc.exit:                                  ; preds = %if.end15, %while.cond.while.end_crit_edge.i
+  %len.i36 = phi i32* [ %len.i, %if.end15 ], [ %len.i37, %while.cond.while.end_crit_edge.i ]
+  %bitstream = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0
+  %4 = load %struct.Bitstream** %bitstream, align 8, !tbaa !3
+  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %4) #4
+  %5 = load i32* %len.i36, align 4, !tbaa !0
+  ret i32 %5
+}

@@ -1,0 +1,132 @@
+define internal fastcc void @S_to_byte_substr(%struct.regexp* nocapture %prog) #0 {
+entry:
+  %substrs = getelementptr inbounds %struct.regexp* %prog, i64 0, i32 3
+  %0 = load %struct.reg_substr_data** %substrs, align 8, !tbaa !3
+  %utf8_substr = getelementptr inbounds %struct.reg_substr_data* %0, i64 0, i32 0, i64 1, i32 3
+  %1 = load %struct.sv** %utf8_substr, align 8, !tbaa !3
+  %tobool = icmp eq %struct.sv* %1, null
+  br i1 %tobool, label %if.end42, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %substr = getelementptr inbounds %struct.reg_substr_data* %0, i64 0, i32 0, i64 1, i32 2
+  %2 = load %struct.sv** %substr, align 8, !tbaa !3
+  %tobool4 = icmp eq %struct.sv* %2, null
+  br i1 %tobool4, label %if.then, label %if.end42
+
+if.then:                                          ; preds = %land.lhs.true
+  %call = tail call %struct.sv* @Perl_newSVsv(%struct.sv* %1) #6
+  %3 = load %struct.reg_substr_data** %substrs, align 8, !tbaa !3
+  %substr12 = getelementptr inbounds %struct.reg_substr_data* %3, i64 0, i32 0, i64 1, i32 2
+  store %struct.sv* %call, %struct.sv** %substr12, align 8, !tbaa !3
+  %call13 = tail call signext i8 @Perl_sv_utf8_downgrade(%struct.sv* %call, i8 signext 1) #6
+  %tobool14 = icmp eq i8 %call13, 0
+  br i1 %tobool14, label %if.else, label %if.then15
+
+if.then15:                                        ; preds = %if.then
+  %4 = load %struct.reg_substr_data** %substrs, align 8, !tbaa !3
+  %utf8_substr19 = getelementptr inbounds %struct.reg_substr_data* %4, i64 0, i32 0, i64 1, i32 3
+  %5 = load %struct.sv** %utf8_substr19, align 8, !tbaa !3
+  %sv_flags = getelementptr inbounds %struct.sv* %5, i64 0, i32 2
+  %6 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %6, 1073741824
+  %tobool20 = icmp eq i32 %and, 0
+  br i1 %tobool20, label %if.end27, label %if.then21
+
+if.then21:                                        ; preds = %if.then15
+  %sv_flags22 = getelementptr inbounds %struct.sv* %call, i64 0, i32 2
+  %7 = load i32* %sv_flags22, align 4, !tbaa !0
+  %or = or i32 %7, 1073741824
+  store i32 %or, i32* %sv_flags22, align 4, !tbaa !0
+  br label %if.end27
+
+if.else:                                          ; preds = %if.then
+  tail call void @Perl_sv_free(%struct.sv* %call) #6
+  %8 = load %struct.reg_substr_data** %substrs, align 8, !tbaa !3
+  %substr26 = getelementptr inbounds %struct.reg_substr_data* %8, i64 0, i32 0, i64 1, i32 2
+  store %struct.sv* @PL_sv_undef, %struct.sv** %substr26, align 8, !tbaa !3
+  %.pre126 = load %struct.reg_substr_data** %substrs, align 8, !tbaa !3
+  %utf8_substr31.phi.trans.insert = getelementptr inbounds %struct.reg_substr_data* %.pre126, i64 0, i32 0, i64 1, i32 3
+  %.pre127 = load %struct.sv** %utf8_substr31.phi.trans.insert, align 8, !tbaa !3
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.then15, %if.then21, %if.else
+  %9 = phi %struct.sv* [ %5, %if.then21 ], [ %5, %if.then15 ], [ %.pre127, %if.else ]
+  %10 = phi %struct.reg_substr_data* [ %4, %if.then21 ], [ %4, %if.then15 ], [ %.pre126, %if.else ]
+  %sv.0 = phi %struct.sv* [ %call, %if.then21 ], [ %call, %if.then15 ], [ @PL_sv_undef, %if.else ]
+  %utf8_substr35 = getelementptr inbounds %struct.reg_substr_data* %10, i64 0, i32 0, i64 2, i32 3
+  %11 = load %struct.sv** %utf8_substr35, align 8, !tbaa !3
+  %cmp = icmp eq %struct.sv* %9, %11
+  br i1 %cmp, label %if.then36, label %if.end42
+
+if.then36:                                        ; preds = %if.end27
+  %substr40 = getelementptr inbounds %struct.reg_substr_data* %10, i64 0, i32 0, i64 2, i32 2
+  store %struct.sv* %sv.0, %struct.sv** %substr40, align 8, !tbaa !3
+  %.pre = load %struct.reg_substr_data** %substrs, align 8, !tbaa !3
+  br label %if.end42
+
+if.end42:                                         ; preds = %land.lhs.true, %entry, %if.end27, %if.then36
+  %12 = phi %struct.reg_substr_data* [ %0, %land.lhs.true ], [ %0, %entry ], [ %10, %if.end27 ], [ %.pre, %if.then36 ]
+  %utf8_substr46 = getelementptr inbounds %struct.reg_substr_data* %12, i64 0, i32 0, i64 0, i32 3
+  %13 = load %struct.sv** %utf8_substr46, align 8, !tbaa !3
+  %tobool47 = icmp eq %struct.sv* %13, null
+  br i1 %tobool47, label %if.end99, label %land.lhs.true48
+
+land.lhs.true48:                                  ; preds = %if.end42
+  %substr52 = getelementptr inbounds %struct.reg_substr_data* %12, i64 0, i32 0, i64 0, i32 2
+  %14 = load %struct.sv** %substr52, align 8, !tbaa !3
+  %tobool53 = icmp eq %struct.sv* %14, null
+  br i1 %tobool53, label %if.then54, label %if.end99
+
+if.then54:                                        ; preds = %land.lhs.true48
+  %call59 = tail call %struct.sv* @Perl_newSVsv(%struct.sv* %13) #6
+  %15 = load %struct.reg_substr_data** %substrs, align 8, !tbaa !3
+  %substr63 = getelementptr inbounds %struct.reg_substr_data* %15, i64 0, i32 0, i64 0, i32 2
+  store %struct.sv* %call59, %struct.sv** %substr63, align 8, !tbaa !3
+  %call64 = tail call signext i8 @Perl_sv_utf8_downgrade(%struct.sv* %call59, i8 signext 1) #6
+  %tobool65 = icmp eq i8 %call64, 0
+  br i1 %tobool65, label %if.else78, label %if.then66
+
+if.then66:                                        ; preds = %if.then54
+  %16 = load %struct.reg_substr_data** %substrs, align 8, !tbaa !3
+  %utf8_substr70 = getelementptr inbounds %struct.reg_substr_data* %16, i64 0, i32 0, i64 0, i32 3
+  %17 = load %struct.sv** %utf8_substr70, align 8, !tbaa !3
+  %sv_flags71 = getelementptr inbounds %struct.sv* %17, i64 0, i32 2
+  %18 = load i32* %sv_flags71, align 4, !tbaa !0
+  %and72 = and i32 %18, 1073741824
+  %tobool73 = icmp eq i32 %and72, 0
+  br i1 %tobool73, label %if.end83, label %if.then74
+
+if.then74:                                        ; preds = %if.then66
+  %sv_flags75 = getelementptr inbounds %struct.sv* %call59, i64 0, i32 2
+  %19 = load i32* %sv_flags75, align 4, !tbaa !0
+  %or76 = or i32 %19, 1073741824
+  store i32 %or76, i32* %sv_flags75, align 4, !tbaa !0
+  br label %if.end83
+
+if.else78:                                        ; preds = %if.then54
+  tail call void @Perl_sv_free(%struct.sv* %call59) #6
+  %20 = load %struct.reg_substr_data** %substrs, align 8, !tbaa !3
+  %substr82 = getelementptr inbounds %struct.reg_substr_data* %20, i64 0, i32 0, i64 0, i32 2
+  store %struct.sv* @PL_sv_undef, %struct.sv** %substr82, align 8, !tbaa !3
+  %.pre124 = load %struct.reg_substr_data** %substrs, align 8, !tbaa !3
+  %utf8_substr87.phi.trans.insert = getelementptr inbounds %struct.reg_substr_data* %.pre124, i64 0, i32 0, i64 0, i32 3
+  %.pre125 = load %struct.sv** %utf8_substr87.phi.trans.insert, align 8, !tbaa !3
+  br label %if.end83
+
+if.end83:                                         ; preds = %if.then66, %if.then74, %if.else78
+  %21 = phi %struct.sv* [ %17, %if.then74 ], [ %17, %if.then66 ], [ %.pre125, %if.else78 ]
+  %22 = phi %struct.reg_substr_data* [ %16, %if.then74 ], [ %16, %if.then66 ], [ %.pre124, %if.else78 ]
+  %sv.1 = phi %struct.sv* [ %call59, %if.then74 ], [ %call59, %if.then66 ], [ @PL_sv_undef, %if.else78 ]
+  %utf8_substr91 = getelementptr inbounds %struct.reg_substr_data* %22, i64 0, i32 0, i64 2, i32 3
+  %23 = load %struct.sv** %utf8_substr91, align 8, !tbaa !3
+  %cmp92 = icmp eq %struct.sv* %21, %23
+  br i1 %cmp92, label %if.then93, label %if.end99
+
+if.then93:                                        ; preds = %if.end83
+  %substr97 = getelementptr inbounds %struct.reg_substr_data* %22, i64 0, i32 0, i64 2, i32 2
+  store %struct.sv* %sv.1, %struct.sv** %substr97, align 8, !tbaa !3
+  br label %if.end99
+
+if.end99:                                         ; preds = %land.lhs.true48, %if.end42, %if.end83, %if.then93
+  ret void
+}

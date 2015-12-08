@@ -1,0 +1,194 @@
+define void @IVqsortUp(i32 %n, i32* %ivec) #1 {
+entry:
+  %cmp230 = icmp slt i32 %n, 11
+  br i1 %cmp230, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.end97, %entry
+  %ivec.tr.lcssa = phi i32* [ %ivec, %entry ], [ %add.ptr102, %for.end97 ]
+  %n.tr.lcssa = phi i32 [ %n, %entry ], [ %sub70, %for.end97 ]
+  tail call void @IVisortUp(i32 %n.tr.lcssa, i32* %ivec.tr.lcssa) #2
+  ret void
+
+if.else:                                          ; preds = %entry, %for.end97
+  %ivec.tr232 = phi i32* [ %add.ptr102, %for.end97 ], [ %ivec, %entry ]
+  %n.tr231 = phi i32 [ %sub70, %for.end97 ], [ %n, %entry ]
+  %call = tail call fastcc i32 @Icentervalue(i32 %n.tr231, i32* %ivec.tr232) #2
+  %sub = add nsw i32 %n.tr231, -1
+  br label %while.cond.outer
+
+while.cond.outer:                                 ; preds = %if.end41, %if.else
+  %b.0.ph = phi i32 [ 0, %if.else ], [ %inc50, %if.end41 ]
+  %c.0.ph = phi i32 [ %sub, %if.else ], [ %dec51, %if.end41 ]
+  %d.0.ph = phi i32 [ %sub, %if.else ], [ %d.1207, %if.end41 ]
+  %a.0.ph = phi i32 [ 0, %if.else ], [ %a.0.lcssa, %if.end41 ]
+  %cmp1211 = icmp sgt i32 %b.0.ph, %c.0.ph
+  br i1 %cmp1211, label %while.cond16.preheader, label %land.rhs.lr.ph
+
+land.rhs.lr.ph:                                   ; preds = %while.cond.outer
+  %0 = sext i32 %b.0.ph to i64
+  br label %land.rhs
+
+land.rhs:                                         ; preds = %if.end, %land.rhs.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end ], [ %0, %land.rhs.lr.ph ]
+  %a.0213 = phi i32 [ %a.1, %if.end ], [ %a.0.ph, %land.rhs.lr.ph ]
+  %b.0212 = phi i32 [ %inc15, %if.end ], [ %b.0.ph, %land.rhs.lr.ph ]
+  %arrayidx = getelementptr inbounds i32* %ivec.tr232, i64 %indvars.iv
+  %1 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp2 = icmp sgt i32 %1, %call
+  br i1 %cmp2, label %while.cond16.preheader, label %while.body
+
+while.cond16.preheader:                           ; preds = %if.end, %land.rhs, %while.cond.outer
+  %a.0.lcssa = phi i32 [ %a.0.ph, %while.cond.outer ], [ %a.0213, %land.rhs ], [ %a.1, %if.end ]
+  %b.0.lcssa = phi i32 [ %b.0.ph, %while.cond.outer ], [ %b.0212, %land.rhs ], [ %inc15, %if.end ]
+  %cmp17205 = icmp slt i32 %c.0.ph, %b.0.lcssa
+  br i1 %cmp17205, label %for.end, label %land.rhs18.lr.ph
+
+land.rhs18.lr.ph:                                 ; preds = %while.cond16.preheader
+  %2 = sext i32 %c.0.ph to i64
+  br label %land.rhs18
+
+while.body:                                       ; preds = %land.rhs
+  %cmp5 = icmp eq i32 %1, %call
+  br i1 %cmp5, label %if.then6, label %if.end
+
+if.then6:                                         ; preds = %while.body
+  %idxprom7 = sext i32 %a.0213 to i64
+  %arrayidx8 = getelementptr inbounds i32* %ivec.tr232, i64 %idxprom7
+  %3 = load i32* %arrayidx8, align 4, !tbaa !0
+  store i32 %call, i32* %arrayidx8, align 4, !tbaa !0
+  store i32 %3, i32* %arrayidx, align 4, !tbaa !0
+  %inc = add nsw i32 %a.0213, 1
+  br label %if.end
+
+if.end:                                           ; preds = %if.then6, %while.body
+  %a.1 = phi i32 [ %inc, %if.then6 ], [ %a.0213, %while.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc15 = add nsw i32 %b.0212, 1
+  %4 = trunc i64 %indvars.iv to i32
+  %cmp1 = icmp slt i32 %4, %c.0.ph
+  br i1 %cmp1, label %land.rhs, label %while.cond16.preheader
+
+land.rhs18:                                       ; preds = %if.end36, %land.rhs18.lr.ph
+  %indvars.iv239 = phi i64 [ %indvars.iv.next240, %if.end36 ], [ %2, %land.rhs18.lr.ph ]
+  %d.1207 = phi i32 [ %d.2, %if.end36 ], [ %d.0.ph, %land.rhs18.lr.ph ]
+  %c.1206 = phi i32 [ %dec37, %if.end36 ], [ %c.0.ph, %land.rhs18.lr.ph ]
+  %arrayidx20 = getelementptr inbounds i32* %ivec.tr232, i64 %indvars.iv239
+  %5 = load i32* %arrayidx20, align 4, !tbaa !0
+  %cmp21 = icmp slt i32 %5, %call
+  br i1 %cmp21, label %if.end41, label %while.body23
+
+while.body23:                                     ; preds = %land.rhs18
+  %cmp26 = icmp eq i32 %5, %call
+  br i1 %cmp26, label %if.then27, label %if.end36
+
+if.then27:                                        ; preds = %while.body23
+  %idxprom30 = sext i32 %d.1207 to i64
+  %arrayidx31 = getelementptr inbounds i32* %ivec.tr232, i64 %idxprom30
+  %6 = load i32* %arrayidx31, align 4, !tbaa !0
+  store i32 %6, i32* %arrayidx20, align 4, !tbaa !0
+  store i32 %call, i32* %arrayidx31, align 4, !tbaa !0
+  %dec = add nsw i32 %d.1207, -1
+  br label %if.end36
+
+if.end36:                                         ; preds = %if.then27, %while.body23
+  %d.2 = phi i32 [ %dec, %if.then27 ], [ %d.1207, %while.body23 ]
+  %indvars.iv.next240 = add i64 %indvars.iv239, -1
+  %dec37 = add nsw i32 %c.1206, -1
+  %7 = trunc i64 %indvars.iv239 to i32
+  %cmp17 = icmp sgt i32 %7, %b.0.lcssa
+  br i1 %cmp17, label %land.rhs18, label %for.end
+
+if.end41:                                         ; preds = %land.rhs18
+  %idxprom42 = sext i32 %b.0.lcssa to i64
+  %arrayidx43 = getelementptr inbounds i32* %ivec.tr232, i64 %idxprom42
+  %8 = load i32* %arrayidx43, align 4, !tbaa !0
+  %idxprom44 = sext i32 %c.1206 to i64
+  %arrayidx45 = getelementptr inbounds i32* %ivec.tr232, i64 %idxprom44
+  %9 = load i32* %arrayidx45, align 4, !tbaa !0
+  store i32 %9, i32* %arrayidx43, align 4, !tbaa !0
+  store i32 %8, i32* %arrayidx45, align 4, !tbaa !0
+  %inc50 = add nsw i32 %b.0.lcssa, 1
+  %dec51 = add nsw i32 %c.1206, -1
+  br label %while.cond.outer
+
+for.end:                                          ; preds = %while.cond16.preheader, %if.end36
+  %d.1.lcssa = phi i32 [ %d.2, %if.end36 ], [ %d.0.ph, %while.cond16.preheader ]
+  %c.1.lcssa = phi i32 [ %dec37, %if.end36 ], [ %c.0.ph, %while.cond16.preheader ]
+  %sub52 = sub nsw i32 %b.0.lcssa, %a.0.lcssa
+  %cmp53 = icmp sgt i32 %a.0.lcssa, %sub52
+  %sub52.a.0 = select i1 %cmp53, i32 %sub52, i32 %a.0.lcssa
+  %cmp57216 = icmp eq i32 %sub52.a.0, 0
+  br i1 %cmp57216, label %for.end69, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %for.end
+  %10 = add i32 %b.0.lcssa, 1
+  %11 = add i32 %a.0.lcssa, -1
+  %12 = sub i32 %11, %b.0.lcssa
+  %13 = xor i32 %a.0.lcssa, -1
+  %14 = icmp sgt i32 %12, %13
+  %smax = select i1 %14, i32 %12, i32 %13
+  %15 = add i32 %10, %smax
+  %16 = sext i32 %15 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv250 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next251, %for.body ]
+  %indvars.iv247 = phi i64 [ %16, %for.body.lr.ph ], [ %indvars.iv.next248, %for.body ]
+  %s.0219 = phi i32 [ %sub52.a.0, %for.body.lr.ph ], [ %dec68, %for.body ]
+  %arrayidx59 = getelementptr inbounds i32* %ivec.tr232, i64 %indvars.iv250
+  %17 = load i32* %arrayidx59, align 4, !tbaa !0
+  %arrayidx61 = getelementptr inbounds i32* %ivec.tr232, i64 %indvars.iv247
+  %18 = load i32* %arrayidx61, align 4, !tbaa !0
+  store i32 %18, i32* %arrayidx59, align 4, !tbaa !0
+  store i32 %17, i32* %arrayidx61, align 4, !tbaa !0
+  %indvars.iv.next251 = add i64 %indvars.iv250, 1
+  %dec68 = add nsw i32 %s.0219, -1
+  %cmp57 = icmp eq i32 %dec68, 0
+  %indvars.iv.next248 = add i64 %indvars.iv247, 1
+  br i1 %cmp57, label %for.end69, label %for.body
+
+for.end69:                                        ; preds = %for.body, %for.end
+  %sub70 = sub nsw i32 %d.1.lcssa, %c.1.lcssa
+  %sub72 = sub nsw i32 %sub, %d.1.lcssa
+  %cmp73 = icmp sgt i32 %sub70, %sub72
+  %sub72.sub70 = select i1 %cmp73, i32 %sub72, i32 %sub70
+  %cmp83220 = icmp eq i32 %sub72.sub70, 0
+  br i1 %cmp83220, label %for.end97, label %for.body84.lr.ph
+
+for.body84.lr.ph:                                 ; preds = %for.end69
+  %19 = add i32 %n.tr231, 1
+  %20 = sub i32 %d.1.lcssa, %n.tr231
+  %21 = add i32 %c.1.lcssa, -1
+  %22 = sub i32 %21, %d.1.lcssa
+  %23 = icmp sgt i32 %20, %22
+  %smax255 = select i1 %23, i32 %20, i32 %22
+  %24 = add i32 %19, %smax255
+  %25 = sext i32 %24 to i64
+  %26 = sext i32 %b.0.lcssa to i64
+  br label %for.body84
+
+for.body84:                                       ; preds = %for.body84.lr.ph, %for.body84
+  %indvars.iv259 = phi i64 [ %26, %for.body84.lr.ph ], [ %indvars.iv.next260, %for.body84 ]
+  %indvars.iv256 = phi i64 [ %25, %for.body84.lr.ph ], [ %indvars.iv.next257, %for.body84 ]
+  %s.1223 = phi i32 [ %sub72.sub70, %for.body84.lr.ph ], [ %dec96, %for.body84 ]
+  %arrayidx86 = getelementptr inbounds i32* %ivec.tr232, i64 %indvars.iv259
+  %27 = load i32* %arrayidx86, align 4, !tbaa !0
+  %arrayidx88 = getelementptr inbounds i32* %ivec.tr232, i64 %indvars.iv256
+  %28 = load i32* %arrayidx88, align 4, !tbaa !0
+  store i32 %28, i32* %arrayidx86, align 4, !tbaa !0
+  store i32 %27, i32* %arrayidx88, align 4, !tbaa !0
+  %indvars.iv.next260 = add i64 %indvars.iv259, 1
+  %dec96 = add nsw i32 %s.1223, -1
+  %cmp83 = icmp eq i32 %dec96, 0
+  %indvars.iv.next257 = add i64 %indvars.iv256, 1
+  br i1 %cmp83, label %for.end97, label %for.body84
+
+for.end97:                                        ; preds = %for.body84, %for.end69
+  tail call void @IVqsortUp(i32 %sub52, i32* %ivec.tr232) #2
+  %idx.ext = sext i32 %n.tr231 to i64
+  %idx.ext101 = sext i32 %sub70 to i64
+  %add.ptr.sum = sub i64 %idx.ext, %idx.ext101
+  %add.ptr102 = getelementptr inbounds i32* %ivec.tr232, i64 %add.ptr.sum
+  %cmp = icmp slt i32 %sub70, 11
+  br i1 %cmp, label %if.then, label %if.else
+}

@@ -1,9 +1,16 @@
-int
-Perl_PerlIO_close(pTHX_ PerlIO *f)
+void
+PerlIO_init(pTHX)
 {
-    int code = PerlIO__close(aTHX_ f);
-    while (PerlIOValid(f)) {
-	PerlIO_pop(aTHX_ f);
-    }
-    return code;
+    /*
+     * Force this file to be included in perl binary. Which allows this
+     * file to force inclusion of other functions that may be required by
+     * loadable extensions e.g. for FileHandle::tmpfile
+     */
+
+    /*
+     * Hack sfio does its own 'autoflush' on stdout in common cases. Flush
+     * results in a lot of lseek()s to regular files and lot of small
+     * writes to pipes.
+     */
+    sfset(sfstdout, SF_SHARE, 0);
 }

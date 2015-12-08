@@ -1,0 +1,15 @@
+OP *
+Perl_jmaybe(pTHX_ OP *o)
+{
+    if (o->op_type == OP_LIST) {
+	OP *o2;
+#ifdef USE_5005THREADS
+	o2 = newOP(OP_THREADSV, 0);
+	o2->op_targ = find_threadsv(";");
+#else
+	o2 = newSVREF(newGVOP(OP_GV, 0, gv_fetchpv(";", TRUE, SVt_PV))),
+#endif /* USE_5005THREADS */
+	o = convert(OP_JOIN, 0, prepend_elem(OP_LIST, o2, o));
+    }
+    return o;
+}

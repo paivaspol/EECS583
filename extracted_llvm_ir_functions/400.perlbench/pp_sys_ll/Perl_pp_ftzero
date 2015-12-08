@@ -1,0 +1,40 @@
+define %struct.op* @Perl_pp_ftzero() #0 {
+entry:
+  %call = tail call i32 @Perl_my_stat() #6
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %cmp = icmp slt i32 %call, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %incdec.ptr = getelementptr inbounds %struct.sv** %0, i64 1
+  store %struct.sv* @PL_sv_undef, %struct.sv** %incdec.ptr, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %1, i64 0, i32 0
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %2 = load i64* getelementptr inbounds (%struct.stat* @PL_statcache, i64 0, i32 8), align 8, !tbaa !3
+  %cmp1 = icmp eq i64 %2, 0
+  %incdec.ptr3 = getelementptr inbounds %struct.sv** %0, i64 1
+  br i1 %cmp1, label %if.then2, label %if.end5
+
+if.then2:                                         ; preds = %if.end
+  store %struct.sv* @PL_sv_yes, %struct.sv** %incdec.ptr3, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr3, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %3 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next4 = getelementptr inbounds %struct.op* %3, i64 0, i32 0
+  br label %return
+
+if.end5:                                          ; preds = %if.end
+  store %struct.sv* @PL_sv_no, %struct.sv** %incdec.ptr3, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr3, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %4 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next7 = getelementptr inbounds %struct.op* %4, i64 0, i32 0
+  br label %return
+
+return:                                           ; preds = %if.end5, %if.then2, %if.then
+  %retval.0.in = phi %struct.op** [ %op_next, %if.then ], [ %op_next4, %if.then2 ], [ %op_next7, %if.end5 ]
+  %retval.0 = load %struct.op** %retval.0.in, align 8
+  ret %struct.op* %retval.0
+}

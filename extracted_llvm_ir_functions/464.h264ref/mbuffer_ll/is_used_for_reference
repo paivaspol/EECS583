@@ -1,0 +1,61 @@
+define internal fastcc i32 @is_used_for_reference(%struct.frame_store* nocapture %fs) #4 {
+entry:
+  %is_reference = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 1
+  %0 = load i32* %is_reference, align 4, !tbaa !3
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %is_used = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 0
+  %1 = load i32* %is_used, align 4, !tbaa !3
+  %cmp = icmp eq i32 %1, 3
+  br i1 %cmp, label %if.then1, label %if.end5
+
+if.then1:                                         ; preds = %if.end
+  %frame = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 10
+  %2 = load %struct.storable_picture** %frame, align 8, !tbaa !0
+  %used_for_reference = getelementptr inbounds %struct.storable_picture* %2, i64 0, i32 15
+  %3 = load i32* %used_for_reference, align 4, !tbaa !3
+  %tobool2 = icmp eq i32 %3, 0
+  br i1 %tobool2, label %if.end5, label %return
+
+if.end5:                                          ; preds = %if.then1, %if.end
+  %4 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !0
+  %frame_mbs_only_flag = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %4, i64 0, i32 25
+  %5 = load i32* %frame_mbs_only_flag, align 4, !tbaa !1
+  %tobool6 = icmp eq i32 %5, 0
+  br i1 %tobool6, label %if.then7, label %if.end25
+
+if.then7:                                         ; preds = %if.end5
+  %and = and i32 %1, 1
+  %tobool9 = icmp eq i32 %and, 0
+  br i1 %tobool9, label %if.end15, label %if.then10
+
+if.then10:                                        ; preds = %if.then7
+  %top_field = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 11
+  %6 = load %struct.storable_picture** %top_field, align 8, !tbaa !0
+  %used_for_reference11 = getelementptr inbounds %struct.storable_picture* %6, i64 0, i32 15
+  %7 = load i32* %used_for_reference11, align 4, !tbaa !3
+  %tobool12 = icmp eq i32 %7, 0
+  br i1 %tobool12, label %if.end15, label %return
+
+if.end15:                                         ; preds = %if.then10, %if.then7
+  %and17 = and i32 %1, 2
+  %tobool18 = icmp eq i32 %and17, 0
+  br i1 %tobool18, label %if.end25, label %if.then19
+
+if.then19:                                        ; preds = %if.end15
+  %bottom_field = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 12
+  %8 = load %struct.storable_picture** %bottom_field, align 8, !tbaa !0
+  %used_for_reference20 = getelementptr inbounds %struct.storable_picture* %8, i64 0, i32 15
+  %9 = load i32* %used_for_reference20, align 4, !tbaa !3
+  %tobool21 = icmp eq i32 %9, 0
+  br i1 %tobool21, label %if.end25, label %return
+
+if.end25:                                         ; preds = %if.then19, %if.end15, %if.end5
+  br label %return
+
+return:                                           ; preds = %if.then19, %if.then10, %if.then1, %entry, %if.end25
+  %retval.0 = phi i32 [ 0, %if.end25 ], [ 1, %entry ], [ 1, %if.then1 ], [ 1, %if.then10 ], [ 1, %if.then19 ]
+  ret i32 %retval.0
+}

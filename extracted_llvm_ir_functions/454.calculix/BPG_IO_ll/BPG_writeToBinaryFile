@@ -1,0 +1,50 @@
+define i32 @BPG_writeToBinaryFile(%struct._BPG* %bpg, %struct._IO_FILE* %fp) #0 {
+entry:
+  %itemp = alloca [6 x i32], align 16
+  %cmp = icmp eq %struct._BPG* %bpg, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str20, i64 0, i64 0), %struct._BPG* %bpg, %struct._IO_FILE* %fp) #5
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %nX = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 0
+  %1 = load i32* %nX, align 4, !tbaa !3
+  %arrayidx = getelementptr inbounds [6 x i32]* %itemp, i64 0, i64 0
+  store i32 %1, i32* %arrayidx, align 16, !tbaa !3
+  %nY = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 1
+  %2 = load i32* %nY, align 4, !tbaa !3
+  %arrayidx2 = getelementptr inbounds [6 x i32]* %itemp, i64 0, i64 1
+  store i32 %2, i32* %arrayidx2, align 4, !tbaa !3
+  %3 = bitcast [6 x i32]* %itemp to i8*
+  %call3 = call i64 @fwrite(i8* %3, i64 4, i64 6, %struct._IO_FILE* %fp) #5
+  %conv = trunc i64 %call3 to i32
+  %cmp4 = icmp eq i32 %conv, 6
+  br i1 %cmp4, label %if.end8, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call7 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([72 x i8]* @.str21, i64 0, i64 0), %struct._BPG* %bpg, %struct._IO_FILE* %fp, i32 %conv, i32 6) #5
+  br label %return
+
+if.end8:                                          ; preds = %if.end
+  %graph = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 2
+  %5 = load %struct._Graph** %graph, align 8, !tbaa !0
+  %call9 = call i32 @Graph_writeToBinaryFile(%struct._Graph* %5, %struct._IO_FILE* %fp) #5
+  %cmp10 = icmp slt i32 %call9, 0
+  br i1 %cmp10, label %if.then12, label %return
+
+if.then12:                                        ; preds = %if.end8
+  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %7 = load %struct._Graph** %graph, align 8, !tbaa !0
+  %call14 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([137 x i8]* @.str22, i64 0, i64 0), %struct._BPG* %bpg, %struct._IO_FILE* %fp, i32 %call9, %struct._Graph* %7, %struct._IO_FILE* %fp) #5
+  br label %return
+
+return:                                           ; preds = %if.end8, %if.then12, %if.then6, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then6 ], [ 0, %if.then12 ], [ 1, %if.end8 ]
+  ret i32 %retval.0
+}

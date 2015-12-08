@@ -1,12 +1,21 @@
-static void
-resolve_unique_section (decl, reloc, flag_function_or_data_sections)
-     tree decl;
-     int reloc ATTRIBUTE_UNUSED;
-     int flag_function_or_data_sections;
+void
+named_section_flags (name, flags)
+     const char *name;
+     unsigned int flags;
 {
-  if (DECL_SECTION_NAME (decl) == NULL_TREE
-      && (flag_function_or_data_sections
-	  || (targetm.have_named_sections
-	      && DECL_ONE_ONLY (decl))))
-    UNIQUE_SECTION (decl, reloc);
+  if (in_section != in_named || strcmp (name, in_named_name) != 0)
+    {
+      if (! set_named_section_flags (name, flags))
+	abort ();
+
+      (* targetm.asm_out.named_section) (name, flags);
+
+      if (flags & SECTION_FORGET)
+	in_section = no_section;
+      else
+	{
+	  in_named_name = ggc_strdup (name);
+	  in_section = in_named;
+	}
+    }
 }

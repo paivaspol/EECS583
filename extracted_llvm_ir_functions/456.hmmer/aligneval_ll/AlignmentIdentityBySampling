@@ -1,0 +1,51 @@
+define float @AlignmentIdentityBySampling(i8** nocapture %aseq, i32 %L, i32 %N, i32 %nsample) #0 {
+entry:
+  %cmp = icmp slt i32 %N, 2
+  br i1 %cmp, label %return, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp121 = icmp sgt i32 %nsample, 0
+  br i1 %cmp121, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %conv = sitofp i32 %N to double
+  br label %for.body
+
+for.body:                                         ; preds = %do.end, %for.body.lr.ph
+  %sum.023 = phi float [ 0.000000e+00, %for.body.lr.ph ], [ %add, %do.end ]
+  %x.022 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %do.end ]
+  %call = tail call double @sre_random() #8
+  %mul = fmul double %conv, %call
+  %conv2 = fptosi double %mul to i32
+  br label %do.body
+
+do.body:                                          ; preds = %do.body, %for.body
+  %call3 = tail call double @sre_random() #8
+  %mul5 = fmul double %conv, %call3
+  %conv6 = fptosi double %mul5 to i32
+  %cmp7 = icmp eq i32 %conv6, %conv2
+  br i1 %cmp7, label %do.body, label %do.end
+
+do.end:                                           ; preds = %do.body
+  %idxprom = sext i32 %conv2 to i64
+  %arrayidx = getelementptr inbounds i8** %aseq, i64 %idxprom
+  %0 = load i8** %arrayidx, align 8, !tbaa !0
+  %idxprom9 = sext i32 %conv6 to i64
+  %arrayidx10 = getelementptr inbounds i8** %aseq, i64 %idxprom9
+  %1 = load i8** %arrayidx10, align 8, !tbaa !0
+  %call11 = tail call float @PairwiseIdentity(i8* %0, i8* %1) #7
+  %add = fadd float %sum.023, %call11
+  %inc = add nsw i32 %x.022, 1
+  %exitcond = icmp eq i32 %inc, %nsample
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %do.end, %for.cond.preheader
+  %sum.0.lcssa = phi float [ 0.000000e+00, %for.cond.preheader ], [ %add, %do.end ]
+  %conv12 = sitofp i32 %nsample to float
+  %div = fdiv float %sum.0.lcssa, %conv12
+  br label %return
+
+return:                                           ; preds = %entry, %for.end
+  %retval.0 = phi float [ %div, %for.end ], [ 1.000000e+00, %entry ]
+  ret float %retval.0
+}

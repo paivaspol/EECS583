@@ -1,0 +1,36 @@
+define internal fastcc %struct.sv* @new_opset(%struct.sv* %old_opset) #0 {
+entry:
+  %tobool = icmp eq %struct.sv* %old_opset, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call fastcc i32 @verify_opset(%struct.sv* %old_opset, i32 1) #5
+  %call1 = tail call %struct.sv* @Perl_newSVsv(%struct.sv* %old_opset) #4
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %0 = load i64* @my_cxt.2, align 8, !tbaa !4
+  %call2 = tail call %struct.sv* @Perl_newSV(i64 %0) #4
+  %sv_any = getelementptr inbounds %struct.sv* %call2, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %1 to i8**
+  %2 = load i8** %xpv_pv, align 8, !tbaa !0
+  %3 = load i64* @my_cxt.2, align 8, !tbaa !4
+  %add = add nsw i64 %3, 1
+  tail call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 %add, i32 1, i1 false)
+  %4 = load i64* @my_cxt.2, align 8, !tbaa !4
+  %5 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %5, i64 8
+  %6 = bitcast i8* %xpv_cur to i64*
+  store i64 %4, i64* %6, align 8, !tbaa !4
+  %sv_flags = getelementptr inbounds %struct.sv* %call2, i64 0, i32 2
+  %7 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %7, 1223753727
+  %or = or i32 %and, 67371008
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %opset.0 = phi %struct.sv* [ %call1, %if.then ], [ %call2, %if.else ]
+  ret %struct.sv* %opset.0
+}

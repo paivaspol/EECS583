@@ -1,0 +1,48 @@
+STATIC SV *
+S_is_an_int(pTHX_ char *s, STRLEN l)
+{
+  STRLEN	 n_a;
+  SV             *result = newSVpvn(s, l);
+  char           *result_c = SvPV(result, n_a);	/* convenience */
+  char           *out = result_c;
+  bool            skip = 1;
+  bool            ignore = 0;
+
+  while (*s) {
+    switch (*s) {
+    case ' ':
+      break;
+    case '+':
+      if (!skip) {
+	SvREFCNT_dec(result);
+	return (NULL);
+      }
+      break;
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+      skip = 0;
+      if (!ignore) {
+	*(out++) = *s;
+      }
+      break;
+    case '.':
+      ignore = 1;
+      break;
+    default:
+      SvREFCNT_dec(result);
+      return (NULL);
+    }
+    s++;
+  }
+  *(out++) = '\0';
+  SvCUR_set(result, out - result_c);
+  return (result);
+}

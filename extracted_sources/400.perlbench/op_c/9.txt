@@ -1,22 +1,63 @@
-int
-Perl_block_start(pTHX_ int full)
+PADOFFSET
+Perl_find_threadsv(pTHX_ const char *name)
 {
-    int retval = PL_savestack_ix;
-    /* If there were syntax errors, don't try to start a block */
-    if (PL_yynerrs) return retval;
+    char *p;
+    PADOFFSET key;
+    SV **svp;
+    /* We currently only handle names of a single character */
+    p = strchr(PL_threadsv_names, *name);
+    if (!p)
+	return NOT_IN_PAD;
+    key = p - PL_threadsv_names;
+    MUTEX_LOCK(&thr->mutex);
+    svp = av_fetch(thr->threadsv, key, FALSE);
+    if (svp)
+	MUTEX_UNLOCK(&thr->mutex);
+    else {
+	SV *sv = NEWSV(0, 0);
+	av_store(thr->threadsv, key, sv);
+	thr->threadsvp = AvARRAY(thr->threadsv);
+	MUTEX_UNLOCK(&thr->mutex);
+	/*
+	 * Some magic variables used to be automagically initialised
+	 * in gv_fetchpv. Those which are now per-thread magicals get
+	 * initialised here instead.
+	 */
+	switch (*name) {
+	case '_':
+	    break;
+	case ';':
+	    sv_setpv(sv, "\034");
+	    sv_magic(sv, 0, PERL_MAGIC_sv, name, 1);
+	    break;
+	case '&':
+	case '`':
+	case '\'':
+	    PL_sawampersand = TRUE;
+	    /* FALL THROUGH */
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	    SvREADONLY_on(sv);
+	    /* FALL THROUGH */
 
-    pad_block_start(full);
-    SAVEHINTS();
-    PL_hints &= ~HINT_BLOCK_SCOPE;
-    SAVESPTR(PL_compiling.cop_warnings);
-    if (! specialWARN(PL_compiling.cop_warnings)) {
-        PL_compiling.cop_warnings = newSVsv(PL_compiling.cop_warnings) ;
-        SAVEFREESV(PL_compiling.cop_warnings) ;
+	/* XXX %! tied to Errno.pm needs to be added here.
+	 * See gv_fetchpv(). */
+	/* case '!': */
+
+	default:
+	    sv_magic(sv, 0, PERL_MAGIC_sv, name, 1);
+	}
+	DEBUG_S(PerlIO_printf(Perl_error_log,
+			      "find_threadsv: new SV %p for $%s%c\n",
+			      sv, (*name < 32) ? "^" : "",
+			      (*name < 32) ? toCTRL(*name) : *name));
     }
-    SAVESPTR(PL_compiling.cop_io);
-    if (! specialCopIO(PL_compiling.cop_io)) {
-        PL_compiling.cop_io = newSVsv(PL_compiling.cop_io) ;
-        SAVEFREESV(PL_compiling.cop_io) ;
-    }
-    return retval;
+    return key;
 }

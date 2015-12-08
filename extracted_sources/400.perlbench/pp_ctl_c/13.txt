@@ -1,0 +1,41 @@
+PP(pp_flip)
+{
+    dSP;
+
+    if (GIMME == G_ARRAY) {
+	RETURNOP(((LOGOP*)cUNOP->op_first)->op_other);
+    }
+    else {
+	dTOPss;
+	SV *targ = PAD_SV(PL_op->op_targ);
+ 	int flip = 0;
+
+ 	if (PL_op->op_private & OPpFLIP_LINENUM) {
+	    if (GvIO(PL_last_in_gv)) {
+		flip = SvIV(sv) == (IV)IoLINES(GvIOp(PL_last_in_gv));
+	    }
+	    else {
+		GV *gv = gv_fetchpv(".", TRUE, SVt_PV);
+		if (gv && GvSV(gv)) flip = SvIV(sv) == SvIV(GvSV(gv));
+	    }
+ 	} else {
+ 	    flip = SvTRUE(sv);
+ 	}
+ 	if (flip) {
+	    sv_setiv(PAD_SV(cUNOP->op_first->op_targ), 1);
+	    if (PL_op->op_flags & OPf_SPECIAL) {
+		sv_setiv(targ, 1);
+		SETs(targ);
+		RETURN;
+	    }
+	    else {
+		sv_setiv(targ, 0);
+		SP--;
+		RETURNOP(((LOGOP*)cUNOP->op_first)->op_other);
+	    }
+	}
+	sv_setpv(TARG, "");
+	SETs(targ);
+	RETURN;
+    }
+}

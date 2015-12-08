@@ -1,0 +1,22 @@
+define i32 @PerlIO_stdoutf(i8* %fmt, ...) #1 {
+entry:
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %0 = load %struct._PerlIO*** @PL_perlio, align 8, !tbaa !3
+  %tobool.i = icmp eq %struct._PerlIO** %0, null
+  br i1 %tobool.i, label %if.then.i, label %Perl_PerlIO_stdout.exit
+
+if.then.i:                                        ; preds = %entry
+  call void @PerlIO_stdstreams() #9
+  %.pre.i = load %struct._PerlIO*** @PL_perlio, align 8, !tbaa !3
+  br label %Perl_PerlIO_stdout.exit
+
+Perl_PerlIO_stdout.exit:                          ; preds = %entry, %if.then.i
+  %1 = phi %struct._PerlIO** [ %0, %entry ], [ %.pre.i, %if.then.i ]
+  %arrayidx.i = getelementptr inbounds %struct._PerlIO** %1, i64 2
+  %call3 = call i32 @PerlIO_vprintf(%struct._PerlIO** %arrayidx.i, i8* %fmt, %struct.__va_list_tag* %arraydecay) #10
+  call void @llvm.va_end(i8* %arraydecay1)
+  ret i32 %call3
+}

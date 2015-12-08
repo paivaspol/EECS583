@@ -1,0 +1,158 @@
+define i8* @PostalCode(i32 %L, %struct.dpmatrix_s* nocapture %mx, %struct.p7trace_s* nocapture %tr) #0 {
+entry:
+  %add = add nsw i32 %L, 1
+  %conv = sext i32 %add to i64
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), i32 692, i64 %conv) #2
+  %tlen = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 0
+  %0 = load i32* %tlen, align 4, !tbaa !3
+  %cmp110 = icmp sgt i32 %0, 0
+  br i1 %cmp110, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %pos = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 3
+  %nodeidx = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 2
+  %statetype = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 1
+  %mmx = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 1
+  %imx = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 2
+  %xmx = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 0
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %1 = load i32** %pos, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv
+  %2 = load i32* %arrayidx, align 4, !tbaa !3
+  %3 = load i32** %nodeidx, align 8, !tbaa !0
+  %arrayidx3 = getelementptr inbounds i32* %3, i64 %indvars.iv
+  %4 = load i32* %arrayidx3, align 4, !tbaa !3
+  %cmp4 = icmp eq i32 %2, 0
+  br i1 %cmp4, label %for.inc, label %if.end
+
+if.end:                                           ; preds = %for.body
+  %5 = load i8** %statetype, align 8, !tbaa !0
+  %arrayidx7 = getelementptr inbounds i8* %5, i64 %indvars.iv
+  %6 = load i8* %arrayidx7, align 1, !tbaa !1
+  %conv8 = sext i8 %6 to i32
+  switch i32 %conv8, label %for.inc [
+    i32 1, label %sw.bb
+    i32 3, label %sw.bb16
+    i32 5, label %sw.bb25
+    i32 8, label %sw.bb33
+    i32 10, label %sw.bb42
+  ]
+
+sw.bb:                                            ; preds = %if.end
+  %idxprom9 = sext i32 %4 to i64
+  %idxprom10 = sext i32 %2 to i64
+  %7 = load i32*** %mmx, align 8, !tbaa !0
+  %arrayidx11 = getelementptr inbounds i32** %7, i64 %idxprom10
+  %8 = load i32** %arrayidx11, align 8, !tbaa !0
+  %arrayidx12 = getelementptr inbounds i32* %8, i64 %idxprom9
+  %9 = load i32* %arrayidx12, align 4, !tbaa !3
+  %call.i = tail call float @Score2Prob(i32 %9, float 1.000000e+00) #2
+  %conv.i = fpext float %call.i to double
+  %mul.i = fmul double %conv.i, 1.000000e+01
+  %conv1.i = fptosi double %mul.i to i8
+  %cmp.i = icmp sgt i8 %conv1.i, 9
+  %add.i = add i8 %conv1.i, 48
+  %.add.i = select i1 %cmp.i, i8 42, i8 %add.i
+  %sub = add nsw i32 %2, -1
+  %idxprom14 = sext i32 %sub to i64
+  %arrayidx15 = getelementptr inbounds i8* %call, i64 %idxprom14
+  store i8 %.add.i, i8* %arrayidx15, align 1, !tbaa !1
+  br label %for.inc
+
+sw.bb16:                                          ; preds = %if.end
+  %idxprom17 = sext i32 %4 to i64
+  %idxprom18 = sext i32 %2 to i64
+  %10 = load i32*** %imx, align 8, !tbaa !0
+  %arrayidx19 = getelementptr inbounds i32** %10, i64 %idxprom18
+  %11 = load i32** %arrayidx19, align 8, !tbaa !0
+  %arrayidx20 = getelementptr inbounds i32* %11, i64 %idxprom17
+  %12 = load i32* %arrayidx20, align 4, !tbaa !3
+  %call.i82 = tail call float @Score2Prob(i32 %12, float 1.000000e+00) #2
+  %conv.i83 = fpext float %call.i82 to double
+  %mul.i84 = fmul double %conv.i83, 1.000000e+01
+  %conv1.i85 = fptosi double %mul.i84 to i8
+  %cmp.i86 = icmp sgt i8 %conv1.i85, 9
+  %add.i87 = add i8 %conv1.i85, 48
+  %.add.i88 = select i1 %cmp.i86, i8 42, i8 %add.i87
+  %sub22 = add nsw i32 %2, -1
+  %idxprom23 = sext i32 %sub22 to i64
+  %arrayidx24 = getelementptr inbounds i8* %call, i64 %idxprom23
+  store i8 %.add.i88, i8* %arrayidx24, align 1, !tbaa !1
+  br label %for.inc
+
+sw.bb25:                                          ; preds = %if.end
+  %idxprom26 = sext i32 %2 to i64
+  %13 = load i32*** %xmx, align 8, !tbaa !0
+  %arrayidx27 = getelementptr inbounds i32** %13, i64 %idxprom26
+  %14 = load i32** %arrayidx27, align 8, !tbaa !0
+  %arrayidx28 = getelementptr inbounds i32* %14, i64 4
+  %15 = load i32* %arrayidx28, align 4, !tbaa !3
+  %call.i89 = tail call float @Score2Prob(i32 %15, float 1.000000e+00) #2
+  %conv.i90 = fpext float %call.i89 to double
+  %mul.i91 = fmul double %conv.i90, 1.000000e+01
+  %conv1.i92 = fptosi double %mul.i91 to i8
+  %cmp.i93 = icmp sgt i8 %conv1.i92, 9
+  %add.i94 = add i8 %conv1.i92, 48
+  %.add.i95 = select i1 %cmp.i93, i8 42, i8 %add.i94
+  %sub30 = add nsw i32 %2, -1
+  %idxprom31 = sext i32 %sub30 to i64
+  %arrayidx32 = getelementptr inbounds i8* %call, i64 %idxprom31
+  store i8 %.add.i95, i8* %arrayidx32, align 1, !tbaa !1
+  br label %for.inc
+
+sw.bb33:                                          ; preds = %if.end
+  %idxprom34 = sext i32 %2 to i64
+  %16 = load i32*** %xmx, align 8, !tbaa !0
+  %arrayidx36 = getelementptr inbounds i32** %16, i64 %idxprom34
+  %17 = load i32** %arrayidx36, align 8, !tbaa !0
+  %arrayidx37 = getelementptr inbounds i32* %17, i64 2
+  %18 = load i32* %arrayidx37, align 4, !tbaa !3
+  %call.i96 = tail call float @Score2Prob(i32 %18, float 1.000000e+00) #2
+  %conv.i97 = fpext float %call.i96 to double
+  %mul.i98 = fmul double %conv.i97, 1.000000e+01
+  %conv1.i99 = fptosi double %mul.i98 to i8
+  %cmp.i100 = icmp sgt i8 %conv1.i99, 9
+  %add.i101 = add i8 %conv1.i99, 48
+  %.add.i102 = select i1 %cmp.i100, i8 42, i8 %add.i101
+  %sub39 = add nsw i32 %2, -1
+  %idxprom40 = sext i32 %sub39 to i64
+  %arrayidx41 = getelementptr inbounds i8* %call, i64 %idxprom40
+  store i8 %.add.i102, i8* %arrayidx41, align 1, !tbaa !1
+  br label %for.inc
+
+sw.bb42:                                          ; preds = %if.end
+  %idxprom43 = sext i32 %2 to i64
+  %19 = load i32*** %xmx, align 8, !tbaa !0
+  %arrayidx45 = getelementptr inbounds i32** %19, i64 %idxprom43
+  %20 = load i32** %arrayidx45, align 8, !tbaa !0
+  %arrayidx46 = getelementptr inbounds i32* %20, i64 3
+  %21 = load i32* %arrayidx46, align 4, !tbaa !3
+  %call.i103 = tail call float @Score2Prob(i32 %21, float 1.000000e+00) #2
+  %conv.i104 = fpext float %call.i103 to double
+  %mul.i105 = fmul double %conv.i104, 1.000000e+01
+  %conv1.i106 = fptosi double %mul.i105 to i8
+  %cmp.i107 = icmp sgt i8 %conv1.i106, 9
+  %add.i108 = add i8 %conv1.i106, 48
+  %.add.i109 = select i1 %cmp.i107, i8 42, i8 %add.i108
+  %sub48 = add nsw i32 %2, -1
+  %idxprom49 = sext i32 %sub48 to i64
+  %arrayidx50 = getelementptr inbounds i8* %call, i64 %idxprom49
+  store i8 %.add.i109, i8* %arrayidx50, align 1, !tbaa !1
+  br label %for.inc
+
+for.inc:                                          ; preds = %sw.bb, %sw.bb16, %sw.bb25, %sw.bb33, %sw.bb42, %if.end, %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %22 = load i32* %tlen, align 4, !tbaa !3
+  %23 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %23, %22
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %entry
+  %idxprom51 = sext i32 %L to i64
+  %arrayidx52 = getelementptr inbounds i8* %call, i64 %idxprom51
+  store i8 0, i8* %arrayidx52, align 1, !tbaa !1
+  ret i8* %call
+}

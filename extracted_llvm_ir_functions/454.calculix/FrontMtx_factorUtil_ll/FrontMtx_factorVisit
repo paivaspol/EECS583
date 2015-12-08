@@ -1,0 +1,458 @@
+define signext i8 @FrontMtx_factorVisit(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._Chv** %fronts, i32 %lookahead, double %tau, double %droptol, i8* %status, %struct._IP** %heads, %struct._IV* %pivotsizesIV, %struct._DV* %workDV, i32* nocapture %parent, %struct._ChvList* %aggList, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager, i32* %stats, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
+entry:
+  %ndelay = alloca i32, align 4
+  %idxprom = sext i32 %J to i64
+  %arrayidx = getelementptr inbounds i8* %status, i64 %idxprom
+  %0 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %0, 70
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %arrayidx3 = getelementptr inbounds %struct._IP** %heads, i64 %idxprom
+  %1 = load %struct._IP** %arrayidx3, align 8, !tbaa !0
+  %cmp4 = icmp eq %struct._IP* %1, null
+  br i1 %cmp4, label %if.end26, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  %arrayidx8 = getelementptr inbounds %struct._Chv** %fronts, i64 %idxprom
+  %2 = load %struct._Chv** %arrayidx8, align 8, !tbaa !0
+  %cmp9 = icmp eq %struct._Chv* %2, null
+  br i1 %cmp9, label %if.then11, label %if.end18
+
+if.then11:                                        ; preds = %if.then6
+  %call = call %struct._Chv* @FrontMtx_setupFront(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #6
+  store %struct._Chv* %call, %struct._Chv** %arrayidx8, align 8, !tbaa !0
+  store i8 65, i8* %arrayidx, align 1, !tbaa !1
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.then11, %if.then6
+  %frontJ.0 = phi %struct._Chv* [ %call, %if.then11 ], [ %2, %if.then6 ]
+  %cmp19 = icmp sgt i32 %msglvl, 1
+  br i1 %cmp19, label %if.then21, label %if.end24
+
+if.then21:                                        ; preds = %if.end18
+  %3 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %msgFile)
+  %call23 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.then21, %if.end18
+  call void @FrontMtx_update(%struct._FrontMtx* %frontmtx, %struct._Chv* %frontJ.0, %struct._IP** %heads, i8* %status, %struct._DV* %workDV, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
+  %arrayidx25 = getelementptr inbounds double* %cpus, i64 2
+  %4 = load double* %arrayidx25, align 8, !tbaa !4
+  %add = fadd double %4, 0.000000e+00
+  store double %add, double* %arrayidx25, align 8, !tbaa !4
+  %.pr = load %struct._IP** %arrayidx3, align 8, !tbaa !0
+  %phitmp350 = icmp eq %struct._IP* %.pr, null
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.end, %if.end24
+  %5 = phi i1 [ true, %if.end ], [ %phitmp350, %if.end24 ]
+  %frontJ.1 = phi %struct._Chv* [ null, %if.end ], [ %frontJ.0, %if.end24 ]
+  %. = select i1 %5, i32 89, i32 78
+  %cmp33 = icmp eq i32* %owners, null
+  br i1 %cmp33, label %if.then39, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end26
+  %arrayidx36 = getelementptr inbounds i32* %owners, i64 %idxprom
+  %6 = load i32* %arrayidx36, align 4, !tbaa !3
+  %cmp37 = icmp eq i32 %6, %myid
+  br i1 %cmp37, label %if.then39, label %if.else131
+
+if.then39:                                        ; preds = %lor.lhs.false, %if.end26
+  %arrayidx41 = getelementptr inbounds %struct._Chv** %fronts, i64 %idxprom
+  %7 = load %struct._Chv** %arrayidx41, align 8, !tbaa !0
+  %cmp42 = icmp eq %struct._Chv* %7, null
+  br i1 %cmp42, label %if.then44, label %if.end52
+
+if.then44:                                        ; preds = %if.then39
+  %call45 = call %struct._Chv* @FrontMtx_setupFront(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #6
+  store %struct._Chv* %call45, %struct._Chv** %arrayidx41, align 8, !tbaa !0
+  store i8 65, i8* %arrayidx, align 1, !tbaa !1
+  br label %if.end52
+
+if.end52:                                         ; preds = %if.then44, %if.then39
+  %frontJ.2 = phi %struct._Chv* [ %call45, %if.then44 ], [ %7, %if.then39 ]
+  %cmp53 = icmp eq %struct._ChvList* %aggList, null
+  br i1 %cmp53, label %if.end71, label %if.then55
+
+if.then55:                                        ; preds = %if.end52
+  %call56 = call i32 @ChvList_isListNonempty(%struct._ChvList* %aggList, i32 %J) #5
+  %cmp57 = icmp eq i32 %call56, 1
+  br i1 %cmp57, label %if.then59, label %if.end60
+
+if.then59:                                        ; preds = %if.then55
+  call fastcc void @assembleAggregates(%struct._Chv* %frontJ.2, %struct._ChvList* %aggList, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #6
+  br label %if.end60
+
+if.end60:                                         ; preds = %if.then59, %if.then55
+  %call61 = call i32 @ChvList_isCountZero(%struct._ChvList* %aggList, i32 %J) #5
+  %cmp62 = icmp eq i32 %call61, 1
+  br i1 %cmp62, label %if.then64, label %if.end71
+
+if.then64:                                        ; preds = %if.end60
+  %call65 = call i32 @ChvList_isListNonempty(%struct._ChvList* %aggList, i32 %J) #5
+  %cmp66 = icmp eq i32 %call65, 1
+  br i1 %cmp66, label %if.then68, label %if.end71
+
+if.then68:                                        ; preds = %if.then64
+  call fastcc void @assembleAggregates(%struct._Chv* %frontJ.2, %struct._ChvList* %aggList, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #6
+  br label %if.end71
+
+if.end71:                                         ; preds = %if.end52, %if.then64, %if.then68, %if.end60
+  %allAggregatesHere.0 = phi i32 [ 78, %if.end60 ], [ 89, %if.then68 ], [ 89, %if.then64 ], [ 89, %if.end52 ]
+  %cmp72 = icmp sgt i32 %msglvl, 1
+  br i1 %cmp72, label %if.then74, label %if.end79
+
+if.then74:                                        ; preds = %if.end71
+  %call77 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([43 x i8]* @.str1, i64 0, i64 0), i32 %., i32 %allAggregatesHere.0) #5
+  %call78 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end79
+
+if.end79:                                         ; preds = %if.then74, %if.end71
+  %cmp84 = icmp eq i32 %allAggregatesHere.0, 89
+  %or.cond = and i1 %5, %cmp84
+  br i1 %or.cond, label %if.then86, label %if.end157
+
+if.then86:                                        ; preds = %if.end79
+  %cmp87 = icmp eq %struct._ChvList* %postList, null
+  br i1 %cmp87, label %if.else93, label %if.then89
+
+if.then89:                                        ; preds = %if.then86
+  %cmp.i = icmp sgt i32 %msglvl, 4
+  br i1 %cmp.i, label %if.then.i, label %if.end.i
+
+if.then.i:                                        ; preds = %if.then89
+  %call.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([86 x i8]* @.str25, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._Chv* %frontJ.2, i32* %ndelay, %struct._Chv** %fronts, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager, double* %cpus) #5
+  %call1.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.then.i, %if.then89
+  %id.i = getelementptr inbounds %struct._Chv* %frontJ.2, i64 0, i32 0
+  %8 = load i32* %id.i, align 4, !tbaa !3
+  br i1 %cmp72, label %if.then3.i, label %if.end12.i
+
+if.then3.i:                                       ; preds = %if.end.i
+  %call4.i = call i32 @ChvList_isCountZero(%struct._ChvList* %postList, i32 %8) #5
+  %cmp5.i = icmp eq i32 %call4.i, 1
+  br i1 %cmp5.i, label %if.then6.i, label %if.else.i
+
+if.then6.i:                                       ; preds = %if.then3.i
+  %9 = call i64 @fwrite(i8* getelementptr inbounds ([29 x i8]* @.str26, i64 0, i64 0), i64 28, i64 1, %struct._IO_FILE* %msgFile) #4
+  %call8.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end12.i
+
+if.else.i:                                        ; preds = %if.then3.i
+  %10 = call i64 @fwrite(i8* getelementptr inbounds ([34 x i8]* @.str27, i64 0, i64 0), i64 33, i64 1, %struct._IO_FILE* %msgFile) #4
+  %call10.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end12.i
+
+if.end12.i:                                       ; preds = %if.else.i, %if.then6.i, %if.end.i
+  %call13.i = call i32 @ChvList_isCountZero(%struct._ChvList* %postList, i32 %8) #5
+  %cmp14.i = icmp eq i32 %call13.i, 1
+  br i1 %cmp14.i, label %if.then15.i, label %assemblePostponedData.exit
+
+if.then15.i:                                      ; preds = %if.end12.i
+  br i1 %cmp72, label %if.then17.i, label %if.end20.i
+
+if.then17.i:                                      ; preds = %if.then15.i
+  %11 = call i64 @fwrite(i8* getelementptr inbounds ([28 x i8]* @.str28, i64 0, i64 0), i64 27, i64 1, %struct._IO_FILE* %msgFile) #4
+  %call19.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end20.i
+
+if.end20.i:                                       ; preds = %if.then17.i, %if.then15.i
+  %call21.i = call %struct._Chv* @FrontMtx_assemblePostponedData(%struct._FrontMtx* %frontmtx, %struct._Chv* %frontJ.2, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager, i32* %ndelay) #5
+  %idxprom.i = sext i32 %8 to i64
+  %arrayidx.i = getelementptr inbounds %struct._Chv** %fronts, i64 %idxprom.i
+  store %struct._Chv* %call21.i, %struct._Chv** %arrayidx.i, align 8, !tbaa !0
+  %cmp24.i = icmp eq %struct._Chv* %call21.i, %frontJ.2
+  br i1 %cmp24.i, label %if.end31.i, label %if.then25.i
+
+if.then25.i:                                      ; preds = %if.end20.i
+  br i1 %cmp72, label %if.then27.i, label %if.end30.i
+
+if.then27.i:                                      ; preds = %if.then25.i
+  %12 = call i64 @fwrite(i8* getelementptr inbounds ([22 x i8]* @.str29, i64 0, i64 0), i64 21, i64 1, %struct._IO_FILE* %msgFile) #4
+  %call29.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end30.i
+
+if.end30.i:                                       ; preds = %if.then27.i, %if.then25.i
+  call void @ChvManager_releaseObject(%struct._ChvManager* %chvmanager, %struct._Chv* %frontJ.2) #5
+  br label %if.end31.i
+
+if.end31.i:                                       ; preds = %if.end30.i, %if.end20.i
+  %arrayidx32.i = getelementptr inbounds double* %cpus, i64 3
+  %13 = load double* %arrayidx32.i, align 8, !tbaa !4
+  %add.i = fadd double %13, 0.000000e+00
+  store double %add.i, double* %arrayidx32.i, align 8, !tbaa !4
+  br label %assemblePostponedData.exit
+
+assemblePostponedData.exit:                       ; preds = %if.end12.i, %if.end31.i
+  %rc.0.i = phi i32 [ 89, %if.end31.i ], [ 78, %if.end12.i ]
+  %14 = load %struct._Chv** %arrayidx41, align 8, !tbaa !0
+  br label %if.end94
+
+if.else93:                                        ; preds = %if.then86
+  store i32 0, i32* %ndelay, align 4, !tbaa !3
+  br label %if.end94
+
+if.end94:                                         ; preds = %if.else93, %assemblePostponedData.exit
+  %allPostponedAssmb.0 = phi i32 [ %rc.0.i, %assemblePostponedData.exit ], [ 89, %if.else93 ]
+  %frontJ.3 = phi %struct._Chv* [ %14, %assemblePostponedData.exit ], [ %frontJ.2, %if.else93 ]
+  br i1 %cmp72, label %if.then97, label %if.end101
+
+if.then97:                                        ; preds = %if.end94
+  %call99 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([24 x i8]* @.str2, i64 0, i64 0), i32 %allPostponedAssmb.0) #5
+  %call100 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end101
+
+if.end101:                                        ; preds = %if.then97, %if.end94
+  %cmp103 = icmp eq i32 %allPostponedAssmb.0, 89
+  br i1 %cmp103, label %if.then105, label %if.end157
+
+if.then105:                                       ; preds = %if.end101
+  %15 = load i32* %ndelay, align 4, !tbaa !3
+  %cmp.i326 = icmp sgt i32 %msglvl, 2
+  br i1 %cmp.i326, label %if.then.i329, label %if.end7.i
+
+if.then.i329:                                     ; preds = %if.then105
+  %call.i327 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([27 x i8]* @.str21, i64 0, i64 0), %struct._Chv* %frontJ.3, i32 %15) #5
+  %call1.i328 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([15 x i8]* @.str22, i64 0, i64 0), double %tau) #5
+  %call2.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([20 x i8]* @.str23, i64 0, i64 0), i32* %stats, double* %cpus) #5
+  %call3.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  call void @Chv_writeForHumanEye(%struct._Chv* %frontJ.3, %struct._IO_FILE* %msgFile) #5
+  %call6.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end7.i
+
+if.end7.i:                                        ; preds = %if.then.i329, %if.then105
+  %pivotingflag.i = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 5
+  %16 = load i32* %pivotingflag.i, align 4, !tbaa !3
+  %cmp8.i = icmp eq i32 %16, 1
+  br i1 %cmp8.i, label %if.then9.i, label %if.else.i331
+
+if.then9.i:                                       ; preds = %if.end7.i
+  %arrayidx.i330 = getelementptr inbounds i32* %stats, i64 1
+  %call11.i = call i32 @Chv_factorWithPivoting(%struct._Chv* %frontJ.3, i32 %15, i32 1, %struct._IV* %pivotsizesIV, %struct._DV* %workDV, double %tau, i32* %arrayidx.i330) #5
+  br label %if.end13.i
+
+if.else.i331:                                     ; preds = %if.end7.i
+  %patchinfo.i = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 27
+  %17 = load %struct._PatchAndGoInfo** %patchinfo.i, align 8, !tbaa !0
+  %call12.i = call i32 @Chv_factorWithNoPivoting(%struct._Chv* %frontJ.3, %struct._PatchAndGoInfo* %17) #5
+  br label %if.end13.i
+
+if.end13.i:                                       ; preds = %if.else.i331, %if.then9.i
+  %nelim.0.i = phi i32 [ %call11.i, %if.then9.i ], [ %call12.i, %if.else.i331 ]
+  %nD.i = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 1
+  %18 = load i32* %nD.i, align 4, !tbaa !3
+  %sub.i = sub nsw i32 %18, %nelim.0.i
+  %arrayidx14.i = getelementptr inbounds i32* %stats, i64 2
+  %19 = load i32* %arrayidx14.i, align 4, !tbaa !3
+  %add.i332 = add nsw i32 %19, %sub.i
+  store i32 %add.i332, i32* %arrayidx14.i, align 4, !tbaa !3
+  %20 = load i32* %pivotingflag.i, align 4, !tbaa !3
+  %cmp16.i = icmp eq i32 %20, 1
+  br i1 %cmp16.i, label %lor.lhs.false.i, label %if.then18.i
+
+lor.lhs.false.i:                                  ; preds = %if.end13.i
+  %symmetryflag.i = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3
+  %21 = load i32* %symmetryflag.i, align 4, !tbaa !3
+  %cmp17.i = icmp eq i32 %21, 2
+  br i1 %cmp17.i, label %if.then18.i, label %if.else21.i
+
+if.then18.i:                                      ; preds = %lor.lhs.false.i, %if.end13.i
+  %22 = load i32* %stats, align 4, !tbaa !3
+  %add20.i = add nsw i32 %22, %nelim.0.i
+  br label %if.end25.i
+
+if.else21.i:                                      ; preds = %lor.lhs.false.i
+  %call22.i = call i32 @IV_size(%struct._IV* %pivotsizesIV) #5
+  %23 = load i32* %stats, align 4, !tbaa !3
+  %add24.i = add nsw i32 %23, %call22.i
+  br label %if.end25.i
+
+if.end25.i:                                       ; preds = %if.else21.i, %if.then18.i
+  %storemerge.i = phi i32 [ %add20.i, %if.then18.i ], [ %add24.i, %if.else21.i ]
+  store i32 %storemerge.i, i32* %stats, align 4, !tbaa !3
+  %arrayidx27.i = getelementptr inbounds double* %cpus, i64 4
+  %24 = load double* %arrayidx27.i, align 8, !tbaa !4
+  %add28.i = fadd double %24, 0.000000e+00
+  store double %add28.i, double* %arrayidx27.i, align 8, !tbaa !4
+  br i1 %cmp72, label %if.then30.i, label %if.end33.i
+
+if.then30.i:                                      ; preds = %if.end25.i
+  %id.i333 = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 0
+  %25 = load i32* %id.i333, align 4, !tbaa !3
+  %call31.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([36 x i8]* @.str24, i64 0, i64 0), i32 %25, i32 %nelim.0.i, i32 %sub.i) #5
+  %call32.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end33.i
+
+if.end33.i:                                       ; preds = %if.then30.i, %if.end25.i
+  br i1 %cmp.i326, label %if.then35.i, label %factorFront.exit
+
+if.then35.i:                                      ; preds = %if.end33.i
+  call void @Chv_writeForHumanEye(%struct._Chv* %frontJ.3, %struct._IO_FILE* %msgFile) #5
+  %call36.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %factorFront.exit
+
+factorFront.exit:                                 ; preds = %if.end33.i, %if.then35.i
+  br i1 %cmp72, label %if.then109, label %if.end112
+
+if.then109:                                       ; preds = %factorFront.exit
+  %id = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 0
+  %26 = load i32* %id, align 4, !tbaa !3
+  %call110 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([22 x i8]* @.str3, i64 0, i64 0), i32 %26, i32 %nelim.0.i) #5
+  %call111 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end112
+
+if.end112:                                        ; preds = %if.then109, %factorFront.exit
+  %27 = load i32* %pivotingflag.i, align 4, !tbaa !3
+  %cmp113 = icmp ne i32 %27, 1
+  %.pre = load i32* %nD.i, align 4, !tbaa !3
+  %cmp116 = icmp slt i32 %nelim.0.i, %.pre
+  %or.cond351 = and i1 %cmp113, %cmp116
+  br i1 %or.cond351, label %if.then118, label %if.else123
+
+if.then118:                                       ; preds = %if.end112
+  call void @ChvManager_releaseObject(%struct._ChvManager* %chvmanager, %struct._Chv* %frontJ.3) #5
+  store %struct._Chv* null, %struct._Chv** %arrayidx41, align 8, !tbaa !0
+  store i8 69, i8* %arrayidx, align 1, !tbaa !1
+  br label %if.end157
+
+if.else123:                                       ; preds = %if.end112
+  %sub.i335 = sub nsw i32 %.pre, %nelim.0.i
+  br i1 %cmp72, label %if.then.i339, label %if.end.i342
+
+if.then.i339:                                     ; preds = %if.else123
+  %call.i337 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([34 x i8]* @.str18, i64 0, i64 0), i32 %nelim.0.i) #5
+  %call1.i338 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  %.pre.i = load i32* %nD.i, align 4, !tbaa !3
+  br label %if.end.i342
+
+if.end.i342:                                      ; preds = %if.then.i339, %if.else123
+  %28 = phi i32 [ %.pre.i, %if.then.i339 ], [ %.pre, %if.else123 ]
+  %sub3.i = sub nsw i32 %28, %sub.i335
+  store i32 %sub3.i, i32* %nD.i, align 4, !tbaa !3
+  %nL.i = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 2
+  %29 = load i32* %nL.i, align 4, !tbaa !3
+  %add.i340 = add nsw i32 %29, %sub.i335
+  store i32 %add.i340, i32* %nL.i, align 4, !tbaa !3
+  %nU.i = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 3
+  %30 = load i32* %nU.i, align 4, !tbaa !3
+  %add4.i = add nsw i32 %30, %sub.i335
+  store i32 %add4.i, i32* %nU.i, align 4, !tbaa !3
+  call void @FrontMtx_storeFront(%struct._FrontMtx* %frontmtx, %struct._Chv* %frontJ.3, %struct._IV* %pivotsizesIV, double %droptol, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
+  %31 = load i32* %nD.i, align 4, !tbaa !3
+  %add6.i = add nsw i32 %31, %sub.i335
+  store i32 %add6.i, i32* %nD.i, align 4, !tbaa !3
+  %32 = load i32* %nL.i, align 4, !tbaa !3
+  %sub8.i = sub nsw i32 %32, %sub.i335
+  store i32 %sub8.i, i32* %nL.i, align 4, !tbaa !3
+  %33 = load i32* %nU.i, align 4, !tbaa !3
+  %sub10.i = sub nsw i32 %33, %sub.i335
+  store i32 %sub10.i, i32* %nU.i, align 4, !tbaa !3
+  %arrayidx.i341 = getelementptr inbounds double* %cpus, i64 6
+  %34 = load double* %arrayidx.i341, align 8, !tbaa !4
+  %add12.i = fadd double %34, 0.000000e+00
+  store double %add12.i, double* %arrayidx.i341, align 8, !tbaa !4
+  br i1 %cmp87, label %storeEntries.exit, label %if.then14.i
+
+if.then14.i:                                      ; preds = %if.end.i342
+  %cmp15.i.not = icmp slt i32 %sub.i335, 1
+  %cmp.i326.not = xor i1 %cmp.i326, true
+  %brmerge = or i1 %cmp15.i.not, %cmp.i326.not
+  %.mux = select i1 %cmp15.i.not, %struct._Chv* null, %struct._Chv* %frontJ.3
+  br i1 %brmerge, label %if.end22.i, label %if.then18.i346
+
+if.then18.i346:                                   ; preds = %if.then14.i
+  %id.i344 = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 0
+  %35 = load i32* %id.i344, align 4, !tbaa !3
+  %call19.i345 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([30 x i8]* @.str19, i64 0, i64 0), i32 %35) #5
+  call void @Chv_writeForHumanEye(%struct._Chv* %frontJ.3, %struct._IO_FILE* %msgFile) #5
+  %call20.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end22.i
+
+if.end22.i:                                       ; preds = %if.then14.i, %if.then18.i346
+  %postponedchv.0.i = phi %struct._Chv* [ %frontJ.3, %if.then18.i346 ], [ %.mux, %if.then14.i ]
+  br i1 %cmp72, label %if.then24.i, label %if.end27.i
+
+if.then24.i:                                      ; preds = %if.end22.i
+  %call25.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([28 x i8]* @.str20, i64 0, i64 0), %struct._Chv* %postponedchv.0.i) #5
+  %call26.i = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end27.i
+
+if.end27.i:                                       ; preds = %if.then24.i, %if.end22.i
+  %id28.i = getelementptr inbounds %struct._Chv* %frontJ.3, i64 0, i32 0
+  %36 = load i32* %id28.i, align 4, !tbaa !3
+  %idxprom.i347 = sext i32 %36 to i64
+  %arrayidx29.i = getelementptr inbounds i32* %parent, i64 %idxprom.i347
+  %37 = load i32* %arrayidx29.i, align 4, !tbaa !3
+  call void @FrontMtx_storePostponedData(%struct._FrontMtx* %frontmtx, %struct._Chv* %postponedchv.0.i, i32 %sub.i335, i32 %37, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager) #5
+  %arrayidx31.i = getelementptr inbounds double* %cpus, i64 5
+  %38 = load double* %arrayidx31.i, align 8, !tbaa !4
+  %add32.i = fadd double %38, 0.000000e+00
+  store double %add32.i, double* %arrayidx31.i, align 8, !tbaa !4
+  br label %storeEntries.exit
+
+storeEntries.exit:                                ; preds = %if.end.i342, %if.end27.i
+  call void @ChvManager_releaseObject(%struct._ChvManager* %chvmanager, %struct._Chv* %frontJ.3) #5
+  store %struct._Chv* null, %struct._Chv** %arrayidx41, align 8, !tbaa !0
+  store i8 70, i8* %arrayidx, align 1, !tbaa !1
+  br label %if.end157
+
+if.else131:                                       ; preds = %lor.lhs.false
+  br i1 %5, label %if.then135, label %if.end157
+
+if.then135:                                       ; preds = %if.else131
+  %cmp136 = icmp eq %struct._Chv* %frontJ.1, null
+  br i1 %cmp136, label %if.end153, label %if.then138
+
+if.then138:                                       ; preds = %if.then135
+  %cmp139 = icmp sgt i32 %msglvl, 1
+  br i1 %cmp139, label %if.end144, label %if.end149
+
+if.end144:                                        ; preds = %if.then138
+  %call142 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([30 x i8]* @.str4, i64 0, i64 0), i32 %J) #5
+  %call143 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  %cmp145 = icmp sgt i32 %msglvl, 3
+  br i1 %cmp145, label %if.then147, label %if.end149
+
+if.then147:                                       ; preds = %if.end144
+  call void @Chv_writeForHumanEye(%struct._Chv* %frontJ.1, %struct._IO_FILE* %msgFile) #5
+  %call148 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end149
+
+if.end149:                                        ; preds = %if.then138, %if.then147, %if.end144
+  call void @ChvList_addObjectToList(%struct._ChvList* %aggList, %struct._Chv* %frontJ.1, i32 %J) #5
+  %arrayidx151 = getelementptr inbounds double* %cpus, i64 7
+  %39 = load double* %arrayidx151, align 8, !tbaa !4
+  %add152 = fadd double %39, 0.000000e+00
+  store double %add152, double* %arrayidx151, align 8, !tbaa !4
+  br label %if.end153
+
+if.end153:                                        ; preds = %if.then135, %if.end149
+  store i8 70, i8* %arrayidx, align 1, !tbaa !1
+  br label %if.end157
+
+if.end157:                                        ; preds = %if.else131, %if.end153, %if.end79, %if.then118, %storeEntries.exit, %if.end101
+  %dec = add nsw i32 %lookahead, -1
+  %cmp158 = icmp sgt i32 %lookahead, 0
+  br i1 %cmp158, label %land.lhs.true160, label %if.end167
+
+land.lhs.true160:                                 ; preds = %if.end157
+  %arrayidx162 = getelementptr inbounds i32* %parent, i64 %idxprom
+  %40 = load i32* %arrayidx162, align 4, !tbaa !3
+  %cmp163 = icmp eq i32 %40, -1
+  br i1 %cmp163, label %if.end167, label %if.then165
+
+if.then165:                                       ; preds = %land.lhs.true160
+  %call166 = call signext i8 @FrontMtx_factorVisit(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._Chv** %fronts, i32 %dec, double %tau, double %droptol, i8* %status, %struct._IP** %heads, %struct._IV* %pivotsizesIV, %struct._DV* %workDV, i32* %parent, %struct._ChvList* %aggList, %struct._ChvList* %postList, %struct._ChvManager* %chvmanager, i32* %stats, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #6
+  br label %if.end167
+
+if.end167:                                        ; preds = %land.lhs.true160, %if.end157, %if.then165
+  %41 = load i8* %arrayidx, align 1, !tbaa !1
+  br label %return
+
+return:                                           ; preds = %entry, %if.end167
+  %retval.0 = phi i8 [ %41, %if.end167 ], [ 70, %entry ]
+  ret i8 %retval.0
+}

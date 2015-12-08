@@ -1,14 +1,14 @@
-void
-PerlIOUnix_refcnt_inc(int fd)
+int
+PerlIO_apply_layers(pTHX_ PerlIO *f, const char *mode, const char *names)
 {
-    if (fd >= 0 && fd < PERLIO_MAX_REFCOUNTABLE_FD) {
-#ifdef USE_THREADS
-	MUTEX_LOCK(&PerlIO_mutex);
-#endif
-	PerlIO_fd_refcnt[fd]++;
-	PerlIO_debug("fd %d refcnt=%d\n",fd,PerlIO_fd_refcnt[fd]);
-#ifdef USE_THREADS
-	MUTEX_UNLOCK(&PerlIO_mutex);
-#endif
+    int code = 0;
+    if (f && names) {
+	PerlIO_list_t *layers = PerlIO_list_alloc(aTHX);
+	code = PerlIO_parse_layers(aTHX_ layers, names);
+	if (code == 0) {
+	    code = PerlIO_apply_layera(aTHX_ f, mode, layers, 0, layers->cur);
+	}
+	PerlIO_list_free(aTHX_ layers);
     }
+    return code;
 }

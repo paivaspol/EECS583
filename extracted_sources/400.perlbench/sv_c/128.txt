@@ -1,0 +1,72 @@
+CV *
+Perl_sv_2cv(pTHX_ SV *sv, HV **st, GV **gvp, I32 lref)
+{
+    GV *gv = Nullgv;
+    CV *cv = Nullcv;
+    STRLEN n_a;
+
+    if (!sv)
+	return *gvp = Nullgv, Nullcv;
+    switch (SvTYPE(sv)) {
+    case SVt_PVCV:
+	*st = CvSTASH(sv);
+	*gvp = Nullgv;
+	return (CV*)sv;
+    case SVt_PVHV:
+    case SVt_PVAV:
+	*gvp = Nullgv;
+	return Nullcv;
+    case SVt_PVGV:
+	gv = (GV*)sv;
+	*gvp = gv;
+	*st = GvESTASH(gv);
+	goto fix_gv;
+
+    default:
+	if (SvGMAGICAL(sv))
+	    mg_get(sv);
+	if (SvROK(sv)) {
+	    SV **sp = &sv;		/* Used in tryAMAGICunDEREF macro. */
+	    tryAMAGICunDEREF(to_cv);
+
+	    sv = SvRV(sv);
+	    if (SvTYPE(sv) == SVt_PVCV) {
+		cv = (CV*)sv;
+		*gvp = Nullgv;
+		*st = CvSTASH(cv);
+		return cv;
+	    }
+	    else if(isGV(sv))
+		gv = (GV*)sv;
+	    else
+		Perl_croak(aTHX_ "Not a subroutine reference");
+	}
+	else if (isGV(sv))
+	    gv = (GV*)sv;
+	else
+	    gv = gv_fetchpv(SvPV(sv, n_a), lref, SVt_PVCV);
+	*gvp = gv;
+	if (!gv)
+	    return Nullcv;
+	*st = GvESTASH(gv);
+    fix_gv:
+	if (lref && !GvCVu(gv)) {
+	    SV *tmpsv;
+	    ENTER;
+	    tmpsv = NEWSV(704,0);
+	    gv_efullname3(tmpsv, gv, Nullch);
+	    /* XXX this is probably not what they think they're getting.
+	     * It has the same effect as "sub name;", i.e. just a forward
+	     * declaration! */
+	    newSUB(start_subparse(FALSE, 0),
+		   newSVOP(OP_CONST, 0, tmpsv),
+		   Nullop,
+		   Nullop);
+	    LEAVE;
+	    if (!GvCVu(gv))
+		Perl_croak(aTHX_ "Unable to create sub named \"%"SVf"\"",
+			   sv);
+	}
+	return GvCVu(gv);
+    }
+}

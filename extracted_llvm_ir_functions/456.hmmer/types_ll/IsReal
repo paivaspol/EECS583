@@ -1,0 +1,121 @@
+define i32 @IsReal(i8* %s) #3 {
+entry:
+  %cmp = icmp eq i8* %s, null
+  br i1 %cmp, label %return, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %entry
+  %call = tail call i16** @__ctype_b_loc() #5
+  %0 = load i16** %call, align 8, !tbaa !0
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond, %while.cond.preheader
+  %s.addr.0 = phi i8* [ %incdec.ptr, %while.cond ], [ %s, %while.cond.preheader ]
+  %1 = load i8* %s.addr.0, align 1, !tbaa !1
+  %idxprom = sext i8 %1 to i64
+  %arrayidx = getelementptr inbounds i16* %0, i64 %idxprom
+  %2 = load i16* %arrayidx, align 2, !tbaa !4
+  %and = and i16 %2, 8192
+  %tobool = icmp eq i16 %and, 0
+  %incdec.ptr = getelementptr inbounds i8* %s.addr.0, i64 1
+  br i1 %tobool, label %while.end, label %while.cond
+
+while.end:                                        ; preds = %while.cond
+  switch i8 %1, label %while.cond11.preheader [
+    i8 45, label %if.then8
+    i8 43, label %if.then8
+  ]
+
+if.then8:                                         ; preds = %while.end, %while.end
+  %.pre = load i8* %incdec.ptr, align 1, !tbaa !1
+  br label %while.cond11.preheader
+
+while.cond11.preheader:                           ; preds = %if.then8, %while.end
+  %3 = phi i8 [ %1, %while.end ], [ %.pre, %if.then8 ]
+  %s.addr.1.ph = phi i8* [ %s.addr.0, %while.end ], [ %incdec.ptr, %if.then8 ]
+  %cmp13102 = icmp eq i8 %3, 0
+  br i1 %cmp13102, label %while.cond65.preheader, label %while.body15
+
+while.body15:                                     ; preds = %while.cond11.preheader, %if.end62
+  %4 = phi i8 [ %9, %if.end62 ], [ %3, %while.cond11.preheader ]
+  %gotreal.0106 = phi i32 [ %gotreal.1, %if.end62 ], [ 0, %while.cond11.preheader ]
+  %gotexp.0105 = phi i32 [ %gotexp.1, %if.end62 ], [ 0, %while.cond11.preheader ]
+  %gotdecimal.0104 = phi i32 [ %gotdecimal.1, %if.end62 ], [ 0, %while.cond11.preheader ]
+  %s.addr.1103 = phi i8* [ %incdec.ptr63, %if.end62 ], [ %s.addr.1.ph, %while.cond11.preheader ]
+  %idxprom17 = sext i8 %4 to i64
+  %arrayidx19 = getelementptr inbounds i16* %0, i64 %idxprom17
+  %5 = load i16* %arrayidx19, align 2, !tbaa !4
+  %conv20 = zext i16 %5 to i32
+  %and21 = and i32 %conv20, 2048
+  %tobool22 = icmp eq i32 %and21, 0
+  br i1 %tobool22, label %if.else, label %if.then23
+
+if.then23:                                        ; preds = %while.body15
+  %inc = add nsw i32 %gotreal.0106, 1
+  br label %if.end62
+
+if.else:                                          ; preds = %while.body15
+  switch i8 %4, label %if.else50 [
+    i8 46, label %if.then27
+    i8 101, label %if.then44
+    i8 69, label %if.then44
+  ]
+
+if.then27:                                        ; preds = %if.else
+  %6 = or i32 %gotexp.0105, %gotdecimal.0104
+  %7 = icmp eq i32 %6, 0
+  br i1 %7, label %if.else33, label %return
+
+if.else33:                                        ; preds = %if.then27
+  %inc34 = add nsw i32 %gotdecimal.0104, 1
+  br label %if.end62
+
+if.then44:                                        ; preds = %if.else, %if.else
+  %tobool45 = icmp eq i32 %gotexp.0105, 0
+  br i1 %tobool45, label %if.end62, label %return
+
+if.else50:                                        ; preds = %if.else
+  %and56 = and i32 %conv20, 8192
+  %tobool57 = icmp eq i32 %and56, 0
+  br i1 %tobool57, label %if.end62, label %while.cond65.preheader
+
+while.cond65.preheader:                           ; preds = %if.end62, %if.else50, %while.cond11.preheader
+  %8 = phi i8 [ 0, %while.cond11.preheader ], [ %4, %if.else50 ], [ 0, %if.end62 ]
+  %gotreal.0.lcssa = phi i32 [ 0, %while.cond11.preheader ], [ %gotreal.0106, %if.else50 ], [ %gotreal.1, %if.end62 ]
+  %s.addr.1.lcssa = phi i8* [ %s.addr.1.ph, %while.cond11.preheader ], [ %s.addr.1103, %if.else50 ], [ %incdec.ptr63, %if.end62 ]
+  br label %while.cond65
+
+if.end62:                                         ; preds = %if.then44, %if.else50, %if.else33, %if.then23
+  %gotdecimal.1 = phi i32 [ %gotdecimal.0104, %if.then23 ], [ %inc34, %if.else33 ], [ %gotdecimal.0104, %if.else50 ], [ %gotdecimal.0104, %if.then44 ]
+  %gotexp.1 = phi i32 [ %gotexp.0105, %if.then23 ], [ %gotexp.0105, %if.else33 ], [ %gotexp.0105, %if.else50 ], [ 1, %if.then44 ]
+  %gotreal.1 = phi i32 [ %inc, %if.then23 ], [ %gotreal.0106, %if.else33 ], [ %gotreal.0106, %if.else50 ], [ %gotreal.0106, %if.then44 ]
+  %incdec.ptr63 = getelementptr inbounds i8* %s.addr.1103, i64 1
+  %9 = load i8* %incdec.ptr63, align 1, !tbaa !1
+  %cmp13 = icmp eq i8 %9, 0
+  br i1 %cmp13, label %while.cond65.preheader, label %while.body15
+
+while.cond65:                                     ; preds = %while.cond65.while.cond65_crit_edge, %while.cond65.preheader
+  %10 = phi i8 [ %.pre114, %while.cond65.while.cond65_crit_edge ], [ %8, %while.cond65.preheader ]
+  %s.addr.2 = phi i8* [ %incdec.ptr74, %while.cond65.while.cond65_crit_edge ], [ %s.addr.1.lcssa, %while.cond65.preheader ]
+  %idxprom67 = sext i8 %10 to i64
+  %arrayidx69 = getelementptr inbounds i16* %0, i64 %idxprom67
+  %11 = load i16* %arrayidx69, align 2, !tbaa !4
+  %and71 = and i16 %11, 8192
+  %tobool72 = icmp eq i16 %and71, 0
+  %incdec.ptr74 = getelementptr inbounds i8* %s.addr.2, i64 1
+  br i1 %tobool72, label %while.end75, label %while.cond65.while.cond65_crit_edge
+
+while.cond65.while.cond65_crit_edge:              ; preds = %while.cond65
+  %.pre114 = load i8* %incdec.ptr74, align 1, !tbaa !1
+  br label %while.cond65
+
+while.end75:                                      ; preds = %while.cond65
+  %cmp77 = icmp ne i8 %10, 0
+  %tobool79 = icmp eq i32 %gotreal.0.lcssa, 0
+  %or.cond = or i1 %cmp77, %tobool79
+  %12 = zext i1 %or.cond to i32
+  %. = xor i32 %12, 1
+  ret i32 %.
+
+return:                                           ; preds = %if.then44, %if.then27, %entry
+  ret i32 0
+}

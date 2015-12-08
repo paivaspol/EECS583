@@ -1,0 +1,52 @@
+STATIC I32
+S_sublex_push(pTHX)
+{
+    ENTER;
+
+    PL_lex_state = PL_sublex_info.super_state;
+    SAVEI32(PL_lex_dojoin);
+    SAVEI32(PL_lex_brackets);
+    SAVEI32(PL_lex_casemods);
+    SAVEI32(PL_lex_starts);
+    SAVEI32(PL_lex_state);
+    SAVEVPTR(PL_lex_inpat);
+    SAVEI32(PL_lex_inwhat);
+    SAVECOPLINE(PL_curcop);
+    SAVEPPTR(PL_bufptr);
+    SAVEPPTR(PL_bufend);
+    SAVEPPTR(PL_oldbufptr);
+    SAVEPPTR(PL_oldoldbufptr);
+    SAVEPPTR(PL_last_lop);
+    SAVEPPTR(PL_last_uni);
+    SAVEPPTR(PL_linestart);
+    SAVESPTR(PL_linestr);
+    SAVEGENERICPV(PL_lex_brackstack);
+    SAVEGENERICPV(PL_lex_casestack);
+
+    PL_linestr = PL_lex_stuff;
+    PL_lex_stuff = Nullsv;
+
+    PL_bufend = PL_bufptr = PL_oldbufptr = PL_oldoldbufptr = PL_linestart
+	= SvPVX(PL_linestr);
+    PL_bufend += SvCUR(PL_linestr);
+    PL_last_lop = PL_last_uni = Nullch;
+    SAVEFREESV(PL_linestr);
+
+    PL_lex_dojoin = FALSE;
+    PL_lex_brackets = 0;
+    New(899, PL_lex_brackstack, 120, char);
+    New(899, PL_lex_casestack, 12, char);
+    PL_lex_casemods = 0;
+    *PL_lex_casestack = '\0';
+    PL_lex_starts = 0;
+    PL_lex_state = LEX_INTERPCONCAT;
+    CopLINE_set(PL_curcop, (line_t)PL_multi_start);
+
+    PL_lex_inwhat = PL_sublex_info.sub_inwhat;
+    if (PL_lex_inwhat == OP_MATCH || PL_lex_inwhat == OP_QR || PL_lex_inwhat == OP_SUBST)
+	PL_lex_inpat = PL_sublex_info.sub_op;
+    else
+	PL_lex_inpat = Nullop;
+
+    return '(';
+}

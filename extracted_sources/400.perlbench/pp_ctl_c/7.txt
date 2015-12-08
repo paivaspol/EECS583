@@ -1,16 +1,11 @@
-static bool
-S_path_is_absolute(pTHX_ char *name)
+void
+Perl_rxres_free(pTHX_ void **rsp)
 {
-    if (PERL_FILE_IS_ABSOLUTE(name)
-#ifdef MACOS_TRADITIONAL
-	|| (*name == ':'))
-#else
-	|| (*name == '.' && (name[1] == '/' ||
-			     (name[1] == '.' && name[2] == '/'))))
-#endif
-    {
-	return TRUE;
+    UV *p = (UV*)*rsp;
+
+    if (p) {
+	Safefree(INT2PTR(char*,*p));
+	Safefree(p);
+	*rsp = Null(void*);
     }
-    else
-    	return FALSE;
 }

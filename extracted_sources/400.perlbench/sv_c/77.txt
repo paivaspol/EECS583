@@ -1,33 +1,6 @@
 void
-Perl_ptr_table_clear(pTHX_ PTR_TBL_t *tbl)
+Perl_sv_setpv_mg(pTHX_ register SV *sv, register const char *ptr)
 {
-    register PTR_TBL_ENT_t **array;
-    register PTR_TBL_ENT_t *entry;
-    register PTR_TBL_ENT_t *oentry = Null(PTR_TBL_ENT_t*);
-    UV riter = 0;
-    UV max;
-
-    if (!tbl || !tbl->tbl_items) {
-        return;
-    }
-
-    array = tbl->tbl_ary;
-    entry = array[0];
-    max = tbl->tbl_max;
-
-    for (;;) {
-        if (entry) {
-            oentry = entry;
-            entry = entry->next;
-            S_del_pte(aTHX_ oentry);
-        }
-        if (!entry) {
-            if (++riter > max) {
-                break;
-            }
-            entry = array[riter];
-        }
-    }
-
-    tbl->tbl_items = 0;
+    sv_setpv(sv,ptr);
+    SvSETMAGIC(sv);
 }

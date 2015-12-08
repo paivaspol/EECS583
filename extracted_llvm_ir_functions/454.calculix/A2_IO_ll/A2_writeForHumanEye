@@ -1,0 +1,168 @@
+define void @A2_writeForHumanEye(%struct._A2* %mtx, %struct._IO_FILE* %fp) #0 {
+entry:
+  %cmp = icmp eq %struct._A2* %mtx, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str18, i64 0, i64 0), %struct._A2* %mtx, %struct._IO_FILE* %fp) #5
+  tail call void @exit(i32 -1) #8
+  unreachable
+
+if.end:                                           ; preds = %entry
+  tail call void @A2_writeStats(%struct._A2* %mtx, %struct._IO_FILE* %fp) #7
+  %type = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0
+  %1 = load i32* %type, align 4, !tbaa !3
+  switch i32 %1, label %if.end88 [
+    i32 1, label %for.cond.preheader
+    i32 2, label %for.cond37.preheader
+  ]
+
+for.cond37.preheader:                             ; preds = %if.end
+  %n238 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2
+  %2 = load i32* %n238, align 4, !tbaa !3
+  %cmp39171 = icmp sgt i32 %2, 0
+  br i1 %cmp39171, label %for.body40.lr.ph, label %if.end88
+
+for.body40.lr.ph:                                 ; preds = %for.cond37.preheader
+  %n157 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 1
+  %inc164 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 3
+  %inc266 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4
+  %entries71 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 6
+  br label %for.body40
+
+for.cond.preheader:                               ; preds = %if.end
+  %n2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2
+  %3 = load i32* %n2, align 4, !tbaa !3
+  %cmp4160 = icmp sgt i32 %3, 0
+  br i1 %cmp4160, label %for.body.lr.ph, label %if.end88
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %n1 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 1
+  %inc1 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 3
+  %inc2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4
+  %entries = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 6
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc31
+  %4 = phi i32 [ %3, %for.body.lr.ph ], [ %12, %for.inc31 ]
+  %jfirst.0161 = phi i32 [ 0, %for.body.lr.ph ], [ %add32, %for.inc31 ]
+  %add152 = or i32 %jfirst.0161, 3
+  %cmp6 = icmp slt i32 %add152, %4
+  %sub = add nsw i32 %4, -1
+  %add152.sub = select i1 %cmp6, i32 %add152, i32 %sub
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str19, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %fp) #9
+  %cmp12153 = icmp sgt i32 %jfirst.0161, %add152.sub
+  br i1 %cmp12153, label %for.cond15.loopexit, label %for.body13
+
+for.body13:                                       ; preds = %for.body, %for.body13
+  %j.0154 = phi i32 [ %inc, %for.body13 ], [ %jfirst.0161, %for.body ]
+  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str20, i64 0, i64 0), i32 %j.0154) #5
+  %inc = add nsw i32 %j.0154, 1
+  %exitcond = icmp eq i32 %j.0154, %add152.sub
+  br i1 %exitcond, label %for.cond15.loopexit, label %for.body13
+
+for.cond15.loopexit:                              ; preds = %for.body13, %for.body
+  %6 = load i32* %n1, align 4, !tbaa !3
+  %cmp16157 = icmp sgt i32 %6, 0
+  br i1 %cmp16157, label %for.body17, label %for.inc31
+
+for.body17:                                       ; preds = %for.cond15.loopexit, %for.inc28
+  %i.0158 = phi i32 [ %inc29, %for.inc28 ], [ 0, %for.cond15.loopexit ]
+  %call18 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str21, i64 0, i64 0), i32 %i.0158) #5
+  br i1 %cmp12153, label %for.inc28, label %for.body21
+
+for.body21:                                       ; preds = %for.body17, %for.body21
+  %j.1156 = phi i32 [ %inc26, %for.body21 ], [ %jfirst.0161, %for.body17 ]
+  %7 = load i32* %inc1, align 4, !tbaa !3
+  %mul = mul nsw i32 %7, %i.0158
+  %8 = load i32* %inc2, align 4, !tbaa !3
+  %mul22 = mul nsw i32 %8, %j.1156
+  %add23 = add nsw i32 %mul22, %mul
+  %idxprom = sext i32 %add23 to i64
+  %9 = load double** %entries, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds double* %9, i64 %idxprom
+  %10 = load double* %arrayidx, align 8, !tbaa !4
+  %call24 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str22, i64 0, i64 0), double %10) #5
+  %inc26 = add nsw i32 %j.1156, 1
+  %exitcond174 = icmp eq i32 %j.1156, %add152.sub
+  br i1 %exitcond174, label %for.inc28, label %for.body21
+
+for.inc28:                                        ; preds = %for.body21, %for.body17
+  %inc29 = add nsw i32 %i.0158, 1
+  %11 = load i32* %n1, align 4, !tbaa !3
+  %cmp16 = icmp slt i32 %inc29, %11
+  br i1 %cmp16, label %for.body17, label %for.inc31
+
+for.inc31:                                        ; preds = %for.inc28, %for.cond15.loopexit
+  %add32 = add nsw i32 %jfirst.0161, 4
+  %12 = load i32* %n2, align 4, !tbaa !3
+  %cmp4 = icmp slt i32 %add32, %12
+  br i1 %cmp4, label %for.body, label %if.end88
+
+for.body40:                                       ; preds = %for.body40.lr.ph, %for.inc84
+  %13 = phi i32 [ %2, %for.body40.lr.ph ], [ %22, %for.inc84 ]
+  %jfirst.1172 = phi i32 [ 0, %for.body40.lr.ph ], [ %add85, %for.inc84 ]
+  %add41150 = or i32 %jfirst.1172, 1
+  %cmp43 = icmp slt i32 %add41150, %13
+  %sub46 = add nsw i32 %13, -1
+  %add41150.sub46 = select i1 %cmp43, i32 %add41150, i32 %sub46
+  %14 = tail call i64 @fwrite(i8* getelementptr inbounds ([6 x i8]* @.str19, i64 0, i64 0), i64 5, i64 1, %struct._IO_FILE* %fp) #9
+  %cmp50163 = icmp sgt i32 %jfirst.1172, %add41150.sub46
+  br i1 %cmp50163, label %for.cond56.loopexit, label %for.body51
+
+for.body51:                                       ; preds = %for.body40, %for.body51
+  %j.2164 = phi i32 [ %inc54, %for.body51 ], [ %jfirst.1172, %for.body40 ]
+  %call52 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str23, i64 0, i64 0), i32 %j.2164) #5
+  %inc54 = add nsw i32 %j.2164, 1
+  %exitcond175 = icmp eq i32 %j.2164, %add41150.sub46
+  br i1 %exitcond175, label %for.cond56.loopexit, label %for.body51
+
+for.cond56.loopexit:                              ; preds = %for.body51, %for.body40
+  %15 = load i32* %n157, align 4, !tbaa !3
+  %cmp58167 = icmp sgt i32 %15, 0
+  br i1 %cmp58167, label %for.body59, label %for.inc84
+
+for.body59:                                       ; preds = %for.cond56.loopexit, %for.inc81
+  %i.1168 = phi i32 [ %inc82, %for.inc81 ], [ 0, %for.cond56.loopexit ]
+  %call60 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str21, i64 0, i64 0), i32 %i.1168) #5
+  br i1 %cmp50163, label %for.inc81, label %for.body63
+
+for.body63:                                       ; preds = %for.body59, %for.body63
+  %j.3166 = phi i32 [ %inc79, %for.body63 ], [ %jfirst.1172, %for.body59 ]
+  %16 = load i32* %inc164, align 4, !tbaa !3
+  %mul65 = mul nsw i32 %16, %i.1168
+  %17 = load i32* %inc266, align 4, !tbaa !3
+  %mul67 = mul nsw i32 %17, %j.3166
+  %add68 = add nsw i32 %mul67, %mul65
+  %mul69 = shl nsw i32 %add68, 1
+  %idxprom70 = sext i32 %mul69 to i64
+  %18 = load double** %entries71, align 8, !tbaa !0
+  %arrayidx72 = getelementptr inbounds double* %18, i64 %idxprom70
+  %19 = load double* %arrayidx72, align 8, !tbaa !4
+  %add73151 = or i32 %mul69, 1
+  %idxprom74 = sext i32 %add73151 to i64
+  %arrayidx76 = getelementptr inbounds double* %18, i64 %idxprom74
+  %20 = load double* %arrayidx76, align 8, !tbaa !4
+  %call77 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([19 x i8]* @.str24, i64 0, i64 0), double %19, double %20) #5
+  %inc79 = add nsw i32 %j.3166, 1
+  %exitcond176 = icmp eq i32 %j.3166, %add41150.sub46
+  br i1 %exitcond176, label %for.inc81, label %for.body63
+
+for.inc81:                                        ; preds = %for.body63, %for.body59
+  %inc82 = add nsw i32 %i.1168, 1
+  %21 = load i32* %n157, align 4, !tbaa !3
+  %cmp58 = icmp slt i32 %inc82, %21
+  br i1 %cmp58, label %for.body59, label %for.inc84
+
+for.inc84:                                        ; preds = %for.inc81, %for.cond56.loopexit
+  %add85 = add nsw i32 %jfirst.1172, 2
+  %22 = load i32* %n238, align 4, !tbaa !3
+  %cmp39 = icmp slt i32 %add85, %22
+  br i1 %cmp39, label %for.body40, label %if.end88
+
+if.end88:                                         ; preds = %for.cond37.preheader, %for.inc84, %for.cond.preheader, %for.inc31, %if.end
+  ret void
+}

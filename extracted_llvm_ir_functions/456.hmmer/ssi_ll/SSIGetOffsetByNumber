@@ -1,0 +1,58 @@
+define i32 @SSIGetOffsetByNumber(%struct.ssifile_s* nocapture %sfp, i32 %n, i32* nocapture %ret_fh, %struct.ssioffset_s* nocapture %ret_offset) #0 {
+entry:
+  %fnum = alloca i16, align 2
+  %nprimary = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 3
+  %0 = load i32* %nprimary, align 4, !tbaa !4
+  %cmp = icmp ugt i32 %0, %n
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %poffset = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 12
+  %precsize = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 9
+  %1 = load i32* %precsize, align 4, !tbaa !4
+  %call = call fastcc i32 @indexfile_position(%struct.ssifile_s* %sfp, %struct.ssioffset_s* %poffset, i32 %1, i32 %n) #9
+  %cmp1 = icmp eq i32 %call, 0
+  br i1 %cmp1, label %if.end3, label %return
+
+if.end3:                                          ; preds = %if.end
+  %plen = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 6
+  %2 = load i32* %plen, align 4, !tbaa !4
+  %conv = zext i32 %2 to i64
+  %call4 = call noalias i8* @malloc(i64 %conv) #8
+  %cmp5 = icmp eq i8* %call4, null
+  br i1 %cmp5, label %return, label %if.end8
+
+if.end8:                                          ; preds = %if.end3
+  %fp = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0
+  %3 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
+  %call11 = call i64 @fread(i8* %call4, i64 1, i64 %conv, %struct._IO_FILE* %3) #8
+  %4 = load i32* %plen, align 4, !tbaa !4
+  %conv13 = zext i32 %4 to i64
+  %cmp14 = icmp eq i64 %call11, %conv13
+  br i1 %cmp14, label %if.end17, label %return
+
+if.end17:                                         ; preds = %if.end8
+  %5 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
+  %call19 = call fastcc i32 @read_i16(%struct._IO_FILE* %5, i16* %fnum) #9
+  %tobool = icmp eq i32 %call19, 0
+  br i1 %tobool, label %return, label %if.end21
+
+if.end21:                                         ; preds = %if.end17
+  %6 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
+  %smode = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 15
+  %7 = load i8* %smode, align 1, !tbaa !1
+  %call23 = call fastcc i32 @read_offset(%struct._IO_FILE* %6, i8 signext %7, %struct.ssioffset_s* %ret_offset) #9
+  %tobool24 = icmp eq i32 %call23, 0
+  br i1 %tobool24, label %return, label %if.end26
+
+if.end26:                                         ; preds = %if.end21
+  %8 = load i16* %fnum, align 2, !tbaa !3
+  %conv27 = zext i16 %8 to i32
+  store i32 %conv27, i32* %ret_fh, align 4, !tbaa !4
+  call void @free(i8* %call4) #8
+  br label %return
+
+return:                                           ; preds = %if.end21, %if.end17, %if.end8, %if.end3, %if.end, %entry, %if.end26
+  %retval.0 = phi i32 [ 0, %if.end26 ], [ 2, %entry ], [ 8, %if.end ], [ 3, %if.end3 ], [ 1, %if.end8 ], [ 1, %if.end17 ], [ 1, %if.end21 ]
+  ret i32 %retval.0
+}

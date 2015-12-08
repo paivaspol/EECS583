@@ -1,0 +1,43 @@
+define internal fastcc %struct.MD5_CTX* @get_md5_ctx(%struct.sv* nocapture %sv) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 524288
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end12, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xrv_rv = bitcast i8* %1 to %struct.sv**
+  %2 = load %struct.sv** %xrv_rv, align 8, !tbaa !0
+  %sv_flags1 = getelementptr inbounds %struct.sv* %2, i64 0, i32 2
+  %3 = load i32* %sv_flags1, align 4, !tbaa !3
+  %and2 = and i32 %3, 65536
+  %tobool3 = icmp eq i32 %and2, 0
+  br i1 %tobool3, label %if.end12, label %cond.true
+
+cond.true:                                        ; preds = %if.then
+  %sv_any8 = getelementptr inbounds %struct.sv* %2, i64 0, i32 0
+  %4 = load i8** %sv_any8, align 8, !tbaa !0
+  %xiv_iv = getelementptr inbounds i8* %4, i64 24
+  %5 = bitcast i8* %xiv_iv to i64*
+  %6 = load i64* %5, align 8, !tbaa !4
+  %7 = inttoptr i64 %6 to %struct.MD5_CTX*
+  %tobool9 = icmp eq i64 %6, 0
+  br i1 %tobool9, label %if.end12, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %cond.true
+  %signature = getelementptr inbounds %struct.MD5_CTX* %7, i64 0, i32 0
+  %8 = load i32* %signature, align 4, !tbaa !3
+  %cmp = icmp eq i32 %8, 200003165
+  br i1 %cmp, label %return, label %if.end12
+
+if.end12:                                         ; preds = %if.then, %cond.true, %entry, %land.lhs.true
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([40 x i8]* @.str31, i64 0, i64 0)) #4
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %if.end12
+  %retval.0 = phi %struct.MD5_CTX* [ null, %if.end12 ], [ %7, %land.lhs.true ]
+  ret %struct.MD5_CTX* %retval.0
+}

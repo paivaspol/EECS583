@@ -1,22 +1,78 @@
-static I32
-sortcv(pTHX_ SV *a, SV *b)
+STATIC void
+S_qsortsv(pTHX_ gptr *list1, size_t nmemb, SVCOMPARE_t cmp, U32 flags)
 {
-    I32 oldsaveix = PL_savestack_ix;
-    I32 oldscopeix = PL_scopestack_ix;
-    I32 result;
-    GvSV(PL_firstgv) = a;
-    GvSV(PL_secondgv) = b;
-    PL_stack_sp = PL_stack_base;
-    PL_op = PL_sortcop;
-    CALLRUNOPS(aTHX);
-    if (PL_stack_sp != PL_stack_base + 1)
-	Perl_croak(aTHX_ "Sort subroutine didn't return single value");
-    if (!SvNIOKp(*PL_stack_sp))
-	Perl_croak(aTHX_ "Sort subroutine didn't return a numeric value");
-    result = SvIV(*PL_stack_sp);
-    while (PL_scopestack_ix > oldscopeix) {
-	LEAVE;
+    SV *hintsv;
+
+    if (SORTHINTS(hintsv) & HINT_SORT_STABLE) {
+	 register gptr **pp, *q;
+	 register size_t n, j, i;
+	 gptr *small[SMALLSORT], **indir, tmp;
+	 SVCOMPARE_t savecmp;
+	 if (nmemb <= 1) return;     /* sorted trivially */
+
+	 /* Small arrays can use the stack, big ones must be allocated */
+	 if (nmemb <= SMALLSORT) indir = small;
+	 else { New(1799, indir, nmemb, gptr *); }
+
+	 /* Copy pointers to original array elements into indirect array */
+	 for (n = nmemb, pp = indir, q = list1; n--; ) *pp++ = q++;
+
+	 savecmp = PL_sort_RealCmp;	/* Save current comparison routine, if any */
+	 PL_sort_RealCmp = cmp;	/* Put comparison routine where cmpindir can find it */
+
+	 /* sort, with indirection */
+	 S_qsortsvu(aTHX_ (gptr *)indir, nmemb,
+		    flags ? cmpindir_desc : cmpindir);
+
+	 pp = indir;
+	 q = list1;
+	 for (n = nmemb; n--; ) {
+	      /* Assert A: all elements of q with index > n are already
+	       * in place.  This is vacuosly true at the start, and we
+	       * put element n where it belongs below (if it wasn't
+	       * already where it belonged). Assert B: we only move
+	       * elements that aren't where they belong,
+	       * so, by A, we never tamper with elements above n.
+	       */
+	      j = pp[n] - q;		/* This sets j so that q[j] is
+					 * at pp[n].  *pp[j] belongs in
+					 * q[j], by construction.
+					 */
+	      if (n != j) {		/* all's well if n == j */
+		   tmp = q[j];		/* save what's in q[j] */
+		   do {
+			q[j] = *pp[j];	/* put *pp[j] where it belongs */
+			i = pp[j] - q;	/* the index in q of the element
+					 * just moved */
+			pp[j] = q + j;	/* this is ok now */
+		   } while ((j = i) != n);
+		   /* There are only finitely many (nmemb) addresses
+		    * in the pp array.
+		    * So we must eventually revisit an index we saw before.
+		    * Suppose the first revisited index is k != n.
+		    * An index is visited because something else belongs there.
+		    * If we visit k twice, then two different elements must
+		    * belong in the same place, which cannot be.
+		    * So j must get back to n, the loop terminates,
+		    * and we put the saved element where it belongs.
+		    */
+		   q[n] = tmp;		/* put what belongs into
+					 * the n-th element */
+	      }
+	 }
+
+	/* free iff allocated */
+	 if (indir != small) { Safefree(indir); }
+	 /* restore prevailing comparison routine */
+	 PL_sort_RealCmp = savecmp;
+    } else if (flags) {
+	 SVCOMPARE_t savecmp = PL_sort_RealCmp;	/* Save current comparison routine, if any */
+	 PL_sort_RealCmp = cmp;	/* Put comparison routine where cmp_desc can find it */
+	 cmp = cmp_desc;
+	 S_qsortsvu(aTHX_ list1, nmemb, cmp);
+	 /* restore prevailing comparison routine */
+	 PL_sort_RealCmp = savecmp;
+    } else {
+	 S_qsortsvu(aTHX_ list1, nmemb, cmp);
     }
-    leave_scope(oldsaveix);
-    return result;
 }

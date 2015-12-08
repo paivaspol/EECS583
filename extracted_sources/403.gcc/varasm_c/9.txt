@@ -1,21 +1,19 @@
-void
-named_section_flags (name, flags)
+bool
+named_section_first_declaration (name)
      const char *name;
-     unsigned int flags;
 {
-  if (in_section != in_named || strcmp (name, in_named_name) != 0)
+  struct in_named_entry **slot;
+
+  slot = (struct in_named_entry**)
+    htab_find_slot_with_hash (in_named_htab, name, 
+			      htab_hash_string (name), NO_INSERT);
+  if (! (*slot)->declared)
     {
-      if (! set_named_section_flags (name, flags))
-	abort ();
-
-      (* targetm.asm_out.named_section) (name, flags);
-
-      if (flags & SECTION_FORGET)
-	in_section = no_section;
-      else
-	{
-	  in_named_name = ggc_strdup (name);
-	  in_section = in_named;
-	}
+      (*slot)->declared = true;
+      return true;
+    }
+  else 
+    {
+      return false;
     }
 }

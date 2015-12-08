@@ -1,0 +1,22 @@
+define void @P7ReallocTrace(%struct.p7trace_s* nocapture %tr, i32 %tlen) #0 {
+entry:
+  %statetype = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 1
+  %0 = load i8** %statetype, align 8, !tbaa !0
+  %conv = sext i32 %tlen to i64
+  %call = tail call i8* @sre_realloc(i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i32 49, i8* %0, i64 %conv) #6
+  store i8* %call, i8** %statetype, align 8, !tbaa !0
+  %nodeidx = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 2
+  %1 = load i32** %nodeidx, align 8, !tbaa !0
+  %2 = bitcast i32* %1 to i8*
+  %mul3 = shl nsw i64 %conv, 2
+  %call4 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i32 50, i8* %2, i64 %mul3) #6
+  %3 = bitcast i8* %call4 to i32*
+  store i32* %3, i32** %nodeidx, align 8, !tbaa !0
+  %pos = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 3
+  %4 = load i32** %pos, align 8, !tbaa !0
+  %5 = bitcast i32* %4 to i8*
+  %call8 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i32 51, i8* %5, i64 %mul3) #6
+  %6 = bitcast i8* %call8 to i32*
+  store i32* %6, i32** %pos, align 8, !tbaa !0
+  ret void
+}
