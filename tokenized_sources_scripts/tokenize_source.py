@@ -28,18 +28,12 @@ def tokenize_funct(function):
     defined = False
     switch = False
     switch_text = []
+    labels = {}
     with open(function, "r") as funct_file:        
         for line in funct_file:
             #if there is a ':', it means that this line is a lable
             line = line.strip()
-            if "define" in line and not defined:
-                defined = True
-
-#            elif "define" in line:
-#                print "uh oh... seems like I've already defined this!"
-#                print line            
-
-            elif "switch" in line:
+            if "switch" in line:
                 switch = True
                 switch_text.append(line)
                 continue 
@@ -47,30 +41,45 @@ def tokenize_funct(function):
 
             elif "]" in line and switch:
                 switch_text.append(line)
-                backend = False
-                for line in switch_text:
-                    if "backedge" in line:
-                        token_function.append(get_token("back_sw"))
-                        backend = True
-                        break
-                
-                if not backend:
-                    token_function.append(get_token("sw"))
-                switch = False
+                backedge = False
 
+                for line in switch_text:
+                    if " label " in line:
+                        sys.stdout.flush()
+                        label = line.split("label")[-1].strip()
+                        remove_trailing_brace = label.split("[")[0]
+                        remove_percent = remove_trailing_brace.split("%")[1]
+                        if remove_percent in labels:
+                            backedge = True
+
+                if backedge:
+                    token_function.append(get_token("back_sw"))
+                else:
+                    token_function.append(get_token("sw"))
+
+                switch = False
             elif switch:
                 switch_text.append(line)
-                continue
 
-            elif ":" in line or len(line) == 0 or line == "}" or "unreachable" in line: 
+            elif ":" in line: 
+                labels[line.split(":")[0]] = 1 #this is a label... add it!  
+
+            elif len(line) == 0 or line == "}" or "define" in line or "unreachable" in line: 
                 continue 
 
             elif "br" in line:
-                if "backedge" in line:
+                found = False
+                line_labels = line.split(" label ")
+                for i in range(1,len(line_labels)):
+                    label = line_labels[i].split(",")[0]
+                    remove_percent = label.split("%")[1]
+                    if remove_percent in labels:
+                        found = True
+                        break
+                if found: 
                     token_function.append(get_token("back_br"))
-                else: 
+                else:
                     token_function.append(get_token("br"))
-
 
             elif "=" in line: 
                 split_equals = line.split("=")
