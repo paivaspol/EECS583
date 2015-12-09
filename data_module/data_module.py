@@ -85,10 +85,8 @@ class Data_Module:
 
 def main():
     d = Data_Module()
-    
+
     for i in range(100):
-        tokens_array,results_array = d.get_testing_data(1000)
         print len(tokens_array),len(results_array)
         print len(tokens_array[0])
-
 
