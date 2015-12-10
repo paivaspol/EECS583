@@ -1,0 +1,10 @@
+define void @xdr_free(i32 (%struct.XDR*, i8*, ...)* nocapture %proc, i8* %objp) #0 {
+  %x = alloca %struct.XDR, align 8
+  %1 = bitcast %struct.XDR* %x to i8*
+  call void @llvm.lifetime.start(i64 48, i8* %1) #1
+  %2 = getelementptr inbounds %struct.XDR* %x, i64 0, i32 0
+  store i32 2, i32* %2, align 8, !tbaa !2
+  %3 = call i32 (%struct.XDR*, i8*, ...)* %proc(%struct.XDR* %x, i8* %objp) #6
+  call void @llvm.lifetime.end(i64 48, i8* %1) #1
+  ret void
+}

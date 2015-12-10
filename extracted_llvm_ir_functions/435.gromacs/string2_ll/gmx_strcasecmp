@@ -1,0 +1,34 @@
+define i32 @gmx_strcasecmp(i8* nocapture readonly %str1, i8* nocapture readonly %str2) #3 {
+  br label %1
+
+; <label>:1                                       ; preds = %13, %0
+  %.02 = phi i8* [ %str2, %0 ], [ %15, %13 ]
+  %.01 = phi i8* [ %str1, %0 ], [ %16, %13 ]
+  %2 = load i8* %.01, align 1, !tbaa !13
+  %3 = sext i8 %2 to i32
+  %4 = tail call i32 @__toupper(i32 %3) #10
+  %5 = load i8* %.02, align 1, !tbaa !13
+  %6 = sext i8 %5 to i32
+  %7 = tail call i32 @__toupper(i32 %6) #10
+  %sext = shl i32 %4, 24
+  %8 = ashr exact i32 %sext, 24
+  %sext3 = shl i32 %7, 24
+  %9 = ashr exact i32 %sext3, 24
+  %10 = icmp eq i32 %8, %9
+  br i1 %10, label %13, label %11
+
+; <label>:11                                      ; preds = %1
+  %12 = sub nsw i32 %8, %9
+  br label %.loopexit
+
+; <label>:13                                      ; preds = %1
+  %14 = trunc i32 %4 to i8
+  %15 = getelementptr inbounds i8* %.02, i64 1
+  %16 = getelementptr inbounds i8* %.01, i64 1
+  %17 = icmp eq i8 %14, 0
+  br i1 %17, label %.loopexit, label %1
+
+.loopexit:                                        ; preds = %13, %11
+  %.0 = phi i32 [ %12, %11 ], [ 0, %13 ]
+  ret i32 %.0
+}

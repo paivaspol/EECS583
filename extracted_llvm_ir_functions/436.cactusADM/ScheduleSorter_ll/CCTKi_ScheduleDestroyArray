@@ -1,0 +1,29 @@
+define void @CCTKi_ScheduleDestroyArray(i32 %size, i8** %array) #1 {
+  %1 = icmp eq i8** %array, null
+  br i1 %1, label %9, label %.preheader
+
+.preheader:                                       ; preds = %0
+  %2 = icmp sgt i32 %size, 0
+  br i1 %2, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %.preheader
+  %3 = sext i32 %size to i64
+  br label %4
+
+; <label>:4                                       ; preds = %.lr.ph, %4
+  %indvars.iv = phi i64 [ %3, %.lr.ph ], [ %indvars.iv.next, %4 ]
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1
+  %5 = getelementptr inbounds i8** %array, i64 %indvars.iv.next
+  %6 = load i8** %5, align 8, !tbaa !2
+  tail call void @free(i8* %6) #5
+  %7 = icmp sgt i64 %indvars.iv, 1
+  br i1 %7, label %4, label %._crit_edge
+
+._crit_edge:                                      ; preds = %4, %.preheader
+  %8 = bitcast i8** %array to i8*
+  tail call void @free(i8* %8) #5
+  br label %9
+
+; <label>:9                                       ; preds = %0, %._crit_edge
+  ret void
+}

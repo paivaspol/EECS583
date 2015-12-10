@@ -1,158 +1,176 @@
-; ModuleID = '../../SPEC/benchspec/CPU2006/435.gromacs/src/smalloc.c'
-target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
-target triple = "x86_64-unknown-linux-gnu"
+; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/435.gromacs/src/smalloc.c'
+target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-apple-macosx10.10.0"
 
 @.str = private unnamed_addr constant [43 x i8] c"malloc for %s (%d bytes, file %s, line %d)\00", align 1
 @.str1 = private unnamed_addr constant [54 x i8] c"calloc for %s (nelem=%d, elsize=%d, file %s, line %d)\00", align 1
 @.str2 = private unnamed_addr constant [54 x i8] c"realloc for %s (%d bytes, file %s, line %d, %s=0x%8x)\00", align 1
 
-; Function Attrs: nounwind optsize uwtable
-define noalias i8* @save_malloc(i8* %name, i8* %file, i32 %line, i32 %size) #0 {
-entry:
-  %cmp = icmp eq i32 %size, 0
-  br i1 %cmp, label %if.end6, label %if.else
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__sigbits(i32 %__signo) #0 {
+  %1 = icmp sgt i32 %__signo, 32
+  br i1 %1, label %5, label %2
 
-if.else:                                          ; preds = %entry
-  %conv = sext i32 %size to i64
-  %call = tail call noalias i8* @malloc(i64 %conv) #6
-  %cmp1 = icmp eq i8* %call, null
-  br i1 %cmp1, label %if.then3, label %if.end
+; <label>:2                                       ; preds = %0
+  %3 = add nsw i32 %__signo, -1
+  %4 = shl i32 1, %3
+  br label %5
 
-if.then3:                                         ; preds = %if.else
-  %call4 = tail call i32* @__errno_location() #7
-  %0 = load i32* %call4, align 4, !tbaa !0
-  tail call void (i32, i8*, ...)* @fatal_error(i32 %0, i8* getelementptr inbounds ([43 x i8]* @.str, i64 0, i64 0), i8* %name, i32 %size, i8* %file, i32 %line) #6
-  br label %if.end
+; <label>:5                                       ; preds = %0, %2
+  %6 = phi i32 [ %4, %2 ], [ 0, %0 ]
+  ret i32 %6
+}
 
-if.end:                                           ; preds = %if.then3, %if.else
-  tail call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 %conv, i32 1, i1 false)
-  br label %if.end6
+; Function Attrs: nounwind optsize ssp uwtable
+define i8* @save_malloc(i8* %name, i8* %file, i32 %line, i32 %size) #1 {
+  %1 = icmp eq i32 %size, 0
+  br i1 %1, label %12, label %2
 
-if.end6:                                          ; preds = %entry, %if.end
-  %p.0 = phi i8* [ %call, %if.end ], [ null, %entry ]
+; <label>:2                                       ; preds = %0
+  %3 = sext i32 %size to i64
+  %4 = tail call i8* @malloc(i64 %3) #6
+  %5 = icmp eq i8* %4, null
+  br i1 %5, label %6, label %9
+
+; <label>:6                                       ; preds = %2
+  %7 = tail call i32* @__error() #6
+  %8 = load i32* %7, align 4, !tbaa !2
+  tail call void (i32, i8*, ...)* @fatal_error(i32 %8, i8* getelementptr inbounds ([43 x i8]* @.str, i64 0, i64 0), i8* %name, i32 %size, i8* %file, i32 %line) #6
+  br label %9
+
+; <label>:9                                       ; preds = %6, %2
+  %10 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %4, i1 false)
+  %11 = tail call i8* @__memset_chk(i8* %4, i32 0, i64 %3, i64 %10) #6
+  br label %12
+
+; <label>:12                                      ; preds = %0, %9
+  %p.0 = phi i8* [ %4, %9 ], [ null, %0 ]
   ret i8* %p.0
 }
 
 ; Function Attrs: nounwind optsize
-declare noalias i8* @malloc(i64) #1
+declare noalias i8* @malloc(i64) #2
 
 ; Function Attrs: optsize
-declare void @fatal_error(i32, i8*, ...) #2
+declare void @fatal_error(i32, i8*, ...) #3
 
-; Function Attrs: nounwind optsize readnone
-declare i32* @__errno_location() #3
+; Function Attrs: optsize
+declare i32* @__error() #3
 
-; Function Attrs: nounwind
-declare void @llvm.memset.p0i8.i64(i8* nocapture, i8, i64, i32, i1) #4
+; Function Attrs: nounwind optsize
+declare i8* @__memset_chk(i8*, i32, i64, i64) #2
 
-; Function Attrs: nounwind optsize uwtable
-define noalias i8* @save_calloc(i8* %name, i8* %file, i32 %line, i32 %nelem, i32 %elsize) #0 {
-entry:
-  %cmp = icmp eq i32 %nelem, 0
-  %cmp1 = icmp eq i32 %elsize, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.end7, label %if.else
+; Function Attrs: nounwind readnone
+declare i64 @llvm.objectsize.i64.p0i8(i8*, i1) #4
 
-if.else:                                          ; preds = %entry
-  %conv = zext i32 %nelem to i64
-  %conv2 = zext i32 %elsize to i64
-  %call = tail call noalias i8* @calloc(i64 %conv, i64 %conv2) #6
-  %cmp3 = icmp eq i8* %call, null
-  br i1 %cmp3, label %if.then5, label %if.end7
+; Function Attrs: nounwind optsize ssp uwtable
+define noalias i8* @save_calloc(i8* %name, i8* %file, i32 %line, i32 %nelem, i32 %elsize) #1 {
+  %1 = icmp eq i32 %nelem, 0
+  %2 = icmp eq i32 %elsize, 0
+  %or.cond = or i1 %1, %2
+  br i1 %or.cond, label %11, label %3
 
-if.then5:                                         ; preds = %if.else
-  %call6 = tail call i32* @__errno_location() #7
-  %0 = load i32* %call6, align 4, !tbaa !0
-  tail call void (i32, i8*, ...)* @fatal_error(i32 %0, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i8* %name, i32 %nelem, i32 %elsize, i8* %file, i32 %line) #6
-  br label %if.end7
+; <label>:3                                       ; preds = %0
+  %4 = zext i32 %nelem to i64
+  %5 = zext i32 %elsize to i64
+  %6 = tail call i8* @calloc(i64 %4, i64 %5) #6
+  %7 = icmp eq i8* %6, null
+  br i1 %7, label %8, label %11
 
-if.end7:                                          ; preds = %entry, %if.else, %if.then5
-  %p.0 = phi i8* [ null, %if.then5 ], [ %call, %if.else ], [ null, %entry ]
+; <label>:8                                       ; preds = %3
+  %9 = tail call i32* @__error() #6
+  %10 = load i32* %9, align 4, !tbaa !2
+  tail call void (i32, i8*, ...)* @fatal_error(i32 %10, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i8* %name, i32 %nelem, i32 %elsize, i8* %file, i32 %line) #6
+  br label %11
+
+; <label>:11                                      ; preds = %0, %3, %8
+  %p.0 = phi i8* [ null, %8 ], [ %6, %3 ], [ null, %0 ]
   ret i8* %p.0
 }
 
 ; Function Attrs: nounwind optsize
-declare noalias i8* @calloc(i64, i64) #1
+declare noalias i8* @calloc(i64, i64) #2
 
-; Function Attrs: nounwind optsize uwtable
-define i8* @save_realloc(i8* %name, i8* %file, i32 %line, i8* %ptr, i32 %size) #0 {
-entry:
-  %cmp = icmp eq i32 %size, 0
-  br i1 %cmp, label %if.end11, label %if.else
+; Function Attrs: nounwind optsize ssp uwtable
+define i8* @save_realloc(i8* %name, i8* %file, i32 %line, i8* %ptr, i32 %size) #1 {
+  %1 = icmp eq i32 %size, 0
+  br i1 %1, label %14, label %2
 
-if.else:                                          ; preds = %entry
-  %cmp1 = icmp eq i8* %ptr, null
-  %conv = zext i32 %size to i64
-  br i1 %cmp1, label %if.then2, label %if.else3
+; <label>:2                                       ; preds = %0
+  %3 = icmp eq i8* %ptr, null
+  %4 = zext i32 %size to i64
+  br i1 %3, label %5, label %7
 
-if.then2:                                         ; preds = %if.else
-  %call = tail call noalias i8* @malloc(i64 %conv) #6
-  br label %if.end
+; <label>:5                                       ; preds = %2
+  %6 = tail call i8* @malloc(i64 %4) #6
+  br label %9
 
-if.else3:                                         ; preds = %if.else
-  %call5 = tail call i8* @realloc(i8* %ptr, i64 %conv) #6
-  br label %if.end
+; <label>:7                                       ; preds = %2
+  %8 = tail call i8* @realloc(i8* %ptr, i64 %4) #6
+  br label %9
 
-if.end:                                           ; preds = %if.else3, %if.then2
-  %p.0 = phi i8* [ %call, %if.then2 ], [ %call5, %if.else3 ]
-  %cmp6 = icmp eq i8* %p.0, null
-  br i1 %cmp6, label %if.then8, label %if.end11
+; <label>:9                                       ; preds = %7, %5
+  %p.0 = phi i8* [ %6, %5 ], [ %8, %7 ]
+  %10 = icmp eq i8* %p.0, null
+  br i1 %10, label %11, label %14
 
-if.then8:                                         ; preds = %if.end
-  %call9 = tail call i32* @__errno_location() #7
-  %0 = load i32* %call9, align 4, !tbaa !0
-  tail call void (i32, i8*, ...)* @fatal_error(i32 %0, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), i8* %name, i32 %size, i8* %file, i32 %line, i8* %name, i8* %ptr) #6
-  br label %if.end11
+; <label>:11                                      ; preds = %9
+  %12 = tail call i32* @__error() #6
+  %13 = load i32* %12, align 4, !tbaa !2
+  tail call void (i32, i8*, ...)* @fatal_error(i32 %13, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), i8* %name, i32 %size, i8* %file, i32 %line, i8* %name, i8* %ptr) #6
+  br label %14
 
-if.end11:                                         ; preds = %entry, %if.end, %if.then8
-  %p.1 = phi i8* [ null, %if.then8 ], [ %p.0, %if.end ], [ null, %entry ]
+; <label>:14                                      ; preds = %0, %9, %11
+  %p.1 = phi i8* [ null, %11 ], [ %p.0, %9 ], [ null, %0 ]
   ret i8* %p.1
 }
 
 ; Function Attrs: nounwind optsize
-declare noalias i8* @realloc(i8* nocapture, i64) #1
+declare noalias i8* @realloc(i8* nocapture, i64) #2
 
-; Function Attrs: nounwind optsize uwtable
-define void @save_free(i8* nocapture %name, i8* nocapture %file, i32 %line, i8* %ptr) #0 {
-entry:
-  %cmp = icmp eq i8* %ptr, null
-  br i1 %cmp, label %if.end, label %if.then
+; Function Attrs: nounwind optsize ssp uwtable
+define void @save_free(i8* nocapture readnone %name, i8* nocapture readnone %file, i32 %line, i8* %ptr) #1 {
+  %1 = icmp eq i8* %ptr, null
+  br i1 %1, label %3, label %2
 
-if.then:                                          ; preds = %entry
-  tail call void @free(i8* %ptr) #6
-  br label %if.end
+; <label>:2                                       ; preds = %0
+  tail call void @free(i8* %ptr) #7
+  br label %3
 
-if.end:                                           ; preds = %entry, %if.then
+; <label>:3                                       ; preds = %0, %2
   ret void
 }
 
 ; Function Attrs: nounwind optsize
-declare void @free(i8* nocapture) #1
+declare void @free(i8* nocapture) #2
 
-; Function Attrs: nounwind optsize readnone uwtable
+; Function Attrs: nounwind optsize readnone ssp uwtable
 define i32 @maxavail() #5 {
-entry:
   ret i32 255999996
 }
 
-; Function Attrs: nounwind optsize readnone uwtable
+; Function Attrs: nounwind optsize readnone ssp uwtable
 define i32 @memavail() #5 {
-if.end6:
-  %call5 = tail call i32 @memavail() #8
-  %add = add i32 %call5, 255999996
-  ret i32 %add
+  %1 = tail call i32 @memavail() #7
+  %2 = add i32 %1, 255999996
+  ret i32 %2
 }
 
-attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #4 = { nounwind }
-attributes #5 = { nounwind optsize readnone uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { alwaysinline nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind readnone }
+attributes #5 = { nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #6 = { nounwind optsize }
-attributes #7 = { nounwind optsize readnone }
-attributes #8 = { optsize }
+attributes #7 = { optsize }
 
-!0 = metadata !{metadata !"int", metadata !1}
-!1 = metadata !{metadata !"omnipotent char", metadata !2}
-!2 = metadata !{metadata !"Simple C/C++ TBAA"}
+!llvm.module.flags = !{!0}
+!llvm.ident = !{!1}
+
+!0 = !{i32 1, !"PIC Level", i32 2}
+!1 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
+!2 = !{!3, !3, i64 0}
+!3 = !{!"int", !4, i64 0}
+!4 = !{!"omnipotent char", !5, i64 0}
+!5 = !{!"Simple C/C++ TBAA"}

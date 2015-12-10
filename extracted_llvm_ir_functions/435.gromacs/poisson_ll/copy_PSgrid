@@ -1,68 +1,76 @@
-define void @copy_PSgrid(%struct.t_PSgrid* nocapture %dest, %struct.t_PSgrid* nocapture %src) #0 {
-entry:
-  %ptr4.i = getelementptr inbounds %struct.t_PSgrid* %dest, i64 0, i32 3
-  %0 = load float**** %ptr4.i, align 8, !tbaa !3
-  %nx1.i32 = getelementptr inbounds %struct.t_PSgrid* %src, i64 0, i32 0
-  %1 = load i32* %nx1.i32, align 4, !tbaa !0
-  %ny2.i33 = getelementptr inbounds %struct.t_PSgrid* %src, i64 0, i32 1
-  %2 = load i32* %ny2.i33, align 4, !tbaa !0
-  %nz3.i34 = getelementptr inbounds %struct.t_PSgrid* %src, i64 0, i32 2
-  %3 = load i32* %nz3.i34, align 4, !tbaa !0
-  %ptr4.i35 = getelementptr inbounds %struct.t_PSgrid* %src, i64 0, i32 3
-  %4 = load float**** %ptr4.i35, align 8, !tbaa !3
-  %cmp40 = icmp sgt i32 %1, 0
-  br i1 %cmp40, label %for.cond1.preheader.lr.ph, label %for.end22
+define void @copy_PSgrid(%struct.t_PSgrid* nocapture readonly %dest, %struct.t_PSgrid* nocapture readonly %src) #3 {
+  %1 = getelementptr inbounds %struct.t_PSgrid* %src, i64 0, i32 0
+  %2 = load i32* %1, align 4, !tbaa !14
+  %3 = getelementptr inbounds %struct.t_PSgrid* %src, i64 0, i32 1
+  %4 = load i32* %3, align 4, !tbaa !16
+  %5 = getelementptr inbounds %struct.t_PSgrid* %src, i64 0, i32 2
+  %6 = load i32* %5, align 4, !tbaa !17
+  %7 = icmp sgt i32 %2, 0
+  br i1 %7, label %.preheader1.lr.ph, label %._crit_edge6
 
-for.cond1.preheader.lr.ph:                        ; preds = %entry
-  %cmp238 = icmp sgt i32 %2, 0
-  %cmp536 = icmp sgt i32 %3, 0
-  br label %for.cond1.preheader
+.preheader1.lr.ph:                                ; preds = %0
+  %8 = getelementptr inbounds %struct.t_PSgrid* %src, i64 0, i32 3
+  %9 = bitcast float**** %8 to i64*
+  %10 = load i64* %9, align 8, !tbaa !18
+  %11 = getelementptr inbounds %struct.t_PSgrid* %dest, i64 0, i32 3
+  %12 = bitcast float**** %11 to i64*
+  %13 = load i64* %12, align 8, !tbaa !18
+  %14 = icmp sgt i32 %4, 0
+  %15 = icmp sgt i32 %6, 0
+  %16 = inttoptr i64 %10 to float***
+  %17 = inttoptr i64 %13 to float***
+  %18 = add i32 %6, -1
+  %19 = add i32 %4, -1
+  %20 = add i32 %2, -1
+  br label %.preheader1
 
-for.cond1.preheader:                              ; preds = %for.inc20, %for.cond1.preheader.lr.ph
-  %indvars.iv46 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next47, %for.inc20 ]
-  br i1 %cmp238, label %for.cond4.preheader.lr.ph, label %for.inc20
+.preheader1:                                      ; preds = %._crit_edge4, %.preheader1.lr.ph
+  %indvars.iv11 = phi i64 [ 0, %.preheader1.lr.ph ], [ %indvars.iv.next12, %._crit_edge4 ]
+  br i1 %14, label %.preheader.lr.ph, label %._crit_edge4
 
-for.cond4.preheader.lr.ph:                        ; preds = %for.cond1.preheader
-  %arrayidx = getelementptr inbounds float*** %4, i64 %indvars.iv46
-  %arrayidx14 = getelementptr inbounds float*** %0, i64 %indvars.iv46
-  br label %for.cond4.preheader
+.preheader.lr.ph:                                 ; preds = %.preheader1
+  %21 = getelementptr inbounds float*** %16, i64 %indvars.iv11
+  %22 = getelementptr inbounds float*** %17, i64 %indvars.iv11
+  br label %.preheader
 
-for.cond4.preheader:                              ; preds = %for.inc17, %for.cond4.preheader.lr.ph
-  %indvars.iv42 = phi i64 [ 0, %for.cond4.preheader.lr.ph ], [ %indvars.iv.next43, %for.inc17 ]
-  br i1 %cmp536, label %for.body6.lr.ph, label %for.inc17
+.preheader:                                       ; preds = %._crit_edge, %.preheader.lr.ph
+  %indvars.iv7 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next8, %._crit_edge ]
+  br i1 %15, label %.lr.ph, label %._crit_edge
 
-for.body6.lr.ph:                                  ; preds = %for.cond4.preheader
-  %5 = load float*** %arrayidx, align 8, !tbaa !3
-  %arrayidx9 = getelementptr inbounds float** %5, i64 %indvars.iv42
-  %6 = load float** %arrayidx9, align 8, !tbaa !3
-  %7 = load float*** %arrayidx14, align 8, !tbaa !3
-  %arrayidx15 = getelementptr inbounds float** %7, i64 %indvars.iv42
-  %8 = load float** %arrayidx15, align 8, !tbaa !3
-  br label %for.body6
+.lr.ph:                                           ; preds = %.preheader
+  %23 = load float*** %21, align 8, !tbaa !19
+  %24 = getelementptr inbounds float** %23, i64 %indvars.iv7
+  %25 = load float** %24, align 8, !tbaa !19
+  %26 = load float*** %22, align 8, !tbaa !19
+  %27 = getelementptr inbounds float** %26, i64 %indvars.iv7
+  %28 = load float** %27, align 8, !tbaa !19
+  br label %29
 
-for.body6:                                        ; preds = %for.body6, %for.body6.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body6.lr.ph ], [ %indvars.iv.next, %for.body6 ]
-  %arrayidx10 = getelementptr inbounds float* %6, i64 %indvars.iv
-  %9 = load float* %arrayidx10, align 4, !tbaa !4
-  %arrayidx16 = getelementptr inbounds float* %8, i64 %indvars.iv
-  store float %9, float* %arrayidx16, align 4, !tbaa !4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %3
-  br i1 %exitcond, label %for.inc17, label %for.body6
+; <label>:29                                      ; preds = %29, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %29 ]
+  %30 = getelementptr inbounds float* %25, i64 %indvars.iv
+  %31 = bitcast float* %30 to i32*
+  %32 = load i32* %31, align 4, !tbaa !21
+  %33 = getelementptr inbounds float* %28, i64 %indvars.iv
+  %34 = bitcast float* %33 to i32*
+  store i32 %32, i32* %34, align 4, !tbaa !21
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %18
+  br i1 %exitcond, label %._crit_edge, label %29
 
-for.inc17:                                        ; preds = %for.body6, %for.cond4.preheader
-  %indvars.iv.next43 = add i64 %indvars.iv42, 1
-  %lftr.wideiv44 = trunc i64 %indvars.iv.next43 to i32
-  %exitcond45 = icmp eq i32 %lftr.wideiv44, %2
-  br i1 %exitcond45, label %for.inc20, label %for.cond4.preheader
+._crit_edge:                                      ; preds = %29, %.preheader
+  %indvars.iv.next8 = add nuw nsw i64 %indvars.iv7, 1
+  %lftr.wideiv9 = trunc i64 %indvars.iv7 to i32
+  %exitcond10 = icmp eq i32 %lftr.wideiv9, %19
+  br i1 %exitcond10, label %._crit_edge4, label %.preheader
 
-for.inc20:                                        ; preds = %for.inc17, %for.cond1.preheader
-  %indvars.iv.next47 = add i64 %indvars.iv46, 1
-  %lftr.wideiv48 = trunc i64 %indvars.iv.next47 to i32
-  %exitcond49 = icmp eq i32 %lftr.wideiv48, %1
-  br i1 %exitcond49, label %for.end22, label %for.cond1.preheader
+._crit_edge4:                                     ; preds = %._crit_edge, %.preheader1
+  %indvars.iv.next12 = add nuw nsw i64 %indvars.iv11, 1
+  %lftr.wideiv13 = trunc i64 %indvars.iv11 to i32
+  %exitcond14 = icmp eq i32 %lftr.wideiv13, %20
+  br i1 %exitcond14, label %._crit_edge6, label %.preheader1
 
-for.end22:                                        ; preds = %for.inc20, %entry
+._crit_edge6:                                     ; preds = %._crit_edge4, %0
   ret void
 }

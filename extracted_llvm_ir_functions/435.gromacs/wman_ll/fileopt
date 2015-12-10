@@ -1,70 +1,62 @@
-define i8* @fileopt(i64 %flag) #0 {
-entry:
-  %and = and i64 %flag, 6
-  %cmp = icmp eq i64 %and, 6
-  br i1 %cmp, label %if.then, label %if.else
+define i8* @fileopt(i64 %flag) #3 {
+  %1 = and i64 %flag, 6
+  %2 = icmp eq i64 %1, 6
+  br i1 %2, label %3, label %4
 
-if.then:                                          ; preds = %entry
+; <label>:3                                       ; preds = %0
   tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str54, i64 0, i64 0), i64 7, i32 1, i1 false)
-  br label %if.end13
+  br label %13
 
-if.else:                                          ; preds = %entry
-  %and1 = and i64 %flag, 2
-  %cmp2 = icmp eq i64 %and1, 0
-  br i1 %cmp2, label %if.else5, label %if.then3
+; <label>:4                                       ; preds = %0
+  %5 = and i64 %flag, 2
+  %6 = icmp eq i64 %5, 0
+  br i1 %6, label %8, label %7
 
-if.then3:                                         ; preds = %if.else
+; <label>:7                                       ; preds = %4
   tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str55, i64 0, i64 0), i64 6, i32 1, i1 false)
-  br label %if.end13
+  br label %13
 
-if.else5:                                         ; preds = %if.else
-  %and6 = and i64 %flag, 4
-  %cmp7 = icmp eq i64 %and6, 0
-  br i1 %cmp7, label %if.else10, label %if.then8
+; <label>:8                                       ; preds = %4
+  %9 = and i64 %flag, 4
+  %10 = icmp eq i64 %9, 0
+  br i1 %10, label %12, label %11
 
-if.then8:                                         ; preds = %if.else5
+; <label>:11                                      ; preds = %8
   tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str56, i64 0, i64 0), i64 7, i32 1, i1 false)
-  br label %if.end13
+  br label %13
 
-if.else10:                                        ; preds = %if.else5
+; <label>:12                                      ; preds = %8
   tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str57, i64 0, i64 0), i64 6, i32 1, i1 false)
-  br label %if.end13
+  br label %13
 
-if.end13:                                         ; preds = %if.then3, %if.else10, %if.then8, %if.then
-  %and14 = and i64 %flag, 8
-  %cmp15 = icmp eq i64 %and14, 0
-  br i1 %cmp15, label %if.end25, label %if.then16
+; <label>:13                                      ; preds = %7, %12, %11, %3
+  %14 = and i64 %flag, 8
+  %15 = icmp eq i64 %14, 0
+  br i1 %15, label %24, label %16
 
-if.then16:                                        ; preds = %if.end13
-  %strlen36 = tail call i64 @strlen(i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0))
-  %endptr37 = getelementptr [32 x i8]* @fileopt.buf, i64 0, i64 %strlen36
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %endptr37, i8* getelementptr inbounds ([6 x i8]* @.str58, i64 0, i64 0), i64 6, i32 1, i1 false)
-  %and18 = and i64 %flag, 1
-  %cmp19 = icmp eq i64 %and18, 0
-  %strlen38 = tail call i64 @strlen(i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0))
-  %endptr39 = getelementptr [32 x i8]* @fileopt.buf, i64 0, i64 %strlen38
-  %0 = bitcast i8* %endptr39 to i16*
-  br i1 %cmp19, label %if.else22, label %if.then20
+; <label>:16                                      ; preds = %13
+  %17 = tail call i8* @__strcat_chk(i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str58, i64 0, i64 0), i64 32) #8
+  %18 = and i64 %flag, 1
+  %19 = icmp eq i64 %18, 0
+  br i1 %19, label %22, label %20
 
-if.then20:                                        ; preds = %if.then16
-  store i16 33, i16* %0, align 1
-  br label %if.end25
+; <label>:20                                      ; preds = %16
+  %21 = tail call i8* @__strcat_chk(i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str59, i64 0, i64 0), i64 32) #8
+  br label %24
 
-if.else22:                                        ; preds = %if.then16
-  store i16 46, i16* %0, align 1
-  br label %if.end25
+; <label>:22                                      ; preds = %16
+  %23 = tail call i8* @__strcat_chk(i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str60, i64 0, i64 0), i64 32) #8
+  br label %24
 
-if.end25:                                         ; preds = %if.end13, %if.then20, %if.else22
-  %and26 = and i64 %flag, 16
-  %cmp27 = icmp eq i64 %and26, 0
-  br i1 %cmp27, label %if.end30, label %if.then28
+; <label>:24                                      ; preds = %13, %20, %22
+  %25 = and i64 %flag, 16
+  %26 = icmp eq i64 %25, 0
+  br i1 %26, label %29, label %27
 
-if.then28:                                        ; preds = %if.end25
-  %strlen = tail call i64 @strlen(i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0))
-  %endptr = getelementptr [32 x i8]* @fileopt.buf, i64 0, i64 %strlen
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %endptr, i8* getelementptr inbounds ([7 x i8]* @.str61, i64 0, i64 0), i64 7, i32 1, i1 false)
-  br label %if.end30
+; <label>:27                                      ; preds = %24
+  %28 = tail call i8* @__strcat_chk(i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str61, i64 0, i64 0), i64 32) #8
+  br label %29
 
-if.end30:                                         ; preds = %if.end25, %if.then28
+; <label>:29                                      ; preds = %24, %27
   ret i8* getelementptr inbounds ([32 x i8]* @fileopt.buf, i64 0, i64 0)
 }

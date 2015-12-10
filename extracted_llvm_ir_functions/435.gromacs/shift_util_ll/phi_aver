@@ -1,22 +1,25 @@
-define float @phi_aver(i32 %natoms, float* nocapture %phi) #3 {
-entry:
-  %cmp4 = icmp sgt i32 %natoms, 0
-  br i1 %cmp4, label %for.body, label %for.end
+define float @phi_aver(i32 %natoms, float* nocapture readonly %phi) #4 {
+  %1 = icmp sgt i32 %natoms, 0
+  br i1 %1, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %phitot.05 = phi float [ %add, %for.body ], [ 0.000000e+00, %entry ]
-  %arrayidx = getelementptr inbounds float* %phi, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !0
-  %add = fadd float %phitot.05, %0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %natoms
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %natoms, -1
+  br label %3
 
-for.end:                                          ; preds = %for.body, %entry
-  %phitot.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %add, %for.body ]
-  %conv = sitofp i32 %natoms to float
-  %div = fdiv float %phitot.0.lcssa, %conv
-  ret float %div
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
+  %phitot.01 = phi float [ 0.000000e+00, %.lr.ph ], [ %6, %3 ]
+  %4 = getelementptr inbounds float* %phi, i64 %indvars.iv
+  %5 = load float* %4, align 4, !tbaa !2
+  %6 = fadd float %phitot.01, %5
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %2
+  br i1 %exitcond, label %._crit_edge, label %3
+
+._crit_edge:                                      ; preds = %3, %0
+  %phitot.0.lcssa = phi float [ 0.000000e+00, %0 ], [ %6, %3 ]
+  %7 = sitofp i32 %natoms to float
+  %8 = fdiv float %phitot.0.lcssa, %7
+  ret float %8
 }

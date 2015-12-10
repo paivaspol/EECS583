@@ -1,0 +1,45 @@
+define i32 @CCTKi_DoScheduleGroup(i8* %gname, i8* %thisname, %struct.T_SCHED_MODIFIER* %modifiers, i8* %attributes) #1 {
+  %this_group = alloca i8*, align 8
+  %1 = load %struct.cHandledData** @schedule_groups, align 8, !tbaa !9
+  %2 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %gname, i8** %this_group) #8
+  %3 = icmp slt i32 %2, 0
+  br i1 %3, label %4, label %6
+
+; <label>:4                                       ; preds = %0
+  %5 = call fastcc i32 @ScheduleCreateGroup(i8* %gname) #9
+  br label %6
+
+; <label>:6                                       ; preds = %4, %0
+  %handle.0 = phi i32 [ %5, %4 ], [ %2, %0 ]
+  %7 = load %struct.cHandledData** @schedule_groups, align 8, !tbaa !9
+  %8 = call i32 @Util_GetHandle(%struct.cHandledData* %7, i8* %thisname, i8** %this_group) #8
+  %9 = icmp slt i32 %8, 0
+  br i1 %9, label %10, label %12
+
+; <label>:10                                      ; preds = %6
+  %11 = call fastcc i32 @ScheduleCreateGroup(i8* %thisname) #9
+  br label %12
+
+; <label>:12                                      ; preds = %10, %6
+  %thishandle.0 = phi i32 [ %11, %10 ], [ %8, %6 ]
+  %13 = or i32 %thishandle.0, %handle.0
+  %14 = icmp slt i32 %13, 0
+  br i1 %14, label %22, label %15
+
+; <label>:15                                      ; preds = %12
+  %16 = call fastcc %struct.t_sched_item* @ScheduleCreateItem(i8* %thisname, %struct.T_SCHED_MODIFIER* %modifiers, i8* %attributes) #9
+  %17 = icmp eq %struct.t_sched_item* %16, null
+  br i1 %17, label %22, label %18
+
+; <label>:18                                      ; preds = %15
+  %19 = getelementptr inbounds %struct.t_sched_item* %16, i64 0, i32 1
+  store i32 1, i32* %19, align 4, !tbaa !10
+  %20 = getelementptr inbounds %struct.t_sched_item* %16, i64 0, i32 3
+  store i32 %thishandle.0, i32* %20, align 4, !tbaa !21
+  %21 = call fastcc i32 @ScheduleAddItem(i32 %handle.0, %struct.t_sched_item* %16) #9
+  br label %22
+
+; <label>:22                                      ; preds = %15, %12, %18
+  %retcode.0 = phi i32 [ %21, %18 ], [ -1, %12 ], [ -1, %15 ]
+  ret i32 %retcode.0
+}

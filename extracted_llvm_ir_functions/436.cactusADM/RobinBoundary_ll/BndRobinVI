@@ -1,0 +1,21 @@
+define i32 @BndRobinVI(%struct.cGH* %GH, i32* readonly %stencil, double %finf, i32 %npow, i32 %vi) #1 {
+  %1 = icmp sgt i32 %vi, -1
+  br i1 %1, label %2, label %7
+
+; <label>:2                                       ; preds = %0
+  %3 = tail call i32 @CCTK_NumVars() #6
+  %4 = icmp sgt i32 %3, %vi
+  br i1 %4, label %5, label %7
+
+; <label>:5                                       ; preds = %2
+  %6 = tail call fastcc i32 @ApplyBndRobin(%struct.cGH* %GH, i32* %stencil, double %finf, i32 %npow, i32 %vi, i32 1) #7
+  br label %9
+
+; <label>:7                                       ; preds = %2, %0
+  %8 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 294, i8* getelementptr inbounds ([84 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([38 x i8]* @.str4, i64 0, i64 0), i32 %vi) #6
+  br label %9
+
+; <label>:9                                       ; preds = %7, %5
+  %retval.0 = phi i32 [ %6, %5 ], [ -1, %7 ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,77 @@
+define i32 @Util_SplitString(i8** nocapture %before, i8** nocapture %after, i8* %string, i8* nocapture readonly %sep) #1 {
+  %1 = tail call i8* @strstr(i8* %string, i8* %sep) #7
+  %2 = icmp eq i8* %1, null
+  br i1 %2, label %20, label %3
+
+; <label>:3                                       ; preds = %0
+  %4 = ptrtoint i8* %1 to i64
+  %5 = ptrtoint i8* %string to i64
+  %6 = sub i64 %4, %5
+  %7 = add nsw i64 %6, 1
+  %8 = tail call i8* @malloc(i64 %7) #7
+  store i8* %8, i8** %before, align 8, !tbaa !2
+  %9 = tail call i64 @strlen(i8* %string) #7
+  %10 = tail call i64 @strlen(i8* %sep) #7
+  %11 = sub i64 1, %6
+  %12 = add i64 %11, %9
+  %13 = sub i64 %12, %10
+  %14 = tail call i8* @malloc(i64 %13) #7
+  store i8* %14, i8** %after, align 8, !tbaa !2
+  %15 = load i8** %before, align 8, !tbaa !2
+  %16 = icmp eq i8* %15, null
+  %17 = icmp eq i8* %14, null
+  %or.cond = or i1 %17, %16
+  br i1 %or.cond, label %18, label %21
+
+; <label>:18                                      ; preds = %3
+  tail call void @free(i8* %15) #8
+  store i8* null, i8** %before, align 8, !tbaa !2
+  %19 = load i8** %after, align 8, !tbaa !2
+  tail call void @free(i8* %19) #8
+  store i8* null, i8** %after, align 8, !tbaa !2
+  %.pr = load i8** %before, align 8, !tbaa !2
+  br label %21
+
+; <label>:20                                      ; preds = %0
+  store i8* null, i8** %before, align 8, !tbaa !2
+  store i8* null, i8** %after, align 8, !tbaa !2
+  br label %45
+
+; <label>:21                                      ; preds = %3, %18
+  %22 = phi i8* [ %14, %3 ], [ null, %18 ]
+  %23 = phi i8* [ %15, %3 ], [ %.pr, %18 ]
+  %retval.0.ph = phi i32 [ 3, %3 ], [ 2, %18 ]
+  %24 = icmp eq i8* %23, null
+  %25 = icmp eq i8* %22, null
+  %or.cond7 = or i1 %24, %25
+  br i1 %or.cond7, label %45, label %26
+
+; <label>:26                                      ; preds = %21
+  %sext = shl i64 %6, 32
+  %27 = ashr exact i64 %sext, 32
+  %28 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %23, i1 false)
+  %29 = tail call i8* @__strncpy_chk(i8* %23, i8* %string, i64 %27, i64 %28) #7
+  %30 = load i8** %before, align 8, !tbaa !2
+  %31 = getelementptr inbounds i8* %30, i64 %27
+  store i8 0, i8* %31, align 1, !tbaa !6
+  %32 = load i8** %after, align 8, !tbaa !2
+  %33 = tail call i64 @strlen(i8* %sep) #7
+  %34 = getelementptr inbounds i8* %1, i64 %33
+  %35 = tail call i64 @strlen(i8* %string) #7
+  %sum = add i64 %33, %27
+  %36 = sub i64 %35, %sum
+  %37 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %32, i1 false)
+  %38 = tail call i8* @__strncpy_chk(i8* %32, i8* %34, i64 %36, i64 %37) #7
+  %39 = tail call i64 @strlen(i8* %string) #7
+  %40 = sub i64 %39, %6
+  %41 = tail call i64 @strlen(i8* %sep) #7
+  %42 = sub i64 %40, %41
+  %43 = load i8** %after, align 8, !tbaa !2
+  %44 = getelementptr inbounds i8* %43, i64 %42
+  store i8 0, i8* %44, align 1, !tbaa !6
+  br label %45
+
+; <label>:45                                      ; preds = %20, %21, %26
+  %retval.1 = phi i32 [ 0, %26 ], [ %retval.0.ph, %21 ], [ 1, %20 ]
+  ret i32 %retval.1
+}

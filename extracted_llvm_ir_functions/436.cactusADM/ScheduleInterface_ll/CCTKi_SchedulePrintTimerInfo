@@ -1,0 +1,132 @@
+define internal fastcc void @CCTKi_SchedulePrintTimerInfo(%struct.cTimerData* nocapture readonly %timer, %struct.cTimerData* readonly %total_time, i8* %where, i8* %description) #1 {
+  %1 = load i32* @indent_level, align 4, !tbaa !38
+  %2 = icmp sgt i32 %1, 0
+  br i1 %2, label %3, label %5
+
+; <label>:3                                       ; preds = %0
+  %4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str71, i64 0, i64 0), i32 %1, i8* getelementptr inbounds ([2 x i8]* @.str77, i64 0, i64 0)) #8
+  br label %5
+
+; <label>:5                                       ; preds = %3, %0
+  %6 = load i8* %where, align 1, !tbaa !10
+  %7 = icmp eq i8 %6, 0
+  br i1 %7, label %8, label %9
+
+; <label>:8                                       ; preds = %5
+  tail call fastcc void @PrintDelimiterLine(i8 signext 45, %struct.cTimerData* %timer) #9
+  br label %9
+
+; <label>:9                                       ; preds = %8, %5
+  %10 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str80, i64 0, i64 0), i8* %where, i8* %description) #8
+  %11 = getelementptr inbounds %struct.cTimerData* %timer, i64 0, i32 0
+  %12 = load i32* %11, align 4, !tbaa !48
+  %13 = icmp sgt i32 %12, 0
+  br i1 %13, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %9
+  %14 = getelementptr inbounds %struct.cTimerData* %timer, i64 0, i32 1
+  %15 = icmp eq %struct.cTimerData* %total_time, null
+  %16 = getelementptr inbounds %struct.cTimerData* %total_time, i64 0, i32 1
+  br label %17
+
+; <label>:17                                      ; preds = %.lr.ph, %74
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %74 ]
+  %18 = load %struct.cTimerVal** %14, align 8, !tbaa !46
+  %19 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 1
+  %20 = load i8** %19, align 8, !tbaa !51
+  %21 = tail call i64 @strlen(i8* %20) #8
+  %22 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 2
+  %23 = load i8** %22, align 8, !tbaa !52
+  %24 = tail call i64 @strlen(i8* %23) #8
+  %25 = add i64 %21, 3
+  %26 = add i64 %25, %24
+  %27 = trunc i64 %26 to i32
+  %28 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 0
+  %29 = load i32* %28, align 4, !tbaa !49
+  switch i32 %29, label %72 [
+    i32 1, label %30
+    i32 2, label %45
+    i32 3, label %57
+  ]
+
+; <label>:30                                      ; preds = %17
+  %31 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 3
+  %32 = bitcast %union.anon* %31 to i32*
+  %33 = load i32* %32, align 4, !tbaa !38
+  %34 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([7 x i8]* @.str84, i64 0, i64 0), i32 %27, i32 %33) #8
+  br i1 %15, label %74, label %35
+
+; <label>:35                                      ; preds = %30
+  %36 = load %struct.cTimerVal** %14, align 8, !tbaa !46
+  %37 = getelementptr inbounds %struct.cTimerVal* %36, i64 %indvars.iv, i32 3
+  %38 = bitcast %union.anon* %37 to i32*
+  %39 = load i32* %38, align 4, !tbaa !38
+  %40 = load %struct.cTimerVal** %16, align 8, !tbaa !46
+  %41 = getelementptr inbounds %struct.cTimerVal* %40, i64 %indvars.iv, i32 3
+  %42 = bitcast %union.anon* %41 to i32*
+  %43 = load i32* %42, align 4, !tbaa !38
+  %44 = add nsw i32 %43, %39
+  store i32 %44, i32* %42, align 4, !tbaa !38
+  br label %74
+
+; <label>:45                                      ; preds = %17
+  %46 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 3, i32 0
+  %47 = load i64* %46, align 8, !tbaa !53
+  %48 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([8 x i8]* @.str85, i64 0, i64 0), i32 %27, i64 %47) #8
+  br i1 %15, label %74, label %49
+
+; <label>:49                                      ; preds = %45
+  %50 = load %struct.cTimerVal** %14, align 8, !tbaa !46
+  %51 = getelementptr inbounds %struct.cTimerVal* %50, i64 %indvars.iv, i32 3, i32 0
+  %52 = load i64* %51, align 8, !tbaa !53
+  %53 = load %struct.cTimerVal** %16, align 8, !tbaa !46
+  %54 = getelementptr inbounds %struct.cTimerVal* %53, i64 %indvars.iv, i32 3, i32 0
+  %55 = load i64* %54, align 8, !tbaa !53
+  %56 = add nsw i64 %55, %52
+  store i64 %56, i64* %54, align 8, !tbaa !53
+  br label %74
+
+; <label>:57                                      ; preds = %17
+  %58 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 3
+  %59 = bitcast %union.anon* %58 to double*
+  %60 = load double* %59, align 8, !tbaa !55
+  %61 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([9 x i8]* @.str86, i64 0, i64 0), i32 %27, double %60) #8
+  br i1 %15, label %74, label %62
+
+; <label>:62                                      ; preds = %57
+  %63 = load %struct.cTimerVal** %14, align 8, !tbaa !46
+  %64 = getelementptr inbounds %struct.cTimerVal* %63, i64 %indvars.iv, i32 3
+  %65 = bitcast %union.anon* %64 to double*
+  %66 = load double* %65, align 8, !tbaa !55
+  %67 = load %struct.cTimerVal** %16, align 8, !tbaa !46
+  %68 = getelementptr inbounds %struct.cTimerVal* %67, i64 %indvars.iv, i32 3
+  %69 = bitcast %union.anon* %68 to double*
+  %70 = load double* %69, align 8, !tbaa !55
+  %71 = fadd double %66, %70
+  store double %71, double* %69, align 8, !tbaa !55
+  br label %74
+
+; <label>:72                                      ; preds = %17
+  %73 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([37 x i8]* @.str87, i64 0, i64 0), i32 2353, i8* getelementptr inbounds ([86 x i8]* @.str, i64 0, i64 0)) #8
+  br label %74
+
+; <label>:74                                      ; preds = %30, %45, %57, %72, %35, %49, %62
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %75 = load i32* %11, align 4, !tbaa !48
+  %76 = sext i32 %75 to i64
+  %77 = icmp slt i64 %indvars.iv.next, %76
+  br i1 %77, label %17, label %._crit_edge
+
+._crit_edge:                                      ; preds = %74, %9
+  %78 = tail call i32 @putchar(i32 10) #8
+  %79 = load i8* %where, align 1, !tbaa !10
+  %80 = icmp eq i8 %79, 0
+  br i1 %80, label %81, label %82
+
+; <label>:81                                      ; preds = %._crit_edge
+  tail call fastcc void @PrintDelimiterLine(i8 signext 45, %struct.cTimerData* %timer) #9
+  br label %82
+
+; <label>:82                                      ; preds = %81, %._crit_edge
+  ret void
+}

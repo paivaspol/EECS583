@@ -1,21 +1,19 @@
-define void @add_nrnb(%struct.t_nrnb* nocapture %dest, %struct.t_nrnb* nocapture %s1, %struct.t_nrnb* nocapture %s2) #0 {
-entry:
-  br label %for.body
+define void @add_nrnb(%struct.t_nrnb* nocapture %dest, %struct.t_nrnb* nocapture readonly %s1, %struct.t_nrnb* nocapture readonly %s2) #3 {
+  br label %1
 
-for.body:                                         ; preds = %for.body, %entry
-  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
-  %arrayidx = getelementptr inbounds %struct.t_nrnb* %s1, i64 0, i32 0, i64 %indvars.iv
-  %0 = load double* %arrayidx, align 8, !tbaa !0
-  %arrayidx3 = getelementptr inbounds %struct.t_nrnb* %s2, i64 0, i32 0, i64 %indvars.iv
-  %1 = load double* %arrayidx3, align 8, !tbaa !0
-  %add = fadd double %0, %1
-  %arrayidx6 = getelementptr inbounds %struct.t_nrnb* %dest, i64 0, i32 0, i64 %indvars.iv
-  store double %add, double* %arrayidx6, align 8, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 129
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:1                                       ; preds = %1, %0
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
+  %2 = getelementptr inbounds %struct.t_nrnb* %s1, i64 0, i32 0, i64 %indvars.iv
+  %3 = load double* %2, align 8, !tbaa !14
+  %4 = getelementptr inbounds %struct.t_nrnb* %s2, i64 0, i32 0, i64 %indvars.iv
+  %5 = load double* %4, align 8, !tbaa !14
+  %6 = fadd double %3, %5
+  %7 = getelementptr inbounds %struct.t_nrnb* %dest, i64 0, i32 0, i64 %indvars.iv
+  store double %6, double* %7, align 8, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 129
+  br i1 %exitcond, label %8, label %1
 
-for.end:                                          ; preds = %for.body
+; <label>:8                                       ; preds = %1
   ret void
 }

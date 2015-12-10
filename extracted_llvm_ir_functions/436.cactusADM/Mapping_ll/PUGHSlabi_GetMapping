@@ -1,0 +1,22 @@
+define %struct.hslab_mapping_t* @PUGHSlabi_GetMapping(i32 %mapping_handle) #6 {
+  %mapping.01 = load %struct.hslab_mapping_t** @mapping_list, align 8
+  %1 = icmp eq %struct.hslab_mapping_t* %mapping.01, null
+  br i1 %1, label %.critedge, label %.lr.ph
+
+.lr.ph:                                           ; preds = %0, %5
+  %mapping.02 = phi %struct.hslab_mapping_t* [ %mapping.0, %5 ], [ %mapping.01, %0 ]
+  %2 = getelementptr inbounds %struct.hslab_mapping_t* %mapping.02, i64 0, i32 0
+  %3 = load i32* %2, align 4, !tbaa !46
+  %4 = icmp eq i32 %3, %mapping_handle
+  br i1 %4, label %.critedge, label %5
+
+; <label>:5                                       ; preds = %.lr.ph
+  %6 = getelementptr inbounds %struct.hslab_mapping_t* %mapping.02, i64 0, i32 18
+  %mapping.0 = load %struct.hslab_mapping_t** %6, align 8
+  %7 = icmp eq %struct.hslab_mapping_t* %mapping.0, null
+  br i1 %7, label %.critedge, label %.lr.ph
+
+.critedge:                                        ; preds = %5, %.lr.ph, %0
+  %mapping.0.lcssa = phi %struct.hslab_mapping_t* [ null, %0 ], [ null, %5 ], [ %mapping.02, %.lr.ph ]
+  ret %struct.hslab_mapping_t* %mapping.0.lcssa
+}

@@ -1,0 +1,15 @@
+define void @cctk_timerprintdata_(i32* nocapture %ierr, i8* %cctk_str1, i8* %cctk_str2, i32 %cctk_strlen1, i32 %cctk_strlen2) #1 {
+  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #7
+  %2 = tail call i8* @Util_NullTerminateString(i8* %cctk_str2, i32 %cctk_strlen2) #7
+  %3 = load i8* %1, align 1, !tbaa !31
+  %4 = icmp ne i8 %3, 0
+  %5 = select i1 %4, i8* %1, i8* null
+  %6 = load i8* %2, align 1, !tbaa !31
+  %7 = icmp ne i8 %6, 0
+  %8 = select i1 %7, i8* %2, i8* null
+  %9 = tail call i32 @CCTK_TimerPrintData(i8* %5, i8* %8) #8
+  store i32 %9, i32* %ierr, align 4, !tbaa !11
+  tail call void @free(i8* %1) #8
+  tail call void @free(i8* %2) #8
+  ret void
+}

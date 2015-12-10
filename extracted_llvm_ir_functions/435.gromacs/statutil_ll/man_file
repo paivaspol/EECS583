@@ -1,26 +1,25 @@
-define internal fastcc %struct._IO_FILE* @man_file(i8* %program, i8* %mantp) #2 {
-entry:
+define internal fastcc %struct.__sFILE* @man_file(i8* %program, i8* %mantp) #1 {
   %buf = alloca [256 x i8], align 16
-  %0 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %0) #7
-  %call = call i8* @strrchr(i8* %program, i32 47) #9
-  %cmp = icmp eq i8* %call, null
-  %add.ptr = getelementptr inbounds i8* %call, i64 1
-  %pr.0 = select i1 %cmp, i8* %program, i8* %add.ptr
-  %call1 = call i32 @strcmp(i8* %mantp, i8* getelementptr inbounds ([6 x i8]* @.str17, i64 0, i64 0)) #9
-  %cmp2 = icmp eq i32 %call1, 0
-  br i1 %cmp2, label %if.else5, label %if.then3
+  %1 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %1) #10
+  %2 = tail call i8* @strrchr(i8* %program, i32 47) #12
+  %3 = icmp eq i8* %2, null
+  %4 = getelementptr inbounds i8* %2, i64 1
+  %pr.0 = select i1 %3, i8* %program, i8* %4
+  %5 = tail call i32 @strcmp(i8* %mantp, i8* getelementptr inbounds ([6 x i8]* @.str17, i64 0, i64 0)) #12
+  %6 = icmp eq i32 %5, 0
+  br i1 %6, label %9, label %7
 
-if.then3:                                         ; preds = %entry
-  %call4 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([6 x i8]* @.str71, i64 0, i64 0), i8* %pr.0, i8* %mantp) #10
-  br label %if.end8
+; <label>:7                                       ; preds = %0
+  %8 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 256, i8* getelementptr inbounds ([6 x i8]* @.str91, i64 0, i64 0), i8* %pr.0, i8* %mantp) #12
+  br label %11
 
-if.else5:                                         ; preds = %entry
-  %call7 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str72, i64 0, i64 0), i8* %pr.0) #10
-  br label %if.end8
+; <label>:9                                       ; preds = %0
+  %10 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 256, i8* getelementptr inbounds ([7 x i8]* @.str92, i64 0, i64 0), i8* %pr.0) #12
+  br label %11
 
-if.end8:                                          ; preds = %if.else5, %if.then3
-  %call10 = call %struct._IO_FILE* @ffopen(i8* %0, i8* getelementptr inbounds ([2 x i8]* @.str73, i64 0, i64 0)) #10
-  call void @llvm.lifetime.end(i64 256, i8* %0) #7
-  ret %struct._IO_FILE* %call10
+; <label>:11                                      ; preds = %9, %7
+  %12 = call %struct.__sFILE* @ffopen(i8* %1, i8* getelementptr inbounds ([2 x i8]* @.str93, i64 0, i64 0)) #12
+  call void @llvm.lifetime.end(i64 256, i8* %1) #10
+  ret %struct.__sFILE* %12
 }

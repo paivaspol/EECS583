@@ -1,0 +1,14 @@
+define i8* @CCTK_VarTypeName(i32 %vtype) #0 {
+  %switch.tableidx = add i32 %vtype, -1
+  %1 = icmp ult i32 %switch.tableidx, 14
+  br i1 %1, label %switch.lookup, label %3
+
+switch.lookup:                                    ; preds = %0
+  %2 = sext i32 %switch.tableidx to i64
+  %switch.gep = getelementptr inbounds [14 x i8*]* @switch.table, i64 0, i64 %2
+  %switch.load = load i8** %switch.gep, align 8
+  ret i8* %switch.load
+
+; <label>:3                                       ; preds = %0
+  ret i8* null
+}

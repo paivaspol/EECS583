@@ -1,0 +1,13 @@
+define i32 @CCTK_InterpHandle(i8* %name) #1 {
+  %1 = load %struct.cHandledData** @interp_operators, align 8, !tbaa !2
+  %2 = tail call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %name, i8** null) #6
+  %3 = icmp slt i32 %2, 0
+  br i1 %3, label %4, label %6
+
+; <label>:4                                       ; preds = %0
+  %5 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 329, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([48 x i8]* @.str8, i64 0, i64 0), i8* %name) #6
+  br label %6
+
+; <label>:6                                       ; preds = %4, %0
+  ret i32 %2
+}

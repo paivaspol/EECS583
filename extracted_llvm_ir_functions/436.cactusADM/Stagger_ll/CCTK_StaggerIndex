@@ -1,0 +1,48 @@
+define i32 @CCTK_StaggerIndex(i8* %stype) #1 {
+  %1 = tail call i64 @strlen(i8* %stype) #6
+  %2 = trunc i64 %1 to i32
+  %3 = icmp sgt i32 %2, 0
+  br i1 %3, label %.lr.ph, label %.loopexit
+
+.lr.ph:                                           ; preds = %0
+  %sext = shl i64 %1, 32
+  %4 = ashr exact i64 %sext, 32
+  br label %5
+
+; <label>:5                                       ; preds = %.lr.ph, %14
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %14 ]
+  %base.04 = phi i32 [ 1, %.lr.ph ], [ %17, %14 ]
+  %scode.03 = phi i32 [ 0, %.lr.ph ], [ %16, %14 ]
+  %6 = getelementptr inbounds i8* %stype, i64 %indvars.iv
+  %7 = load i8* %6, align 1, !tbaa !8
+  %8 = sext i8 %7 to i32
+  %9 = tail call i32 @__toupper(i32 %8) #6
+  switch i32 %9, label %12 [
+    i32 77, label %14
+    i32 67, label %10
+    i32 80, label %11
+  ]
+
+; <label>:10                                      ; preds = %5
+  br label %14
+
+; <label>:11                                      ; preds = %5
+  br label %14
+
+; <label>:12                                      ; preds = %5
+  %13 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 150, i8* getelementptr inbounds ([76 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str2, i64 0, i64 0), i8* %stype) #6
+  br label %.loopexit
+
+; <label>:14                                      ; preds = %5, %11, %10
+  %m.0 = phi i32 [ 2, %11 ], [ 1, %10 ], [ 0, %5 ]
+  %15 = mul nsw i32 %m.0, %base.04
+  %16 = add nsw i32 %15, %scode.03
+  %17 = mul nsw i32 %base.04, 3
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %18 = icmp slt i64 %indvars.iv.next, %4
+  br i1 %18, label %5, label %.loopexit
+
+.loopexit:                                        ; preds = %14, %0, %12
+  %.0 = phi i32 [ -1, %12 ], [ 0, %0 ], [ %16, %14 ]
+  ret i32 %.0
+}

@@ -1,0 +1,18 @@
+define i32 @BndScalarGI(%struct.cGH* %GH, i32* %stencil, double %scalar, i32 %gi) #1 {
+  %1 = tail call i32 @CCTK_FirstVarIndexI(i32 %gi) #5
+  %2 = icmp sgt i32 %1, -1
+  br i1 %2, label %3, label %6
+
+; <label>:3                                       ; preds = %0
+  %4 = tail call i32 @CCTK_NumVarsInGroupI(i32 %gi) #5
+  %5 = tail call fastcc i32 @ApplyBndScalar(%struct.cGH* %GH, i32 -1, i32* %stencil, i32 0, double %scalar, i32 %1, i32 %4) #6
+  br label %8
+
+; <label>:6                                       ; preds = %0
+  %7 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 383, i8* getelementptr inbounds ([85 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([38 x i8]* @.str5, i64 0, i64 0), i32 %gi) #5
+  br label %8
+
+; <label>:8                                       ; preds = %6, %3
+  %retval.0 = phi i32 [ %5, %3 ], [ -1, %6 ]
+  ret i32 %retval.0
+}

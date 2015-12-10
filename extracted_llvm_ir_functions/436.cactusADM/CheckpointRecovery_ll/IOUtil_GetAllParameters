@@ -1,0 +1,101 @@
+define i8* @IOUtil_GetAllParameters(%struct.cGH* nocapture readnone %GH) #1 {
+  %param = alloca i8*, align 8
+  %pdata = alloca %struct.PARAM_PROPS*, align 8
+  %1 = tail call i32 @CCTK_NumCompiledThorns() #7
+  br label %.outer.outer
+
+.outer.outer:                                     ; preds = %46, %0
+  %maxLen.0.ph.ph = phi i32 [ 0, %0 ], [ %maxLen.3, %46 ]
+  %parameters.0.ph.ph = phi i8* [ null, %0 ], [ %parameters.3, %46 ]
+  %currentLen.0.ph.ph = phi i32 [ 0, %0 ], [ %currentLen.2, %46 ]
+  %i.0.in.ph.ph = phi i32 [ %1, %0 ], [ %i.0, %46 ]
+  br label %.outer
+
+.outer:                                           ; preds = %.preheader, %.outer.outer, %3
+  %i.0.in = phi i32 [ %i.0, %3 ], [ %i.0, %.preheader ], [ %i.0.in.ph.ph, %.outer.outer ]
+  %i.0 = add nsw i32 %i.0.in, -1
+  %2 = icmp sgt i32 %i.0.in, 0
+  br i1 %2, label %3, label %50
+
+; <label>:3                                       ; preds = %.outer
+  %4 = call i8* @CCTK_CompiledThorn(i32 %i.0) #7
+  %5 = call i32 @CCTK_IsThornActive(i8* %4) #7
+  %6 = icmp eq i32 %5, 0
+  br i1 %6, label %.outer, label %.preheader
+
+.preheader:                                       ; preds = %3
+  %7 = call i32 @CCTK_ParameterWalk(i32 1, i8* %4, i8** %param, %struct.PARAM_PROPS** %pdata) #7
+  %8 = icmp eq i32 %7, 0
+  br i1 %8, label %.lr.ph, label %.outer
+
+.lr.ph:                                           ; preds = %.preheader, %46
+  %currentLen.14 = phi i32 [ %currentLen.2, %46 ], [ %currentLen.0.ph.ph, %.preheader ]
+  %parameters.13 = phi i8* [ %parameters.3, %46 ], [ %parameters.0.ph.ph, %.preheader ]
+  %maxLen.12 = phi i32 [ %maxLen.3, %46 ], [ %maxLen.0.ph.ph, %.preheader ]
+  %9 = load %struct.PARAM_PROPS** %pdata, align 8, !tbaa !2
+  %10 = getelementptr inbounds %struct.PARAM_PROPS* %9, i64 0, i32 7
+  %11 = load i32* %10, align 4, !tbaa !30
+  %12 = icmp sgt i32 %11, 0
+  br i1 %12, label %13, label %46
+
+; <label>:13                                      ; preds = %.lr.ph
+  %14 = getelementptr inbounds %struct.PARAM_PROPS* %9, i64 0, i32 0
+  %15 = load i8** %14, align 8, !tbaa !32
+  %16 = getelementptr inbounds %struct.PARAM_PROPS* %9, i64 0, i32 1
+  %17 = load i8** %16, align 8, !tbaa !33
+  %18 = call i8* @CCTK_ParameterValString(i8* %15, i8* %17) #7
+  %19 = icmp eq i8* %18, null
+  %20 = load i8** %param, align 8, !tbaa !2
+  br i1 %19, label %21, label %23
+
+; <label>:21                                      ; preds = %13
+  %22 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 741, i8* getelementptr inbounds ([87 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([38 x i8]* @.str23, i64 0, i64 0), i8* %20) #7
+  br label %46
+
+; <label>:23                                      ; preds = %13
+  %24 = call i64 @strlen(i8* %20) #7
+  %25 = call i64 @strlen(i8* %18) #7
+  %26 = add i64 %24, 5
+  %27 = add i64 %26, %25
+  %28 = trunc i64 %27 to i32
+  %29 = add nsw i32 %28, %currentLen.14
+  %30 = icmp slt i32 %29, %maxLen.12
+  br i1 %30, label %38, label %31
+
+; <label>:31                                      ; preds = %23
+  %32 = add nsw i32 %maxLen.12, 1024
+  %33 = sext i32 %32 to i64
+  %34 = call i8* @realloc(i8* %parameters.13, i64 %33) #7
+  %35 = icmp eq i8* %34, null
+  br i1 %35, label %36, label %38
+
+; <label>:36                                      ; preds = %31
+  %37 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 755, i8* getelementptr inbounds ([87 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([38 x i8]* @.str24, i64 0, i64 0), i32 %32) #7
+  br label %38
+
+; <label>:38                                      ; preds = %36, %31, %23
+  %maxLen.2 = phi i32 [ %maxLen.12, %23 ], [ %32, %31 ], [ %32, %36 ]
+  %parameters.2 = phi i8* [ %parameters.13, %23 ], [ %34, %31 ], [ null, %36 ]
+  %39 = sext i32 %currentLen.14 to i64
+  %40 = getelementptr inbounds i8* %parameters.2, i64 %39
+  %41 = call i64 @llvm.objectsize.i64.p0i8(i8* %40, i1 false)
+  %42 = load i8** %param, align 8, !tbaa !2
+  %43 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %40, i32 0, i64 %41, i8* getelementptr inbounds ([9 x i8]* @.str25, i64 0, i64 0), i8* %42, i8* %18) #7
+  %44 = add i32 %currentLen.14, -1
+  %45 = add i32 %44, %28
+  call void @free(i8* %18) #8
+  br label %46
+
+; <label>:46                                      ; preds = %21, %38, %.lr.ph
+  %maxLen.3 = phi i32 [ %maxLen.12, %21 ], [ %maxLen.2, %38 ], [ %maxLen.12, %.lr.ph ]
+  %parameters.3 = phi i8* [ %parameters.13, %21 ], [ %parameters.2, %38 ], [ %parameters.13, %.lr.ph ]
+  %currentLen.2 = phi i32 [ %currentLen.14, %21 ], [ %45, %38 ], [ %currentLen.14, %.lr.ph ]
+  %47 = load i8** %param, align 8, !tbaa !2
+  call void @free(i8* %47) #8
+  %48 = call i32 @CCTK_ParameterWalk(i32 0, i8* %4, i8** %param, %struct.PARAM_PROPS** %pdata) #7
+  %49 = icmp eq i32 %48, 0
+  br i1 %49, label %.lr.ph, label %.outer.outer
+
+; <label>:50                                      ; preds = %.outer
+  ret i8* %parameters.0.ph.ph
+}

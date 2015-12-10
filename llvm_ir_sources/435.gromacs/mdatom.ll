@@ -1,10 +1,11 @@
-; ModuleID = '../../SPEC/benchspec/CPU2006/435.gromacs/src/mdatom.c'
-target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
-target triple = "x86_64-unknown-linux-gnu"
+; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/435.gromacs/src/mdatom.c'
+target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-apple-macosx10.10.0"
 
+%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
+%struct.__sFILEX = type opaque
+%struct.__sbuf = type { i8*, i32 }
 %struct.t_mdatoms = type { float, i32, float*, float*, float*, float*, float*, float*, float*, i32*, i32*, i32*, i32*, i16*, i16*, i16*, i16*, i16*, i16*, i16*, i16*, i16*, i16* }
-%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
-%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 %struct.t_atoms = type { i32, %struct.t_atom*, i8***, i8***, i8***, i32, i8***, i32, i8***, %struct.t_block, [9 x %struct.t_grps], %struct.t_pdbinfo* }
 %struct.t_atom = type { float, float, float, float, i16, i16, i32, i32, [9 x i8], i8 }
 %struct.t_block = type { [256 x i32], i32, i32*, i32, i32* }
@@ -12,7 +13,7 @@ target triple = "x86_64-unknown-linux-gnu"
 %struct.t_pdbinfo = type { i32, i32, i8, [6 x i8], float, float, i32, [6 x i32] }
 
 @.str = private unnamed_addr constant [3 x i8] c"md\00", align 1
-@.str1 = private unnamed_addr constant [54 x i8] c"../../SPEC/benchspec/CPU2006/435.gromacs/src/mdatom.c\00", align 1
+@.str1 = private unnamed_addr constant [66 x i8] c"../../SPEC_CPU2006v1.1/benchspec/CPU2006/435.gromacs/src/mdatom.c\00", align 1
 @.str2 = private unnamed_addr constant [10 x i8] c"md->massA\00", align 1
 @.str3 = private unnamed_addr constant [10 x i8] c"md->massB\00", align 1
 @.str4 = private unnamed_addr constant [10 x i8] c"md->massT\00", align 1
@@ -38,782 +39,909 @@ target triple = "x86_64-unknown-linux-gnu"
 @.str24 = private unnamed_addr constant [49 x i8] c"There are %d atoms for free energy perturbation\0A\00", align 1
 @init_mdatoms.lambda0 = internal unnamed_addr global float 0.000000e+00, align 4
 
-; Function Attrs: nounwind optsize uwtable
-define %struct.t_mdatoms* @atoms2md(%struct._IO_FILE* %fp, %struct.t_atoms* nocapture %atoms, [3 x i32]* nocapture %nFreeze, i32 %bBD, float %delta_t, float %fric, float* nocapture %tau_t, i32 %bPert, i32 %bFree) #0 {
-entry:
-  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 50, i32 1, i32 176) #4
-  %0 = bitcast i8* %call to %struct.t_mdatoms*
-  %nr = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 0
-  %1 = load i32* %nr, align 4, !tbaa !0
-  %nr1 = getelementptr inbounds i8* %call, i64 4
-  %2 = bitcast i8* %nr1 to i32*
-  store i32 %1, i32* %2, align 4, !tbaa !0
-  %call3 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 52, i32 %1, i32 4) #4
-  %3 = bitcast i8* %call3 to float*
-  %massA = getelementptr inbounds i8* %call, i64 8
-  %4 = bitcast i8* %massA to float**
-  store float* %3, float** %4, align 8, !tbaa !3
-  %5 = load i32* %2, align 4, !tbaa !0
-  %call5 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 53, i32 %5, i32 4) #4
-  %6 = bitcast i8* %call5 to float*
-  %massB = getelementptr inbounds i8* %call, i64 16
-  %7 = bitcast i8* %massB to float**
-  store float* %6, float** %7, align 8, !tbaa !3
-  %8 = load i32* %2, align 4, !tbaa !0
-  %call7 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 54, i32 %8, i32 4) #4
-  %9 = bitcast i8* %call7 to float*
-  %massT = getelementptr inbounds i8* %call, i64 24
-  %10 = bitcast i8* %massT to float**
-  store float* %9, float** %10, align 8, !tbaa !3
-  %11 = load i32* %2, align 4, !tbaa !0
-  %call9 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 55, i32 %11, i32 4) #4
-  %12 = bitcast i8* %call9 to float*
-  %invmass = getelementptr inbounds i8* %call, i64 32
-  %13 = bitcast i8* %invmass to float**
-  store float* %12, float** %13, align 8, !tbaa !3
-  %14 = load i32* %2, align 4, !tbaa !0
-  %call11 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 56, i32 %14, i32 4) #4
-  %15 = bitcast i8* %call11 to float*
-  %chargeA = getelementptr inbounds i8* %call, i64 40
-  %16 = bitcast i8* %chargeA to float**
-  store float* %15, float** %16, align 8, !tbaa !3
-  %17 = load i32* %2, align 4, !tbaa !0
-  %call13 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 57, i32 %17, i32 4) #4
-  %18 = bitcast i8* %call13 to float*
-  %chargeB = getelementptr inbounds i8* %call, i64 48
-  %19 = bitcast i8* %chargeB to float**
-  store float* %18, float** %19, align 8, !tbaa !3
-  %20 = load i32* %2, align 4, !tbaa !0
-  %call15 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 58, i32 %20, i32 4) #4
-  %21 = bitcast i8* %call15 to float*
-  %chargeT = getelementptr inbounds i8* %call, i64 56
-  %22 = bitcast i8* %chargeT to float**
-  store float* %21, float** %22, align 8, !tbaa !3
-  %23 = load i32* %2, align 4, !tbaa !0
-  %call17 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 59, i32 %23, i32 4) #4
-  %24 = bitcast i8* %call17 to i32*
-  %resnr = getelementptr inbounds i8* %call, i64 72
-  %25 = bitcast i8* %resnr to i32**
-  store i32* %24, i32** %25, align 8, !tbaa !3
-  %26 = load i32* %2, align 4, !tbaa !0
-  %call19 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 60, i32 %26, i32 4) #4
-  %27 = bitcast i8* %call19 to i32*
-  %typeA = getelementptr inbounds i8* %call, i64 80
-  %28 = bitcast i8* %typeA to i32**
-  store i32* %27, i32** %28, align 8, !tbaa !3
-  %29 = load i32* %2, align 4, !tbaa !0
-  %call21 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 61, i32 %29, i32 4) #4
-  %30 = bitcast i8* %call21 to i32*
-  %typeB = getelementptr inbounds i8* %call, i64 88
-  %31 = bitcast i8* %typeB to i32**
-  store i32* %30, i32** %31, align 8, !tbaa !3
-  %32 = load i32* %2, align 4, !tbaa !0
-  %call23 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 62, i32 %32, i32 2) #4
-  %33 = bitcast i8* %call23 to i16*
-  %ptype = getelementptr inbounds i8* %call, i64 96
-  %34 = bitcast i8* %ptype to i16**
-  store i16* %33, i16** %34, align 8, !tbaa !3
-  %35 = load i32* %2, align 4, !tbaa !0
-  %call25 = tail call i8* @save_calloc(i8* getelementptr inbounds ([8 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 63, i32 %35, i32 2) #4
-  %36 = bitcast i8* %call25 to i16*
-  %cTC = getelementptr inbounds i8* %call, i64 104
-  %37 = bitcast i8* %cTC to i16**
-  store i16* %36, i16** %37, align 8, !tbaa !3
-  %38 = load i32* %2, align 4, !tbaa !0
-  %call27 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 64, i32 %38, i32 2) #4
-  %39 = bitcast i8* %call27 to i16*
-  %cENER = getelementptr inbounds i8* %call, i64 112
-  %40 = bitcast i8* %cENER to i16**
-  store i16* %39, i16** %40, align 8, !tbaa !3
-  %41 = load i32* %2, align 4, !tbaa !0
-  %call29 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 65, i32 %41, i32 2) #4
-  %42 = bitcast i8* %call29 to i16*
-  %cACC = getelementptr inbounds i8* %call, i64 120
-  %43 = bitcast i8* %cACC to i16**
-  store i16* %42, i16** %43, align 8, !tbaa !3
-  %44 = load i32* %2, align 4, !tbaa !0
-  %call31 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 66, i32 %44, i32 2) #4
-  %45 = bitcast i8* %call31 to i16*
-  %cFREEZE = getelementptr inbounds i8* %call, i64 128
-  %46 = bitcast i8* %cFREEZE to i16**
-  store i16* %45, i16** %46, align 8, !tbaa !3
-  %47 = load i32* %2, align 4, !tbaa !0
-  %call33 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 67, i32 %47, i32 2) #4
-  %48 = bitcast i8* %call33 to i16*
-  %cXTC = getelementptr inbounds i8* %call, i64 136
-  %49 = bitcast i8* %cXTC to i16**
-  store i16* %48, i16** %49, align 8, !tbaa !3
-  %50 = load i32* %2, align 4, !tbaa !0
-  %call35 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 68, i32 %50, i32 2) #4
-  %51 = bitcast i8* %call35 to i16*
-  %cVCM = getelementptr inbounds i8* %call, i64 144
-  %52 = bitcast i8* %cVCM to i16**
-  store i16* %51, i16** %52, align 8, !tbaa !3
-  %53 = load i32* %2, align 4, !tbaa !0
-  %call37 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 69, i32 %53, i32 2) #4
-  %54 = bitcast i8* %call37 to i16*
-  %cORF = getelementptr inbounds i8* %call, i64 168
-  %55 = bitcast i8* %cORF to i16**
-  store i16* %54, i16** %55, align 8, !tbaa !3
-  %56 = load i32* %2, align 4, !tbaa !0
-  %call39 = tail call i8* @save_calloc(i8* getelementptr inbounds ([15 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 70, i32 %56, i32 4) #4
-  %57 = bitcast i8* %call39 to i32*
-  %bPerturbed = getelementptr inbounds i8* %call, i64 64
-  %58 = bitcast i8* %bPerturbed to i32**
-  store i32* %57, i32** %58, align 8, !tbaa !3
-  %59 = load i32* %2, align 4, !tbaa !0
-  %call41 = tail call i8* @save_calloc(i8* getelementptr inbounds ([8 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 72, i32 %59, i32 2) #4
-  %60 = bitcast i8* %call41 to i16*
-  %cU1 = getelementptr inbounds i8* %call, i64 152
-  %61 = bitcast i8* %cU1 to i16**
-  store i16* %60, i16** %61, align 8, !tbaa !3
-  %62 = load i32* %2, align 4, !tbaa !0
-  %call43 = tail call i8* @save_calloc(i8* getelementptr inbounds ([8 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 73, i32 %62, i32 2) #4
-  %63 = bitcast i8* %call43 to i16*
-  %cU2 = getelementptr inbounds i8* %call, i64 160
-  %64 = bitcast i8* %cU2 to i16**
-  store i16* %63, i16** %64, align 8, !tbaa !3
-  %65 = load i32* %2, align 4, !tbaa !0
-  %cmp519 = icmp sgt i32 %65, 0
-  br i1 %cmp519, label %for.body.lr.ph, label %for.end
+; Function Attrs: alwaysinline nounwind optsize ssp uwtable
+define i32 @__sputc(i32 %_c, %struct.__sFILE* %_p) #0 {
+  %1 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 2
+  %2 = load i32* %1, align 4, !tbaa !2
+  %3 = add nsw i32 %2, -1
+  store i32 %3, i32* %1, align 4, !tbaa !2
+  %4 = icmp sgt i32 %2, 0
+  br i1 %4, label %._crit_edge, label %5
 
-for.body.lr.ph:                                   ; preds = %entry
-  %tobool = icmp eq i32 %bBD, 0
-  %atom75 = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 1
-  %tobool258 = icmp eq i32 %bPert, 0
-  %mul = fmul float %delta_t, %fric
-  br label %for.body
+._crit_edge:                                      ; preds = %0
+  %.pre = and i32 %_c, 255
+  br label %10
 
-for.body:                                         ; preds = %for.body.lr.ph, %if.end309
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %if.end309 ]
-  %tm.0521 = phi double [ 0.000000e+00, %for.body.lr.ph ], [ %tm.1, %if.end309 ]
-  %np.0520 = phi i32 [ 0, %for.body.lr.ph ], [ %np.1, %if.end309 ]
-  br i1 %tobool, label %if.else73, label %if.then
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 6
+  %7 = load i32* %6, align 4, !tbaa !11
+  %8 = icmp sle i32 %2, %7
+  %sext.mask = and i32 %_c, 255
+  %9 = icmp eq i32 %sext.mask, 10
+  %or.cond = or i1 %9, %8
+  br i1 %or.cond, label %15, label %10
 
-if.then:                                          ; preds = %for.body
-  %fabsf518 = tail call float @fabsf(float %fric) #2
-  %66 = fpext float %fabsf518 to double
-  %cmp46 = fcmp ogt double %66, 1.200000e-38
-  br i1 %cmp46, label %if.then48, label %if.else
+; <label>:10                                      ; preds = %._crit_edge, %5
+  %.pre-phi = phi i32 [ %.pre, %._crit_edge ], [ %sext.mask, %5 ]
+  %11 = trunc i32 %_c to i8
+  %12 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 0
+  %13 = load i8** %12, align 8, !tbaa !12
+  %14 = getelementptr inbounds i8* %13, i64 1
+  store i8* %14, i8** %12, align 8, !tbaa !12
+  store i8 %11, i8* %13, align 1, !tbaa !13
+  br label %17
 
-if.then48:                                        ; preds = %if.then
-  %67 = load float** %4, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds float* %67, i64 %indvars.iv
-  store float %mul, float* %arrayidx, align 4, !tbaa !4
-  %68 = load float** %7, align 8, !tbaa !3
-  %arrayidx53 = getelementptr inbounds float* %68, i64 %indvars.iv
-  store float %mul, float* %arrayidx53, align 4, !tbaa !4
-  %.pre = load %struct.t_atom** %atom75, align 8, !tbaa !3
-  br label %if.end88
+; <label>:15                                      ; preds = %5
+  %16 = tail call i32 @__swbuf(i32 %_c, %struct.__sFILE* %_p) #6
+  br label %17
 
-if.else:                                          ; preds = %if.then
-  %69 = load %struct.t_atom** %atom75, align 8, !tbaa !3
-  %arrayidx56 = getelementptr inbounds %struct.t_atom* %69, i64 %indvars.iv, i32 8, i64 0
-  %70 = load i8* %arrayidx56, align 1, !tbaa !1
-  %idxprom57 = zext i8 %70 to i64
-  %arrayidx58 = getelementptr inbounds float* %tau_t, i64 %idxprom57
-  %71 = load float* %arrayidx58, align 4, !tbaa !4
-  %div = fdiv float %delta_t, %71
-  %m = getelementptr inbounds %struct.t_atom* %69, i64 %indvars.iv, i32 0
-  %72 = load float* %m, align 4, !tbaa !4
-  %mul62 = fmul float %div, %72
-  %73 = load float** %4, align 8, !tbaa !3
-  %arrayidx65 = getelementptr inbounds float* %73, i64 %indvars.iv
-  store float %mul62, float* %arrayidx65, align 4, !tbaa !4
-  %mB = getelementptr inbounds %struct.t_atom* %69, i64 %indvars.iv, i32 2
-  %74 = load float* %mB, align 4, !tbaa !4
-  %mul69 = fmul float %div, %74
-  %75 = load float** %7, align 8, !tbaa !3
-  %arrayidx72 = getelementptr inbounds float* %75, i64 %indvars.iv
-  store float %mul69, float* %arrayidx72, align 4, !tbaa !4
-  br label %if.end88
+; <label>:17                                      ; preds = %15, %10
+  %.0 = phi i32 [ %.pre-phi, %10 ], [ %16, %15 ]
+  ret i32 %.0
+}
 
-if.else73:                                        ; preds = %for.body
-  %76 = load %struct.t_atom** %atom75, align 8, !tbaa !3
-  %m77 = getelementptr inbounds %struct.t_atom* %76, i64 %indvars.iv, i32 0
-  %77 = load float* %m77, align 4, !tbaa !4
-  %78 = load float** %4, align 8, !tbaa !3
-  %arrayidx80 = getelementptr inbounds float* %78, i64 %indvars.iv
-  store float %77, float* %arrayidx80, align 4, !tbaa !4
-  %mB84 = getelementptr inbounds %struct.t_atom* %76, i64 %indvars.iv, i32 2
-  %79 = load float* %mB84, align 4, !tbaa !4
-  %80 = load float** %7, align 8, !tbaa !3
-  %arrayidx87 = getelementptr inbounds float* %80, i64 %indvars.iv
-  store float %79, float* %arrayidx87, align 4, !tbaa !4
-  br label %if.end88
+; Function Attrs: optsize
+declare i32 @__swbuf(i32, %struct.__sFILE*) #1
 
-if.end88:                                         ; preds = %if.then48, %if.else, %if.else73
-  %81 = phi %struct.t_atom* [ %.pre, %if.then48 ], [ %69, %if.else ], [ %76, %if.else73 ]
-  %82 = phi float* [ %67, %if.then48 ], [ %73, %if.else ], [ %78, %if.else73 ]
-  %arrayidx91 = getelementptr inbounds float* %82, i64 %indvars.iv
-  %83 = load float* %arrayidx91, align 4, !tbaa !4
-  %84 = load float** %10, align 8, !tbaa !3
-  %arrayidx94 = getelementptr inbounds float* %84, i64 %indvars.iv
-  store float %83, float* %arrayidx94, align 4, !tbaa !4
-  %q = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 1
-  %85 = load float* %q, align 4, !tbaa !4
-  %86 = load float** %16, align 8, !tbaa !3
-  %arrayidx100 = getelementptr inbounds float* %86, i64 %indvars.iv
-  store float %85, float* %arrayidx100, align 4, !tbaa !4
-  %qB = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 3
-  %87 = load float* %qB, align 4, !tbaa !4
-  %88 = load float** %19, align 8, !tbaa !3
-  %arrayidx106 = getelementptr inbounds float* %88, i64 %indvars.iv
-  store float %87, float* %arrayidx106, align 4, !tbaa !4
-  %resnr110 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 7
-  %89 = load i32* %resnr110, align 4, !tbaa !0
-  %90 = load i32** %25, align 8, !tbaa !3
-  %arrayidx113 = getelementptr inbounds i32* %90, i64 %indvars.iv
-  store i32 %89, i32* %arrayidx113, align 4, !tbaa !0
-  %type = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 4
-  %91 = load i16* %type, align 2, !tbaa !5
-  %conv117 = zext i16 %91 to i32
-  %92 = load i32** %28, align 8, !tbaa !3
-  %arrayidx120 = getelementptr inbounds i32* %92, i64 %indvars.iv
-  store i32 %conv117, i32* %arrayidx120, align 4, !tbaa !0
-  %typeB124 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 5
-  %93 = load i16* %typeB124, align 2, !tbaa !5
-  %conv125 = zext i16 %93 to i32
-  %94 = load i32** %31, align 8, !tbaa !3
-  %arrayidx128 = getelementptr inbounds i32* %94, i64 %indvars.iv
-  store i32 %conv125, i32* %arrayidx128, align 4, !tbaa !0
-  %ptype132 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 6
-  %95 = load i32* %ptype132, align 4, !tbaa !0
-  %conv133 = trunc i32 %95 to i16
-  %96 = load i16** %34, align 8, !tbaa !3
-  %arrayidx136 = getelementptr inbounds i16* %96, i64 %indvars.iv
-  store i16 %conv133, i16* %arrayidx136, align 2, !tbaa !5
-  %arrayidx141 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 8, i64 0
-  %97 = load i8* %arrayidx141, align 1, !tbaa !1
-  %conv142 = zext i8 %97 to i16
-  %98 = load i16** %37, align 8, !tbaa !3
-  %arrayidx145 = getelementptr inbounds i16* %98, i64 %indvars.iv
-  store i16 %conv142, i16* %arrayidx145, align 2, !tbaa !5
-  %arrayidx150 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 8, i64 1
-  %99 = load i8* %arrayidx150, align 1, !tbaa !1
-  %conv151 = zext i8 %99 to i16
-  %100 = load i16** %40, align 8, !tbaa !3
-  %arrayidx154 = getelementptr inbounds i16* %100, i64 %indvars.iv
-  store i16 %conv151, i16* %arrayidx154, align 2, !tbaa !5
-  %arrayidx159 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 8, i64 2
-  %101 = load i8* %arrayidx159, align 1, !tbaa !1
-  %conv160 = zext i8 %101 to i16
-  %102 = load i16** %43, align 8, !tbaa !3
-  %arrayidx163 = getelementptr inbounds i16* %102, i64 %indvars.iv
-  store i16 %conv160, i16* %arrayidx163, align 2, !tbaa !5
-  %arrayidx168 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 8, i64 3
-  %103 = load i8* %arrayidx168, align 1, !tbaa !1
-  %conv169 = zext i8 %103 to i16
-  %104 = load i16** %46, align 8, !tbaa !3
-  %arrayidx172 = getelementptr inbounds i16* %104, i64 %indvars.iv
-  store i16 %conv169, i16* %arrayidx172, align 2, !tbaa !5
-  %arrayidx177 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 8, i64 7
-  %105 = load i8* %arrayidx177, align 1, !tbaa !1
-  %conv178 = zext i8 %105 to i16
-  %106 = load i16** %49, align 8, !tbaa !3
-  %arrayidx181 = getelementptr inbounds i16* %106, i64 %indvars.iv
-  store i16 %conv178, i16* %arrayidx181, align 2, !tbaa !5
-  %arrayidx186 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 8, i64 6
-  %107 = load i8* %arrayidx186, align 1, !tbaa !1
-  %conv187 = zext i8 %107 to i16
-  %108 = load i16** %52, align 8, !tbaa !3
-  %arrayidx190 = getelementptr inbounds i16* %108, i64 %indvars.iv
-  store i16 %conv187, i16* %arrayidx190, align 2, !tbaa !5
-  %arrayidx195 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 8, i64 8
-  %109 = load i8* %arrayidx195, align 1, !tbaa !1
-  %conv196 = zext i8 %109 to i16
-  %110 = load i16** %55, align 8, !tbaa !3
-  %arrayidx199 = getelementptr inbounds i16* %110, i64 %indvars.iv
-  store i16 %conv196, i16* %arrayidx199, align 2, !tbaa !5
-  %111 = load float* %arrayidx91, align 4, !tbaa !4
-  %fabsf = tail call float @fabsf(float %111) #2
-  %112 = fpext float %fabsf to double
-  %cmp205 = fcmp ogt double %112, 1.200000e-38
-  br i1 %cmp205, label %if.then207, label %if.end257
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__sigbits(i32 %__signo) #2 {
+  %1 = icmp sgt i32 %__signo, 32
+  br i1 %1, label %5, label %2
 
-if.then207:                                       ; preds = %if.end88
-  %113 = load float* %arrayidx94, align 4, !tbaa !4
-  %conv211 = fpext float %113 to double
-  %add = fadd double %tm.0521, %conv211
-  %114 = load i16* %arrayidx172, align 2, !tbaa !5
-  %idxprom216 = zext i16 %114 to i64
-  %arrayidx218 = getelementptr inbounds [3 x i32]* %nFreeze, i64 %idxprom216, i64 0
-  %115 = load i32* %arrayidx218, align 4, !tbaa !0
-  %tobool219 = icmp eq i32 %115, 0
-  br i1 %tobool219, label %if.else233, label %land.lhs.true
+; <label>:2                                       ; preds = %0
+  %3 = add nsw i32 %__signo, -1
+  %4 = shl i32 1, %3
+  br label %5
 
-land.lhs.true:                                    ; preds = %if.then207
-  %arrayidx222 = getelementptr inbounds [3 x i32]* %nFreeze, i64 %idxprom216, i64 1
-  %116 = load i32* %arrayidx222, align 4, !tbaa !0
-  %tobool223 = icmp eq i32 %116, 0
-  br i1 %tobool223, label %if.else233, label %land.lhs.true224
+; <label>:5                                       ; preds = %0, %2
+  %6 = phi i32 [ %4, %2 ], [ 0, %0 ]
+  ret i32 %6
+}
 
-land.lhs.true224:                                 ; preds = %land.lhs.true
-  %arrayidx227 = getelementptr inbounds [3 x i32]* %nFreeze, i64 %idxprom216, i64 2
-  %117 = load i32* %arrayidx227, align 4, !tbaa !0
-  %tobool228 = icmp eq i32 %117, 0
-  br i1 %tobool228, label %if.else233, label %if.then229
+; Function Attrs: nounwind optsize ssp uwtable
+define %struct.t_mdatoms* @atoms2md(%struct.__sFILE* %fp, %struct.t_atoms* nocapture %atoms, [3 x i32]* nocapture readonly %nFreeze, i32 %bBD, float %delta_t, float %fric, float* nocapture readonly %tau_t, i32 %bPert, i32 %bFree) #3 {
+  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 50, i32 1, i32 176) #6
+  %2 = bitcast i8* %1 to %struct.t_mdatoms*
+  %3 = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 0
+  %4 = load i32* %3, align 4, !tbaa !14
+  %5 = getelementptr inbounds i8* %1, i64 4
+  %6 = bitcast i8* %5 to i32*
+  store i32 %4, i32* %6, align 4, !tbaa !17
+  %7 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 52, i32 %4, i32 4) #6
+  %8 = getelementptr inbounds i8* %1, i64 8
+  %9 = bitcast i8* %8 to float**
+  %10 = bitcast i8* %8 to i8**
+  store i8* %7, i8** %10, align 8, !tbaa !20
+  %11 = load i32* %6, align 4, !tbaa !17
+  %12 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 53, i32 %11, i32 4) #6
+  %13 = getelementptr inbounds i8* %1, i64 16
+  %14 = bitcast i8* %13 to float**
+  %15 = bitcast i8* %13 to i8**
+  store i8* %12, i8** %15, align 8, !tbaa !21
+  %16 = load i32* %6, align 4, !tbaa !17
+  %17 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 54, i32 %16, i32 4) #6
+  %18 = getelementptr inbounds i8* %1, i64 24
+  %19 = bitcast i8* %18 to float**
+  %20 = bitcast i8* %18 to i8**
+  store i8* %17, i8** %20, align 8, !tbaa !22
+  %21 = load i32* %6, align 4, !tbaa !17
+  %22 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 55, i32 %21, i32 4) #6
+  %23 = getelementptr inbounds i8* %1, i64 32
+  %24 = bitcast i8* %23 to float**
+  %25 = bitcast i8* %23 to i8**
+  store i8* %22, i8** %25, align 8, !tbaa !23
+  %26 = load i32* %6, align 4, !tbaa !17
+  %27 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 56, i32 %26, i32 4) #6
+  %28 = getelementptr inbounds i8* %1, i64 40
+  %29 = bitcast i8* %28 to float**
+  %30 = bitcast i8* %28 to i8**
+  store i8* %27, i8** %30, align 8, !tbaa !24
+  %31 = load i32* %6, align 4, !tbaa !17
+  %32 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 57, i32 %31, i32 4) #6
+  %33 = getelementptr inbounds i8* %1, i64 48
+  %34 = bitcast i8* %33 to float**
+  %35 = bitcast i8* %33 to i8**
+  store i8* %32, i8** %35, align 8, !tbaa !25
+  %36 = load i32* %6, align 4, !tbaa !17
+  %37 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 58, i32 %36, i32 4) #6
+  %38 = getelementptr inbounds i8* %1, i64 56
+  %39 = bitcast i8* %38 to i8**
+  store i8* %37, i8** %39, align 8, !tbaa !26
+  %40 = load i32* %6, align 4, !tbaa !17
+  %41 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 59, i32 %40, i32 4) #6
+  %42 = getelementptr inbounds i8* %1, i64 72
+  %43 = bitcast i8* %42 to i32**
+  %44 = bitcast i8* %42 to i8**
+  store i8* %41, i8** %44, align 8, !tbaa !27
+  %45 = load i32* %6, align 4, !tbaa !17
+  %46 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 60, i32 %45, i32 4) #6
+  %47 = getelementptr inbounds i8* %1, i64 80
+  %48 = bitcast i8* %47 to i32**
+  %49 = bitcast i8* %47 to i8**
+  store i8* %46, i8** %49, align 8, !tbaa !28
+  %50 = load i32* %6, align 4, !tbaa !17
+  %51 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 61, i32 %50, i32 4) #6
+  %52 = getelementptr inbounds i8* %1, i64 88
+  %53 = bitcast i8* %52 to i32**
+  %54 = bitcast i8* %52 to i8**
+  store i8* %51, i8** %54, align 8, !tbaa !29
+  %55 = load i32* %6, align 4, !tbaa !17
+  %56 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 62, i32 %55, i32 2) #6
+  %57 = getelementptr inbounds i8* %1, i64 96
+  %58 = bitcast i8* %57 to i16**
+  %59 = bitcast i8* %57 to i8**
+  store i8* %56, i8** %59, align 8, !tbaa !30
+  %60 = load i32* %6, align 4, !tbaa !17
+  %61 = tail call i8* @save_calloc(i8* getelementptr inbounds ([8 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 63, i32 %60, i32 2) #6
+  %62 = getelementptr inbounds i8* %1, i64 104
+  %63 = bitcast i8* %62 to i16**
+  %64 = bitcast i8* %62 to i8**
+  store i8* %61, i8** %64, align 8, !tbaa !31
+  %65 = load i32* %6, align 4, !tbaa !17
+  %66 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 64, i32 %65, i32 2) #6
+  %67 = getelementptr inbounds i8* %1, i64 112
+  %68 = bitcast i8* %67 to i16**
+  %69 = bitcast i8* %67 to i8**
+  store i8* %66, i8** %69, align 8, !tbaa !32
+  %70 = load i32* %6, align 4, !tbaa !17
+  %71 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 65, i32 %70, i32 2) #6
+  %72 = getelementptr inbounds i8* %1, i64 120
+  %73 = bitcast i8* %72 to i16**
+  %74 = bitcast i8* %72 to i8**
+  store i8* %71, i8** %74, align 8, !tbaa !33
+  %75 = load i32* %6, align 4, !tbaa !17
+  %76 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 66, i32 %75, i32 2) #6
+  %77 = getelementptr inbounds i8* %1, i64 128
+  %78 = bitcast i8* %77 to i16**
+  %79 = bitcast i8* %77 to i8**
+  store i8* %76, i8** %79, align 8, !tbaa !34
+  %80 = load i32* %6, align 4, !tbaa !17
+  %81 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 67, i32 %80, i32 2) #6
+  %82 = getelementptr inbounds i8* %1, i64 136
+  %83 = bitcast i8* %82 to i16**
+  %84 = bitcast i8* %82 to i8**
+  store i8* %81, i8** %84, align 8, !tbaa !35
+  %85 = load i32* %6, align 4, !tbaa !17
+  %86 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 68, i32 %85, i32 2) #6
+  %87 = getelementptr inbounds i8* %1, i64 144
+  %88 = bitcast i8* %87 to i16**
+  %89 = bitcast i8* %87 to i8**
+  store i8* %86, i8** %89, align 8, !tbaa !36
+  %90 = load i32* %6, align 4, !tbaa !17
+  %91 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 69, i32 %90, i32 2) #6
+  %92 = getelementptr inbounds i8* %1, i64 168
+  %93 = bitcast i8* %92 to i16**
+  %94 = bitcast i8* %92 to i8**
+  store i8* %91, i8** %94, align 8, !tbaa !37
+  %95 = load i32* %6, align 4, !tbaa !17
+  %96 = tail call i8* @save_calloc(i8* getelementptr inbounds ([15 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 70, i32 %95, i32 4) #6
+  %97 = getelementptr inbounds i8* %1, i64 64
+  %98 = bitcast i8* %97 to i32**
+  %99 = bitcast i8* %97 to i8**
+  store i8* %96, i8** %99, align 8, !tbaa !38
+  %100 = load i32* %6, align 4, !tbaa !17
+  %101 = tail call i8* @save_calloc(i8* getelementptr inbounds ([8 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 72, i32 %100, i32 2) #6
+  %102 = getelementptr inbounds i8* %1, i64 152
+  %103 = bitcast i8* %102 to i16**
+  %104 = bitcast i8* %102 to i8**
+  store i8* %101, i8** %104, align 8, !tbaa !39
+  %105 = load i32* %6, align 4, !tbaa !17
+  %106 = tail call i8* @save_calloc(i8* getelementptr inbounds ([8 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 73, i32 %105, i32 2) #6
+  %107 = getelementptr inbounds i8* %1, i64 160
+  %108 = bitcast i8* %107 to i8**
+  store i8* %106, i8** %108, align 8, !tbaa !40
+  %109 = load i32* %6, align 4, !tbaa !17
+  %110 = icmp sgt i32 %109, 0
+  %111 = bitcast i8* %106 to i16*
+  br i1 %110, label %.lr.ph, label %._crit_edge
 
-if.then229:                                       ; preds = %land.lhs.true224
-  %118 = load float** %13, align 8, !tbaa !3
-  %arrayidx232 = getelementptr inbounds float* %118, i64 %indvars.iv
-  store float 0x39B4484C00000000, float* %arrayidx232, align 4, !tbaa !4
-  br label %if.end257
+.lr.ph:                                           ; preds = %0
+  %112 = icmp eq i32 %bBD, 0
+  %113 = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 1
+  %114 = icmp eq i32 %bPert, 0
+  %115 = fmul float %delta_t, %fric
+  br label %116
 
-if.else233:                                       ; preds = %land.lhs.true224, %land.lhs.true, %if.then207
-  %fabsf517 = tail call float @fabsf(float %113) #2
-  %119 = fpext float %fabsf517 to double
-  %cmp239 = fcmp olt double %119, 1.200000e-38
-  br i1 %cmp239, label %if.then241, label %if.else245
+; <label>:116                                     ; preds = %.lr.ph, %296
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %296 ]
+  %tm.06 = phi double [ 0.000000e+00, %.lr.ph ], [ %tm.1, %296 ]
+  %np.05 = phi i32 [ 0, %.lr.ph ], [ %np.1, %296 ]
+  br i1 %112, label %143, label %117
 
-if.then241:                                       ; preds = %if.else233
-  %120 = load float** %13, align 8, !tbaa !3
-  %arrayidx244 = getelementptr inbounds float* %120, i64 %indvars.iv
-  store float 0.000000e+00, float* %arrayidx244, align 4, !tbaa !4
-  br label %if.end257
+; <label>:117                                     ; preds = %116
+  %fabsf4 = tail call float @fabsf(float %fric) #4
+  %118 = fpext float %fabsf4 to double
+  %119 = fcmp ogt double %118, 1.200000e-38
+  br i1 %119, label %120, label %125
 
-if.else245:                                       ; preds = %if.else233
-  %conv251 = fdiv float 1.000000e+00, %113
-  %121 = load float** %13, align 8, !tbaa !3
-  %arrayidx254 = getelementptr inbounds float* %121, i64 %indvars.iv
-  store float %conv251, float* %arrayidx254, align 4, !tbaa !4
-  br label %if.end257
+; <label>:120                                     ; preds = %117
+  %121 = load float** %9, align 8, !tbaa !20
+  %122 = getelementptr inbounds float* %121, i64 %indvars.iv
+  store float %115, float* %122, align 4, !tbaa !41
+  %123 = load float** %14, align 8, !tbaa !21
+  %124 = getelementptr inbounds float* %123, i64 %indvars.iv
+  store float %115, float* %124, align 4, !tbaa !41
+  %.pre = load %struct.t_atom** %113, align 8, !tbaa !42
+  br label %157
 
-if.end257:                                        ; preds = %if.then229, %if.else245, %if.then241, %if.end88
-  %tm.1 = phi double [ %add, %if.then229 ], [ %add, %if.then241 ], [ %add, %if.else245 ], [ %tm.0521, %if.end88 ]
-  br i1 %tobool258, label %if.end309, label %if.then259
+; <label>:125                                     ; preds = %117
+  %126 = load %struct.t_atom** %113, align 8, !tbaa !42
+  %127 = getelementptr inbounds %struct.t_atom* %126, i64 %indvars.iv, i32 8, i64 0
+  %128 = load i8* %127, align 1, !tbaa !13
+  %129 = zext i8 %128 to i64
+  %130 = getelementptr inbounds float* %tau_t, i64 %129
+  %131 = load float* %130, align 4, !tbaa !41
+  %132 = fdiv float %delta_t, %131
+  %133 = getelementptr inbounds %struct.t_atom* %126, i64 %indvars.iv, i32 0
+  %134 = load float* %133, align 4, !tbaa !43
+  %135 = fmul float %132, %134
+  %136 = load float** %9, align 8, !tbaa !20
+  %137 = getelementptr inbounds float* %136, i64 %indvars.iv
+  store float %135, float* %137, align 4, !tbaa !41
+  %138 = getelementptr inbounds %struct.t_atom* %126, i64 %indvars.iv, i32 2
+  %139 = load float* %138, align 4, !tbaa !45
+  %140 = fmul float %132, %139
+  %141 = load float** %14, align 8, !tbaa !21
+  %142 = getelementptr inbounds float* %141, i64 %indvars.iv
+  store float %140, float* %142, align 4, !tbaa !41
+  br label %157
 
-if.then259:                                       ; preds = %if.end257
-  %mB263 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 2
-  %122 = load float* %mB263, align 4, !tbaa !4
-  %m267 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 0
-  %123 = load float* %m267, align 4, !tbaa !4
-  %sub = fsub float %122, %123
-  %fabsf515 = tail call float @fabsf(float %sub) #2
-  %124 = fpext float %fabsf515 to double
-  %cmp270 = fcmp ogt double %124, 1.200000e-38
-  br i1 %cmp270, label %lor.end, label %lor.lhs.false
+; <label>:143                                     ; preds = %116
+  %144 = load %struct.t_atom** %113, align 8, !tbaa !42
+  %145 = getelementptr inbounds %struct.t_atom* %144, i64 %indvars.iv, i32 0
+  %146 = bitcast float* %145 to i32*
+  %147 = load i32* %146, align 4, !tbaa !43
+  %148 = load float** %9, align 8, !tbaa !20
+  %149 = getelementptr inbounds float* %148, i64 %indvars.iv
+  %150 = bitcast float* %149 to i32*
+  store i32 %147, i32* %150, align 4, !tbaa !41
+  %151 = getelementptr inbounds %struct.t_atom* %144, i64 %indvars.iv, i32 2
+  %152 = bitcast float* %151 to i32*
+  %153 = load i32* %152, align 4, !tbaa !45
+  %154 = load float** %14, align 8, !tbaa !21
+  %155 = getelementptr inbounds float* %154, i64 %indvars.iv
+  %156 = bitcast float* %155 to i32*
+  store i32 %153, i32* %156, align 4, !tbaa !41
+  br label %157
 
-lor.lhs.false:                                    ; preds = %if.then259
-  %125 = load float* %qB, align 4, !tbaa !4
-  %126 = load float* %q, align 4, !tbaa !4
-  %sub280 = fsub float %125, %126
-  %fabsf516 = tail call float @fabsf(float %sub280) #2
-  %127 = fpext float %fabsf516 to double
-  %cmp283 = fcmp ogt double %127, 1.200000e-38
-  br i1 %cmp283, label %lor.end, label %lor.rhs
+; <label>:157                                     ; preds = %120, %125, %143
+  %158 = phi %struct.t_atom* [ %.pre, %120 ], [ %126, %125 ], [ %144, %143 ]
+  %159 = phi float* [ %121, %120 ], [ %136, %125 ], [ %148, %143 ]
+  %160 = getelementptr inbounds float* %159, i64 %indvars.iv
+  %161 = bitcast float* %160 to i32*
+  %162 = load i32* %161, align 4, !tbaa !41
+  %163 = load float** %19, align 8, !tbaa !22
+  %164 = getelementptr inbounds float* %163, i64 %indvars.iv
+  %165 = bitcast float* %164 to i32*
+  store i32 %162, i32* %165, align 4, !tbaa !41
+  %166 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 1
+  %167 = bitcast float* %166 to i32*
+  %168 = load i32* %167, align 4, !tbaa !46
+  %169 = load float** %29, align 8, !tbaa !24
+  %170 = getelementptr inbounds float* %169, i64 %indvars.iv
+  %171 = bitcast float* %170 to i32*
+  store i32 %168, i32* %171, align 4, !tbaa !41
+  %172 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 3
+  %173 = bitcast float* %172 to i32*
+  %174 = load i32* %173, align 4, !tbaa !47
+  %175 = load float** %34, align 8, !tbaa !25
+  %176 = getelementptr inbounds float* %175, i64 %indvars.iv
+  %177 = bitcast float* %176 to i32*
+  store i32 %174, i32* %177, align 4, !tbaa !41
+  %178 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 7
+  %179 = load i32* %178, align 4, !tbaa !48
+  %180 = load i32** %43, align 8, !tbaa !27
+  %181 = getelementptr inbounds i32* %180, i64 %indvars.iv
+  store i32 %179, i32* %181, align 4, !tbaa !49
+  %182 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 4
+  %183 = load i16* %182, align 2, !tbaa !50
+  %184 = zext i16 %183 to i32
+  %185 = load i32** %48, align 8, !tbaa !28
+  %186 = getelementptr inbounds i32* %185, i64 %indvars.iv
+  store i32 %184, i32* %186, align 4, !tbaa !49
+  %187 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 5
+  %188 = load i16* %187, align 2, !tbaa !51
+  %189 = zext i16 %188 to i32
+  %190 = load i32** %53, align 8, !tbaa !29
+  %191 = getelementptr inbounds i32* %190, i64 %indvars.iv
+  store i32 %189, i32* %191, align 4, !tbaa !49
+  %192 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 6
+  %193 = load i32* %192, align 4, !tbaa !52
+  %194 = trunc i32 %193 to i16
+  %195 = load i16** %58, align 8, !tbaa !30
+  %196 = getelementptr inbounds i16* %195, i64 %indvars.iv
+  store i16 %194, i16* %196, align 2, !tbaa !53
+  %197 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 8, i64 0
+  %198 = load i8* %197, align 1, !tbaa !13
+  %199 = zext i8 %198 to i16
+  %200 = load i16** %63, align 8, !tbaa !31
+  %201 = getelementptr inbounds i16* %200, i64 %indvars.iv
+  store i16 %199, i16* %201, align 2, !tbaa !53
+  %202 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 8, i64 1
+  %203 = load i8* %202, align 1, !tbaa !13
+  %204 = zext i8 %203 to i16
+  %205 = load i16** %68, align 8, !tbaa !32
+  %206 = getelementptr inbounds i16* %205, i64 %indvars.iv
+  store i16 %204, i16* %206, align 2, !tbaa !53
+  %207 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 8, i64 2
+  %208 = load i8* %207, align 1, !tbaa !13
+  %209 = zext i8 %208 to i16
+  %210 = load i16** %73, align 8, !tbaa !33
+  %211 = getelementptr inbounds i16* %210, i64 %indvars.iv
+  store i16 %209, i16* %211, align 2, !tbaa !53
+  %212 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 8, i64 3
+  %213 = load i8* %212, align 1, !tbaa !13
+  %214 = zext i8 %213 to i16
+  %215 = load i16** %78, align 8, !tbaa !34
+  %216 = getelementptr inbounds i16* %215, i64 %indvars.iv
+  store i16 %214, i16* %216, align 2, !tbaa !53
+  %217 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 8, i64 7
+  %218 = load i8* %217, align 1, !tbaa !13
+  %219 = zext i8 %218 to i16
+  %220 = load i16** %83, align 8, !tbaa !35
+  %221 = getelementptr inbounds i16* %220, i64 %indvars.iv
+  store i16 %219, i16* %221, align 2, !tbaa !53
+  %222 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 8, i64 6
+  %223 = load i8* %222, align 1, !tbaa !13
+  %224 = zext i8 %223 to i16
+  %225 = load i16** %88, align 8, !tbaa !36
+  %226 = getelementptr inbounds i16* %225, i64 %indvars.iv
+  store i16 %224, i16* %226, align 2, !tbaa !53
+  %227 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 8, i64 8
+  %228 = load i8* %227, align 1, !tbaa !13
+  %229 = zext i8 %228 to i16
+  %230 = load i16** %93, align 8, !tbaa !37
+  %231 = getelementptr inbounds i16* %230, i64 %indvars.iv
+  store i16 %229, i16* %231, align 2, !tbaa !53
+  %232 = load float* %160, align 4, !tbaa !41
+  %fabsf = tail call float @fabsf(float %232) #4
+  %233 = fpext float %fabsf to double
+  %234 = fcmp ogt double %233, 1.200000e-38
+  br i1 %234, label %235, label %267
 
-lor.rhs:                                          ; preds = %lor.lhs.false
-  %128 = load i16* %typeB124, align 2, !tbaa !5
-  %conv289 = zext i16 %128 to i32
-  %129 = load i16* %type, align 2, !tbaa !5
-  %conv294 = zext i16 %129 to i32
-  %sub295 = sub nsw i32 %conv289, %conv294
-  %conv296 = sitofp i32 %sub295 to double
-  %call297 = tail call double @fabs(double %conv296) #5
-  %cmp298 = fcmp ogt double %call297, 1.200000e-38
-  br label %lor.end
+; <label>:235                                     ; preds = %157
+  %236 = load float** %19, align 8, !tbaa !22
+  %237 = getelementptr inbounds float* %236, i64 %indvars.iv
+  %238 = load float* %237, align 4, !tbaa !41
+  %239 = fpext float %238 to double
+  %240 = fadd double %tm.06, %239
+  %241 = load i16* %216, align 2, !tbaa !53
+  %242 = zext i16 %241 to i64
+  %243 = getelementptr inbounds [3 x i32]* %nFreeze, i64 %242, i64 0
+  %244 = load i32* %243, align 4, !tbaa !49
+  %245 = icmp eq i32 %244, 0
+  br i1 %245, label %257, label %246
 
-lor.end:                                          ; preds = %lor.lhs.false, %if.then259, %lor.rhs
-  %130 = phi i1 [ %cmp298, %lor.rhs ], [ true, %if.then259 ], [ true, %lor.lhs.false ]
-  %lor.ext = zext i1 %130 to i32
-  %131 = load i32** %58, align 8, !tbaa !3
-  %arrayidx302 = getelementptr inbounds i32* %131, i64 %indvars.iv
-  store i32 %lor.ext, i32* %arrayidx302, align 4, !tbaa !0
-  %np.0.inc = add nsw i32 %lor.ext, %np.0520
-  br label %if.end309
+; <label>:246                                     ; preds = %235
+  %247 = getelementptr inbounds [3 x i32]* %nFreeze, i64 %242, i64 1
+  %248 = load i32* %247, align 4, !tbaa !49
+  %249 = icmp eq i32 %248, 0
+  br i1 %249, label %257, label %250
 
-if.end309:                                        ; preds = %if.end257, %lor.end
-  %np.1 = phi i32 [ %np.0.inc, %lor.end ], [ %np.0520, %if.end257 ]
-  %arrayidx314 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 8, i64 4
-  %132 = load i8* %arrayidx314, align 1, !tbaa !1
-  %conv315 = zext i8 %132 to i16
-  %133 = load i16** %61, align 8, !tbaa !3
-  %arrayidx318 = getelementptr inbounds i16* %133, i64 %indvars.iv
-  store i16 %conv315, i16* %arrayidx318, align 2, !tbaa !5
-  %arrayidx323 = getelementptr inbounds %struct.t_atom* %81, i64 %indvars.iv, i32 8, i64 5
-  %134 = load i8* %arrayidx323, align 1, !tbaa !1
-  %conv324 = zext i8 %134 to i16
-  %arrayidx327 = getelementptr inbounds i16* %63, i64 %indvars.iv
-  store i16 %conv324, i16* %arrayidx327, align 2, !tbaa !5
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %135 = load i32* %2, align 4, !tbaa !0
-  %136 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %136, %135
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:250                                     ; preds = %246
+  %251 = getelementptr inbounds [3 x i32]* %nFreeze, i64 %242, i64 2
+  %252 = load i32* %251, align 4, !tbaa !49
+  %253 = icmp eq i32 %252, 0
+  br i1 %253, label %257, label %254
 
-for.end:                                          ; preds = %if.end309, %entry
-  %tm.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %tm.1, %if.end309 ]
-  %np.0.lcssa = phi i32 [ 0, %entry ], [ %np.1, %if.end309 ]
-  %conv329 = fptrunc double %tm.0.lcssa to float
-  %tmass = bitcast i8* %call to float*
-  store float %conv329, float* %tmass, align 4, !tbaa !4
-  %tobool330 = icmp eq i32 %bFree, 0
-  br i1 %tobool330, label %if.end334, label %if.then331
+; <label>:254                                     ; preds = %250
+  %255 = load float** %24, align 8, !tbaa !23
+  %256 = getelementptr inbounds float* %255, i64 %indvars.iv
+  store float 0x39B4484C00000000, float* %256, align 4, !tbaa !41
+  br label %267
 
-if.then331:                                       ; preds = %for.end
-  %atom332 = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 1
-  %137 = load %struct.t_atom** %atom332, align 8, !tbaa !3
-  %138 = bitcast %struct.t_atom* %137 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 133, i8* %138) #4
-  store %struct.t_atom* null, %struct.t_atom** %atom332, align 8, !tbaa !3
-  br label %if.end334
+; <label>:257                                     ; preds = %250, %246, %235
+  %fabsf3 = tail call float @fabsf(float %238) #4
+  %258 = fpext float %fabsf3 to double
+  %259 = fcmp olt double %258, 1.200000e-38
+  br i1 %259, label %260, label %263
 
-if.end334:                                        ; preds = %for.end, %if.then331
-  %tobool335 = icmp eq %struct._IO_FILE* %fp, null
-  br i1 %tobool335, label %if.end338, label %if.then336
+; <label>:260                                     ; preds = %257
+  %261 = load float** %24, align 8, !tbaa !23
+  %262 = getelementptr inbounds float* %261, i64 %indvars.iv
+  store float 0.000000e+00, float* %262, align 4, !tbaa !41
+  br label %267
 
-if.then336:                                       ; preds = %if.end334
-  %call337 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([49 x i8]* @.str24, i64 0, i64 0), i32 %np.0.lcssa) #4
-  br label %if.end338
+; <label>:263                                     ; preds = %257
+  %264 = fdiv float 1.000000e+00, %238
+  %265 = load float** %24, align 8, !tbaa !23
+  %266 = getelementptr inbounds float* %265, i64 %indvars.iv
+  store float %264, float* %266, align 4, !tbaa !41
+  br label %267
 
-if.end338:                                        ; preds = %if.end334, %if.then336
-  ret %struct.t_mdatoms* %0
+; <label>:267                                     ; preds = %254, %263, %260, %157
+  %tm.1 = phi double [ %240, %254 ], [ %240, %260 ], [ %240, %263 ], [ %tm.06, %157 ]
+  br i1 %114, label %296, label %268
+
+; <label>:268                                     ; preds = %267
+  %269 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 2
+  %270 = load float* %269, align 4, !tbaa !45
+  %271 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 0
+  %272 = load float* %271, align 4, !tbaa !43
+  %273 = fsub float %270, %272
+  %fabsf1 = tail call float @fabsf(float %273) #4
+  %274 = fpext float %fabsf1 to double
+  %275 = fcmp ogt double %274, 1.200000e-38
+  br i1 %275, label %291, label %276
+
+; <label>:276                                     ; preds = %268
+  %277 = load float* %172, align 4, !tbaa !47
+  %278 = load float* %166, align 4, !tbaa !46
+  %279 = fsub float %277, %278
+  %fabsf2 = tail call float @fabsf(float %279) #4
+  %280 = fpext float %fabsf2 to double
+  %281 = fcmp ogt double %280, 1.200000e-38
+  br i1 %281, label %291, label %282
+
+; <label>:282                                     ; preds = %276
+  %283 = load i16* %187, align 2, !tbaa !51
+  %284 = zext i16 %283 to i32
+  %285 = load i16* %182, align 2, !tbaa !50
+  %286 = zext i16 %285 to i32
+  %287 = sub nsw i32 %284, %286
+  %288 = sitofp i32 %287 to double
+  %289 = tail call double @fabs(double %288) #7
+  %290 = fcmp ogt double %289, 1.200000e-38
+  br label %291
+
+; <label>:291                                     ; preds = %282, %276, %268
+  %292 = phi i1 [ true, %276 ], [ true, %268 ], [ %290, %282 ]
+  %293 = zext i1 %292 to i32
+  %294 = load i32** %98, align 8, !tbaa !38
+  %295 = getelementptr inbounds i32* %294, i64 %indvars.iv
+  store i32 %293, i32* %295, align 4, !tbaa !49
+  %np.0. = add nsw i32 %293, %np.05
+  br label %296
+
+; <label>:296                                     ; preds = %291, %267
+  %np.1 = phi i32 [ %np.05, %267 ], [ %np.0., %291 ]
+  %297 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 8, i64 4
+  %298 = load i8* %297, align 1, !tbaa !13
+  %299 = zext i8 %298 to i16
+  %300 = load i16** %103, align 8, !tbaa !39
+  %301 = getelementptr inbounds i16* %300, i64 %indvars.iv
+  store i16 %299, i16* %301, align 2, !tbaa !53
+  %302 = getelementptr inbounds %struct.t_atom* %158, i64 %indvars.iv, i32 8, i64 5
+  %303 = load i8* %302, align 1, !tbaa !13
+  %304 = zext i8 %303 to i16
+  %305 = getelementptr inbounds i16* %111, i64 %indvars.iv
+  store i16 %304, i16* %305, align 2, !tbaa !53
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %306 = load i32* %6, align 4, !tbaa !17
+  %307 = sext i32 %306 to i64
+  %308 = icmp slt i64 %indvars.iv.next, %307
+  br i1 %308, label %116, label %._crit_edge
+
+._crit_edge:                                      ; preds = %296, %0
+  %tm.0.lcssa = phi double [ 0.000000e+00, %0 ], [ %tm.1, %296 ]
+  %np.0.lcssa = phi i32 [ 0, %0 ], [ %np.1, %296 ]
+  %309 = fptrunc double %tm.0.lcssa to float
+  %310 = bitcast i8* %1 to float*
+  store float %309, float* %310, align 4, !tbaa !54
+  %311 = icmp eq i32 %bFree, 0
+  br i1 %311, label %316, label %312
+
+; <label>:312                                     ; preds = %._crit_edge
+  %313 = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 1
+  %314 = bitcast %struct.t_atom** %313 to i8**
+  %315 = load i8** %314, align 8, !tbaa !42
+  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 133, i8* %315) #6
+  store %struct.t_atom* null, %struct.t_atom** %313, align 8, !tbaa !42
+  br label %316
+
+; <label>:316                                     ; preds = %._crit_edge, %312
+  %317 = icmp eq %struct.__sFILE* %fp, null
+  br i1 %317, label %320, label %318
+
+; <label>:318                                     ; preds = %316
+  %319 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([49 x i8]* @.str24, i64 0, i64 0), i32 %np.0.lcssa) #6
+  br label %320
+
+; <label>:320                                     ; preds = %316, %318
+  ret %struct.t_mdatoms* %2
 }
 
 ; Function Attrs: optsize
 declare i8* @save_calloc(i8*, i8*, i32, i32, i32) #1
 
 ; Function Attrs: nounwind optsize readnone
-declare double @fabs(double) #2
+declare double @fabs(double) #4
 
 ; Function Attrs: optsize
 declare void @save_free(i8*, i8*, i32, i8*) #1
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #3
+declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #5
 
-; Function Attrs: nounwind optsize uwtable
-define void @md2atoms(%struct.t_mdatoms* %md, %struct.t_atoms* nocapture %atoms, i32 %bFree) #0 {
-entry:
-  %nr = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 1
-  %0 = load i32* %nr, align 4, !tbaa !0
-  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 147, i32 %0, i32 40) #4
-  %1 = bitcast i8* %call to %struct.t_atom*
-  %atom = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 1
-  store %struct.t_atom* %1, %struct.t_atom** %atom, align 8, !tbaa !3
-  %2 = load i32* %nr, align 4, !tbaa !0
-  %cmp191 = icmp sgt i32 %2, 0
-  br i1 %cmp191, label %for.body.lr.ph, label %for.end
+; Function Attrs: nounwind optsize ssp uwtable
+define void @md2atoms(%struct.t_mdatoms* %md, %struct.t_atoms* nocapture %atoms, i32 %bFree) #3 {
+  %1 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 1
+  %2 = load i32* %1, align 4, !tbaa !17
+  %3 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 147, i32 %2, i32 40) #6
+  %4 = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 1
+  %5 = bitcast %struct.t_atom** %4 to i8**
+  store i8* %3, i8** %5, align 8, !tbaa !42
+  %6 = load i32* %1, align 4, !tbaa !17
+  %7 = icmp sgt i32 %6, 0
+  br i1 %7, label %.lr.ph, label %._crit_edge
 
-for.body.lr.ph:                                   ; preds = %entry
-  %massT = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 4
-  %chargeT = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 8
-  %resnr = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 10
-  %typeA = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 11
-  %ptype = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 13
-  %cTC = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 14
-  %cENER = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 15
-  %cACC = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 16
-  %cFREEZE = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 17
-  %cVCM = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 19
-  %cXTC = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 18
-  %cORF = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 22
-  %cU1 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 20
-  %cU2 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 21
-  br label %for.body
+.lr.ph:                                           ; preds = %0
+  %8 = bitcast i8* %3 to %struct.t_atom*
+  %9 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 4
+  %10 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 8
+  %11 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 10
+  %12 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 11
+  %13 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 13
+  %14 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 14
+  %15 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 15
+  %16 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 16
+  %17 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 17
+  %18 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 19
+  %19 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 18
+  %20 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 22
+  %21 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 20
+  %22 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 21
+  br label %23
 
-for.body:                                         ; preds = %for.body.for.body_crit_edge, %for.body.lr.ph
-  %3 = phi %struct.t_atom* [ %1, %for.body.lr.ph ], [ %.pre, %for.body.for.body_crit_edge ]
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body.for.body_crit_edge ]
-  %4 = load float** %massT, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds float* %4, i64 %indvars.iv
-  %5 = load float* %arrayidx, align 4, !tbaa !4
-  %m = getelementptr inbounds %struct.t_atom* %3, i64 %indvars.iv, i32 0
-  store float %5, float* %m, align 4, !tbaa !4
-  %6 = load float** %chargeT, align 8, !tbaa !3
-  %arrayidx6 = getelementptr inbounds float* %6, i64 %indvars.iv
-  %7 = load float* %arrayidx6, align 4, !tbaa !4
-  %q = getelementptr inbounds %struct.t_atom* %3, i64 %indvars.iv, i32 1
-  store float %7, float* %q, align 4, !tbaa !4
-  %8 = load i32** %resnr, align 8, !tbaa !3
-  %arrayidx11 = getelementptr inbounds i32* %8, i64 %indvars.iv
-  %9 = load i32* %arrayidx11, align 4, !tbaa !0
-  %resnr15 = getelementptr inbounds %struct.t_atom* %3, i64 %indvars.iv, i32 7
-  store i32 %9, i32* %resnr15, align 4, !tbaa !0
-  %10 = load i32** %typeA, align 8, !tbaa !3
-  %arrayidx17 = getelementptr inbounds i32* %10, i64 %indvars.iv
-  %11 = load i32* %arrayidx17, align 4, !tbaa !0
-  %conv = trunc i32 %11 to i16
-  %type = getelementptr inbounds %struct.t_atom* %3, i64 %indvars.iv, i32 4
-  store i16 %conv, i16* %type, align 2, !tbaa !5
-  %12 = load i16** %ptype, align 8, !tbaa !3
-  %arrayidx22 = getelementptr inbounds i16* %12, i64 %indvars.iv
-  %13 = load i16* %arrayidx22, align 2, !tbaa !5
-  %conv23 = zext i16 %13 to i32
-  %ptype27 = getelementptr inbounds %struct.t_atom* %3, i64 %indvars.iv, i32 6
-  store i32 %conv23, i32* %ptype27, align 4, !tbaa !0
-  %14 = load i16** %cTC, align 8, !tbaa !3
-  %arrayidx29 = getelementptr inbounds i16* %14, i64 %indvars.iv
-  %15 = load i16* %arrayidx29, align 2, !tbaa !5
-  %conv30 = trunc i16 %15 to i8
-  %arrayidx34 = getelementptr inbounds %struct.t_atom* %3, i64 %indvars.iv, i32 8, i64 0
-  store i8 %conv30, i8* %arrayidx34, align 1, !tbaa !1
-  %16 = load i16** %cENER, align 8, !tbaa !3
-  %arrayidx36 = getelementptr inbounds i16* %16, i64 %indvars.iv
-  %17 = load i16* %arrayidx36, align 2, !tbaa !5
-  %conv37 = trunc i16 %17 to i8
-  %18 = load %struct.t_atom** %atom, align 8, !tbaa !3
-  %arrayidx42 = getelementptr inbounds %struct.t_atom* %18, i64 %indvars.iv, i32 8, i64 1
-  store i8 %conv37, i8* %arrayidx42, align 1, !tbaa !1
-  %19 = load i16** %cACC, align 8, !tbaa !3
-  %arrayidx44 = getelementptr inbounds i16* %19, i64 %indvars.iv
-  %20 = load i16* %arrayidx44, align 2, !tbaa !5
-  %conv45 = trunc i16 %20 to i8
-  %21 = load %struct.t_atom** %atom, align 8, !tbaa !3
-  %arrayidx50 = getelementptr inbounds %struct.t_atom* %21, i64 %indvars.iv, i32 8, i64 2
-  store i8 %conv45, i8* %arrayidx50, align 1, !tbaa !1
-  %22 = load i16** %cFREEZE, align 8, !tbaa !3
-  %arrayidx52 = getelementptr inbounds i16* %22, i64 %indvars.iv
-  %23 = load i16* %arrayidx52, align 2, !tbaa !5
-  %conv53 = trunc i16 %23 to i8
-  %24 = load %struct.t_atom** %atom, align 8, !tbaa !3
-  %arrayidx58 = getelementptr inbounds %struct.t_atom* %24, i64 %indvars.iv, i32 8, i64 3
-  store i8 %conv53, i8* %arrayidx58, align 1, !tbaa !1
-  %25 = load i16** %cVCM, align 8, !tbaa !3
-  %arrayidx60 = getelementptr inbounds i16* %25, i64 %indvars.iv
-  %26 = load i16* %arrayidx60, align 2, !tbaa !5
-  %conv61 = trunc i16 %26 to i8
-  %27 = load %struct.t_atom** %atom, align 8, !tbaa !3
-  %arrayidx66 = getelementptr inbounds %struct.t_atom* %27, i64 %indvars.iv, i32 8, i64 6
-  store i8 %conv61, i8* %arrayidx66, align 1, !tbaa !1
-  %28 = load i16** %cXTC, align 8, !tbaa !3
-  %arrayidx68 = getelementptr inbounds i16* %28, i64 %indvars.iv
-  %29 = load i16* %arrayidx68, align 2, !tbaa !5
-  %conv69 = trunc i16 %29 to i8
-  %30 = load %struct.t_atom** %atom, align 8, !tbaa !3
-  %arrayidx74 = getelementptr inbounds %struct.t_atom* %30, i64 %indvars.iv, i32 8, i64 7
-  store i8 %conv69, i8* %arrayidx74, align 1, !tbaa !1
-  %31 = load i16** %cORF, align 8, !tbaa !3
-  %arrayidx76 = getelementptr inbounds i16* %31, i64 %indvars.iv
-  %32 = load i16* %arrayidx76, align 2, !tbaa !5
-  %conv77 = trunc i16 %32 to i8
-  %33 = load %struct.t_atom** %atom, align 8, !tbaa !3
-  %arrayidx82 = getelementptr inbounds %struct.t_atom* %33, i64 %indvars.iv, i32 8, i64 8
-  store i8 %conv77, i8* %arrayidx82, align 1, !tbaa !1
-  %34 = load i16** %cU1, align 8, !tbaa !3
-  %arrayidx84 = getelementptr inbounds i16* %34, i64 %indvars.iv
-  %35 = load i16* %arrayidx84, align 2, !tbaa !5
-  %conv85 = trunc i16 %35 to i8
-  %36 = load %struct.t_atom** %atom, align 8, !tbaa !3
-  %arrayidx90 = getelementptr inbounds %struct.t_atom* %36, i64 %indvars.iv, i32 8, i64 4
-  store i8 %conv85, i8* %arrayidx90, align 1, !tbaa !1
-  %37 = load i16** %cU2, align 8, !tbaa !3
-  %arrayidx92 = getelementptr inbounds i16* %37, i64 %indvars.iv
-  %38 = load i16* %arrayidx92, align 2, !tbaa !5
-  %conv93 = trunc i16 %38 to i8
-  %39 = load %struct.t_atom** %atom, align 8, !tbaa !3
-  %arrayidx98 = getelementptr inbounds %struct.t_atom* %39, i64 %indvars.iv, i32 8, i64 5
-  store i8 %conv93, i8* %arrayidx98, align 1, !tbaa !1
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %40 = load i32* %nr, align 4, !tbaa !0
-  %41 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %41, %40
-  br i1 %cmp, label %for.body.for.body_crit_edge, label %for.end
+; <label>:23                                      ; preds = %._crit_edge2, %.lr.ph
+  %24 = phi %struct.t_atom* [ %8, %.lr.ph ], [ %.pre, %._crit_edge2 ]
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %._crit_edge2 ]
+  %25 = load float** %9, align 8, !tbaa !22
+  %26 = getelementptr inbounds float* %25, i64 %indvars.iv
+  %27 = bitcast float* %26 to i32*
+  %28 = load i32* %27, align 4, !tbaa !41
+  %29 = getelementptr inbounds %struct.t_atom* %24, i64 %indvars.iv
+  %30 = bitcast %struct.t_atom* %29 to i32*
+  store i32 %28, i32* %30, align 4, !tbaa !43
+  %31 = load float** %10, align 8, !tbaa !26
+  %32 = getelementptr inbounds float* %31, i64 %indvars.iv
+  %33 = bitcast float* %32 to i32*
+  %34 = load i32* %33, align 4, !tbaa !41
+  %35 = getelementptr inbounds %struct.t_atom* %24, i64 %indvars.iv, i32 1
+  %36 = bitcast float* %35 to i32*
+  store i32 %34, i32* %36, align 4, !tbaa !46
+  %37 = load i32** %11, align 8, !tbaa !27
+  %38 = getelementptr inbounds i32* %37, i64 %indvars.iv
+  %39 = load i32* %38, align 4, !tbaa !49
+  %40 = getelementptr inbounds %struct.t_atom* %24, i64 %indvars.iv, i32 7
+  store i32 %39, i32* %40, align 4, !tbaa !48
+  %41 = load i32** %12, align 8, !tbaa !28
+  %42 = getelementptr inbounds i32* %41, i64 %indvars.iv
+  %43 = load i32* %42, align 4, !tbaa !49
+  %44 = trunc i32 %43 to i16
+  %45 = getelementptr inbounds %struct.t_atom* %24, i64 %indvars.iv, i32 4
+  store i16 %44, i16* %45, align 2, !tbaa !50
+  %46 = load i16** %13, align 8, !tbaa !30
+  %47 = getelementptr inbounds i16* %46, i64 %indvars.iv
+  %48 = load i16* %47, align 2, !tbaa !53
+  %49 = zext i16 %48 to i32
+  %50 = getelementptr inbounds %struct.t_atom* %24, i64 %indvars.iv, i32 6
+  store i32 %49, i32* %50, align 4, !tbaa !52
+  %51 = load i16** %14, align 8, !tbaa !31
+  %52 = getelementptr inbounds i16* %51, i64 %indvars.iv
+  %53 = load i16* %52, align 2, !tbaa !53
+  %54 = trunc i16 %53 to i8
+  %55 = getelementptr inbounds %struct.t_atom* %24, i64 %indvars.iv, i32 8, i64 0
+  store i8 %54, i8* %55, align 1, !tbaa !13
+  %56 = load i16** %15, align 8, !tbaa !32
+  %57 = getelementptr inbounds i16* %56, i64 %indvars.iv
+  %58 = load i16* %57, align 2, !tbaa !53
+  %59 = trunc i16 %58 to i8
+  %60 = load %struct.t_atom** %4, align 8, !tbaa !42
+  %61 = getelementptr inbounds %struct.t_atom* %60, i64 %indvars.iv, i32 8, i64 1
+  store i8 %59, i8* %61, align 1, !tbaa !13
+  %62 = load i16** %16, align 8, !tbaa !33
+  %63 = getelementptr inbounds i16* %62, i64 %indvars.iv
+  %64 = load i16* %63, align 2, !tbaa !53
+  %65 = trunc i16 %64 to i8
+  %66 = load %struct.t_atom** %4, align 8, !tbaa !42
+  %67 = getelementptr inbounds %struct.t_atom* %66, i64 %indvars.iv, i32 8, i64 2
+  store i8 %65, i8* %67, align 1, !tbaa !13
+  %68 = load i16** %17, align 8, !tbaa !34
+  %69 = getelementptr inbounds i16* %68, i64 %indvars.iv
+  %70 = load i16* %69, align 2, !tbaa !53
+  %71 = trunc i16 %70 to i8
+  %72 = load %struct.t_atom** %4, align 8, !tbaa !42
+  %73 = getelementptr inbounds %struct.t_atom* %72, i64 %indvars.iv, i32 8, i64 3
+  store i8 %71, i8* %73, align 1, !tbaa !13
+  %74 = load i16** %18, align 8, !tbaa !36
+  %75 = getelementptr inbounds i16* %74, i64 %indvars.iv
+  %76 = load i16* %75, align 2, !tbaa !53
+  %77 = trunc i16 %76 to i8
+  %78 = load %struct.t_atom** %4, align 8, !tbaa !42
+  %79 = getelementptr inbounds %struct.t_atom* %78, i64 %indvars.iv, i32 8, i64 6
+  store i8 %77, i8* %79, align 1, !tbaa !13
+  %80 = load i16** %19, align 8, !tbaa !35
+  %81 = getelementptr inbounds i16* %80, i64 %indvars.iv
+  %82 = load i16* %81, align 2, !tbaa !53
+  %83 = trunc i16 %82 to i8
+  %84 = load %struct.t_atom** %4, align 8, !tbaa !42
+  %85 = getelementptr inbounds %struct.t_atom* %84, i64 %indvars.iv, i32 8, i64 7
+  store i8 %83, i8* %85, align 1, !tbaa !13
+  %86 = load i16** %20, align 8, !tbaa !37
+  %87 = getelementptr inbounds i16* %86, i64 %indvars.iv
+  %88 = load i16* %87, align 2, !tbaa !53
+  %89 = trunc i16 %88 to i8
+  %90 = load %struct.t_atom** %4, align 8, !tbaa !42
+  %91 = getelementptr inbounds %struct.t_atom* %90, i64 %indvars.iv, i32 8, i64 8
+  store i8 %89, i8* %91, align 1, !tbaa !13
+  %92 = load i16** %21, align 8, !tbaa !39
+  %93 = getelementptr inbounds i16* %92, i64 %indvars.iv
+  %94 = load i16* %93, align 2, !tbaa !53
+  %95 = trunc i16 %94 to i8
+  %96 = load %struct.t_atom** %4, align 8, !tbaa !42
+  %97 = getelementptr inbounds %struct.t_atom* %96, i64 %indvars.iv, i32 8, i64 4
+  store i8 %95, i8* %97, align 1, !tbaa !13
+  %98 = load i16** %22, align 8, !tbaa !40
+  %99 = getelementptr inbounds i16* %98, i64 %indvars.iv
+  %100 = load i16* %99, align 2, !tbaa !53
+  %101 = trunc i16 %100 to i8
+  %102 = load %struct.t_atom** %4, align 8, !tbaa !42
+  %103 = getelementptr inbounds %struct.t_atom* %102, i64 %indvars.iv, i32 8, i64 5
+  store i8 %101, i8* %103, align 1, !tbaa !13
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %104 = load i32* %1, align 4, !tbaa !17
+  %105 = sext i32 %104 to i64
+  %106 = icmp slt i64 %indvars.iv.next, %105
+  br i1 %106, label %._crit_edge2, label %._crit_edge
 
-for.body.for.body_crit_edge:                      ; preds = %for.body
-  %.pre = load %struct.t_atom** %atom, align 8, !tbaa !3
-  br label %for.body
+._crit_edge2:                                     ; preds = %23
+  %.pre = load %struct.t_atom** %4, align 8, !tbaa !42
+  br label %23
 
-for.end:                                          ; preds = %for.body, %entry
-  %tobool = icmp eq i32 %bFree, 0
-  br i1 %tobool, label %if.end, label %if.then
+._crit_edge:                                      ; preds = %23, %0
+  %107 = icmp eq i32 %bFree, 0
+  br i1 %107, label %169, label %108
 
-if.then:                                          ; preds = %for.end
-  %massA = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 2
-  %42 = load float** %massA, align 8, !tbaa !3
-  %43 = bitcast float* %42 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 167, i8* %43) #4
-  %massB = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 3
-  %44 = load float** %massB, align 8, !tbaa !3
-  %45 = bitcast float* %44 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 168, i8* %45) #4
-  %massT99 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 4
-  %46 = load float** %massT99, align 8, !tbaa !3
-  %47 = bitcast float* %46 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 169, i8* %47) #4
-  %invmass = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 5
-  %48 = load float** %invmass, align 8, !tbaa !3
-  %49 = bitcast float* %48 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 170, i8* %49) #4
-  %chargeA = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 6
-  %50 = load float** %chargeA, align 8, !tbaa !3
-  %51 = bitcast float* %50 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 171, i8* %51) #4
-  %chargeB = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 7
-  %52 = load float** %chargeB, align 8, !tbaa !3
-  %53 = bitcast float* %52 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 172, i8* %53) #4
-  %chargeT100 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 8
-  %54 = load float** %chargeT100, align 8, !tbaa !3
-  %55 = bitcast float* %54 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 173, i8* %55) #4
-  %resnr101 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 10
-  %56 = load i32** %resnr101, align 8, !tbaa !3
-  %57 = bitcast i32* %56 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 174, i8* %57) #4
-  %typeA102 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 11
-  %58 = load i32** %typeA102, align 8, !tbaa !3
-  %59 = bitcast i32* %58 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 175, i8* %59) #4
-  %typeB = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 12
-  %60 = load i32** %typeB, align 8, !tbaa !3
-  %61 = bitcast i32* %60 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 176, i8* %61) #4
-  %ptype103 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 13
-  %62 = load i16** %ptype103, align 8, !tbaa !3
-  %63 = bitcast i16* %62 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 177, i8* %63) #4
-  %cTC104 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 14
-  %64 = load i16** %cTC104, align 8, !tbaa !3
-  %65 = bitcast i16* %64 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 178, i8* %65) #4
-  %cENER105 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 15
-  %66 = load i16** %cENER105, align 8, !tbaa !3
-  %67 = bitcast i16* %66 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 179, i8* %67) #4
-  %cACC106 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 16
-  %68 = load i16** %cACC106, align 8, !tbaa !3
-  %69 = bitcast i16* %68 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([9 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 180, i8* %69) #4
-  %cFREEZE107 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 17
-  %70 = load i16** %cFREEZE107, align 8, !tbaa !3
-  %71 = bitcast i16* %70 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 181, i8* %71) #4
-  %cVCM108 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 19
-  %72 = load i16** %cVCM108, align 8, !tbaa !3
-  %73 = bitcast i16* %72 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([9 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 182, i8* %73) #4
-  %cXTC109 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 18
-  %74 = load i16** %cXTC109, align 8, !tbaa !3
-  %75 = bitcast i16* %74 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([9 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 183, i8* %75) #4
-  %cORF110 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 22
-  %76 = load i16** %cORF110, align 8, !tbaa !3
-  %77 = bitcast i16* %76 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([9 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 184, i8* %77) #4
-  %cU1111 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 20
-  %78 = load i16** %cU1111, align 8, !tbaa !3
-  %79 = bitcast i16* %78 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 186, i8* %79) #4
-  %cU2112 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 21
-  %80 = load i16** %cU2112, align 8, !tbaa !3
-  %81 = bitcast i16* %80 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 187, i8* %81) #4
-  br label %if.end
+; <label>:108                                     ; preds = %._crit_edge
+  %109 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 2
+  %110 = bitcast float** %109 to i8**
+  %111 = load i8** %110, align 8, !tbaa !20
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 167, i8* %111) #6
+  %112 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 3
+  %113 = bitcast float** %112 to i8**
+  %114 = load i8** %113, align 8, !tbaa !21
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 168, i8* %114) #6
+  %115 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 4
+  %116 = bitcast float** %115 to i8**
+  %117 = load i8** %116, align 8, !tbaa !22
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 169, i8* %117) #6
+  %118 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 5
+  %119 = bitcast float** %118 to i8**
+  %120 = load i8** %119, align 8, !tbaa !23
+  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 170, i8* %120) #6
+  %121 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 6
+  %122 = bitcast float** %121 to i8**
+  %123 = load i8** %122, align 8, !tbaa !24
+  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 171, i8* %123) #6
+  %124 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 7
+  %125 = bitcast float** %124 to i8**
+  %126 = load i8** %125, align 8, !tbaa !25
+  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 172, i8* %126) #6
+  %127 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 8
+  %128 = bitcast float** %127 to i8**
+  %129 = load i8** %128, align 8, !tbaa !26
+  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 173, i8* %129) #6
+  %130 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 10
+  %131 = bitcast i32** %130 to i8**
+  %132 = load i8** %131, align 8, !tbaa !27
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 174, i8* %132) #6
+  %133 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 11
+  %134 = bitcast i32** %133 to i8**
+  %135 = load i8** %134, align 8, !tbaa !28
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 175, i8* %135) #6
+  %136 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 12
+  %137 = bitcast i32** %136 to i8**
+  %138 = load i8** %137, align 8, !tbaa !29
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 176, i8* %138) #6
+  %139 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 13
+  %140 = bitcast i16** %139 to i8**
+  %141 = load i8** %140, align 8, !tbaa !30
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 177, i8* %141) #6
+  %142 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 14
+  %143 = bitcast i16** %142 to i8**
+  %144 = load i8** %143, align 8, !tbaa !31
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 178, i8* %144) #6
+  %145 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 15
+  %146 = bitcast i16** %145 to i8**
+  %147 = load i8** %146, align 8, !tbaa !32
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 179, i8* %147) #6
+  %148 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 16
+  %149 = bitcast i16** %148 to i8**
+  %150 = load i8** %149, align 8, !tbaa !33
+  tail call void @save_free(i8* getelementptr inbounds ([9 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 180, i8* %150) #6
+  %151 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 17
+  %152 = bitcast i16** %151 to i8**
+  %153 = load i8** %152, align 8, !tbaa !34
+  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 181, i8* %153) #6
+  %154 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 19
+  %155 = bitcast i16** %154 to i8**
+  %156 = load i8** %155, align 8, !tbaa !36
+  tail call void @save_free(i8* getelementptr inbounds ([9 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 182, i8* %156) #6
+  %157 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 18
+  %158 = bitcast i16** %157 to i8**
+  %159 = load i8** %158, align 8, !tbaa !35
+  tail call void @save_free(i8* getelementptr inbounds ([9 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 183, i8* %159) #6
+  %160 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 22
+  %161 = bitcast i16** %160 to i8**
+  %162 = load i8** %161, align 8, !tbaa !37
+  tail call void @save_free(i8* getelementptr inbounds ([9 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 184, i8* %162) #6
+  %163 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 20
+  %164 = bitcast i16** %163 to i8**
+  %165 = load i8** %164, align 8, !tbaa !39
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 186, i8* %165) #6
+  %166 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 21
+  %167 = bitcast i16** %166 to i8**
+  %168 = load i8** %167, align 8, !tbaa !40
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 187, i8* %168) #6
+  br label %169
 
-if.end:                                           ; preds = %for.end, %if.then
+; <label>:169                                     ; preds = %._crit_edge, %108
   ret void
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @init_mdatoms(%struct.t_mdatoms* nocapture %md, float %lambda, i32 %bFirst) #0 {
-entry:
-  %conv1 = fsub float 1.000000e+00, %lambda
-  %tobool = icmp eq i32 %bFirst, 0
-  br i1 %tobool, label %lor.lhs.false, label %if.end.thread
+; Function Attrs: nounwind optsize ssp uwtable
+define void @init_mdatoms(%struct.t_mdatoms* nocapture readonly %md, float %lambda, i32 %bFirst) #3 {
+  %1 = fsub float 1.000000e+00, %lambda
+  %2 = icmp eq i32 %bFirst, 0
+  br i1 %2, label %3, label %.thread
 
-if.end.thread:                                    ; preds = %entry
-  store float %lambda, float* @init_mdatoms.lambda0, align 4, !tbaa !4
-  br label %for.cond.preheader
+.thread:                                          ; preds = %0
+  store float %lambda, float* @init_mdatoms.lambda0, align 4, !tbaa !41
+  br label %.preheader
 
-lor.lhs.false:                                    ; preds = %entry
-  %0 = load float* @init_mdatoms.lambda0, align 4, !tbaa !4
-  %sub3 = fsub float %0, %lambda
-  %fabsf = tail call float @fabsf(float %sub3) #2
-  %1 = fpext float %fabsf to double
-  %cmp = fcmp ogt double %1, 1.200000e-38
-  br i1 %cmp, label %for.cond.preheader, label %if.end45
+; <label>:3                                       ; preds = %0
+  %4 = load float* @init_mdatoms.lambda0, align 4, !tbaa !41
+  %5 = fsub float %4, %lambda
+  %fabsf = tail call float @fabsf(float %5) #4
+  %6 = fpext float %fabsf to double
+  %7 = fcmp ogt double %6, 1.200000e-38
+  br i1 %7, label %.preheader, label %.loopexit
 
-for.cond.preheader:                               ; preds = %lor.lhs.false, %if.end.thread
+.preheader:                                       ; preds = %3, %.thread
   %.ph.in = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 1
   %.ph = load i32* %.ph.in, align 4
-  %cmp776 = icmp sgt i32 %.ph, 0
-  br i1 %cmp776, label %for.body.lr.ph, label %if.end45
+  %8 = icmp sgt i32 %.ph, 0
+  br i1 %8, label %.lr.ph, label %.loopexit
 
-for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %bPerturbed = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 9
-  %2 = load i32** %bPerturbed, align 8, !tbaa !3
-  %massA = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 2
-  %massB = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 3
-  %massT = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 4
-  %invmass = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 5
-  %chargeA = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 6
-  %chargeB = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 7
-  %chargeT = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 8
-  br label %for.body
+.lr.ph:                                           ; preds = %.preheader
+  %9 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 9
+  %10 = load i32** %9, align 8, !tbaa !38
+  %11 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 2
+  %12 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 3
+  %13 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 4
+  %14 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 5
+  %15 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 6
+  %16 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 7
+  %17 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 8
+  %18 = add i32 %.ph, -1
+  br label %19
 
-for.body:                                         ; preds = %for.inc, %for.body.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
-  %arrayidx = getelementptr inbounds i32* %2, i64 %indvars.iv
-  %3 = load i32* %arrayidx, align 4, !tbaa !0
-  %4 = or i32 %3, %bFirst
-  %5 = icmp eq i32 %4, 0
-  br i1 %5, label %for.inc, label %if.then12
+; <label>:19                                      ; preds = %55, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %55 ]
+  %20 = getelementptr inbounds i32* %10, i64 %indvars.iv
+  %21 = load i32* %20, align 4, !tbaa !49
+  %22 = or i32 %21, %bFirst
+  %23 = icmp eq i32 %22, 0
+  br i1 %23, label %55, label %24
 
-if.then12:                                        ; preds = %for.body
-  %6 = load float** %massA, align 8, !tbaa !3
-  %arrayidx14 = getelementptr inbounds float* %6, i64 %indvars.iv
-  %7 = load float* %arrayidx14, align 4, !tbaa !4
-  %mul = fmul float %conv1, %7
-  %8 = load float** %massB, align 8, !tbaa !3
-  %arrayidx16 = getelementptr inbounds float* %8, i64 %indvars.iv
-  %9 = load float* %arrayidx16, align 4, !tbaa !4
-  %mul17 = fmul float %9, %lambda
-  %add = fadd float %mul, %mul17
-  %10 = load float** %massT, align 8, !tbaa !3
-  %arrayidx19 = getelementptr inbounds float* %10, i64 %indvars.iv
-  store float %add, float* %arrayidx19, align 4, !tbaa !4
-  %11 = load float** %invmass, align 8, !tbaa !3
-  %arrayidx21 = getelementptr inbounds float* %11, i64 %indvars.iv
-  %12 = load float* %arrayidx21, align 4, !tbaa !4
-  %conv22 = fpext float %12 to double
-  %cmp23 = fcmp ogt double %conv22, 0x39B64F86CB9CEFB1
-  br i1 %cmp23, label %if.then25, label %if.end34
+; <label>:24                                      ; preds = %19
+  %25 = load float** %11, align 8, !tbaa !20
+  %26 = getelementptr inbounds float* %25, i64 %indvars.iv
+  %27 = load float* %26, align 4, !tbaa !41
+  %28 = fmul float %1, %27
+  %29 = load float** %12, align 8, !tbaa !21
+  %30 = getelementptr inbounds float* %29, i64 %indvars.iv
+  %31 = load float* %30, align 4, !tbaa !41
+  %32 = fmul float %31, %lambda
+  %33 = fadd float %28, %32
+  %34 = load float** %13, align 8, !tbaa !22
+  %35 = getelementptr inbounds float* %34, i64 %indvars.iv
+  store float %33, float* %35, align 4, !tbaa !41
+  %36 = load float** %14, align 8, !tbaa !23
+  %37 = getelementptr inbounds float* %36, i64 %indvars.iv
+  %38 = load float* %37, align 4, !tbaa !41
+  %39 = fpext float %38 to double
+  %40 = fcmp ogt double %39, 0x39B64F86CB9CEFB1
+  br i1 %40, label %41, label %43
 
-if.then25:                                        ; preds = %if.then12
-  %conv30 = fdiv float 1.000000e+00, %add
-  store float %conv30, float* %arrayidx21, align 4, !tbaa !4
-  br label %if.end34
+; <label>:41                                      ; preds = %24
+  %42 = fdiv float 1.000000e+00, %33
+  store float %42, float* %37, align 4, !tbaa !41
+  br label %43
 
-if.end34:                                         ; preds = %if.then12, %if.then25
-  %13 = load float** %chargeA, align 8, !tbaa !3
-  %arrayidx36 = getelementptr inbounds float* %13, i64 %indvars.iv
-  %14 = load float* %arrayidx36, align 4, !tbaa !4
-  %mul37 = fmul float %conv1, %14
-  %15 = load float** %chargeB, align 8, !tbaa !3
-  %arrayidx39 = getelementptr inbounds float* %15, i64 %indvars.iv
-  %16 = load float* %arrayidx39, align 4, !tbaa !4
-  %mul40 = fmul float %16, %lambda
-  %add41 = fadd float %mul37, %mul40
-  %17 = load float** %chargeT, align 8, !tbaa !3
-  %arrayidx43 = getelementptr inbounds float* %17, i64 %indvars.iv
-  store float %add41, float* %arrayidx43, align 4, !tbaa !4
-  br label %for.inc
+; <label>:43                                      ; preds = %41, %24
+  %44 = load float** %15, align 8, !tbaa !24
+  %45 = getelementptr inbounds float* %44, i64 %indvars.iv
+  %46 = load float* %45, align 4, !tbaa !41
+  %47 = fmul float %1, %46
+  %48 = load float** %16, align 8, !tbaa !25
+  %49 = getelementptr inbounds float* %48, i64 %indvars.iv
+  %50 = load float* %49, align 4, !tbaa !41
+  %51 = fmul float %50, %lambda
+  %52 = fadd float %47, %51
+  %53 = load float** %17, align 8, !tbaa !26
+  %54 = getelementptr inbounds float* %53, i64 %indvars.iv
+  store float %52, float* %54, align 4, !tbaa !41
+  br label %55
 
-for.inc:                                          ; preds = %for.body, %if.end34
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %.ph
-  br i1 %exitcond, label %if.end45, label %for.body
+; <label>:55                                      ; preds = %19, %43
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %18
+  br i1 %exitcond, label %.loopexit, label %19
 
-if.end45:                                         ; preds = %for.cond.preheader, %for.inc, %lor.lhs.false
-  store float %lambda, float* @init_mdatoms.lambda0, align 4, !tbaa !4
+.loopexit:                                        ; preds = %55, %.preheader, %3
+  store float %lambda, float* @init_mdatoms.lambda0, align 4, !tbaa !41
   ret void
 }
 
 declare float @fabsf(float)
 
-attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #4 = { nounwind optsize }
-attributes #5 = { nounwind optsize readnone }
+attributes #0 = { alwaysinline nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { alwaysinline nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #5 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #6 = { nounwind optsize }
+attributes #7 = { nounwind optsize readnone }
 
-!0 = metadata !{metadata !"int", metadata !1}
-!1 = metadata !{metadata !"omnipotent char", metadata !2}
-!2 = metadata !{metadata !"Simple C/C++ TBAA"}
-!3 = metadata !{metadata !"any pointer", metadata !1}
-!4 = metadata !{metadata !"float", metadata !1}
-!5 = metadata !{metadata !"short", metadata !1}
+!llvm.module.flags = !{!0}
+!llvm.ident = !{!1}
+
+!0 = !{i32 1, !"PIC Level", i32 2}
+!1 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
+!2 = !{!3, !7, i64 12}
+!3 = !{!"__sFILE", !4, i64 0, !7, i64 8, !7, i64 12, !8, i64 16, !8, i64 18, !9, i64 24, !7, i64 40, !4, i64 48, !4, i64 56, !4, i64 64, !4, i64 72, !4, i64 80, !9, i64 88, !4, i64 104, !7, i64 112, !5, i64 116, !5, i64 119, !9, i64 120, !7, i64 136, !10, i64 144}
+!4 = !{!"any pointer", !5, i64 0}
+!5 = !{!"omnipotent char", !6, i64 0}
+!6 = !{!"Simple C/C++ TBAA"}
+!7 = !{!"int", !5, i64 0}
+!8 = !{!"short", !5, i64 0}
+!9 = !{!"__sbuf", !4, i64 0, !7, i64 8}
+!10 = !{!"long long", !5, i64 0}
+!11 = !{!3, !7, i64 40}
+!12 = !{!3, !4, i64 0}
+!13 = !{!5, !5, i64 0}
+!14 = !{!15, !7, i64 0}
+!15 = !{!"", !7, i64 0, !4, i64 8, !4, i64 16, !4, i64 24, !4, i64 32, !7, i64 40, !4, i64 48, !7, i64 56, !4, i64 64, !16, i64 72, !5, i64 1128, !4, i64 1272}
+!16 = !{!"", !5, i64 0, !7, i64 1024, !4, i64 1032, !7, i64 1040, !4, i64 1048}
+!17 = !{!18, !7, i64 4}
+!18 = !{!"", !19, i64 0, !7, i64 4, !4, i64 8, !4, i64 16, !4, i64 24, !4, i64 32, !4, i64 40, !4, i64 48, !4, i64 56, !4, i64 64, !4, i64 72, !4, i64 80, !4, i64 88, !4, i64 96, !4, i64 104, !4, i64 112, !4, i64 120, !4, i64 128, !4, i64 136, !4, i64 144, !4, i64 152, !4, i64 160, !4, i64 168}
+!19 = !{!"float", !5, i64 0}
+!20 = !{!18, !4, i64 8}
+!21 = !{!18, !4, i64 16}
+!22 = !{!18, !4, i64 24}
+!23 = !{!18, !4, i64 32}
+!24 = !{!18, !4, i64 40}
+!25 = !{!18, !4, i64 48}
+!26 = !{!18, !4, i64 56}
+!27 = !{!18, !4, i64 72}
+!28 = !{!18, !4, i64 80}
+!29 = !{!18, !4, i64 88}
+!30 = !{!18, !4, i64 96}
+!31 = !{!18, !4, i64 104}
+!32 = !{!18, !4, i64 112}
+!33 = !{!18, !4, i64 120}
+!34 = !{!18, !4, i64 128}
+!35 = !{!18, !4, i64 136}
+!36 = !{!18, !4, i64 144}
+!37 = !{!18, !4, i64 168}
+!38 = !{!18, !4, i64 64}
+!39 = !{!18, !4, i64 152}
+!40 = !{!18, !4, i64 160}
+!41 = !{!19, !19, i64 0}
+!42 = !{!15, !4, i64 8}
+!43 = !{!44, !19, i64 0}
+!44 = !{!"", !19, i64 0, !19, i64 4, !19, i64 8, !19, i64 12, !8, i64 16, !8, i64 18, !7, i64 20, !7, i64 24, !5, i64 28, !5, i64 37}
+!45 = !{!44, !19, i64 8}
+!46 = !{!44, !19, i64 4}
+!47 = !{!44, !19, i64 12}
+!48 = !{!44, !7, i64 24}
+!49 = !{!7, !7, i64 0}
+!50 = !{!44, !8, i64 16}
+!51 = !{!44, !8, i64 18}
+!52 = !{!44, !7, i64 20}
+!53 = !{!8, !8, i64 0}
+!54 = !{!18, !19, i64 0}

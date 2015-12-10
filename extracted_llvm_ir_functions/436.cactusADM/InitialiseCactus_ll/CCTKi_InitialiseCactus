@@ -1,0 +1,45 @@
+define i32 @CCTKi_InitialiseCactus(i32* %argc, i8*** %argv, %struct.tFleshConfig* %ConfigData) #1 {
+  %i.i = alloca i32, align 4
+  %1 = tail call i64 @time(i64* null) #4
+  store i64 %1, i64* @startuptime, align 8, !tbaa !2
+  %2 = tail call i32 @CCTKi_InitialiseSubsystemDefaults() #4
+  %3 = tail call i32 @CCTKi_ProcessEnvironment(i32* %argc, i8*** %argv, %struct.tFleshConfig* %ConfigData) #4
+  %4 = tail call i32 @CCTKi_ProcessCommandLine(i32* %argc, i8*** %argv, %struct.tFleshConfig* %ConfigData) #4
+  tail call void @CCTKi_CactusBanner() #4
+  %5 = tail call i32 @CCTKi_InitialiseDataStructures(%struct.tFleshConfig* %ConfigData) #4
+  %6 = tail call i32 @CCTKi_ProcessParameterDatabase(%struct.tFleshConfig* %ConfigData) #4
+  %7 = tail call i32 @CCTKi_BindingsVariablesInitialise() #4
+  %8 = tail call i32 @CCTKBindings_RegisterThornFunctions() #4
+  %9 = bitcast i32* %i.i to i8*
+  call void @llvm.lifetime.start(i64 4, i8* %9)
+  tail call void @CCTKi_SetParameterSetMask(i32 1) #4
+  %10 = tail call i32 @CCTKi_BindingsParameterRecoveryInitialise() #4
+  %11 = icmp slt i32 %10, 0
+  br i1 %11, label %12, label %14
+
+; <label>:12                                      ; preds = %0
+  %13 = tail call i32 @CCTK_Warn(i32 0, i32 178, i8* getelementptr inbounds ([85 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([29 x i8]* @.str3, i64 0, i64 0)) #4
+  br label %14
+
+; <label>:14                                      ; preds = %12, %0
+  tail call void @CCTKi_SetParameterSetMask(i32 2) #4
+  %15 = tail call i32 @CCTKi_BindingsScheduleInitialise() #4
+  %16 = tail call i32 @CCTKi_DoScheduleSortAllGroups() #4
+  %17 = call i8* @CCTK_ParameterGet(i8* getelementptr inbounds ([19 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i32* %i.i) #4
+  %18 = bitcast i8* %17 to i32*
+  %19 = load i32* %18, align 4, !tbaa !6
+  %20 = icmp eq i32 %19, 0
+  br i1 %20, label %CCTKi_InitialiseScheduler.exit, label %21
+
+; <label>:21                                      ; preds = %14
+  %puts.i = call i32 @puts(i8* getelementptr inbounds ([81 x i8]* @str6, i64 0, i64 0)) #3
+  %22 = call i32 @CCTK_SchedulePrint(i8* null) #4
+  %puts1.i = call i32 @puts(i8* getelementptr inbounds ([81 x i8]* @str6, i64 0, i64 0)) #3
+  br label %CCTKi_InitialiseScheduler.exit
+
+CCTKi_InitialiseScheduler.exit:                   ; preds = %14, %21
+  call void @llvm.lifetime.end(i64 4, i8* %9)
+  %23 = call i32 @CCTKi_CallStartupFunctions(%struct.tFleshConfig* %ConfigData) #4
+  %24 = call i32 @CCTKi_PrintBanners() #4
+  ret i32 0
+}

@@ -1,70 +1,68 @@
-define i8* @backup_fn(i8* %file) #0 {
-entry:
-  %call = tail call i64 @strlen(i8* %file) #7
-  %sub = add i64 %call, 4294967295
-  %conv = trunc i64 %sub to i32
-  %cmp40 = icmp sgt i32 %conv, 0
-  br i1 %cmp40, label %land.rhs.lr.ph, label %if.else
+define i8* @backup_fn(i8* nocapture readonly %file) #1 {
+  %1 = tail call i64 @strlen(i8* %file) #8
+  %2 = add i64 %1, 4294967295
+  %3 = trunc i64 %2 to i32
+  %4 = icmp sgt i32 %3, 0
+  br i1 %4, label %.lr.ph, label %.critedge2
 
-land.rhs.lr.ph:                                   ; preds = %entry
-  %sext = shl i64 %sub, 32
-  %0 = ashr exact i64 %sext, 32
-  br label %land.rhs
+.lr.ph:                                           ; preds = %0
+  %sext = shl i64 %2, 32
+  %5 = ashr exact i64 %sext, 32
+  br label %8
 
-for.cond:                                         ; preds = %land.rhs
-  %1 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp sgt i32 %1, 0
-  br i1 %cmp, label %land.rhs, label %if.else
+; <label>:6                                       ; preds = %8
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1
+  %7 = icmp sgt i64 %indvars.iv, 1
+  br i1 %7, label %8, label %.critedge2
 
-land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.cond
-  %indvars.iv = phi i64 [ %0, %land.rhs.lr.ph ], [ %indvars.iv.next, %for.cond ]
-  %arrayidx = getelementptr inbounds i8* %file, i64 %indvars.iv
-  %2 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp3 = icmp eq i8 %2, 47
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  br i1 %cmp3, label %if.then, label %for.cond
+; <label>:8                                       ; preds = %.lr.ph, %6
+  %indvars.iv = phi i64 [ %5, %.lr.ph ], [ %indvars.iv.next, %6 ]
+  %9 = getelementptr inbounds i8* %file, i64 %indvars.iv
+  %10 = load i8* %9, align 1, !tbaa !9
+  %11 = icmp eq i8 %10, 47
+  br i1 %11, label %.critedge, label %6
 
-if.then:                                          ; preds = %land.rhs
-  %call7 = tail call i8* @gmx_strdup(i8* %file) #6
-  %arrayidx9 = getelementptr inbounds i8* %call7, i64 %indvars.iv
-  store i8 0, i8* %arrayidx9, align 1, !tbaa !1
-  %add.ptr.sum = add i64 %indvars.iv, 1
-  %add.ptr10 = getelementptr inbounds i8* %file, i64 %add.ptr.sum
-  %call11 = tail call i8* @gmx_strdup(i8* %add.ptr10) #6
-  br label %do.body.preheader
+.critedge:                                        ; preds = %8
+  %12 = tail call i8* @strdup(i8* %file) #8
+  %13 = getelementptr inbounds i8* %12, i64 %indvars.iv
+  store i8 0, i8* %13, align 1, !tbaa !9
+  %.sum = add nsw i64 %indvars.iv, 1
+  %14 = getelementptr inbounds i8* %file, i64 %.sum
+  %15 = tail call i8* @strdup(i8* %14) #8
+  br label %.preheader
 
-if.else:                                          ; preds = %for.cond, %entry
-  %call12 = tail call i8* @gmx_strdup(i8* getelementptr inbounds ([2 x i8]* @.str9, i64 0, i64 0)) #6
-  %call13 = tail call i8* @gmx_strdup(i8* %file) #6
-  br label %do.body.preheader
+.critedge2:                                       ; preds = %6, %0
+  %16 = tail call i8* @strdup(i8* getelementptr inbounds ([2 x i8]* @.str9, i64 0, i64 0)) #8
+  %17 = tail call i8* @strdup(i8* %file) #8
+  br label %.preheader
 
-do.body.preheader:                                ; preds = %if.else, %if.then
-  %directory.0.ph = phi i8* [ %call7, %if.then ], [ %call12, %if.else ]
-  %fn.0.ph = phi i8* [ %call11, %if.then ], [ %call13, %if.else ]
-  br label %do.body
+.preheader:                                       ; preds = %.critedge2, %.critedge
+  %directory.0.ph = phi i8* [ %16, %.critedge2 ], [ %12, %.critedge ]
+  %fn.0.ph = phi i8* [ %17, %.critedge2 ], [ %15, %.critedge ]
+  br label %18
 
-do.body:                                          ; preds = %do.body.preheader, %land.rhs17
-  %count.0 = phi i32 [ %inc, %land.rhs17 ], [ 1, %do.body.preheader ]
-  %call14 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([256 x i8]* @backup_fn.buf, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str10, i64 0, i64 0), i8* %directory.0.ph, i8* %fn.0.ph, i32 %count.0) #6
-  %inc = add nsw i32 %count.0, 1
-  %cmp15 = icmp slt i32 %inc, 128
-  br i1 %cmp15, label %land.rhs17, label %do.end
+; <label>:18                                      ; preds = %.preheader, %22
+  %count.0 = phi i32 [ %20, %22 ], [ 1, %.preheader ]
+  %19 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* getelementptr inbounds ([256 x i8]* @backup_fn.buf, i64 0, i64 0), i32 0, i64 256, i8* getelementptr inbounds ([11 x i8]* @.str10, i64 0, i64 0), i8* %directory.0.ph, i8* %fn.0.ph, i32 %count.0) #8
+  %20 = add nuw nsw i32 %count.0, 1
+  %21 = icmp slt i32 %20, 128
+  br i1 %21, label %22, label %.critedge1
 
-land.rhs17:                                       ; preds = %do.body
-  %call18 = tail call i32 @fexist(i8* getelementptr inbounds ([256 x i8]* @backup_fn.buf, i64 0, i64 0)) #8
-  %tobool = icmp eq i32 %call18, 0
-  br i1 %tobool, label %do.end, label %do.body
+; <label>:22                                      ; preds = %18
+  %23 = tail call i32 @fexist(i8* getelementptr inbounds ([256 x i8]* @backup_fn.buf, i64 0, i64 0)) #9
+  %24 = icmp eq i32 %23, 0
+  br i1 %24, label %.critedge1.thread, label %18
 
-do.end:                                           ; preds = %land.rhs17, %do.body
-  %cmp20 = icmp eq i32 %inc, 128
-  br i1 %cmp20, label %if.then22, label %if.end23
+.critedge1:                                       ; preds = %18
+  %25 = icmp eq i32 %20, 128
+  br i1 %25, label %26, label %.critedge1.thread
 
-if.then22:                                        ; preds = %do.end
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([46 x i8]* @.str11, i64 0, i64 0), i32 128, i8* %fn.0.ph) #6
-  br label %if.end23
+; <label>:26                                      ; preds = %.critedge1
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([46 x i8]* @.str11, i64 0, i64 0), i32 128, i8* %fn.0.ph) #8
+  br label %.critedge1.thread
 
-if.end23:                                         ; preds = %if.then22, %do.end
-  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 266, i8* %directory.0.ph) #6
-  tail call void @save_free(i8* getelementptr inbounds ([3 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 267, i8* %fn.0.ph) #6
+.critedge1.thread:                                ; preds = %22, %26, %.critedge1
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 266, i8* %directory.0.ph) #8
+  tail call void @save_free(i8* getelementptr inbounds ([3 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 267, i8* %fn.0.ph) #8
   ret i8* getelementptr inbounds ([256 x i8]* @backup_fn.buf, i64 0, i64 0)
 }

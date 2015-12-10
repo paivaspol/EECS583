@@ -1,0 +1,26 @@
+define <2 x float> @CCTK_Cmplx8Sin(<2 x float> %complex_number.coerce) #0 {
+  %1 = extractelement <2 x float> %complex_number.coerce, i32 1
+  %2 = fpext float %1 to double
+  %3 = fcmp oeq float %1, 0.000000e+00
+  %4 = extractelement <2 x float> %complex_number.coerce, i32 0
+  %5 = fpext float %4 to double
+  %6 = tail call double @sin(double %5) #5
+  br i1 %3, label %14, label %7
+
+; <label>:7                                       ; preds = %0
+  %8 = tail call double @cosh(double %2) #5
+  %9 = fmul double %6, %8
+  %10 = tail call double @cos(double %5) #5
+  %11 = tail call double @sinh(double %2) #5
+  %12 = fmul double %10, %11
+  %13 = fptrunc double %12 to float
+  br label %14
+
+; <label>:14                                      ; preds = %0, %7
+  %result.sroa.3.0 = phi float [ %13, %7 ], [ 0.000000e+00, %0 ]
+  %result.sroa.0.0.in = phi double [ %9, %7 ], [ %6, %0 ]
+  %result.sroa.0.0 = fptrunc double %result.sroa.0.0.in to float
+  %15 = insertelement <2 x float> undef, float %result.sroa.0.0, i32 0
+  %16 = insertelement <2 x float> %15, float %result.sroa.3.0, i32 1
+  ret <2 x float> %16
+}

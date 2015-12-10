@@ -1,0 +1,143 @@
+define i32 @PUGH_EnableGArrayDataStorage(%struct.PGA* %GA, i32 %this_proc, i8* %initialize_memory, i32 %padding_active, i32 %padding_cacheline_bits, i32 %padding_size, i32 %padding_address_spacing) #1 {
+  %1 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 5
+  %2 = load i32* %1, align 4, !tbaa !10
+  %3 = icmp eq i32 %2, 0
+  br i1 %3, label %4, label %92
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 14
+  %6 = load i32* %5, align 4, !tbaa !35
+  %7 = icmp sgt i32 %6, 1
+  br i1 %7, label %8, label %28
+
+; <label>:8                                       ; preds = %4
+  %9 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 15
+  %10 = load i32* %9, align 4, !tbaa !36
+  %11 = icmp sgt i32 %10, 0
+  br i1 %11, label %12, label %28
+
+; <label>:12                                      ; preds = %8
+  %13 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 16
+  %14 = load %struct.PGA** %13, align 8, !tbaa !38
+  %15 = getelementptr inbounds %struct.PGA* %14, i64 0, i32 4
+  %16 = load i8** %15, align 8, !tbaa !25
+  %17 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 10
+  %18 = load %struct.PGExtras** %17, align 8, !tbaa !12
+  %19 = getelementptr inbounds %struct.PGExtras* %18, i64 0, i32 7
+  %20 = load i32* %19, align 4, !tbaa !30
+  %21 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 8
+  %22 = load i32* %21, align 4, !tbaa !31
+  %23 = mul i32 %20, %10
+  %24 = mul i32 %23, %22
+  %25 = sext i32 %24 to i64
+  %26 = getelementptr inbounds i8* %16, i64 %25
+  %27 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 4
+  store i8* %26, i8** %27, align 8, !tbaa !25
+  br label %75
+
+; <label>:28                                      ; preds = %8, %4
+  %29 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 3
+  %30 = load i8** %29, align 8, !tbaa !37
+  %31 = icmp eq i8* %30, null
+  br i1 %31, label %33, label %32
+
+; <label>:32                                      ; preds = %28
+  tail call void @free(i8* %30) #8
+  store i8* null, i8** %29, align 8, !tbaa !37
+  br label %33
+
+; <label>:33                                      ; preds = %28, %32
+  %34 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 10
+  %35 = load %struct.PGExtras** %34, align 8, !tbaa !12
+  %36 = getelementptr inbounds %struct.PGExtras* %35, i64 0, i32 7
+  %37 = load i32* %36, align 4, !tbaa !30
+  %38 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 8
+  %39 = load i32* %38, align 4, !tbaa !31
+  %40 = mul nsw i32 %39, %37
+  %41 = icmp slt i32 %40, 1
+  br i1 %41, label %.thread, label %46
+
+.thread:                                          ; preds = %33
+  %42 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 0
+  %43 = load i8** %42, align 8, !tbaa !39
+  %44 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 809, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([85 x i8]* @.str17, i64 0, i64 0), i8* %43) #7
+  %45 = bitcast i8** %29 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %45, i8 0, i64 16, i32 8, i1 false)
+  br label %75
+
+; <label>:46                                      ; preds = %33
+  %47 = icmp eq i32 %padding_active, 0
+  br i1 %47, label %48, label %52
+
+; <label>:48                                      ; preds = %46
+  %49 = sext i32 %40 to i64
+  %50 = tail call i8* @malloc(i64 %49) #7
+  %51 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 4
+  store i8* %50, i8** %51, align 8, !tbaa !25
+  store i8* %50, i8** %29, align 8, !tbaa !37
+  br label %60
+
+; <label>:52                                      ; preds = %46
+  %53 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 2
+  %54 = load i32* %53, align 4, !tbaa !40
+  %55 = load i32* %5, align 4, !tbaa !35
+  %56 = mul nsw i32 %55, %40
+  %57 = sext i32 %56 to i64
+  %58 = tail call i8* @Util_CacheMalloc(i32 %54, i64 %57, i8** %29) #7
+  %59 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 4
+  store i8* %58, i8** %59, align 8, !tbaa !25
+  br label %60
+
+; <label>:60                                      ; preds = %48, %52
+  %.pre-phi2 = phi i8** [ %51, %48 ], [ %59, %52 ]
+  %61 = phi i8* [ %50, %48 ], [ %58, %52 ]
+  %62 = icmp eq i8* %61, null
+  br i1 %62, label %75, label %63
+
+; <label>:63                                      ; preds = %60
+  %64 = tail call i32 @CCTK_Equals(i8* %initialize_memory, i8* getelementptr inbounds ([5 x i8]* @.str18, i64 0, i64 0)) #7
+  %65 = icmp eq i32 %64, 0
+  br i1 %65, label %66, label %75
+
+; <label>:66                                      ; preds = %63
+  %67 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 9
+  %68 = load i32* %67, align 4, !tbaa !41
+  %69 = load %struct.PGExtras** %34, align 8, !tbaa !12
+  %70 = getelementptr inbounds %struct.PGExtras* %69, i64 0, i32 7
+  %71 = load i32* %70, align 4, !tbaa !30
+  %72 = load i32* %38, align 4, !tbaa !31
+  %73 = mul nsw i32 %72, %71
+  %74 = load i8** %.pre-phi2, align 8, !tbaa !25
+  tail call fastcc void @PUGH_InitializeMemory(i8* %initialize_memory, i32 %68, i32 %73, i8* %74) #8
+  br label %75
+
+; <label>:75                                      ; preds = %.thread, %63, %60, %66, %12
+  %.pre-phi1 = phi i32* [ %38, %63 ], [ %38, %60 ], [ %38, %66 ], [ %21, %12 ], [ %38, %.thread ]
+  %.pre-phi = phi %struct.PGExtras** [ %34, %63 ], [ %34, %60 ], [ %34, %66 ], [ %17, %12 ], [ %34, %.thread ]
+  %76 = load %struct.PGExtras** %.pre-phi, align 8, !tbaa !12
+  %77 = getelementptr inbounds %struct.PGExtras* %76, i64 0, i32 7
+  %78 = load i32* %77, align 4, !tbaa !30
+  %79 = load i32* %.pre-phi1, align 4, !tbaa !31
+  %80 = mul nsw i32 %79, %78
+  %81 = icmp sgt i32 %80, 0
+  br i1 %81, label %82, label %92
+
+; <label>:82                                      ; preds = %75
+  %83 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 3
+  %84 = load i8** %83, align 8, !tbaa !37
+  %85 = icmp eq i8* %84, null
+  br i1 %85, label %86, label %92
+
+; <label>:86                                      ; preds = %82
+  %87 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 0
+  %88 = load i8** %87, align 8, !tbaa !39
+  %89 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 1
+  %90 = load i32* %89, align 4, !tbaa !42
+  %91 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 838, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str19, i64 0, i64 0), i8* %88, i32 %90) #7
+  br label %92
+
+; <label>:92                                      ; preds = %75, %82, %86, %0
+  %retval.1 = phi i32 [ -1, %86 ], [ 0, %82 ], [ 0, %75 ], [ 0, %0 ]
+  store i32 1, i32* %1, align 4, !tbaa !10
+  ret i32 %retval.1
+}

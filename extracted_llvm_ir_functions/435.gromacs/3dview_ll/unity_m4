@@ -1,30 +1,27 @@
-define void @unity_m4([4 x float]* nocapture %m) #0 {
-entry:
-  br label %for.cond1.preheader
+define void @unity_m4([4 x float]* nocapture %m) #3 {
+  br label %.preheader
 
-for.cond1.preheader:                              ; preds = %for.inc11, %entry
-  %indvars.iv21 = phi i64 [ 0, %entry ], [ %indvars.iv.next22, %for.inc11 ]
-  br label %for.body3
+.preheader:                                       ; preds = %6, %0
+  %indvars.iv3 = phi i64 [ 0, %0 ], [ %indvars.iv.next4, %6 ]
+  br label %1
 
-for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
-  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
-  %0 = trunc i64 %indvars.iv to i32
-  %1 = trunc i64 %indvars.iv21 to i32
-  %cmp4 = icmp eq i32 %1, %0
-  %arrayidx6 = getelementptr inbounds [4 x float]* %m, i64 %indvars.iv21, i64 %indvars.iv
-  %. = select i1 %cmp4, float 1.000000e+00, float 0.000000e+00
-  store float %., float* %arrayidx6, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 4
-  br i1 %exitcond, label %for.inc11, label %for.body3
+; <label>:1                                       ; preds = %1, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %1 ]
+  %2 = trunc i64 %indvars.iv to i32
+  %3 = trunc i64 %indvars.iv3 to i32
+  %4 = icmp eq i32 %3, %2
+  %5 = getelementptr inbounds [4 x float]* %m, i64 %indvars.iv3, i64 %indvars.iv
+  %. = select i1 %4, float 1.000000e+00, float 0.000000e+00
+  store float %., float* %5, align 4, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 4
+  br i1 %exitcond, label %6, label %1
 
-for.inc11:                                        ; preds = %for.body3
-  %indvars.iv.next22 = add i64 %indvars.iv21, 1
-  %lftr.wideiv23 = trunc i64 %indvars.iv.next22 to i32
-  %exitcond24 = icmp eq i32 %lftr.wideiv23, 4
-  br i1 %exitcond24, label %for.end13, label %for.cond1.preheader
+; <label>:6                                       ; preds = %1
+  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1
+  %exitcond5 = icmp eq i64 %indvars.iv.next4, 4
+  br i1 %exitcond5, label %7, label %.preheader
 
-for.end13:                                        ; preds = %for.inc11
+; <label>:7                                       ; preds = %6
   ret void
 }

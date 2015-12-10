@@ -1,0 +1,37 @@
+define internal i32 @xdrstdio_putint32(%struct.XDR* nocapture readonly %xdrs, i32* nocapture readonly %ip) #0 {
+  %1 = alloca i32, align 4
+  %y.i.i = alloca i32, align 4
+  %mycopy = alloca i32, align 4
+  %2 = load i32* %ip, align 4, !tbaa !8
+  %3 = bitcast i32* %1 to i8*
+  call void @llvm.lifetime.start(i64 4, i8* %3) #1
+  %4 = bitcast i32* %y.i.i to i8*
+  call void @llvm.lifetime.start(i64 4, i8* %4) #1
+  store i32 %2, i32* %1, align 4, !tbaa !8
+  br label %5
+
+; <label>:5                                       ; preds = %5, %0
+  %indvars.iv.i.i = phi i64 [ 0, %0 ], [ %indvars.iv.next.i.i, %5 ]
+  %6 = sub nsw i64 3, %indvars.iv.i.i
+  %7 = getelementptr inbounds i8* %3, i64 %6
+  %8 = load i8* %7, align 1, !tbaa !17
+  %9 = getelementptr inbounds i8* %4, i64 %indvars.iv.i.i
+  store i8 %8, i8* %9, align 1, !tbaa !17
+  %indvars.iv.next.i.i = add nuw nsw i64 %indvars.iv.i.i, 1
+  %exitcond.i.i = icmp eq i64 %indvars.iv.next.i.i, 4
+  br i1 %exitcond.i.i, label %xdr_htonl.exit, label %5
+
+xdr_htonl.exit:                                   ; preds = %5
+  %10 = load i32* %y.i.i, align 4, !tbaa !8
+  call void @llvm.lifetime.end(i64 4, i8* %3) #1
+  call void @llvm.lifetime.end(i64 4, i8* %4) #1
+  store i32 %10, i32* %mycopy, align 4, !tbaa !8
+  %11 = bitcast i32* %mycopy to i8*
+  %12 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 3
+  %13 = bitcast i8** %12 to %struct.__sFILE**
+  %14 = load %struct.__sFILE** %13, align 8, !tbaa !21
+  %15 = call i64 @"\01_fwrite"(i8* %11, i64 4, i64 1, %struct.__sFILE* %14) #6
+  %16 = icmp eq i64 %15, 1
+  %. = zext i1 %16 to i32
+  ret i32 %.
+}

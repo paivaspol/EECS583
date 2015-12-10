@@ -1,104 +1,106 @@
-define void @finish_run(%struct._IO_FILE* %log, %struct.t_commrec* nocapture %cr, i8* nocapture %confout, %struct.t_nsborder* nocapture %nsb, %struct.t_topology* nocapture %top, %struct.t_parm* nocapture %parm, %struct.t_nrnb* %nrnb, double %nodetime, double %realtime, i32 %step, i32 %bWriteStat) #0 {
-entry:
+define void @finish_run(%struct.__sFILE* %log, %struct.t_commrec* nocapture readonly %cr, i8* nocapture readnone %confout, %struct.t_nsborder* nocapture readonly %nsb, %struct.t_topology* nocapture readnone %top, %struct.t_parm* nocapture readonly %parm, %struct.t_nrnb* %nrnb, double %nodetime, double %realtime, i32 %step, i32 %bWriteStat) #4 {
+.preheader1:
   %ntot = alloca %struct.t_nrnb, align 8
   %0 = bitcast %struct.t_nrnb* %ntot to i8*
-  call void @llvm.lifetime.start(i64 1032, i8* %0) #1
+  call void @llvm.lifetime.start(i64 1032, i8* %0) #5
   call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 1032, i32 8, i1 false)
-  %nnodes = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 1
-  %1 = load i32* %nnodes, align 4, !tbaa !0
-  %cmp273 = icmp sgt i32 %1, 0
-  br i1 %cmp273, label %for.cond4.preheader, label %for.end20
+  %1 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 1
+  %2 = load i32* %1, align 4, !tbaa !67
+  %3 = icmp sgt i32 %2, 0
+  br i1 %3, label %.preheader.lr.ph, label %._crit_edge
 
-for.cond4.preheader:                              ; preds = %entry, %for.inc18
-  %indvars.iv76 = phi i64 [ %indvars.iv.next77, %for.inc18 ], [ 0, %entry ]
-  br label %for.body6
+.preheader.lr.ph:                                 ; preds = %.preheader1
+  %4 = sext i32 %2 to i64
+  br label %.preheader
 
-for.body6:                                        ; preds = %for.body6, %for.cond4.preheader
-  %indvars.iv = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next, %for.body6 ]
-  %arrayidx11 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 %indvars.iv76, i32 0, i64 %indvars.iv
-  %2 = load double* %arrayidx11, align 8, !tbaa !6
-  %arrayidx14 = getelementptr inbounds %struct.t_nrnb* %ntot, i64 0, i32 0, i64 %indvars.iv
-  %3 = load double* %arrayidx14, align 8, !tbaa !6
-  %add = fadd double %2, %3
-  store double %add, double* %arrayidx14, align 8, !tbaa !6
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 129
-  br i1 %exitcond, label %for.inc18, label %for.body6
+.preheader:                                       ; preds = %.preheader.lr.ph, %11
+  %indvars.iv5 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next6, %11 ]
+  br label %5
 
-for.inc18:                                        ; preds = %for.body6
-  %indvars.iv.next77 = add i64 %indvars.iv76, 1
-  %4 = trunc i64 %indvars.iv.next77 to i32
-  %cmp2 = icmp slt i32 %4, %1
-  br i1 %cmp2, label %for.cond4.preheader, label %for.end20
+; <label>:5                                       ; preds = %5, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %5 ]
+  %6 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 %indvars.iv5, i32 0, i64 %indvars.iv
+  %7 = load double* %6, align 8, !tbaa !6
+  %8 = getelementptr inbounds %struct.t_nrnb* %ntot, i64 0, i32 0, i64 %indvars.iv
+  %9 = load double* %8, align 8, !tbaa !6
+  %10 = fadd double %7, %9
+  store double %10, double* %8, align 8, !tbaa !6
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 129
+  br i1 %exitcond, label %11, label %5
 
-for.end20:                                        ; preds = %for.inc18, %entry
-  %tobool = icmp eq i32 %bWriteStat, 0
-  br i1 %tobool, label %for.end20.if.end31_crit_edge, label %if.then
+; <label>:11                                      ; preds = %5
+  %indvars.iv.next6 = add nuw nsw i64 %indvars.iv5, 1
+  %12 = icmp slt i64 %indvars.iv.next6, %4
+  br i1 %12, label %.preheader, label %._crit_edge
 
-for.end20.if.end31_crit_edge:                     ; preds = %for.end20
-  %nodeid32.pre = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
-  br label %if.end31
+._crit_edge:                                      ; preds = %11, %.preheader1
+  %13 = icmp eq i32 %bWriteStat, 0
+  br i1 %13, label %._crit_edge10, label %14
 
-if.then:                                          ; preds = %for.end20
-  %nsteps = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 1
-  %5 = load i32* %nsteps, align 4, !tbaa !0
-  %conv = sitofp i32 %5 to float
-  %delta_t = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 15
-  %6 = load float* %delta_t, align 4, !tbaa !3
-  %mul = fmul float %conv, %6
-  %nodeid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
-  %7 = load i32* %nodeid, align 4, !tbaa !0
-  %cmp22 = icmp eq i32 %7, 0
-  br i1 %cmp22, label %land.lhs.true, label %if.else
+._crit_edge10:                                    ; preds = %._crit_edge
+  %.pre = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  br label %38
 
-land.lhs.true:                                    ; preds = %if.then
-  %threadid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
-  %8 = load i32* %threadid, align 4, !tbaa !0
-  %cmp24 = icmp eq i32 %8, 0
-  br i1 %cmp24, label %if.then26, label %if.else
+; <label>:14                                      ; preds = %._crit_edge
+  %15 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 1
+  %16 = load i32* %15, align 4, !tbaa !68
+  %17 = sitofp i32 %16 to float
+  %18 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 15
+  %19 = load float* %18, align 4, !tbaa !52
+  %20 = fmul float %17, %19
+  %21 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  %22 = load i32* %21, align 4, !tbaa !69
+  %23 = icmp eq i32 %22, 0
+  br i1 %23, label %24, label %33
 
-if.then26:                                        ; preds = %land.lhs.true
-  %9 = load %struct._IO_FILE** @stderr, align 8, !tbaa !5
-  %10 = call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str19, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %9)
-  %11 = load %struct._IO_FILE** @stderr, align 8, !tbaa !5
-  %12 = load i32* %nnodes, align 4, !tbaa !0
-  call void @print_perf(%struct._IO_FILE* %11, double %nodetime, double %realtime, float %mul, %struct.t_nrnb* %ntot, i32 %12) #6
-  br label %if.end31
+; <label>:24                                      ; preds = %14
+  %25 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
+  %26 = load i32* %25, align 4, !tbaa !70
+  %27 = icmp eq i32 %26, 0
+  br i1 %27, label %28, label %33
 
-if.else:                                          ; preds = %land.lhs.true, %if.then
-  %nodeid28 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 0
-  %13 = load i32* %nodeid28, align 4, !tbaa !0
-  %idxprom29 = sext i32 %13 to i64
-  %arrayidx30 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 %idxprom29
-  call void @print_nrnb(%struct._IO_FILE* %log, %struct.t_nrnb* %arrayidx30) #6
-  br label %if.end31
+; <label>:28                                      ; preds = %24
+  %29 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !32
+  %30 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str19, i64 0, i64 0), i64 2, i64 1, %struct.__sFILE* %29)
+  %31 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !32
+  %32 = load i32* %1, align 4, !tbaa !67
+  call void @print_perf(%struct.__sFILE* %31, double %nodetime, double %realtime, float %20, %struct.t_nrnb* %ntot, i32 %32) #10
+  br label %38
 
-if.end31:                                         ; preds = %for.end20.if.end31_crit_edge, %if.then26, %if.else
-  %nodeid32.pre-phi = phi i32* [ %nodeid32.pre, %for.end20.if.end31_crit_edge ], [ %nodeid, %if.then26 ], [ %nodeid, %if.else ]
-  %runtime.0 = phi float [ 0.000000e+00, %for.end20.if.end31_crit_edge ], [ %mul, %if.then26 ], [ %mul, %if.else ]
-  %14 = load i32* %nodeid32.pre-phi, align 4, !tbaa !0
-  %cmp33 = icmp eq i32 %14, 0
-  br i1 %cmp33, label %land.lhs.true35, label %if.end47
+; <label>:33                                      ; preds = %24, %14
+  %34 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 0
+  %35 = load i32* %34, align 4, !tbaa !17
+  %36 = sext i32 %35 to i64
+  %37 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 %36
+  tail call void @print_nrnb(%struct.__sFILE* %log, %struct.t_nrnb* %37) #10
+  br label %38
 
-land.lhs.true35:                                  ; preds = %if.end31
-  %threadid36 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
-  %15 = load i32* %threadid36, align 4, !tbaa !0
-  %cmp37 = icmp eq i32 %15, 0
-  br i1 %cmp37, label %if.then39, label %if.end47
+; <label>:38                                      ; preds = %._crit_edge10, %28, %33
+  %.pre-phi = phi i32* [ %.pre, %._crit_edge10 ], [ %21, %28 ], [ %21, %33 ]
+  %runtime.0 = phi float [ 0.000000e+00, %._crit_edge10 ], [ %20, %28 ], [ %20, %33 ]
+  %39 = load i32* %.pre-phi, align 4, !tbaa !69
+  %40 = icmp eq i32 %39, 0
+  br i1 %40, label %41, label %50
 
-if.then39:                                        ; preds = %land.lhs.true35
-  %16 = load i32* %nnodes, align 4, !tbaa !0
-  call void @print_perf(%struct._IO_FILE* %log, double %nodetime, double %realtime, float %runtime.0, %struct.t_nrnb* %ntot, i32 %16) #6
-  %17 = load i32* %nnodes, align 4, !tbaa !0
-  %cmp42 = icmp sgt i32 %17, 1
-  br i1 %cmp42, label %if.then44, label %if.end47
+; <label>:41                                      ; preds = %38
+  %42 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
+  %43 = load i32* %42, align 4, !tbaa !70
+  %44 = icmp eq i32 %43, 0
+  br i1 %44, label %45, label %50
 
-if.then44:                                        ; preds = %if.then39
-  call void @pr_load(%struct._IO_FILE* %log, i32 %17, %struct.t_nrnb* %nrnb) #6
-  br label %if.end47
+; <label>:45                                      ; preds = %41
+  %46 = load i32* %1, align 4, !tbaa !67
+  call void @print_perf(%struct.__sFILE* %log, double %nodetime, double %realtime, float %runtime.0, %struct.t_nrnb* %ntot, i32 %46) #10
+  %47 = load i32* %1, align 4, !tbaa !67
+  %48 = icmp sgt i32 %47, 1
+  br i1 %48, label %49, label %50
 
-if.end47:                                         ; preds = %if.then39, %if.then44, %land.lhs.true35, %if.end31
-  call void @llvm.lifetime.end(i64 1032, i8* %0) #1
+; <label>:49                                      ; preds = %45
+  call void @pr_load(%struct.__sFILE* %log, i32 %47, %struct.t_nrnb* %nrnb) #10
+  br label %50
+
+; <label>:50                                      ; preds = %45, %49, %41, %38
+  call void @llvm.lifetime.end(i64 1032, i8* %0) #5
   ret void
 }

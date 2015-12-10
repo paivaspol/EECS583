@@ -1,0 +1,101 @@
+define internal fastcc void @exchange(i8** nocapture %argv) #0 {
+  %1 = load i32* @first_nonopt, align 4, !tbaa !6
+  %2 = load i32* @last_nonopt, align 4, !tbaa !6
+  %3 = load i32* @optind, align 4, !tbaa !6
+  %4 = icmp sgt i32 %3, %2
+  %5 = icmp sgt i32 %2, %1
+  %or.cond714 = and i1 %4, %5
+  br i1 %or.cond714, label %.lr.ph10.lr.ph, label %.critedge
+
+.lr.ph10.lr.ph:                                   ; preds = %0
+  %6 = sext i32 %2 to i64
+  %7 = xor i32 %2, -1
+  br label %.lr.ph10
+
+.lr.ph10:                                         ; preds = %.lr.ph10.lr.ph, %.outer
+  %bottom.0.ph16 = phi i32 [ %1, %.lr.ph10.lr.ph ], [ %18, %.outer ]
+  %top.0.ph15 = phi i32 [ %3, %.lr.ph10.lr.ph ], [ %21, %.outer ]
+  %8 = sub nsw i32 %top.0.ph15, %2
+  %9 = icmp sgt i32 %8, 0
+  %10 = add i32 %top.0.ph15, %7
+  %11 = sext i32 %bottom.0.ph16 to i64
+  %12 = sub i32 %top.0.ph15, %2
+  %13 = sext i32 %12 to i64
+  %14 = sext i32 %8 to i64
+  br label %15
+
+; <label>:15                                      ; preds = %.lr.ph10, %._crit_edge
+  %indvars.iv22 = phi i64 [ %11, %.lr.ph10 ], [ %indvars.iv.next23, %._crit_edge ]
+  %16 = sub nsw i64 %6, %indvars.iv22
+  %17 = icmp sgt i64 %14, %16
+  br i1 %17, label %.preheader, label %.preheader4
+
+.preheader4:                                      ; preds = %15
+  br i1 %9, label %.lr.ph, label %._crit_edge
+
+.preheader:                                       ; preds = %15
+  %18 = trunc i64 %indvars.iv22 to i32
+  %19 = trunc i64 %16 to i32
+  %20 = icmp sgt i32 %19, 0
+  %21 = sub i32 %top.0.ph15, %19
+  br i1 %20, label %.lr.ph12, label %.outer
+
+.lr.ph12:                                         ; preds = %.preheader
+  %sext = shl i64 %indvars.iv22, 32
+  %22 = ashr exact i64 %sext, 32
+  %23 = sext i32 %21 to i64
+  %24 = add i32 %19, -1
+  br label %25
+
+; <label>:25                                      ; preds = %25, %.lr.ph12
+  %indvars.iv24 = phi i64 [ 0, %.lr.ph12 ], [ %indvars.iv.next25, %25 ]
+  %26 = add nsw i64 %indvars.iv24, %22
+  %27 = getelementptr inbounds i8** %argv, i64 %26
+  %28 = bitcast i8** %27 to i64*
+  %29 = load i64* %28, align 8, !tbaa !2
+  %30 = add nsw i64 %23, %indvars.iv24
+  %31 = getelementptr inbounds i8** %argv, i64 %30
+  %32 = bitcast i8** %31 to i64*
+  %33 = load i64* %32, align 8, !tbaa !2
+  store i64 %33, i64* %28, align 8, !tbaa !2
+  store i64 %29, i64* %32, align 8, !tbaa !2
+  %indvars.iv.next25 = add nuw nsw i64 %indvars.iv24, 1
+  %lftr.wideiv26 = trunc i64 %indvars.iv24 to i32
+  %exitcond27 = icmp eq i32 %lftr.wideiv26, %24
+  br i1 %exitcond27, label %.outer, label %25
+
+.outer:                                           ; preds = %25, %.preheader
+  %34 = icmp sgt i32 %21, %2
+  %35 = icmp sgt i32 %2, %18
+  %or.cond7 = and i1 %34, %35
+  br i1 %or.cond7, label %.lr.ph10, label %.critedge
+
+.lr.ph:                                           ; preds = %.preheader4, %.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %.preheader4 ]
+  %36 = add nsw i64 %indvars.iv, %indvars.iv22
+  %37 = getelementptr inbounds i8** %argv, i64 %36
+  %38 = bitcast i8** %37 to i64*
+  %39 = load i64* %38, align 8, !tbaa !2
+  %40 = add nsw i64 %indvars.iv, %6
+  %41 = getelementptr inbounds i8** %argv, i64 %40
+  %42 = bitcast i8** %41 to i64*
+  %43 = load i64* %42, align 8, !tbaa !2
+  store i64 %43, i64* %38, align 8, !tbaa !2
+  store i64 %39, i64* %42, align 8, !tbaa !2
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %10
+  br i1 %exitcond, label %._crit_edge, label %.lr.ph
+
+._crit_edge:                                      ; preds = %.lr.ph, %.preheader4
+  %indvars.iv.next23 = add i64 %indvars.iv22, %13
+  %44 = icmp sgt i64 %6, %indvars.iv.next23
+  br i1 %44, label %15, label %.critedge
+
+.critedge:                                        ; preds = %.outer, %._crit_edge, %0
+  %45 = sub i32 %3, %2
+  %46 = add nsw i32 %45, %1
+  store i32 %46, i32* @first_nonopt, align 4, !tbaa !6
+  store i32 %3, i32* @last_nonopt, align 4, !tbaa !6
+  ret void
+}

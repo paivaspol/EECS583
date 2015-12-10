@@ -1,40 +1,41 @@
-define i32 @is_protein(i8* %resnm) #0 {
-entry:
+define i32 @is_protein(i8* nocapture readonly %resnm) #3 {
   %.b = load i1* @is_protein.bRead, align 1
-  br i1 %.b, label %entry.for.cond.preheader_crit_edge, label %if.then
+  br i1 %.b, label %..preheader_crit_edge, label %1
 
-entry.for.cond.preheader_crit_edge:               ; preds = %entry
-  %.pre = load i32* @is_protein.naa, align 4, !tbaa !3
-  br label %for.cond.preheader
+..preheader_crit_edge:                            ; preds = %0
+  %.pre = load i32* @is_protein.naa, align 4, !tbaa !18
+  br label %.preheader
 
-if.then:                                          ; preds = %entry
-  %call = tail call i32 @get_strings(i8* getelementptr inbounds ([15 x i8]* @.str11, i64 0, i64 0), i8*** @is_protein.aas) #6
-  store i32 %call, i32* @is_protein.naa, align 4, !tbaa !3
+; <label>:1                                       ; preds = %0
+  %2 = tail call i32 @get_strings(i8* getelementptr inbounds ([15 x i8]* @.str11, i64 0, i64 0), i8*** @is_protein.aas) #7
+  store i32 %2, i32* @is_protein.naa, align 4, !tbaa !18
   store i1 true, i1* @is_protein.bRead, align 1
-  br label %for.cond.preheader
+  br label %.preheader
 
-for.cond.preheader:                               ; preds = %entry.for.cond.preheader_crit_edge, %if.then
-  %0 = phi i32 [ %.pre, %entry.for.cond.preheader_crit_edge ], [ %call, %if.then ]
-  %cmp7 = icmp sgt i32 %0, 0
-  br i1 %cmp7, label %for.body, label %return
+.preheader:                                       ; preds = %..preheader_crit_edge, %1
+  %3 = phi i32 [ %.pre, %..preheader_crit_edge ], [ %2, %1 ]
+  %4 = icmp sgt i32 %3, 0
+  br i1 %4, label %.lr.ph, label %._crit_edge
 
-for.cond:                                         ; preds = %for.body
-  %1 = load i32* @is_protein.naa, align 4, !tbaa !3
-  %2 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %2, %1
-  br i1 %cmp, label %for.body, label %return
+.lr.ph:                                           ; preds = %.preheader
+  %5 = load i8*** @is_protein.aas, align 8, !tbaa !17
+  %6 = sext i32 %3 to i64
+  br label %9
 
-for.body:                                         ; preds = %for.cond.preheader, %for.cond
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %for.cond.preheader ]
-  %3 = load i8*** @is_protein.aas, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i8** %3, i64 %indvars.iv
-  %4 = load i8** %arrayidx, align 8, !tbaa !0
-  %call1 = tail call i32 @gmx_strcasecmp(i8* %4, i8* %resnm) #6
-  %cmp2 = icmp eq i32 %call1, 0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp2, label %return, label %for.cond
+; <label>:7                                       ; preds = %9
+  %8 = icmp slt i64 %indvars.iv.next, %6
+  br i1 %8, label %9, label %._crit_edge
 
-return:                                           ; preds = %for.cond, %for.body, %for.cond.preheader
-  %retval.0 = phi i32 [ 0, %for.cond.preheader ], [ 1, %for.body ], [ 0, %for.cond ]
-  ret i32 %retval.0
+; <label>:9                                       ; preds = %.lr.ph, %7
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %7 ]
+  %10 = getelementptr inbounds i8** %5, i64 %indvars.iv
+  %11 = load i8** %10, align 8, !tbaa !17
+  %12 = tail call i32 @strcasecmp(i8* %11, i8* %resnm) #7
+  %13 = icmp eq i32 %12, 0
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  br i1 %13, label %._crit_edge, label %7
+
+._crit_edge:                                      ; preds = %9, %7, %.preheader
+  %.0 = phi i32 [ 0, %.preheader ], [ 1, %9 ], [ 0, %7 ]
+  ret i32 %.0
 }

@@ -1,62 +1,67 @@
-define %struct.t_complex*** @mk_cgrid(i32 %nx, i32 %ny, i32 %nz) #0 {
-entry:
-  %mul = mul nsw i32 %ny, %nx
-  %mul1 = mul nsw i32 %mul, %nz
-  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 350, i32 %mul1, i32 8) #4
-  %0 = bitcast i8* %call to %struct.t_complex*
-  %call3 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 351, i32 %mul, i32 8) #4
-  %1 = bitcast i8* %call3 to %struct.t_complex**
-  %call4 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 352, i32 %nx, i32 8) #4
-  %2 = bitcast i8* %call4 to %struct.t_complex***
-  %cmp37 = icmp sgt i32 %nx, 0
-  br i1 %cmp37, label %for.body.lr.ph, label %for.end17
+define %struct.t_complex*** @mk_cgrid(i32 %nx, i32 %ny, i32 %nz) #4 {
+  %1 = mul nsw i32 %ny, %nx
+  %2 = mul nsw i32 %1, %nz
+  %3 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str1, i64 0, i64 0), i32 350, i32 %2, i32 8) #7
+  %4 = bitcast i8* %3 to %struct.t_complex*
+  %5 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str1, i64 0, i64 0), i32 351, i32 %1, i32 8) #7
+  %6 = bitcast i8* %5 to %struct.t_complex**
+  %7 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str1, i64 0, i64 0), i32 352, i32 %nx, i32 8) #7
+  %8 = bitcast i8* %7 to %struct.t_complex***
+  %9 = icmp sgt i32 %nx, 0
+  br i1 %9, label %.lr.ph9, label %._crit_edge10
 
-for.body.lr.ph:                                   ; preds = %entry
-  %cmp832 = icmp sgt i32 %ny, 0
-  %3 = sext i32 %nz to i64
-  %4 = mul i32 %nz, %ny
-  br label %for.body
+.lr.ph9:                                          ; preds = %0
+  %10 = icmp sgt i32 %ny, 0
+  %11 = sext i32 %nz to i64
+  %12 = add i32 %ny, -1
+  %13 = zext i32 %12 to i64
+  %14 = add nuw nsw i64 %13, 1
+  %15 = mul i64 %14, %11
+  %16 = add i32 %nx, -1
+  br label %17
 
-for.body:                                         ; preds = %for.inc15, %for.body.lr.ph
-  %indvars.iv43 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next44, %for.inc15 ]
-  %n3.040 = phi i32 [ 0, %for.body.lr.ph ], [ %n3.1.lcssa, %for.inc15 ]
-  %n2.039 = phi i32 [ 0, %for.body.lr.ph ], [ %n2.1.lcssa, %for.inc15 ]
-  %idxprom = sext i32 %n2.039 to i64
-  %arrayidx = getelementptr inbounds %struct.t_complex** %1, i64 %idxprom
-  %arrayidx6 = getelementptr inbounds %struct.t_complex*** %2, i64 %indvars.iv43
-  store %struct.t_complex** %arrayidx, %struct.t_complex*** %arrayidx6, align 8, !tbaa !3
-  br i1 %cmp832, label %for.body9.lr.ph, label %for.inc15
+; <label>:17                                      ; preds = %30, %.lr.ph9
+  %indvars.iv14 = phi i64 [ 0, %.lr.ph9 ], [ %indvars.iv.next15, %30 ]
+  %n3.07 = phi i32 [ 0, %.lr.ph9 ], [ %n3.1.lcssa, %30 ]
+  %n2.06 = phi i32 [ 0, %.lr.ph9 ], [ %n2.1.lcssa, %30 ]
+  %18 = sext i32 %n2.06 to i64
+  %19 = getelementptr inbounds %struct.t_complex** %6, i64 %18
+  %20 = getelementptr inbounds %struct.t_complex*** %8, i64 %indvars.iv14
+  store %struct.t_complex** %19, %struct.t_complex*** %20, align 8, !tbaa !32
+  br i1 %10, label %.lr.ph, label %30
 
-for.body9.lr.ph:                                  ; preds = %for.body
-  %5 = sext i32 %n3.040 to i64
-  %6 = add i32 %n2.039, %ny
-  br label %for.body9
+.lr.ph:                                           ; preds = %17
+  %21 = sext i32 %n3.07 to i64
+  %22 = add nsw i64 %14, %18
+  br label %23
 
-for.body9:                                        ; preds = %for.body9, %for.body9.lr.ph
-  %indvars.iv41 = phi i64 [ %idxprom, %for.body9.lr.ph ], [ %indvars.iv.next42, %for.body9 ]
-  %indvars.iv = phi i64 [ %5, %for.body9.lr.ph ], [ %indvars.iv.next, %for.body9 ]
-  %j.033 = phi i32 [ 0, %for.body9.lr.ph ], [ %inc, %for.body9 ]
-  %arrayidx11 = getelementptr inbounds %struct.t_complex* %0, i64 %indvars.iv
-  %arrayidx13 = getelementptr inbounds %struct.t_complex** %1, i64 %indvars.iv41
-  store %struct.t_complex* %arrayidx11, %struct.t_complex** %arrayidx13, align 8, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, %3
-  %inc = add nsw i32 %j.033, 1
-  %indvars.iv.next42 = add i64 %indvars.iv41, 1
-  %exitcond = icmp eq i32 %inc, %ny
-  br i1 %exitcond, label %for.cond7.for.inc15_crit_edge, label %for.body9
+; <label>:23                                      ; preds = %23, %.lr.ph
+  %indvars.iv12 = phi i64 [ %18, %.lr.ph ], [ %indvars.iv.next13, %23 ]
+  %indvars.iv = phi i64 [ %21, %.lr.ph ], [ %indvars.iv.next, %23 ]
+  %j.01 = phi i32 [ 0, %.lr.ph ], [ %26, %23 ]
+  %24 = getelementptr inbounds %struct.t_complex* %4, i64 %indvars.iv
+  %25 = getelementptr inbounds %struct.t_complex** %6, i64 %indvars.iv12
+  store %struct.t_complex* %24, %struct.t_complex** %25, align 8, !tbaa !32
+  %indvars.iv.next = add i64 %indvars.iv, %11
+  %26 = add nuw nsw i32 %j.01, 1
+  %indvars.iv.next13 = add nsw i64 %indvars.iv12, 1
+  %exitcond = icmp eq i32 %j.01, %12
+  br i1 %exitcond, label %._crit_edge, label %23
 
-for.cond7.for.inc15_crit_edge:                    ; preds = %for.body9
-  %7 = add i32 %4, %n3.040
-  br label %for.inc15
+._crit_edge:                                      ; preds = %23
+  %27 = add i64 %15, %21
+  %28 = trunc i64 %22 to i32
+  %29 = trunc i64 %27 to i32
+  br label %30
 
-for.inc15:                                        ; preds = %for.cond7.for.inc15_crit_edge, %for.body
-  %n3.1.lcssa = phi i32 [ %7, %for.cond7.for.inc15_crit_edge ], [ %n3.040, %for.body ]
-  %n2.1.lcssa = phi i32 [ %6, %for.cond7.for.inc15_crit_edge ], [ %n2.039, %for.body ]
-  %indvars.iv.next44 = add i64 %indvars.iv43, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next44 to i32
-  %exitcond45 = icmp eq i32 %lftr.wideiv, %nx
-  br i1 %exitcond45, label %for.end17, label %for.body
+; <label>:30                                      ; preds = %._crit_edge, %17
+  %n3.1.lcssa = phi i32 [ %29, %._crit_edge ], [ %n3.07, %17 ]
+  %n2.1.lcssa = phi i32 [ %28, %._crit_edge ], [ %n2.06, %17 ]
+  %indvars.iv.next15 = add nuw nsw i64 %indvars.iv14, 1
+  %lftr.wideiv = trunc i64 %indvars.iv14 to i32
+  %exitcond16 = icmp eq i32 %lftr.wideiv, %16
+  br i1 %exitcond16, label %._crit_edge10, label %17
 
-for.end17:                                        ; preds = %for.inc15, %entry
-  ret %struct.t_complex*** %2
+._crit_edge10:                                    ; preds = %30, %0
+  ret %struct.t_complex*** %8
 }

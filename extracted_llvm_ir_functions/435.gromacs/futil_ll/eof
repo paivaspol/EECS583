@@ -1,18 +1,17 @@
-define i32 @eof(%struct._IO_FILE* nocapture %fp) #0 {
-entry:
+define i32 @eof(%struct.__sFILE* nocapture %fp) #1 {
   %data = alloca [4 x i8], align 1
-  %arraydecay = getelementptr inbounds [4 x i8]* %data, i64 0, i64 0
-  %call2 = call i64 @fread(i8* %arraydecay, i64 1, i64 1, %struct._IO_FILE* %fp) #6
-  %conv = trunc i64 %call2 to i32
-  %cmp = icmp eq i32 %conv, 1
-  br i1 %cmp, label %if.then4, label %return
+  %1 = getelementptr inbounds [4 x i8]* %data, i64 0, i64 0
+  %2 = call i64 @fread(i8* %1, i64 1, i64 1, %struct.__sFILE* %fp) #8
+  %3 = trunc i64 %2 to i32
+  %4 = icmp eq i32 %3, 1
+  br i1 %4, label %5, label %7
 
-if.then4:                                         ; preds = %entry
-  %call5 = call i32 @fseek(%struct._IO_FILE* %fp, i64 -1, i32 1) #6
-  br label %return
+; <label>:5                                       ; preds = %0
+  %6 = tail call i32 @fseek(%struct.__sFILE* %fp, i64 -1, i32 1) #8
+  br label %7
 
-return:                                           ; preds = %entry, %if.then4
-  %lnot = icmp eq i32 %conv, 0
-  %lnot.ext = zext i1 %lnot to i32
-  ret i32 %lnot.ext
+; <label>:7                                       ; preds = %0, %5
+  %8 = icmp eq i32 %3, 0
+  %9 = zext i1 %8 to i32
+  ret i32 %9
 }

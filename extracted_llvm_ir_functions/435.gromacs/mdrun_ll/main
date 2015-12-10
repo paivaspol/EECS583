@@ -1,195 +1,197 @@
-define i32 @main(i32 %argc, i8** %argv) #0 {
-entry:
-  %argc.addr = alloca i32, align 4
-  %argv.addr = alloca i8**, align 8
+define i32 @main(i32 %argc, i8** %argv) #4 {
+  %1 = alloca i32, align 4
+  %2 = alloca i8**, align 8
   %edyn = alloca %struct.t_edsamyn, align 8
-  store i32 %argc, i32* %argc.addr, align 4, !tbaa !0
-  store i8** %argv, i8*** %argv.addr, align 8, !tbaa !3
-  %call = call %struct.t_commrec* @init_par(i32* %argc.addr, i8*** %argv.addr) #3
-  %bEdsam = getelementptr inbounds %struct.t_edsamyn* %edyn, i64 0, i32 0
-  store i32 0, i32* %bEdsam, align 8, !tbaa !0
-  %nodeid = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 0
-  %0 = load i32* %nodeid, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 0
-  br i1 %cmp, label %land.lhs.true, label %if.end5
+  store i32 %argc, i32* %1, align 4, !tbaa !18
+  store i8** %argv, i8*** %2, align 8, !tbaa !19
+  %3 = call %struct.t_commrec* @init_par(i32* %1, i8*** %2) #6
+  %4 = getelementptr inbounds %struct.t_edsamyn* %edyn, i64 0, i32 0
+  store i32 0, i32* %4, align 8, !tbaa !20
+  %5 = getelementptr inbounds %struct.t_commrec* %3, i64 0, i32 0
+  %6 = load i32* %5, align 4, !tbaa !22
+  %7 = icmp eq i32 %6, 0
+  br i1 %7, label %8, label %.loopexit
 
-land.lhs.true:                                    ; preds = %entry
-  %threadid = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 4
-  %1 = load i32* %threadid, align 4, !tbaa !0
-  %cmp1 = icmp eq i32 %1, 0
-  br i1 %cmp1, label %for.cond.preheader, label %if.end5
+; <label>:8                                       ; preds = %0
+  %9 = getelementptr inbounds %struct.t_commrec* %3, i64 0, i32 4
+  %10 = load i32* %9, align 4, !tbaa !24
+  %11 = icmp eq i32 %10, 0
+  br i1 %11, label %.preheader, label %.loopexit
 
-for.cond.preheader:                               ; preds = %land.lhs.true
-  %2 = load i32* %argc.addr, align 4, !tbaa !0
-  %cmp290 = icmp sgt i32 %2, 1
-  br i1 %cmp290, label %for.body.lr.ph, label %if.end5
+.preheader:                                       ; preds = %8
+  %12 = load i32* %1, align 4, !tbaa !18
+  %13 = icmp sgt i32 %12, 1
+  br i1 %13, label %.lr.ph, label %.loopexit
 
-for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %3 = load i8*** %argv.addr, align 8, !tbaa !3
-  br label %for.body
+.lr.ph:                                           ; preds = %.preheader
+  %14 = load i8*** %2, align 8, !tbaa !19
+  %15 = sext i32 %12 to i64
+  br label %16
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.body
-  %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %pca_quiet.091 = phi i64 [ 4096, %for.body.lr.ph ], [ %.pca_quiet.0, %for.body ]
-  %arrayidx = getelementptr inbounds i8** %3, i64 %indvars.iv
-  %4 = load i8** %arrayidx, align 8, !tbaa !3
-  %call3 = call i32 @strncmp(i8* getelementptr inbounds ([3 x i8]* @.str102, i64 0, i64 0), i8* %4, i64 2) #4
-  %tobool = icmp eq i32 %call3, 0
-  %.pca_quiet.0 = select i1 %tobool, i64 0, i64 %pca_quiet.091
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %5 = trunc i64 %indvars.iv.next to i32
-  %cmp2 = icmp slt i32 %5, %2
-  br i1 %cmp2, label %for.body, label %if.end5
+; <label>:16                                      ; preds = %.lr.ph, %16
+  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %16 ]
+  %pca_quiet.04 = phi i64 [ 4096, %.lr.ph ], [ %.pca_quiet.0, %16 ]
+  %17 = getelementptr inbounds i8** %14, i64 %indvars.iv
+  %18 = load i8** %17, align 8, !tbaa !19
+  %19 = call i32 @strncmp(i8* getelementptr inbounds ([3 x i8]* @.str102, i64 0, i64 0), i8* %18, i64 2) #6
+  %20 = icmp eq i32 %19, 0
+  %.pca_quiet.0 = select i1 %20, i64 0, i64 %pca_quiet.04
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %21 = icmp slt i64 %indvars.iv.next, %15
+  br i1 %21, label %16, label %.loopexit.loopexit
 
-if.end5:                                          ; preds = %for.cond.preheader, %for.body, %land.lhs.true, %entry
-  %pca_quiet.2 = phi i64 [ 4096, %entry ], [ 4096, %land.lhs.true ], [ 4096, %for.cond.preheader ], [ %.pca_quiet.0, %for.body ]
-  %6 = load i8*** %argv.addr, align 8, !tbaa !3
-  %or = or i64 %pca_quiet.2, 11520
-  call void @parse_common_args(i32* %argc.addr, i8** %6, i64 %or, i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0), i32 8, %struct.t_pargs* getelementptr inbounds ([8 x %struct.t_pargs]* @main.pa, i64 0, i64 0), i32 63, i8** getelementptr inbounds ([63 x i8*]* @main.desc, i64 0, i64 0), i32 0, i8** null) #3
-  %7 = load i32* @main.bVerbose, align 4, !tbaa !0
-  %tobool6 = icmp eq i32 %7, 0
-  br i1 %tobool6, label %land.end12, label %land.rhs
+.loopexit.loopexit:                               ; preds = %16
+  %phitmp = or i64 %.pca_quiet.0, 11520
+  br label %.loopexit
 
-land.rhs:                                         ; preds = %if.end5
-  %8 = load i32* %nodeid, align 4, !tbaa !0
-  %cmp8 = icmp eq i32 %8, 0
-  br i1 %cmp8, label %land.rhs9, label %land.end12
+.loopexit:                                        ; preds = %.loopexit.loopexit, %.preheader, %8, %0
+  %pca_quiet.2 = phi i64 [ 15616, %8 ], [ 15616, %0 ], [ 15616, %.preheader ], [ %phitmp, %.loopexit.loopexit ]
+  %22 = load i8*** %2, align 8, !tbaa !19
+  call void @parse_common_args(i32* %1, i8** %22, i64 %pca_quiet.2, i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0), i32 8, %struct.t_pargs* getelementptr inbounds ([8 x %struct.t_pargs]* @main.pa, i64 0, i64 0), i32 63, i8** getelementptr inbounds ([63 x i8*]* @main.desc, i64 0, i64 0), i32 0, i8** null) #6
+  %23 = load i32* @main.bVerbose, align 4, !tbaa !18
+  %24 = icmp eq i32 %23, 0
+  br i1 %24, label %32, label %25
 
-land.rhs9:                                        ; preds = %land.rhs
-  %threadid10 = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 4
-  %9 = load i32* %threadid10, align 4, !tbaa !0
-  %cmp11 = icmp eq i32 %9, 0
-  br label %land.end12
+; <label>:25                                      ; preds = %.loopexit
+  %26 = load i32* %5, align 4, !tbaa !22
+  %27 = icmp eq i32 %26, 0
+  br i1 %27, label %28, label %32
 
-land.end12:                                       ; preds = %if.end5, %land.rhs, %land.rhs9
-  %10 = phi i1 [ false, %if.end5 ], [ false, %land.rhs ], [ %cmp11, %land.rhs9 ]
-  %land.ext = zext i1 %10 to i32
-  store i32 %land.ext, i32* @main.bVerbose, align 4, !tbaa !0
-  %11 = load i32* @main.nnodes, align 4, !tbaa !0
-  %cmp13 = icmp sgt i32 %11, 1
-  br i1 %cmp13, label %if.then14, label %if.end15
+; <label>:28                                      ; preds = %25
+  %29 = getelementptr inbounds %struct.t_commrec* %3, i64 0, i32 4
+  %30 = load i32* %29, align 4, !tbaa !24
+  %31 = icmp eq i32 %30, 0
+  br label %32
 
-if.then14:                                        ; preds = %land.end12
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([62 x i8]* @.str116, i64 0, i64 0)) #3
-  %.pr = load i32* @main.bVerbose, align 4, !tbaa !0
-  br label %if.end15
+; <label>:32                                      ; preds = %.loopexit, %25, %28
+  %33 = phi i1 [ false, %.loopexit ], [ false, %25 ], [ %31, %28 ]
+  %34 = zext i1 %33 to i32
+  store i32 %34, i32* @main.bVerbose, align 4, !tbaa !18
+  %35 = load i32* @main.nnodes, align 4, !tbaa !18
+  %36 = icmp sgt i32 %35, 1
+  br i1 %36, label %37, label %38
 
-if.end15:                                         ; preds = %if.then14, %land.end12
-  %12 = phi i32 [ %.pr, %if.then14 ], [ %land.ext, %land.end12 ]
-  %tobool16 = icmp eq i32 %12, 0
-  br i1 %tobool16, label %if.end19, label %if.then17
+; <label>:37                                      ; preds = %32
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([62 x i8]* @.str116, i64 0, i64 0)) #6
+  %.pr = load i32* @main.bVerbose, align 4, !tbaa !18
+  br label %38
 
-if.then17:                                        ; preds = %if.end15
-  %call18 = call i8* @ftp2fn(i32 18, i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0)) #3
-  call void @open_log(i8* %call18, %struct.t_commrec* %call) #3
-  br label %if.end19
+; <label>:38                                      ; preds = %37, %32
+  %39 = phi i32 [ %.pr, %37 ], [ %34, %32 ]
+  %40 = icmp eq i32 %39, 0
+  br i1 %40, label %43, label %41
 
-if.end19:                                         ; preds = %if.end15, %if.then17
-  %13 = load i32* @main.bMultiSim, align 4, !tbaa !0
-  %tobool20 = icmp eq i32 %13, 0
-  br i1 %tobool20, label %if.end26, label %land.lhs.true21
+; <label>:41                                      ; preds = %38
+  %42 = call i8* @ftp2fn(i32 18, i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0)) #6
+  call void @open_log(i8* %42, %struct.t_commrec* %3) #6
+  br label %43
 
-land.lhs.true21:                                  ; preds = %if.end19
-  %nnodes = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 1
-  %14 = load i32* %nnodes, align 4, !tbaa !0
-  %cmp22 = icmp sgt i32 %14, 1
-  br i1 %cmp22, label %if.then24, label %lor.lhs.false
+; <label>:43                                      ; preds = %38, %41
+  %44 = load i32* @main.bMultiSim, align 4, !tbaa !18
+  %45 = icmp eq i32 %44, 0
+  br i1 %45, label %56, label %46
 
-lor.lhs.false:                                    ; preds = %land.lhs.true21
-  %nthreads = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 5
-  %15 = load i32* %nthreads, align 4, !tbaa !0
-  %cmp23 = icmp sgt i32 %15, 1
-  br i1 %cmp23, label %if.then24, label %if.end26
+; <label>:46                                      ; preds = %43
+  %47 = getelementptr inbounds %struct.t_commrec* %3, i64 0, i32 1
+  %48 = load i32* %47, align 4, !tbaa !25
+  %49 = icmp sgt i32 %48, 1
+  br i1 %49, label %54, label %50
 
-if.then24:                                        ; preds = %lor.lhs.false, %land.lhs.true21
-  %call25 = call %struct.t_commrec* @init_multisystem(%struct.t_commrec* %call, i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0)) #3
-  br label %if.end26
+; <label>:50                                      ; preds = %46
+  %51 = getelementptr inbounds %struct.t_commrec* %3, i64 0, i32 5
+  %52 = load i32* %51, align 4, !tbaa !26
+  %53 = icmp sgt i32 %52, 1
+  br i1 %53, label %54, label %56
 
-if.end26:                                         ; preds = %lor.lhs.false, %if.end19, %if.then24
-  %mcr.0 = phi %struct.t_commrec* [ %call25, %if.then24 ], [ null, %if.end19 ], [ null, %lor.lhs.false ]
-  %16 = load i32* %nodeid, align 4, !tbaa !0
-  %cmp28 = icmp eq i32 %16, 0
-  br i1 %cmp28, label %land.lhs.true29, label %if.end36
+; <label>:54                                      ; preds = %50, %46
+  %55 = call %struct.t_commrec* @init_multisystem(%struct.t_commrec* %3, i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0)) #6
+  br label %56
 
-land.lhs.true29:                                  ; preds = %if.end26
-  %threadid30 = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 4
-  %17 = load i32* %threadid30, align 4, !tbaa !0
-  %cmp31 = icmp eq i32 %17, 0
-  %18 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
-  %cmp33 = icmp ne %struct._IO_FILE* %18, null
-  %or.cond = and i1 %cmp31, %cmp33
-  br i1 %or.cond, label %if.then34, label %if.end36
+; <label>:56                                      ; preds = %50, %43, %54
+  %mcr.0 = phi %struct.t_commrec* [ %55, %54 ], [ null, %43 ], [ null, %50 ]
+  %57 = load i32* %5, align 4, !tbaa !22
+  %58 = icmp eq i32 %57, 0
+  br i1 %58, label %59, label %70
 
-if.then34:                                        ; preds = %land.lhs.true29
-  %19 = load i8*** %argv.addr, align 8, !tbaa !3
-  %20 = load i8** %19, align 8, !tbaa !3
-  call void @CopyRight(%struct._IO_FILE* %18, i8* %20) #3
-  %21 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
-  call void @please_cite(%struct._IO_FILE* %21, i8* getelementptr inbounds ([13 x i8]* @.str117, i64 0, i64 0)) #3
-  %22 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
-  call void @please_cite(%struct._IO_FILE* %22, i8* getelementptr inbounds ([13 x i8]* @.str118, i64 0, i64 0)) #3
-  br label %if.end36
+; <label>:59                                      ; preds = %56
+  %60 = getelementptr inbounds %struct.t_commrec* %3, i64 0, i32 4
+  %61 = load i32* %60, align 4, !tbaa !24
+  %62 = icmp eq i32 %61, 0
+  %63 = load %struct.__sFILE** @stdlog, align 8
+  %64 = icmp ne %struct.__sFILE* %63, null
+  %or.cond = and i1 %62, %64
+  br i1 %or.cond, label %65, label %70
 
-if.end36:                                         ; preds = %if.then34, %land.lhs.true29, %if.end26
-  %call37 = call i32 @opt2bSet(i8* getelementptr inbounds ([4 x i8]* @.str77, i64 0, i64 0), i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0)) #3
-  %tobool38 = icmp eq i32 %call37, 0
-  br i1 %tobool38, label %if.end40, label %if.then39
+; <label>:65                                      ; preds = %59
+  %66 = load i8*** %2, align 8, !tbaa !19
+  %67 = load i8** %66, align 8, !tbaa !19
+  call void @CopyRight(%struct.__sFILE* %63, i8* %67) #6
+  %68 = load %struct.__sFILE** @stdlog, align 8, !tbaa !19
+  call void @please_cite(%struct.__sFILE* %68, i8* getelementptr inbounds ([13 x i8]* @.str117, i64 0, i64 0)) #6
+  %69 = load %struct.__sFILE** @stdlog, align 8, !tbaa !19
+  call void @please_cite(%struct.__sFILE* %69, i8* getelementptr inbounds ([13 x i8]* @.str118, i64 0, i64 0)) #6
+  br label %70
 
-if.then39:                                        ; preds = %if.end36
-  call void @ed_open(i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0), %struct.t_edsamyn* %edyn) #3
-  br label %if.end40
+; <label>:70                                      ; preds = %65, %59, %56
+  %71 = call i32 @opt2bSet(i8* getelementptr inbounds ([4 x i8]* @.str77, i64 0, i64 0), i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0)) #6
+  %72 = icmp eq i32 %71, 0
+  br i1 %72, label %74, label %73
 
-if.end40:                                         ; preds = %if.end36, %if.then39
-  %call41 = call i32 @opt2bSet(i8* getelementptr inbounds ([7 x i8]* @.str75, i64 0, i64 0), i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0)) #3
-  %tobool42 = icmp ne i32 %call41, 0
-  %conv = select i1 %tobool42, i64 16, i64 0
-  %23 = load i32* @main.bSepDVDL, align 4, !tbaa !0
-  %tobool43 = icmp ne i32 %23, 0
-  %conv45 = select i1 %tobool43, i64 128, i64 0
-  %or46 = or i64 %conv45, %conv
-  %24 = load i32* @main.bIonize, align 4, !tbaa !0
-  %tobool47 = icmp ne i32 %24, 0
-  %conv49 = select i1 %tobool47, i64 8, i64 0
-  %or50 = or i64 %or46, %conv49
-  %25 = load i32* @main.bMultiSim, align 4, !tbaa !0
-  %tobool51 = icmp ne i32 %25, 0
-  %conv53 = zext i1 %tobool51 to i64
-  %or54 = or i64 %or50, %conv53
-  %26 = load i32* @main.bGlas, align 4, !tbaa !0
-  %tobool55 = icmp ne i32 %26, 0
-  %conv57 = select i1 %tobool55, i64 2, i64 0
-  %or58 = or i64 %or54, %conv57
-  %27 = load i32* @main.bVerbose, align 4, !tbaa !0
-  %28 = load i32* @main.bCompact, align 4, !tbaa !0
-  %29 = load i32* @main.nstepout, align 4, !tbaa !0
-  call void @mdrunner(%struct.t_commrec* %call, %struct.t_commrec* %mcr.0, i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0), i32 %27, i32 %28, i32 0, i32 %29, %struct.t_edsamyn* %edyn, i64 %or58) #3
-  %30 = load i32* @gmx_parallel, align 4, !tbaa !0
-  %tobool59 = icmp eq i32 %30, 0
-  br i1 %tobool59, label %if.end61, label %if.then60
+; <label>:73                                      ; preds = %70
+  call void @ed_open(i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0), %struct.t_edsamyn* %edyn) #6
+  br label %74
 
-if.then60:                                        ; preds = %if.end40
-  call void @gmx_finalize() #3
-  br label %if.end61
+; <label>:74                                      ; preds = %70, %73
+  %75 = call i32 @opt2bSet(i8* getelementptr inbounds ([7 x i8]* @.str75, i64 0, i64 0), i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0)) #6
+  %76 = icmp ne i32 %75, 0
+  %77 = select i1 %76, i64 16, i64 0
+  %78 = load i32* @main.bSepDVDL, align 4, !tbaa !18
+  %79 = icmp ne i32 %78, 0
+  %80 = select i1 %79, i64 128, i64 0
+  %81 = or i64 %80, %77
+  %82 = load i32* @main.bIonize, align 4, !tbaa !18
+  %83 = icmp ne i32 %82, 0
+  %84 = select i1 %83, i64 8, i64 0
+  %85 = or i64 %81, %84
+  %86 = load i32* @main.bMultiSim, align 4, !tbaa !18
+  %87 = icmp ne i32 %86, 0
+  %88 = zext i1 %87 to i64
+  %89 = or i64 %85, %88
+  %90 = load i32* @main.bGlas, align 4, !tbaa !18
+  %91 = icmp ne i32 %90, 0
+  %92 = select i1 %91, i64 2, i64 0
+  %93 = or i64 %89, %92
+  %94 = load i32* @main.bVerbose, align 4, !tbaa !18
+  %95 = load i32* @main.bCompact, align 4, !tbaa !18
+  %96 = load i32* @main.nstepout, align 4, !tbaa !18
+  call void @mdrunner(%struct.t_commrec* %3, %struct.t_commrec* %mcr.0, i32 22, %struct.t_filenm* getelementptr inbounds ([22 x %struct.t_filenm]* @main.fnm, i64 0, i64 0), i32 %94, i32 %95, i32 0, i32 %96, %struct.t_edsamyn* %edyn, i64 %93) #6
+  %97 = load i32* @gmx_parallel, align 4, !tbaa !18
+  %98 = icmp eq i32 %97, 0
+  br i1 %98, label %100, label %99
 
-if.end61:                                         ; preds = %if.end40, %if.then60
-  %31 = load i32* %nodeid, align 4, !tbaa !0
-  %cmp63 = icmp eq i32 %31, 0
-  br i1 %cmp63, label %land.lhs.true65, label %if.end72
+; <label>:99                                      ; preds = %74
+  call void @gmx_finalize() #6
+  br label %100
 
-land.lhs.true65:                                  ; preds = %if.end61
-  %threadid66 = getelementptr inbounds %struct.t_commrec* %call, i64 0, i32 4
-  %32 = load i32* %threadid66, align 4, !tbaa !0
-  %cmp67 = icmp eq i32 %32, 0
-  %33 = load i32* @main.bVerbose, align 4, !tbaa !0
-  %tobool70 = icmp ne i32 %33, 0
-  %or.cond73 = and i1 %cmp67, %tobool70
-  br i1 %or.cond73, label %if.then71, label %if.end72
+; <label>:100                                     ; preds = %74, %99
+  %101 = load i32* %5, align 4, !tbaa !22
+  %102 = icmp eq i32 %101, 0
+  br i1 %102, label %103, label %111
 
-if.then71:                                        ; preds = %land.lhs.true65
-  %34 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  call void @thanx(%struct._IO_FILE* %34) #3
-  br label %if.end72
+; <label>:103                                     ; preds = %100
+  %104 = getelementptr inbounds %struct.t_commrec* %3, i64 0, i32 4
+  %105 = load i32* %104, align 4, !tbaa !24
+  %106 = icmp eq i32 %105, 0
+  %107 = load i32* @main.bVerbose, align 4
+  %108 = icmp ne i32 %107, 0
+  %or.cond3 = and i1 %106, %108
+  br i1 %or.cond3, label %109, label %111
 
-if.end72:                                         ; preds = %if.then71, %land.lhs.true65, %if.end61
+; <label>:109                                     ; preds = %103
+  %110 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !19
+  call void @thanx(%struct.__sFILE* %110) #6
+  br label %111
+
+; <label>:111                                     ; preds = %109, %103, %100
   ret i32 0
 }

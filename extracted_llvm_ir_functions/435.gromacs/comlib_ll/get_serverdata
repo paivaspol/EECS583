@@ -1,28 +1,27 @@
 define void @get_serverdata(i8* nocapture %data, i32 %size) #0 {
-entry:
-  %cmp2 = icmp sgt i32 %size, 0
-  br i1 %cmp2, label %while.cond.i.preheader, label %for.end
+  %1 = icmp sgt i32 %size, 0
+  br i1 %1, label %.preheader, label %._crit_edge
 
-while.cond.i.preheader:                           ; preds = %entry, %get_serverbyte.exit
-  %p.04 = phi i8* [ %incdec.ptr, %get_serverbyte.exit ], [ %data, %entry ]
-  %size.addr.03 = phi i32 [ %dec, %get_serverbyte.exit ], [ %size, %entry ]
-  br label %while.cond.i
+.preheader:                                       ; preds = %0, %get_serverbyte.exit
+  %p.02 = phi i8* [ %7, %get_serverbyte.exit ], [ %data, %0 ]
+  %.01 = phi i32 [ %8, %get_serverbyte.exit ], [ %size, %0 ]
+  br label %2
 
-while.cond.i:                                     ; preds = %while.cond.i.preheader, %while.cond.i
-  %0 = load volatile i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !0
-  %and.i = and i8 %0, 1
-  %cmp.i = icmp eq i8 %and.i, 0
-  br i1 %cmp.i, label %while.cond.i, label %get_serverbyte.exit
+; <label>:2                                       ; preds = %.preheader, %2
+  %3 = load volatile i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !2
+  %4 = and i8 %3, 1
+  %5 = icmp eq i8 %4, 0
+  br i1 %5, label %2, label %get_serverbyte.exit
 
-get_serverbyte.exit:                              ; preds = %while.cond.i
-  %1 = load volatile i8* inttoptr (i64 2952794320 to i8*), align 16, !tbaa !0
-  store volatile i8 0, i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !0
-  %incdec.ptr = getelementptr inbounds i8* %p.04, i64 1
-  store i8 %1, i8* %p.04, align 1, !tbaa !0
-  %dec = add nsw i32 %size.addr.03, -1
-  %cmp = icmp sgt i32 %dec, 0
-  br i1 %cmp, label %while.cond.i.preheader, label %for.end
+get_serverbyte.exit:                              ; preds = %2
+  %6 = load volatile i8* inttoptr (i64 2952794320 to i8*), align 16, !tbaa !2
+  store volatile i8 0, i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !2
+  %7 = getelementptr inbounds i8* %p.02, i64 1
+  store i8 %6, i8* %p.02, align 1, !tbaa !2
+  %8 = add nsw i32 %.01, -1
+  %9 = icmp sgt i32 %.01, 1
+  br i1 %9, label %.preheader, label %._crit_edge
 
-for.end:                                          ; preds = %get_serverbyte.exit, %entry
+._crit_edge:                                      ; preds = %get_serverbyte.exit, %0
   ret void
 }

@@ -1,0 +1,16 @@
+define i32 @CCTK_RegisterGHExtensionScheduleTraverseGH(i32 %handle, i32 (%struct.cGH*, i8*)* %func) #1 {
+  %1 = load %struct.cHandledData** @GHExtensions, align 8, !tbaa !2
+  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #5
+  %3 = icmp eq i8* %2, null
+  br i1 %3, label %7, label %4
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds i8* %2, i64 16
+  %6 = bitcast i8* %5 to i32 (%struct.cGH*, i8*)**
+  store i32 (%struct.cGH*, i8*)* %func, i32 (%struct.cGH*, i8*)** %6, align 8, !tbaa !11
+  br label %7
+
+; <label>:7                                       ; preds = %0, %4
+  %return_code.0 = phi i32 [ 1, %4 ], [ 0, %0 ]
+  ret i32 %return_code.0
+}

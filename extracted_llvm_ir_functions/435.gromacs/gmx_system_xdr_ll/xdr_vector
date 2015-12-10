@@ -1,0 +1,25 @@
+define i32 @xdr_vector(%struct.XDR* %xdrs, i8* %basep, i32 %nelem, i32 %elemsize, i32 (%struct.XDR*, i8*, ...)* nocapture %xdr_elem) #0 {
+  %1 = icmp eq i32 %nelem, 0
+  br i1 %1, label %._crit_edge, label %.lr.ph
+
+.lr.ph:                                           ; preds = %0
+  %2 = zext i32 %elemsize to i64
+  br label %3
+
+; <label>:3                                       ; preds = %.lr.ph, %6
+  %elptr.02 = phi i8* [ %basep, %.lr.ph ], [ %7, %6 ]
+  %i.01 = phi i32 [ 0, %.lr.ph ], [ %8, %6 ]
+  %4 = tail call i32 (%struct.XDR*, i8*, ...)* %xdr_elem(%struct.XDR* %xdrs, i8* %elptr.02, i32 -1) #6
+  %5 = icmp eq i32 %4, 0
+  br i1 %5, label %._crit_edge, label %6
+
+; <label>:6                                       ; preds = %3
+  %7 = getelementptr inbounds i8* %elptr.02, i64 %2
+  %8 = add nuw i32 %i.01, 1
+  %9 = icmp ult i32 %8, %nelem
+  br i1 %9, label %3, label %._crit_edge
+
+._crit_edge:                                      ; preds = %3, %6, %0
+  %.0 = phi i32 [ 1, %0 ], [ 0, %3 ], [ 1, %6 ]
+  ret i32 %.0
+}

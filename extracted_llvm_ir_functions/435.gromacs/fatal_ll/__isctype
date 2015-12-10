@@ -1,0 +1,18 @@
+define i32 @__isctype(i32 %_c, i64 %_f) #5 {
+  %1 = icmp ugt i32 %_c, 255
+  br i1 %1, label %10, label %2
+
+; <label>:2                                       ; preds = %0
+  %3 = sext i32 %_c to i64
+  %4 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %3
+  %5 = load i32* %4, align 4, !tbaa !14
+  %6 = zext i32 %5 to i64
+  %7 = and i64 %6, %_f
+  %8 = icmp ne i64 %7, 0
+  %9 = zext i1 %8 to i32
+  br label %10
+
+; <label>:10                                      ; preds = %0, %2
+  %11 = phi i32 [ %9, %2 ], [ 0, %0 ]
+  ret i32 %11
+}

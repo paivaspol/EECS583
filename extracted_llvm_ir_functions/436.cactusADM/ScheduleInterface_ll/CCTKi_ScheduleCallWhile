@@ -1,0 +1,37 @@
+define internal i32 @CCTKi_ScheduleCallWhile(i32 %n_whiles, i8** nocapture readonly %whiles, %struct.t_attribute* nocapture readnone %attribute, %struct.t_sched_data* nocapture readonly %data, i32 %first) #1 {
+  %1 = icmp sgt i32 %n_whiles, 0
+  br i1 %1, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %0
+  %2 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 0
+  %3 = add i32 %n_whiles, -1
+  br label %4
+
+; <label>:4                                       ; preds = %14, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %14 ]
+  %retcode.02 = phi i32 [ 1, %.lr.ph ], [ %16, %14 ]
+  %5 = icmp eq i32 %retcode.02, 0
+  br i1 %5, label %14, label %6
+
+; <label>:6                                       ; preds = %4
+  %7 = load %struct.cGH** %2, align 8, !tbaa !39
+  %8 = getelementptr inbounds i8** %whiles, i64 %indvars.iv
+  %9 = load i8** %8, align 8, !tbaa !13
+  %10 = tail call i8* @CCTK_VarDataPtr(%struct.cGH* %7, i32 0, i8* %9) #8
+  %11 = bitcast i8* %10 to i32*
+  %12 = load i32* %11, align 4, !tbaa !38
+  %13 = icmp ne i32 %12, 0
+  br label %14
+
+; <label>:14                                      ; preds = %4, %6
+  %15 = phi i1 [ false, %4 ], [ %13, %6 ]
+  %16 = zext i1 %15 to i32
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %3
+  br i1 %exitcond, label %._crit_edge, label %4
+
+._crit_edge:                                      ; preds = %14, %0
+  %retcode.0.lcssa = phi i32 [ 1, %0 ], [ %16, %14 ]
+  ret i32 %retcode.0.lcssa
+}

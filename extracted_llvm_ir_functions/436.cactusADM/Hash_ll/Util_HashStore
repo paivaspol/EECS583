@@ -1,0 +1,18 @@
+define i32 @Util_HashStore(%struct.T_HASH* nocapture %hash, i32 %klen, i8* nocapture readonly %key, i32 %hashval, i8* %data) #1 {
+  %1 = tail call fastcc %struct.T_HASH_ENTRY* @HashFind(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval) #6
+  %2 = icmp eq %struct.T_HASH_ENTRY* %1, null
+  br i1 %2, label %5, label %3
+
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %struct.T_HASH_ENTRY* %1, i64 0, i32 5
+  store i8* %data, i8** %4, align 8, !tbaa !15
+  br label %7
+
+; <label>:5                                       ; preds = %0
+  %6 = tail call i32 @Util_HashAdd(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval, i8* %data) #6
+  br label %7
+
+; <label>:7                                       ; preds = %5, %3
+  %retval.0 = phi i32 [ 0, %3 ], [ %6, %5 ]
+  ret i32 %retval.0
+}

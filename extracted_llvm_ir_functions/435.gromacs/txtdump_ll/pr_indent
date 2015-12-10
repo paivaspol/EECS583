@@ -1,15 +1,18 @@
-define i32 @pr_indent(%struct._IO_FILE* nocapture %fp, i32 %n) #0 {
-entry:
-  %cmp3 = icmp sgt i32 %n, 0
-  br i1 %cmp3, label %for.body, label %for.end
+define i32 @pr_indent(%struct.__sFILE* nocapture %fp, i32 %n) #4 {
+  %1 = icmp sgt i32 %n, 0
+  br i1 %1, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %entry, %for.body
-  %i.04 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
-  %fputc = tail call i32 @fputc(i32 32, %struct._IO_FILE* %fp)
-  %inc = add nsw i32 %i.04, 1
-  %exitcond = icmp eq i32 %inc, %n
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %n, -1
+  br label %3
 
-for.end:                                          ; preds = %for.body, %entry
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %i.01 = phi i32 [ 0, %.lr.ph ], [ %4, %3 ]
+  %fputc = tail call i32 @fputc(i32 32, %struct.__sFILE* %fp)
+  %4 = add nuw nsw i32 %i.01, 1
+  %exitcond = icmp eq i32 %i.01, %2
+  br i1 %exitcond, label %._crit_edge, label %3
+
+._crit_edge:                                      ; preds = %3, %0
   ret i32 %n
 }

@@ -1,229 +1,238 @@
-define void @symmetrize_PSgrid(%struct._IO_FILE* %fp, %struct.t_PSgrid* nocapture %grid, float %sum) #0 {
-entry:
-  %nx1.i = getelementptr inbounds %struct.t_PSgrid* %grid, i64 0, i32 0
-  %0 = load i32* %nx1.i, align 4, !tbaa !0
-  %ny2.i = getelementptr inbounds %struct.t_PSgrid* %grid, i64 0, i32 1
-  %1 = load i32* %ny2.i, align 4, !tbaa !0
-  %nz3.i = getelementptr inbounds %struct.t_PSgrid* %grid, i64 0, i32 2
-  %2 = load i32* %nz3.i, align 4, !tbaa !0
-  %ptr4.i = getelementptr inbounds %struct.t_PSgrid* %grid, i64 0, i32 3
-  %3 = load float**** %ptr4.i, align 8, !tbaa !3
-  %fabsf = tail call float @fabsf(float %sum) #5
-  %4 = fpext float %fabsf to double
-  %cmp = fcmp olt double %4, 1.200000e-38
-  br i1 %cmp, label %if.then, label %if.end62
+define void @symmetrize_PSgrid(%struct.__sFILE* %fp, %struct.t_PSgrid* nocapture readonly %grid, float %sum) #3 {
+  %1 = getelementptr inbounds %struct.t_PSgrid* %grid, i64 0, i32 0
+  %2 = load i32* %1, align 4, !tbaa !14
+  %3 = getelementptr inbounds %struct.t_PSgrid* %grid, i64 0, i32 1
+  %4 = load i32* %3, align 4, !tbaa !16
+  %5 = getelementptr inbounds %struct.t_PSgrid* %grid, i64 0, i32 2
+  %6 = load i32* %5, align 4, !tbaa !17
+  %7 = getelementptr inbounds %struct.t_PSgrid* %grid, i64 0, i32 3
+  %8 = bitcast float**** %7 to i64*
+  %9 = load i64* %8, align 8, !tbaa !18
+  %fabsf = tail call float @fabsf(float %sum) #7
+  %10 = fpext float %fabsf to double
+  %11 = fcmp olt double %10, 1.200000e-38
+  br i1 %11, label %12, label %.loopexit
 
-if.then:                                          ; preds = %entry
-  %5 = load float*** %3, align 8, !tbaa !3
-  %6 = load float** %5, align 8, !tbaa !3
-  %7 = load float* %6, align 4, !tbaa !4
-  %cmp4195 = icmp sgt i32 %0, 0
-  br i1 %cmp4195, label %for.cond6.preheader.lr.ph, label %if.end62.thread
+; <label>:12                                      ; preds = %0
+  %13 = inttoptr i64 %9 to float***
+  %14 = load float*** %13, align 8, !tbaa !19
+  %15 = load float** %14, align 8, !tbaa !19
+  %16 = load float* %15, align 4, !tbaa !21
+  %17 = icmp sgt i32 %2, 0
+  br i1 %17, label %.preheader3.lr.ph, label %.loopexit.thread
 
-if.end62.thread:                                  ; preds = %if.then
-  %mul236 = mul nsw i32 %1, %0
-  %mul63237 = mul nsw i32 %mul236, %2
-  %conv64238 = sitofp i32 %mul63237 to float
-  %div239 = fdiv float 0.000000e+00, %conv64238
-  br label %for.end91
+.loopexit.thread:                                 ; preds = %12
+  %18 = mul nsw i32 %4, %2
+  %19 = mul nsw i32 %18, %6
+  %20 = sitofp i32 %19 to float
+  %21 = fdiv float 0.000000e+00, %20
+  br label %._crit_edge8
 
-for.cond6.preheader.lr.ph:                        ; preds = %if.then
-  %cmp7174 = icmp sgt i32 %1, 0
-  %cmp11155 = icmp sgt i32 %2, 0
-  br label %for.cond6.preheader
+.preheader3.lr.ph:                                ; preds = %12
+  %22 = icmp sgt i32 %4, 0
+  %23 = icmp sgt i32 %6, 0
+  %24 = add i32 %6, -1
+  %25 = add i32 %4, -1
+  %26 = add i32 %2, -1
+  br label %.preheader3
 
-for.cond6.preheader:                              ; preds = %for.inc59, %for.cond6.preheader.lr.ph
-  %indvars.iv232 = phi i64 [ 0, %for.cond6.preheader.lr.ph ], [ %indvars.iv.next233, %for.inc59 ]
-  %imax.sroa.0.0206 = phi i32 [ -1, %for.cond6.preheader.lr.ph ], [ %imax.sroa.0.1.lcssa, %for.inc59 ]
-  %imax.sroa.1.0205 = phi i32 [ -1, %for.cond6.preheader.lr.ph ], [ %imax.sroa.1.1.lcssa, %for.inc59 ]
-  %imax.sroa.2.0204 = phi i32 [ -1, %for.cond6.preheader.lr.ph ], [ %imax.sroa.2.1.lcssa, %for.inc59 ]
-  %imin.sroa.0.0203 = phi i32 [ -1, %for.cond6.preheader.lr.ph ], [ %imin.sroa.0.1.lcssa, %for.inc59 ]
-  %imin.sroa.1.0202 = phi i32 [ -1, %for.cond6.preheader.lr.ph ], [ %imin.sroa.1.1.lcssa, %for.inc59 ]
-  %imin.sroa.2.0201 = phi i32 [ -1, %for.cond6.preheader.lr.ph ], [ %imin.sroa.2.1.lcssa, %for.inc59 ]
-  %maxg.0200 = phi float [ %7, %for.cond6.preheader.lr.ph ], [ %maxg.1.lcssa, %for.inc59 ]
-  %ming.0199 = phi float [ %7, %for.cond6.preheader.lr.ph ], [ %ming.1.lcssa, %for.inc59 ]
-  %i.0197 = phi i32 [ 0, %for.cond6.preheader.lr.ph ], [ %inc60, %for.inc59 ]
-  %sum.addr.0196 = phi float [ 0.000000e+00, %for.cond6.preheader.lr.ph ], [ %sum.addr.1.lcssa, %for.inc59 ]
-  br i1 %cmp7174, label %for.cond10.preheader.lr.ph, label %for.inc59
+.preheader3:                                      ; preds = %._crit_edge40, %.preheader3.lr.ph
+  %indvars.iv86 = phi i64 [ 0, %.preheader3.lr.ph ], [ %indvars.iv.next87, %._crit_edge40 ]
+  %imax.sroa.0.060 = phi i32 [ -1, %.preheader3.lr.ph ], [ %imax.sroa.0.1.lcssa, %._crit_edge40 ]
+  %imax.sroa.3.059 = phi i32 [ -1, %.preheader3.lr.ph ], [ %imax.sroa.3.1.lcssa, %._crit_edge40 ]
+  %imax.sroa.5.058 = phi i32 [ -1, %.preheader3.lr.ph ], [ %imax.sroa.5.1.lcssa, %._crit_edge40 ]
+  %imin.sroa.0.057 = phi i32 [ -1, %.preheader3.lr.ph ], [ %imin.sroa.0.1.lcssa, %._crit_edge40 ]
+  %imin.sroa.3.056 = phi i32 [ -1, %.preheader3.lr.ph ], [ %imin.sroa.3.1.lcssa, %._crit_edge40 ]
+  %imin.sroa.5.055 = phi i32 [ -1, %.preheader3.lr.ph ], [ %imin.sroa.5.1.lcssa, %._crit_edge40 ]
+  %maxg.054 = phi float [ %16, %.preheader3.lr.ph ], [ %maxg.1.lcssa, %._crit_edge40 ]
+  %ming.053 = phi float [ %16, %.preheader3.lr.ph ], [ %ming.1.lcssa, %._crit_edge40 ]
+  %.050 = phi float [ 0.000000e+00, %.preheader3.lr.ph ], [ %.1.lcssa, %._crit_edge40 ]
+  br i1 %22, label %.preheader2.lr.ph, label %._crit_edge40
 
-for.cond10.preheader.lr.ph:                       ; preds = %for.cond6.preheader
-  %arrayidx16 = getelementptr inbounds float*** %3, i64 %indvars.iv232
-  br label %for.cond10.preheader
+.preheader2.lr.ph:                                ; preds = %.preheader3
+  %27 = getelementptr inbounds float*** %13, i64 %indvars.iv86
+  br label %.preheader2
 
-for.cond10.preheader:                             ; preds = %for.inc56, %for.cond10.preheader.lr.ph
-  %indvars.iv228 = phi i64 [ 0, %for.cond10.preheader.lr.ph ], [ %indvars.iv.next229, %for.inc56 ]
-  %imax.sroa.0.1185 = phi i32 [ %imax.sroa.0.0206, %for.cond10.preheader.lr.ph ], [ %imax.sroa.0.2.lcssa, %for.inc56 ]
-  %imax.sroa.1.1184 = phi i32 [ %imax.sroa.1.0205, %for.cond10.preheader.lr.ph ], [ %imax.sroa.1.2.lcssa, %for.inc56 ]
-  %imax.sroa.2.1183 = phi i32 [ %imax.sroa.2.0204, %for.cond10.preheader.lr.ph ], [ %imax.sroa.2.2.lcssa, %for.inc56 ]
-  %imin.sroa.0.1182 = phi i32 [ %imin.sroa.0.0203, %for.cond10.preheader.lr.ph ], [ %imin.sroa.0.2.lcssa, %for.inc56 ]
-  %imin.sroa.1.1181 = phi i32 [ %imin.sroa.1.0202, %for.cond10.preheader.lr.ph ], [ %imin.sroa.1.2.lcssa, %for.inc56 ]
-  %imin.sroa.2.1180 = phi i32 [ %imin.sroa.2.0201, %for.cond10.preheader.lr.ph ], [ %imin.sroa.2.2.lcssa, %for.inc56 ]
-  %maxg.1179 = phi float [ %maxg.0200, %for.cond10.preheader.lr.ph ], [ %maxg.2.lcssa, %for.inc56 ]
-  %ming.1178 = phi float [ %ming.0199, %for.cond10.preheader.lr.ph ], [ %ming.2.lcssa, %for.inc56 ]
-  %j.0176 = phi i32 [ 0, %for.cond10.preheader.lr.ph ], [ %inc57, %for.inc56 ]
-  %sum.addr.1175 = phi float [ %sum.addr.0196, %for.cond10.preheader.lr.ph ], [ %sum.addr.2.lcssa, %for.inc56 ]
-  br i1 %cmp11155, label %for.body13.lr.ph, label %for.inc56
+.preheader2:                                      ; preds = %._crit_edge20, %.preheader2.lr.ph
+  %indvars.iv82 = phi i64 [ 0, %.preheader2.lr.ph ], [ %indvars.iv.next83, %._crit_edge20 ]
+  %imax.sroa.0.139 = phi i32 [ %imax.sroa.0.060, %.preheader2.lr.ph ], [ %imax.sroa.0.2.lcssa, %._crit_edge20 ]
+  %imax.sroa.3.138 = phi i32 [ %imax.sroa.3.059, %.preheader2.lr.ph ], [ %imax.sroa.3.2.lcssa, %._crit_edge20 ]
+  %imax.sroa.5.137 = phi i32 [ %imax.sroa.5.058, %.preheader2.lr.ph ], [ %imax.sroa.5.2.lcssa, %._crit_edge20 ]
+  %imin.sroa.0.136 = phi i32 [ %imin.sroa.0.057, %.preheader2.lr.ph ], [ %imin.sroa.0.2.lcssa, %._crit_edge20 ]
+  %imin.sroa.3.135 = phi i32 [ %imin.sroa.3.056, %.preheader2.lr.ph ], [ %imin.sroa.3.2.lcssa, %._crit_edge20 ]
+  %imin.sroa.5.134 = phi i32 [ %imin.sroa.5.055, %.preheader2.lr.ph ], [ %imin.sroa.5.2.lcssa, %._crit_edge20 ]
+  %maxg.133 = phi float [ %maxg.054, %.preheader2.lr.ph ], [ %maxg.2.lcssa, %._crit_edge20 ]
+  %ming.132 = phi float [ %ming.053, %.preheader2.lr.ph ], [ %ming.2.lcssa, %._crit_edge20 ]
+  %.129 = phi float [ %.050, %.preheader2.lr.ph ], [ %.2.lcssa, %._crit_edge20 ]
+  br i1 %23, label %.lr.ph19, label %.preheader2._crit_edge
 
-for.body13.lr.ph:                                 ; preds = %for.cond10.preheader
-  %8 = load float*** %arrayidx16, align 8, !tbaa !3
-  %arrayidx17 = getelementptr inbounds float** %8, i64 %indvars.iv228
-  %9 = load float** %arrayidx17, align 8, !tbaa !3
-  br label %for.body13
+.preheader2._crit_edge:                           ; preds = %.preheader2
+  %.pre = trunc i64 %indvars.iv82 to i32
+  br label %._crit_edge20
 
-for.body13:                                       ; preds = %for.inc, %for.body13.lr.ph
-  %indvars.iv224 = phi i64 [ 0, %for.body13.lr.ph ], [ %indvars.iv.next225, %for.inc ]
-  %imax.sroa.0.2165 = phi i32 [ %imax.sroa.0.1185, %for.body13.lr.ph ], [ %imax.sroa.0.3, %for.inc ]
-  %imax.sroa.1.2164 = phi i32 [ %imax.sroa.1.1184, %for.body13.lr.ph ], [ %imax.sroa.1.3, %for.inc ]
-  %imax.sroa.2.2163 = phi i32 [ %imax.sroa.2.1183, %for.body13.lr.ph ], [ %imax.sroa.2.3, %for.inc ]
-  %imin.sroa.0.2162 = phi i32 [ %imin.sroa.0.1182, %for.body13.lr.ph ], [ %imin.sroa.0.3, %for.inc ]
-  %imin.sroa.1.2161 = phi i32 [ %imin.sroa.1.1181, %for.body13.lr.ph ], [ %imin.sroa.1.3, %for.inc ]
-  %imin.sroa.2.2160 = phi i32 [ %imin.sroa.2.1180, %for.body13.lr.ph ], [ %imin.sroa.2.3, %for.inc ]
-  %maxg.2159 = phi float [ %maxg.1179, %for.body13.lr.ph ], [ %maxg.3, %for.inc ]
-  %ming.2158 = phi float [ %ming.1178, %for.body13.lr.ph ], [ %ming.3, %for.inc ]
-  %sum.addr.2156 = phi float [ %sum.addr.1175, %for.body13.lr.ph ], [ %add, %for.inc ]
-  %arrayidx18 = getelementptr inbounds float* %9, i64 %indvars.iv224
-  %10 = load float* %arrayidx18, align 4, !tbaa !4
-  %add = fadd float %sum.addr.2156, %10
-  %cmp25 = fcmp olt float %10, %ming.2158
-  %11 = trunc i64 %indvars.iv224 to i32
-  br i1 %cmp25, label %for.inc, label %if.else
+.lr.ph19:                                         ; preds = %.preheader2
+  %28 = load float*** %27, align 8, !tbaa !19
+  %29 = getelementptr inbounds float** %28, i64 %indvars.iv82
+  %30 = load float** %29, align 8, !tbaa !19
+  br label %31
 
-if.else:                                          ; preds = %for.body13
-  %cmp43 = fcmp ogt float %10, %maxg.2159
-  br i1 %cmp43, label %if.then45, label %for.inc
+; <label>:31                                      ; preds = %42, %.lr.ph19
+  %indvars.iv78 = phi i64 [ 0, %.lr.ph19 ], [ %indvars.iv.next79, %42 ]
+  %imax.sroa.0.218 = phi i32 [ %imax.sroa.0.139, %.lr.ph19 ], [ %imax.sroa.0.3, %42 ]
+  %imax.sroa.3.217 = phi i32 [ %imax.sroa.3.138, %.lr.ph19 ], [ %imax.sroa.3.3, %42 ]
+  %imax.sroa.5.216 = phi i32 [ %imax.sroa.5.137, %.lr.ph19 ], [ %imax.sroa.5.3, %42 ]
+  %imin.sroa.0.215 = phi i32 [ %imin.sroa.0.136, %.lr.ph19 ], [ %imin.sroa.0.3, %42 ]
+  %imin.sroa.3.214 = phi i32 [ %imin.sroa.3.135, %.lr.ph19 ], [ %imin.sroa.3.3, %42 ]
+  %imin.sroa.5.213 = phi i32 [ %imin.sroa.5.134, %.lr.ph19 ], [ %imin.sroa.5.3, %42 ]
+  %maxg.212 = phi float [ %maxg.133, %.lr.ph19 ], [ %maxg.3, %42 ]
+  %ming.211 = phi float [ %ming.132, %.lr.ph19 ], [ %ming.3, %42 ]
+  %.29 = phi float [ %.129, %.lr.ph19 ], [ %34, %42 ]
+  %32 = getelementptr inbounds float* %30, i64 %indvars.iv78
+  %33 = load float* %32, align 4, !tbaa !21
+  %34 = fadd float %.29, %33
+  %35 = fcmp olt float %33, %ming.211
+  %36 = trunc i64 %indvars.iv78 to i32
+  %37 = trunc i64 %indvars.iv82 to i32
+  %38 = trunc i64 %indvars.iv86 to i32
+  br i1 %35, label %42, label %39
 
-if.then45:                                        ; preds = %if.else
-  br label %for.inc
+; <label>:39                                      ; preds = %31
+  %40 = fcmp ogt float %33, %maxg.212
+  br i1 %40, label %41, label %42
 
-for.inc:                                          ; preds = %for.body13, %if.then45, %if.else
-  %ming.3 = phi float [ %ming.2158, %if.then45 ], [ %ming.2158, %if.else ], [ %10, %for.body13 ]
-  %maxg.3 = phi float [ %10, %if.then45 ], [ %maxg.2159, %if.else ], [ %maxg.2159, %for.body13 ]
-  %imin.sroa.2.3 = phi i32 [ %imin.sroa.2.2160, %if.then45 ], [ %imin.sroa.2.2160, %if.else ], [ %11, %for.body13 ]
-  %imin.sroa.1.3 = phi i32 [ %imin.sroa.1.2161, %if.then45 ], [ %imin.sroa.1.2161, %if.else ], [ %j.0176, %for.body13 ]
-  %imin.sroa.0.3 = phi i32 [ %imin.sroa.0.2162, %if.then45 ], [ %imin.sroa.0.2162, %if.else ], [ %i.0197, %for.body13 ]
-  %imax.sroa.2.3 = phi i32 [ %11, %if.then45 ], [ %imax.sroa.2.2163, %if.else ], [ %imax.sroa.2.2163, %for.body13 ]
-  %imax.sroa.1.3 = phi i32 [ %j.0176, %if.then45 ], [ %imax.sroa.1.2164, %if.else ], [ %imax.sroa.1.2164, %for.body13 ]
-  %imax.sroa.0.3 = phi i32 [ %i.0197, %if.then45 ], [ %imax.sroa.0.2165, %if.else ], [ %imax.sroa.0.2165, %for.body13 ]
-  %indvars.iv.next225 = add i64 %indvars.iv224, 1
-  %lftr.wideiv226 = trunc i64 %indvars.iv.next225 to i32
-  %exitcond227 = icmp eq i32 %lftr.wideiv226, %2
-  br i1 %exitcond227, label %for.inc56, label %for.body13
+; <label>:41                                      ; preds = %39
+  br label %42
 
-for.inc56:                                        ; preds = %for.inc, %for.cond10.preheader
-  %imax.sroa.0.2.lcssa = phi i32 [ %imax.sroa.0.1185, %for.cond10.preheader ], [ %imax.sroa.0.3, %for.inc ]
-  %imax.sroa.1.2.lcssa = phi i32 [ %imax.sroa.1.1184, %for.cond10.preheader ], [ %imax.sroa.1.3, %for.inc ]
-  %imax.sroa.2.2.lcssa = phi i32 [ %imax.sroa.2.1183, %for.cond10.preheader ], [ %imax.sroa.2.3, %for.inc ]
-  %imin.sroa.0.2.lcssa = phi i32 [ %imin.sroa.0.1182, %for.cond10.preheader ], [ %imin.sroa.0.3, %for.inc ]
-  %imin.sroa.1.2.lcssa = phi i32 [ %imin.sroa.1.1181, %for.cond10.preheader ], [ %imin.sroa.1.3, %for.inc ]
-  %imin.sroa.2.2.lcssa = phi i32 [ %imin.sroa.2.1180, %for.cond10.preheader ], [ %imin.sroa.2.3, %for.inc ]
-  %maxg.2.lcssa = phi float [ %maxg.1179, %for.cond10.preheader ], [ %maxg.3, %for.inc ]
-  %ming.2.lcssa = phi float [ %ming.1178, %for.cond10.preheader ], [ %ming.3, %for.inc ]
-  %sum.addr.2.lcssa = phi float [ %sum.addr.1175, %for.cond10.preheader ], [ %add, %for.inc ]
-  %indvars.iv.next229 = add i64 %indvars.iv228, 1
-  %inc57 = add nsw i32 %j.0176, 1
-  %lftr.wideiv230 = trunc i64 %indvars.iv.next229 to i32
-  %exitcond231 = icmp eq i32 %lftr.wideiv230, %1
-  br i1 %exitcond231, label %for.inc59, label %for.cond10.preheader
+; <label>:42                                      ; preds = %31, %41, %39
+  %ming.3 = phi float [ %ming.211, %41 ], [ %ming.211, %39 ], [ %33, %31 ]
+  %maxg.3 = phi float [ %33, %41 ], [ %maxg.212, %39 ], [ %maxg.212, %31 ]
+  %imin.sroa.5.3 = phi i32 [ %imin.sroa.5.213, %41 ], [ %imin.sroa.5.213, %39 ], [ %36, %31 ]
+  %imin.sroa.3.3 = phi i32 [ %imin.sroa.3.214, %41 ], [ %imin.sroa.3.214, %39 ], [ %37, %31 ]
+  %imin.sroa.0.3 = phi i32 [ %imin.sroa.0.215, %41 ], [ %imin.sroa.0.215, %39 ], [ %38, %31 ]
+  %imax.sroa.5.3 = phi i32 [ %36, %41 ], [ %imax.sroa.5.216, %39 ], [ %imax.sroa.5.216, %31 ]
+  %imax.sroa.3.3 = phi i32 [ %37, %41 ], [ %imax.sroa.3.217, %39 ], [ %imax.sroa.3.217, %31 ]
+  %imax.sroa.0.3 = phi i32 [ %38, %41 ], [ %imax.sroa.0.218, %39 ], [ %imax.sroa.0.218, %31 ]
+  %indvars.iv.next79 = add nuw nsw i64 %indvars.iv78, 1
+  %exitcond81 = icmp eq i32 %36, %24
+  br i1 %exitcond81, label %._crit_edge20, label %31
 
-for.inc59:                                        ; preds = %for.inc56, %for.cond6.preheader
-  %imax.sroa.0.1.lcssa = phi i32 [ %imax.sroa.0.0206, %for.cond6.preheader ], [ %imax.sroa.0.2.lcssa, %for.inc56 ]
-  %imax.sroa.1.1.lcssa = phi i32 [ %imax.sroa.1.0205, %for.cond6.preheader ], [ %imax.sroa.1.2.lcssa, %for.inc56 ]
-  %imax.sroa.2.1.lcssa = phi i32 [ %imax.sroa.2.0204, %for.cond6.preheader ], [ %imax.sroa.2.2.lcssa, %for.inc56 ]
-  %imin.sroa.0.1.lcssa = phi i32 [ %imin.sroa.0.0203, %for.cond6.preheader ], [ %imin.sroa.0.2.lcssa, %for.inc56 ]
-  %imin.sroa.1.1.lcssa = phi i32 [ %imin.sroa.1.0202, %for.cond6.preheader ], [ %imin.sroa.1.2.lcssa, %for.inc56 ]
-  %imin.sroa.2.1.lcssa = phi i32 [ %imin.sroa.2.0201, %for.cond6.preheader ], [ %imin.sroa.2.2.lcssa, %for.inc56 ]
-  %maxg.1.lcssa = phi float [ %maxg.0200, %for.cond6.preheader ], [ %maxg.2.lcssa, %for.inc56 ]
-  %ming.1.lcssa = phi float [ %ming.0199, %for.cond6.preheader ], [ %ming.2.lcssa, %for.inc56 ]
-  %sum.addr.1.lcssa = phi float [ %sum.addr.0196, %for.cond6.preheader ], [ %sum.addr.2.lcssa, %for.inc56 ]
-  %indvars.iv.next233 = add i64 %indvars.iv232, 1
-  %inc60 = add nsw i32 %i.0197, 1
-  %lftr.wideiv234 = trunc i64 %indvars.iv.next233 to i32
-  %exitcond235 = icmp eq i32 %lftr.wideiv234, %0
-  br i1 %exitcond235, label %if.end62, label %for.cond6.preheader
+._crit_edge20:                                    ; preds = %42, %.preheader2._crit_edge
+  %lftr.wideiv84.pre-phi = phi i32 [ %.pre, %.preheader2._crit_edge ], [ %37, %42 ]
+  %imax.sroa.0.2.lcssa = phi i32 [ %imax.sroa.0.139, %.preheader2._crit_edge ], [ %imax.sroa.0.3, %42 ]
+  %imax.sroa.3.2.lcssa = phi i32 [ %imax.sroa.3.138, %.preheader2._crit_edge ], [ %imax.sroa.3.3, %42 ]
+  %imax.sroa.5.2.lcssa = phi i32 [ %imax.sroa.5.137, %.preheader2._crit_edge ], [ %imax.sroa.5.3, %42 ]
+  %imin.sroa.0.2.lcssa = phi i32 [ %imin.sroa.0.136, %.preheader2._crit_edge ], [ %imin.sroa.0.3, %42 ]
+  %imin.sroa.3.2.lcssa = phi i32 [ %imin.sroa.3.135, %.preheader2._crit_edge ], [ %imin.sroa.3.3, %42 ]
+  %imin.sroa.5.2.lcssa = phi i32 [ %imin.sroa.5.134, %.preheader2._crit_edge ], [ %imin.sroa.5.3, %42 ]
+  %maxg.2.lcssa = phi float [ %maxg.133, %.preheader2._crit_edge ], [ %maxg.3, %42 ]
+  %ming.2.lcssa = phi float [ %ming.132, %.preheader2._crit_edge ], [ %ming.3, %42 ]
+  %.2.lcssa = phi float [ %.129, %.preheader2._crit_edge ], [ %34, %42 ]
+  %indvars.iv.next83 = add nuw nsw i64 %indvars.iv82, 1
+  %exitcond85 = icmp eq i32 %lftr.wideiv84.pre-phi, %25
+  br i1 %exitcond85, label %._crit_edge40, label %.preheader2
 
-if.end62:                                         ; preds = %for.inc59, %entry
-  %sum.addr.3 = phi float [ %sum, %entry ], [ %sum.addr.1.lcssa, %for.inc59 ]
-  %ming.4 = phi float [ 0.000000e+00, %entry ], [ %ming.1.lcssa, %for.inc59 ]
-  %maxg.4 = phi float [ 0.000000e+00, %entry ], [ %maxg.1.lcssa, %for.inc59 ]
-  %imin.sroa.2.4 = phi i32 [ -1, %entry ], [ %imin.sroa.2.1.lcssa, %for.inc59 ]
-  %imin.sroa.1.4 = phi i32 [ -1, %entry ], [ %imin.sroa.1.1.lcssa, %for.inc59 ]
-  %imin.sroa.0.4 = phi i32 [ -1, %entry ], [ %imin.sroa.0.1.lcssa, %for.inc59 ]
-  %imax.sroa.2.4 = phi i32 [ -1, %entry ], [ %imax.sroa.2.1.lcssa, %for.inc59 ]
-  %imax.sroa.1.4 = phi i32 [ -1, %entry ], [ %imax.sroa.1.1.lcssa, %for.inc59 ]
-  %imax.sroa.0.4 = phi i32 [ -1, %entry ], [ %imax.sroa.0.1.lcssa, %for.inc59 ]
-  %mul = mul nsw i32 %1, %0
-  %mul63 = mul nsw i32 %mul, %2
-  %conv64 = sitofp i32 %mul63 to float
-  %div = fdiv float %sum.addr.3, %conv64
-  %cmp66153 = icmp sgt i32 %0, 0
-  br i1 %cmp66153, label %for.cond69.preheader.lr.ph, label %for.end91
+._crit_edge40:                                    ; preds = %._crit_edge20, %.preheader3
+  %imax.sroa.0.1.lcssa = phi i32 [ %imax.sroa.0.060, %.preheader3 ], [ %imax.sroa.0.2.lcssa, %._crit_edge20 ]
+  %imax.sroa.3.1.lcssa = phi i32 [ %imax.sroa.3.059, %.preheader3 ], [ %imax.sroa.3.2.lcssa, %._crit_edge20 ]
+  %imax.sroa.5.1.lcssa = phi i32 [ %imax.sroa.5.058, %.preheader3 ], [ %imax.sroa.5.2.lcssa, %._crit_edge20 ]
+  %imin.sroa.0.1.lcssa = phi i32 [ %imin.sroa.0.057, %.preheader3 ], [ %imin.sroa.0.2.lcssa, %._crit_edge20 ]
+  %imin.sroa.3.1.lcssa = phi i32 [ %imin.sroa.3.056, %.preheader3 ], [ %imin.sroa.3.2.lcssa, %._crit_edge20 ]
+  %imin.sroa.5.1.lcssa = phi i32 [ %imin.sroa.5.055, %.preheader3 ], [ %imin.sroa.5.2.lcssa, %._crit_edge20 ]
+  %maxg.1.lcssa = phi float [ %maxg.054, %.preheader3 ], [ %maxg.2.lcssa, %._crit_edge20 ]
+  %ming.1.lcssa = phi float [ %ming.053, %.preheader3 ], [ %ming.2.lcssa, %._crit_edge20 ]
+  %.1.lcssa = phi float [ %.050, %.preheader3 ], [ %.2.lcssa, %._crit_edge20 ]
+  %indvars.iv.next87 = add nuw nsw i64 %indvars.iv86, 1
+  %lftr.wideiv88 = trunc i64 %indvars.iv86 to i32
+  %exitcond89 = icmp eq i32 %lftr.wideiv88, %26
+  br i1 %exitcond89, label %.loopexit, label %.preheader3
 
-for.cond69.preheader.lr.ph:                       ; preds = %if.end62
-  %cmp70151 = icmp sgt i32 %1, 0
-  %cmp74149 = icmp sgt i32 %2, 0
-  br label %for.cond69.preheader
+.loopexit:                                        ; preds = %._crit_edge40, %0
+  %.3 = phi float [ %sum, %0 ], [ %.1.lcssa, %._crit_edge40 ]
+  %ming.4 = phi float [ 0.000000e+00, %0 ], [ %ming.1.lcssa, %._crit_edge40 ]
+  %maxg.4 = phi float [ 0.000000e+00, %0 ], [ %maxg.1.lcssa, %._crit_edge40 ]
+  %imin.sroa.5.4 = phi i32 [ -1, %0 ], [ %imin.sroa.5.1.lcssa, %._crit_edge40 ]
+  %imin.sroa.3.4 = phi i32 [ -1, %0 ], [ %imin.sroa.3.1.lcssa, %._crit_edge40 ]
+  %imin.sroa.0.4 = phi i32 [ -1, %0 ], [ %imin.sroa.0.1.lcssa, %._crit_edge40 ]
+  %imax.sroa.5.4 = phi i32 [ -1, %0 ], [ %imax.sroa.5.1.lcssa, %._crit_edge40 ]
+  %imax.sroa.3.4 = phi i32 [ -1, %0 ], [ %imax.sroa.3.1.lcssa, %._crit_edge40 ]
+  %imax.sroa.0.4 = phi i32 [ -1, %0 ], [ %imax.sroa.0.1.lcssa, %._crit_edge40 ]
+  %43 = mul nsw i32 %4, %2
+  %44 = mul nsw i32 %43, %6
+  %45 = sitofp i32 %44 to float
+  %46 = fdiv float %.3, %45
+  %47 = icmp sgt i32 %2, 0
+  br i1 %47, label %.preheader1.lr.ph, label %._crit_edge8
 
-for.cond69.preheader:                             ; preds = %for.inc89, %for.cond69.preheader.lr.ph
-  %indvars.iv220 = phi i64 [ 0, %for.cond69.preheader.lr.ph ], [ %indvars.iv.next221, %for.inc89 ]
-  br i1 %cmp70151, label %for.cond73.preheader.lr.ph, label %for.inc89
+.preheader1.lr.ph:                                ; preds = %.loopexit
+  %48 = icmp sgt i32 %4, 0
+  %49 = icmp sgt i32 %6, 0
+  %50 = inttoptr i64 %9 to float***
+  %51 = add i32 %6, -1
+  %52 = add i32 %4, -1
+  %53 = add i32 %2, -1
+  br label %.preheader1
 
-for.cond73.preheader.lr.ph:                       ; preds = %for.cond69.preheader
-  %arrayidx80 = getelementptr inbounds float*** %3, i64 %indvars.iv220
-  br label %for.cond73.preheader
+.preheader1:                                      ; preds = %._crit_edge6, %.preheader1.lr.ph
+  %indvars.iv74 = phi i64 [ 0, %.preheader1.lr.ph ], [ %indvars.iv.next75, %._crit_edge6 ]
+  br i1 %48, label %.preheader.lr.ph, label %._crit_edge6
 
-for.cond73.preheader:                             ; preds = %for.inc86, %for.cond73.preheader.lr.ph
-  %indvars.iv216 = phi i64 [ 0, %for.cond73.preheader.lr.ph ], [ %indvars.iv.next217, %for.inc86 ]
-  br i1 %cmp74149, label %for.body76.lr.ph, label %for.inc86
+.preheader.lr.ph:                                 ; preds = %.preheader1
+  %54 = getelementptr inbounds float*** %50, i64 %indvars.iv74
+  br label %.preheader
 
-for.body76.lr.ph:                                 ; preds = %for.cond73.preheader
-  %12 = load float*** %arrayidx80, align 8, !tbaa !3
-  %arrayidx81 = getelementptr inbounds float** %12, i64 %indvars.iv216
-  %13 = load float** %arrayidx81, align 8, !tbaa !3
-  br label %for.body76
+.preheader:                                       ; preds = %._crit_edge, %.preheader.lr.ph
+  %indvars.iv70 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next71, %._crit_edge ]
+  br i1 %49, label %.lr.ph, label %._crit_edge
 
-for.body76:                                       ; preds = %for.body76, %for.body76.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body76.lr.ph ], [ %indvars.iv.next, %for.body76 ]
-  %arrayidx82 = getelementptr inbounds float* %13, i64 %indvars.iv
-  %14 = load float* %arrayidx82, align 4, !tbaa !4
-  %sub = fsub float %14, %div
-  store float %sub, float* %arrayidx82, align 4, !tbaa !4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond, label %for.inc86, label %for.body76
+.lr.ph:                                           ; preds = %.preheader
+  %55 = load float*** %54, align 8, !tbaa !19
+  %56 = getelementptr inbounds float** %55, i64 %indvars.iv70
+  %57 = load float** %56, align 8, !tbaa !19
+  br label %58
 
-for.inc86:                                        ; preds = %for.body76, %for.cond73.preheader
-  %indvars.iv.next217 = add i64 %indvars.iv216, 1
-  %lftr.wideiv218 = trunc i64 %indvars.iv.next217 to i32
-  %exitcond219 = icmp eq i32 %lftr.wideiv218, %1
-  br i1 %exitcond219, label %for.inc89, label %for.cond73.preheader
+; <label>:58                                      ; preds = %58, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %58 ]
+  %59 = getelementptr inbounds float* %57, i64 %indvars.iv
+  %60 = load float* %59, align 4, !tbaa !21
+  %61 = fsub float %60, %46
+  store float %61, float* %59, align 4, !tbaa !21
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %51
+  br i1 %exitcond, label %._crit_edge, label %58
 
-for.inc89:                                        ; preds = %for.inc86, %for.cond69.preheader
-  %indvars.iv.next221 = add i64 %indvars.iv220, 1
-  %lftr.wideiv222 = trunc i64 %indvars.iv.next221 to i32
-  %exitcond223 = icmp eq i32 %lftr.wideiv222, %0
-  br i1 %exitcond223, label %for.end91, label %for.cond69.preheader
+._crit_edge:                                      ; preds = %58, %.preheader
+  %indvars.iv.next71 = add nuw nsw i64 %indvars.iv70, 1
+  %lftr.wideiv72 = trunc i64 %indvars.iv70 to i32
+  %exitcond73 = icmp eq i32 %lftr.wideiv72, %52
+  br i1 %exitcond73, label %._crit_edge6, label %.preheader
 
-for.end91:                                        ; preds = %for.inc89, %if.end62.thread, %if.end62
-  %div249 = phi float [ %div239, %if.end62.thread ], [ %div, %if.end62 ], [ %div, %for.inc89 ]
-  %imax.sroa.0.4248 = phi i32 [ -1, %if.end62.thread ], [ %imax.sroa.0.4, %if.end62 ], [ %imax.sroa.0.4, %for.inc89 ]
-  %imax.sroa.1.4247 = phi i32 [ -1, %if.end62.thread ], [ %imax.sroa.1.4, %if.end62 ], [ %imax.sroa.1.4, %for.inc89 ]
-  %imax.sroa.2.4246 = phi i32 [ -1, %if.end62.thread ], [ %imax.sroa.2.4, %if.end62 ], [ %imax.sroa.2.4, %for.inc89 ]
-  %imin.sroa.0.4245 = phi i32 [ -1, %if.end62.thread ], [ %imin.sroa.0.4, %if.end62 ], [ %imin.sroa.0.4, %for.inc89 ]
-  %imin.sroa.1.4244 = phi i32 [ -1, %if.end62.thread ], [ %imin.sroa.1.4, %if.end62 ], [ %imin.sroa.1.4, %for.inc89 ]
-  %imin.sroa.2.4243 = phi i32 [ -1, %if.end62.thread ], [ %imin.sroa.2.4, %if.end62 ], [ %imin.sroa.2.4, %for.inc89 ]
-  %maxg.4242 = phi float [ %7, %if.end62.thread ], [ %maxg.4, %if.end62 ], [ %maxg.4, %for.inc89 ]
-  %ming.4241 = phi float [ %7, %if.end62.thread ], [ %ming.4, %if.end62 ], [ %ming.4, %for.inc89 ]
-  %tobool = icmp eq %struct._IO_FILE* %fp, null
-  br i1 %tobool, label %if.end103, label %if.then92
+._crit_edge6:                                     ; preds = %._crit_edge, %.preheader1
+  %indvars.iv.next75 = add nuw nsw i64 %indvars.iv74, 1
+  %lftr.wideiv76 = trunc i64 %indvars.iv74 to i32
+  %exitcond77 = icmp eq i32 %lftr.wideiv76, %53
+  br i1 %exitcond77, label %._crit_edge8, label %.preheader1
 
-if.then92:                                        ; preds = %for.end91
-  %conv93 = fpext float %div249 to double
-  %conv94 = fpext float %ming.4241 to double
-  %conv98 = fpext float %maxg.4242 to double
-  %call102 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([71 x i8]* @.str5, i64 0, i64 0), double %conv93, double %conv94, i32 %imin.sroa.0.4245, i32 %imin.sroa.1.4244, i32 %imin.sroa.2.4243, double %conv98, i32 %imax.sroa.0.4248, i32 %imax.sroa.1.4247, i32 %imax.sroa.2.4246) #4
-  br label %if.end103
+._crit_edge8:                                     ; preds = %._crit_edge6, %.loopexit.thread, %.loopexit
+  %62 = phi float [ %21, %.loopexit.thread ], [ %46, %.loopexit ], [ %46, %._crit_edge6 ]
+  %imax.sroa.0.497 = phi i32 [ -1, %.loopexit.thread ], [ %imax.sroa.0.4, %.loopexit ], [ %imax.sroa.0.4, %._crit_edge6 ]
+  %imax.sroa.3.496 = phi i32 [ -1, %.loopexit.thread ], [ %imax.sroa.3.4, %.loopexit ], [ %imax.sroa.3.4, %._crit_edge6 ]
+  %imax.sroa.5.495 = phi i32 [ -1, %.loopexit.thread ], [ %imax.sroa.5.4, %.loopexit ], [ %imax.sroa.5.4, %._crit_edge6 ]
+  %imin.sroa.0.494 = phi i32 [ -1, %.loopexit.thread ], [ %imin.sroa.0.4, %.loopexit ], [ %imin.sroa.0.4, %._crit_edge6 ]
+  %imin.sroa.3.493 = phi i32 [ -1, %.loopexit.thread ], [ %imin.sroa.3.4, %.loopexit ], [ %imin.sroa.3.4, %._crit_edge6 ]
+  %imin.sroa.5.492 = phi i32 [ -1, %.loopexit.thread ], [ %imin.sroa.5.4, %.loopexit ], [ %imin.sroa.5.4, %._crit_edge6 ]
+  %maxg.491 = phi float [ %16, %.loopexit.thread ], [ %maxg.4, %.loopexit ], [ %maxg.4, %._crit_edge6 ]
+  %ming.490 = phi float [ %16, %.loopexit.thread ], [ %ming.4, %.loopexit ], [ %ming.4, %._crit_edge6 ]
+  %63 = icmp eq %struct.__sFILE* %fp, null
+  br i1 %63, label %69, label %64
 
-if.end103:                                        ; preds = %for.end91, %if.then92
+; <label>:64                                      ; preds = %._crit_edge8
+  %65 = fpext float %62 to double
+  %66 = fpext float %ming.490 to double
+  %67 = fpext float %maxg.491 to double
+  %68 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([71 x i8]* @.str5, i64 0, i64 0), double %65, double %66, i32 %imin.sroa.0.494, i32 %imin.sroa.3.493, i32 %imin.sroa.5.492, double %67, i32 %imax.sroa.0.497, i32 %imax.sroa.3.496, i32 %imax.sroa.5.495) #6
+  br label %69
+
+; <label>:69                                      ; preds = %._crit_edge8, %64
   ret void
 }

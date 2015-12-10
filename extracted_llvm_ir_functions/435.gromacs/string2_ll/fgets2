@@ -1,0 +1,18 @@
+define i8* @fgets2(i8* %line, i32 %n, %struct.__sFILE* nocapture %stream) #3 {
+  %1 = tail call i8* @fgets(i8* %line, i32 %n, %struct.__sFILE* %stream) #10
+  %2 = icmp eq i8* %1, null
+  br i1 %2, label %7, label %3
+
+; <label>:3                                       ; preds = %0
+  %4 = tail call i8* @strchr(i8* %line, i32 10) #10
+  %5 = icmp eq i8* %4, null
+  br i1 %5, label %7, label %6
+
+; <label>:6                                       ; preds = %3
+  store i8 0, i8* %4, align 1, !tbaa !13
+  br label %7
+
+; <label>:7                                       ; preds = %6, %3, %0
+  %.0 = phi i8* [ null, %0 ], [ %line, %3 ], [ %line, %6 ]
+  ret i8* %.0
+}

@@ -1,40 +1,40 @@
-define float @calc_mu_aver(%struct.t_commrec* nocapture %cr, %struct.t_nsborder* nocapture %nsb, [3 x float]* nocapture %x, float* nocapture %q, float* nocapture %mu, %struct.t_topology* nocapture %top, %struct.t_mdatoms* nocapture %md, i32 %gnx, i32* nocapture %grpindex) #0 {
-entry:
-  %cmp = icmp sgt i32 %gnx, 0
-  br i1 %cmp, label %for.body.lr.ph, label %return
+define float @calc_mu_aver(%struct.t_commrec* nocapture readnone %cr, %struct.t_nsborder* nocapture readnone %nsb, [3 x float]* nocapture readonly %x, float* nocapture readonly %q, float* nocapture readnone %mu, %struct.t_topology* nocapture readonly %top, %struct.t_mdatoms* nocapture readnone %md, i32 %gnx, i32* nocapture readonly %grpindex) #4 {
+  %1 = icmp sgt i32 %gnx, 0
+  br i1 %1, label %.lr.ph, label %21
 
-for.body.lr.ph:                                   ; preds = %entry
-  %index10 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 1, i32 2
-  %a = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 1, i32 4
-  br label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 1, i32 2
+  %3 = load i32** %2, align 8, !tbaa !19
+  %4 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 1, i32 4
+  %5 = load i32** %4, align 8, !tbaa !21
+  %6 = add i32 %gnx, -1
+  br label %7
 
-for.body:                                         ; preds = %for.body, %for.body.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %mu_ave.030 = phi float [ 0.000000e+00, %for.body.lr.ph ], [ %add16, %for.body ]
-  %arrayidx8 = getelementptr inbounds i32* %grpindex, i64 %indvars.iv
-  %0 = load i32* %arrayidx8, align 4, !tbaa !3
-  %idxprom9 = sext i32 %0 to i64
-  %1 = load i32** %index10, align 8, !tbaa !4
-  %arrayidx11 = getelementptr inbounds i32* %1, i64 %idxprom9
-  %2 = load i32* %arrayidx11, align 4, !tbaa !3
-  %add12 = add nsw i32 %0, 1
-  %idxprom13 = sext i32 %add12 to i64
-  %arrayidx15 = getelementptr inbounds i32* %1, i64 %idxprom13
-  %3 = load i32* %arrayidx15, align 4, !tbaa !3
-  %4 = load i32** %a, align 8, !tbaa !4
-  %call = tail call float @mol_dipole(i32 %2, i32 %3, i32* %4, [3 x float]* %x, float* %q) #6
-  %add16 = fadd float %mu_ave.030, %call
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %gnx
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:7                                       ; preds = %7, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %7 ]
+  %mu_ave.01 = phi float [ 0.000000e+00, %.lr.ph ], [ %18, %7 ]
+  %8 = getelementptr inbounds i32* %grpindex, i64 %indvars.iv
+  %9 = load i32* %8, align 4, !tbaa !18
+  %10 = sext i32 %9 to i64
+  %11 = getelementptr inbounds i32* %3, i64 %10
+  %12 = load i32* %11, align 4, !tbaa !18
+  %13 = add nsw i32 %9, 1
+  %14 = sext i32 %13 to i64
+  %15 = getelementptr inbounds i32* %3, i64 %14
+  %16 = load i32* %15, align 4, !tbaa !18
+  %17 = tail call float @mol_dipole(i32 %12, i32 %16, i32* %5, [3 x float]* %x, float* %q) #12
+  %18 = fadd float %mu_ave.01, %17
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %6
+  br i1 %exitcond, label %._crit_edge, label %7
 
-for.end:                                          ; preds = %for.body
-  %conv = sitofp i32 %gnx to float
-  %div = fdiv float %add16, %conv
-  br label %return
+._crit_edge:                                      ; preds = %7
+  %19 = sitofp i32 %gnx to float
+  %20 = fdiv float %18, %19
+  br label %21
 
-return:                                           ; preds = %entry, %for.end
-  %retval.0 = phi float [ %div, %for.end ], [ 0.000000e+00, %entry ]
-  ret float %retval.0
+; <label>:21                                      ; preds = %0, %._crit_edge
+  %.0 = phi float [ %20, %._crit_edge ], [ 0.000000e+00, %0 ]
+  ret float %.0
 }

@@ -1,0 +1,44 @@
+define internal i32 @CCTKi_SchedulePrintWhile(i32 %n_whiles, i8** nocapture readonly %whiles, %struct.t_attribute* nocapture readnone %attribute, %struct.t_sched_data* nocapture readnone %data, i32 %first) #1 {
+  %1 = icmp eq i32 %first, 0
+  %2 = load i32* @indent_level, align 4, !tbaa !38
+  %3 = add nsw i32 %2, 9
+  br i1 %1, label %16, label %4
+
+; <label>:4                                       ; preds = %0
+  %5 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str71, i64 0, i64 0), i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str72, i64 0, i64 0)) #8
+  %6 = icmp sgt i32 %n_whiles, 0
+  br i1 %6, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %4
+  %7 = add i32 %n_whiles, -1
+  br label %8
+
+; <label>:8                                       ; preds = %12, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %12 ]
+  %9 = icmp sgt i64 %indvars.iv, 0
+  br i1 %9, label %10, label %12
+
+; <label>:10                                      ; preds = %8
+  %11 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.str73, i64 0, i64 0)) #8
+  br label %12
+
+; <label>:12                                      ; preds = %10, %8
+  %13 = getelementptr inbounds i8** %whiles, i64 %indvars.iv
+  %14 = load i8** %13, align 8, !tbaa !13
+  %15 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([3 x i8]* @.str74, i64 0, i64 0), i8* %14) #8
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %7
+  br i1 %exitcond, label %._crit_edge, label %8
+
+._crit_edge:                                      ; preds = %12, %4
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([2 x i8]* @str110, i64 0, i64 0))
+  br label %18
+
+; <label>:16                                      ; preds = %0
+  %17 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str71, i64 0, i64 0), i32 %3, i8* getelementptr inbounds ([11 x i8]* @.str76, i64 0, i64 0)) #8
+  br label %18
+
+; <label>:18                                      ; preds = %16, %._crit_edge
+  ret i32 %first
+}

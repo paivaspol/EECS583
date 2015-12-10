@@ -1,0 +1,17 @@
+define i32 @BndScalarDirGN(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, double %scalar, i8* %gname) #1 {
+  %1 = tail call i32 @CCTK_GroupIndex(i8* %gname) #5
+  %2 = icmp sgt i32 %1, -1
+  br i1 %2, label %3, label %5
+
+; <label>:3                                       ; preds = %0
+  %4 = tail call i32 @BndScalarDirGI(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, double %scalar, i32 %1) #6
+  br label %7
+
+; <label>:5                                       ; preds = %0
+  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 461, i8* getelementptr inbounds ([85 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([42 x i8]* @.str6, i64 0, i64 0), i8* %gname) #5
+  br label %7
+
+; <label>:7                                       ; preds = %5, %3
+  %retval.0 = phi i32 [ %4, %3 ], [ -1, %5 ]
+  ret i32 %retval.0
+}

@@ -1,81 +1,79 @@
-define void @mv_grid(%struct.t_commrec* nocapture %cr, i32 %bDD, i32* nocapture %cg_index, %struct.t_grid* nocapture %grid, i32* nocapture %cgload) #0 {
-entry:
-  %cell_index = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 8
-  %0 = load i32** %cell_index, align 8, !tbaa !4
-  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
-  %1 = load i32* %nnodes, align 4, !tbaa !3
-  %sub62 = add nsw i32 %1, -1
-  %cmp63 = icmp sgt i32 %sub62, 0
-  br i1 %cmp63, label %for.body.lr.ph, label %for.end
+define void @mv_grid(%struct.t_commrec* nocapture readonly %cr, i32 %bDD, i32* nocapture readnone %cg_index, %struct.t_grid* nocapture readonly %grid, i32* nocapture readonly %cgload) #4 {
+  %1 = getelementptr inbounds %struct.t_grid* %grid, i64 0, i32 8
+  %2 = load i32** %1, align 8, !tbaa !28
+  %3 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
+  %4 = load i32* %3, align 4, !tbaa !33
+  %5 = icmp sgt i32 %4, 1
+  br i1 %5, label %.lr.ph, label %._crit_edge
 
-for.body.lr.ph:                                   ; preds = %entry
-  %nodeid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
-  %2 = load i32* %nodeid, align 4, !tbaa !3
-  %left = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
-  %right = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
-  br label %for.body
+.lr.ph:                                           ; preds = %0
+  %6 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  %7 = load i32* %6, align 4, !tbaa !35
+  %8 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
+  %9 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
+  br label %10
 
-for.body:                                         ; preds = %for.body.lr.ph, %cond.end20
-  %i.065 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %cond.end20 ]
-  %cur.064 = phi i32 [ %2, %for.body.lr.ph ], [ %rem37, %cond.end20 ]
-  %cmp1 = icmp eq i32 %cur.064, 0
-  br i1 %cmp1, label %cond.end, label %cond.false
+; <label>:10                                      ; preds = %.lr.ph, %37
+  %i.02 = phi i32 [ 0, %.lr.ph ], [ %52, %37 ]
+  %cur.01 = phi i32 [ %7, %.lr.ph ], [ %51, %37 ]
+  %11 = icmp eq i32 %cur.01, 0
+  br i1 %11, label %17, label %12
 
-cond.false:                                       ; preds = %for.body
-  %sub2 = add nsw i32 %cur.064, -1
-  %idxprom = sext i32 %sub2 to i64
-  %arrayidx = getelementptr inbounds i32* %cgload, i64 %idxprom
-  %3 = load i32* %arrayidx, align 4, !tbaa !3
-  br label %cond.end
+; <label>:12                                      ; preds = %10
+  %13 = add nsw i32 %cur.01, -1
+  %14 = sext i32 %13 to i64
+  %15 = getelementptr inbounds i32* %cgload, i64 %14
+  %16 = load i32* %15, align 4, !tbaa !18
+  br label %17
 
-cond.end:                                         ; preds = %for.body, %cond.false
-  %cond = phi i32 [ %3, %cond.false ], [ 0, %for.body ]
-  %idxprom3 = sext i32 %cur.064 to i64
-  %arrayidx4 = getelementptr inbounds i32* %cgload, i64 %idxprom3
-  %4 = load i32* %arrayidx4, align 4, !tbaa !3
-  %sub5 = sub nsw i32 %4, %cond
-  %5 = load i32* %left, align 4, !tbaa !3
-  %idxprom6 = sext i32 %cond to i64
-  %arrayidx7 = getelementptr inbounds i32* %0, i64 %idxprom6
-  %6 = bitcast i32* %arrayidx7 to i8*
-  %mul = shl i32 %sub5, 2
-  tail call void @gmx_tx(i32 %5, i8* %6, i32 %mul) #5
-  %add = add nsw i32 %cur.064, 1
-  %7 = load i32* %nnodes, align 4, !tbaa !3
-  %rem = srem i32 %add, %7
-  %cmp10 = icmp eq i32 %rem, 0
-  br i1 %cmp10, label %cond.end20, label %cond.false13
+; <label>:17                                      ; preds = %10, %12
+  %18 = phi i32 [ %16, %12 ], [ 0, %10 ]
+  %19 = sext i32 %cur.01 to i64
+  %20 = getelementptr inbounds i32* %cgload, i64 %19
+  %21 = load i32* %20, align 4, !tbaa !18
+  %22 = sub nsw i32 %21, %18
+  %23 = load i32* %8, align 4, !tbaa !36
+  %24 = sext i32 %18 to i64
+  %25 = getelementptr inbounds i32* %2, i64 %24
+  %26 = bitcast i32* %25 to i8*
+  %27 = shl i32 %22, 2
+  tail call void @gmx_tx(i32 %23, i8* %26, i32 %27) #8
+  %28 = add nsw i32 %cur.01, 1
+  %29 = load i32* %3, align 4, !tbaa !33
+  %30 = srem i32 %28, %29
+  %31 = icmp eq i32 %30, 0
+  br i1 %31, label %37, label %32
 
-cond.false13:                                     ; preds = %cond.end
-  %sub17 = add nsw i32 %rem, -1
-  %idxprom18 = sext i32 %sub17 to i64
-  %arrayidx19 = getelementptr inbounds i32* %cgload, i64 %idxprom18
-  %8 = load i32* %arrayidx19, align 4, !tbaa !3
-  br label %cond.end20
+; <label>:32                                      ; preds = %17
+  %33 = add nsw i32 %30, -1
+  %34 = sext i32 %33 to i64
+  %35 = getelementptr inbounds i32* %cgload, i64 %34
+  %36 = load i32* %35, align 4, !tbaa !18
+  br label %37
 
-cond.end20:                                       ; preds = %cond.end, %cond.false13
-  %cond21 = phi i32 [ %8, %cond.false13 ], [ 0, %cond.end ]
-  %idxprom25 = sext i32 %rem to i64
-  %arrayidx26 = getelementptr inbounds i32* %cgload, i64 %idxprom25
-  %9 = load i32* %arrayidx26, align 4, !tbaa !3
-  %sub27 = sub nsw i32 %9, %cond21
-  %10 = load i32* %right, align 4, !tbaa !3
-  %idxprom28 = sext i32 %cond21 to i64
-  %arrayidx29 = getelementptr inbounds i32* %0, i64 %idxprom28
-  %11 = bitcast i32* %arrayidx29 to i8*
-  %mul31 = shl i32 %sub27, 2
-  tail call void @gmx_rx(i32 %10, i8* %11, i32 %mul31) #5
-  %12 = load i32* %left, align 4, !tbaa !3
-  tail call void @gmx_tx_wait(i32 %12) #5
-  %13 = load i32* %right, align 4, !tbaa !3
-  tail call void @gmx_rx_wait(i32 %13) #5
-  %14 = load i32* %nnodes, align 4, !tbaa !3
-  %rem37 = srem i32 %add, %14
-  %inc = add nsw i32 %i.065, 1
-  %sub = add nsw i32 %14, -1
-  %cmp = icmp slt i32 %inc, %sub
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:37                                      ; preds = %17, %32
+  %38 = phi i32 [ %36, %32 ], [ 0, %17 ]
+  %39 = sext i32 %30 to i64
+  %40 = getelementptr inbounds i32* %cgload, i64 %39
+  %41 = load i32* %40, align 4, !tbaa !18
+  %42 = sub nsw i32 %41, %38
+  %43 = load i32* %9, align 4, !tbaa !37
+  %44 = sext i32 %38 to i64
+  %45 = getelementptr inbounds i32* %2, i64 %44
+  %46 = bitcast i32* %45 to i8*
+  %47 = shl i32 %42, 2
+  tail call void @gmx_rx(i32 %43, i8* %46, i32 %47) #8
+  %48 = load i32* %8, align 4, !tbaa !36
+  tail call void @gmx_tx_wait(i32 %48) #8
+  %49 = load i32* %9, align 4, !tbaa !37
+  tail call void @gmx_rx_wait(i32 %49) #8
+  %50 = load i32* %3, align 4, !tbaa !33
+  %51 = srem i32 %28, %50
+  %52 = add nuw nsw i32 %i.02, 1
+  %53 = add nsw i32 %50, -1
+  %54 = icmp slt i32 %52, %53
+  br i1 %54, label %10, label %._crit_edge
 
-for.end:                                          ; preds = %cond.end20, %entry
+._crit_edge:                                      ; preds = %37, %0
   ret void
 }

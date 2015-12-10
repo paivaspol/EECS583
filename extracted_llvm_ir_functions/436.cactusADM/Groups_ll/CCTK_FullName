@@ -1,0 +1,31 @@
+define i8* @CCTK_FullName(i32 %var) #2 {
+  %1 = tail call i8* @CCTK_VarName(i32 %var) #9
+  %2 = icmp eq i8* %1, null
+  br i1 %2, label %21, label %3
+
+; <label>:3                                       ; preds = %0
+  %4 = sext i32 %var to i64
+  %5 = load i32** @group_of_variable, align 8, !tbaa !2
+  %6 = getelementptr inbounds i32* %5, i64 %4
+  %7 = load i32* %6, align 4, !tbaa !6
+  %8 = sext i32 %7 to i64
+  %9 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
+  %10 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 1
+  %11 = load i8** %10, align 8, !tbaa !8
+  %12 = tail call i64 @strlen(i8* %1) #10
+  %13 = tail call i64 @strlen(i8* %11) #10
+  %14 = add i64 %12, 3
+  %15 = add i64 %14, %13
+  %16 = tail call i8* @malloc(i64 %15) #10
+  %17 = icmp eq i8* %16, null
+  br i1 %17, label %21, label %18
+
+; <label>:18                                      ; preds = %3
+  %19 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %16, i1 false)
+  %20 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %16, i32 0, i64 %19, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* %11, i8* %1) #10
+  br label %21
+
+; <label>:21                                      ; preds = %0, %3, %18
+  %fullname.0 = phi i8* [ %16, %18 ], [ null, %3 ], [ null, %0 ]
+  ret i8* %fullname.0
+}

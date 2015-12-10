@@ -1,0 +1,22 @@
+define i32 @Util_BinTreePrintNodes(%struct.T_TREE* readonly %root, i32 %depth, void (i8*, i32)* %print_node) #1 {
+  %1 = icmp eq %struct.T_TREE* %root, null
+  br i1 %1, label %tailrecurse._crit_edge, label %tailrecurse
+
+tailrecurse:                                      ; preds = %0, %tailrecurse
+  %depth.tr2 = phi i32 [ %4, %tailrecurse ], [ %depth, %0 ]
+  %root.tr1 = phi %struct.T_TREE* [ %9, %tailrecurse ], [ %root, %0 ]
+  %2 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 0
+  %3 = load %struct.T_TREE** %2, align 8, !tbaa !7
+  %4 = add nsw i32 %depth.tr2, 1
+  %5 = tail call i32 @Util_BinTreePrintNodes(%struct.T_TREE* %3, i32 %4, void (i8*, i32)* %print_node) #5
+  %6 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 3
+  %7 = load i8** %6, align 8, !tbaa !2
+  tail call void %print_node(i8* %7, i32 %depth.tr2) #4
+  %8 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 1
+  %9 = load %struct.T_TREE** %8, align 8, !tbaa !8
+  %10 = icmp eq %struct.T_TREE* %9, null
+  br i1 %10, label %tailrecurse._crit_edge, label %tailrecurse
+
+tailrecurse._crit_edge:                           ; preds = %tailrecurse, %0
+  ret i32 0
+}

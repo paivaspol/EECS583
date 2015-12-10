@@ -1,0 +1,11 @@
+define i32 @CCTK_GroupStaggerDirArrayGI(i32* nocapture %dindex, i32 %dim, i32 %gi) #1 {
+  %group.i = alloca %struct.cGroup, align 4
+  %1 = bitcast %struct.cGroup* %group.i to i8*
+  call void @llvm.lifetime.start(i64 32, i8* %1)
+  %2 = call i32 @CCTK_GroupData(i32 %gi, %struct.cGroup* %group.i) #6
+  %3 = getelementptr inbounds %struct.cGroup* %group.i, i64 0, i32 3
+  %4 = load i32* %3, align 4, !tbaa !2
+  call void @llvm.lifetime.end(i64 32, i8* %1)
+  %5 = call i32 @CCTK_StaggerDirArray(i32* %dindex, i32 %dim, i32 %4) #7
+  ret i32 %5
+}

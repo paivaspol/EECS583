@@ -1,0 +1,155 @@
+define i32 @CCTK_CoordRegisterRangePhysIndex(%struct.cGH* %GH, i32 %min, i32 %max, i32 %dir, i8* %coordname, i8* %systemname) #1 {
+  %coord_system = alloca %struct.Coordsystem*, align 8
+  %1 = load %struct.cHandledData** @CoordSystems, align 8, !tbaa !2
+  %2 = bitcast %struct.Coordsystem** %coord_system to i8**
+  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %systemname, i8** %2) #5
+  %4 = load %struct.Coordsystem** %coord_system, align 8, !tbaa !2
+  %5 = icmp eq %struct.Coordsystem* %4, null
+  br i1 %5, label %6, label %8
+
+; <label>:6                                       ; preds = %0
+  %7 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 579, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([61 x i8]* @.str16, i64 0, i64 0), i8* %systemname) #5
+  br label %.thread
+
+; <label>:8                                       ; preds = %0
+  %9 = icmp sgt i32 %dir, -1
+  br i1 %9, label %13, label %.preheader
+
+.preheader:                                       ; preds = %8
+  %10 = getelementptr inbounds %struct.Coordsystem* %4, i64 0, i32 1
+  %11 = load i32* %10, align 4, !tbaa !6
+  %12 = icmp sgt i32 %11, 0
+  br i1 %12, label %.lr.ph, label %._crit_edge.thread
+
+; <label>:13                                      ; preds = %8
+  %14 = icmp eq i32 %dir, 0
+  %.phi.trans.insert = getelementptr inbounds %struct.Coordsystem* %4, i64 0, i32 1
+  %.pre7 = load i32* %.phi.trans.insert, align 4, !tbaa !6
+  %15 = icmp slt i32 %.pre7, %dir
+  %or.cond = or i1 %14, %15
+  br i1 %or.cond, label %._crit_edge6, label %17
+
+._crit_edge6:                                     ; preds = %13
+  %16 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 590, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([75 x i8]* @.str17, i64 0, i64 0), i32 %dir, i32 %.pre7) #5
+  %.pre8 = load %struct.Coordsystem** %coord_system, align 8, !tbaa !2
+  br label %17
+
+; <label>:17                                      ; preds = %13, %._crit_edge6
+  %18 = phi %struct.Coordsystem* [ %.pre8, %._crit_edge6 ], [ %4, %13 ]
+  %retval.0 = phi i32 [ -2, %._crit_edge6 ], [ 0, %13 ]
+  %19 = add nsw i32 %dir, -1
+  %20 = sext i32 %19 to i64
+  %21 = getelementptr inbounds %struct.Coordsystem* %18, i64 0, i32 3
+  %22 = load %struct.Coordprops** %21, align 8, !tbaa !11
+  %23 = getelementptr inbounds %struct.Coordprops* %22, i64 %20, i32 0
+  %24 = load i8** %23, align 8, !tbaa !13
+  %25 = icmp eq i8* %24, null
+  br i1 %25, label %26, label %46
+
+; <label>:26                                      ; preds = %17
+  %27 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 601, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([73 x i8]* @.str18, i64 0, i64 0), i32 %dir) #5
+  br label %.thread
+
+.lr.ph:                                           ; preds = %.preheader, %38
+  %indvars.iv = phi i64 [ %indvars.iv.next, %38 ], [ 0, %.preheader ]
+  %28 = phi %struct.Coordsystem* [ %39, %38 ], [ %4, %.preheader ]
+  %vindex.04 = phi i32 [ %vindex.1, %38 ], [ -1, %.preheader ]
+  %29 = getelementptr inbounds %struct.Coordsystem* %28, i64 0, i32 3
+  %30 = load %struct.Coordprops** %29, align 8, !tbaa !11
+  %31 = getelementptr inbounds %struct.Coordprops* %30, i64 %indvars.iv, i32 0
+  %32 = load i8** %31, align 8, !tbaa !13
+  %33 = icmp eq i8* %32, null
+  br i1 %33, label %38, label %34
+
+; <label>:34                                      ; preds = %.lr.ph
+  %35 = call i32 @CCTK_Equals(i8* %32, i8* %coordname) #5
+  %36 = icmp eq i32 %35, 0
+  %37 = trunc i64 %indvars.iv to i32
+  %vindex.0.i.0 = select i1 %36, i32 %vindex.04, i32 %37
+  %.pre = load %struct.Coordsystem** %coord_system, align 8, !tbaa !2
+  br label %38
+
+; <label>:38                                      ; preds = %34, %.lr.ph
+  %39 = phi %struct.Coordsystem* [ %28, %.lr.ph ], [ %.pre, %34 ]
+  %vindex.1 = phi i32 [ %vindex.04, %.lr.ph ], [ %vindex.0.i.0, %34 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %40 = getelementptr inbounds %struct.Coordsystem* %39, i64 0, i32 1
+  %41 = load i32* %40, align 4, !tbaa !6
+  %42 = sext i32 %41 to i64
+  %43 = icmp slt i64 %indvars.iv.next, %42
+  br i1 %43, label %.lr.ph, label %._crit_edge
+
+._crit_edge:                                      ; preds = %38
+  %44 = icmp eq i32 %vindex.1, -1
+  br i1 %44, label %._crit_edge.thread, label %..thread1_crit_edge
+
+..thread1_crit_edge:                              ; preds = %._crit_edge
+  %.phi.trans.insert9 = getelementptr inbounds %struct.Coordsystem* %39, i64 0, i32 3
+  %.pre10 = load %struct.Coordprops** %.phi.trans.insert9, align 8, !tbaa !11
+  br label %.thread1
+
+._crit_edge.thread:                               ; preds = %.preheader, %._crit_edge
+  %45 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 620, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([68 x i8]* @.str19, i64 0, i64 0), i8* %coordname) #5
+  br label %.thread
+
+; <label>:46                                      ; preds = %17
+  br i1 %14, label %.thread, label %.thread1
+
+.thread1:                                         ; preds = %..thread1_crit_edge, %46
+  %47 = phi %struct.Coordprops* [ %22, %46 ], [ %.pre10, %..thread1_crit_edge ]
+  %48 = phi %struct.Coordsystem* [ %18, %46 ], [ %39, %..thread1_crit_edge ]
+  %vindex.23 = phi i32 [ %19, %46 ], [ %vindex.1, %..thread1_crit_edge ]
+  %retval.12 = phi i32 [ %retval.0, %46 ], [ 0, %..thread1_crit_edge ]
+  %49 = sext i32 %vindex.23 to i64
+  %50 = getelementptr inbounds %struct.Coordsystem* %48, i64 0, i32 3
+  %51 = getelementptr inbounds %struct.Coordprops* %47, i64 %49, i32 3
+  %52 = load %struct.Coordpropslistphysi** %51, align 8, !tbaa !24
+  %53 = icmp eq %struct.Coordpropslistphysi* %52, null
+  br i1 %53, label %63, label %54
+
+; <label>:54                                      ; preds = %.thread1
+  %55 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 3, i32 633, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([59 x i8]* @.str20, i64 0, i64 0), i8* %systemname) #5
+  %56 = load %struct.Coordsystem** %coord_system, align 8, !tbaa !2
+  %57 = getelementptr inbounds %struct.Coordsystem* %56, i64 0, i32 3
+  %58 = load %struct.Coordprops** %57, align 8, !tbaa !11
+  %59 = getelementptr inbounds %struct.Coordprops* %58, i64 %49, i32 3
+  %60 = load %struct.Coordpropslistphysi** %59, align 8, !tbaa !24
+  %61 = getelementptr inbounds %struct.Coordpropslistphysi* %60, i64 0, i32 1
+  store i32 %min, i32* %61, align 4, !tbaa !25
+  %62 = getelementptr inbounds %struct.Coordpropslistphysi* %60, i64 0, i32 2
+  store i32 %max, i32* %62, align 4, !tbaa !27
+  br label %.thread
+
+; <label>:63                                      ; preds = %.thread1
+  %64 = call i8* @malloc(i64 24) #5
+  %65 = icmp eq i8* %64, null
+  br i1 %65, label %66, label %68
+
+; <label>:66                                      ; preds = %63
+  %67 = call i32 @CCTK_Warn(i32 1, i32 647, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([76 x i8]* @.str21, i64 0, i64 0)) #5
+  br label %.thread
+
+; <label>:68                                      ; preds = %63
+  %69 = bitcast i8* %64 to %struct.cGH**
+  store %struct.cGH* %GH, %struct.cGH** %69, align 8, !tbaa !28
+  %70 = getelementptr inbounds i8* %64, i64 8
+  %71 = bitcast i8* %70 to i32*
+  store i32 %min, i32* %71, align 4, !tbaa !25
+  %72 = getelementptr inbounds i8* %64, i64 12
+  %73 = bitcast i8* %72 to i32*
+  store i32 %max, i32* %73, align 4, !tbaa !27
+  %74 = load %struct.Coordprops** %50, align 8, !tbaa !11
+  %75 = getelementptr inbounds %struct.Coordprops* %74, i64 %49, i32 3
+  %76 = bitcast %struct.Coordpropslistphysi** %75 to i64*
+  %77 = load i64* %76, align 8, !tbaa !24
+  %78 = getelementptr inbounds i8* %64, i64 16
+  %79 = bitcast i8* %78 to i64*
+  store i64 %77, i64* %79, align 8, !tbaa !29
+  %80 = bitcast %struct.Coordpropslistphysi** %75 to i8**
+  store i8* %64, i8** %80, align 8, !tbaa !24
+  br label %.thread
+
+.thread:                                          ; preds = %._crit_edge.thread, %26, %46, %66, %68, %54, %6
+  %retval.2 = phi i32 [ %retval.12, %54 ], [ %retval.12, %68 ], [ -5, %66 ], [ %retval.0, %46 ], [ -1, %6 ], [ -3, %._crit_edge.thread ], [ -4, %26 ]
+  ret i32 %retval.2
+}

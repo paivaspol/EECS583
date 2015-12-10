@@ -1,0 +1,32 @@
+define i32 @Util_SplitFilename(i8** nocapture %dir, i8** nocapture %file, i8* %string) #1 {
+  %1 = tail call i8* @Util_Strdup(i8* %string) #8
+  store i8* %1, i8** %file, align 8, !tbaa !2
+  %2 = icmp eq i8* %1, null
+  %3 = ptrtoint i8* %1 to i64
+  br i1 %2, label %12, label %4
+
+; <label>:4                                       ; preds = %0
+  %5 = tail call i8* @strrchr(i8* %1, i32 47) #7
+  %6 = icmp eq i8* %5, null
+  br i1 %6, label %11, label %7
+
+; <label>:7                                       ; preds = %4
+  %8 = bitcast i8** %dir to i64*
+  store i64 %3, i64* %8, align 8, !tbaa !2
+  store i8 0, i8* %5, align 1, !tbaa !6
+  %9 = getelementptr inbounds i8* %5, i64 1
+  %10 = tail call i8* @Util_Strdup(i8* %9) #8
+  store i8* %10, i8** %file, align 8, !tbaa !2
+  br label %12
+
+; <label>:11                                      ; preds = %4
+  store i8* null, i8** %dir, align 8, !tbaa !2
+  %.pre = load i8** %file, align 8, !tbaa !2
+  br label %12
+
+; <label>:12                                      ; preds = %0, %7, %11
+  %13 = phi i8* [ null, %0 ], [ %10, %7 ], [ %.pre, %11 ]
+  %not. = icmp eq i8* %13, null
+  %14 = sext i1 %not. to i32
+  ret i32 %14
+}

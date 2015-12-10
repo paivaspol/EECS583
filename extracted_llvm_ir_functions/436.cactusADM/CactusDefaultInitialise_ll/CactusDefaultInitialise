@@ -1,0 +1,20 @@
+define i32 @CactusDefaultInitialise(%struct.tFleshConfig* %config) #1 {
+  %1 = load %struct.cGH* (%struct.tFleshConfig*, i32)** @CCTK_SetupGH, align 8, !tbaa !2
+  %2 = tail call %struct.cGH* %1(%struct.tFleshConfig* %config, i32 0) #3
+  %3 = icmp eq %struct.cGH* %2, null
+  br i1 %3, label %._crit_edge, label %.lr.ph
+
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %4 = phi %struct.cGH* [ %9, %.lr.ph ], [ %2, %0 ]
+  %convergence_level.01 = phi i32 [ %7, %.lr.ph ], [ 0, %0 ]
+  %5 = tail call i32 @CCTKi_AddGH(%struct.tFleshConfig* %config, i32 %convergence_level.01, %struct.cGH* %4) #3
+  %6 = tail call i32 @CactusInitialiseGH(%struct.cGH* %4) #4
+  %7 = add nuw nsw i32 %convergence_level.01, 1
+  %8 = load %struct.cGH* (%struct.tFleshConfig*, i32)** @CCTK_SetupGH, align 8, !tbaa !2
+  %9 = tail call %struct.cGH* %8(%struct.tFleshConfig* %config, i32 %7) #3
+  %10 = icmp eq %struct.cGH* %9, null
+  br i1 %10, label %._crit_edge, label %.lr.ph
+
+._crit_edge:                                      ; preds = %.lr.ph, %0
+  ret i32 0
+}

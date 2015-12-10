@@ -1,0 +1,21 @@
+define void @CCTK_Cmplx32Exp(%struct.CCTK_COMPLEX32* noalias nocapture sret %agg.result, %struct.CCTK_COMPLEX32* byval nocapture readonly align 16 %complex_number) #3 {
+  %1 = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 0
+  %2 = load x86_fp80* %1, align 16, !tbaa !2
+  %3 = fptrunc x86_fp80 %2 to double
+  %4 = tail call double @exp(double %3) #5
+  %5 = fpext double %4 to x86_fp80
+  %6 = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 1
+  %7 = load x86_fp80* %6, align 16, !tbaa !7
+  %8 = fptrunc x86_fp80 %7 to double
+  %9 = tail call double @cos(double %8) #5
+  %10 = fpext double %9 to x86_fp80
+  %11 = fmul x86_fp80 %5, %10
+  %12 = tail call double @sin(double %8) #5
+  %13 = fpext double %12 to x86_fp80
+  %14 = fmul x86_fp80 %5, %13
+  %15 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 0
+  store x86_fp80 %11, x86_fp80* %15, align 16
+  %16 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 1
+  store x86_fp80 %14, x86_fp80* %16, align 16
+  ret void
+}

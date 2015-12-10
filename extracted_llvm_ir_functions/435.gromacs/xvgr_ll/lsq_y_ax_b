@@ -1,91 +1,95 @@
-define float @lsq_y_ax_b(i32 %n, float* nocapture %x, float* nocapture %y, float* nocapture %a, float* nocapture %b) #0 {
-entry:
-  %cmp93 = icmp sgt i32 %n, 0
-  br i1 %cmp93, label %for.body, label %for.end
+define float @lsq_y_ax_b(i32 %n, float* nocapture readonly %x, float* nocapture readonly %y, float* nocapture %a, float* nocapture %b) #4 {
+  %1 = icmp sgt i32 %n, 0
+  br i1 %1, label %.lr.ph9, label %._crit_edge10
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv103 = phi i64 [ %indvars.iv.next104, %for.body ], [ 0, %entry ]
-  %sy.098 = phi double [ %add17, %for.body ], [ 0.000000e+00, %entry ]
-  %sx.097 = phi double [ %add13, %for.body ], [ 0.000000e+00, %entry ]
-  %xx.096 = phi double [ %add9, %for.body ], [ 0.000000e+00, %entry ]
-  %yx.095 = phi double [ %add, %for.body ], [ 0.000000e+00, %entry ]
-  %arrayidx = getelementptr inbounds float* %y, i64 %indvars.iv103
-  %0 = load float* %arrayidx, align 4, !tbaa !3
-  %arrayidx2 = getelementptr inbounds float* %x, i64 %indvars.iv103
-  %1 = load float* %arrayidx2, align 4, !tbaa !3
-  %mul = fmul float %0, %1
-  %conv = fpext float %mul to double
-  %add = fadd double %yx.095, %conv
-  %mul7 = fmul float %1, %1
-  %conv8 = fpext float %mul7 to double
-  %add9 = fadd double %xx.096, %conv8
-  %conv12 = fpext float %1 to double
-  %add13 = fadd double %sx.097, %conv12
-  %conv16 = fpext float %0 to double
-  %add17 = fadd double %sy.098, %conv16
-  %indvars.iv.next104 = add i64 %indvars.iv103, 1
-  %lftr.wideiv105 = trunc i64 %indvars.iv.next104 to i32
-  %exitcond106 = icmp eq i32 %lftr.wideiv105, %n
-  br i1 %exitcond106, label %for.end, label %for.body
+.lr.ph9:                                          ; preds = %0
+  %2 = add i32 %n, -1
+  br label %3
 
-for.end:                                          ; preds = %for.body, %entry
-  %sy.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add17, %for.body ]
-  %sx.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add13, %for.body ]
-  %xx.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add9, %for.body ]
-  %yx.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add, %for.body ]
-  %conv18 = sitofp i32 %n to double
-  %mul19 = fmul double %conv18, %yx.0.lcssa
-  %mul20 = fmul double %sx.0.lcssa, %sy.0.lcssa
-  %sub = fsub double %mul19, %mul20
-  %mul22 = fmul double %conv18, %xx.0.lcssa
-  %mul23 = fmul double %sx.0.lcssa, %sx.0.lcssa
-  %sub24 = fsub double %mul22, %mul23
-  %div = fdiv double %sub, %sub24
-  %conv25 = fptrunc double %div to float
-  store float %conv25, float* %a, align 4, !tbaa !3
-  %conv26 = fpext float %conv25 to double
-  %mul27 = fmul double %sx.0.lcssa, %conv26
-  %sub28 = fsub double %sy.0.lcssa, %mul27
-  %div30 = fdiv double %sub28, %conv18
-  %conv31 = fptrunc double %div30 to float
-  store float %conv31, float* %b, align 4, !tbaa !3
-  br i1 %cmp93, label %for.body35.lr.ph, label %return
+; <label>:3                                       ; preds = %3, %.lr.ph9
+  %indvars.iv19 = phi i64 [ 0, %.lr.ph9 ], [ %indvars.iv.next20, %3 ]
+  %4 = phi <2 x double> [ zeroinitializer, %.lr.ph9 ], [ %19, %3 ]
+  %5 = phi <2 x double> [ zeroinitializer, %.lr.ph9 ], [ %15, %3 ]
+  %6 = getelementptr inbounds float* %y, i64 %indvars.iv19
+  %7 = load float* %6, align 4, !tbaa !14
+  %8 = getelementptr inbounds float* %x, i64 %indvars.iv19
+  %9 = load float* %8, align 4, !tbaa !14
+  %10 = insertelement <2 x float> undef, float %9, i32 0
+  %11 = insertelement <2 x float> %10, float %9, i32 1
+  %12 = insertelement <2 x float> %10, float %7, i32 1
+  %13 = fmul <2 x float> %11, %12
+  %14 = fpext <2 x float> %13 to <2 x double>
+  %15 = fadd <2 x double> %5, %14
+  %16 = insertelement <2 x float> undef, float %7, i32 0
+  %17 = insertelement <2 x float> %16, float %9, i32 1
+  %18 = fpext <2 x float> %17 to <2 x double>
+  %19 = fadd <2 x double> %4, %18
+  %indvars.iv.next20 = add nuw nsw i64 %indvars.iv19, 1
+  %lftr.wideiv21 = trunc i64 %indvars.iv19 to i32
+  %exitcond22 = icmp eq i32 %lftr.wideiv21, %2
+  br i1 %exitcond22, label %._crit_edge10, label %3
 
-for.body35.lr.ph:                                 ; preds = %for.end
-  %2 = load float* %a, align 4, !tbaa !3
-  br label %for.body35
+._crit_edge10:                                    ; preds = %3, %0
+  %20 = phi <2 x double> [ zeroinitializer, %0 ], [ %19, %3 ]
+  %21 = phi <2 x double> [ zeroinitializer, %0 ], [ %15, %3 ]
+  %22 = sitofp i32 %n to double
+  %23 = extractelement <2 x double> %21, i32 1
+  %24 = fmul double %22, %23
+  %25 = extractelement <2 x double> %20, i32 0
+  %26 = extractelement <2 x double> %20, i32 1
+  %27 = fmul double %26, %25
+  %28 = fsub double %24, %27
+  %29 = extractelement <2 x double> %21, i32 0
+  %30 = fmul double %22, %29
+  %31 = fmul double %26, %26
+  %32 = fsub double %30, %31
+  %33 = fdiv double %28, %32
+  %34 = fptrunc double %33 to float
+  store float %34, float* %a, align 4, !tbaa !14
+  %35 = fpext float %34 to double
+  %36 = fmul double %26, %35
+  %37 = fsub double %25, %36
+  %38 = fdiv double %37, %22
+  %39 = fptrunc double %38 to float
+  store float %39, float* %b, align 4, !tbaa !14
+  br i1 %1, label %.lr.ph, label %._crit_edge.thread
 
-for.body35:                                       ; preds = %for.body35, %for.body35.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body35.lr.ph ], [ %indvars.iv.next, %for.body35 ]
-  %chi2.092 = phi double [ 0.000000e+00, %for.body35.lr.ph ], [ %add44, %for.body35 ]
-  %arrayidx37 = getelementptr inbounds float* %y, i64 %indvars.iv
-  %3 = load float* %arrayidx37, align 4, !tbaa !3
-  %arrayidx39 = getelementptr inbounds float* %x, i64 %indvars.iv
-  %4 = load float* %arrayidx39, align 4, !tbaa !3
-  %mul40 = fmul float %2, %4
-  %add41 = fadd float %mul40, %conv31
-  %sub42 = fsub float %3, %add41
-  %mul.i = fmul float %sub42, %sub42
-  %conv43 = fpext float %mul.i to double
-  %add44 = fadd double %chi2.092, %conv43
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end47, label %for.body35
+.lr.ph:                                           ; preds = %._crit_edge10
+  %40 = load float* %a, align 4, !tbaa !14
+  %41 = add i32 %n, -1
+  br label %42
 
-for.end47:                                        ; preds = %for.body35
-  %cmp48 = icmp sgt i32 %n, 2
-  br i1 %cmp48, label %if.then, label %return
+; <label>:42                                      ; preds = %42, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %42 ]
+  %chi2.02 = phi double [ 0.000000e+00, %.lr.ph ], [ %52, %42 ]
+  %43 = getelementptr inbounds float* %y, i64 %indvars.iv
+  %44 = load float* %43, align 4, !tbaa !14
+  %45 = getelementptr inbounds float* %x, i64 %indvars.iv
+  %46 = load float* %45, align 4, !tbaa !14
+  %47 = fmul float %40, %46
+  %48 = fadd float %47, %39
+  %49 = fsub float %44, %48
+  %50 = fmul float %49, %49
+  %51 = fpext float %50 to double
+  %52 = fadd double %chi2.02, %51
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %41
+  br i1 %exitcond, label %._crit_edge, label %42
 
-if.then:                                          ; preds = %for.end47
-  %sub50 = add nsw i32 %n, -2
-  %conv51 = sitofp i32 %sub50 to double
-  %div52 = fdiv double %add44, %conv51
-  %call53 = tail call double @sqrt(double %div52) #6
-  %conv54 = fptrunc double %call53 to float
-  br label %return
+._crit_edge:                                      ; preds = %42
+  %53 = icmp sgt i32 %n, 2
+  br i1 %53, label %54, label %._crit_edge.thread
 
-return:                                           ; preds = %for.end, %for.end47, %if.then
-  %retval.0 = phi float [ %conv54, %if.then ], [ 0.000000e+00, %for.end47 ], [ 0.000000e+00, %for.end ]
-  ret float %retval.0
+; <label>:54                                      ; preds = %._crit_edge
+  %55 = add nsw i32 %n, -2
+  %56 = sitofp i32 %55 to double
+  %57 = fdiv double %52, %56
+  %58 = tail call double @sqrt(double %57) #11
+  %59 = fptrunc double %58 to float
+  br label %._crit_edge.thread
+
+._crit_edge.thread:                               ; preds = %._crit_edge10, %._crit_edge, %54
+  %.0 = phi float [ %59, %54 ], [ 0.000000e+00, %._crit_edge ], [ 0.000000e+00, %._crit_edge10 ]
+  ret float %.0
 }

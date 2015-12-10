@@ -1,0 +1,49 @@
+define i32 @StoreNamedData(%struct.PNamedData** nocapture %list, i8* %name, i8* %data) #1 {
+  %1 = tail call i8* @malloc(i64 32) #6
+  %2 = icmp eq i8* %1, null
+  br i1 %2, label %26, label %3
+
+; <label>:3                                       ; preds = %0
+  %4 = tail call i64 @strlen(i8* %name) #6
+  %5 = add i64 %4, 1
+  %6 = tail call i8* @malloc(i64 %5) #6
+  %7 = getelementptr inbounds i8* %1, i64 16
+  %8 = bitcast i8* %7 to i8**
+  store i8* %6, i8** %8, align 8, !tbaa !2
+  %9 = icmp eq i8* %6, null
+  br i1 %9, label %25, label %10
+
+; <label>:10                                      ; preds = %3
+  %11 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %6, i1 false)
+  %12 = tail call i8* @__strcpy_chk(i8* %6, i8* %name, i64 %11) #6
+  %13 = getelementptr inbounds i8* %1, i64 24
+  %14 = bitcast i8* %13 to i8**
+  store i8* %data, i8** %14, align 8, !tbaa !7
+  %15 = bitcast %struct.PNamedData** %list to i64*
+  %16 = load i64* %15, align 8, !tbaa !8
+  %17 = getelementptr inbounds i8* %1, i64 8
+  %18 = bitcast i8* %17 to i64*
+  store i64 %16, i64* %18, align 8, !tbaa !9
+  %19 = bitcast i8* %1 to %struct.PNamedData**
+  store %struct.PNamedData* null, %struct.PNamedData** %19, align 8, !tbaa !10
+  %20 = icmp eq i64 %16, 0
+  br i1 %20, label %23, label %21
+
+; <label>:21                                      ; preds = %10
+  %22 = inttoptr i64 %16 to i8**
+  store i8* %1, i8** %22, align 8, !tbaa !10
+  br label %23
+
+; <label>:23                                      ; preds = %10, %21
+  %24 = bitcast %struct.PNamedData** %list to i8**
+  store i8* %1, i8** %24, align 8, !tbaa !8
+  br label %26
+
+; <label>:25                                      ; preds = %3
+  tail call void @free(i8* %1) #7
+  br label %26
+
+; <label>:26                                      ; preds = %0, %23, %25
+  %return_code.0 = phi i32 [ 0, %23 ], [ 1, %25 ], [ 1, %0 ]
+  ret i32 %return_code.0
+}

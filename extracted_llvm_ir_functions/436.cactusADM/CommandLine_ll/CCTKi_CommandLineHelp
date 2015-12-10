@@ -1,0 +1,25 @@
+define void @CCTKi_CommandLineHelp() #1 {
+  %argv = alloca i8**, align 8
+  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !tbaa !2
+  %2 = tail call i32 %1(%struct.cGH* null) #5
+  %3 = icmp eq i32 %2, 0
+  br i1 %3, label %4, label %15
+
+; <label>:4                                       ; preds = %0
+  %5 = call i32 @CCTK_CommandLine(i8*** %argv) #5
+  %6 = load i8*** %argv, align 8, !tbaa !2
+  %7 = load i8** %6, align 8, !tbaa !2
+  %8 = call i8* @CCTK_CompileDate() #5
+  %9 = call i8* @CCTK_CompileTime() #5
+  %10 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([26 x i8]* @.str18, i64 0, i64 0), i8* %7, i8* %8, i8* %9) #5
+  %11 = load i8*** %argv, align 8, !tbaa !2
+  %12 = load i8** %11, align 8, !tbaa !2
+  %13 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str19, i64 0, i64 0), i8* %12, i8* getelementptr inbounds ([127 x i8]* @.str20, i64 0, i64 0)) #5
+  %14 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([1033 x i8]* @.str17, i64 0, i64 0)) #5
+  br label %15
+
+; <label>:15                                      ; preds = %4, %0
+  %16 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !tbaa !2
+  %17 = call i32 %16(%struct.cGH* null, i32 1) #5
+  ret void
+}

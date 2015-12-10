@@ -1,0 +1,45 @@
+define i8* @Util_CacheMalloc(i32 %index, i64 %size, i8** nocapture %realstart) #1 {
+  %1 = load i32* @cache_set, align 4, !tbaa !2
+  %2 = icmp eq i32 %1, 0
+  br i1 %2, label %5, label %Utili_CacheDataGet.exit.thread
+
+Utili_CacheDataGet.exit.thread:                   ; preds = %0
+  %3 = load i64* @cache_data.0, align 8, !tbaa !6
+  %4 = load i64* @cache_data.1, align 8, !tbaa !9
+  br label %5
+
+; <label>:5                                       ; preds = %0, %Utili_CacheDataGet.exit.thread
+  %6 = phi i64 [ %3, %Utili_CacheDataGet.exit.thread ], [ 0, %0 ]
+  %7 = phi i64 [ %4, %Utili_CacheDataGet.exit.thread ], [ 0, %0 ]
+  %8 = add i64 %7, %size
+  %9 = tail call i8* @malloc(i64 %8) #3
+  %10 = icmp eq i8* %9, null
+  br i1 %10, label %26, label %11
+
+; <label>:11                                      ; preds = %5
+  %12 = icmp eq i64 %7, 0
+  br i1 %12, label %24, label %13
+
+; <label>:13                                      ; preds = %11
+  %14 = ptrtoint i8* %9 to i64
+  %15 = urem i64 %14, %7
+  %16 = urem i64 %15, %6
+  %17 = udiv i64 %15, %6
+  %18 = zext i32 %index to i64
+  %19 = sub i64 %18, %17
+  %20 = mul i64 %19, %6
+  %21 = sub i64 %6, %16
+  %22 = add i64 %21, %20
+  %23 = urem i64 %22, %7
+  br label %24
+
+; <label>:24                                      ; preds = %11, %13
+  %pad.0 = phi i64 [ %23, %13 ], [ 0, %11 ]
+  %25 = getelementptr inbounds i8* %9, i64 %pad.0
+  br label %26
+
+; <label>:26                                      ; preds = %5, %24
+  %retval.0 = phi i8* [ %25, %24 ], [ null, %5 ]
+  store i8* %9, i8** %realstart, align 8, !tbaa !10
+  ret i8* %retval.0
+}

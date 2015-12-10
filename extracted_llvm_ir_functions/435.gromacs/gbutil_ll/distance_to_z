@@ -1,10 +1,9 @@
-define float @distance_to_z(float* nocapture %x) #0 {
-entry:
-  %0 = load float* %x, align 4, !tbaa !0
-  %mul.i = fmul float %0, %0
-  %arrayidx1 = getelementptr inbounds float* %x, i64 1
-  %1 = load float* %arrayidx1, align 4, !tbaa !0
-  %mul.i4 = fmul float %1, %1
-  %add = fadd float %mul.i, %mul.i4
-  ret float %add
+define float @distance_to_z(float* nocapture readonly %x) #3 {
+  %1 = bitcast float* %x to <2 x float>*
+  %2 = load <2 x float>* %1, align 4, !tbaa !14
+  %3 = fmul <2 x float> %2, %2
+  %4 = extractelement <2 x float> %3, i32 0
+  %5 = extractelement <2 x float> %3, i32 1
+  %6 = fadd float %4, %5
+  ret float %6
 }

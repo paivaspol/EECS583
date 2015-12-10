@@ -1,25 +1,24 @@
-define void @mv_block(i32 %dest, %struct.t_block* %block) #0 {
-entry:
-  %0 = bitcast %struct.t_block* %block to i8*
-  tail call void @_blocktx(i32 %dest, i32 1, i32 1024, i8* %0) #3
-  %nr = getelementptr inbounds %struct.t_block* %block, i64 0, i32 1
-  %1 = bitcast i32* %nr to i8*
-  tail call void @_blocktx(i32 %dest, i32 1, i32 4, i8* %1) #3
-  %2 = load i32* %nr, align 4, !tbaa !0
-  %add = shl i32 %2, 2
-  %mul = add i32 %add, 4
-  %index = getelementptr inbounds %struct.t_block* %block, i64 0, i32 2
-  %3 = load i32** %index, align 8, !tbaa !3
-  %4 = bitcast i32* %3 to i8*
-  tail call void @_blocktx(i32 %dest, i32 1, i32 %mul, i8* %4) #3
-  %nra = getelementptr inbounds %struct.t_block* %block, i64 0, i32 3
-  %5 = bitcast i32* %nra to i8*
-  tail call void @_blocktx(i32 %dest, i32 1, i32 4, i8* %5) #3
-  %6 = load i32* %nra, align 4, !tbaa !0
-  %mul5 = shl i32 %6, 2
-  %a = getelementptr inbounds %struct.t_block* %block, i64 0, i32 4
-  %7 = load i32** %a, align 8, !tbaa !3
-  %8 = bitcast i32* %7 to i8*
-  tail call void @_blocktx(i32 %dest, i32 1, i32 %mul5, i8* %8) #3
+define void @mv_block(i32 %dest, %struct.t_block* %block) #3 {
+  %1 = bitcast %struct.t_block* %block to i8*
+  tail call void @_blocktx(i32 %dest, i32 1, i32 1024, i8* %1) #5
+  %2 = getelementptr inbounds %struct.t_block* %block, i64 0, i32 1
+  %3 = bitcast i32* %2 to i8*
+  tail call void @_blocktx(i32 %dest, i32 1, i32 4, i8* %3) #5
+  %4 = load i32* %2, align 4, !tbaa !15
+  %5 = shl i32 %4, 2
+  %6 = add i32 %5, 4
+  %7 = getelementptr inbounds %struct.t_block* %block, i64 0, i32 2
+  %8 = bitcast i32** %7 to i8**
+  %9 = load i8** %8, align 8, !tbaa !17
+  tail call void @_blocktx(i32 %dest, i32 1, i32 %6, i8* %9) #5
+  %10 = getelementptr inbounds %struct.t_block* %block, i64 0, i32 3
+  %11 = bitcast i32* %10 to i8*
+  tail call void @_blocktx(i32 %dest, i32 1, i32 4, i8* %11) #5
+  %12 = load i32* %10, align 4, !tbaa !18
+  %13 = shl i32 %12, 2
+  %14 = getelementptr inbounds %struct.t_block* %block, i64 0, i32 4
+  %15 = bitcast i32** %14 to i8**
+  %16 = load i8** %15, align 8, !tbaa !19
+  tail call void @_blocktx(i32 %dest, i32 1, i32 %13, i8* %16) #5
   ret void
 }

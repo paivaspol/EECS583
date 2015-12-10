@@ -1,0 +1,95 @@
+define internal fastcc void @get_dx(i32 %Nx, float %gridx, float %grid_x, float %rc2, float %x, i32* nocapture %dx0, i32* nocapture %dx1, float* nocapture %dcx2) #3 {
+  %1 = sitofp i32 %Nx to float
+  %2 = fmul float %grid_x, %x
+  %3 = fadd float %1, %2
+  %4 = fptosi float %3 to i32
+  %5 = sub nsw i32 %4, %Nx
+  %6 = icmp slt i32 %5, 0
+  br i1 %6, label %.thread, label %7
+
+.thread:                                          ; preds = %0
+  store i32 0, i32* %dx0, align 4, !tbaa !17
+  store i32 -1, i32* %dx1, align 4, !tbaa !17
+  br label %.preheader
+
+; <label>:7                                       ; preds = %0
+  %8 = icmp slt i32 %5, %Nx
+  br i1 %8, label %11, label %9
+
+; <label>:9                                       ; preds = %7
+  store i32 %Nx, i32* %dx0, align 4, !tbaa !17
+  %10 = add nsw i32 %Nx, -1
+  store i32 %10, i32* %dx1, align 4, !tbaa !17
+  br label %16
+
+; <label>:11                                      ; preds = %7
+  %12 = sext i32 %5 to i64
+  %13 = getelementptr inbounds float* %dcx2, i64 %12
+  store float 0.000000e+00, float* %13, align 4, !tbaa !21
+  store i32 %5, i32* %dx0, align 4, !tbaa !17
+  %14 = add nsw i32 %5, -1
+  store i32 %5, i32* %dx1, align 4, !tbaa !17
+  %15 = add nsw i32 %5, 1
+  br label %16
+
+; <label>:16                                      ; preds = %9, %11
+  %xgi0.0 = phi i32 [ %10, %9 ], [ %14, %11 ]
+  %xgi1.0 = phi i32 [ %Nx, %9 ], [ %15, %11 ]
+  %17 = icmp sgt i32 %xgi0.0, -1
+  br i1 %17, label %.lr.ph5, label %.preheader
+
+.lr.ph5:                                          ; preds = %16
+  %18 = sext i32 %xgi0.0 to i64
+  br label %22
+
+.preheader:                                       ; preds = %30, %22, %.thread, %16
+  %xgi1.09 = phi i32 [ 0, %.thread ], [ %xgi1.0, %16 ], [ %xgi1.0, %22 ], [ %xgi1.0, %30 ]
+  %19 = icmp slt i32 %xgi1.09, %Nx
+  br i1 %19, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %.preheader
+  %20 = sext i32 %xgi1.09 to i64
+  %21 = sext i32 %Nx to i64
+  br label %34
+
+; <label>:22                                      ; preds = %.lr.ph5, %30
+  %indvars.iv7 = phi i64 [ %18, %.lr.ph5 ], [ %indvars.iv.next8, %30 ]
+  %23 = add nsw i64 %indvars.iv7, 1
+  %24 = trunc i64 %23 to i32
+  %25 = sitofp i32 %24 to float
+  %26 = fmul float %25, %gridx
+  %27 = fsub float %26, %x
+  %28 = fmul float %27, %27
+  %29 = fcmp ult float %28, %rc2
+  br i1 %29, label %30, label %.preheader
+
+; <label>:30                                      ; preds = %22
+  %31 = trunc i64 %indvars.iv7 to i32
+  store i32 %31, i32* %dx0, align 4, !tbaa !17
+  %32 = getelementptr inbounds float* %dcx2, i64 %indvars.iv7
+  store float %28, float* %32, align 4, !tbaa !21
+  %indvars.iv.next8 = add nsw i64 %indvars.iv7, -1
+  %33 = icmp sgt i64 %indvars.iv7, 0
+  br i1 %33, label %22, label %.preheader
+
+; <label>:34                                      ; preds = %.lr.ph, %41
+  %indvars.iv = phi i64 [ %20, %.lr.ph ], [ %indvars.iv.next, %41 ]
+  %35 = trunc i64 %indvars.iv to i32
+  %36 = sitofp i32 %35 to float
+  %37 = fmul float %36, %gridx
+  %38 = fsub float %37, %x
+  %39 = fmul float %38, %38
+  %40 = fcmp ult float %39, %rc2
+  br i1 %40, label %41, label %._crit_edge
+
+; <label>:41                                      ; preds = %34
+  store i32 %35, i32* %dx1, align 4, !tbaa !17
+  %42 = getelementptr inbounds float* %dcx2, i64 %indvars.iv
+  store float %39, float* %42, align 4, !tbaa !21
+  %indvars.iv.next = add nsw i64 %indvars.iv, 1
+  %43 = icmp slt i64 %indvars.iv.next, %21
+  br i1 %43, label %34, label %._crit_edge
+
+._crit_edge:                                      ; preds = %41, %34, %.preheader
+  ret void
+}

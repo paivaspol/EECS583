@@ -1,0 +1,35 @@
+define i32 @Util_TableItSetToKey(i32 %ihandle, i8* %key) #1 {
+  %1 = icmp sgt i32 %ihandle, -1
+  %2 = load i32* @N_ip_array, align 4
+  %3 = icmp sgt i32 %2, %ihandle
+  %or.cond.i = and i1 %1, %3
+  br i1 %or.cond.i, label %get_iterator_ptr.exit, label %get_iterator_ptr.exit.thread
+
+get_iterator_ptr.exit:                            ; preds = %0
+  %4 = sext i32 %ihandle to i64
+  %5 = load i8*** @ip_array, align 8, !tbaa !6
+  %6 = getelementptr inbounds i8** %5, i64 %4
+  %7 = bitcast i8** %6 to %struct.iterator**
+  %8 = load %struct.iterator** %7, align 8, !tbaa !6
+  %9 = icmp eq %struct.iterator* %8, null
+  br i1 %9, label %get_iterator_ptr.exit.thread, label %10
+
+; <label>:10                                      ; preds = %get_iterator_ptr.exit
+  %11 = tail call i8* @strchr(i8* %key, i32 47) #10
+  %not..i = icmp eq i8* %11, null
+  br i1 %not..i, label %12, label %get_iterator_ptr.exit.thread
+
+; <label>:12                                      ; preds = %10
+  %13 = getelementptr inbounds %struct.iterator* %8, i64 0, i32 0
+  %14 = load %struct.table_header** %13, align 8, !tbaa !21
+  %15 = tail call fastcc %struct.table_entry* @find_table_entry(%struct.table_header* %14, i8* %key, %struct.table_entry** null) #9
+  %16 = getelementptr inbounds %struct.iterator* %8, i64 0, i32 1
+  store %struct.table_entry* %15, %struct.table_entry** %16, align 8, !tbaa !23
+  %17 = icmp eq %struct.table_entry* %15, null
+  %. = select i1 %17, i32 -103, i32 0
+  br label %get_iterator_ptr.exit.thread
+
+get_iterator_ptr.exit.thread:                     ; preds = %10, %0, %12, %get_iterator_ptr.exit
+  %.0 = phi i32 [ -2, %get_iterator_ptr.exit ], [ -101, %10 ], [ %., %12 ], [ -2, %0 ]
+  ret i32 %.0
+}

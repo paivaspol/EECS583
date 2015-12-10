@@ -13,13 +13,13 @@ sess = tf.Session()
 #####################################################################
 # STEP 1: Configure parameters here.
 #####################################################################
-max_epochs = 10                 # number of epochs with decaying learning rate
+max_epochs = 15                 # number of epochs with decaying learning rate
 lstm_size = 128                 # size of hidden layer in LSTM
 batch_size = 20                 # num functions to analyze per batch
 words_per_function = 100        # num of unrolled LSTM steps
 vocab_size = 10000              # word embedding vocabulary size
 num_buckets = 10                # how many buckets for final labels?
-learning_rate = 1e-4            # learning rate for iterations
+learning_rate = 0.001           # learning rate for iterations
 
 # TODO: haven't started test set yet so is_training is always true
 # see ptb_word_lm.py for reference on why this is used (dropout)
@@ -102,10 +102,12 @@ logits = tf.nn.softmax(tf.matmul(mean_output,softmax_W) + softmax_b, name="logis
 cross_entropy = -tf.reduce_sum(correct_labels * tf.log(tf.clip_by_value(logits,1e-10,1.0)))
 
 #####################################################################
-# STEP 8: Calculate accuracy of predictions.
+# STEP 8: Calculate accuracy and distance of predictions.
 #####################################################################
 correct_prediction = tf.equal(tf.argmax(logits,1), tf.argmax(correct_labels,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+difference = tf.abs(tf.sub(tf.argmax(logits, 1), tf.argmax(correct_labels, 1)))
+distance = tf.reduce_mean(tf.cast(difference, "float"))
 
 #####################################################################
 # STEP 9: Learn the model.
@@ -121,6 +123,7 @@ train_step = optimizer.minimize(cross_entropy)
 #####################################################################
 ce_summ = tf.scalar_summary("cross entropy", cross_entropy)
 accuracy_summary = tf.scalar_summary("accuracy", accuracy)
+dist_summary = tf.scalar_summary("distance", distance)
 w_hist = tf.histogram_summary("weights", softmax_W)
 b_hist = tf.histogram_summary("biases", softmax_b)
 y_hist = tf.histogram_summary("y", logits)
@@ -139,7 +142,7 @@ sess.run(init)
 #####################################################################
 # words, which should be ids between 0 and vocab_size
 # TODO: currently, this is generated via an artificial pattern
-training_size = 100000
+training_size = 1000
 training_set = np.random.randint(0, vocab_size, [training_size, words_per_function])
 
 # actual labels, format is a one-hot vector of length num_buckets
@@ -149,10 +152,10 @@ training_set_mod = np.mod(training_set_sum, num_buckets)
 training_set_labels = np.eye(num_buckets)[training_set_mod]
 
 #####################################################################
-# STEP 12: LEARN!
+# STEP 12: LEARN! And evaluate...
 #####################################################################
 for i in range(max_epochs):
-    print "Starting Epoch %d..." % i
+    print "Running training epoch %d..." % i
     start = time.time()
     training_used = 0
     iteration_count = 0
@@ -161,20 +164,22 @@ for i in range(max_epochs):
         words_generated = training_set[training_used:next_batch, :]
         correct_label_generated = training_set_labels[training_used:next_batch, :]
 
-        summary_str, _, print_accuracy, print_cross_ent, print_lr = sess.run(
-            [merged, train_step, accuracy, cross_entropy, lr],
+        summary_str, _, print_accuracy, print_cross_ent, print_lr, print_dist = sess.run(
+            [merged, train_step, accuracy, cross_entropy, lr, distance],
             feed_dict= {
                 words: words_generated,
                 correct_labels: correct_label_generated
             })
 
 
-        if iteration_count % 100 == 0:
-            print "\titeration %d, accuracy %g, cross-entropy %g" % (iteration_count, print_accuracy, print_cross_ent)
-            writer.add_summary(summary_str, i)
+        if iteration_count % 10 == 0:
+            print "\titeration %d, accuracy %g, cross-entropy %g, distance %g" % (iteration_count, print_accuracy, print_cross_ent, print_dist)
+            writer.add_summary(summary_str, iteration_count)
 
         iteration_count += 1
         training_used = next_batch
 
     print_exec_time = time.time() - start
     print "Epoch %d finished. Time elapsed: %ds" % (i, print_exec_time)
+
+    print "Evaluating on test set..."

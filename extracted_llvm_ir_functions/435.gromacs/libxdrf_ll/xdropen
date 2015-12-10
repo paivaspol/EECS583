@@ -1,90 +1,90 @@
-define i32 @xdropen(%struct.XDR* %xdrs, i8* nocapture %filename, i8* nocapture %type) #0 {
-entry:
+define i32 @xdropen(%struct.XDR* %xdrs, i8* %filename, i8* nocapture readonly %type) #4 {
   %newtype = alloca [5 x i8], align 4
   %.b = load i1* @xdropen.init_done, align 1
-  br i1 %.b, label %land.rhs, label %for.cond.preheader
+  br i1 %.b, label %.preheader, label %.preheader1
 
-for.cond.preheader:                               ; preds = %entry
+.preheader1:                                      ; preds = %0
   call void @llvm.memset.p0i8.i64(i8* bitcast (%struct.XDR** getelementptr inbounds ([20 x %struct.XDR*]* @xdridptr, i64 0, i64 1) to i8*), i8 0, i64 152, i32 8, i1 false)
   store i1 true, i1* @xdropen.init_done, align 1
-  br label %land.rhs
+  br label %.preheader
 
-while.cond:                                       ; preds = %land.rhs
-  %0 = trunc i64 %indvars.iv.next to i32
-  %cmp2 = icmp slt i32 %0, 20
-  br i1 %cmp2, label %land.rhs, label %while.end
+.preheader:                                       ; preds = %.preheader1, %0, %5
+  %indvars.iv = phi i64 [ %indvars.iv.next, %5 ], [ 1, %0 ], [ 1, %.preheader1 ]
+  %xdrid.12 = phi i32 [ %6, %5 ], [ 1, %0 ], [ 1, %.preheader1 ]
+  %1 = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %indvars.iv
+  %2 = load %struct.XDR** %1, align 8, !tbaa !18
+  %3 = icmp eq %struct.XDR* %2, null
+  %4 = trunc i64 %indvars.iv to i32
+  br i1 %3, label %.critedge, label %5
 
-land.rhs:                                         ; preds = %while.cond, %for.cond.preheader, %entry
-  %indvars.iv = phi i64 [ 1, %entry ], [ 1, %for.cond.preheader ], [ %indvars.iv.next, %while.cond ]
-  %xdrid.183 = phi i32 [ 1, %entry ], [ 1, %for.cond.preheader ], [ %inc6, %while.cond ]
-  %arrayidx4 = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %indvars.iv
-  %1 = load %struct.XDR** %arrayidx4, align 8, !tbaa !0
-  %cmp5 = icmp eq %struct.XDR* %1, null
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc6 = add nsw i32 %xdrid.183, 1
-  br i1 %cmp5, label %if.end9, label %while.cond
+; <label>:5                                       ; preds = %.preheader
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %6 = add nuw nsw i32 %xdrid.12, 1
+  %7 = icmp slt i64 %indvars.iv.next, 20
+  br i1 %7, label %.preheader, label %.critedge
 
-while.end:                                        ; preds = %while.cond
-  %cmp7 = icmp eq i32 %inc6, 20
-  br i1 %cmp7, label %return, label %if.end9
+.critedge:                                        ; preds = %.preheader, %5
+  %xdrid.1.lcssa = phi i32 [ %4, %.preheader ], [ %6, %5 ]
+  %8 = icmp eq i32 %xdrid.1.lcssa, 20
+  br i1 %8, label %34, label %9
 
-if.end9:                                          ; preds = %land.rhs, %while.end
-  %xdrid.182 = phi i32 [ %inc6, %while.end ], [ %xdrid.183, %land.rhs ]
-  %2 = load i8* %type, align 1, !tbaa !1
-  switch i8 %2, label %if.else26 [
-    i8 119, label %if.then15
-    i8 87, label %if.then15
-    i8 97, label %if.then23
-    i8 65, label %if.then23
+; <label>:9                                       ; preds = %.critedge
+  %10 = load i8* %type, align 1, !tbaa !17
+  switch i8 %10, label %15 [
+    i8 119, label %11
+    i8 87, label %11
+    i8 97, label %13
+    i8 65, label %13
   ]
 
-if.then15:                                        ; preds = %if.end9, %if.end9
-  %3 = bitcast [5 x i8]* %newtype to i32*
-  store i32 2843255, i32* %3, align 4
-  br label %if.end30
+; <label>:11                                      ; preds = %9, %9
+  %12 = bitcast [5 x i8]* %newtype to i32*
+  store i32 2843255, i32* %12, align 4
+  br label %17
 
-if.then23:                                        ; preds = %if.end9, %if.end9
-  %4 = bitcast [5 x i8]* %newtype to i32*
-  store i32 2843233, i32* %4, align 4
-  br label %if.end30
+; <label>:13                                      ; preds = %9, %9
+  %14 = bitcast [5 x i8]* %newtype to i32*
+  store i32 2843233, i32* %14, align 4
+  br label %17
 
-if.else26:                                        ; preds = %if.end9
-  %5 = bitcast [5 x i8]* %newtype to i32*
-  store i32 2843250, i32* %5, align 4
-  br label %if.end30
+; <label>:15                                      ; preds = %9
+  %16 = bitcast [5 x i8]* %newtype to i32*
+  store i32 2843250, i32* %16, align 4
+  br label %17
 
-if.end30:                                         ; preds = %if.then23, %if.else26, %if.then15
-  %lmode.0 = phi i32 [ 0, %if.then15 ], [ 0, %if.then23 ], [ 1, %if.else26 ]
-  %arraydecay31 = getelementptr inbounds [5 x i8]* %newtype, i64 0, i64 0
-  %call32 = call %struct._IO_FILE* @fopen(i8* %filename, i8* %arraydecay31) #5
-  %idxprom33 = sext i32 %xdrid.182 to i64
-  %arrayidx34 = getelementptr inbounds [20 x %struct._IO_FILE*]* @xdrfiles, i64 0, i64 %idxprom33
-  store %struct._IO_FILE* %call32, %struct._IO_FILE** %arrayidx34, align 8, !tbaa !0
-  %cmp37 = icmp eq %struct._IO_FILE* %call32, null
-  br i1 %cmp37, label %return, label %if.end40
+; <label>:17                                      ; preds = %13, %15, %11
+  %lmode.0 = phi i32 [ 0, %11 ], [ 0, %13 ], [ 1, %15 ]
+  %18 = getelementptr inbounds [5 x i8]* %newtype, i64 0, i64 0
+  %19 = call %struct.__sFILE* @"\01_fopen"(i8* %filename, i8* %18) #10
+  %20 = sext i32 %xdrid.1.lcssa to i64
+  %21 = getelementptr inbounds [20 x %struct.__sFILE*]* @xdrfiles, i64 0, i64 %20
+  store %struct.__sFILE* %19, %struct.__sFILE** %21, align 8, !tbaa !18
+  %22 = icmp eq %struct.__sFILE* %19, null
+  br i1 %22, label %34, label %23
 
-if.end40:                                         ; preds = %if.end30
-  %6 = load i8* %type, align 1, !tbaa !1
-  %arrayidx42 = getelementptr inbounds [20 x i8]* @xdrmodes, i64 0, i64 %idxprom33
-  store i8 %6, i8* %arrayidx42, align 1, !tbaa !1
-  %cmp43 = icmp eq %struct.XDR* %xdrs, null
-  br i1 %cmp43, label %if.then45, label %if.else53
+; <label>:23                                      ; preds = %17
+  %24 = load i8* %type, align 1, !tbaa !17
+  %25 = getelementptr inbounds [20 x i8]* @xdrmodes, i64 0, i64 %20
+  store i8 %24, i8* %25, align 1, !tbaa !17
+  %26 = icmp eq %struct.XDR* %xdrs, null
+  br i1 %26, label %27, label %32
 
-if.then45:                                        ; preds = %if.end40
-  %call46 = call noalias i8* @malloc(i64 48) #5
-  %7 = bitcast i8* %call46 to %struct.XDR*
-  %arrayidx48 = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %idxprom33
-  store %struct.XDR* %7, %struct.XDR** %arrayidx48, align 8, !tbaa !0
-  call void @xdrstdio_create(%struct.XDR* %7, %struct._IO_FILE* %call32, i32 %lmode.0) #5
-  br label %return
+; <label>:27                                      ; preds = %23
+  %28 = call i8* @malloc(i64 48) #10
+  %29 = bitcast i8* %28 to %struct.XDR*
+  %30 = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %20
+  %31 = bitcast %struct.XDR** %30 to i8**
+  store i8* %28, i8** %31, align 8, !tbaa !18
+  call void @xdrstdio_create(%struct.XDR* %29, %struct.__sFILE* %19, i32 %lmode.0) #10
+  br label %34
 
-if.else53:                                        ; preds = %if.end40
-  %arrayidx55 = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %idxprom33
-  store %struct.XDR* %xdrs, %struct.XDR** %arrayidx55, align 8, !tbaa !0
-  call void @xdrstdio_create(%struct.XDR* %xdrs, %struct._IO_FILE* %call32, i32 %lmode.0) #5
-  br label %return
+; <label>:32                                      ; preds = %23
+  %33 = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %20
+  store %struct.XDR* %xdrs, %struct.XDR** %33, align 8, !tbaa !18
+  call void @xdrstdio_create(%struct.XDR* %xdrs, %struct.__sFILE* %19, i32 %lmode.0) #10
+  br label %34
 
-return:                                           ; preds = %if.then45, %if.else53, %if.end30, %while.end
-  %retval.0 = phi i32 [ 0, %while.end ], [ 0, %if.end30 ], [ %xdrid.182, %if.else53 ], [ %xdrid.182, %if.then45 ]
-  ret i32 %retval.0
+; <label>:34                                      ; preds = %27, %32, %17, %.critedge
+  %.0 = phi i32 [ 0, %.critedge ], [ 0, %17 ], [ %xdrid.1.lcssa, %32 ], [ %xdrid.1.lcssa, %27 ]
+  ret i32 %.0
 }

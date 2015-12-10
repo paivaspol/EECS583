@@ -1,68 +1,67 @@
-define void @dump_conf(%struct.t_pull* nocapture %pull, [3 x float]* %x, [3 x float]* %box, %struct.t_topology* %top, i32 %nout, float %time) #0 {
-entry:
+define void @dump_conf(%struct.t_pull* nocapture readonly %pull, [3 x float]* %x, [3 x float]* %box, %struct.t_topology* %top, i32 %nout, float %time) #4 {
   %buf = alloca [128 x i8], align 16
   %buf2 = alloca [128 x i8], align 16
-  %0 = getelementptr inbounds [128 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 128, i8* %0) #1
-  %1 = getelementptr inbounds [128 x i8]* %buf2, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 128, i8* %1) #1
-  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([11 x i8]* @.str, i64 0, i64 0), i32 %nout) #4
-  %n = getelementptr inbounds %struct.t_pull* %pull, i64 0, i32 1, i32 0
-  %2 = load i32* %n, align 4, !tbaa !0
-  %cmp = icmp eq i32 %2, 2
-  %x_unc = getelementptr inbounds %struct.t_pull* %pull, i64 0, i32 1, i32 9
-  %3 = load [3 x float]** %x_unc, align 8, !tbaa !3
-  %arraydecay5 = getelementptr inbounds [3 x float]* %3, i64 0, i64 0
-  %x_unc6 = getelementptr inbounds %struct.t_pull* %pull, i64 0, i32 2, i32 9
-  %4 = load [3 x float]** %x_unc6, align 8, !tbaa !3
-  %arraydecay8 = getelementptr inbounds [3 x float]* %4, i64 0, i64 0
-  %5 = load float* %arraydecay5, align 4, !tbaa !4
-  %6 = load float* %arraydecay8, align 4, !tbaa !4
-  %sub.i = fsub float %5, %6
-  %arrayidx2.i = getelementptr inbounds [3 x float]* %3, i64 0, i64 1
-  %7 = load float* %arrayidx2.i, align 4, !tbaa !4
-  %arrayidx3.i = getelementptr inbounds [3 x float]* %4, i64 0, i64 1
-  %8 = load float* %arrayidx3.i, align 4, !tbaa !4
-  %sub4.i = fsub float %7, %8
-  %arrayidx5.i = getelementptr inbounds [3 x float]* %3, i64 0, i64 2
-  %9 = load float* %arrayidx5.i, align 4, !tbaa !4
-  %arrayidx6.i = getelementptr inbounds [3 x float]* %4, i64 0, i64 2
-  %10 = load float* %arrayidx6.i, align 4, !tbaa !4
-  %sub7.i = fsub float %9, %10
-  br i1 %cmp, label %if.then, label %if.else
+  %1 = getelementptr inbounds [128 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 128, i8* %1) #5
+  %2 = getelementptr inbounds [128 x i8]* %buf2, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 128, i8* %2) #5
+  %3 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 128, i8* getelementptr inbounds ([11 x i8]* @.str, i64 0, i64 0), i32 %nout) #7
+  %4 = getelementptr inbounds %struct.t_pull* %pull, i64 0, i32 1, i32 0
+  %5 = load i32* %4, align 4, !tbaa !18
+  %6 = icmp eq i32 %5, 2
+  %7 = getelementptr inbounds %struct.t_pull* %pull, i64 0, i32 1, i32 9
+  %8 = load [3 x float]** %7, align 8, !tbaa !21
+  %9 = getelementptr inbounds [3 x float]* %8, i64 0, i64 0
+  %10 = getelementptr inbounds %struct.t_pull* %pull, i64 0, i32 2, i32 9
+  %11 = load [3 x float]** %10, align 8, !tbaa !22
+  %12 = getelementptr inbounds [3 x float]* %11, i64 0, i64 0
+  %13 = load float* %9, align 4, !tbaa !14
+  %14 = load float* %12, align 4, !tbaa !14
+  %15 = fsub float %13, %14
+  %16 = getelementptr inbounds [3 x float]* %8, i64 0, i64 1
+  %17 = load float* %16, align 4, !tbaa !14
+  %18 = getelementptr inbounds [3 x float]* %11, i64 0, i64 1
+  %19 = load float* %18, align 4, !tbaa !14
+  %20 = fsub float %17, %19
+  %21 = getelementptr inbounds [3 x float]* %8, i64 0, i64 2
+  %22 = load float* %21, align 4, !tbaa !14
+  %23 = getelementptr inbounds [3 x float]* %11, i64 0, i64 2
+  %24 = load float* %23, align 4, !tbaa !14
+  %25 = fsub float %22, %24
+  br i1 %6, label %26, label %44
 
-if.then:                                          ; preds = %entry
-  %arraydecay13 = getelementptr inbounds [3 x float]* %3, i64 1, i64 0
-  %11 = load float* %arraydecay13, align 4, !tbaa !4
-  %sub.i59 = fsub float %11, %6
-  %arrayidx2.i60 = getelementptr inbounds [3 x float]* %3, i64 1, i64 1
-  %12 = load float* %arrayidx2.i60, align 4, !tbaa !4
-  %sub4.i62 = fsub float %12, %8
-  %arrayidx5.i63 = getelementptr inbounds [3 x float]* %3, i64 1, i64 2
-  %13 = load float* %arrayidx5.i63, align 4, !tbaa !4
-  %sub7.i65 = fsub float %13, %10
-  %conv = fpext float %sub.i to double
-  %conv22 = fpext float %sub4.i to double
-  %conv24 = fpext float %sub7.i to double
-  %conv26 = fpext float %sub.i59 to double
-  %conv28 = fpext float %sub4.i62 to double
-  %conv30 = fpext float %sub7.i65 to double
-  %conv31 = fpext float %time to double
-  %call32 = call i32 (i8*, i8*, ...)* @sprintf(i8* %1, i8* getelementptr inbounds ([50 x i8]* @.str1, i64 0, i64 0), double %conv, double %conv22, double %conv24, double %conv26, double %conv28, double %conv30, double %conv31) #4
-  br label %if.end
+; <label>:26                                      ; preds = %0
+  %27 = getelementptr inbounds [3 x float]* %8, i64 1, i64 0
+  %28 = load float* %27, align 4, !tbaa !14
+  %29 = fsub float %28, %14
+  %30 = getelementptr inbounds [3 x float]* %8, i64 1, i64 1
+  %31 = load float* %30, align 4, !tbaa !14
+  %32 = fsub float %31, %19
+  %33 = getelementptr inbounds [3 x float]* %8, i64 1, i64 2
+  %34 = load float* %33, align 4, !tbaa !14
+  %35 = fsub float %34, %24
+  %36 = fpext float %15 to double
+  %37 = fpext float %20 to double
+  %38 = fpext float %25 to double
+  %39 = fpext float %29 to double
+  %40 = fpext float %32 to double
+  %41 = fpext float %35 to double
+  %42 = fpext float %time to double
+  %43 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %2, i32 0, i64 128, i8* getelementptr inbounds ([50 x i8]* @.str1, i64 0, i64 0), double %36, double %37, double %38, double %39, double %40, double %41, double %42) #7
+  br label %50
 
-if.else:                                          ; preds = %entry
-  %conv44 = fpext float %sub.i to double
-  %conv46 = fpext float %sub4.i to double
-  %conv48 = fpext float %sub7.i to double
-  %conv49 = fpext float %time to double
-  %call50 = call i32 (i8*, i8*, ...)* @sprintf(i8* %1, i8* getelementptr inbounds ([29 x i8]* @.str2, i64 0, i64 0), double %conv44, double %conv46, double %conv48, double %conv49) #4
-  br label %if.end
+; <label>:44                                      ; preds = %0
+  %45 = fpext float %15 to double
+  %46 = fpext float %20 to double
+  %47 = fpext float %25 to double
+  %48 = fpext float %time to double
+  %49 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %2, i32 0, i64 128, i8* getelementptr inbounds ([29 x i8]* @.str2, i64 0, i64 0), double %45, double %46, double %47, double %48) #7
+  br label %50
 
-if.end:                                           ; preds = %if.else, %if.then
-  %atoms = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 2
-  call void @write_sto_conf(i8* %0, i8* %1, %struct.t_atoms* %atoms, [3 x float]* %x, [3 x float]* null, [3 x float]* %box) #4
-  call void @llvm.lifetime.end(i64 128, i8* %1) #1
-  call void @llvm.lifetime.end(i64 128, i8* %0) #1
+; <label>:50                                      ; preds = %44, %26
+  %51 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 2
+  call void @write_sto_conf(i8* %1, i8* %2, %struct.t_atoms* %51, [3 x float]* %x, [3 x float]* null, [3 x float]* %box) #7
+  call void @llvm.lifetime.end(i64 128, i8* %2) #5
+  call void @llvm.lifetime.end(i64 128, i8* %1) #5
   ret void
 }
