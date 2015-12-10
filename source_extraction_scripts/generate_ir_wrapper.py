@@ -45,8 +45,8 @@ directories = ['400.perlbench'
 #         '450.soplex': '-DSPEC_CPU -DNDEBUG -DSPEC_CPU_LP64'
 # }
 
-flags = {
-        '471.omnetpp': '-DSPEC_CPU -DNDEBUG -I{0} -I{0}/omnet_include -I{0}/libs/envir -DSPEC_CPU_LP64',
+flags = {'403.gcc' :'-DSPEC_CPU -DNDEBUG -I{0} -DSPEC_CPU_LP64',\
+        '471.omnetpp': '-DSPEC_CPU -DNDEBUG -I{0} -I{0}/omnet_include -I{0}/libs/envir -DSPEC_CPU_LP64',\
         '483.xalancbmk': '-DSPEC_CPU -DNDEBUG  -DAPP_NO_THREADS -DXALAN_INMEM_MSG_LOADER -I{0} -I{0}/xercesc -I{0}/xercesc/dom -I{0}/xercesc/dom/impl -I{0}/xercesc/sax -I{0}/xercesc/util/MsgLoaders/InMemory -I{0}/xercesc/util/Transcoders/Iconv -I{0}/xalanc/include -DPROJ_XMLPARSER -DPROJ_XMLUTIL -DPROJ_PARSERS -DPROJ_SAX4C -DPROJ_SAX2 -DPROJ_DOM -DPROJ_VALIDATORS -DXML_USE_NATIVE_TRANSCODER -DXML_USE_INMEM_MESSAGELOADER -DSPEC_CPU_LP64 -DSPEC_CPU_LINUX'
 }
 

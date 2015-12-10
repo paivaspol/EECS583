@@ -104,6 +104,13 @@ def main():
     data_buckets = get_buckets("data")
     inst_buckets = get_buckets("inst")
 
+    print "data_buckets:"
+    for bucket in data_buckets:
+        print "len:", len(bucket), "range: (",bucket[0],",", bucket[-1],")"
+
+    print "inst_buckets:"
+    for bucket in inst_buckets:
+        print "len:", len(bucket), "range: (",bucket[0],",", bucket[-1],")"
 
     for f in os.listdir(input_path): 
         if ".merge" in f:
@@ -126,5 +133,8 @@ def main():
                 for word in not_found2:
                     if word not in not_found:
                         out_file.write(word + "\n")
+
+
+
 
 main()

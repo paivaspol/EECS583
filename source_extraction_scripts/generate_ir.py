@@ -3,7 +3,7 @@ import os
 
 from argparse import ArgumentParser
 
-flags = {
+flags = {'403.gcc' :'-DSPEC_CPU -DNDEBUG -I{0} -DSPEC_CPU_LP64',
         '435.gromacs': '-DSPEC_CPU -DNDEBUG  -I{0} -DHAVE_CONFIG_H -DSPEC_CPU_LP64',
         '436.cactusADM': '-DSPEC_CPU -DNDEBUG  -I{0}/include -I{0}/../include -DCCODE -DSPEC_CPU_LP64',
         '471.omnetpp': '-DSPEC_CPU -DNDEBUG -I{0} -I{0}/omnet_include -I{0}/libs/envir -DSPEC_CPU_LP64',
