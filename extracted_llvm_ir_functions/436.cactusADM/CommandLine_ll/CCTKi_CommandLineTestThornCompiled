@@ -1,0 +1,18 @@
+define void @CCTKi_CommandLineTestThornCompiled(i8* %argument) #1 {
+  %1 = tail call i32 @CCTK_IsThornCompiled(i8* %argument) #5
+  %2 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !tbaa !2
+  %3 = tail call i32 %2(%struct.cGH* null) #5
+  %4 = icmp eq i32 %3, 0
+  br i1 %4, label %5, label %9
+
+; <label>:5                                       ; preds = %0
+  %6 = icmp ne i32 %1, 0
+  %7 = select i1 %6, i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str2, i64 0, i64 0)
+  %8 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([25 x i8]* @.str, i64 0, i64 0), i8* %argument, i8* %7) #5
+  br label %9
+
+; <label>:9                                       ; preds = %5, %0
+  %10 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !tbaa !2
+  %11 = tail call i32 %10(%struct.cGH* null, i32 %1) #5
+  ret void
+}

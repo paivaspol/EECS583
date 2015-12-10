@@ -1,0 +1,20 @@
+define i32 @CCTK_ParameterQueryTimesSet(i8* %name, i8* %thorn) #1 {
+  %1 = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 5) #8
+  %2 = icmp eq %struct.PARAM* %1, null
+  br i1 %2, label %CCTK_ParameterData.exit.thread, label %CCTK_ParameterData.exit
+
+CCTK_ParameterData.exit:                          ; preds = %0
+  %3 = getelementptr inbounds %struct.PARAM* %1, i64 0, i32 0
+  %4 = load %struct.PARAM_PROPS** %3, align 8, !tbaa !2
+  %5 = icmp eq %struct.PARAM_PROPS* %4, null
+  br i1 %5, label %CCTK_ParameterData.exit.thread, label %6
+
+; <label>:6                                       ; preds = %CCTK_ParameterData.exit
+  %7 = getelementptr inbounds %struct.PARAM_PROPS* %4, i64 0, i32 7
+  %8 = load i32* %7, align 4, !tbaa !17
+  br label %CCTK_ParameterData.exit.thread
+
+CCTK_ParameterData.exit.thread:                   ; preds = %0, %CCTK_ParameterData.exit, %6
+  %9 = phi i32 [ %8, %6 ], [ -1, %CCTK_ParameterData.exit ], [ -1, %0 ]
+  ret i32 %9
+}

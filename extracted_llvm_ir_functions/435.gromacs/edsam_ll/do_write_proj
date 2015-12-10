@@ -1,71 +1,70 @@
-define void @do_write_proj(%struct._IO_FILE* nocapture %out, %struct.t_eigvec* nocapture %vec, i8* nocapture %mode) #0 {
-entry:
-  %neig = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 0
-  %0 = load i32* %neig, align 4, !tbaa !3
-  %cmp41 = icmp sgt i32 %0, 0
-  br i1 %cmp41, label %for.body.lr.ph, label %if.end27
+define void @do_write_proj(%struct.__sFILE* nocapture %out, %struct.t_eigvec* nocapture readonly %vec, i8* nocapture readonly %mode) #4 {
+  %1 = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 0
+  %2 = load i32* %1, align 4, !tbaa !79
+  %3 = icmp sgt i32 %2, 0
+  br i1 %3, label %.lr.ph, label %._crit_edge.thread
 
-for.body.lr.ph:                                   ; preds = %entry
-  %xproj = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 4
-  %vproj = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 5
-  %fproj = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 6
-  br label %for.body
+.lr.ph:                                           ; preds = %0
+  %4 = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 4
+  %5 = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 5
+  %6 = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 6
+  br label %7
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.inc
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
-  %call = tail call i32 @strcmp(i8* %mode, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #8
-  %cmp1 = icmp eq i32 %call, 0
-  br i1 %cmp1, label %if.then, label %if.else
+; <label>:7                                       ; preds = %.lr.ph, %34
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %34 ]
+  %8 = tail call i32 @strcmp(i8* %mode, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #11
+  %9 = icmp eq i32 %8, 0
+  br i1 %9, label %10, label %16
 
-if.then:                                          ; preds = %for.body
-  %1 = load float** %xproj, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds float* %1, i64 %indvars.iv
-  %2 = load float* %arrayidx, align 4, !tbaa !4
-  %conv = fpext float %2 to double
-  %call2 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str59, i64 0, i64 0), double %conv) #6
-  br label %for.inc
+; <label>:10                                      ; preds = %7
+  %11 = load float** %4, align 8, !tbaa !81
+  %12 = getelementptr inbounds float* %11, i64 %indvars.iv
+  %13 = load float* %12, align 4, !tbaa !2
+  %14 = fpext float %13 to double
+  %15 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str59, i64 0, i64 0), double %14) #11
+  br label %34
 
-if.else:                                          ; preds = %for.body
-  %call3 = tail call i32 @strcmp(i8* %mode, i8* getelementptr inbounds ([2 x i8]* @.str48, i64 0, i64 0)) #8
-  %cmp4 = icmp eq i32 %call3, 0
-  br i1 %cmp4, label %if.then6, label %if.else11
+; <label>:16                                      ; preds = %7
+  %17 = tail call i32 @strcmp(i8* %mode, i8* getelementptr inbounds ([2 x i8]* @.str48, i64 0, i64 0)) #11
+  %18 = icmp eq i32 %17, 0
+  br i1 %18, label %19, label %25
 
-if.then6:                                         ; preds = %if.else
-  %3 = load float** %vproj, align 8, !tbaa !0
-  %arrayidx8 = getelementptr inbounds float* %3, i64 %indvars.iv
-  %4 = load float* %arrayidx8, align 4, !tbaa !4
-  %conv9 = fpext float %4 to double
-  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str59, i64 0, i64 0), double %conv9) #6
-  br label %for.inc
+; <label>:19                                      ; preds = %16
+  %20 = load float** %5, align 8, !tbaa !86
+  %21 = getelementptr inbounds float* %20, i64 %indvars.iv
+  %22 = load float* %21, align 4, !tbaa !2
+  %23 = fpext float %22 to double
+  %24 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str59, i64 0, i64 0), double %23) #11
+  br label %34
 
-if.else11:                                        ; preds = %if.else
-  %call12 = tail call i32 @strcmp(i8* %mode, i8* getelementptr inbounds ([2 x i8]* @.str49, i64 0, i64 0)) #8
-  %cmp13 = icmp eq i32 %call12, 0
-  br i1 %cmp13, label %if.then15, label %for.inc
+; <label>:25                                      ; preds = %16
+  %26 = tail call i32 @strcmp(i8* %mode, i8* getelementptr inbounds ([2 x i8]* @.str49, i64 0, i64 0)) #11
+  %27 = icmp eq i32 %26, 0
+  br i1 %27, label %28, label %34
 
-if.then15:                                        ; preds = %if.else11
-  %5 = load float** %fproj, align 8, !tbaa !0
-  %arrayidx17 = getelementptr inbounds float* %5, i64 %indvars.iv
-  %6 = load float* %arrayidx17, align 4, !tbaa !4
-  %conv18 = fpext float %6 to double
-  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str59, i64 0, i64 0), double %conv18) #6
-  br label %for.inc
+; <label>:28                                      ; preds = %25
+  %29 = load float** %6, align 8, !tbaa !87
+  %30 = getelementptr inbounds float* %29, i64 %indvars.iv
+  %31 = load float* %30, align 4, !tbaa !2
+  %32 = fpext float %31 to double
+  %33 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str59, i64 0, i64 0), double %32) #11
+  br label %34
 
-for.inc:                                          ; preds = %if.then, %if.else11, %if.then15, %if.then6
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %7 = load i32* %neig, align 4, !tbaa !3
-  %8 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %8, %7
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:34                                      ; preds = %10, %25, %28, %19
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %35 = load i32* %1, align 4, !tbaa !79
+  %36 = sext i32 %35 to i64
+  %37 = icmp slt i64 %indvars.iv.next, %36
+  br i1 %37, label %7, label %._crit_edge
 
-for.end:                                          ; preds = %for.inc
-  %cmp23 = icmp sgt i32 %7, 0
-  br i1 %cmp23, label %if.then25, label %if.end27
+._crit_edge:                                      ; preds = %34
+  %38 = icmp sgt i32 %35, 0
+  br i1 %38, label %39, label %._crit_edge.thread
 
-if.then25:                                        ; preds = %for.end
-  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %out)
-  br label %if.end27
+; <label>:39                                      ; preds = %._crit_edge
+  %fputc = tail call i32 @fputc(i32 10, %struct.__sFILE* %out)
+  br label %._crit_edge.thread
 
-if.end27:                                         ; preds = %entry, %if.then25, %for.end
+._crit_edge.thread:                               ; preds = %0, %39, %._crit_edge
   ret void
 }

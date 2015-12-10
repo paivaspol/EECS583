@@ -1,15 +1,14 @@
-define internal fastcc void @warn_step(%struct._IO_FILE* nocapture %fp, float %ustep, float %ftol, i32 %bConstrain) #0 {
-entry:
-  %conv = fpext float %ustep to double
-  %conv1 = fpext float %ftol to double
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([100 x i8]* @.str34, i64 0, i64 0), double %conv, double %conv1) #5
-  %tobool = icmp eq i32 %bConstrain, 0
-  br i1 %tobool, label %if.end, label %if.then
+define internal fastcc void @warn_step(%struct.__sFILE* nocapture %fp, float %ustep, float %ftol, i32 %bConstrain) #3 {
+  %1 = fpext float %ustep to double
+  %2 = fpext float %ftol to double
+  %3 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([100 x i8]* @.str42, i64 0, i64 0), double %1, double %2) #7
+  %4 = icmp eq i32 %bConstrain, 0
+  br i1 %4, label %7, label %5
 
-if.then:                                          ; preds = %entry
-  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([127 x i8]* @.str35, i64 0, i64 0), i64 126, i64 1, %struct._IO_FILE* %fp)
-  br label %if.end
+; <label>:5                                       ; preds = %0
+  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([127 x i8]* @.str43, i64 0, i64 0), i64 126, i64 1, %struct.__sFILE* %fp)
+  br label %7
 
-if.end:                                           ; preds = %entry, %if.then
+; <label>:7                                       ; preds = %0, %5
   ret void
 }

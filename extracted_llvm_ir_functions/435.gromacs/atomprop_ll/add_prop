@@ -1,43 +1,44 @@
-define internal fastcc void @add_prop(float %p, i8* nocapture %resnm, i8* nocapture %atomnm, i32* nocapture %nprop, %struct.t_prop** nocapture %props, i32* nocapture %maxprop) #0 {
-entry:
-  %0 = load i32* %nprop, align 4, !tbaa !3
-  %1 = load i32* %maxprop, align 4, !tbaa !3
-  %cmp = icmp slt i32 %0, %1
-  br i1 %cmp, label %entry.if.end_crit_edge, label %if.then
+define internal fastcc void @add_prop(float %p, i8* %resnm, i8* %atomnm, i32* nocapture %nprop, %struct.t_prop** nocapture %props, i32* nocapture %maxprop) #3 {
+  %1 = load i32* %nprop, align 4, !tbaa !15
+  %2 = load i32* %maxprop, align 4, !tbaa !15
+  %3 = icmp slt i32 %1, %2
+  br i1 %3, label %._crit_edge, label %4
 
-entry.if.end_crit_edge:                           ; preds = %entry
-  %.pre19 = load %struct.t_prop** %props, align 8, !tbaa !0
-  br label %if.end
+._crit_edge:                                      ; preds = %0
+  %.pre1 = load %struct.t_prop** %props, align 8, !tbaa !14
+  br label %11
 
-if.then:                                          ; preds = %entry
-  %add = add nsw i32 %1, 10
-  store i32 %add, i32* %maxprop, align 4, !tbaa !3
-  %2 = load %struct.t_prop** %props, align 8, !tbaa !0
-  %3 = getelementptr inbounds %struct.t_prop* %2, i64 0, i32 0, i64 0
-  %mul = mul i32 %add, 24
-  %call = tail call i8* @save_realloc(i8* getelementptr inbounds ([7 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([56 x i8]* @.str10, i64 0, i64 0), i32 56, i8* %3, i32 %mul) #8
-  %4 = bitcast i8* %call to %struct.t_prop*
-  store %struct.t_prop* %4, %struct.t_prop** %props, align 8, !tbaa !0
-  %.pre = load i32* %nprop, align 4, !tbaa !3
-  br label %if.end
+; <label>:4                                       ; preds = %0
+  %5 = add nsw i32 %2, 10
+  store i32 %5, i32* %maxprop, align 4, !tbaa !15
+  %6 = bitcast %struct.t_prop** %props to i8**
+  %7 = load i8** %6, align 8, !tbaa !14
+  %8 = mul i32 %5, 24
+  %9 = tail call i8* @save_realloc(i8* getelementptr inbounds ([7 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([68 x i8]* @.str13, i64 0, i64 0), i32 56, i8* %7, i32 %8) #9
+  store i8* %9, i8** %6, align 8, !tbaa !14
+  %.pre = load i32* %nprop, align 4, !tbaa !15
+  %10 = bitcast i8* %9 to %struct.t_prop*
+  br label %11
 
-if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
-  %5 = phi %struct.t_prop* [ %.pre19, %entry.if.end_crit_edge ], [ %4, %if.then ]
-  %6 = phi i32 [ %0, %entry.if.end_crit_edge ], [ %.pre, %if.then ]
-  %idxprom = sext i32 %6 to i64
-  %arraydecay = getelementptr inbounds %struct.t_prop* %5, i64 %idxprom, i32 0, i64 0
-  %call2 = tail call i8* @strcpy(i8* %arraydecay, i8* %atomnm) #8
-  %7 = load i32* %nprop, align 4, !tbaa !3
-  %idxprom3 = sext i32 %7 to i64
-  %8 = load %struct.t_prop** %props, align 8, !tbaa !0
-  %arraydecay5 = getelementptr inbounds %struct.t_prop* %8, i64 %idxprom3, i32 1, i64 0
-  %call6 = tail call i8* @strcpy(i8* %arraydecay5, i8* %resnm) #8
-  %9 = load i32* %nprop, align 4, !tbaa !3
-  %idxprom7 = sext i32 %9 to i64
-  %10 = load %struct.t_prop** %props, align 8, !tbaa !0
-  %prop = getelementptr inbounds %struct.t_prop* %10, i64 %idxprom7, i32 2
-  store float %p, float* %prop, align 4, !tbaa !4
-  %inc = add nsw i32 %9, 1
-  store i32 %inc, i32* %nprop, align 4, !tbaa !3
+; <label>:11                                      ; preds = %._crit_edge, %4
+  %12 = phi %struct.t_prop* [ %.pre1, %._crit_edge ], [ %10, %4 ]
+  %13 = phi i32 [ %1, %._crit_edge ], [ %.pre, %4 ]
+  %14 = sext i32 %13 to i64
+  %15 = getelementptr inbounds %struct.t_prop* %12, i64 %14, i32 0, i64 0
+  %16 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %15, i1 false)
+  %17 = tail call i8* @__strcpy_chk(i8* %15, i8* %atomnm, i64 %16) #9
+  %18 = load i32* %nprop, align 4, !tbaa !15
+  %19 = sext i32 %18 to i64
+  %20 = load %struct.t_prop** %props, align 8, !tbaa !14
+  %21 = getelementptr inbounds %struct.t_prop* %20, i64 %19, i32 1, i64 0
+  %22 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %21, i1 false)
+  %23 = tail call i8* @__strcpy_chk(i8* %21, i8* %resnm, i64 %22) #9
+  %24 = load i32* %nprop, align 4, !tbaa !15
+  %25 = sext i32 %24 to i64
+  %26 = load %struct.t_prop** %props, align 8, !tbaa !14
+  %27 = getelementptr inbounds %struct.t_prop* %26, i64 %25, i32 2
+  store float %p, float* %27, align 4, !tbaa !20
+  %28 = add nsw i32 %24, 1
+  store i32 %28, i32* %nprop, align 4, !tbaa !15
   ret void
 }

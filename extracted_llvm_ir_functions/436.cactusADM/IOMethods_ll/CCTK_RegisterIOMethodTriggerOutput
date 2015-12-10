@@ -1,0 +1,16 @@
+define i32 @CCTK_RegisterIOMethodTriggerOutput(i32 %handle, i32 (%struct.cGH*, i32)* %TriggerOutput) #1 {
+  %1 = load %struct.cHandledData** @IOMethods, align 8, !tbaa !2
+  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #5
+  %3 = icmp ne i8* %2, null
+  br i1 %3, label %4, label %7
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds i8* %2, i64 32
+  %6 = bitcast i8* %5 to i32 (%struct.cGH*, i32)**
+  store i32 (%struct.cGH*, i32)* %TriggerOutput, i32 (%struct.cGH*, i32)** %6, align 8, !tbaa !11
+  br label %7
+
+; <label>:7                                       ; preds = %4, %0
+  %8 = zext i1 %3 to i32
+  ret i32 %8
+}

@@ -1,43 +1,40 @@
-define float @calc_ewaldcoeff(float %rc, float %dtol) #0 {
-entry:
-  %conv2 = fpext float %dtol to double
-  br label %do.body
+define float @calc_ewaldcoeff(float %rc, float %dtol) #1 {
+  %1 = fpext float %dtol to double
+  br label %2
 
-do.body:                                          ; preds = %do.body, %entry
-  %indvars.iv = phi i32 [ %indvars.iv.next, %do.body ], [ 61, %entry ]
-  %x.0 = phi float [ %mul, %do.body ], [ 5.000000e+00, %entry ]
-  %i.0 = phi i32 [ %inc, %do.body ], [ 0, %entry ]
-  %inc = add nsw i32 %i.0, 1
-  %mul = fmul float %x.0, 2.000000e+00
-  %mul1 = fmul float %mul, %rc
-  %conv = fpext float %mul1 to double
-  %call = tail call double @erfc(double %conv) #4
-  %cmp = fcmp ogt double %call, %conv2
-  %indvars.iv.next = add i32 %indvars.iv, 1
-  br i1 %cmp, label %do.body, label %do.end
+; <label>:2                                       ; preds = %2, %0
+  %x.0 = phi float [ 5.000000e+00, %0 ], [ %4, %2 ]
+  %i.0 = phi i32 [ 0, %0 ], [ %3, %2 ]
+  %3 = add nuw nsw i32 %i.0, 1
+  %4 = fmul float %x.0, 2.000000e+00
+  %5 = fmul float %4, %rc
+  %6 = fpext float %5 to double
+  %7 = tail call double @erfc(double %6) #7
+  %8 = fcmp ogt double %7, %1
+  br i1 %8, label %2, label %9
 
-do.end:                                           ; preds = %do.body
-  %add = add nsw i32 %i.0, 61
-  %cmp424 = icmp sgt i32 %add, 0
-  br i1 %cmp424, label %for.body, label %for.end
+; <label>:9                                       ; preds = %2
+  %10 = icmp sgt i32 %i.0, -61
+  br i1 %10, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %do.end, %for.body
-  %i.127 = phi i32 [ %inc13, %for.body ], [ 0, %do.end ]
-  %high.026 = phi float [ %high.0.div, %for.body ], [ %mul, %do.end ]
-  %low.025 = phi float [ %div.low.0, %for.body ], [ 0.000000e+00, %do.end ]
-  %add6 = fadd float %low.025, %high.026
-  %div = fmul float %add6, 5.000000e-01
-  %mul7 = fmul float %div, %rc
-  %conv8 = fpext float %mul7 to double
-  %call9 = tail call double @erfc(double %conv8) #4
-  %cmp11 = fcmp ogt double %call9, %conv2
-  %div.low.0 = select i1 %cmp11, float %div, float %low.025
-  %high.0.div = select i1 %cmp11, float %high.026, float %div
-  %inc13 = add nsw i32 %i.127, 1
-  %exitcond = icmp eq i32 %inc13, %indvars.iv
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %9, %.lr.ph
+  %i.14 = phi i32 [ %17, %.lr.ph ], [ 0, %9 ]
+  %high.03 = phi float [ %high.0., %.lr.ph ], [ %4, %9 ]
+  %low.02 = phi float [ %.low.0, %.lr.ph ], [ 0.000000e+00, %9 ]
+  %11 = fadd float %low.02, %high.03
+  %12 = fmul float %11, 5.000000e-01
+  %13 = fmul float %12, %rc
+  %14 = fpext float %13 to double
+  %15 = tail call double @erfc(double %14) #7
+  %16 = fcmp ogt double %15, %1
+  %.low.0 = select i1 %16, float %12, float %low.02
+  %high.0. = select i1 %16, float %high.03, float %12
+  %17 = add nuw nsw i32 %i.14, 1
+  %18 = add nsw i32 %i.0, 60
+  %19 = icmp slt i32 %i.14, %18
+  br i1 %19, label %.lr.ph, label %._crit_edge
 
-for.end:                                          ; preds = %for.body, %do.end
-  %x.1.lcssa = phi float [ %mul, %do.end ], [ %div, %for.body ]
+._crit_edge:                                      ; preds = %.lr.ph, %9
+  %x.1.lcssa = phi float [ %4, %9 ], [ %12, %.lr.ph ]
   ret float %x.1.lcssa
 }

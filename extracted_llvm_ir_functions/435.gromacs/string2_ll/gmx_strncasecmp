@@ -1,0 +1,38 @@
+define i32 @gmx_strncasecmp(i8* nocapture readonly %str1, i8* nocapture readonly %str2, i32 %n) #3 {
+  %1 = icmp eq i32 %n, 0
+  br i1 %1, label %.critedge, label %.preheader
+
+.preheader:                                       ; preds = %0, %13
+  %.04 = phi i8* [ %14, %13 ], [ %str2, %0 ]
+  %.03 = phi i32 [ %16, %13 ], [ %n, %0 ]
+  %.02 = phi i8* [ %15, %13 ], [ %str1, %0 ]
+  %2 = load i8* %.02, align 1, !tbaa !13
+  %3 = sext i8 %2 to i32
+  %4 = tail call i32 @__toupper(i32 %3) #10
+  %5 = load i8* %.04, align 1, !tbaa !13
+  %6 = sext i8 %5 to i32
+  %7 = tail call i32 @__toupper(i32 %6) #10
+  %sext = shl i32 %4, 24
+  %8 = ashr exact i32 %sext, 24
+  %sext5 = shl i32 %7, 24
+  %9 = ashr exact i32 %sext5, 24
+  %10 = icmp eq i32 %8, %9
+  br i1 %10, label %13, label %11
+
+; <label>:11                                      ; preds = %.preheader
+  %12 = sub nsw i32 %8, %9
+  br label %.critedge
+
+; <label>:13                                      ; preds = %.preheader
+  %14 = getelementptr inbounds i8* %.04, i64 1
+  %15 = getelementptr inbounds i8* %.02, i64 1
+  %16 = add nsw i32 %.03, -1
+  %17 = icmp ne i32 %8, 0
+  %18 = icmp ne i32 %16, 0
+  %or.cond = and i1 %18, %17
+  br i1 %or.cond, label %.preheader, label %.critedge
+
+.critedge:                                        ; preds = %13, %0, %11
+  %.0 = phi i32 [ %12, %11 ], [ 0, %0 ], [ 0, %13 ]
+  ret i32 %.0
+}

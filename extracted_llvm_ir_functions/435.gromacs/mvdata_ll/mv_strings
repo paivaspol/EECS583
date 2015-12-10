@@ -1,31 +1,30 @@
-define internal fastcc void @mv_strings(i32 %dest, %struct.t_symtab* %symtab, i32 %nr, i8*** nocapture %nm) #0 {
-entry:
-  %nr.addr = alloca i32, align 4
-  store i32 %nr, i32* %nr.addr, align 4, !tbaa !0
-  %call = call i8* @save_calloc(i8* getelementptr inbounds ([7 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str8, i64 0, i64 0), i32 298, i32 %nr, i32 4) #4
-  %0 = bitcast i8* %call to i32*
-  %cmp11 = icmp sgt i32 %nr, 0
-  br i1 %cmp11, label %for.body, label %for.end
+define internal fastcc void @mv_strings(i32 %dest, %struct.t_symtab* %symtab, i32 %nr, i8*** nocapture readonly %nm) #4 {
+  %1 = alloca i32, align 4
+  store i32 %nr, i32* %1, align 4, !tbaa !36
+  %2 = tail call i8* @save_calloc(i8* getelementptr inbounds ([7 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str8, i64 0, i64 0), i32 298, i32 %nr, i32 4) #7
+  %3 = bitcast i8* %2 to i32*
+  %4 = icmp sgt i32 %nr, 0
+  br i1 %4, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds i8*** %nm, i64 %indvars.iv
-  %1 = load i8*** %arrayidx, align 8, !tbaa !3
-  %call1 = call i32 @lookup_symtab(%struct.t_symtab* %symtab, i8** %1) #4
-  %arrayidx3 = getelementptr inbounds i32* %0, i64 %indvars.iv
-  store i32 %call1, i32* %arrayidx3, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %2 = load i32* %nr.addr, align 4, !tbaa !0
-  %3 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %3, %2
-  br i1 %cmp, label %for.body, label %for.end
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %0 ]
+  %5 = getelementptr inbounds i8*** %nm, i64 %indvars.iv
+  %6 = load i8*** %5, align 8, !tbaa !29
+  %7 = tail call i32 @lookup_symtab(%struct.t_symtab* %symtab, i8** %6) #7
+  %8 = getelementptr inbounds i32* %3, i64 %indvars.iv
+  store i32 %7, i32* %8, align 4, !tbaa !36
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %9 = load i32* %1, align 4, !tbaa !36
+  %10 = sext i32 %9 to i64
+  %11 = icmp slt i64 %indvars.iv.next, %10
+  br i1 %11, label %.lr.ph, label %._crit_edge
 
-for.end:                                          ; preds = %for.body, %entry
-  %4 = bitcast i32* %nr.addr to i8*
-  call void @_blocktx(i32 %dest, i32 1, i32 4, i8* %4) #4
-  %5 = load i32* %nr.addr, align 4, !tbaa !0
-  %mul = shl i32 %5, 2
-  call void @_blocktx(i32 %dest, i32 1, i32 %mul, i8* %call) #4
-  call void @save_free(i8* getelementptr inbounds ([7 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str8, i64 0, i64 0), i32 303, i8* %call) #4
+._crit_edge:                                      ; preds = %.lr.ph, %0
+  %12 = bitcast i32* %1 to i8*
+  call void @_blocktx(i32 %dest, i32 1, i32 4, i8* %12) #7
+  %13 = load i32* %1, align 4, !tbaa !36
+  %14 = shl i32 %13, 2
+  call void @_blocktx(i32 %dest, i32 1, i32 %14, i8* %2) #7
+  call void @save_free(i8* getelementptr inbounds ([7 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str8, i64 0, i64 0), i32 303, i8* %2) #7
   ret void
 }

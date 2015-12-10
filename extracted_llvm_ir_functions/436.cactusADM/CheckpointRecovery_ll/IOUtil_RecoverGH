@@ -1,0 +1,29 @@
+define void @IOUtil_RecoverGH(%struct.cGH* %GH) #1 {
+  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0)) #7
+  %2 = load i32* @checkpoint_file_exists, align 4, !tbaa !6
+  %3 = icmp eq i32 %2, 0
+  br i1 %3, label %11, label %4
+
+; <label>:4                                       ; preds = %0
+  %5 = tail call fastcc i32 @IOUtil_RecoverFromFile(%struct.cGH* %GH, i8* null, i32 3) #8
+  %6 = icmp sgt i32 %5, -1
+  %.lobit = lshr i32 %5, 31
+  %.lobit.not = xor i32 %.lobit, 1
+  %7 = getelementptr inbounds i8* %1, i64 28
+  %8 = bitcast i8* %7 to i32*
+  store i32 %.lobit.not, i32* %8, align 4, !tbaa !19
+  br i1 %6, label %14, label %9
+
+; <label>:9                                       ; preds = %4
+  %10 = tail call i32 @CCTK_Warn(i32 0, i32 343, i8* getelementptr inbounds ([87 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([34 x i8]* @.str10, i64 0, i64 0)) #7
+  br label %14
+
+; <label>:11                                      ; preds = %0
+  %12 = getelementptr inbounds i8* %1, i64 28
+  %13 = bitcast i8* %12 to i32*
+  store i32 0, i32* %13, align 4, !tbaa !19
+  br label %14
+
+; <label>:14                                      ; preds = %4, %9, %11
+  ret void
+}

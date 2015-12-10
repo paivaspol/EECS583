@@ -35,21 +35,38 @@ directories = ['400.perlbench'
         ,'998.specrand'
         ,'999.specrand']
 
+# flags = {
+#         '435.gromacs': '-DSPEC_CPU -DNDEBUG  -I{0} -DHAVE_CONFIG_H -DSPEC_CPU_LP64',
+#         '436.cactusADM': '-DSPEC_CPU -DNDEBUG  -I{0}/include -I{0}/../include -DCCODE -DSPEC_CPU_LP64',
+#         '471.omnetpp': '-DSPEC_CPU -DNDEBUG -I{0} -I{0}/omnet_include -I{0}/libs/envir -DSPEC_CPU_LP64',
+#         '483.xalancbmk': '-DSPEC_CPU -DNDEBUG  -DAPP_NO_THREADS -DXALAN_INMEM_MSG_LOADER -I{0} -I{0}/xercesc -I{0}/xercesc/dom -I{0}/xercesc/dom/impl -I{0}/xercesc/sax -I{0}/xercesc/util/MsgLoaders/InMemory -I{0}/xercesc/util/Transcoders/Iconv -I{0}/xalanc/include -DPROJ_XMLPARSER -DPROJ_XMLUTIL -DPROJ_PARSERS -DPROJ_SAX4C -DPROJ_SAX2 -DPROJ_DOM -DPROJ_VALIDATORS -DXML_USE_NATIVE_TRANSCODER -DXML_USE_INMEM_MESSAGELOADER -DSPEC_CPU_LP64 -DSPEC_CPU_LINUX',
+#         '481.wrf': '-DSPEC_CPU -DNDEBUG -I{0} -I{0}/netcdf/include -DSPEC_CPU_LP64 -DSPEC_CPU_CASE_FLAG -DSPEC_CPU_LINUX',
+#         '453.povray': '-DSPEC_CPU -DNDEBUG -DSPEC_CPU_LP64',
+#         '450.soplex': '-DSPEC_CPU -DNDEBUG -DSPEC_CPU_LP64'
+# }
+
+flags = {
+        '471.omnetpp': '-DSPEC_CPU -DNDEBUG -I{0} -I{0}/omnet_include -I{0}/libs/envir -DSPEC_CPU_LP64',
+        '483.xalancbmk': '-DSPEC_CPU -DNDEBUG  -DAPP_NO_THREADS -DXALAN_INMEM_MSG_LOADER -I{0} -I{0}/xercesc -I{0}/xercesc/dom -I{0}/xercesc/dom/impl -I{0}/xercesc/sax -I{0}/xercesc/util/MsgLoaders/InMemory -I{0}/xercesc/util/Transcoders/Iconv -I{0}/xalanc/include -DPROJ_XMLPARSER -DPROJ_XMLUTIL -DPROJ_PARSERS -DPROJ_SAX4C -DPROJ_SAX2 -DPROJ_DOM -DPROJ_VALIDATORS -DXML_USE_NATIVE_TRANSCODER -DXML_USE_INMEM_MESSAGELOADER -DSPEC_CPU_LP64 -DSPEC_CPU_LINUX'
+}
+
+
 def generate_llvm_ir_from_directory(root_dir, output_dir):
     for path, dirs, filenames in os.walk(root_dir):
-        if check_directory(path):
+        benchmark = check_directory(path)
+        if benchmark is not None:
             src_directory = os.path.join(path, 'src')
             output_directory = path.replace(root_dir, output_dir)
             if not os.path.exists(output_directory):
                 os.mkdir(output_directory)
-            generate_ir_cmd = 'python generate_ir.py {0} --output-dir {1}'.format(src_directory, output_directory)
+            generate_ir_cmd = 'python generate_ir.py {0} {2} --output-dir {1}'.format(src_directory, output_directory, benchmark)
             print 'generate IR cmd: ' + generate_ir_cmd
             subprocess.call(generate_ir_cmd, shell=True)
 
 def check_directory(path):
-    for directory in directories:
-        if path.endswith(directory):
-            return directory
+    for benchmark in flags:
+        if path.endswith(benchmark):
+            return benchmark
     return None
 
 if __name__ == '__main__':

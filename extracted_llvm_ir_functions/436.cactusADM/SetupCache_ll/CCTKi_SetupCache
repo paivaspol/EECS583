@@ -1,0 +1,18 @@
+define i32 @CCTKi_SetupCache() #1 {
+  %1 = load i64* bitcast (i32* getelementptr inbounds (%struct.anon.0* @cactuspriv_, i64 0, i32 8) to i64*), align 8
+  %2 = trunc i64 %1 to i32
+  %3 = icmp eq i32 %2, 0
+  br i1 %3, label %8, label %4
+
+; <label>:4                                       ; preds = %0
+  %5 = load i32* getelementptr inbounds (%struct.anon.0* @cactuspriv_, i64 0, i32 10), align 8, !tbaa !2
+  %6 = ashr i64 %1, 32
+  %7 = sext i32 %5 to i64
+  br label %8
+
+; <label>:8                                       ; preds = %0, %4
+  %cacheline_bytes.0 = phi i64 [ %7, %4 ], [ 128, %0 ]
+  %cache_size.0 = phi i64 [ %6, %4 ], [ 8388608, %0 ]
+  %9 = tail call i32 @Utili_CacheDataSet(i64 %cacheline_bytes.0, i64 %cache_size.0) #3
+  ret i32 0
+}

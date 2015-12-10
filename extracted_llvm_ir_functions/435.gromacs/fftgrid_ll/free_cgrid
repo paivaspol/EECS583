@@ -1,25 +1,28 @@
-define void @free_cgrid(%struct.t_complex*** %grid, i32 %nx, i32 %ny) #0 {
-entry:
-  %0 = load %struct.t_complex*** %grid, align 8, !tbaa !3
-  %1 = load %struct.t_complex** %0, align 8, !tbaa !3
-  %2 = bitcast %struct.t_complex* %1 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([11 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 369, i8* %2) #4
-  %cmp7 = icmp sgt i32 %nx, 0
-  br i1 %cmp7, label %for.body, label %for.end
+define void @free_cgrid(%struct.t_complex*** %grid, i32 %nx, i32 %ny) #4 {
+  %1 = bitcast %struct.t_complex*** %grid to i8***
+  %2 = load i8*** %1, align 8, !tbaa !32
+  %3 = load i8** %2, align 8, !tbaa !32
+  tail call void @save_free(i8* getelementptr inbounds ([11 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str1, i64 0, i64 0), i32 369, i8* %3) #7
+  %4 = icmp sgt i32 %nx, 0
+  br i1 %4, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %arrayidx2 = getelementptr inbounds %struct.t_complex*** %grid, i64 %indvars.iv
-  %3 = load %struct.t_complex*** %arrayidx2, align 8, !tbaa !3
-  %4 = bitcast %struct.t_complex** %3 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 371, i8* %4) #4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %nx
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %5 = add i32 %nx, -1
+  br label %6
 
-for.end:                                          ; preds = %for.body, %entry
-  %5 = bitcast %struct.t_complex*** %grid to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 372, i8* %5) #4
+; <label>:6                                       ; preds = %6, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %6 ]
+  %7 = getelementptr inbounds %struct.t_complex*** %grid, i64 %indvars.iv
+  %8 = bitcast %struct.t_complex*** %7 to i8**
+  %9 = load i8** %8, align 8, !tbaa !32
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str1, i64 0, i64 0), i32 371, i8* %9) #7
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %5
+  br i1 %exitcond, label %._crit_edge, label %6
+
+._crit_edge:                                      ; preds = %6, %0
+  %10 = bitcast %struct.t_complex*** %grid to i8*
+  tail call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str1, i64 0, i64 0), i32 372, i8* %10) #7
   ret void
 }

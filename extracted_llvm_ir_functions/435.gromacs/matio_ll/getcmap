@@ -1,5 +1,4 @@
-define i32 @getcmap(%struct._IO_FILE* %in, i8* %fn, %struct.t_mapping** nocapture %map) #0 {
-entry:
+define i32 @getcmap(%struct.__sFILE* %in, i8* %fn, %struct.t_mapping** nocapture %map) #3 {
   %n = alloca i32, align 4
   %line = alloca [4096 x i8], align 16
   %code = alloca [4096 x i8], align 16
@@ -7,75 +6,76 @@ entry:
   %r = alloca double, align 8
   %g = alloca double, align 8
   %b = alloca double, align 8
-  %0 = getelementptr inbounds [4096 x i8]* %line, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 4096, i8* %0) #4
-  %1 = getelementptr inbounds [4096 x i8]* %code, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 4096, i8* %1) #4
-  %2 = getelementptr inbounds [4096 x i8]* %desc, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 4096, i8* %2) #4
-  %call = call i8* @fgets2(i8* %0, i32 4095, %struct._IO_FILE* %in) #8
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  %1 = getelementptr inbounds [4096 x i8]* %line, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %1) #6
+  %2 = getelementptr inbounds [4096 x i8]* %code, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %2) #6
+  %3 = getelementptr inbounds [4096 x i8]* %desc, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %3) #6
+  %4 = call i8* @fgets2(i8* %1, i32 4095, %struct.__sFILE* %in) #10
+  %5 = icmp eq i8* %4, null
+  br i1 %5, label %6, label %7
 
-if.then:                                          ; preds = %entry
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([76 x i8]* @.str6, i64 0, i64 0), i8* %fn) #8
-  br label %if.end
+; <label>:6                                       ; preds = %0
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([76 x i8]* @.str6, i64 0, i64 0), i8* %fn) #10
+  br label %7
 
-if.end:                                           ; preds = %if.then, %entry
-  %call2 = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %0, i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i32* %n) #8
-  %3 = load i32* %n, align 4, !tbaa !3
-  %call3 = call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 115, i32 %3, i32 32) #8
-  %4 = bitcast i8* %call3 to %struct.t_mapping*
-  %5 = load i32* %n, align 4, !tbaa !3
-  %cmp453 = icmp sgt i32 %5, 0
-  br i1 %cmp453, label %for.body, label %for.end
+; <label>:7                                       ; preds = %6, %0
+  %8 = call i32 (i8*, i8*, ...)* @sscanf(i8* %1, i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i32* %n) #10
+  %9 = load i32* %n, align 4, !tbaa !15
+  %10 = call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 115, i32 %9, i32 32) #10
+  %11 = bitcast i8* %10 to %struct.t_mapping*
+  %12 = load i32* %n, align 4, !tbaa !15
+  %13 = icmp sgt i32 %12, 0
+  br i1 %13, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %if.end, %if.end9
-  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end9 ], [ 0, %if.end ]
-  %call6 = call i8* @fgets2(i8* %0, i32 4095, %struct._IO_FILE* %in) #8
-  %cmp7 = icmp eq i8* %call6, null
-  br i1 %cmp7, label %if.then8, label %if.end9
+.lr.ph:                                           ; preds = %7, %20
+  %indvars.iv = phi i64 [ %indvars.iv.next, %20 ], [ 0, %7 ]
+  %14 = call i8* @fgets2(i8* %1, i32 4095, %struct.__sFILE* %in) #10
+  %15 = icmp eq i8* %14, null
+  br i1 %15, label %16, label %20
 
-if.then8:                                         ; preds = %for.body
-  %6 = load i32* %n, align 4, !tbaa !3
-  %add = add nsw i32 %6, 1
-  %7 = trunc i64 %indvars.iv to i32
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([66 x i8]* @.str8, i64 0, i64 0), i8* %fn, i32 %add, i32 %7) #8
-  br label %if.end9
+; <label>:16                                      ; preds = %.lr.ph
+  %17 = load i32* %n, align 4, !tbaa !15
+  %18 = add nsw i32 %17, 1
+  %19 = trunc i64 %indvars.iv to i32
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([66 x i8]* @.str8, i64 0, i64 0), i8* %fn, i32 %18, i32 %19) #10
+  br label %20
 
-if.end9:                                          ; preds = %if.then8, %for.body
-  %call13 = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %0, i8* getelementptr inbounds ([14 x i8]* @.str9, i64 0, i64 0), i8* %1, i8* %2, double* %r, double* %g, double* %b) #8
-  %8 = load i8* %1, align 16, !tbaa !1
-  %c1 = getelementptr inbounds %struct.t_mapping* %4, i64 %indvars.iv, i32 0, i32 0
-  store i8 %8, i8* %c1, align 1, !tbaa !1
-  %c2 = getelementptr inbounds %struct.t_mapping* %4, i64 %indvars.iv, i32 0, i32 1
-  store i8 0, i8* %c2, align 1, !tbaa !1
-  %call20 = call i8* @gmx_strdup(i8* %2) #8
-  %desc23 = getelementptr inbounds %struct.t_mapping* %4, i64 %indvars.iv, i32 1
-  store i8* %call20, i8** %desc23, align 8, !tbaa !0
-  %9 = load double* %r, align 8, !tbaa !4
-  %conv = fptrunc double %9 to float
-  %r26 = getelementptr inbounds %struct.t_mapping* %4, i64 %indvars.iv, i32 2, i32 0
-  store float %conv, float* %r26, align 4, !tbaa !5
-  %10 = load double* %g, align 8, !tbaa !4
-  %conv27 = fptrunc double %10 to float
-  %g31 = getelementptr inbounds %struct.t_mapping* %4, i64 %indvars.iv, i32 2, i32 1
-  store float %conv27, float* %g31, align 4, !tbaa !5
-  %11 = load double* %b, align 8, !tbaa !4
-  %conv32 = fptrunc double %11 to float
-  %b36 = getelementptr inbounds %struct.t_mapping* %4, i64 %indvars.iv, i32 2, i32 2
-  store float %conv32, float* %b36, align 4, !tbaa !5
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %12 = load i32* %n, align 4, !tbaa !3
-  %13 = trunc i64 %indvars.iv.next to i32
-  %cmp4 = icmp slt i32 %13, %12
-  br i1 %cmp4, label %for.body, label %for.end
+; <label>:20                                      ; preds = %16, %.lr.ph
+  %21 = call i32 (i8*, i8*, ...)* @sscanf(i8* %1, i8* getelementptr inbounds ([14 x i8]* @.str9, i64 0, i64 0), i8* %2, i8* %3, double* %r, double* %g, double* %b) #10
+  %22 = load i8* %2, align 16, !tbaa !13
+  %23 = getelementptr inbounds %struct.t_mapping* %11, i64 %indvars.iv, i32 0, i32 0
+  store i8 %22, i8* %23, align 1, !tbaa !16
+  %24 = getelementptr inbounds %struct.t_mapping* %11, i64 %indvars.iv, i32 0, i32 1
+  store i8 0, i8* %24, align 1, !tbaa !21
+  %25 = call i8* @strdup(i8* %3) #10
+  %26 = getelementptr inbounds %struct.t_mapping* %11, i64 %indvars.iv, i32 1
+  store i8* %25, i8** %26, align 8, !tbaa !22
+  %27 = load double* %r, align 8, !tbaa !23
+  %28 = fptrunc double %27 to float
+  %29 = getelementptr inbounds %struct.t_mapping* %11, i64 %indvars.iv, i32 2, i32 0
+  store float %28, float* %29, align 4, !tbaa !25
+  %30 = load double* %g, align 8, !tbaa !23
+  %31 = fptrunc double %30 to float
+  %32 = getelementptr inbounds %struct.t_mapping* %11, i64 %indvars.iv, i32 2, i32 1
+  store float %31, float* %32, align 4, !tbaa !26
+  %33 = load double* %b, align 8, !tbaa !23
+  %34 = fptrunc double %33 to float
+  %35 = getelementptr inbounds %struct.t_mapping* %11, i64 %indvars.iv, i32 2, i32 2
+  store float %34, float* %35, align 4, !tbaa !27
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %36 = load i32* %n, align 4, !tbaa !15
+  %37 = sext i32 %36 to i64
+  %38 = icmp slt i64 %indvars.iv.next, %37
+  br i1 %38, label %.lr.ph, label %._crit_edge
 
-for.end:                                          ; preds = %if.end9, %if.end
-  %14 = phi i32 [ %5, %if.end ], [ %12, %if.end9 ]
-  store %struct.t_mapping* %4, %struct.t_mapping** %map, align 8, !tbaa !0
-  call void @llvm.lifetime.end(i64 4096, i8* %2) #4
-  call void @llvm.lifetime.end(i64 4096, i8* %1) #4
-  call void @llvm.lifetime.end(i64 4096, i8* %0) #4
-  ret i32 %14
+._crit_edge:                                      ; preds = %20, %7
+  %39 = phi i32 [ %12, %7 ], [ %36, %20 ]
+  %40 = bitcast %struct.t_mapping** %map to i8**
+  store i8* %10, i8** %40, align 8, !tbaa !14
+  call void @llvm.lifetime.end(i64 4096, i8* %3) #6
+  call void @llvm.lifetime.end(i64 4096, i8* %2) #6
+  call void @llvm.lifetime.end(i64 4096, i8* %1) #6
+  ret i32 %39
 }

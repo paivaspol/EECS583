@@ -1,26 +1,25 @@
-define internal fastcc void @mv_cosines(i32 %dest, %struct.t_cosines* %cs) #0 {
-entry:
-  %n = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 0
-  %0 = bitcast %struct.t_cosines* %cs to i8*
-  tail call void @_blocktx(i32 %dest, i32 1, i32 4, i8* %0) #4
-  %1 = load i32* %n, align 4, !tbaa !0
-  %cmp = icmp sgt i32 %1, 0
-  br i1 %cmp, label %if.then, label %if.end
+define internal fastcc void @mv_cosines(i32 %dest, %struct.t_cosines* %cs) #4 {
+  %1 = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 0
+  %2 = bitcast %struct.t_cosines* %cs to i8*
+  tail call void @_blocktx(i32 %dest, i32 1, i32 4, i8* %2) #7
+  %3 = load i32* %1, align 4, !tbaa !56
+  %4 = icmp sgt i32 %3, 0
+  br i1 %4, label %5, label %15
 
-if.then:                                          ; preds = %entry
-  %mul = shl i32 %1, 2
-  %a = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 1
-  %2 = load float** %a, align 8, !tbaa !3
-  %3 = bitcast float* %2 to i8*
-  tail call void @_blocktx(i32 %dest, i32 1, i32 %mul, i8* %3) #4
-  %4 = load i32* %n, align 4, !tbaa !0
-  %mul6 = shl i32 %4, 2
-  %phi = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 2
-  %5 = load float** %phi, align 8, !tbaa !3
-  %6 = bitcast float* %5 to i8*
-  tail call void @_blocktx(i32 %dest, i32 1, i32 %mul6, i8* %6) #4
-  br label %if.end
+; <label>:5                                       ; preds = %0
+  %6 = shl i32 %3, 2
+  %7 = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 1
+  %8 = bitcast float** %7 to i8**
+  %9 = load i8** %8, align 8, !tbaa !58
+  tail call void @_blocktx(i32 %dest, i32 1, i32 %6, i8* %9) #7
+  %10 = load i32* %1, align 4, !tbaa !56
+  %11 = shl i32 %10, 2
+  %12 = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 2
+  %13 = bitcast float** %12 to i8**
+  %14 = load i8** %13, align 8, !tbaa !59
+  tail call void @_blocktx(i32 %dest, i32 1, i32 %11, i8* %14) #7
+  br label %15
 
-if.end:                                           ; preds = %if.then, %entry
+; <label>:15                                      ; preds = %5, %0
   ret void
 }

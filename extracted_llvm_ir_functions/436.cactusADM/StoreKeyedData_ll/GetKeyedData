@@ -1,0 +1,26 @@
+define i8* @GetKeyedData(%struct.PKeyedData* readonly %storage, i32 %key) #3 {
+  %1 = icmp eq %struct.PKeyedData* %storage, null
+  br i1 %1, label %.loopexit, label %.lr.ph
+
+.lr.ph:                                           ; preds = %0, %8
+  %current.02 = phi %struct.PKeyedData* [ %10, %8 ], [ %storage, %0 ]
+  %2 = getelementptr inbounds %struct.PKeyedData* %current.02, i64 0, i32 2
+  %3 = load i32* %2, align 4, !tbaa !2
+  %4 = icmp eq i32 %3, %key
+  br i1 %4, label %5, label %8
+
+; <label>:5                                       ; preds = %.lr.ph
+  %6 = getelementptr inbounds %struct.PKeyedData* %current.02, i64 0, i32 3
+  %7 = load i8** %6, align 8, !tbaa !8
+  br label %.loopexit
+
+; <label>:8                                       ; preds = %.lr.ph
+  %9 = getelementptr inbounds %struct.PKeyedData* %current.02, i64 0, i32 1
+  %10 = load %struct.PKeyedData** %9, align 8, !tbaa !10
+  %11 = icmp eq %struct.PKeyedData* %10, null
+  br i1 %11, label %.loopexit, label %.lr.ph
+
+.loopexit:                                        ; preds = %8, %0, %5
+  %return_val.0 = phi i8* [ %7, %5 ], [ null, %0 ], [ null, %8 ]
+  ret i8* %return_val.0
+}

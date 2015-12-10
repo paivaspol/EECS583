@@ -1,16 +1,19 @@
-define internal fastcc void @pr_int(%struct._IO_FILE* nocapture %fp, i32 %indent, i8* %title, i32 %i) #0 {
-entry:
-  %cmp3.i = icmp sgt i32 %indent, 0
-  br i1 %cmp3.i, label %for.body.i, label %pr_indent.exit
+define internal fastcc void @pr_int(%struct.__sFILE* nocapture %fp, i32 %indent, i8* %title, i32 %i) #4 {
+  %1 = icmp sgt i32 %indent, 0
+  br i1 %1, label %.lr.ph.i, label %pr_indent.exit
 
-for.body.i:                                       ; preds = %entry, %for.body.i
-  %i.04.i = phi i32 [ %inc.i, %for.body.i ], [ 0, %entry ]
-  %fputc.i = tail call i32 @fputc(i32 32, %struct._IO_FILE* %fp) #3
-  %inc.i = add nsw i32 %i.04.i, 1
-  %exitcond.i = icmp eq i32 %inc.i, %indent
-  br i1 %exitcond.i, label %pr_indent.exit, label %for.body.i
+.lr.ph.i:                                         ; preds = %0
+  %2 = add i32 %indent, -1
+  br label %3
 
-pr_indent.exit:                                   ; preds = %for.body.i, %entry
-  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([12 x i8]* @.str195, i64 0, i64 0), i8* %title, i32 %i) #4
+; <label>:3                                       ; preds = %3, %.lr.ph.i
+  %i.01.i = phi i32 [ 0, %.lr.ph.i ], [ %4, %3 ]
+  %fputc.i = tail call i32 @fputc(i32 32, %struct.__sFILE* %fp) #6
+  %4 = add nuw nsw i32 %i.01.i, 1
+  %exitcond.i = icmp eq i32 %i.01.i, %2
+  br i1 %exitcond.i, label %pr_indent.exit, label %3
+
+pr_indent.exit:                                   ; preds = %3, %0
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([12 x i8]* @.str166, i64 0, i64 0), i8* %title, i32 %i) #8
   ret void
 }

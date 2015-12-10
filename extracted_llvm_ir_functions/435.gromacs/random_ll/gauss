@@ -1,23 +1,22 @@
-define float @gauss(float %am, float %sd, i32* %ig) #0 {
-entry:
-  br label %for.body
+define float @gauss(float %am, float %sd, i32* %ig) #3 {
+  br label %1
 
-for.body:                                         ; preds = %for.body, %entry
-  %a.07 = phi float [ 0.000000e+00, %entry ], [ %add, %for.body ]
-  %i.06 = phi i32 [ 0, %entry ], [ %inc, %for.body ]
-  %call = tail call float @rando(i32* %ig) #4
-  %add = fadd float %a.07, %call
-  %inc = add nsw i32 %i.06, 1
-  %exitcond = icmp eq i32 %inc, 12
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:1                                       ; preds = %1, %0
+  %a.02 = phi float [ 0.000000e+00, %0 ], [ %3, %1 ]
+  %i.01 = phi i32 [ 0, %0 ], [ %4, %1 ]
+  %2 = tail call float @rando(i32* %ig) #6
+  %3 = fadd float %a.02, %2
+  %4 = add nuw nsw i32 %i.01, 1
+  %exitcond = icmp eq i32 %4, 12
+  br i1 %exitcond, label %5, label %1
 
-for.end:                                          ; preds = %for.body
-  %conv = fpext float %add to double
-  %sub = fadd double %conv, -6.000000e+00
-  %conv1 = fpext float %sd to double
-  %mul = fmul double %conv1, %sub
-  %conv2 = fpext float %am to double
-  %add3 = fadd double %conv2, %mul
-  %conv4 = fptrunc double %add3 to float
-  ret float %conv4
+; <label>:5                                       ; preds = %1
+  %6 = fpext float %3 to double
+  %7 = fadd double %6, -6.000000e+00
+  %8 = fpext float %sd to double
+  %9 = fmul double %8, %7
+  %10 = fpext float %am to double
+  %11 = fadd double %10, %9
+  %12 = fptrunc double %11 to float
+  ret float %12
 }

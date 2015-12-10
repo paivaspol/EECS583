@@ -1,47 +1,45 @@
-define float @calc_dx2dx(float* nocapture %xi, float* nocapture %xj, float* nocapture %box, float* nocapture %dx) #0 {
-entry:
-  br label %for.body
+define float @calc_dx2dx(float* nocapture readonly %xi, float* nocapture readonly %xj, float* nocapture readonly %box, float* nocapture %dx) #1 {
+  br label %1
 
-for.body:                                         ; preds = %if.end21, %entry
-  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %if.end21 ]
-  %dx2.045 = phi float [ 0.000000e+00, %entry ], [ %add25, %if.end21 ]
-  %arrayidx = getelementptr inbounds float* %xj, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !0
-  %arrayidx2 = getelementptr inbounds float* %xi, i64 %indvars.iv
-  %1 = load float* %arrayidx2, align 4, !tbaa !0
-  %sub = fsub float %0, %1
-  %conv = fpext float %sub to double
-  %arrayidx4 = getelementptr inbounds float* %box, i64 %indvars.iv
-  %2 = load float* %arrayidx4, align 4, !tbaa !0
-  %conv5 = fpext float %2 to double
-  %mul = fmul double %conv5, -5.000000e-01
-  %cmp6 = fcmp olt double %conv, %mul
-  br i1 %cmp6, label %if.then, label %if.else
+; <label>:1                                       ; preds = %20, %0
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %20 ]
+  %dx2.02 = phi float [ 0.000000e+00, %0 ], [ %23, %20 ]
+  %2 = getelementptr inbounds float* %xj, i64 %indvars.iv
+  %3 = load float* %2, align 4, !tbaa !2
+  %4 = getelementptr inbounds float* %xi, i64 %indvars.iv
+  %5 = load float* %4, align 4, !tbaa !2
+  %6 = fsub float %3, %5
+  %7 = fpext float %6 to double
+  %8 = getelementptr inbounds float* %box, i64 %indvars.iv
+  %9 = load float* %8, align 4, !tbaa !2
+  %10 = fpext float %9 to double
+  %11 = fmul double %10, -5.000000e-01
+  %12 = fcmp olt double %7, %11
+  br i1 %12, label %13, label %15
 
-if.then:                                          ; preds = %for.body
-  %add = fadd float %sub, %2
-  br label %if.end21
+; <label>:13                                      ; preds = %1
+  %14 = fadd float %6, %9
+  br label %20
 
-if.else:                                          ; preds = %for.body
-  %mul14 = fmul double %conv5, 5.000000e-01
-  %cmp15 = fcmp ult double %conv, %mul14
-  br i1 %cmp15, label %if.end21, label %if.then17
+; <label>:15                                      ; preds = %1
+  %16 = fmul double %10, 5.000000e-01
+  %17 = fcmp ult double %7, %16
+  br i1 %17, label %20, label %18
 
-if.then17:                                        ; preds = %if.else
-  %sub20 = fsub float %sub, %2
-  br label %if.end21
+; <label>:18                                      ; preds = %15
+  %19 = fsub float %6, %9
+  br label %20
 
-if.end21:                                         ; preds = %if.else, %if.then17, %if.then
-  %ddx.0 = phi float [ %add, %if.then ], [ %sub20, %if.then17 ], [ %sub, %if.else ]
-  %arrayidx23 = getelementptr inbounds float* %dx, i64 %indvars.iv
-  store float %ddx.0, float* %arrayidx23, align 4, !tbaa !0
-  %mul24 = fmul float %ddx.0, %ddx.0
-  %add25 = fadd float %dx2.045, %mul24
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:20                                      ; preds = %15, %18, %13
+  %ddx.0 = phi float [ %14, %13 ], [ %19, %18 ], [ %6, %15 ]
+  %21 = getelementptr inbounds float* %dx, i64 %indvars.iv
+  store float %ddx.0, float* %21, align 4, !tbaa !2
+  %22 = fmul float %ddx.0, %ddx.0
+  %23 = fadd float %dx2.02, %22
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 3
+  br i1 %exitcond, label %24, label %1
 
-for.end:                                          ; preds = %if.end21
-  ret float %add25
+; <label>:24                                      ; preds = %20
+  ret float %23
 }

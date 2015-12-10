@@ -1,10 +1,9 @@
-define i32 @Util_snprintf(i8* %str, i64 %count, i8* nocapture %fmt, ...) #0 {
-entry:
+define i32 @Util_snprintf(i8* %str, i64 %count, i8* readonly %fmt, ...) #0 {
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  %call = call i32 @Util_vsnprintf(i8* %str, i64 %count, i8* %fmt, %struct.__va_list_tag* %arraydecay) #5
-  call void @llvm.va_end(i8* %arraydecay1)
-  ret i32 %call
+  %1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
+  %2 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %2)
+  %3 = call i32 @Util_vsnprintf(i8* %str, i64 %count, i8* %fmt, %struct.__va_list_tag* %1) #3
+  call void @llvm.va_end(i8* %2)
+  ret i32 %3
 }

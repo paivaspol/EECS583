@@ -1,33 +1,28 @@
-define internal fastcc void @set_extension(i8* %buf, i32 %ftp) #0 {
-entry:
-  %idxprom = sext i32 %ftp to i64
-  %call = tail call i64 @strlen(i8* %buf) #7
-  %conv = trunc i64 %call to i32
-  %ext = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %idxprom, i32 1
-  %0 = load i8** %ext, align 8, !tbaa !0
-  %call1 = tail call i64 @strlen(i8* %0) #7
-  %conv2 = trunc i64 %call1 to i32
-  %cmp = icmp sgt i32 %conv, %conv2
-  br i1 %cmp, label %lor.lhs.false, label %if.then
+define internal fastcc void @set_extension(i8* %buf, i32 %ftp) #3 {
+  %1 = sext i32 %ftp to i64
+  %2 = tail call i64 @strlen(i8* %buf) #9
+  %3 = trunc i64 %2 to i32
+  %4 = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %1, i32 1
+  %5 = load i8** %4, align 8, !tbaa !17
+  %6 = tail call i64 @strlen(i8* %5) #9
+  %7 = trunc i64 %6 to i32
+  %8 = icmp sgt i32 %3, %7
+  br i1 %8, label %9, label %15
 
-lor.lhs.false:                                    ; preds = %entry
-  %sub = sub i64 %call, %call1
-  %sext = shl i64 %sub, 32
-  %idxprom4 = ashr exact i64 %sext, 32
-  %arrayidx5 = getelementptr inbounds i8* %buf, i64 %idxprom4
-  %call7 = tail call i32 @gmx_strcasecmp(i8* %arrayidx5, i8* %0) #6
-  %cmp8 = icmp eq i32 %call7, 0
-  br i1 %cmp8, label %if.end, label %lor.lhs.false.if.then_crit_edge
+; <label>:9                                       ; preds = %0
+  %10 = sub i64 %2, %6
+  %sext = shl i64 %10, 32
+  %11 = ashr exact i64 %sext, 32
+  %12 = getelementptr inbounds i8* %buf, i64 %11
+  %13 = tail call i32 @strcasecmp(i8* %12, i8* %5) #9
+  %14 = icmp eq i32 %13, 0
+  br i1 %14, label %18, label %15
 
-lor.lhs.false.if.then_crit_edge:                  ; preds = %lor.lhs.false
-  %.pre = load i8** %ext, align 8, !tbaa !0
-  br label %if.then
+; <label>:15                                      ; preds = %9, %0
+  %16 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %buf, i1 false)
+  %17 = tail call i8* @__strcat_chk(i8* %buf, i8* %5, i64 %16) #9
+  br label %18
 
-if.then:                                          ; preds = %lor.lhs.false.if.then_crit_edge, %entry
-  %1 = phi i8* [ %.pre, %lor.lhs.false.if.then_crit_edge ], [ %0, %entry ]
-  %call11 = tail call i8* @strcat(i8* %buf, i8* %1) #6
-  br label %if.end
-
-if.end:                                           ; preds = %lor.lhs.false, %if.then
+; <label>:18                                      ; preds = %9, %15
   ret void
 }

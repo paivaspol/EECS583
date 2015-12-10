@@ -1,15 +1,14 @@
-define i32 @do_per_step(i32 %step, i32 %nstep) #3 {
-entry:
-  %cmp = icmp eq i32 %nstep, 0
-  br i1 %cmp, label %return, label %if.then
+define i32 @do_per_step(i32 %step, i32 %nstep) #6 {
+  %1 = icmp eq i32 %nstep, 0
+  br i1 %1, label %6, label %2
 
-if.then:                                          ; preds = %entry
-  %rem = srem i32 %step, %nstep
-  %cmp1 = icmp eq i32 %rem, 0
-  %conv = zext i1 %cmp1 to i32
-  br label %return
+; <label>:2                                       ; preds = %0
+  %3 = srem i32 %step, %nstep
+  %4 = icmp eq i32 %3, 0
+  %5 = zext i1 %4 to i32
+  br label %6
 
-return:                                           ; preds = %entry, %if.then
-  %retval.0 = phi i32 [ %conv, %if.then ], [ 0, %entry ]
-  ret i32 %retval.0
+; <label>:6                                       ; preds = %0, %2
+  %.0 = phi i32 [ %5, %2 ], [ 0, %0 ]
+  ret i32 %.0
 }

@@ -1,0 +1,119 @@
+define i32 @CartApplySym2Di(%struct.cGH* nocapture readonly %GH, i32* nocapture readonly %doSym, i32* nocapture readonly %cntstag, i32* nocapture readonly %lssh, i32* nocapture readonly %ghostz, i32* nocapture readonly %sym, double* nocapture %var) #1 {
+  %1 = load i32* %doSym, align 4, !tbaa !2
+  %2 = icmp eq i32 %1, 1
+  br i1 %2, label %.preheader4, label %.loopexit5
+
+.preheader4:                                      ; preds = %0
+  %3 = getelementptr inbounds i32* %lssh, i64 1
+  %4 = load i32* %3, align 4, !tbaa !2
+  %5 = icmp sgt i32 %4, 0
+  br i1 %5, label %.preheader3.lr.ph, label %.loopexit5
+
+.preheader3.lr.ph:                                ; preds = %.preheader4
+  %6 = load i32* %ghostz, align 4, !tbaa !2
+  %7 = icmp sgt i32 %6, 0
+  %8 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 3
+  br label %.preheader3
+
+.preheader3:                                      ; preds = %.preheader3.lr.ph, %._crit_edge11
+  %j.012 = phi i32 [ 0, %.preheader3.lr.ph ], [ %30, %._crit_edge11 ]
+  br i1 %7, label %.lr.ph10, label %._crit_edge11
+
+.lr.ph10:                                         ; preds = %.preheader3
+  %9 = load i32* %sym, align 4, !tbaa !2
+  %10 = sitofp i32 %9 to double
+  %11 = load i32* %cntstag, align 4, !tbaa !2
+  %12 = load i32** %8, align 8, !tbaa !6
+  %13 = load i32* %12, align 4, !tbaa !2
+  %14 = mul nsw i32 %13, %j.012
+  %15 = sext i32 %14 to i64
+  %16 = sext i32 %6 to i64
+  br label %17
+
+; <label>:17                                      ; preds = %.lr.ph10, %17
+  %indvars.iv15 = phi i64 [ 0, %.lr.ph10 ], [ %indvars.iv.next16, %17 ]
+  %18 = shl nsw i32 %6, 1
+  %19 = trunc i64 %indvars.iv15 to i32
+  %20 = sub i32 %18, %19
+  %21 = sub i32 %20, %11
+  %22 = add i32 %21, %14
+  %23 = sext i32 %22 to i64
+  %24 = getelementptr inbounds double* %var, i64 %23
+  %25 = load double* %24, align 8, !tbaa !10
+  %26 = fmul double %10, %25
+  %27 = add nsw i64 %15, %indvars.iv15
+  %28 = getelementptr inbounds double* %var, i64 %27
+  store double %26, double* %28, align 8, !tbaa !10
+  %indvars.iv.next16 = add nuw nsw i64 %indvars.iv15, 1
+  %29 = icmp slt i64 %indvars.iv.next16, %16
+  br i1 %29, label %17, label %._crit_edge11
+
+._crit_edge11:                                    ; preds = %17, %.preheader3
+  %30 = add nuw nsw i32 %j.012, 1
+  %31 = icmp slt i32 %30, %4
+  br i1 %31, label %.preheader3, label %.loopexit5
+
+.loopexit5:                                       ; preds = %._crit_edge11, %.preheader4, %0
+  %32 = getelementptr inbounds i32* %doSym, i64 2
+  %33 = load i32* %32, align 4, !tbaa !2
+  %34 = icmp eq i32 %33, 1
+  br i1 %34, label %.preheader2, label %.loopexit
+
+.preheader2:                                      ; preds = %.loopexit5
+  %35 = load i32* %lssh, align 4, !tbaa !2
+  %36 = icmp sgt i32 %35, 0
+  br i1 %36, label %.preheader.lr.ph, label %.loopexit
+
+.preheader.lr.ph:                                 ; preds = %.preheader2
+  %37 = getelementptr inbounds i32* %ghostz, i64 1
+  %38 = load i32* %37, align 4, !tbaa !2
+  %39 = icmp sgt i32 %38, 0
+  %40 = getelementptr inbounds i32* %sym, i64 2
+  %41 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 3
+  %42 = getelementptr inbounds i32* %cntstag, i64 1
+  %43 = sext i32 %35 to i64
+  br label %.preheader
+
+.preheader:                                       ; preds = %.preheader.lr.ph, %._crit_edge
+  %indvars.iv13 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next14, %._crit_edge ]
+  br i1 %39, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %.preheader
+  %44 = load i32* %40, align 4, !tbaa !2
+  %45 = sitofp i32 %44 to double
+  %46 = load i32** %41, align 8, !tbaa !6
+  %47 = load i32* %46, align 4, !tbaa !2
+  %48 = load i32* %42, align 4, !tbaa !2
+  %49 = sext i32 %47 to i64
+  %50 = sext i32 %38 to i64
+  br label %51
+
+; <label>:51                                      ; preds = %.lr.ph, %51
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %51 ]
+  %52 = shl nsw i32 %38, 1
+  %53 = trunc i64 %indvars.iv to i32
+  %54 = sub i32 %52, %53
+  %55 = sub i32 %54, %48
+  %56 = mul nsw i32 %55, %47
+  %57 = trunc i64 %indvars.iv13 to i32
+  %58 = add nsw i32 %56, %57
+  %59 = sext i32 %58 to i64
+  %60 = getelementptr inbounds double* %var, i64 %59
+  %61 = load double* %60, align 8, !tbaa !10
+  %62 = fmul double %45, %61
+  %63 = mul nsw i64 %49, %indvars.iv
+  %64 = add nsw i64 %63, %indvars.iv13
+  %65 = getelementptr inbounds double* %var, i64 %64
+  store double %62, double* %65, align 8, !tbaa !10
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %66 = icmp slt i64 %indvars.iv.next, %50
+  br i1 %66, label %51, label %._crit_edge
+
+._crit_edge:                                      ; preds = %51, %.preheader
+  %indvars.iv.next14 = add nuw nsw i64 %indvars.iv13, 1
+  %67 = icmp slt i64 %indvars.iv.next14, %43
+  br i1 %67, label %.preheader, label %.loopexit
+
+.loopexit:                                        ; preds = %._crit_edge, %.preheader2, %.loopexit5
+  ret i32 0
+}

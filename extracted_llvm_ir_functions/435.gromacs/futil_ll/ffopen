@@ -1,64 +1,63 @@
-define %struct._IO_FILE* @ffopen(i8* %file, i8* nocapture %mode) #0 {
-entry:
+define %struct.__sFILE* @ffopen(i8* %file, i8* %mode) #1 {
   %buf = alloca [256 x i8], align 16
-  %0 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %0) #4
-  %1 = load i8* %mode, align 1, !tbaa !1
-  %call = call i8* @strcpy(i8* %0, i8* %file) #6
-  %call3 = call i32 @fexist(i8* %0) #8
-  %tobool = icmp eq i32 %call3, 0
-  %cmp = icmp eq i8 %1, 114
-  %or.cond = and i1 %tobool, %cmp
-  br i1 %or.cond, label %if.else33, label %if.then
+  %1 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %1) #5
+  %2 = load i8* %mode, align 1, !tbaa !9
+  %3 = icmp eq i8 %2, 114
+  %4 = call i8* @__strcpy_chk(i8* %1, i8* %file, i64 256) #8
+  %5 = call i32 @fexist(i8* %1) #9
+  %6 = icmp eq i32 %5, 0
+  %or.cond = and i1 %3, %6
+  br i1 %or.cond, label %14, label %7
 
-if.then:                                          ; preds = %entry
-  %call6 = call %struct._IO_FILE* @fopen(i8* %0, i8* %mode) #6
-  %cmp7 = icmp eq %struct._IO_FILE* %call6, null
-  br i1 %cmp7, label %if.then9, label %if.end
+; <label>:7                                       ; preds = %0
+  %8 = call %struct.__sFILE* @"\01_fopen"(i8* %1, i8* %mode) #8
+  %9 = icmp eq %struct.__sFILE* %8, null
+  br i1 %9, label %10, label %11
 
-if.then9:                                         ; preds = %if.then
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([18 x i8]* @.str6, i64 0, i64 0), i8* %0) #6
-  br label %if.end
+; <label>:10                                      ; preds = %7
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([18 x i8]* @.str6, i64 0, i64 0), i8* %1) #8
+  br label %11
 
-if.end:                                           ; preds = %if.then9, %if.then
-  call void @_where(i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 297) #6
-  %.b66 = load i1* @bUnbuffered, align 1
-  br i1 %.b66, label %if.then22, label %if.end32
+; <label>:11                                      ; preds = %10, %7
+  call void @_where(i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 297) #8
+  %.b = load i1* @bUnbuffered, align 1
+  br i1 %.b, label %12, label %13
 
-if.then22:                                        ; preds = %if.end
-  call void @setbuf(%struct._IO_FILE* %call6, i8* null) #6
-  br label %if.end32
+; <label>:12                                      ; preds = %11
+  call void @setbuf(%struct.__sFILE* %8, i8* null) #8
+  br label %13
 
-if.end32:                                         ; preds = %if.end, %if.then22
-  call void @_where(i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 320) #6
-  br label %if.end54
+; <label>:13                                      ; preds = %12, %11
+  call void @_where(i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 320) #8
+  br label %27
 
-if.else33:                                        ; preds = %entry
-  %call35 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([5 x i8]* @.str16, i64 0, i64 0), i8* %file) #6
-  %call37 = call i32 @fexist(i8* %0) #8
-  %tobool38 = icmp eq i32 %call37, 0
-  br i1 %tobool38, label %if.else42, label %if.then39
+; <label>:14                                      ; preds = %0
+  %15 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 256, i8* getelementptr inbounds ([5 x i8]* @.str16, i64 0, i64 0), i8* %file) #8
+  %16 = call i32 @fexist(i8* %1) #9
+  %17 = icmp eq i32 %16, 0
+  br i1 %17, label %20, label %18
 
-if.then39:                                        ; preds = %if.else33
-  %call41 = call %struct._IO_FILE* @uncompress(i8* %0, i8* %mode) #8
-  br label %if.end54
+; <label>:18                                      ; preds = %14
+  %19 = call %struct.__sFILE* @uncompress(i8* %1, i8* %mode) #9
+  br label %27
 
-if.else42:                                        ; preds = %if.else33
-  %call44 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([6 x i8]* @.str17, i64 0, i64 0), i8* %file) #6
-  %call46 = call i32 @fexist(i8* %0) #8
-  %tobool47 = icmp eq i32 %call46, 0
-  br i1 %tobool47, label %if.else51, label %if.then48
+; <label>:20                                      ; preds = %14
+  %21 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 256, i8* getelementptr inbounds ([6 x i8]* @.str17, i64 0, i64 0), i8* %file) #8
+  %22 = call i32 @fexist(i8* %1) #9
+  %23 = icmp eq i32 %22, 0
+  br i1 %23, label %26, label %24
 
-if.then48:                                        ; preds = %if.else42
-  %call50 = call %struct._IO_FILE* @gunzip(i8* %0, i8* %mode) #8
-  br label %if.end54
+; <label>:24                                      ; preds = %20
+  %25 = call %struct.__sFILE* @gunzip(i8* %1, i8* %mode) #9
+  br label %27
 
-if.else51:                                        ; preds = %if.else42
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([18 x i8]* @.str18, i64 0, i64 0), i8* %file) #6
-  br label %if.end54
+; <label>:26                                      ; preds = %20
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([18 x i8]* @.str18, i64 0, i64 0), i8* %file) #8
+  br label %27
 
-if.end54:                                         ; preds = %if.then39, %if.else51, %if.then48, %if.end32
-  %ff.0 = phi %struct._IO_FILE* [ %call6, %if.end32 ], [ %call41, %if.then39 ], [ %call50, %if.then48 ], [ null, %if.else51 ]
-  call void @llvm.lifetime.end(i64 256, i8* %0) #4
-  ret %struct._IO_FILE* %ff.0
+; <label>:27                                      ; preds = %18, %26, %24, %13
+  %ff.0 = phi %struct.__sFILE* [ %19, %18 ], [ %25, %24 ], [ null, %26 ], [ %8, %13 ]
+  call void @llvm.lifetime.end(i64 256, i8* %1) #5
+  ret %struct.__sFILE* %ff.0
 }

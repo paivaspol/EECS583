@@ -1,0 +1,42 @@
+define internal fastcc void @close_nblist(%struct.t_nblist* nocapture %nlist) #3 {
+  %1 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 2
+  %2 = load i32* %1, align 4, !tbaa !35
+  %3 = icmp sgt i32 %2, 0
+  br i1 %3, label %4, label %29
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 1
+  %6 = load i32* %5, align 4, !tbaa !18
+  %7 = add nsw i32 %6, 1
+  %8 = sext i32 %7 to i64
+  %9 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 10
+  %10 = load i32** %9, align 8, !tbaa !41
+  %11 = getelementptr inbounds i32* %10, i64 %8
+  %12 = load i32* %11, align 4, !tbaa !17
+  %13 = sext i32 %6 to i64
+  %14 = getelementptr inbounds i32* %10, i64 %13
+  %15 = load i32* %14, align 4, !tbaa !17
+  %16 = icmp sgt i32 %12, %15
+  br i1 %16, label %17, label %29
+
+; <label>:17                                      ; preds = %4
+  %18 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 8
+  %19 = load i32** %18, align 8, !tbaa !42
+  %20 = getelementptr inbounds i32* %19, i64 %13
+  %21 = load i32* %20, align 4, !tbaa !17
+  %22 = icmp eq i32 %21, -1
+  br i1 %22, label %29, label %23
+
+; <label>:23                                      ; preds = %17
+  store i32 %7, i32* %5, align 4, !tbaa !18
+  %24 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 3
+  %25 = load i32* %24, align 4, !tbaa !38
+  %26 = add nsw i32 %6, 2
+  %27 = sext i32 %26 to i64
+  %28 = getelementptr inbounds i32* %10, i64 %27
+  store i32 %25, i32* %28, align 4, !tbaa !17
+  br label %29
+
+; <label>:29                                      ; preds = %17, %4, %23, %0
+  ret void
+}

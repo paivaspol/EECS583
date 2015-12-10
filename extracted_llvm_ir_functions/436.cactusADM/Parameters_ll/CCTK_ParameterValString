@@ -1,0 +1,65 @@
+define noalias i8* @CCTK_ParameterValString(i8* %param_name, i8* %thorn) #1 {
+  %buffer = alloca [80 x i8], align 16
+  %1 = getelementptr inbounds [80 x i8]* %buffer, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 80, i8* %1) #2
+  %2 = tail call fastcc %struct.PARAM* @ParameterFind(i8* %param_name, i8* %thorn, i32 5) #8
+  %3 = icmp eq %struct.PARAM* %2, null
+  br i1 %3, label %CCTK_ParameterGet.exit.thread, label %CCTK_ParameterGet.exit
+
+CCTK_ParameterGet.exit:                           ; preds = %0
+  %4 = getelementptr inbounds %struct.PARAM* %2, i64 0, i32 0
+  %5 = load %struct.PARAM_PROPS** %4, align 8, !tbaa !2
+  %6 = getelementptr inbounds %struct.PARAM_PROPS* %5, i64 0, i32 5
+  %7 = load i32* %6, align 4, !tbaa !14
+  %8 = getelementptr inbounds %struct.PARAM* %2, i64 0, i32 1
+  %9 = load i8** %8, align 8, !tbaa !18
+  %10 = icmp eq i8* %9, null
+  br i1 %10, label %CCTK_ParameterGet.exit.thread, label %11
+
+; <label>:11                                      ; preds = %CCTK_ParameterGet.exit
+  switch i32 %7, label %32 [
+    i32 1, label %12
+    i32 2, label %12
+    i32 3, label %12
+    i32 6, label %16
+    i32 4, label %22
+    i32 5, label %27
+  ]
+
+; <label>:12                                      ; preds = %11, %11, %11
+  %13 = bitcast i8* %9 to i8**
+  %14 = load i8** %13, align 8, !tbaa !19
+  %15 = tail call i8* @strdup(i8* %14) #8
+  br label %CCTK_ParameterGet.exit.thread
+
+; <label>:16                                      ; preds = %11
+  %17 = bitcast i8* %9 to i32*
+  %18 = load i32* %17, align 4, !tbaa !35
+  %19 = icmp ne i32 %18, 0
+  %20 = select i1 %19, i8* getelementptr inbounds ([4 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0)
+  %21 = tail call i8* @strdup(i8* %20) #8
+  br label %CCTK_ParameterGet.exit.thread
+
+; <label>:22                                      ; preds = %11
+  %23 = bitcast i8* %9 to i32*
+  %24 = load i32* %23, align 4, !tbaa !35
+  %25 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 80, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0), i32 %24) #8
+  %26 = call i8* @strdup(i8* %1) #8
+  br label %CCTK_ParameterGet.exit.thread
+
+; <label>:27                                      ; preds = %11
+  %28 = bitcast i8* %9 to double*
+  %29 = load double* %28, align 8, !tbaa !37
+  %30 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 80, i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), double %29) #8
+  %31 = call i8* @strdup(i8* %1) #8
+  br label %CCTK_ParameterGet.exit.thread
+
+; <label>:32                                      ; preds = %11
+  %33 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 3, i32 588, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str8, i64 0, i64 0), i32 %7, i8* %thorn, i8* %param_name) #8
+  br label %CCTK_ParameterGet.exit.thread
+
+CCTK_ParameterGet.exit.thread:                    ; preds = %0, %CCTK_ParameterGet.exit, %12, %16, %22, %27, %32
+  %retval.0 = phi i8* [ null, %32 ], [ %31, %27 ], [ %26, %22 ], [ %21, %16 ], [ %15, %12 ], [ null, %CCTK_ParameterGet.exit ], [ null, %0 ]
+  call void @llvm.lifetime.end(i64 80, i8* %1) #2
+  ret i8* %retval.0
+}

@@ -1,0 +1,21 @@
+define i32 @Util_HashHash(i32 %klen, i8* nocapture readonly %key) #3 {
+  %1 = icmp eq i32 %klen, 0
+  br i1 %1, label %._crit_edge, label %.lr.ph
+
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %pos.03 = phi i8* [ %4, %.lr.ph ], [ %key, %0 ]
+  %i.02 = phi i32 [ %2, %.lr.ph ], [ %klen, %0 ]
+  %hash.01 = phi i32 [ %7, %.lr.ph ], [ 0, %0 ]
+  %2 = add nsw i32 %i.02, -1
+  %3 = mul i32 %hash.01, 33
+  %4 = getelementptr inbounds i8* %pos.03, i64 1
+  %5 = load i8* %pos.03, align 1, !tbaa !16
+  %6 = sext i8 %5 to i32
+  %7 = add i32 %6, %3
+  %8 = icmp eq i32 %2, 0
+  br i1 %8, label %._crit_edge, label %.lr.ph
+
+._crit_edge:                                      ; preds = %.lr.ph, %0
+  %hash.0.lcssa = phi i32 [ 0, %0 ], [ %7, %.lr.ph ]
+  ret i32 %hash.0.lcssa
+}

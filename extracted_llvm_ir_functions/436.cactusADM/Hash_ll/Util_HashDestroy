@@ -1,0 +1,61 @@
+define i32 @Util_HashDestroy(%struct.T_HASH* nocapture readonly %hash, void (i8*)* %delete_entry) #1 {
+  %1 = getelementptr inbounds %struct.T_HASH* %hash, i64 0, i32 0
+  %2 = load i32* %1, align 4, !tbaa !2
+  %3 = getelementptr inbounds %struct.T_HASH* %hash, i64 0, i32 3
+  %4 = load %struct.T_HASH_ENTRY*** %3, align 8, !tbaa !10
+  %5 = icmp eq i32 %2, 0
+  br i1 %5, label %._crit_edge6, label %.lr.ph4
+
+._crit_edge6:                                     ; preds = %0
+  %6 = bitcast %struct.T_HASH_ENTRY** %4 to i8*
+  br label %23
+
+.lr.ph4:                                          ; preds = %0
+  %7 = icmp eq void (i8*)* %delete_entry, null
+  %8 = add i32 %2, -1
+  br label %9
+
+; <label>:9                                       ; preds = %._crit_edge, %.lr.ph4
+  %indvars.iv = phi i64 [ 0, %.lr.ph4 ], [ %indvars.iv.next, %._crit_edge ]
+  %10 = getelementptr inbounds %struct.T_HASH_ENTRY** %4, i64 %indvars.iv
+  %11 = load %struct.T_HASH_ENTRY** %10, align 8, !tbaa !11
+  %12 = icmp eq %struct.T_HASH_ENTRY* %11, null
+  br i1 %12, label %._crit_edge, label %.lr.ph
+
+.lr.ph:                                           ; preds = %9, %20
+  %entry.01 = phi %struct.T_HASH_ENTRY* [ %14, %20 ], [ %11, %9 ]
+  %13 = getelementptr inbounds %struct.T_HASH_ENTRY* %entry.01, i64 0, i32 1
+  %14 = load %struct.T_HASH_ENTRY** %13, align 8, !tbaa !12
+  %15 = getelementptr inbounds %struct.T_HASH_ENTRY* %entry.01, i64 0, i32 4
+  %16 = load i8** %15, align 8, !tbaa !14
+  tail call void @free(i8* %16) #6
+  br i1 %7, label %20, label %17
+
+; <label>:17                                      ; preds = %.lr.ph
+  %18 = getelementptr inbounds %struct.T_HASH_ENTRY* %entry.01, i64 0, i32 5
+  %19 = load i8** %18, align 8, !tbaa !15
+  tail call void %delete_entry(i8* %19) #5
+  br label %20
+
+; <label>:20                                      ; preds = %.lr.ph, %17
+  %21 = bitcast %struct.T_HASH_ENTRY* %entry.01 to i8*
+  tail call void @free(i8* %21) #6
+  %22 = icmp eq %struct.T_HASH_ENTRY* %14, null
+  br i1 %22, label %._crit_edge, label %.lr.ph
+
+._crit_edge:                                      ; preds = %20, %9
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %8
+  br i1 %exitcond, label %._crit_edge5, label %9
+
+._crit_edge5:                                     ; preds = %._crit_edge
+  %.phi.trans.insert = bitcast %struct.T_HASH_ENTRY*** %3 to i8**
+  %.pre = load i8** %.phi.trans.insert, align 8, !tbaa !10
+  br label %23
+
+; <label>:23                                      ; preds = %._crit_edge6, %._crit_edge5
+  %24 = phi i8* [ %6, %._crit_edge6 ], [ %.pre, %._crit_edge5 ]
+  tail call void @free(i8* %24) #6
+  ret i32 0
+}

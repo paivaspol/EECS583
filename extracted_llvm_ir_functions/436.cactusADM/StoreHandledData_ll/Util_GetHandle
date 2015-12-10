@@ -1,0 +1,58 @@
+define i32 @Util_GetHandle(%struct.cHandledData* readonly %storage, i8* nocapture readonly %name, i8** %data) #1 {
+  %1 = icmp ne i8** %data, null
+  br i1 %1, label %2, label %3
+
+; <label>:2                                       ; preds = %0
+  store i8* null, i8** %data, align 8, !tbaa !2
+  br label %3
+
+; <label>:3                                       ; preds = %2, %0
+  %4 = icmp eq %struct.cHandledData* %storage, null
+  br i1 %4, label %.loopexit, label %.preheader
+
+.preheader:                                       ; preds = %3
+  %5 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 1
+  %6 = load i32* %5, align 4, !tbaa !9
+  %7 = icmp eq i32 %6, 0
+  br i1 %7, label %.loopexit, label %.lr.ph
+
+.lr.ph:                                           ; preds = %.preheader
+  %8 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 0
+  %9 = load %struct.cHandleStorage** %8, align 8, !tbaa !6
+  br label %10
+
+; <label>:10                                      ; preds = %.lr.ph, %26
+  %current.03 = phi i32 [ 0, %.lr.ph ], [ %27, %26 ]
+  %11 = zext i32 %current.03 to i64
+  %12 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %11, i32 0
+  %13 = load i32* %12, align 4, !tbaa !11
+  %14 = icmp eq i32 %13, 1
+  br i1 %14, label %15, label %26
+
+; <label>:15                                      ; preds = %10
+  %16 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %11, i32 1
+  %17 = load i8** %16, align 8, !tbaa !14
+  %18 = tail call i32 @strcmp(i8* %name, i8* %17) #6
+  %19 = icmp eq i32 %18, 0
+  br i1 %19, label %20, label %26
+
+; <label>:20                                      ; preds = %15
+  br i1 %1, label %21, label %.loopexit
+
+; <label>:21                                      ; preds = %20
+  %22 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %11, i32 2
+  %23 = bitcast i8** %22 to i64*
+  %24 = load i64* %23, align 8, !tbaa !13
+  %25 = bitcast i8** %data to i64*
+  store i64 %24, i64* %25, align 8, !tbaa !2
+  br label %.loopexit
+
+; <label>:26                                      ; preds = %15, %10
+  %27 = add nuw i32 %current.03, 1
+  %28 = icmp ult i32 %27, %6
+  br i1 %28, label %10, label %.loopexit
+
+.loopexit:                                        ; preds = %26, %.preheader, %3, %21, %20
+  %handle.0 = phi i32 [ %current.03, %21 ], [ %current.03, %20 ], [ -2, %3 ], [ -1, %.preheader ], [ -1, %26 ]
+  ret i32 %handle.0
+}

@@ -1,0 +1,34 @@
+define %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* readonly %root, i8* readonly %key) #1 {
+  %1 = icmp eq %struct.T_SKTREE* %root, null
+  br i1 %1, label %tailrecurse._crit_edge, label %.lr.ph
+
+.lr.ph:                                           ; preds = %0, %tailrecurse.backedge
+  %root.tr1 = phi %struct.T_SKTREE* [ %root.tr.be, %tailrecurse.backedge ], [ %root, %0 ]
+  %2 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 4
+  %3 = load i8** %2, align 8, !tbaa !7
+  %4 = tail call i32 @STR_cmpi(i8* %key, i8* %3) #9
+  %5 = icmp slt i32 %4, 0
+  br i1 %5, label %6, label %8
+
+; <label>:6                                       ; preds = %.lr.ph
+  %7 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 0
+  br label %tailrecurse.backedge
+
+; <label>:8                                       ; preds = %.lr.ph
+  %9 = icmp sgt i32 %4, 0
+  br i1 %9, label %10, label %tailrecurse._crit_edge
+
+; <label>:10                                      ; preds = %8
+  %11 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 1
+  br label %tailrecurse.backedge
+
+tailrecurse.backedge:                             ; preds = %10, %6
+  %root.tr.be.in = phi %struct.T_SKTREE** [ %11, %10 ], [ %7, %6 ]
+  %root.tr.be = load %struct.T_SKTREE** %root.tr.be.in, align 8
+  %12 = icmp eq %struct.T_SKTREE* %root.tr.be, null
+  br i1 %12, label %tailrecurse._crit_edge, label %.lr.ph
+
+tailrecurse._crit_edge:                           ; preds = %8, %tailrecurse.backedge, %0
+  %node.0 = phi %struct.T_SKTREE* [ null, %0 ], [ %root.tr1, %8 ], [ null, %tailrecurse.backedge ]
+  ret %struct.T_SKTREE* %node.0
+}

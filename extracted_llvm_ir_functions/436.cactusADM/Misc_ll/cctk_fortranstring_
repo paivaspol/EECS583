@@ -1,0 +1,27 @@
+define void @cctk_fortranstring_(i32* nocapture %nchars, i8** nocapture readonly %c_string, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
+  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8
+  %2 = load i8** %c_string, align 8, !tbaa !2
+  %3 = tail call i64 @strlen(i8* %2) #7
+  %4 = trunc i64 %3 to i32
+  store i32 %4, i32* %nchars, align 4, !tbaa !12
+  %5 = zext i32 %cctk_strlen1 to i64
+  %6 = icmp ugt i64 %3, %5
+  br i1 %6, label %7, label %9
+
+; <label>:7                                       ; preds = %0
+  %8 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 1370, i8* getelementptr inbounds ([73 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([102 x i8]* @.str20, i64 0, i64 0), i8* %2) #7
+  %.pre = load i8** %c_string, align 8, !tbaa !2
+  br label %9
+
+; <label>:9                                       ; preds = %7, %0
+  %10 = phi i8* [ %.pre, %7 ], [ %2, %0 ]
+  %c_strlen.0 = phi i64 [ %5, %7 ], [ %3, %0 ]
+  %11 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %cctk_str1, i1 false)
+  %12 = tail call i8* @__memcpy_chk(i8* %cctk_str1, i8* %10, i64 %c_strlen.0, i64 %11) #7
+  %13 = getelementptr inbounds i8* %cctk_str1, i64 %c_strlen.0
+  %14 = sub i64 %5, %c_strlen.0
+  %15 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %13, i1 false)
+  %16 = tail call i8* @__memset_chk(i8* %13, i32 32, i64 %14, i64 %15) #7
+  tail call void @free(i8* %1) #8
+  ret void
+}

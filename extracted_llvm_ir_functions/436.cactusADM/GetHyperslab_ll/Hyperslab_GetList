@@ -1,0 +1,48 @@
+define i32 @Hyperslab_GetList(%struct.cGH* %GH, i32 %mapping_handle, i32 %num_arrays, i32* nocapture readonly %vindices, i32* readonly %timelevels, i32* readonly %hdatatypes, i8** nocapture readonly %hdata) #1 {
+  %1 = icmp sgt i32 %num_arrays, 0
+  br i1 %1, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %0
+  %2 = icmp eq i32* %timelevels, null
+  %3 = icmp eq i32* %hdatatypes, null
+  %4 = add i32 %num_arrays, -1
+  br label %5
+
+; <label>:5                                       ; preds = %16, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %16 ]
+  %retval.02 = phi i32 [ 0, %.lr.ph ], [ %.retval.0, %16 ]
+  %6 = getelementptr inbounds i32* %vindices, i64 %indvars.iv
+  %7 = load i32* %6, align 4, !tbaa !26
+  br i1 %2, label %11, label %8
+
+; <label>:8                                       ; preds = %5
+  %9 = getelementptr inbounds i32* %timelevels, i64 %indvars.iv
+  %10 = load i32* %9, align 4, !tbaa !26
+  br label %11
+
+; <label>:11                                      ; preds = %5, %8
+  %12 = phi i32 [ %10, %8 ], [ 0, %5 ]
+  br i1 %3, label %16, label %13
+
+; <label>:13                                      ; preds = %11
+  %14 = getelementptr inbounds i32* %hdatatypes, i64 %indvars.iv
+  %15 = load i32* %14, align 4, !tbaa !26
+  br label %16
+
+; <label>:16                                      ; preds = %11, %13
+  %17 = phi i32 [ %15, %13 ], [ -1, %11 ]
+  %18 = getelementptr inbounds i8** %hdata, i64 %indvars.iv
+  %19 = load i8** %18, align 8, !tbaa !22
+  %20 = tail call i32 @Hyperslab_Get(%struct.cGH* %GH, i32 %mapping_handle, i32 %7, i32 %12, i32 %17, i8* %19) #7
+  %21 = icmp eq i32 %20, 0
+  %22 = zext i1 %21 to i32
+  %.retval.0 = add nsw i32 %22, %retval.02
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %4
+  br i1 %exitcond, label %._crit_edge, label %5
+
+._crit_edge:                                      ; preds = %16, %0
+  %retval.0.lcssa = phi i32 [ 0, %0 ], [ %.retval.0, %16 ]
+  ret i32 %retval.0.lcssa
+}

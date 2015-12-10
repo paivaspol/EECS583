@@ -1,28 +1,27 @@
-define internal i32 @rvcomp(i8* nocapture %a, i8* nocapture %b) #2 {
-entry:
-  %0 = load i32* @nwat, align 4, !tbaa !0
-  %1 = bitcast i8* %a to i32*
-  %2 = load i32* %1, align 4, !tbaa !0
-  %mul = mul nsw i32 %2, %0
-  %3 = bitcast i8* %b to i32*
-  %4 = load i32* %3, align 4, !tbaa !0
-  %mul1 = mul nsw i32 %4, %0
-  %idxprom = sext i32 %mul to i64
-  %5 = load [3 x float]** @xptr, align 8, !tbaa !4
-  %arrayidx2 = getelementptr inbounds [3 x float]* %5, i64 %idxprom, i64 0
-  %6 = load float* %arrayidx2, align 4, !tbaa !3
-  %idxprom3 = sext i32 %mul1 to i64
-  %arrayidx5 = getelementptr inbounds [3 x float]* %5, i64 %idxprom3, i64 0
-  %7 = load float* %arrayidx5, align 4, !tbaa !3
-  %cmp = fcmp olt float %6, %7
-  br i1 %cmp, label %return, label %if.else
+define internal i32 @rvcomp(i8* nocapture readonly %a, i8* nocapture readonly %b) #5 {
+  %1 = load i32* @nwat, align 4, !tbaa !18
+  %2 = bitcast i8* %a to i32*
+  %3 = load i32* %2, align 4, !tbaa !18
+  %4 = mul nsw i32 %3, %1
+  %5 = bitcast i8* %b to i32*
+  %6 = load i32* %5, align 4, !tbaa !18
+  %7 = mul nsw i32 %6, %1
+  %8 = sext i32 %4 to i64
+  %9 = load [3 x float]** @xptr, align 8, !tbaa !19
+  %10 = getelementptr inbounds [3 x float]* %9, i64 %8, i64 0
+  %11 = load float* %10, align 4, !tbaa !14
+  %12 = sext i32 %7 to i64
+  %13 = getelementptr inbounds [3 x float]* %9, i64 %12, i64 0
+  %14 = load float* %13, align 4, !tbaa !14
+  %15 = fcmp olt float %11, %14
+  br i1 %15, label %18, label %16
 
-if.else:                                          ; preds = %entry
-  %cmp12 = fcmp ogt float %6, %7
-  %. = zext i1 %cmp12 to i32
-  br label %return
+; <label>:16                                      ; preds = %0
+  %17 = fcmp ogt float %11, %14
+  %. = zext i1 %17 to i32
+  br label %18
 
-return:                                           ; preds = %if.else, %entry
-  %retval.0 = phi i32 [ -1, %entry ], [ %., %if.else ]
-  ret i32 %retval.0
+; <label>:18                                      ; preds = %16, %0
+  %.0 = phi i32 [ -1, %0 ], [ %., %16 ]
+  ret i32 %.0
 }

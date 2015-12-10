@@ -1,0 +1,47 @@
+define internal fastcc i32 @cmpprecendence(i8* nocapture readonly %op1, i8* nocapture readonly %op2) #6 {
+  br label %5
+
+; <label>:1                                       ; preds = %19
+  %2 = getelementptr inbounds [29 x %struct.anon]* @operators, i64 0, i64 %indvars.iv.next, i32 0
+  %3 = trunc i64 %indvars.iv.next to i32
+  %4 = icmp eq i32 %3, 28
+  br i1 %4, label %22, label %5
+
+; <label>:5                                       ; preds = %0, %1
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
+  %6 = phi i8** [ getelementptr inbounds ([29 x %struct.anon]* @operators, i64 0, i64 0, i32 0), %0 ], [ %2, %1 ]
+  %op2prec.04 = phi i32 [ -1, %0 ], [ %op2prec.1, %1 ]
+  %op1prec.03 = phi i32 [ -1, %0 ], [ %op1prec.1, %1 ]
+  %7 = load i8** %6, align 8, !tbaa !19
+  %8 = tail call i32 @strcmp(i8* %7, i8* %op1) #10
+  %9 = icmp eq i32 %8, 0
+  br i1 %9, label %10, label %13
+
+; <label>:10                                      ; preds = %5
+  %11 = getelementptr inbounds [29 x %struct.anon]* @operators, i64 0, i64 %indvars.iv, i32 2
+  %12 = load i32* %11, align 4, !tbaa !27
+  br label %13
+
+; <label>:13                                      ; preds = %5, %10
+  %op1prec.1 = phi i32 [ %op1prec.03, %5 ], [ %12, %10 ]
+  %14 = tail call i32 @strcmp(i8* %7, i8* %op2) #10
+  %15 = icmp eq i32 %14, 0
+  br i1 %15, label %16, label %19
+
+; <label>:16                                      ; preds = %13
+  %17 = getelementptr inbounds [29 x %struct.anon]* @operators, i64 0, i64 %indvars.iv, i32 2
+  %18 = load i32* %17, align 4, !tbaa !27
+  br label %19
+
+; <label>:19                                      ; preds = %13, %16
+  %op2prec.1 = phi i32 [ %op2prec.04, %13 ], [ %18, %16 ]
+  %20 = icmp ne i32 %op1prec.1, -1
+  %21 = icmp ne i32 %op2prec.1, -1
+  %or.cond = and i1 %20, %21
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  br i1 %or.cond, label %22, label %1
+
+; <label>:22                                      ; preds = %1, %19
+  %23 = sub nsw i32 %op2prec.1, %op1prec.1
+  ret i32 %23
+}

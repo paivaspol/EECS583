@@ -1,0 +1,16 @@
+define i32 @CCTK_VInfo(i8* %thorn, i8* nocapture readonly %format, ...) #1 {
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
+  %2 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %2)
+  %3 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
+  %4 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0), i8* %thorn) #8
+  %5 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
+  %6 = call i32 @vfprintf(%struct.__sFILE* %5, i8* %format, %struct.__va_list_tag* %1) #8
+  %7 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
+  %fputc = call i32 @fputc(i32 10, %struct.__sFILE* %7)
+  %8 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
+  %9 = call i32 @fflush(%struct.__sFILE* %8) #8
+  call void @llvm.va_end(i8* %2)
+  ret i32 0
+}

@@ -1,0 +1,51 @@
+define i32 @strcasecmp_min(i8* nocapture readonly %str1, i8* nocapture readonly %str2) #3 {
+  br label %.critedge.outer
+
+.critedge.outer:                                  ; preds = %15, %0
+  %.03.ph = phi i8* [ %6, %15 ], [ %str2, %0 ]
+  %.02.ph = phi i8* [ %1, %15 ], [ %str1, %0 ]
+  br label %.critedge
+
+.critedge:                                        ; preds = %.critedge, %.critedge, %.critedge.outer
+  %.02 = phi i8* [ %.02.ph, %.critedge.outer ], [ %1, %.critedge ], [ %1, %.critedge ]
+  %1 = getelementptr inbounds i8* %.02, i64 1
+  %2 = load i8* %.02, align 1, !tbaa !13
+  %3 = sext i8 %2 to i32
+  %4 = tail call i32 @__toupper(i32 %3) #10
+  %sext = shl i32 %4, 24
+  %5 = ashr exact i32 %sext, 24
+  switch i32 %5, label %.critedge1 [
+    i32 45, label %.critedge
+    i32 95, label %.critedge
+  ]
+
+.critedge1:                                       ; preds = %.critedge1, %.critedge1, %.critedge
+  %.1 = phi i8* [ %.03.ph, %.critedge ], [ %6, %.critedge1 ], [ %6, %.critedge1 ]
+  %6 = getelementptr inbounds i8* %.1, i64 1
+  %7 = load i8* %.1, align 1, !tbaa !13
+  %8 = sext i8 %7 to i32
+  %9 = tail call i32 @__toupper(i32 %8) #10
+  %sext4 = shl i32 %9, 24
+  %10 = ashr exact i32 %sext4, 24
+  switch i32 %10, label %11 [
+    i32 45, label %.critedge1
+    i32 95, label %.critedge1
+  ]
+
+; <label>:11                                      ; preds = %.critedge1
+  %12 = icmp eq i32 %5, %10
+  br i1 %12, label %15, label %13
+
+; <label>:13                                      ; preds = %11
+  %14 = sub nsw i32 %5, %10
+  br label %.loopexit
+
+; <label>:15                                      ; preds = %11
+  %16 = trunc i32 %4 to i8
+  %17 = icmp eq i8 %16, 0
+  br i1 %17, label %.loopexit, label %.critedge.outer
+
+.loopexit:                                        ; preds = %15, %13
+  %.0 = phi i32 [ %14, %13 ], [ 0, %15 ]
+  ret i32 %.0
+}

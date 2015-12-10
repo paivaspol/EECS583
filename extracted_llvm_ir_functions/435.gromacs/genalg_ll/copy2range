@@ -1,59 +1,62 @@
-define internal fastcc void @copy2range(i32 %D, float* nocapture %c, %struct.t_range* nocapture %r) #0 {
-entry:
-  %cmp47 = icmp sgt i32 %D, 0
-  br i1 %cmp47, label %while.cond.preheader, label %for.end
+define internal fastcc void @copy2range(i32 %D, float* nocapture %c, %struct.t_range* nocapture %r) #1 {
+  %1 = icmp sgt i32 %D, 0
+  br i1 %1, label %.preheader1.lr.ph, label %._crit_edge8
 
-while.cond.preheader:                             ; preds = %entry, %while.end20
-  %indvars.iv = phi i64 [ %indvars.iv.next, %while.end20 ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds float* %c, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !3
-  %rmin = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 3
-  %1 = load float* %rmin, align 4, !tbaa !3
-  %cmp343 = fcmp olt float %0, %1
-  br i1 %cmp343, label %while.body.lr.ph, label %while.cond8.loopexit
+.preheader1.lr.ph:                                ; preds = %0
+  %2 = add i32 %D, -1
+  br label %.preheader1
 
-while.body.lr.ph:                                 ; preds = %while.cond.preheader
-  %dr = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 5
-  br label %while.body
+.preheader1:                                      ; preds = %._crit_edge, %.preheader1.lr.ph
+  %indvars.iv = phi i64 [ 0, %.preheader1.lr.ph ], [ %indvars.iv.next, %._crit_edge ]
+  %3 = getelementptr inbounds float* %c, i64 %indvars.iv
+  %4 = load float* %3, align 4, !tbaa !27
+  %5 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 3
+  %6 = load float* %5, align 4, !tbaa !29
+  %7 = fcmp olt float %4, %6
+  br i1 %7, label %.lr.ph, label %.preheader
 
-while.body:                                       ; preds = %while.body.lr.ph, %while.body
-  %2 = phi float [ %0, %while.body.lr.ph ], [ %add, %while.body ]
-  %3 = load float* %dr, align 4, !tbaa !3
-  %add = fadd float %2, %3
-  store float %add, float* %arrayidx, align 4, !tbaa !3
-  %4 = load float* %rmin, align 4, !tbaa !3
-  %cmp3 = fcmp olt float %add, %4
-  br i1 %cmp3, label %while.body, label %while.cond8.loopexit
+.lr.ph:                                           ; preds = %.preheader1
+  %8 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 5
+  br label %14
 
-while.cond8.loopexit:                             ; preds = %while.body, %while.cond.preheader
-  %5 = phi float [ %0, %while.cond.preheader ], [ %add, %while.body ]
-  %rmax = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 4
-  %6 = load float* %rmax, align 4, !tbaa !3
-  %cmp1345 = fcmp ogt float %5, %6
-  br i1 %cmp1345, label %while.body14.lr.ph, label %while.end20
+.preheader:                                       ; preds = %14, %.preheader1
+  %9 = phi float [ %4, %.preheader1 ], [ %17, %14 ]
+  %10 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 4
+  %11 = load float* %10, align 4, !tbaa !31
+  %12 = fcmp ogt float %9, %11
+  br i1 %12, label %.lr.ph5, label %._crit_edge
 
-while.body14.lr.ph:                               ; preds = %while.cond8.loopexit
-  %dr17 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 5
-  br label %while.body14
+.lr.ph5:                                          ; preds = %.preheader
+  %13 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 5
+  br label %20
 
-while.body14:                                     ; preds = %while.body14.lr.ph, %while.body14
-  %7 = phi float [ %5, %while.body14.lr.ph ], [ %sub, %while.body14 ]
-  %8 = load float* %dr17, align 4, !tbaa !3
-  %sub = fsub float %7, %8
-  store float %sub, float* %arrayidx, align 4, !tbaa !3
-  %9 = load float* %rmax, align 4, !tbaa !3
-  %cmp13 = fcmp ogt float %sub, %9
-  br i1 %cmp13, label %while.body14, label %while.end20
+; <label>:14                                      ; preds = %.lr.ph, %14
+  %15 = phi float [ %4, %.lr.ph ], [ %17, %14 ]
+  %16 = load float* %8, align 4, !tbaa !32
+  %17 = fadd float %15, %16
+  store float %17, float* %3, align 4, !tbaa !27
+  %18 = load float* %5, align 4, !tbaa !29
+  %19 = fcmp olt float %17, %18
+  br i1 %19, label %14, label %.preheader
 
-while.end20:                                      ; preds = %while.body14, %while.cond8.loopexit
-  %.lcssa = phi float [ %5, %while.cond8.loopexit ], [ %sub, %while.body14 ]
-  %rval = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 6
-  store float %.lcssa, float* %rval, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %D
-  br i1 %exitcond, label %for.end, label %while.cond.preheader
+; <label>:20                                      ; preds = %.lr.ph5, %20
+  %21 = phi float [ %9, %.lr.ph5 ], [ %23, %20 ]
+  %22 = load float* %13, align 4, !tbaa !32
+  %23 = fsub float %21, %22
+  store float %23, float* %3, align 4, !tbaa !27
+  %24 = load float* %10, align 4, !tbaa !31
+  %25 = fcmp ogt float %23, %24
+  br i1 %25, label %20, label %._crit_edge
 
-for.end:                                          ; preds = %while.end20, %entry
+._crit_edge:                                      ; preds = %20, %.preheader
+  %.lcssa3 = phi float [ %9, %.preheader ], [ %23, %20 ]
+  %26 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 6
+  store float %.lcssa3, float* %26, align 4, !tbaa !33
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %2
+  br i1 %exitcond, label %._crit_edge8, label %.preheader1
+
+._crit_edge8:                                     ; preds = %._crit_edge, %0
   ret void
 }

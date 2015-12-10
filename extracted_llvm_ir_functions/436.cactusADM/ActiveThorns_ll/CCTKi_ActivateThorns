@@ -1,0 +1,405 @@
+define i32 @CCTKi_ActivateThorns(i8* %activethornlist) #1 {
+  %1 = tail call i8* @Util_Strdup(i8* %activethornlist) #7
+  %2 = load i32* @n_thorns, align 4, !tbaa !8
+  %3 = tail call %struct.uStringList* @Util_StringListCreate(i32 %2) #7
+  %4 = load i32* @n_imps, align 4, !tbaa !8
+  %5 = tail call %struct.uStringList* @Util_StringListCreate(i32 %4) #7
+  %6 = load i32* @n_imps, align 4, !tbaa !8
+  %7 = tail call %struct.uStringList* @Util_StringListCreate(i32 %6) #7
+  %8 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([38 x i8]* @.str11, i64 0, i64 0), i8* %activethornlist) #7
+  %9 = tail call i8* @strtok(i8* %1, i8* getelementptr inbounds ([4 x i8]* @.str12, i64 0, i64 0)) #7
+  %10 = icmp eq i8* %9, null
+  br i1 %10, label %._crit_edge.thread, label %.lr.ph45
+
+._crit_edge.thread:                               ; preds = %0
+  tail call void @free(i8* %1) #8
+  br label %128
+
+.lr.ph45:                                         ; preds = %0, %.loopexit27
+  %token.044 = phi i8* [ %125, %.loopexit27 ], [ %9, %0 ]
+  %n_errors.043 = phi i32 [ %n_errors.1, %.loopexit27 ], [ 0, %0 ]
+  %11 = load %struct.T_SKTREE** @thornlist, align 8, !tbaa !7
+  %12 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %11, i8* %token.044) #7
+  %13 = icmp eq %struct.T_SKTREE* %12, null
+  br i1 %13, label %CCTK_IsThornActive.exit.thread, label %CCTK_IsThornActive.exit
+
+CCTK_IsThornActive.exit:                          ; preds = %.lr.ph45
+  %14 = getelementptr inbounds %struct.T_SKTREE* %12, i64 0, i32 5
+  %15 = bitcast i8** %14 to %struct.THORN**
+  %16 = load %struct.THORN** %15, align 8, !tbaa !20
+  %17 = getelementptr inbounds %struct.THORN* %16, i64 0, i32 0
+  %18 = load i32* %17, align 4, !tbaa !12
+  %not..i = icmp eq i32 %18, 0
+  br i1 %not..i, label %CCTK_IsThornActive.exit.thread, label %19
+
+; <label>:19                                      ; preds = %CCTK_IsThornActive.exit
+  %20 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str13, i64 0, i64 0), i8* %token.044) #7
+  br label %.loopexit27
+
+CCTK_IsThornActive.exit.thread:                   ; preds = %CCTK_IsThornActive.exit, %.lr.ph45
+  %21 = load %struct.T_SKTREE** @thornlist, align 8, !tbaa !7
+  %22 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %21, i8* %token.044) #7
+  %23 = icmp eq %struct.T_SKTREE* %22, null
+  br i1 %23, label %CCTK_ThornImplementation.exit.thread, label %CCTK_ThornImplementation.exit
+
+CCTK_ThornImplementation.exit:                    ; preds = %CCTK_IsThornActive.exit.thread
+  %24 = getelementptr inbounds %struct.T_SKTREE* %22, i64 0, i32 5
+  %25 = bitcast i8** %24 to %struct.THORN**
+  %26 = load %struct.THORN** %25, align 8, !tbaa !20
+  %27 = getelementptr inbounds %struct.THORN* %26, i64 0, i32 1
+  %28 = load i8** %27, align 8, !tbaa !10
+  %29 = icmp eq i8* %28, null
+  br i1 %29, label %CCTK_ThornImplementation.exit.thread, label %48
+
+CCTK_ThornImplementation.exit.thread:             ; preds = %CCTK_IsThornActive.exit.thread, %CCTK_ThornImplementation.exit
+  %30 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([27 x i8]* @.str14, i64 0, i64 0), i8* %token.044) #7
+  %31 = add nsw i32 %n_errors.043, 1
+  %32 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %33 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %32, i8* %token.044) #7
+  %34 = icmp eq %struct.T_SKTREE* %33, null
+  br i1 %34, label %.loopexit27, label %35
+
+; <label>:35                                      ; preds = %CCTK_ThornImplementation.exit.thread
+  %36 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %37 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %36, i8* %token.044) #7
+  %38 = icmp eq %struct.T_SKTREE* %37, null
+  br i1 %38, label %CCTK_ImpThornList.exit, label %39
+
+; <label>:39                                      ; preds = %35
+  %40 = getelementptr inbounds %struct.T_SKTREE* %37, i64 0, i32 5
+  %41 = bitcast i8** %40 to %struct.IMPLEMENTATION**
+  %42 = load %struct.IMPLEMENTATION** %41, align 8, !tbaa !20
+  %43 = getelementptr inbounds %struct.IMPLEMENTATION* %42, i64 0, i32 1
+  %44 = load %struct.T_SKTREE** %43, align 8, !tbaa !15
+  br label %CCTK_ImpThornList.exit
+
+CCTK_ImpThornList.exit:                           ; preds = %35, %39
+  %retval.0.i10 = phi %struct.T_SKTREE* [ %44, %39 ], [ null, %35 ]
+  %45 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([52 x i8]* @.str15, i64 0, i64 0), i8* %token.044) #7
+  %46 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([29 x i8]* @.str16, i64 0, i64 0)) #7
+  %47 = tail call i32 @SKTreeTraverseInorder(%struct.T_SKTREE* %retval.0.i10, i32 (i8*, i8*, i8*)* @JustPrintThornName, i8* null) #7
+  %putchar8 = tail call i32 @putchar(i32 10) #6
+  br label %.loopexit27
+
+; <label>:48                                      ; preds = %CCTK_ThornImplementation.exit
+  %49 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %50 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %49, i8* %28) #7
+  %51 = icmp eq %struct.T_SKTREE* %50, null
+  br i1 %51, label %CCTK_IsImplementationActive.exit.thread, label %CCTK_IsImplementationActive.exit
+
+CCTK_IsImplementationActive.exit:                 ; preds = %48
+  %52 = getelementptr inbounds %struct.T_SKTREE* %50, i64 0, i32 5
+  %53 = bitcast i8** %52 to %struct.IMPLEMENTATION**
+  %54 = load %struct.IMPLEMENTATION** %53, align 8, !tbaa !20
+  %55 = getelementptr inbounds %struct.IMPLEMENTATION* %54, i64 0, i32 0
+  %56 = load i32* %55, align 4, !tbaa !13
+  %not..i11 = icmp eq i32 %56, 0
+  br i1 %not..i11, label %CCTK_IsImplementationActive.exit.thread, label %57
+
+; <label>:57                                      ; preds = %CCTK_IsImplementationActive.exit
+  %58 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([61 x i8]* @.str18, i64 0, i64 0), i8* %token.044, i8* %28) #7
+  %59 = add nsw i32 %n_errors.043, 1
+  br label %.loopexit27
+
+CCTK_IsImplementationActive.exit.thread:          ; preds = %CCTK_IsImplementationActive.exit, %48
+  %60 = tail call i32 @Util_StringListAdd(%struct.uStringList* %3, i8* %token.044) #7
+  %61 = icmp eq i32 %60, 0
+  br i1 %61, label %62, label %64
+
+; <label>:62                                      ; preds = %CCTK_IsImplementationActive.exit.thread
+  %63 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([52 x i8]* @.str19, i64 0, i64 0), i8* %token.044) #7
+  br label %.loopexit27
+
+; <label>:64                                      ; preds = %CCTK_IsImplementationActive.exit.thread
+  %65 = tail call i32 @Util_StringListAdd(%struct.uStringList* %7, i8* %28) #7
+  %66 = icmp eq i32 %65, 0
+  br i1 %66, label %67, label %70
+
+; <label>:67                                      ; preds = %64
+  %68 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([86 x i8]* @.str20, i64 0, i64 0), i8* %token.044, i8* %28) #7
+  %69 = add nsw i32 %n_errors.043, 1
+  br label %.loopexit27
+
+; <label>:70                                      ; preds = %64
+  %71 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %72 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %71, i8* %28) #7
+  %73 = icmp eq %struct.T_SKTREE* %72, null
+  br i1 %73, label %123, label %74
+
+; <label>:74                                      ; preds = %70
+  %75 = tail call i32 @Util_StringListAdd(%struct.uStringList* %5, i8* %28) #7
+  %76 = getelementptr inbounds %struct.T_SKTREE* %72, i64 0, i32 5
+  %77 = bitcast i8** %76 to %struct.IMPLEMENTATION**
+  %78 = load %struct.IMPLEMENTATION** %77, align 8, !tbaa !20
+  %79 = getelementptr inbounds %struct.IMPLEMENTATION* %78, i64 0, i32 4
+  %80 = load i8*** %79, align 8, !tbaa !17
+  %81 = load i8** %80, align 8, !tbaa !7
+  %82 = icmp eq i8* %81, null
+  br i1 %82, label %.preheader26, label %.lr.ph39
+
+.preheader26:                                     ; preds = %100, %74
+  %83 = getelementptr inbounds %struct.IMPLEMENTATION* %78, i64 0, i32 6
+  %84 = load i8*** %83, align 8, !tbaa !19
+  %85 = load i8** %84, align 8, !tbaa !7
+  %86 = icmp eq i8* %85, null
+  br i1 %86, label %.loopexit27, label %.lr.ph41
+
+.lr.ph39:                                         ; preds = %74, %100
+  %indvars.iv = phi i64 [ %indvars.iv.next, %100 ], [ 0, %74 ]
+  %87 = phi i8* [ %103, %100 ], [ %81, %74 ]
+  %88 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %89 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %88, i8* %87) #7
+  %90 = icmp eq %struct.T_SKTREE* %89, null
+  br i1 %90, label %CCTK_IsImplementationActive.exit15.thread, label %CCTK_IsImplementationActive.exit15
+
+CCTK_IsImplementationActive.exit15:               ; preds = %.lr.ph39
+  %91 = getelementptr inbounds %struct.T_SKTREE* %89, i64 0, i32 5
+  %92 = bitcast i8** %91 to %struct.IMPLEMENTATION**
+  %93 = load %struct.IMPLEMENTATION** %92, align 8, !tbaa !20
+  %94 = getelementptr inbounds %struct.IMPLEMENTATION* %93, i64 0, i32 0
+  %95 = load i32* %94, align 4, !tbaa !13
+  %not..i13 = icmp eq i32 %95, 0
+  br i1 %not..i13, label %CCTK_IsImplementationActive.exit15.thread, label %100
+
+CCTK_IsImplementationActive.exit15.thread:        ; preds = %CCTK_IsImplementationActive.exit15, %.lr.ph39
+  %96 = load i8*** %79, align 8, !tbaa !17
+  %97 = getelementptr inbounds i8** %96, i64 %indvars.iv
+  %98 = load i8** %97, align 8, !tbaa !7
+  %99 = tail call i32 @Util_StringListAdd(%struct.uStringList* %5, i8* %98) #7
+  br label %100
+
+; <label>:100                                     ; preds = %CCTK_IsImplementationActive.exit15, %CCTK_IsImplementationActive.exit15.thread
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %101 = load i8*** %79, align 8, !tbaa !17
+  %102 = getelementptr inbounds i8** %101, i64 %indvars.iv.next
+  %103 = load i8** %102, align 8, !tbaa !7
+  %104 = icmp eq i8* %103, null
+  br i1 %104, label %.preheader26, label %.lr.ph39
+
+.lr.ph41:                                         ; preds = %.preheader26, %118
+  %indvars.iv48 = phi i64 [ %indvars.iv.next49, %118 ], [ 0, %.preheader26 ]
+  %105 = phi i8* [ %121, %118 ], [ %85, %.preheader26 ]
+  %106 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %107 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %106, i8* %105) #7
+  %108 = icmp eq %struct.T_SKTREE* %107, null
+  br i1 %108, label %CCTK_IsImplementationActive.exit18.thread, label %CCTK_IsImplementationActive.exit18
+
+CCTK_IsImplementationActive.exit18:               ; preds = %.lr.ph41
+  %109 = getelementptr inbounds %struct.T_SKTREE* %107, i64 0, i32 5
+  %110 = bitcast i8** %109 to %struct.IMPLEMENTATION**
+  %111 = load %struct.IMPLEMENTATION** %110, align 8, !tbaa !20
+  %112 = getelementptr inbounds %struct.IMPLEMENTATION* %111, i64 0, i32 0
+  %113 = load i32* %112, align 4, !tbaa !13
+  %not..i16 = icmp eq i32 %113, 0
+  br i1 %not..i16, label %CCTK_IsImplementationActive.exit18.thread, label %118
+
+CCTK_IsImplementationActive.exit18.thread:        ; preds = %CCTK_IsImplementationActive.exit18, %.lr.ph41
+  %114 = load i8*** %83, align 8, !tbaa !19
+  %115 = getelementptr inbounds i8** %114, i64 %indvars.iv48
+  %116 = load i8** %115, align 8, !tbaa !7
+  %117 = tail call i32 @Util_StringListAdd(%struct.uStringList* %5, i8* %116) #7
+  br label %118
+
+; <label>:118                                     ; preds = %CCTK_IsImplementationActive.exit18, %CCTK_IsImplementationActive.exit18.thread
+  %indvars.iv.next49 = add nuw nsw i64 %indvars.iv48, 1
+  %119 = load i8*** %83, align 8, !tbaa !19
+  %120 = getelementptr inbounds i8** %119, i64 %indvars.iv.next49
+  %121 = load i8** %120, align 8, !tbaa !7
+  %122 = icmp eq i8* %121, null
+  br i1 %122, label %.loopexit27, label %.lr.ph41
+
+; <label>:123                                     ; preds = %70
+  %124 = tail call i32 @CCTK_Warn(i32 0, i32 1241, i8* getelementptr inbounds ([81 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str23, i64 0, i64 0)) #7
+  br label %.loopexit27
+
+.loopexit27:                                      ; preds = %118, %.preheader26, %CCTK_ThornImplementation.exit.thread, %CCTK_ImpThornList.exit, %62, %123, %67, %57, %19
+  %n_errors.1 = phi i32 [ %n_errors.043, %19 ], [ %59, %57 ], [ %n_errors.043, %123 ], [ %69, %67 ], [ %n_errors.043, %62 ], [ %31, %CCTK_ImpThornList.exit ], [ %31, %CCTK_ThornImplementation.exit.thread ], [ %n_errors.043, %.preheader26 ], [ %n_errors.043, %118 ]
+  %125 = tail call i8* @strtok(i8* null, i8* getelementptr inbounds ([4 x i8]* @.str12, i64 0, i64 0)) #7
+  %126 = icmp eq i8* %125, null
+  br i1 %126, label %._crit_edge, label %.lr.ph45
+
+._crit_edge:                                      ; preds = %.loopexit27
+  tail call void @free(i8* %1) #8
+  %127 = icmp eq i32 %n_errors.1, 0
+  br i1 %127, label %128, label %.thread
+
+; <label>:128                                     ; preds = %._crit_edge.thread, %._crit_edge
+  %129 = tail call i8* @Util_StringListNext(%struct.uStringList* %7, i32 1) #7
+  %130 = tail call i8* @Util_StringListNext(%struct.uStringList* %5, i32 1) #7
+  %131 = icmp ne i8* %129, null
+  %132 = icmp ne i8* %130, null
+  %or.cond32 = and i1 %131, %132
+  br i1 %or.cond32, label %.preheader, label %.critedge.preheader
+
+.preheader:                                       ; preds = %128, %159
+  %imp2.035 = phi i8* [ %161, %159 ], [ %130, %128 ]
+  %imp1.034 = phi i8* [ %160, %159 ], [ %129, %128 ]
+  %n_errors.233 = phi i32 [ %n_errors.4, %159 ], [ 0, %128 ]
+  br label %134
+
+.critedge.preheader:                              ; preds = %159, %128
+  %imp2.0.lcssa = phi i8* [ %130, %128 ], [ %161, %159 ]
+  %n_errors.2.lcssa = phi i32 [ 0, %128 ], [ %n_errors.4, %159 ]
+  %133 = icmp eq i8* %imp2.0.lcssa, null
+  br i1 %133, label %.critedge._crit_edge, label %.lr.ph31
+
+; <label>:134                                     ; preds = %.preheader, %156
+  %n_errors.3 = phi i32 [ %139, %156 ], [ %n_errors.233, %.preheader ]
+  %imp2.1 = phi i8* [ %157, %156 ], [ %imp2.035, %.preheader ]
+  %135 = tail call i32 @Util_StrCmpi(i8* %imp1.034, i8* %imp2.1) #7
+  %136 = icmp eq i32 %135, 0
+  br i1 %136, label %159, label %137
+
+; <label>:137                                     ; preds = %134
+  %138 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([50 x i8]* @.str24, i64 0, i64 0), i8* %imp2.1) #7
+  %puts4 = tail call i32 @puts(i8* getelementptr inbounds ([76 x i8]* @str36, i64 0, i64 0))
+  %139 = add nsw i32 %n_errors.3, 1
+  %140 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %141 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %140, i8* %imp2.1) #7
+  %142 = icmp eq %struct.T_SKTREE* %141, null
+  br i1 %142, label %155, label %143
+
+; <label>:143                                     ; preds = %137
+  %144 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %145 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %144, i8* %imp2.1) #7
+  %146 = icmp eq %struct.T_SKTREE* %145, null
+  br i1 %146, label %CCTK_ImpThornList.exit21, label %147
+
+; <label>:147                                     ; preds = %143
+  %148 = getelementptr inbounds %struct.T_SKTREE* %145, i64 0, i32 5
+  %149 = bitcast i8** %148 to %struct.IMPLEMENTATION**
+  %150 = load %struct.IMPLEMENTATION** %149, align 8, !tbaa !20
+  %151 = getelementptr inbounds %struct.IMPLEMENTATION* %150, i64 0, i32 1
+  %152 = load %struct.T_SKTREE** %151, align 8, !tbaa !15
+  br label %CCTK_ImpThornList.exit21
+
+CCTK_ImpThornList.exit21:                         ; preds = %143, %147
+  %retval.0.i20 = phi %struct.T_SKTREE* [ %152, %147 ], [ null, %143 ]
+  %puts6 = tail call i32 @puts(i8* getelementptr inbounds ([59 x i8]* @str38, i64 0, i64 0))
+  %153 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str27, i64 0, i64 0)) #7
+  %154 = tail call i32 @SKTreeTraverseInorder(%struct.T_SKTREE* %retval.0.i20, i32 (i8*, i8*, i8*)* @JustPrintThornName, i8* null) #7
+  %putchar7 = tail call i32 @putchar(i32 10) #6
+  br label %156
+
+; <label>:155                                     ; preds = %137
+  %puts5 = tail call i32 @puts(i8* getelementptr inbounds ([65 x i8]* @str37, i64 0, i64 0))
+  br label %156
+
+; <label>:156                                     ; preds = %155, %CCTK_ImpThornList.exit21
+  %157 = tail call i8* @Util_StringListNext(%struct.uStringList* %5, i32 0) #7
+  %158 = icmp eq i8* %157, null
+  br i1 %158, label %159, label %134
+
+; <label>:159                                     ; preds = %156, %134
+  %n_errors.4 = phi i32 [ %139, %156 ], [ %n_errors.3, %134 ]
+  %160 = tail call i8* @Util_StringListNext(%struct.uStringList* %7, i32 0) #7
+  %161 = tail call i8* @Util_StringListNext(%struct.uStringList* %5, i32 0) #7
+  %162 = icmp ne i8* %160, null
+  %163 = icmp ne i8* %161, null
+  %or.cond = and i1 %162, %163
+  br i1 %or.cond, label %.preheader, label %.critedge.preheader
+
+.lr.ph31:                                         ; preds = %.critedge.preheader, %.critedge
+  %imp2.230 = phi i8* [ %182, %.critedge ], [ %imp2.0.lcssa, %.critedge.preheader ]
+  %n_errors.529 = phi i32 [ %165, %.critedge ], [ %n_errors.2.lcssa, %.critedge.preheader ]
+  %164 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([49 x i8]* @.str29, i64 0, i64 0), i8* %imp2.230) #7
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([76 x i8]* @str36, i64 0, i64 0))
+  %165 = add nsw i32 %n_errors.529, 1
+  %166 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %167 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %166, i8* %imp2.230) #7
+  %168 = icmp eq %struct.T_SKTREE* %167, null
+  br i1 %168, label %181, label %169
+
+; <label>:169                                     ; preds = %.lr.ph31
+  %170 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %171 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %170, i8* %imp2.230) #7
+  %172 = icmp eq %struct.T_SKTREE* %171, null
+  br i1 %172, label %CCTK_ImpThornList.exit24, label %173
+
+; <label>:173                                     ; preds = %169
+  %174 = getelementptr inbounds %struct.T_SKTREE* %171, i64 0, i32 5
+  %175 = bitcast i8** %174 to %struct.IMPLEMENTATION**
+  %176 = load %struct.IMPLEMENTATION** %175, align 8, !tbaa !20
+  %177 = getelementptr inbounds %struct.IMPLEMENTATION* %176, i64 0, i32 1
+  %178 = load %struct.T_SKTREE** %177, align 8, !tbaa !15
+  br label %CCTK_ImpThornList.exit24
+
+CCTK_ImpThornList.exit24:                         ; preds = %169, %173
+  %retval.0.i23 = phi %struct.T_SKTREE* [ %178, %173 ], [ null, %169 ]
+  %puts3 = tail call i32 @puts(i8* getelementptr inbounds ([59 x i8]* @str38, i64 0, i64 0))
+  %179 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str27, i64 0, i64 0)) #7
+  %180 = tail call i32 @SKTreeTraverseInorder(%struct.T_SKTREE* %retval.0.i23, i32 (i8*, i8*, i8*)* @JustPrintThornName, i8* null) #7
+  %putchar = tail call i32 @putchar(i32 10) #6
+  br label %.critedge
+
+; <label>:181                                     ; preds = %.lr.ph31
+  %puts2 = tail call i32 @puts(i8* getelementptr inbounds ([65 x i8]* @str37, i64 0, i64 0))
+  br label %.critedge
+
+.critedge:                                        ; preds = %181, %CCTK_ImpThornList.exit24
+  %182 = tail call i8* @Util_StringListNext(%struct.uStringList* %5, i32 0) #7
+  %183 = icmp eq i8* %182, null
+  br i1 %183, label %.critedge._crit_edge, label %.lr.ph31
+
+.critedge._crit_edge:                             ; preds = %.critedge, %.critedge.preheader
+  %n_errors.5.lcssa = phi i32 [ %n_errors.2.lcssa, %.critedge.preheader ], [ %165, %.critedge ]
+  %184 = icmp eq i32 %n_errors.5.lcssa, 0
+  br i1 %184, label %185, label %.thread
+
+; <label>:185                                     ; preds = %.critedge._crit_edge
+  %186 = tail call i8* @Util_StringListNext(%struct.uStringList* %3, i32 1) #7
+  %187 = icmp eq i8* %186, null
+  br i1 %187, label %.loopexit, label %.lr.ph
+
+.lr.ph:                                           ; preds = %185, %ActivateThorn.exit
+  %thorn.028 = phi i8* [ %211, %ActivateThorn.exit ], [ %186, %185 ]
+  %188 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([23 x i8]* @.str5, i64 0, i64 0), i8* %thorn.028) #7
+  %189 = load %struct.T_SKTREE** @thornlist, align 8, !tbaa !7
+  %190 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %189, i8* %thorn.028) #7
+  %191 = icmp eq %struct.T_SKTREE* %190, null
+  br i1 %191, label %ActivateThorn.exit, label %192
+
+; <label>:192                                     ; preds = %.lr.ph
+  %193 = getelementptr inbounds %struct.T_SKTREE* %190, i64 0, i32 5
+  %194 = bitcast i8** %193 to %struct.THORN**
+  %195 = load %struct.THORN** %194, align 8, !tbaa !20
+  %196 = getelementptr inbounds %struct.THORN* %195, i64 0, i32 0
+  store i32 1, i32* %196, align 4, !tbaa !12
+  %197 = getelementptr inbounds %struct.THORN* %195, i64 0, i32 1
+  %198 = load i8** %197, align 8, !tbaa !10
+  %199 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([37 x i8]* @.str6, i64 0, i64 0), i8* %198) #7
+  %200 = load i8** %197, align 8, !tbaa !10
+  %201 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %202 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %201, i8* %200) #7
+  %203 = icmp eq %struct.T_SKTREE* %202, null
+  br i1 %203, label %ActivateThorn.exit, label %204
+
+; <label>:204                                     ; preds = %192
+  %205 = getelementptr inbounds %struct.T_SKTREE* %202, i64 0, i32 5
+  %206 = bitcast i8** %205 to %struct.IMPLEMENTATION**
+  %207 = load %struct.IMPLEMENTATION** %206, align 8, !tbaa !20
+  %208 = getelementptr inbounds %struct.IMPLEMENTATION* %207, i64 0, i32 0
+  store i32 1, i32* %208, align 4, !tbaa !13
+  %209 = tail call i8* @Util_Strdup(i8* %thorn.028) #7
+  %210 = getelementptr inbounds %struct.IMPLEMENTATION* %207, i64 0, i32 2
+  store i8* %209, i8** %210, align 8, !tbaa !22
+  br label %ActivateThorn.exit
+
+ActivateThorn.exit:                               ; preds = %.lr.ph, %192, %204
+  %211 = tail call i8* @Util_StringListNext(%struct.uStringList* %3, i32 0) #7
+  %212 = icmp eq i8* %211, null
+  br i1 %212, label %.loopexit, label %.lr.ph
+
+.thread:                                          ; preds = %._crit_edge, %.critedge._crit_edge
+  %n_errors.625 = phi i32 [ %n_errors.5.lcssa, %.critedge._crit_edge ], [ %n_errors.1, %._crit_edge ]
+  %213 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([54 x i8]* @.str30, i64 0, i64 0), i32 %n_errors.625) #7
+  %214 = sub nsw i32 0, %n_errors.625
+  br label %.loopexit
+
+.loopexit:                                        ; preds = %ActivateThorn.exit, %185, %.thread
+  %retval.0 = phi i32 [ %214, %.thread ], [ 0, %185 ], [ 0, %ActivateThorn.exit ]
+  tail call void @Util_StringListDestroy(%struct.uStringList* %3) #7
+  tail call void @Util_StringListDestroy(%struct.uStringList* %5) #7
+  tail call void @Util_StringListDestroy(%struct.uStringList* %7) #7
+  ret i32 %retval.0
+}

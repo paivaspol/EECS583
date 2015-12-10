@@ -1,0 +1,15 @@
+define i32 @Util_TableCreateFromString(i8* %string) #1 {
+  %1 = tail call i32 @Util_TableCreate(i32 1) #9
+  %2 = icmp slt i32 %1, 0
+  br i1 %2, label %6, label %3
+
+; <label>:3                                       ; preds = %0
+  %4 = tail call i32 @Util_TableSetFromString(i32 %1, i8* %string) #9
+  %5 = icmp slt i32 %4, 0
+  %. = select i1 %5, i32 %4, i32 %1
+  br label %6
+
+; <label>:6                                       ; preds = %3, %0
+  %.0 = phi i32 [ %1, %0 ], [ %., %3 ]
+  ret i32 %.0
+}

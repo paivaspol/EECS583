@@ -1,0 +1,55 @@
+define i32 @IOASCII_Output2DGH(%struct.cGH* %GH) #1 {
+  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #5
+  %2 = bitcast i8* %1 to %struct.IOASCIIGH*
+  tail call fastcc void @CheckSteerableParameters(%struct.IOASCIIGH* %2) #6
+  %3 = getelementptr inbounds i8* %1, i64 4
+  %4 = bitcast i8* %3 to i32*
+  %5 = load i32* %4, align 4, !tbaa !2
+  %6 = icmp slt i32 %5, 1
+  br i1 %6, label %.loopexit, label %.preheader
+
+.preheader:                                       ; preds = %0
+  %7 = tail call i32 @CCTK_NumVars() #5
+  %8 = icmp sgt i32 %7, 0
+  br i1 %8, label %.lr.ph, label %.loopexit
+
+.lr.ph:                                           ; preds = %.preheader
+  %9 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1
+  %10 = getelementptr inbounds i8* %1, i64 72
+  %11 = bitcast i8* %10 to i32**
+  br label %12
+
+; <label>:12                                      ; preds = %.lr.ph, %25
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %25 ]
+  %retval.01 = phi i32 [ 0, %.lr.ph ], [ %retval.1, %25 ]
+  %13 = trunc i64 %indvars.iv to i32
+  %14 = tail call i32 @IOASCII_TimeFor2D(%struct.cGH* %GH, i32 %13) #6
+  %15 = icmp eq i32 %14, 0
+  br i1 %15, label %25, label %16
+
+; <label>:16                                      ; preds = %12
+  %17 = tail call i8* @CCTK_VarName(i32 %13) #5
+  %18 = tail call i32 @IOASCII_Write2D(%struct.cGH* %GH, i32 %13, i8* %17) #5
+  %19 = icmp eq i32 %18, 0
+  br i1 %19, label %20, label %25
+
+; <label>:20                                      ; preds = %16
+  %21 = load i32* %9, align 4, !tbaa !8
+  %22 = load i32** %11, align 8, !tbaa !11
+  %23 = getelementptr inbounds i32* %22, i64 %indvars.iv
+  store i32 %21, i32* %23, align 4, !tbaa !12
+  %24 = add nsw i32 %retval.01, 1
+  br label %25
+
+; <label>:25                                      ; preds = %12, %16, %20
+  %retval.1 = phi i32 [ %24, %20 ], [ %retval.01, %16 ], [ %retval.01, %12 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %26 = tail call i32 @CCTK_NumVars() #5
+  %27 = sext i32 %26 to i64
+  %28 = icmp slt i64 %indvars.iv.next, %27
+  br i1 %28, label %12, label %.loopexit
+
+.loopexit:                                        ; preds = %25, %.preheader, %0
+  %.0 = phi i32 [ 0, %0 ], [ 0, %.preheader ], [ %retval.1, %25 ]
+  ret i32 %.0
+}

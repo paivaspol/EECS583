@@ -1,0 +1,30 @@
+define internal i32 @CCTKi_ScheduleCallFunction(i8* %function, %struct.t_attribute* %attribute, %struct.t_sched_data* nocapture %data) #1 {
+  %1 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 8
+  %2 = load i32* %1, align 4, !tbaa !33
+  %3 = icmp sgt i32 %2, -1
+  br i1 %3, label %4, label %6
+
+; <label>:4                                       ; preds = %0
+  %5 = tail call i32 @CCTK_TimerStartI(i32 %2) #8
+  br label %6
+
+; <label>:6                                       ; preds = %4, %0
+  %7 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 6
+  %8 = load i32 (i8*, %struct.cFunctionData*, i8*)** %7, align 8, !tbaa !41
+  %9 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 3
+  %10 = bitcast %struct.t_sched_data* %data to i8**
+  %11 = load i8** %10, align 8, !tbaa !39
+  %12 = tail call i32 %8(i8* %function, %struct.cFunctionData* %9, i8* %11) #8
+  %13 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 5
+  store i32 %12, i32* %13, align 4, !tbaa !57
+  %14 = load i32* %1, align 4, !tbaa !33
+  %15 = icmp sgt i32 %14, -1
+  br i1 %15, label %16, label %18
+
+; <label>:16                                      ; preds = %6
+  %17 = tail call i32 @CCTK_TimerStopI(i32 %14) #8
+  br label %18
+
+; <label>:18                                      ; preds = %16, %6
+  ret i32 1
+}

@@ -1,35 +1,32 @@
-define void @print_m4(%struct._IO_FILE* %fp, i8* %s, [4 x float]* nocapture %A) #0 {
-entry:
-  %tobool = icmp eq %struct._IO_FILE* %fp, null
-  br i1 %tobool, label %if.end, label %if.then
+define void @print_m4(%struct.__sFILE* %fp, i8* %s, [4 x float]* nocapture readonly %A) #3 {
+  %1 = icmp eq %struct.__sFILE* %fp, null
+  br i1 %1, label %.loopexit, label %2
 
-if.then:                                          ; preds = %entry
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0), i8* %s) #4
-  br label %for.body
+; <label>:2                                       ; preds = %0
+  %3 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0), i8* %s) #7
+  br label %4
 
-for.body:                                         ; preds = %for.end, %if.then
-  %indvars.iv24 = phi i64 [ 0, %if.then ], [ %indvars.iv.next25, %for.end ]
-  %fputc = tail call i32 @fputc(i32 9, %struct._IO_FILE* %fp)
-  br label %for.body4
+; <label>:4                                       ; preds = %10, %2
+  %indvars.iv6 = phi i64 [ 0, %2 ], [ %indvars.iv.next7, %10 ]
+  %fputc = tail call i32 @fputc(i32 9, %struct.__sFILE* %fp)
+  br label %5
 
-for.body4:                                        ; preds = %for.body4, %for.body
-  %indvars.iv = phi i64 [ 0, %for.body ], [ %indvars.iv.next, %for.body4 ]
-  %arrayidx6 = getelementptr inbounds [4 x float]* %A, i64 %indvars.iv24, i64 %indvars.iv
-  %0 = load float* %arrayidx6, align 4, !tbaa !0
-  %conv = fpext float %0 to double
-  %call7 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), double %conv) #4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 4
-  br i1 %exitcond, label %for.end, label %for.body4
+; <label>:5                                       ; preds = %5, %4
+  %indvars.iv = phi i64 [ 0, %4 ], [ %indvars.iv.next, %5 ]
+  %6 = getelementptr inbounds [4 x float]* %A, i64 %indvars.iv6, i64 %indvars.iv
+  %7 = load float* %6, align 4, !tbaa !14
+  %8 = fpext float %7 to double
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), double %8) #7
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 4
+  br i1 %exitcond, label %10, label %5
 
-for.end:                                          ; preds = %for.body4
-  %fputc21 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %fp)
-  %indvars.iv.next25 = add i64 %indvars.iv24, 1
-  %lftr.wideiv26 = trunc i64 %indvars.iv.next25 to i32
-  %exitcond27 = icmp eq i32 %lftr.wideiv26, 4
-  br i1 %exitcond27, label %if.end, label %for.body
+; <label>:10                                      ; preds = %5
+  %fputc3 = tail call i32 @fputc(i32 10, %struct.__sFILE* %fp)
+  %indvars.iv.next7 = add nuw nsw i64 %indvars.iv6, 1
+  %exitcond8 = icmp eq i64 %indvars.iv.next7, 4
+  br i1 %exitcond8, label %.loopexit, label %4
 
-if.end:                                           ; preds = %for.end, %entry
+.loopexit:                                        ; preds = %10, %0
   ret void
 }

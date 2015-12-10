@@ -1,119 +1,118 @@
-define internal fastcc float @f_max(i32 %left, i32 %right, i32 %nnodes, %struct.t_grpopts* nocapture %opts, %struct.t_mdatoms* nocapture %mdatoms, i32 %start, i32 %end, [3 x float]* nocapture %grad, i32* %nfmax) #0 {
-entry:
+define internal fastcc float @f_max(i32 %left, i32 %right, i32 %nnodes, %struct.t_grpopts* nocapture readonly %opts, %struct.t_mdatoms* nocapture readonly %mdatoms, i32 %start, i32 %end, [3 x float]* nocapture readonly %grad, i32* %nfmax) #3 {
   %fmax2 = alloca float, align 4
   %fmax2_0 = alloca float, align 4
   %nfm = alloca float, align 4
-  store float 0.000000e+00, float* %fmax2, align 4, !tbaa !3
-  store float -1.000000e+00, float* %nfm, align 4, !tbaa !3
-  %cmp65 = icmp slt i32 %start, %end
-  br i1 %cmp65, label %for.body.lr.ph, label %for.end20
+  store float 0.000000e+00, float* %fmax2, align 4, !tbaa !19
+  store float -1.000000e+00, float* %nfm, align 4, !tbaa !19
+  %1 = icmp slt i32 %start, %end
+  br i1 %1, label %.lr.ph5, label %._crit_edge
 
-for.body.lr.ph:                                   ; preds = %entry
-  %cFREEZE = getelementptr inbounds %struct.t_mdatoms* %mdatoms, i64 0, i32 17
-  %0 = load i16** %cFREEZE, align 8, !tbaa !4
-  %nFreeze = getelementptr inbounds %struct.t_grpopts* %opts, i64 0, i32 8
-  %1 = load [3 x i32]** %nFreeze, align 8, !tbaa !4
-  %2 = sext i32 %start to i64
-  br label %for.body
+.lr.ph5:                                          ; preds = %0
+  %2 = getelementptr inbounds %struct.t_mdatoms* %mdatoms, i64 0, i32 17
+  %3 = load i16** %2, align 8, !tbaa !41
+  %4 = getelementptr inbounds %struct.t_grpopts* %opts, i64 0, i32 8
+  %5 = load [3 x i32]** %4, align 8, !tbaa !59
+  %6 = sext i32 %start to i64
+  %7 = add i32 %end, -1
+  br label %8
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.inc18
-  %3 = phi float [ 0.000000e+00, %for.body.lr.ph ], [ %9, %for.inc18 ]
-  %4 = phi float [ -1.000000e+00, %for.body.lr.ph ], [ %10, %for.inc18 ]
-  %indvars.iv68 = phi i64 [ %2, %for.body.lr.ph ], [ %indvars.iv.next69, %for.inc18 ]
-  %arrayidx = getelementptr inbounds i16* %0, i64 %indvars.iv68
-  %5 = load i16* %arrayidx, align 2, !tbaa !6
-  %idxprom6 = zext i16 %5 to i64
-  br label %for.body4
+; <label>:8                                       ; preds = %29, %.lr.ph5
+  %9 = phi float [ -1.000000e+00, %.lr.ph5 ], [ %30, %29 ]
+  %10 = phi float [ 0.000000e+00, %.lr.ph5 ], [ %31, %29 ]
+  %indvars.iv6 = phi i64 [ %6, %.lr.ph5 ], [ %indvars.iv.next7, %29 ]
+  %11 = getelementptr inbounds i16* %3, i64 %indvars.iv6
+  %12 = load i16* %11, align 2, !tbaa !43
+  %13 = zext i16 %12 to i64
+  br label %14
 
-for.body4:                                        ; preds = %for.inc, %for.body
-  %indvars.iv = phi i64 [ 0, %for.body ], [ %indvars.iv.next, %for.inc ]
-  %fam.064 = phi float [ 0.000000e+00, %for.body ], [ %fam.1, %for.inc ]
-  %arrayidx8 = getelementptr inbounds [3 x i32]* %1, i64 %idxprom6, i64 %indvars.iv
-  %6 = load i32* %arrayidx8, align 4, !tbaa !0
-  %tobool = icmp eq i32 %6, 0
-  br i1 %tobool, label %if.then, label %for.inc
+; <label>:14                                      ; preds = %23, %8
+  %indvars.iv = phi i64 [ 0, %8 ], [ %indvars.iv.next, %23 ]
+  %fam.03 = phi float [ 0.000000e+00, %8 ], [ %fam.1, %23 ]
+  %15 = getelementptr inbounds [3 x i32]* %5, i64 %13, i64 %indvars.iv
+  %16 = load i32* %15, align 4, !tbaa !25
+  %17 = icmp eq i32 %16, 0
+  br i1 %17, label %18, label %23
 
-if.then:                                          ; preds = %for.body4
-  %arrayidx12 = getelementptr inbounds [3 x float]* %grad, i64 %indvars.iv68, i64 %indvars.iv
-  %7 = load float* %arrayidx12, align 4, !tbaa !3
-  %mul.i = fmul float %7, %7
-  %add = fadd float %fam.064, %mul.i
-  br label %for.inc
+; <label>:18                                      ; preds = %14
+  %19 = getelementptr inbounds [3 x float]* %grad, i64 %indvars.iv6, i64 %indvars.iv
+  %20 = load float* %19, align 4, !tbaa !19
+  %21 = fmul float %20, %20
+  %22 = fadd float %fam.03, %21
+  br label %23
 
-for.inc:                                          ; preds = %for.body4, %if.then
-  %fam.1 = phi float [ %fam.064, %for.body4 ], [ %add, %if.then ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond67 = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond67, label %for.end, label %for.body4
+; <label>:23                                      ; preds = %14, %18
+  %fam.1 = phi float [ %fam.03, %14 ], [ %22, %18 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 3
+  br i1 %exitcond, label %24, label %14
 
-for.end:                                          ; preds = %for.inc
-  %cmp13 = fcmp ogt float %fam.1, %3
-  br i1 %cmp13, label %if.then15, label %for.inc18
+; <label>:24                                      ; preds = %23
+  %25 = fcmp ogt float %fam.1, %10
+  br i1 %25, label %26, label %._crit_edge9
 
-if.then15:                                        ; preds = %for.end
-  store float %fam.1, float* %fmax2, align 4, !tbaa !3
-  %8 = trunc i64 %indvars.iv68 to i32
-  %conv16 = sitofp i32 %8 to float
-  store float %conv16, float* %nfm, align 4, !tbaa !3
-  br label %for.inc18
+._crit_edge9:                                     ; preds = %24
+  %.pre = trunc i64 %indvars.iv6 to i32
+  br label %29
 
-for.inc18:                                        ; preds = %for.end, %if.then15
-  %9 = phi float [ %3, %for.end ], [ %fam.1, %if.then15 ]
-  %10 = phi float [ %4, %for.end ], [ %conv16, %if.then15 ]
-  %indvars.iv.next69 = add i64 %indvars.iv68, 1
-  %11 = trunc i64 %indvars.iv.next69 to i32
-  %cmp = icmp slt i32 %11, %end
-  br i1 %cmp, label %for.body, label %for.end20
+; <label>:26                                      ; preds = %24
+  store float %fam.1, float* %fmax2, align 4, !tbaa !19
+  %27 = trunc i64 %indvars.iv6 to i32
+  %28 = sitofp i32 %27 to float
+  store float %28, float* %nfm, align 4, !tbaa !19
+  br label %29
 
-for.end20:                                        ; preds = %for.inc18, %entry
-  %12 = phi float [ 0.000000e+00, %entry ], [ %9, %for.inc18 ]
-  %13 = phi float [ -1.000000e+00, %entry ], [ %10, %for.inc18 ]
-  %conv21 = fptosi float %13 to i32
-  store i32 %conv21, i32* %nfmax, align 4, !tbaa !0
-  %cmp22 = icmp sgt i32 %nnodes, 1
-  br i1 %cmp22, label %for.cond25.preheader, label %if.end37
+; <label>:29                                      ; preds = %._crit_edge9, %26
+  %lftr.wideiv.pre-phi = phi i32 [ %.pre, %._crit_edge9 ], [ %27, %26 ]
+  %30 = phi float [ %9, %._crit_edge9 ], [ %28, %26 ]
+  %31 = phi float [ %10, %._crit_edge9 ], [ %fam.1, %26 ]
+  %indvars.iv.next7 = add nsw i64 %indvars.iv6, 1
+  %exitcond8 = icmp eq i32 %lftr.wideiv.pre-phi, %7
+  br i1 %exitcond8, label %._crit_edge, label %8
 
-for.cond25.preheader:                             ; preds = %for.end20
-  %sub = add i32 %nnodes, -1
-  %cmp2661 = icmp sgt i32 %sub, 0
-  br i1 %cmp2661, label %for.body28.lr.ph, label %if.end37
+._crit_edge:                                      ; preds = %29, %0
+  %32 = phi float [ 0.000000e+00, %0 ], [ %31, %29 ]
+  %33 = phi float [ -1.000000e+00, %0 ], [ %30, %29 ]
+  %34 = fptosi float %33 to i32
+  store i32 %34, i32* %nfmax, align 4, !tbaa !25
+  %35 = icmp sgt i32 %nnodes, 1
+  br i1 %35, label %.lr.ph, label %.loopexit
 
-for.body28.lr.ph:                                 ; preds = %for.cond25.preheader
-  %14 = bitcast float* %fmax2 to i8*
-  %15 = bitcast float* %fmax2_0 to i8*
-  %16 = bitcast i32* %nfmax to i8*
-  %17 = bitcast float* %nfm to i8*
-  br label %for.body28
+.lr.ph:                                           ; preds = %._crit_edge
+  %36 = add nsw i32 %nnodes, -1
+  %37 = bitcast float* %fmax2 to i8*
+  %38 = bitcast float* %fmax2_0 to i8*
+  %39 = bitcast i32* %nfmax to i8*
+  %40 = bitcast float* %nfm to i8*
+  br label %41
 
-for.body28:                                       ; preds = %for.inc34, %for.body28.lr.ph
-  %i.162 = phi i32 [ 0, %for.body28.lr.ph ], [ %inc35, %for.inc34 ]
-  call void @gmx_tx(i32 %left, i8* %14, i32 4) #5
-  call void @gmx_rx(i32 %right, i8* %15, i32 4) #5
-  call void @gmx_wait(i32 %left, i32 %right) #5
-  call void @gmx_tx(i32 %left, i8* %16, i32 4) #5
-  call void @gmx_rx(i32 %right, i8* %17, i32 4) #5
-  call void @gmx_wait(i32 %left, i32 %right) #5
-  %18 = load float* %fmax2_0, align 4, !tbaa !3
-  %19 = load float* %fmax2, align 4, !tbaa !3
-  %cmp29 = fcmp ogt float %18, %19
-  br i1 %cmp29, label %if.then31, label %for.inc34
+; <label>:41                                      ; preds = %.lr.ph, %48
+  %i.11 = phi i32 [ 0, %.lr.ph ], [ %50, %48 ]
+  call void @gmx_tx(i32 %left, i8* %37, i32 4) #7
+  call void @gmx_rx(i32 %right, i8* %38, i32 4) #7
+  call void @gmx_wait(i32 %left, i32 %right) #7
+  call void @gmx_tx(i32 %left, i8* %39, i32 4) #7
+  call void @gmx_rx(i32 %right, i8* %40, i32 4) #7
+  call void @gmx_wait(i32 %left, i32 %right) #7
+  %42 = load float* %fmax2_0, align 4, !tbaa !19
+  %43 = load float* %fmax2, align 4, !tbaa !19
+  %44 = fcmp ogt float %42, %43
+  br i1 %44, label %45, label %48
 
-if.then31:                                        ; preds = %for.body28
-  store float %18, float* %fmax2, align 4, !tbaa !3
-  %20 = load float* %nfm, align 4, !tbaa !3
-  %conv32 = fptosi float %20 to i32
-  store i32 %conv32, i32* %nfmax, align 4, !tbaa !0
-  br label %for.inc34
+; <label>:45                                      ; preds = %41
+  store float %42, float* %fmax2, align 4, !tbaa !19
+  %46 = load float* %nfm, align 4, !tbaa !19
+  %47 = fptosi float %46 to i32
+  store i32 %47, i32* %nfmax, align 4, !tbaa !25
+  br label %48
 
-for.inc34:                                        ; preds = %for.body28, %if.then31
-  %21 = phi float [ %19, %for.body28 ], [ %18, %if.then31 ]
-  %inc35 = add nsw i32 %i.162, 1
-  %exitcond = icmp eq i32 %inc35, %sub
-  br i1 %exitcond, label %if.end37, label %for.body28
+; <label>:48                                      ; preds = %41, %45
+  %49 = phi float [ %43, %41 ], [ %42, %45 ]
+  %50 = add nuw nsw i32 %i.11, 1
+  %51 = icmp slt i32 %50, %36
+  br i1 %51, label %41, label %.loopexit
 
-if.end37:                                         ; preds = %for.cond25.preheader, %for.inc34, %for.end20
-  %22 = phi float [ %12, %for.end20 ], [ %12, %for.cond25.preheader ], [ %21, %for.inc34 ]
-  %conv40 = call float @sqrtf(float %22) #3
-  ret float %conv40
+.loopexit:                                        ; preds = %48, %._crit_edge
+  %52 = phi float [ %32, %._crit_edge ], [ %49, %48 ]
+  %sqrtf = call float @sqrtf(float %52) #6
+  ret float %sqrtf
 }

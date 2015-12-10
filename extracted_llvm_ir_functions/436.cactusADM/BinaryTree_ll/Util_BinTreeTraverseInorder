@@ -1,0 +1,29 @@
+define i32 @Util_BinTreeTraverseInorder(%struct.T_TREE* readonly %root, i32 (i8*, i8*)* %process, i8* %info) #1 {
+  %1 = icmp eq %struct.T_TREE* %root, null
+  br i1 %1, label %.thread, label %.lr.ph
+
+.lr.ph:                                           ; preds = %0, %tailrecurse
+  %root.tr1 = phi %struct.T_TREE* [ %12, %tailrecurse ], [ %root, %0 ]
+  %2 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 0
+  %3 = load %struct.T_TREE** %2, align 8, !tbaa !7
+  %4 = tail call i32 @Util_BinTreeTraverseInorder(%struct.T_TREE* %3, i32 (i8*, i8*)* %process, i8* %info) #5
+  %5 = icmp eq i32 %4, 0
+  br i1 %5, label %6, label %.thread
+
+; <label>:6                                       ; preds = %.lr.ph
+  %7 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 3
+  %8 = load i8** %7, align 8, !tbaa !2
+  %9 = tail call i32 %process(i8* %8, i8* %info) #4
+  %10 = icmp eq i32 %9, 0
+  br i1 %10, label %tailrecurse, label %.thread
+
+tailrecurse:                                      ; preds = %6
+  %11 = getelementptr inbounds %struct.T_TREE* %root.tr1, i64 0, i32 1
+  %12 = load %struct.T_TREE** %11, align 8, !tbaa !8
+  %13 = icmp eq %struct.T_TREE* %12, null
+  br i1 %13, label %.thread, label %.lr.ph
+
+.thread:                                          ; preds = %tailrecurse, %6, %.lr.ph, %0
+  %terminate.1 = phi i32 [ 0, %0 ], [ 0, %tailrecurse ], [ %9, %6 ], [ %4, %.lr.ph ]
+  ret i32 %terminate.1
+}

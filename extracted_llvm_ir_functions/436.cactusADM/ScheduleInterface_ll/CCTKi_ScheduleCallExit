@@ -1,0 +1,155 @@
+define internal i32 @CCTKi_ScheduleCallExit(%struct.t_attribute* readonly %attribute, %struct.t_sched_data* nocapture %data) #1 {
+  %1 = icmp eq %struct.t_attribute* %attribute, null
+  br i1 %1, label %.loopexit, label %2
+
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 11
+  %4 = load i32* %3, align 4, !tbaa !58
+  %5 = icmp eq i32 %4, 0
+  br i1 %5, label %.loopexit, label %6
+
+; <label>:6                                       ; preds = %2
+  %7 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 3, i32 3
+  %8 = load i32* %7, align 4, !tbaa !32
+  %9 = icmp sgt i32 %8, 0
+  br i1 %9, label %10, label %20
+
+; <label>:10                                      ; preds = %6
+  %11 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 5
+  %12 = load i32* %11, align 4, !tbaa !57
+  %13 = icmp eq i32 %12, 0
+  br i1 %13, label %14, label %20
+
+; <label>:14                                      ; preds = %10
+  %15 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 0
+  %16 = load %struct.cGH** %15, align 8, !tbaa !39
+  %17 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 3, i32 4
+  %18 = load i32** %17, align 8, !tbaa !22
+  %19 = tail call i32 @CCTK_SyncGroupsI(%struct.cGH* %16, i32 %8, i32* %18) #8
+  store i32 0, i32* %11, align 4, !tbaa !57
+  br label %20
+
+; <label>:20                                      ; preds = %10, %14, %6
+  %21 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 1
+  %22 = load i32* %21, align 4, !tbaa !42
+  %23 = icmp eq i32 %22, 1
+  br i1 %23, label %.preheader2, label %.preheader1
+
+.preheader2:                                      ; preds = %20
+  %24 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 3, i32 6
+  %25 = load i32* %24, align 4, !tbaa !31
+  %26 = icmp sgt i32 %25, 0
+  br i1 %26, label %.lr.ph9, label %.preheader1
+
+.lr.ph9:                                          ; preds = %.preheader2
+  %27 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 3, i32 7
+  %28 = bitcast %struct.t_sched_data* %data to i8**
+  br label %35
+
+.preheader1:                                      ; preds = %._crit_edge, %.preheader2, %20
+  %29 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 6
+  %30 = load i32* %29, align 4, !tbaa !30
+  %31 = icmp sgt i32 %30, 0
+  br i1 %31, label %.lr.ph5, label %.preheader
+
+.lr.ph5:                                          ; preds = %.preheader1
+  %32 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 9
+  %33 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 0
+  %34 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 7
+  br label %60
+
+; <label>:35                                      ; preds = %.lr.ph9, %._crit_edge
+  %indvars.iv12 = phi i64 [ 0, %.lr.ph9 ], [ %indvars.iv.next13, %._crit_edge ]
+  %36 = load i32** %27, align 8, !tbaa !21
+  %37 = getelementptr inbounds i32* %36, i64 %indvars.iv12
+  %38 = load i32* %37, align 4, !tbaa !38
+  %39 = tail call i32 @CCTK_FirstVarIndexI(i32 %38) #8
+  %40 = load i32** %27, align 8, !tbaa !21
+  %41 = getelementptr inbounds i32* %40, i64 %indvars.iv12
+  %42 = load i32* %41, align 4, !tbaa !38
+  %43 = tail call i32 @CCTK_NumVarsInGroupI(i32 %42) #8
+  %44 = add i32 %39, -1
+  %45 = add i32 %44, %43
+  %46 = icmp sgt i32 %39, %45
+  br i1 %46, label %._crit_edge, label %.lr.ph7
+
+.lr.ph7:                                          ; preds = %35, %.lr.ph7
+  %vindex.06 = phi i32 [ %49, %.lr.ph7 ], [ %39, %35 ]
+  %47 = load i8** %28, align 8, !tbaa !39
+  %48 = tail call i32 @CCTKi_TriggerAction(i8* %47, i32 %vindex.06) #8
+  %49 = add nsw i32 %vindex.06, 1
+  %50 = icmp slt i32 %vindex.06, %45
+  br i1 %50, label %.lr.ph7, label %._crit_edge
+
+._crit_edge:                                      ; preds = %.lr.ph7, %35
+  %indvars.iv.next13 = add nuw nsw i64 %indvars.iv12, 1
+  %51 = load i32* %24, align 4, !tbaa !31
+  %52 = sext i32 %51 to i64
+  %53 = icmp slt i64 %indvars.iv.next13, %52
+  br i1 %53, label %35, label %.preheader1
+
+.preheader:                                       ; preds = %72, %.preheader1
+  %54 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 4
+  %55 = load i32* %54, align 4, !tbaa !29
+  %56 = icmp sgt i32 %55, 0
+  br i1 %56, label %.lr.ph, label %.loopexit
+
+.lr.ph:                                           ; preds = %.preheader
+  %57 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 10
+  %58 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 0
+  %59 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 5
+  br label %76
+
+; <label>:60                                      ; preds = %.lr.ph5, %72
+  %61 = phi i32 [ %30, %.lr.ph5 ], [ %73, %72 ]
+  %indvars.iv10 = phi i64 [ 0, %.lr.ph5 ], [ %indvars.iv.next11, %72 ]
+  %62 = load i32** %32, align 8, !tbaa !24
+  %63 = getelementptr inbounds i32* %62, i64 %indvars.iv10
+  %64 = load i32* %63, align 4, !tbaa !38
+  %65 = icmp eq i32 %64, 0
+  br i1 %65, label %66, label %72
+
+; <label>:66                                      ; preds = %60
+  %67 = load %struct.cGH** %33, align 8, !tbaa !39
+  %68 = load i32** %34, align 8, !tbaa !20
+  %69 = getelementptr inbounds i32* %68, i64 %indvars.iv10
+  %70 = load i32* %69, align 4, !tbaa !38
+  %71 = tail call i32 @CCTK_DisableGroupCommI(%struct.cGH* %67, i32 %70) #8
+  %.pre = load i32* %29, align 4, !tbaa !30
+  br label %72
+
+; <label>:72                                      ; preds = %60, %66
+  %73 = phi i32 [ %61, %60 ], [ %.pre, %66 ]
+  %indvars.iv.next11 = add nuw nsw i64 %indvars.iv10, 1
+  %74 = sext i32 %73 to i64
+  %75 = icmp slt i64 %indvars.iv.next11, %74
+  br i1 %75, label %60, label %.preheader
+
+; <label>:76                                      ; preds = %.lr.ph, %88
+  %77 = phi i32 [ %55, %.lr.ph ], [ %89, %88 ]
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %88 ]
+  %78 = load i32** %57, align 8, !tbaa !23
+  %79 = getelementptr inbounds i32* %78, i64 %indvars.iv
+  %80 = load i32* %79, align 4, !tbaa !38
+  %81 = icmp eq i32 %80, 0
+  br i1 %81, label %82, label %88
+
+; <label>:82                                      ; preds = %76
+  %83 = load %struct.cGH** %58, align 8, !tbaa !39
+  %84 = load i32** %59, align 8, !tbaa !19
+  %85 = getelementptr inbounds i32* %84, i64 %indvars.iv
+  %86 = load i32* %85, align 4, !tbaa !38
+  %87 = tail call i32 @CCTK_DisableGroupStorageI(%struct.cGH* %83, i32 %86) #8
+  %.pre14 = load i32* %54, align 4, !tbaa !29
+  br label %88
+
+; <label>:88                                      ; preds = %76, %82
+  %89 = phi i32 [ %77, %76 ], [ %.pre14, %82 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %90 = sext i32 %89 to i64
+  %91 = icmp slt i64 %indvars.iv.next, %90
+  br i1 %91, label %76, label %.loopexit
+
+.loopexit:                                        ; preds = %88, %.preheader, %2, %0
+  ret i32 1
+}

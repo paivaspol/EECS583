@@ -1,48 +1,50 @@
-define float** @mk_matrix(i32 %nx, i32 %ny, i32 %b1D) #0 {
-entry:
-  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 55, i32 %nx, i32 8) #8
-  %0 = bitcast i8* %call to float**
-  %tobool = icmp ne i32 %b1D, 0
-  br i1 %tobool, label %if.then, label %for.cond.preheader
+define float** @mk_matrix(i32 %nx, i32 %ny, i32 %b1D) #3 {
+  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 55, i32 %nx, i32 8) #10
+  %2 = bitcast i8* %1 to float**
+  %3 = icmp ne i32 %b1D, 0
+  br i1 %3, label %4, label %.preheader
 
-if.then:                                          ; preds = %entry
-  %mul = mul nsw i32 %ny, %nx
-  %call1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 57, i32 %mul, i32 4) #8
-  %1 = bitcast i8* %call1 to float*
-  store float* %1, float** %0, align 8, !tbaa !0
-  br label %for.cond.preheader
+; <label>:4                                       ; preds = %0
+  %5 = mul nsw i32 %ny, %nx
+  %6 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 57, i32 %5, i32 4) #10
+  %7 = bitcast i8* %1 to i8**
+  store i8* %6, i8** %7, align 8, !tbaa !14
+  br label %.preheader
 
-for.cond.preheader:                               ; preds = %if.then, %entry
-  %cmp26 = icmp sgt i32 %nx, 0
-  br i1 %cmp26, label %for.body, label %for.end
+.preheader:                                       ; preds = %4, %0
+  %8 = icmp sgt i32 %nx, 0
+  br i1 %8, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %for.cond.preheader, %for.inc
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond.preheader ]
-  br i1 %tobool, label %if.then3, label %if.else
+.lr.ph:                                           ; preds = %.preheader
+  %9 = sext i32 %ny to i64
+  %10 = add i32 %nx, -1
+  br label %11
 
-if.then3:                                         ; preds = %for.body
-  %2 = trunc i64 %indvars.iv to i32
-  %mul4 = mul nsw i32 %2, %ny
-  %idxprom = sext i32 %mul4 to i64
-  %3 = load float** %0, align 8, !tbaa !0
-  %arrayidx6 = getelementptr inbounds float* %3, i64 %idxprom
-  %arrayidx8 = getelementptr inbounds float** %0, i64 %indvars.iv
-  store float* %arrayidx6, float** %arrayidx8, align 8, !tbaa !0
-  br label %for.inc
+; <label>:11                                      ; preds = %21, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %21 ]
+  br i1 %3, label %12, label %17
 
-if.else:                                          ; preds = %for.body
-  %call9 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 63, i32 %ny, i32 4) #8
-  %4 = bitcast i8* %call9 to float*
-  %arrayidx11 = getelementptr inbounds float** %0, i64 %indvars.iv
-  store float* %4, float** %arrayidx11, align 8, !tbaa !0
-  br label %for.inc
+; <label>:12                                      ; preds = %11
+  %13 = mul nsw i64 %indvars.iv, %9
+  %14 = load float** %2, align 8, !tbaa !14
+  %15 = getelementptr inbounds float* %14, i64 %13
+  %16 = getelementptr inbounds float** %2, i64 %indvars.iv
+  store float* %15, float** %16, align 8, !tbaa !14
+  br label %21
 
-for.inc:                                          ; preds = %if.then3, %if.else
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %nx
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:17                                      ; preds = %11
+  %18 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 63, i32 %ny, i32 4) #10
+  %19 = getelementptr inbounds float** %2, i64 %indvars.iv
+  %20 = bitcast float** %19 to i8**
+  store i8* %18, i8** %20, align 8, !tbaa !14
+  br label %21
 
-for.end:                                          ; preds = %for.inc, %for.cond.preheader
-  ret float** %0
+; <label>:21                                      ; preds = %12, %17
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %10
+  br i1 %exitcond, label %._crit_edge, label %11
+
+._crit_edge:                                      ; preds = %21, %.preheader
+  ret float** %2
 }

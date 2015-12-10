@@ -1,87 +1,86 @@
-define internal fastcc void @sendbits(i32* nocapture %buf, i32 %num_of_bits, i32 %num) #0 {
-entry:
-  %add.ptr61 = getelementptr inbounds i32* %buf, i64 3
-  %add.ptr = bitcast i32* %add.ptr61 to i8*
-  %0 = load i32* %buf, align 4, !tbaa !3
-  %arrayidx1 = getelementptr inbounds i32* %buf, i64 1
-  %1 = load i32* %arrayidx1, align 4, !tbaa !3
-  %arrayidx2 = getelementptr inbounds i32* %buf, i64 2
-  %2 = load i32* %arrayidx2, align 4, !tbaa !3
-  %cmp62 = icmp sgt i32 %num_of_bits, 7
-  br i1 %cmp62, label %while.body.lr.ph, label %while.end
+define internal fastcc void @sendbits(i32* nocapture %buf, i32 %num_of_bits, i32 %num) #4 {
+  %1 = getelementptr inbounds i32* %buf, i64 3
+  %2 = bitcast i32* %1 to i8*
+  %3 = load i32* %buf, align 4, !tbaa !23
+  %4 = getelementptr inbounds i32* %buf, i64 1
+  %5 = load i32* %4, align 4, !tbaa !23
+  %6 = getelementptr inbounds i32* %buf, i64 2
+  %7 = load i32* %6, align 4, !tbaa !23
+  %8 = icmp sgt i32 %num_of_bits, 7
+  br i1 %8, label %.lr.ph, label %26
 
-while.body.lr.ph:                                 ; preds = %entry
-  %3 = add i32 %num_of_bits, -8
-  %4 = lshr i32 %3, 3
-  %5 = add i32 %0, %4
-  %6 = shl nuw i32 %4, 3
-  br label %while.body
+.lr.ph:                                           ; preds = %0
+  %9 = add i32 %num_of_bits, -8
+  %10 = lshr i32 %9, 3
+  %11 = add i32 %3, %10
+  %12 = shl nuw i32 %10, 3
+  br label %13
 
-while.body:                                       ; preds = %while.body.lr.ph, %while.body
-  %num_of_bits.addr.065 = phi i32 [ %num_of_bits, %while.body.lr.ph ], [ %sub, %while.body ]
-  %lastbyte.064 = phi i32 [ %2, %while.body.lr.ph ], [ %or, %while.body ]
-  %cnt.063 = phi i32 [ %0, %while.body.lr.ph ], [ %inc, %while.body ]
-  %shl = shl i32 %lastbyte.064, 8
-  %sub = add nsw i32 %num_of_bits.addr.065, -8
-  %shr = ashr i32 %num, %sub
-  %or = or i32 %shr, %shl
-  %shr3 = lshr i32 %or, %1
-  %conv = trunc i32 %shr3 to i8
-  %inc = add i32 %cnt.063, 1
-  %idxprom = zext i32 %cnt.063 to i64
-  %arrayidx4 = getelementptr inbounds i8* %add.ptr, i64 %idxprom
-  store i8 %conv, i8* %arrayidx4, align 1, !tbaa !1
-  %cmp = icmp sgt i32 %sub, 7
-  br i1 %cmp, label %while.body, label %while.cond.while.end_crit_edge
+; <label>:13                                      ; preds = %.lr.ph, %13
+  %.03 = phi i32 [ %num_of_bits, %.lr.ph ], [ %15, %13 ]
+  %lastbyte.02 = phi i32 [ %7, %.lr.ph ], [ %17, %13 ]
+  %cnt.01 = phi i32 [ %3, %.lr.ph ], [ %20, %13 ]
+  %14 = shl i32 %lastbyte.02, 8
+  %15 = add nsw i32 %.03, -8
+  %16 = ashr i32 %num, %15
+  %17 = or i32 %16, %14
+  %18 = lshr i32 %17, %5
+  %19 = trunc i32 %18 to i8
+  %20 = add i32 %cnt.01, 1
+  %21 = zext i32 %cnt.01 to i64
+  %22 = getelementptr inbounds i8* %2, i64 %21
+  store i8 %19, i8* %22, align 1, !tbaa !17
+  %23 = icmp sgt i32 %15, 7
+  br i1 %23, label %13, label %._crit_edge
 
-while.cond.while.end_crit_edge:                   ; preds = %while.body
-  %7 = add i32 %5, 1
-  %8 = sub i32 %3, %6
-  br label %while.end
+._crit_edge:                                      ; preds = %13
+  %24 = add i32 %11, 1
+  %25 = sub i32 %9, %12
+  br label %26
 
-while.end:                                        ; preds = %while.cond.while.end_crit_edge, %entry
-  %num_of_bits.addr.0.lcssa = phi i32 [ %8, %while.cond.while.end_crit_edge ], [ %num_of_bits, %entry ]
-  %lastbyte.0.lcssa = phi i32 [ %or, %while.cond.while.end_crit_edge ], [ %2, %entry ]
-  %cnt.0.lcssa = phi i32 [ %7, %while.cond.while.end_crit_edge ], [ %0, %entry ]
-  %cmp6 = icmp sgt i32 %num_of_bits.addr.0.lcssa, 0
-  br i1 %cmp6, label %if.then, label %if.end19
+; <label>:26                                      ; preds = %._crit_edge, %0
+  %.0.lcssa = phi i32 [ %25, %._crit_edge ], [ %num_of_bits, %0 ]
+  %lastbyte.0.lcssa = phi i32 [ %17, %._crit_edge ], [ %7, %0 ]
+  %cnt.0.lcssa = phi i32 [ %24, %._crit_edge ], [ %3, %0 ]
+  %27 = icmp sgt i32 %.0.lcssa, 0
+  br i1 %27, label %28, label %40
 
-if.then:                                          ; preds = %while.end
-  %shl8 = shl i32 %lastbyte.0.lcssa, %num_of_bits.addr.0.lcssa
-  %or9 = or i32 %shl8, %num
-  %add = add nsw i32 %num_of_bits.addr.0.lcssa, %1
-  %cmp10 = icmp sgt i32 %add, 7
-  br i1 %cmp10, label %if.then12, label %if.end19
+; <label>:28                                      ; preds = %26
+  %29 = shl i32 %lastbyte.0.lcssa, %.0.lcssa
+  %30 = or i32 %29, %num
+  %31 = add nsw i32 %.0.lcssa, %5
+  %32 = icmp sgt i32 %31, 7
+  br i1 %32, label %33, label %40
 
-if.then12:                                        ; preds = %if.then
-  %sub13 = add nsw i32 %add, -8
-  %shr14 = lshr i32 %or9, %sub13
-  %conv15 = trunc i32 %shr14 to i8
-  %inc16 = add i32 %cnt.0.lcssa, 1
-  %idxprom17 = zext i32 %cnt.0.lcssa to i64
-  %arrayidx18 = getelementptr inbounds i8* %add.ptr, i64 %idxprom17
-  store i8 %conv15, i8* %arrayidx18, align 1, !tbaa !1
-  br label %if.end19
+; <label>:33                                      ; preds = %28
+  %34 = add nsw i32 %31, -8
+  %35 = lshr i32 %30, %34
+  %36 = trunc i32 %35 to i8
+  %37 = add i32 %cnt.0.lcssa, 1
+  %38 = zext i32 %cnt.0.lcssa to i64
+  %39 = getelementptr inbounds i8* %2, i64 %38
+  store i8 %36, i8* %39, align 1, !tbaa !17
+  br label %40
 
-if.end19:                                         ; preds = %if.then, %if.then12, %while.end
-  %cnt.1 = phi i32 [ %inc16, %if.then12 ], [ %cnt.0.lcssa, %if.then ], [ %cnt.0.lcssa, %while.end ]
-  %lastbyte.1 = phi i32 [ %or9, %if.then12 ], [ %or9, %if.then ], [ %lastbyte.0.lcssa, %while.end ]
-  %lastbits.0 = phi i32 [ %sub13, %if.then12 ], [ %add, %if.then ], [ %1, %while.end ]
-  store i32 %cnt.1, i32* %buf, align 4, !tbaa !3
-  store i32 %lastbits.0, i32* %arrayidx1, align 4, !tbaa !3
-  store i32 %lastbyte.1, i32* %arrayidx2, align 4, !tbaa !3
-  %cmp23 = icmp sgt i32 %lastbits.0, 0
-  br i1 %cmp23, label %if.then25, label %if.end31
+; <label>:40                                      ; preds = %28, %33, %26
+  %cnt.1 = phi i32 [ %37, %33 ], [ %cnt.0.lcssa, %28 ], [ %cnt.0.lcssa, %26 ]
+  %lastbyte.1 = phi i32 [ %30, %33 ], [ %30, %28 ], [ %lastbyte.0.lcssa, %26 ]
+  %lastbits.0 = phi i32 [ %34, %33 ], [ %31, %28 ], [ %5, %26 ]
+  store i32 %cnt.1, i32* %buf, align 4, !tbaa !23
+  store i32 %lastbits.0, i32* %4, align 4, !tbaa !23
+  store i32 %lastbyte.1, i32* %6, align 4, !tbaa !23
+  %41 = icmp sgt i32 %lastbits.0, 0
+  br i1 %41, label %42, label %48
 
-if.then25:                                        ; preds = %if.end19
-  %sub26 = sub nsw i32 8, %lastbits.0
-  %shl27 = shl i32 %lastbyte.1, %sub26
-  %conv28 = trunc i32 %shl27 to i8
-  %idxprom29 = zext i32 %cnt.1 to i64
-  %arrayidx30 = getelementptr inbounds i8* %add.ptr, i64 %idxprom29
-  store i8 %conv28, i8* %arrayidx30, align 1, !tbaa !1
-  br label %if.end31
+; <label>:42                                      ; preds = %40
+  %43 = sub nsw i32 8, %lastbits.0
+  %44 = shl i32 %lastbyte.1, %43
+  %45 = trunc i32 %44 to i8
+  %46 = zext i32 %cnt.1 to i64
+  %47 = getelementptr inbounds i8* %2, i64 %46
+  store i8 %45, i8* %47, align 1, !tbaa !17
+  br label %48
 
-if.end31:                                         ; preds = %if.then25, %if.end19
+; <label>:48                                      ; preds = %42, %40
   ret void
 }

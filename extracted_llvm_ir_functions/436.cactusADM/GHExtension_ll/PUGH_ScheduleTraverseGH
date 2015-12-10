@@ -1,0 +1,94 @@
+define i32 @PUGH_ScheduleTraverseGH(%struct.cGH* %GH, i8* %where) #1 {
+  %1 = tail call i32 @strcmp(i8* getelementptr inbounds ([14 x i8]* @.str3, i64 0, i64 0), i8* %where) #6
+  %2 = icmp eq i32 %1, 0
+  br i1 %2, label %PUGH_InitGHVariables.exit, label %3
+
+; <label>:3                                       ; preds = %0
+  tail call fastcc void @PUGH_InitGHBasics(%struct.cGH* %GH) #7
+  %4 = tail call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #6
+  %5 = getelementptr inbounds %struct.PGH* %4, i64 0, i32 5
+  %6 = load i32* %5, align 4, !tbaa !55
+  %7 = icmp sgt i32 %6, 0
+  br i1 %7, label %.lr.ph5.i, label %PUGH_InitGHVariables.exit
+
+.lr.ph5.i:                                        ; preds = %3
+  %8 = getelementptr inbounds %struct.PGH* %4, i64 0, i32 7
+  %9 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17
+  br label %10
+
+; <label>:10                                      ; preds = %._crit_edge.i, %.lr.ph5.i
+  %indvars.iv7.i = phi i64 [ 0, %.lr.ph5.i ], [ %indvars.iv.next8.i, %._crit_edge.i ]
+  %11 = trunc i64 %indvars.iv7.i to i32
+  %12 = tail call i32 @CCTK_GroupTypeFromVarI(i32 %11) #6
+  %13 = tail call i32 @CCTK_NumTimeLevelsFromVarI(i32 %11) #6
+  %14 = icmp sgt i32 %13, 0
+  br i1 %14, label %.lr.ph.i, label %._crit_edge.i
+
+.lr.ph.i:                                         ; preds = %10
+  %15 = add i32 %13, -1
+  br label %16
+
+; <label>:16                                      ; preds = %46, %.lr.ph.i
+  %indvars.iv.i = phi i64 [ 0, %.lr.ph.i ], [ %indvars.iv.next.i, %46 ]
+  switch i32 %12, label %44 [
+    i32 1, label %17
+    i32 2, label %29
+    i32 3, label %29
+  ]
+
+; <label>:17                                      ; preds = %16
+  %18 = load i8**** %8, align 8, !tbaa !56
+  %19 = getelementptr inbounds i8*** %18, i64 %indvars.iv7.i
+  %20 = load i8*** %19, align 8, !tbaa !12
+  %21 = getelementptr inbounds i8** %20, i64 %indvars.iv.i
+  %22 = bitcast i8** %21 to i64*
+  %23 = load i64* %22, align 8, !tbaa !12
+  %24 = load i8**** %9, align 8, !tbaa !57
+  %25 = getelementptr inbounds i8*** %24, i64 %indvars.iv7.i
+  %26 = load i8*** %25, align 8, !tbaa !12
+  %27 = getelementptr inbounds i8** %26, i64 %indvars.iv.i
+  %28 = bitcast i8** %27 to i64*
+  store i64 %23, i64* %28, align 8, !tbaa !12
+  br label %46
+
+; <label>:29                                      ; preds = %16, %16
+  %30 = load i8**** %8, align 8, !tbaa !56
+  %31 = getelementptr inbounds i8*** %30, i64 %indvars.iv7.i
+  %32 = load i8*** %31, align 8, !tbaa !12
+  %33 = getelementptr inbounds i8** %32, i64 %indvars.iv.i
+  %34 = bitcast i8** %33 to %struct.PGA**
+  %35 = load %struct.PGA** %34, align 8, !tbaa !12
+  %36 = getelementptr inbounds %struct.PGA* %35, i64 0, i32 4
+  %37 = bitcast i8** %36 to i64*
+  %38 = load i64* %37, align 8, !tbaa !58
+  %39 = load i8**** %9, align 8, !tbaa !57
+  %40 = getelementptr inbounds i8*** %39, i64 %indvars.iv7.i
+  %41 = load i8*** %40, align 8, !tbaa !12
+  %42 = getelementptr inbounds i8** %41, i64 %indvars.iv.i
+  %43 = bitcast i8** %42 to i64*
+  store i64 %38, i64* %43, align 8, !tbaa !12
+  br label %46
+
+; <label>:44                                      ; preds = %16
+  %45 = tail call i32 @CCTK_Warn(i32 1, i32 266, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([41 x i8]* @.str10, i64 0, i64 0)) #6
+  br label %46
+
+; <label>:46                                      ; preds = %44, %29, %17
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.i to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %15
+  br i1 %exitcond, label %._crit_edge.i, label %16
+
+._crit_edge.i:                                    ; preds = %46, %10
+  %indvars.iv.next8.i = add nuw nsw i64 %indvars.iv7.i, 1
+  %47 = load i32* %5, align 4, !tbaa !55
+  %48 = sext i32 %47 to i64
+  %49 = icmp slt i64 %indvars.iv.next8.i, %48
+  br i1 %49, label %10, label %PUGH_InitGHVariables.exit
+
+PUGH_InitGHVariables.exit:                        ; preds = %._crit_edge.i, %3, %0
+  %50 = bitcast %struct.cGH* %GH to i8*
+  %51 = load i32 (i8*, %struct.cFunctionData*, i8*)** @PUGHCallFunc, align 8, !tbaa !12
+  %52 = tail call i32 @CCTK_ScheduleTraverse(i8* %where, i8* %50, i32 (i8*, %struct.cFunctionData*, i8*)* %51) #6
+  ret i32 %52
+}

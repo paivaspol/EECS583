@@ -1,0 +1,246 @@
+define i32 @re_search_2(%struct.re_pattern_buffer* nocapture %bufp, i8* %string1, i32 %size1, i8* %string2, i32 %size2, i32 %startpos, i32 %range, %struct.re_registers* %regs, i32 %stop) #0 {
+  %1 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 4
+  %2 = load i8** %1, align 8, !tbaa !6
+  %3 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 5
+  %4 = load i8** %3, align 8, !tbaa !16
+  %5 = add nsw i32 %size2, %size1
+  %6 = add nsw i32 %range, %startpos
+  %7 = icmp slt i32 %startpos, 0
+  %8 = icmp slt i32 %5, %startpos
+  %or.cond11 = or i1 %7, %8
+  br i1 %or.cond11, label %.loopexit, label %9
+
+; <label>:9                                       ; preds = %0
+  %10 = icmp slt i32 %6, 0
+  br i1 %10, label %11, label %13
+
+; <label>:11                                      ; preds = %9
+  %12 = sub nsw i32 0, %startpos
+  br label %16
+
+; <label>:13                                      ; preds = %9
+  %14 = icmp sgt i32 %6, %5
+  %15 = sub nsw i32 %5, %startpos
+  %.range = select i1 %14, i32 %15, i32 %range
+  br label %16
+
+; <label>:16                                      ; preds = %13, %11
+  %.07 = phi i32 [ %12, %11 ], [ %.range, %13 ]
+  %17 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 2
+  %18 = load i64* %17, align 8, !tbaa !11
+  %19 = icmp ne i64 %18, 0
+  %20 = icmp sgt i32 %.07, 0
+  %or.cond = and i1 %20, %19
+  br i1 %or.cond, label %21, label %31
+
+; <label>:21                                      ; preds = %16
+  %22 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 0
+  %23 = load i8** %22, align 8, !tbaa !10
+  %24 = load i8* %23, align 1, !tbaa !12
+  switch i8 %24, label %31 [
+    i8 11, label %29
+    i8 9, label %25
+  ]
+
+; <label>:25                                      ; preds = %21
+  %26 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 7
+  %27 = load i8* %26, align 8
+  %28 = icmp slt i8 %27, 0
+  br i1 %28, label %31, label %29
+
+; <label>:29                                      ; preds = %21, %25
+  %30 = icmp sgt i32 %startpos, 0
+  br i1 %30, label %.loopexit, label %31
+
+; <label>:31                                      ; preds = %29, %21, %25, %16
+  %.18 = phi i32 [ %.07, %25 ], [ %.07, %16 ], [ %.07, %21 ], [ 1, %29 ]
+  %32 = icmp ne i8* %2, null
+  %33 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 7
+  br i1 %32, label %34, label %.preheader19
+
+; <label>:34                                      ; preds = %31
+  %35 = load i8* %33, align 8
+  %36 = and i8 %35, 8
+  %37 = icmp eq i8 %36, 0
+  br i1 %37, label %38, label %.preheader19
+
+; <label>:38                                      ; preds = %34
+  %39 = tail call i32 @re_compile_fastmap(%struct.re_pattern_buffer* %bufp) #8
+  %40 = icmp eq i32 %39, -2
+  br i1 %40, label %.loopexit, label %.preheader19
+
+.preheader19:                                     ; preds = %31, %38, %34
+  %41 = icmp eq i8* %4, null
+  %42 = sext i32 %size1 to i64
+  %43 = sub nsw i64 0, %42
+  %44 = getelementptr inbounds i8* %string2, i64 %43
+  %45 = icmp ne i32 %size1, 0
+  br label %.backedge
+
+.backedge:                                        ; preds = %125, %122, %.preheader19
+  %.29 = phi i32 [ %.18, %.preheader19 ], [ %123, %122 ], [ %126, %125 ]
+  %.06 = phi i32 [ %startpos, %.preheader19 ], [ %124, %122 ], [ %127, %125 ]
+  %46 = icmp slt i32 %.06, %5
+  %or.cond12 = and i1 %32, %46
+  br i1 %or.cond12, label %47, label %106
+
+; <label>:47                                      ; preds = %.backedge
+  %48 = load i8* %33, align 8
+  %49 = and i8 %48, 1
+  %50 = icmp eq i8 %49, 0
+  br i1 %50, label %51, label %106
+
+; <label>:51                                      ; preds = %47
+  %52 = icmp sgt i32 %.29, 0
+  br i1 %52, label %53, label %87
+
+; <label>:53                                      ; preds = %51
+  %54 = icmp sge i32 %.06, %size1
+  %55 = add i32 %.06, %.29
+  %56 = icmp slt i32 %55, %size1
+  %or.cond14 = or i1 %54, %56
+  br i1 %or.cond14, label %60, label %57
+
+; <label>:57                                      ; preds = %53
+  %58 = sub i32 %.29, %size1
+  %59 = add i32 %58, %.06
+  br label %60
+
+; <label>:60                                      ; preds = %53, %57
+  %lim.0 = phi i32 [ %59, %57 ], [ 0, %53 ]
+  %61 = icmp slt i32 %.06, %size1
+  %string1. = select i1 %61, i8* %string1, i8* %44
+  %62 = sext i32 %.06 to i64
+  %63 = getelementptr inbounds i8* %string1., i64 %62
+  %64 = icmp sgt i32 %.29, %lim.0
+  br i1 %41, label %.preheader, label %.preheader17
+
+.preheader17:                                     ; preds = %60
+  br i1 %64, label %.lr.ph, label %.critedge
+
+.preheader:                                       ; preds = %60
+  br i1 %64, label %.lr.ph26, label %.critedge
+
+.lr.ph:                                           ; preds = %.preheader17, %73
+  %d.021 = phi i8* [ %74, %73 ], [ %63, %.preheader17 ]
+  %.320 = phi i32 [ %75, %73 ], [ %.29, %.preheader17 ]
+  %65 = load i8* %d.021, align 1, !tbaa !12
+  %66 = zext i8 %65 to i64
+  %67 = getelementptr inbounds i8* %4, i64 %66
+  %68 = load i8* %67, align 1, !tbaa !12
+  %69 = zext i8 %68 to i64
+  %70 = getelementptr inbounds i8* %2, i64 %69
+  %71 = load i8* %70, align 1, !tbaa !12
+  %72 = icmp eq i8 %71, 0
+  br i1 %72, label %73, label %.critedge
+
+; <label>:73                                      ; preds = %.lr.ph
+  %74 = getelementptr inbounds i8* %d.021, i64 1
+  %75 = add nsw i32 %.320, -1
+  %76 = icmp sgt i32 %75, %lim.0
+  br i1 %76, label %.lr.ph, label %.critedge
+
+.lr.ph26:                                         ; preds = %.preheader, %82
+  %d.125 = phi i8* [ %83, %82 ], [ %63, %.preheader ]
+  %.424 = phi i32 [ %84, %82 ], [ %.29, %.preheader ]
+  %77 = load i8* %d.125, align 1, !tbaa !12
+  %78 = zext i8 %77 to i64
+  %79 = getelementptr inbounds i8* %2, i64 %78
+  %80 = load i8* %79, align 1, !tbaa !12
+  %81 = icmp eq i8 %80, 0
+  br i1 %81, label %82, label %.critedge
+
+; <label>:82                                      ; preds = %.lr.ph26
+  %83 = getelementptr inbounds i8* %d.125, i64 1
+  %84 = add nsw i32 %.424, -1
+  %85 = icmp sgt i32 %84, %lim.0
+  br i1 %85, label %.lr.ph26, label %.critedge
+
+.critedge:                                        ; preds = %73, %.lr.ph, %82, %.lr.ph26, %.preheader17, %.preheader
+  %.5 = phi i32 [ %.29, %.preheader ], [ %.29, %.preheader17 ], [ %.424, %.lr.ph26 ], [ %84, %82 ], [ %.320, %.lr.ph ], [ %75, %73 ]
+  %86 = sub i32 %55, %.5
+  br label %106
+
+; <label>:87                                      ; preds = %51
+  %88 = icmp slt i32 %.06, %size1
+  %or.cond15 = and i1 %45, %88
+  br i1 %or.cond15, label %93, label %89
+
+; <label>:89                                      ; preds = %87
+  %90 = sub nsw i32 %.06, %size1
+  %91 = sext i32 %90 to i64
+  %92 = getelementptr inbounds i8* %string2, i64 %91
+  br label %96
+
+; <label>:93                                      ; preds = %87
+  %94 = sext i32 %.06 to i64
+  %95 = getelementptr inbounds i8* %string1, i64 %94
+  br label %96
+
+; <label>:96                                      ; preds = %93, %89
+  %.sink.in = phi i8* [ %92, %89 ], [ %95, %93 ]
+  %.sink10 = load i8* %.sink.in, align 1
+  br i1 %41, label %101, label %97
+
+; <label>:97                                      ; preds = %96
+  %98 = zext i8 %.sink10 to i64
+  %99 = getelementptr inbounds i8* %4, i64 %98
+  %100 = load i8* %99, align 1, !tbaa !12
+  br label %101
+
+; <label>:101                                     ; preds = %96, %97
+  %.sink3 = phi i8 [ %100, %97 ], [ %.sink10, %96 ]
+  %102 = zext i8 %.sink3 to i64
+  %103 = getelementptr inbounds i8* %2, i64 %102
+  %104 = load i8* %103, align 1, !tbaa !12
+  %105 = icmp eq i8 %104, 0
+  br i1 %105, label %118, label %106
+
+; <label>:106                                     ; preds = %101, %47, %.critedge, %.backedge
+  %.6 = phi i32 [ %.29, %47 ], [ %.5, %.critedge ], [ %.29, %101 ], [ %.29, %.backedge ]
+  %.1 = phi i32 [ %.06, %47 ], [ %86, %.critedge ], [ %.06, %101 ], [ %.06, %.backedge ]
+  %107 = icmp sgt i32 %.6, -1
+  %108 = icmp eq i32 %.1, %5
+  %or.cond5 = and i1 %32, %108
+  %or.cond16 = and i1 %107, %or.cond5
+  br i1 %or.cond16, label %109, label %113
+
+; <label>:109                                     ; preds = %106
+  %110 = load i8* %33, align 8
+  %111 = and i8 %110, 1
+  %112 = icmp eq i8 %111, 0
+  br i1 %112, label %.loopexit, label %113
+
+; <label>:113                                     ; preds = %109, %106
+  %114 = tail call fastcc i32 @re_match_2_internal(%struct.re_pattern_buffer* %bufp, i8* %string1, i32 %size1, i8* %string2, i32 %size2, i32 %.1, %struct.re_registers* %regs, i32 %stop) #8
+  %115 = icmp sgt i32 %114, -1
+  br i1 %115, label %.loopexit, label %116
+
+; <label>:116                                     ; preds = %113
+  %117 = icmp eq i32 %114, -2
+  br i1 %117, label %.loopexit, label %118
+
+; <label>:118                                     ; preds = %101, %116
+  %.7 = phi i32 [ %.6, %116 ], [ %.29, %101 ]
+  %.2 = phi i32 [ %.1, %116 ], [ %.06, %101 ]
+  %119 = icmp eq i32 %.7, 0
+  br i1 %119, label %.loopexit, label %120
+
+; <label>:120                                     ; preds = %118
+  %121 = icmp sgt i32 %.7, 0
+  br i1 %121, label %122, label %125
+
+; <label>:122                                     ; preds = %120
+  %123 = add nsw i32 %.7, -1
+  %124 = add nsw i32 %.2, 1
+  br label %.backedge
+
+; <label>:125                                     ; preds = %120
+  %126 = add nsw i32 %.7, 1
+  %127 = add nsw i32 %.2, -1
+  br label %.backedge
+
+.loopexit:                                        ; preds = %118, %116, %113, %109, %38, %29, %0
+  %.0 = phi i32 [ -1, %0 ], [ -1, %29 ], [ -2, %38 ], [ -1, %109 ], [ %.1, %113 ], [ -2, %116 ], [ -1, %118 ]
+  ret i32 %.0
+}

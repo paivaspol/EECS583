@@ -1,0 +1,67 @@
+define internal fastcc i32 @internal_get(i32 %handle, i32 %type_code, i32 %N_value_buffer, i8* %value_buffer, i8* %key) #1 {
+  %1 = icmp sgt i32 %handle, -1
+  %2 = load i32* @N_thp_array, align 4
+  %3 = icmp sgt i32 %2, %handle
+  %or.cond.i = and i1 %1, %3
+  br i1 %or.cond.i, label %get_table_header_ptr.exit, label %get_table_header_ptr.exit.thread
+
+get_table_header_ptr.exit:                        ; preds = %0
+  %4 = sext i32 %handle to i64
+  %5 = load i8*** @thp_array, align 8, !tbaa !6
+  %6 = getelementptr inbounds i8** %5, i64 %4
+  %7 = bitcast i8** %6 to %struct.table_header**
+  %8 = load %struct.table_header** %7, align 8, !tbaa !6
+  %9 = icmp eq %struct.table_header* %8, null
+  br i1 %9, label %get_table_header_ptr.exit.thread, label %10
+
+; <label>:10                                      ; preds = %get_table_header_ptr.exit
+  %11 = tail call i8* @strchr(i8* %key, i32 47) #10
+  %not..i = icmp eq i8* %11, null
+  br i1 %not..i, label %12, label %get_table_header_ptr.exit.thread
+
+; <label>:12                                      ; preds = %10
+  %13 = tail call fastcc %struct.table_entry* @find_table_entry(%struct.table_header* %8, i8* %key, %struct.table_entry** null) #9
+  %14 = icmp eq %struct.table_entry* %13, null
+  br i1 %14, label %get_table_header_ptr.exit.thread, label %15
+
+; <label>:15                                      ; preds = %12
+  %16 = getelementptr inbounds %struct.table_entry* %13, i64 0, i32 2
+  %17 = load i32* %16, align 4, !tbaa !16
+  %18 = icmp eq i32 %17, %type_code
+  br i1 %18, label %19, label %get_table_header_ptr.exit.thread
+
+; <label>:19                                      ; preds = %15
+  %20 = icmp eq i8* %value_buffer, null
+  br i1 %20, label %._crit_edge, label %21
+
+._crit_edge:                                      ; preds = %19
+  %.pre = getelementptr inbounds %struct.table_entry* %13, i64 0, i32 3
+  br label %34
+
+; <label>:21                                      ; preds = %19
+  %22 = icmp slt i32 %N_value_buffer, 0
+  br i1 %22, label %get_table_header_ptr.exit.thread, label %23
+
+; <label>:23                                      ; preds = %21
+  %24 = getelementptr inbounds %struct.table_entry* %13, i64 0, i32 3
+  %25 = load i32* %24, align 4, !tbaa !17
+  %26 = icmp sgt i32 %25, %N_value_buffer
+  %N_value_buffer. = select i1 %26, i32 %N_value_buffer, i32 %25
+  %27 = tail call i32 @CCTK_VarTypeSize(i32 %type_code) #10
+  %28 = mul nsw i32 %N_value_buffer., %27
+  %29 = sext i32 %28 to i64
+  %30 = getelementptr inbounds %struct.table_entry* %13, i64 0, i32 4
+  %31 = load i8** %30, align 8, !tbaa !15
+  %32 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %value_buffer, i1 false)
+  %33 = tail call i8* @__memcpy_chk(i8* %value_buffer, i8* %31, i64 %29, i64 %32) #10
+  br label %34
+
+; <label>:34                                      ; preds = %._crit_edge, %23
+  %.pre-phi = phi i32* [ %.pre, %._crit_edge ], [ %24, %23 ]
+  %35 = load i32* %.pre-phi, align 4, !tbaa !17
+  br label %get_table_header_ptr.exit.thread
+
+get_table_header_ptr.exit.thread:                 ; preds = %10, %0, %21, %15, %12, %get_table_header_ptr.exit, %34
+  %.0 = phi i32 [ %35, %34 ], [ -2, %get_table_header_ptr.exit ], [ -101, %10 ], [ -103, %12 ], [ -104, %15 ], [ -3, %21 ], [ -2, %0 ]
+  ret i32 %.0
+}

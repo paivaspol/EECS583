@@ -1,0 +1,18 @@
+define %struct.T_SKTREE* @CCTK_ImpThornList(i8* %name) #1 {
+  %1 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %2 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %1, i8* %name) #7
+  %3 = icmp eq %struct.T_SKTREE* %2, null
+  br i1 %3, label %10, label %4
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %struct.T_SKTREE* %2, i64 0, i32 5
+  %6 = bitcast i8** %5 to %struct.IMPLEMENTATION**
+  %7 = load %struct.IMPLEMENTATION** %6, align 8, !tbaa !20
+  %8 = getelementptr inbounds %struct.IMPLEMENTATION* %7, i64 0, i32 1
+  %9 = load %struct.T_SKTREE** %8, align 8, !tbaa !15
+  br label %10
+
+; <label>:10                                      ; preds = %0, %4
+  %retval.0 = phi %struct.T_SKTREE* [ %9, %4 ], [ null, %0 ]
+  ret %struct.T_SKTREE* %retval.0
+}

@@ -1,0 +1,24 @@
+define i32 @PUGH_InitGH(%struct.cGH* %GH) #1 {
+  %1 = load i32* getelementptr inbounds (%struct.anon.0* @pughpriv_, i64 0, i32 12), align 4, !tbaa !33
+  tail call fastcc void @PUGH_InitGHBasics(%struct.cGH* %GH) #7
+  %2 = icmp eq i32 %1, 0
+  br i1 %2, label %.loopexit, label %.preheader
+
+.preheader:                                       ; preds = %0
+  %3 = tail call i32 @CCTK_NumGroups() #6
+  %4 = icmp sgt i32 %3, 0
+  br i1 %4, label %.lr.ph, label %.loopexit
+
+.lr.ph:                                           ; preds = %.preheader, %.lr.ph
+  %i.01 = phi i32 [ %8, %.lr.ph ], [ 0, %.preheader ]
+  %5 = load i32 (%struct.cGH*, i8*)** @CCTK_EnableGroupStorage, align 8, !tbaa !12
+  %6 = tail call i8* @CCTK_GroupName(i32 %i.01) #6
+  %7 = tail call i32 %5(%struct.cGH* %GH, i8* %6) #6
+  %8 = add nuw nsw i32 %i.01, 1
+  %9 = tail call i32 @CCTK_NumGroups() #6
+  %10 = icmp slt i32 %8, %9
+  br i1 %10, label %.lr.ph, label %.loopexit
+
+.loopexit:                                        ; preds = %.lr.ph, %.preheader, %0
+  ret i32 0
+}

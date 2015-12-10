@@ -1,38 +1,41 @@
-define void @printcmap(%struct._IO_FILE* nocapture %out, i32 %n, %struct.t_mapping* nocapture %map) #0 {
-entry:
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str10, i64 0, i64 0), i32 %n) #8
-  %cmp52 = icmp sgt i32 %n, 0
-  br i1 %cmp52, label %for.body, label %for.end
+define void @printcmap(%struct.__sFILE* nocapture %out, i32 %n, %struct.t_mapping* nocapture readonly %map) #3 {
+  %1 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str10, i64 0, i64 0), i32 %n) #10
+  %2 = icmp sgt i32 %n, 0
+  br i1 %2, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %c1 = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 0, i32 0
-  %0 = load i8* %c1, align 1, !tbaa !1
-  %tobool = icmp eq i8 %0, 0
-  %conv = sext i8 %0 to i32
-  %.conv = select i1 %tobool, i32 32, i32 %conv
-  %c2 = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 0, i32 1
-  %1 = load i8* %c2, align 1, !tbaa !1
-  %tobool10 = icmp eq i8 %1, 0
-  %conv9 = sext i8 %1 to i32
-  %cond19 = select i1 %tobool10, i32 32, i32 %conv9
-  %desc = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 1
-  %2 = load i8** %desc, align 8, !tbaa !0
-  %r = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 2, i32 0
-  %3 = load float* %r, align 4, !tbaa !5
-  %conv24 = fpext float %3 to double
-  %g = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 2, i32 1
-  %4 = load float* %g, align 4, !tbaa !5
-  %conv28 = fpext float %4 to double
-  %b = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 2, i32 2
-  %5 = load float* %b, align 4, !tbaa !5
-  %conv32 = fpext float %5 to double
-  %call33 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([30 x i8]* @.str11, i64 0, i64 0), i32 %.conv, i32 %cond19, i8* %2, double %conv24, double %conv28, double %conv32) #8
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %3 = add i32 %n, -1
+  br label %4
 
-for.end:                                          ; preds = %for.body, %entry
+; <label>:4                                       ; preds = %4, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %4 ]
+  %5 = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 0, i32 0
+  %6 = load i8* %5, align 1, !tbaa !16
+  %7 = icmp eq i8 %6, 0
+  %8 = sext i8 %6 to i32
+  %. = select i1 %7, i32 32, i32 %8
+  %9 = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 0, i32 1
+  %10 = load i8* %9, align 1, !tbaa !21
+  %11 = icmp eq i8 %10, 0
+  %12 = sext i8 %10 to i32
+  %13 = select i1 %11, i32 32, i32 %12
+  %14 = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 1
+  %15 = load i8** %14, align 8, !tbaa !22
+  %16 = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 2, i32 0
+  %17 = load float* %16, align 4, !tbaa !25
+  %18 = fpext float %17 to double
+  %19 = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 2, i32 1
+  %20 = load float* %19, align 4, !tbaa !26
+  %21 = fpext float %20 to double
+  %22 = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 2, i32 2
+  %23 = load float* %22, align 4, !tbaa !27
+  %24 = fpext float %23 to double
+  %25 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([30 x i8]* @.str11, i64 0, i64 0), i32 %., i32 %13, i8* %15, double %18, double %21, double %24) #10
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %3
+  br i1 %exitcond, label %._crit_edge, label %4
+
+._crit_edge:                                      ; preds = %4, %0
   ret void
 }

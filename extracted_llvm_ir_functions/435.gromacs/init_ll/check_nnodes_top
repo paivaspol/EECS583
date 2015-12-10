@@ -1,33 +1,32 @@
-define void @check_nnodes_top(i8* %fn, %struct.t_topology* nocapture %top, i32 %nnodes) #0 {
-entry:
-  br label %land.rhs
+define void @check_nnodes_top(i8* %fn, %struct.t_topology* nocapture readonly %top, i32 %nnodes) #4 {
+  br label %1
 
-for.cond:                                         ; preds = %land.rhs
-  %0 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp sgt i32 %0, 0
-  br i1 %cmp, label %land.rhs, label %for.end
+; <label>:1                                       ; preds = %0, %6
+  %indvars.iv = phi i64 [ 255, %0 ], [ %indvars.iv.next, %6 ]
+  %i.01 = phi i32 [ 255, %0 ], [ %7, %6 ]
+  %2 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, i32 0, i64 %indvars.iv
+  %3 = load i32* %2, align 4, !tbaa !8
+  %4 = icmp eq i32 %3, 0
+  %5 = trunc i64 %indvars.iv to i32
+  br i1 %4, label %6, label %.critedge
 
-land.rhs:                                         ; preds = %entry, %for.cond
-  %indvars.iv = phi i64 [ 255, %entry ], [ %indvars.iv.next, %for.cond ]
-  %i.09 = phi i32 [ 255, %entry ], [ %dec, %for.cond ]
-  %arrayidx1 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, i32 0, i64 %indvars.iv
-  %1 = load i32* %arrayidx1, align 4, !tbaa !0
-  %cmp2 = icmp eq i32 %1, 0
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %dec = add nsw i32 %i.09, -1
-  br i1 %cmp2, label %for.cond, label %for.end
+; <label>:6                                       ; preds = %1
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1
+  %7 = add nsw i32 %i.01, -1
+  %8 = icmp sgt i64 %indvars.iv, 1
+  br i1 %8, label %1, label %.critedge
 
-for.end:                                          ; preds = %for.cond, %land.rhs
-  %i.0.lcssa = phi i32 [ %dec, %for.cond ], [ %i.09, %land.rhs ]
-  %add = add nsw i32 %i.0.lcssa, 1
-  %cmp3 = icmp eq i32 %add, %nnodes
-  br i1 %cmp3, label %if.end, label %if.then
+.critedge:                                        ; preds = %6, %1
+  %i.0.lcssa = phi i32 [ %7, %6 ], [ %5, %1 ]
+  %9 = add nsw i32 %i.0.lcssa, 1
+  %10 = icmp eq i32 %9, %nnodes
+  br i1 %10, label %13, label %11
 
-if.then:                                          ; preds = %for.end
-  %call = tail call i8* @ShortProgram() #4
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([95 x i8]* @.str, i64 0, i64 0), i8* %fn, i32 %add, i8* %call, i32 %nnodes) #4
-  br label %if.end
+; <label>:11                                      ; preds = %.critedge
+  %12 = tail call i8* @ShortProgram() #8
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([95 x i8]* @.str, i64 0, i64 0), i8* %fn, i32 %9, i8* %12, i32 %nnodes) #8
+  br label %13
 
-if.end:                                           ; preds = %for.end, %if.then
+; <label>:13                                      ; preds = %.critedge, %11
   ret void
 }

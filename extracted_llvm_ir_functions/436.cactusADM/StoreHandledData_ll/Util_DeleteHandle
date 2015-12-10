@@ -1,0 +1,37 @@
+define i32 @Util_DeleteHandle(%struct.cHandledData* nocapture %storage, i32 %handle) #1 {
+  %1 = icmp sgt i32 %handle, -1
+  br i1 %1, label %2, label %20
+
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 1
+  %4 = load i32* %3, align 4, !tbaa !9
+  %5 = icmp ugt i32 %4, %handle
+  br i1 %5, label %6, label %20
+
+; <label>:6                                       ; preds = %2
+  %7 = sext i32 %handle to i64
+  %8 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 0
+  %9 = load %struct.cHandleStorage** %8, align 8, !tbaa !6
+  %10 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %7, i32 0
+  store i32 0, i32* %10, align 4, !tbaa !11
+  %11 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %7, i32 2
+  store i8* null, i8** %11, align 8, !tbaa !13
+  %12 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %7, i32 1
+  %13 = load i8** %12, align 8, !tbaa !14
+  tail call void @free(i8* %13) #7
+  %14 = load %struct.cHandleStorage** %8, align 8, !tbaa !6
+  %15 = getelementptr inbounds %struct.cHandleStorage* %14, i64 %7, i32 1
+  store i8* null, i8** %15, align 8, !tbaa !14
+  %16 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 2
+  %17 = load i32* %16, align 4, !tbaa !10
+  %18 = icmp ugt i32 %17, %handle
+  br i1 %18, label %19, label %20
+
+; <label>:19                                      ; preds = %6
+  store i32 %handle, i32* %16, align 4, !tbaa !10
+  br label %20
+
+; <label>:20                                      ; preds = %0, %2, %6, %19
+  %return_code.0 = phi i32 [ 0, %19 ], [ 0, %6 ], [ 1, %2 ], [ 1, %0 ]
+  ret i32 %return_code.0
+}

@@ -1,0 +1,52 @@
+define i32 @CCTK_GroupData(i32 %group, %struct.cGroup* %gp) #2 {
+  %1 = icmp sgt i32 %group, -1
+  br i1 %1, label %2, label %.thread
+
+; <label>:2                                       ; preds = %0
+  %3 = load i32* @n_groups, align 4, !tbaa !6
+  %phitmp = icmp sle i32 %3, %group
+  %4 = sext i1 %phitmp to i32
+  br i1 %phitmp, label %.thread, label %5
+
+; <label>:5                                       ; preds = %2
+  %6 = icmp eq %struct.cGroup* %gp, null
+  br i1 %6, label %.thread, label %7
+
+; <label>:7                                       ; preds = %5
+  %8 = sext i32 %group to i64
+  %9 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
+  %10 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 4
+  %11 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 9
+  %12 = load i32* %11, align 4, !tbaa !16
+  %13 = getelementptr inbounds %struct.cGroup* %gp, i64 0, i32 4
+  store i32 %12, i32* %13, align 4, !tbaa !17
+  %14 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 11
+  %15 = load i32* %14, align 4, !tbaa !11
+  %16 = getelementptr inbounds %struct.cGroup* %gp, i64 0, i32 5
+  store i32 %15, i32* %16, align 4, !tbaa !19
+  %17 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 10
+  %18 = load i32* %17, align 4, !tbaa !20
+  %19 = getelementptr inbounds %struct.cGroup* %gp, i64 0, i32 6
+  store i32 %18, i32* %19, align 4, !tbaa !21
+  %20 = bitcast i32* %10 to <4 x i32>*
+  %21 = load <4 x i32>* %20, align 4, !tbaa !6
+  %22 = bitcast %struct.cGroup* %gp to <4 x i32>*
+  store <4 x i32> %21, <4 x i32>* %22, align 4, !tbaa !6
+  %23 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 15
+  %24 = load i8** %23, align 8, !tbaa !22
+  %25 = icmp eq i8* %24, null
+  %26 = getelementptr inbounds %struct.cGroup* %gp, i64 0, i32 7
+  br i1 %25, label %28, label %27
+
+; <label>:27                                      ; preds = %7
+  store i32 1, i32* %26, align 4, !tbaa !23
+  br label %.thread
+
+; <label>:28                                      ; preds = %7
+  store i32 0, i32* %26, align 4, !tbaa !23
+  br label %.thread
+
+.thread:                                          ; preds = %0, %5, %28, %27, %2
+  %retval.0 = phi i32 [ %4, %2 ], [ %4, %27 ], [ %4, %28 ], [ -2, %5 ], [ -1, %0 ]
+  ret i32 %retval.0
+}

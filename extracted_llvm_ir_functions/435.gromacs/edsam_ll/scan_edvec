@@ -1,36 +1,39 @@
-define void @scan_edvec(%struct._IO_FILE* %in, i32 %nr, [3 x float]* nocapture %vec) #0 {
-entry:
+define void @scan_edvec(%struct.__sFILE* %in, i32 %nr, [3 x float]* nocapture %vec) #4 {
   %line = alloca [4097 x i8], align 16
   %x = alloca double, align 8
   %y = alloca double, align 8
   %z = alloca double, align 8
-  %0 = getelementptr inbounds [4097 x i8]* %line, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 4097, i8* %0) #3
-  %cmp18 = icmp sgt i32 %nr, 0
-  br i1 %cmp18, label %for.body, label %for.end
+  %1 = getelementptr inbounds [4097 x i8]* %line, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4097, i8* %1) #6
+  %2 = icmp sgt i32 %nr, 0
+  br i1 %2, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %call = call i8* @fgets2(i8* %0, i32 4096, %struct._IO_FILE* %in) #6
-  %call2 = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %0, i8* getelementptr inbounds ([10 x i8]* @.str42, i64 0, i64 0), double* %x, double* %y, double* %z) #6
-  %1 = load double* %x, align 8, !tbaa !5
-  %conv = fptrunc double %1 to float
-  %arrayidx3 = getelementptr inbounds [3 x float]* %vec, i64 %indvars.iv, i64 0
-  store float %conv, float* %arrayidx3, align 4, !tbaa !4
-  %2 = load double* %y, align 8, !tbaa !5
-  %conv4 = fptrunc double %2 to float
-  %arrayidx7 = getelementptr inbounds [3 x float]* %vec, i64 %indvars.iv, i64 1
-  store float %conv4, float* %arrayidx7, align 4, !tbaa !4
-  %3 = load double* %z, align 8, !tbaa !5
-  %conv8 = fptrunc double %3 to float
-  %arrayidx11 = getelementptr inbounds [3 x float]* %vec, i64 %indvars.iv, i64 2
-  store float %conv8, float* %arrayidx11, align 4, !tbaa !4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %nr
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %3 = add i32 %nr, -1
+  br label %4
 
-for.end:                                          ; preds = %for.body, %entry
-  call void @llvm.lifetime.end(i64 4097, i8* %0) #3
+; <label>:4                                       ; preds = %4, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %4 ]
+  %5 = call i8* @fgets2(i8* %1, i32 4096, %struct.__sFILE* %in) #11
+  %6 = call i32 (i8*, i8*, ...)* @sscanf(i8* %1, i8* getelementptr inbounds ([10 x i8]* @.str42, i64 0, i64 0), double* %x, double* %y, double* %z) #11
+  %7 = load double* %x, align 8, !tbaa !6
+  %8 = fptrunc double %7 to float
+  %9 = getelementptr inbounds [3 x float]* %vec, i64 %indvars.iv, i64 0
+  store float %8, float* %9, align 4, !tbaa !2
+  %10 = load double* %y, align 8, !tbaa !6
+  %11 = fptrunc double %10 to float
+  %12 = getelementptr inbounds [3 x float]* %vec, i64 %indvars.iv, i64 1
+  store float %11, float* %12, align 4, !tbaa !2
+  %13 = load double* %z, align 8, !tbaa !6
+  %14 = fptrunc double %13 to float
+  %15 = getelementptr inbounds [3 x float]* %vec, i64 %indvars.iv, i64 2
+  store float %14, float* %15, align 4, !tbaa !2
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %3
+  br i1 %exitcond, label %._crit_edge, label %4
+
+._crit_edge:                                      ; preds = %4, %0
+  call void @llvm.lifetime.end(i64 4097, i8* %1) #6
   ret void
 }

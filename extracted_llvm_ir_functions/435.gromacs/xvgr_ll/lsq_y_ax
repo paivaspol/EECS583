@@ -1,32 +1,36 @@
-define void @lsq_y_ax(i32 %n, float* nocapture %x, float* nocapture %y, float* nocapture %a) #0 {
-entry:
-  %cmp20 = icmp sgt i32 %n, 0
-  br i1 %cmp20, label %for.body, label %for.end
+define void @lsq_y_ax(i32 %n, float* nocapture readonly %x, float* nocapture readonly %y, float* nocapture %a) #4 {
+  %1 = icmp sgt i32 %n, 0
+  br i1 %1, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %yx.023 = phi double [ %add, %for.body ], [ 0.000000e+00, %entry ]
-  %xx.022 = phi double [ %add9, %for.body ], [ 0.000000e+00, %entry ]
-  %arrayidx = getelementptr inbounds float* %y, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !3
-  %arrayidx2 = getelementptr inbounds float* %x, i64 %indvars.iv
-  %1 = load float* %arrayidx2, align 4, !tbaa !3
-  %mul = fmul float %0, %1
-  %conv = fpext float %mul to double
-  %add = fadd double %yx.023, %conv
-  %mul7 = fmul float %1, %1
-  %conv8 = fpext float %mul7 to double
-  %add9 = fadd double %xx.022, %conv8
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %n, -1
+  br label %3
 
-for.end:                                          ; preds = %for.body, %entry
-  %yx.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add, %for.body ]
-  %xx.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add9, %for.body ]
-  %div = fdiv double %yx.0.lcssa, %xx.0.lcssa
-  %conv10 = fptrunc double %div to float
-  store float %conv10, float* %a, align 4, !tbaa !3
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
+  %4 = phi <2 x double> [ zeroinitializer, %.lr.ph ], [ %15, %3 ]
+  %5 = getelementptr inbounds float* %y, i64 %indvars.iv
+  %6 = load float* %5, align 4, !tbaa !14
+  %7 = getelementptr inbounds float* %x, i64 %indvars.iv
+  %8 = load float* %7, align 4, !tbaa !14
+  %9 = insertelement <2 x float> undef, float %6, i32 0
+  %10 = insertelement <2 x float> %9, float %8, i32 1
+  %11 = insertelement <2 x float> undef, float %8, i32 0
+  %12 = insertelement <2 x float> %11, float %8, i32 1
+  %13 = fmul <2 x float> %10, %12
+  %14 = fpext <2 x float> %13 to <2 x double>
+  %15 = fadd <2 x double> %4, %14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %2
+  br i1 %exitcond, label %._crit_edge, label %3
+
+._crit_edge:                                      ; preds = %3, %0
+  %16 = phi <2 x double> [ zeroinitializer, %0 ], [ %15, %3 ]
+  %17 = extractelement <2 x double> %16, i32 0
+  %18 = extractelement <2 x double> %16, i32 1
+  %19 = fdiv double %17, %18
+  %20 = fptrunc double %19 to float
+  store float %20, float* %a, align 4, !tbaa !14
   ret void
 }

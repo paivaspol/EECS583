@@ -1,0 +1,50 @@
+define i32 @CCTK_CallFunction(i8* %function, %struct.cFunctionData* nocapture readonly %fdata, i8* %data) #1 {
+  %1 = getelementptr inbounds %struct.cFunctionData* %fdata, i64 0, i32 2
+  %2 = load i32* %1, align 4, !tbaa !2
+  switch i32 %2, label %21 [
+    i32 0, label %3
+    i32 1, label %6
+    i32 2, label %9
+  ]
+
+; <label>:3                                       ; preds = %0
+  %4 = bitcast i8* %function to i32 ()*
+  %5 = tail call i32 %4() #8
+  br label %23
+
+; <label>:6                                       ; preds = %0
+  %7 = bitcast i8* %function to i32 (i8*)*
+  %8 = tail call i32 %7(i8* %data) #8
+  br label %23
+
+; <label>:9                                       ; preds = %0
+  %10 = getelementptr inbounds %struct.cFunctionData* %fdata, i64 0, i32 0
+  %11 = load i32* %10, align 4, !tbaa !8
+  switch i32 %11, label %19 [
+    i32 1, label %12
+    i32 2, label %14
+  ]
+
+; <label>:12                                      ; preds = %9
+  %13 = bitcast i8* %function to void (i8*)*
+  tail call void %13(i8* %data) #8
+  br label %23
+
+; <label>:14                                      ; preds = %9
+  %15 = getelementptr inbounds %struct.cFunctionData* %fdata, i64 0, i32 1
+  %16 = load i32 (%struct.cGH*, i8*)** %15, align 8, !tbaa !9
+  %17 = bitcast i8* %data to %struct.cGH*
+  %18 = tail call i32 %16(%struct.cGH* %17, i8* %function) #8
+  br label %23
+
+; <label>:19                                      ; preds = %9
+  %20 = tail call i32 @CCTK_Warn(i32 1, i32 264, i8* getelementptr inbounds ([86 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([37 x i8]* @.str2, i64 0, i64 0)) #8
+  br label %23
+
+; <label>:21                                      ; preds = %0
+  %22 = tail call i32 @CCTK_Warn(i32 1, i32 269, i8* getelementptr inbounds ([86 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([42 x i8]* @.str3, i64 0, i64 0)) #8
+  br label %23
+
+; <label>:23                                      ; preds = %12, %14, %19, %21, %6, %3
+  ret i32 0
+}

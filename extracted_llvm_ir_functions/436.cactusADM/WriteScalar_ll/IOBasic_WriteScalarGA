@@ -1,0 +1,230 @@
+define i32 @IOBasic_WriteScalarGA(%struct.cGH* %GH, i32 %vindex, i8* %alias) #1 {
+  %format_str = alloca [15 x i8], align 1
+  %reduction_value = alloca double, align 8
+  %1 = load i8** getelementptr inbounds (%struct.anon* @iobasicpriv_, i64 0, i32 2), align 8, !tbaa !2
+  %2 = load i8** getelementptr inbounds (%struct.anon* @iobasicpriv_, i64 0, i32 3), align 8, !tbaa !8
+  %3 = load i8** getelementptr inbounds (%struct.anon* @iobasicpriv_, i64 0, i32 5), align 8, !tbaa !9
+  %4 = load i32* getelementptr inbounds (%struct.anon.1* @iorest_, i64 0, i32 28), align 4, !tbaa !10
+  %5 = tail call i32 @CCTK_GroupIndexFromVarI(i32 %vindex) #7
+  %6 = tail call i32 @CCTK_QueryGroupStorageI(%struct.cGH* %GH, i32 %5) #7
+  %7 = icmp eq i32 %6, 0
+  br i1 %7, label %8, label %11
+
+; <label>:8                                       ; preds = %0
+  %9 = tail call i8* @CCTK_FullName(i32 %vindex) #7
+  %10 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 112, i8* getelementptr inbounds ([81 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([62 x i8]* @.str2, i64 0, i64 0), i8* %9) #7
+  tail call void @free(i8* %9) #8
+  br label %124
+
+; <label>:11                                      ; preds = %0
+  %12 = getelementptr inbounds [15 x i8]* %format_str, i64 0, i64 0
+  %13 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %12, i32 0, i64 15, i8* getelementptr inbounds ([11 x i8]* @.str3, i64 0, i64 0), i8* %3, i8* %3) #7
+  %14 = call i32 @CCTK_Equals(i8* %2, i8* getelementptr inbounds ([8 x i8]* @.str4, i64 0, i64 0)) #7
+  %15 = call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([8 x i8]* @.str1, i64 0, i64 0)) #7
+  %16 = call i64 @strlen(i8* %1) #7
+  %17 = add i64 %16, 1
+  %18 = call i8* @malloc(i64 %17) #7
+  %19 = icmp eq i8* %1, null
+  br i1 %19, label %.critedge, label %.lr.ph.lr.ph
+
+.lr.ph.lr.ph:                                     ; preds = %11
+  %20 = call i64 @llvm.objectsize.i64.p0i8(i8* %18, i1 false)
+  %21 = bitcast double* %reduction_value to i8*
+  %22 = icmp eq i32 %4, 0
+  %23 = getelementptr inbounds i8* %15, i64 24
+  %24 = bitcast i8* %23 to i8**
+  %25 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 16
+  %26 = load i8* %1, align 1, !tbaa !13
+  %27 = icmp eq i8 %26, 0
+  br i1 %27, label %.critedge, label %.preheader8.preheader.lr.ph.lr.ph
+
+.preheader8.preheader.lr.ph.lr.ph:                ; preds = %.lr.ph.lr.ph
+  %28 = icmp ne i32 %14, 0
+  %29 = select i1 %28, i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str6, i64 0, i64 0)
+  br label %.preheader8.preheader.lr.ph
+
+.preheader8.preheader.lr.ph:                      ; preds = %.preheader8.preheader.lr.ph.lr.ph, %.outer
+  %30 = phi i8 [ %26, %.preheader8.preheader.lr.ph.lr.ph ], [ %122, %.outer ]
+  %file_extension.0.ph1217 = phi i8* [ %29, %.preheader8.preheader.lr.ph.lr.ph ], [ %file_extension.2, %.outer ]
+  %string_start.0.ph1316 = phi i8* [ %1, %.preheader8.preheader.lr.ph.lr.ph ], [ %string_end.0, %.outer ]
+  br label %.preheader8
+
+.preheader8:                                      ; preds = %.backedge.backedge, %.preheader8.preheader.lr.ph, %isspace.exit._crit_edge
+  %31 = phi i8 [ %.pre, %isspace.exit._crit_edge ], [ %30, %.preheader8.preheader.lr.ph ], [ %64, %.backedge.backedge ]
+  %string_start.1 = phi i8* [ %40, %isspace.exit._crit_edge ], [ %string_start.0.ph1316, %.preheader8.preheader.lr.ph ], [ %string_end.0, %.backedge.backedge ]
+  %isascii.i.i6 = icmp sgt i8 %31, -1
+  br i1 %isascii.i.i6, label %32, label %37
+
+; <label>:32                                      ; preds = %.preheader8
+  %33 = sext i8 %31 to i64
+  %34 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %33
+  %35 = load i32* %34, align 4, !tbaa !14
+  %36 = and i32 %35, 16384
+  br label %isspace.exit
+
+; <label>:37                                      ; preds = %.preheader8
+  %38 = sext i8 %31 to i32
+  %39 = call i32 @__maskrune(i32 %38, i64 16384) #7
+  br label %isspace.exit
+
+isspace.exit:                                     ; preds = %32, %37
+  %.sink.i.in.i = phi i32 [ %36, %32 ], [ %39, %37 ]
+  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0
+  %40 = getelementptr inbounds i8* %string_start.1, i64 1
+  br i1 %.sink.i.i, label %41, label %isspace.exit._crit_edge
+
+isspace.exit._crit_edge:                          ; preds = %isspace.exit
+  %.pre = load i8* %40, align 1, !tbaa !13
+  br label %.preheader8
+
+; <label>:41                                      ; preds = %isspace.exit
+  %42 = load i8* %string_start.1, align 1, !tbaa !13
+  %43 = icmp eq i8 %42, 0
+  br i1 %43, label %.critedge, label %.preheader
+
+.preheader:                                       ; preds = %41, %isspace.exit5
+  %string_start.1.pn = phi i8* [ %string_end.0, %isspace.exit5 ], [ %string_start.1, %41 ]
+  %string_end.0 = getelementptr inbounds i8* %string_start.1.pn, i64 1
+  %44 = load i8* %string_end.0, align 1, !tbaa !13
+  %45 = icmp eq i8 %44, 0
+  br i1 %45, label %.critedge1, label %46
+
+; <label>:46                                      ; preds = %.preheader
+  %isascii.i.i27 = icmp sgt i8 %44, -1
+  br i1 %isascii.i.i27, label %47, label %52
+
+; <label>:47                                      ; preds = %46
+  %48 = sext i8 %44 to i64
+  %49 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %48
+  %50 = load i32* %49, align 4, !tbaa !14
+  %51 = and i32 %50, 16384
+  br label %isspace.exit5
+
+; <label>:52                                      ; preds = %46
+  %53 = sext i8 %44 to i32
+  %54 = call i32 @__maskrune(i32 %53, i64 16384) #7
+  br label %isspace.exit5
+
+isspace.exit5:                                    ; preds = %47, %52
+  %.sink.i.in.i3 = phi i32 [ %51, %47 ], [ %54, %52 ]
+  %.sink.i.i4 = icmp eq i32 %.sink.i.in.i3, 0
+  br i1 %.sink.i.i4, label %.preheader, label %.critedge1
+
+.critedge1:                                       ; preds = %isspace.exit5, %.preheader
+  %55 = ptrtoint i8* %string_end.0 to i64
+  %56 = ptrtoint i8* %string_start.1 to i64
+  %57 = sub i64 %55, %56
+  %58 = call i8* @__strncpy_chk(i8* %18, i8* %string_start.1, i64 %57, i64 %20) #7
+  %59 = getelementptr inbounds i8* %18, i64 %57
+  store i8 0, i8* %59, align 1, !tbaa !13
+  %60 = call i32 @CCTK_ReductionHandle(i8* %18) #7
+  %61 = icmp slt i32 %60, 0
+  br i1 %61, label %62, label %66
+
+; <label>:62                                      ; preds = %.critedge1
+  %63 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 161, i8* getelementptr inbounds ([81 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str7, i64 0, i64 0), i8* %18) #7
+  br label %.backedge.backedge
+
+.backedge.backedge:                               ; preds = %62, %69, %66
+  %64 = load i8* %string_end.0, align 1, !tbaa !13
+  %65 = icmp eq i8 %64, 0
+  br i1 %65, label %.critedge, label %.preheader8
+
+; <label>:66                                      ; preds = %.critedge1
+  %67 = call i32 (%struct.cGH*, i32, i32, i32, i32, i8*, i32, ...)* @CCTK_Reduce(%struct.cGH* %GH, i32 0, i32 %60, i32 1, i32 6, i8* %21, i32 1, i32 %vindex) #7
+  %68 = icmp eq i32 %67, 0
+  br i1 %68, label %69, label %.backedge.backedge
+
+; <label>:69                                      ; preds = %66
+  %70 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !tbaa !15
+  %71 = call i32 %70(%struct.cGH* %GH) #7
+  %72 = icmp eq i32 %71, 0
+  br i1 %72, label %73, label %.backedge.backedge
+
+; <label>:73                                      ; preds = %69
+  br i1 %22, label %88, label %74
+
+; <label>:74                                      ; preds = %73
+  %75 = load i8** %24, align 8, !tbaa !16
+  %76 = call i64 @strlen(i8* %75) #7
+  %77 = call i64 @strlen(i8* %alias) #7
+  %78 = call i64 @strlen(i8* %18) #7
+  %79 = call i64 @strlen(i8* %file_extension.0.ph1217) #7
+  %80 = add i64 %76, 2
+  %81 = add i64 %80, %77
+  %82 = add i64 %81, %78
+  %83 = add i64 %82, %79
+  %84 = call i8* @malloc(i64 %83) #7
+  %85 = call i64 @llvm.objectsize.i64.p0i8(i8* %84, i1 false)
+  %86 = load i8** %24, align 8, !tbaa !16
+  %87 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %84, i32 0, i64 %85, i8* getelementptr inbounds ([10 x i8]* @.str8, i64 0, i64 0), i8* %86, i8* %alias, i8* %18, i8* %file_extension.0.ph1217) #7
+  br label %112
+
+; <label>:88                                      ; preds = %73
+  %89 = call i32 @strcmp(i8* %18, i8* getelementptr inbounds ([8 x i8]* @.str9, i64 0, i64 0)) #7
+  %90 = icmp eq i32 %89, 0
+  br i1 %90, label %100, label %91
+
+; <label>:91                                      ; preds = %88
+  %92 = call i32 @strcmp(i8* %18, i8* getelementptr inbounds ([8 x i8]* @.str11, i64 0, i64 0)) #7
+  %93 = icmp eq i32 %92, 0
+  br i1 %93, label %100, label %94
+
+; <label>:94                                      ; preds = %91
+  %95 = call i32 @strcmp(i8* %18, i8* getelementptr inbounds ([6 x i8]* @.str13, i64 0, i64 0)) #7
+  %96 = icmp eq i32 %95, 0
+  br i1 %96, label %100, label %97
+
+; <label>:97                                      ; preds = %94
+  %98 = call i32 @strcmp(i8* %18, i8* getelementptr inbounds ([6 x i8]* @.str15, i64 0, i64 0)) #7
+  %99 = icmp eq i32 %98, 0
+  %. = select i1 %99, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i8* %18
+  br label %100
+
+; <label>:100                                     ; preds = %97, %94, %91, %88
+  %file_extension.1 = phi i8* [ getelementptr inbounds ([4 x i8]* @.str10, i64 0, i64 0), %88 ], [ getelementptr inbounds ([4 x i8]* @.str12, i64 0, i64 0), %91 ], [ getelementptr inbounds ([4 x i8]* @.str14, i64 0, i64 0), %94 ], [ %., %97 ]
+  %101 = load i8** %24, align 8, !tbaa !16
+  %102 = call i64 @strlen(i8* %101) #7
+  %103 = call i64 @strlen(i8* %alias) #7
+  %104 = call i64 @strlen(i8* %file_extension.1) #7
+  %105 = add i64 %102, 5
+  %106 = add i64 %105, %103
+  %107 = add i64 %106, %104
+  %108 = call i8* @malloc(i64 %107) #7
+  %109 = call i64 @llvm.objectsize.i64.p0i8(i8* %108, i1 false)
+  %110 = load i8** %24, align 8, !tbaa !16
+  %111 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %108, i32 0, i64 %109, i8* getelementptr inbounds ([11 x i8]* @.str17, i64 0, i64 0), i8* %110, i8* %alias, i8* %file_extension.1) #7
+  br label %112
+
+; <label>:112                                     ; preds = %100, %74
+  %file_extension.2 = phi i8* [ %file_extension.0.ph1217, %74 ], [ %file_extension.1, %100 ]
+  %filename.0 = phi i8* [ %84, %74 ], [ %108, %100 ]
+  %113 = call fastcc %struct.__sFILE* @OpenScalarFile(%struct.cGH* %GH, i32 %vindex, i8* %filename.0, i8* %18, i8* getelementptr inbounds ([25 x i8]* @.str18, i64 0, i64 0), i8* %alias) #8
+  %114 = icmp eq %struct.__sFILE* %113, null
+  br i1 %114, label %120, label %115
+
+; <label>:115                                     ; preds = %112
+  %116 = load double* %25, align 8, !tbaa !18
+  %117 = load double* %reduction_value, align 8, !tbaa !20
+  %118 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %113, i8* %12, double %116, double %117) #7
+  %119 = call i32 @fclose(%struct.__sFILE* %113) #7
+  br label %.outer
+
+; <label>:120                                     ; preds = %112
+  %121 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 225, i8* getelementptr inbounds ([81 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str19, i64 0, i64 0), i8* %filename.0) #7
+  br label %.outer
+
+.outer:                                           ; preds = %120, %115
+  call void @free(i8* %filename.0) #8
+  %122 = load i8* %string_end.0, align 1, !tbaa !13
+  %123 = icmp eq i8 %122, 0
+  br i1 %123, label %.critedge, label %.preheader8.preheader.lr.ph
+
+.critedge:                                        ; preds = %.outer, %.lr.ph.lr.ph, %41, %.backedge.backedge, %11
+  call void @free(i8* %18) #8
+  br label %124
+
+; <label>:124                                     ; preds = %.critedge, %8
+  %.0 = phi i32 [ 0, %.critedge ], [ -1, %8 ]
+  ret i32 %.0
+}

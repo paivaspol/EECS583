@@ -1,31 +1,26 @@
-define i32 @is_dummymass(i8* nocapture %nm) #0 {
-entry:
+define i32 @is_dummymass(i8* %nm) #4 {
   %buf = alloca [30 x i8], align 16
-  %arraydecay = getelementptr inbounds [30 x i8]* %buf, i64 0, i64 0
-  %call = call i8* @strcpy(i8* %arraydecay, i8* %nm) #7
-  call void @trim(i8* %arraydecay) #7
-  %0 = load i8* %arraydecay, align 16, !tbaa !1
-  %cmp = icmp eq i8 %0, 77
-  br i1 %cmp, label %land.lhs.true, label %if.end
+  %1 = getelementptr inbounds [30 x i8]* %buf, i64 0, i64 0
+  %2 = call i8* @__strcpy_chk(i8* %1, i8* %nm, i64 30) #10
+  call void @trim(i8* %1) #10
+  %3 = load i8* %1, align 16, !tbaa !13
+  %4 = icmp eq i8 %3, 77
+  br i1 %4, label %5, label %11
 
-land.lhs.true:                                    ; preds = %entry
-  %call4 = call i64 @strlen(i8* %arraydecay) #8
-  %sub = add i64 %call4, -1
-  %arrayidx5 = getelementptr inbounds [30 x i8]* %buf, i64 0, i64 %sub
-  %1 = load i8* %arrayidx5, align 1, !tbaa !1
-  %idxprom = sext i8 %1 to i64
-  %call7 = call i16** @__ctype_b_loc() #10
-  %2 = load i16** %call7, align 8, !tbaa !4
-  %arrayidx8 = getelementptr inbounds i16* %2, i64 %idxprom
-  %3 = load i16* %arrayidx8, align 2, !tbaa !5
-  %and = and i16 %3, 2048
-  %tobool = icmp eq i16 %and, 0
-  br i1 %tobool, label %if.end, label %return
+; <label>:5                                       ; preds = %0
+  %6 = call i64 @strlen(i8* %1) #10
+  %7 = add i64 %6, -1
+  %8 = getelementptr inbounds [30 x i8]* %buf, i64 0, i64 %7
+  %9 = load i8* %8, align 1, !tbaa !13
+  %10 = sext i8 %9 to i32
+  %isdigittmp = add nsw i32 %10, -48
+  %isdigit = icmp ult i32 %isdigittmp, 10
+  br i1 %isdigit, label %12, label %11
 
-if.end:                                           ; preds = %land.lhs.true, %entry
-  br label %return
+; <label>:11                                      ; preds = %5, %0
+  br label %12
 
-return:                                           ; preds = %land.lhs.true, %if.end
-  %retval.0 = phi i32 [ 0, %if.end ], [ 1, %land.lhs.true ]
-  ret i32 %retval.0
+; <label>:12                                      ; preds = %5, %11
+  %.0 = phi i32 [ 0, %11 ], [ 1, %5 ]
+  ret i32 %.0
 }

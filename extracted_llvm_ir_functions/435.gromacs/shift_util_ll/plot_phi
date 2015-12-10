@@ -1,117 +1,124 @@
-define void @plot_phi(i8* %fn, float* nocapture %box, i32 %natoms, [3 x float]* nocapture %x, float* nocapture %phi) #0 {
-entry:
-  %0 = load float* %phi, align 4, !tbaa !0
-  %cmp138 = icmp sgt i32 %natoms, 0
-  br i1 %cmp138, label %for.body, label %for.end
+define void @plot_phi(i8* %fn, float* nocapture readonly %box, i32 %natoms, [3 x float]* nocapture readonly %x, float* nocapture readonly %phi) #1 {
+  %1 = load float* %phi, align 4, !tbaa !2
+  %2 = icmp sgt i32 %natoms, 0
+  br i1 %2, label %.lr.ph6, label %._crit_edge7
 
-for.body:                                         ; preds = %entry, %for.body.for.body_crit_edge
-  %1 = phi float [ %.pre, %for.body.for.body_crit_edge ], [ %0, %entry ]
-  %indvars.iv141 = phi i64 [ %phitmp145, %for.body.for.body_crit_edge ], [ 1, %entry ]
-  %phi_max.0139 = phi float [ %phi_max.0.fabsf112, %for.body.for.body_crit_edge ], [ %0, %entry ]
-  %fabsf112 = tail call float @fabsf(float %1) #8
-  %cmp3 = fcmp ogt float %phi_max.0139, %fabsf112
-  %phi_max.0.fabsf112 = select i1 %cmp3, float %phi_max.0139, float %fabsf112
-  %lftr.wideiv143 = trunc i64 %indvars.iv141 to i32
-  %exitcond144 = icmp eq i32 %lftr.wideiv143, %natoms
-  br i1 %exitcond144, label %for.end, label %for.body.for.body_crit_edge
+.lr.ph6:                                          ; preds = %0
+  %3 = add i32 %natoms, -1
+  %fabsf113 = tail call float @fabsf(float %1) #5
+  %4 = fcmp ogt float %1, %fabsf113
+  %phi_max.0.fabsf114 = select i1 %4, float %1, float %fabsf113
+  %exitcond1115 = icmp eq i32 %3, 0
+  br i1 %exitcond1115, label %._crit_edge7, label %._crit_edge12
 
-for.body.for.body_crit_edge:                      ; preds = %for.body
-  %arrayidx1.phi.trans.insert = getelementptr inbounds float* %phi, i64 %indvars.iv141
-  %.pre = load float* %arrayidx1.phi.trans.insert, align 4, !tbaa !0
-  %phitmp145 = add i64 %indvars.iv141, 1
-  br label %for.body
+._crit_edge12:                                    ; preds = %.lr.ph6, %._crit_edge12
+  %indvars.iv.next917 = phi i64 [ %indvars.iv.next9, %._crit_edge12 ], [ 1, %.lr.ph6 ]
+  %phi_max.0.fabsf116 = phi float [ %phi_max.0.fabsf1, %._crit_edge12 ], [ %phi_max.0.fabsf114, %.lr.ph6 ]
+  %.phi.trans.insert = getelementptr inbounds float* %phi, i64 %indvars.iv.next917
+  %.pre = load float* %.phi.trans.insert, align 4, !tbaa !2
+  %fabsf1 = tail call float @fabsf(float %.pre) #5
+  %5 = fcmp ogt float %phi_max.0.fabsf116, %fabsf1
+  %phi_max.0.fabsf1 = select i1 %5, float %phi_max.0.fabsf116, float %fabsf1
+  %indvars.iv.next9 = add nuw nsw i64 %indvars.iv.next917, 1
+  %lftr.wideiv10 = trunc i64 %indvars.iv.next917 to i32
+  %exitcond11 = icmp eq i32 %lftr.wideiv10, %3
+  br i1 %exitcond11, label %._crit_edge7, label %._crit_edge12
 
-for.end:                                          ; preds = %for.body, %entry
-  %phi_max.0.lcssa = phi float [ %0, %entry ], [ %phi_max.0.fabsf112, %for.body ]
-  %fabsf = tail call float @fabsf(float %phi_max.0.lcssa) #8
-  %2 = fpext float %fabsf to double
-  %cmp13 = fcmp olt double %2, 1.200000e-38
-  br i1 %cmp13, label %if.then, label %if.end
+._crit_edge7:                                     ; preds = %.lr.ph6, %._crit_edge12, %0
+  %phi_max.0.lcssa = phi float [ %1, %0 ], [ %phi_max.0.fabsf114, %.lr.ph6 ], [ %phi_max.0.fabsf1, %._crit_edge12 ]
+  %fabsf = tail call float @fabsf(float %phi_max.0.lcssa) #5
+  %6 = fpext float %fabsf to double
+  %7 = fcmp olt double %6, 1.200000e-38
+  br i1 %7, label %8, label %11
 
-if.then:                                          ; preds = %for.end
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([32 x i8]* @.str20, i64 0, i64 0), i64 31, i64 1, %struct._IO_FILE* %3)
-  br label %return
+; <label>:8                                       ; preds = %._crit_edge7
+  %9 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !6
+  %10 = tail call i64 @fwrite(i8* getelementptr inbounds ([32 x i8]* @.str20, i64 0, i64 0), i64 31, i64 1, %struct.__sFILE* %9)
+  br label %65
 
-if.end:                                           ; preds = %for.end
-  %5 = load float* %box, align 4, !tbaa !0
-  %mul = fmul float %5, 1.500000e+01
-  %add = fadd float %mul, 4.000000e+01
-  %arrayidx18 = getelementptr inbounds float* %box, i64 1
-  %6 = load float* %arrayidx18, align 4, !tbaa !0
-  %mul19 = fmul float %6, 1.500000e+01
-  %add21 = fadd float %mul19, 4.000000e+01
-  %call22 = tail call %struct._IO_FILE* @ps_open(i8* %fn, float 0.000000e+00, float 0.000000e+00, float %add, float %add21) #6
-  tail call void @ps_translate(%struct._IO_FILE* %call22, float 2.000000e+01, float 2.000000e+01) #6
-  tail call void @ps_color(%struct._IO_FILE* %call22, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00) #6
-  %7 = load float* %box, align 4, !tbaa !0
-  %mul24 = fmul float %7, 1.500000e+01
-  %sub = fadd float %mul24, -1.000000e+00
-  %8 = load float* %arrayidx18, align 4, !tbaa !0
-  %mul26 = fmul float %8, 1.500000e+01
-  %sub27 = fadd float %mul26, -1.000000e+00
-  tail call void @ps_box(%struct._IO_FILE* %call22, float 1.000000e+00, float 1.000000e+00, float %sub, float %sub27) #6
-  br i1 %cmp138, label %for.body34, label %for.end69
+; <label>:11                                      ; preds = %._crit_edge7
+  %12 = load float* %box, align 4, !tbaa !2
+  %13 = fmul float %12, 1.500000e+01
+  %14 = fadd float %13, 4.000000e+01
+  %15 = getelementptr inbounds float* %box, i64 1
+  %16 = load float* %15, align 4, !tbaa !2
+  %17 = fmul float %16, 1.500000e+01
+  %18 = fadd float %17, 4.000000e+01
+  %19 = tail call %struct.__sFILE* @ps_open(i8* %fn, float 0.000000e+00, float 0.000000e+00, float %14, float %18) #8
+  tail call void @ps_translate(%struct.__sFILE* %19, float 2.000000e+01, float 2.000000e+01) #8
+  tail call void @ps_color(%struct.__sFILE* %19, float 0.000000e+00, float 0.000000e+00, float 0.000000e+00) #8
+  %20 = load float* %box, align 4, !tbaa !2
+  %21 = fmul float %20, 1.500000e+01
+  %22 = fadd float %21, -1.000000e+00
+  %23 = load float* %15, align 4, !tbaa !2
+  %24 = fmul float %23, 1.500000e+01
+  %25 = fadd float %24, -1.000000e+00
+  tail call void @ps_box(%struct.__sFILE* %19, float 1.000000e+00, float 1.000000e+00, float %22, float %25) #8
+  br i1 %2, label %.lr.ph, label %._crit_edge
 
-for.body34:                                       ; preds = %if.end, %if.end51
-  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end51 ], [ 0, %if.end ]
-  %arrayidx36 = getelementptr inbounds float* %phi, i64 %indvars.iv
-  %9 = load float* %arrayidx36, align 4, !tbaa !0
-  %cmp37 = fcmp olt float %9, 0.000000e+00
-  %div = fdiv float %9, %phi_max.0.lcssa
-  br i1 %cmp37, label %if.then39, label %if.else
+.lr.ph:                                           ; preds = %11
+  %26 = add i32 %natoms, -1
+  br label %27
 
-if.then39:                                        ; preds = %for.body34
-  %conv44 = fadd float %div, 1.000000e+00
-  %phitmp130 = fpext float %conv44 to double
-  %phitmp131 = fmul double %phitmp130, 3.200000e+01
-  %phitmp132 = fptosi double %phitmp131 to i32
-  %phitmp133 = sitofp i32 %phitmp132 to double
-  %phitmp134 = fmul double %phitmp133, 3.125000e-02
-  %phitmp135 = fptrunc double %phitmp134 to float
-  br label %if.end51
+; <label>:27                                      ; preds = %36, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %36 ]
+  %28 = getelementptr inbounds float* %phi, i64 %indvars.iv
+  %29 = load float* %28, align 4, !tbaa !2
+  %30 = fcmp olt float %29, 0.000000e+00
+  %31 = fdiv float %29, %phi_max.0.lcssa
+  br i1 %30, label %32, label %34
 
-if.else:                                          ; preds = %for.body34
-  %conv50 = fsub float 1.000000e+00, %div
-  %phitmp = fpext float %conv50 to double
-  %phitmp125 = fmul double %phitmp, 3.200000e+01
-  %phitmp126 = fptosi double %phitmp125 to i32
-  %phitmp127 = sitofp i32 %phitmp126 to double
-  %phitmp128 = fmul double %phitmp127, 3.125000e-02
-  %phitmp129 = fptrunc double %phitmp128 to float
-  br label %if.end51
+; <label>:32                                      ; preds = %27
+  %33 = fadd float %31, 1.000000e+00
+  br label %36
 
-if.end51:                                         ; preds = %if.else, %if.then39
-  %bb.0 = phi float [ %phitmp135, %if.then39 ], [ 1.000000e+00, %if.else ]
-  %gg.0 = phi float [ %conv44, %if.then39 ], [ %conv50, %if.else ]
-  %rr.0 = phi float [ 1.000000e+00, %if.then39 ], [ %phitmp129, %if.else ]
-  %conv.i119 = fpext float %gg.0 to double
-  %mul.i120 = fmul double %conv.i119, 3.200000e+01
-  %conv1.i121 = fptosi double %mul.i120 to i32
-  %conv2.i122 = sitofp i32 %conv1.i121 to double
-  %div.i123 = fmul double %conv2.i122, 3.125000e-02
-  %conv3.i124 = fptrunc double %div.i123 to float
-  tail call void @ps_color(%struct._IO_FILE* %call22, float %rr.0, float %conv3.i124, float %bb.0) #6
-  %arrayidx57 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 0
-  %10 = load float* %arrayidx57, align 4, !tbaa !0
-  %mul58 = fmul float %10, 1.500000e+01
-  %arrayidx61 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 1
-  %11 = load float* %arrayidx61, align 4, !tbaa !0
-  %mul62 = fmul float %11, 1.500000e+01
-  %sub63 = fadd float %mul58, -2.250000e+00
-  %sub64 = fadd float %mul62, -2.250000e+00
-  %add65 = fadd float %mul58, 2.250000e+00
-  %add66 = fadd float %mul62, 2.250000e+00
-  tail call void @ps_fillbox(%struct._IO_FILE* %call22, float %sub63, float %sub64, float %add65, float %add66) #6
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %natoms
-  br i1 %exitcond, label %for.end69, label %for.body34
+; <label>:34                                      ; preds = %27
+  %35 = fsub float 1.000000e+00, %31
+  br label %36
 
-for.end69:                                        ; preds = %if.end51, %if.end
-  tail call void @ps_close(%struct._IO_FILE* %call22) #6
-  br label %return
+; <label>:36                                      ; preds = %34, %32
+  %bb.0 = phi float [ %33, %32 ], [ 1.000000e+00, %34 ]
+  %gg.0 = phi float [ %33, %32 ], [ %35, %34 ]
+  %rr.0 = phi float [ 1.000000e+00, %32 ], [ %35, %34 ]
+  %37 = fpext float %rr.0 to double
+  %38 = fmul double %37, 3.200000e+01
+  %39 = fptosi double %38 to i32
+  %40 = sitofp i32 %39 to double
+  %41 = fmul double %40, 3.125000e-02
+  %42 = fptrunc double %41 to float
+  %43 = fpext float %gg.0 to double
+  %44 = fmul double %43, 3.200000e+01
+  %45 = fptosi double %44 to i32
+  %46 = sitofp i32 %45 to double
+  %47 = fmul double %46, 3.125000e-02
+  %48 = fptrunc double %47 to float
+  %49 = fpext float %bb.0 to double
+  %50 = fmul double %49, 3.200000e+01
+  %51 = fptosi double %50 to i32
+  %52 = sitofp i32 %51 to double
+  %53 = fmul double %52, 3.125000e-02
+  %54 = fptrunc double %53 to float
+  tail call void @ps_color(%struct.__sFILE* %19, float %42, float %48, float %54) #8
+  %55 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 0
+  %56 = load float* %55, align 4, !tbaa !2
+  %57 = fmul float %56, 1.500000e+01
+  %58 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 1
+  %59 = load float* %58, align 4, !tbaa !2
+  %60 = fmul float %59, 1.500000e+01
+  %61 = fadd float %57, -2.250000e+00
+  %62 = fadd float %60, -2.250000e+00
+  %63 = fadd float %57, 2.250000e+00
+  %64 = fadd float %60, 2.250000e+00
+  tail call void @ps_fillbox(%struct.__sFILE* %19, float %61, float %62, float %63, float %64) #8
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %26
+  br i1 %exitcond, label %._crit_edge, label %27
 
-return:                                           ; preds = %for.end69, %if.then
+._crit_edge:                                      ; preds = %36, %11
+  tail call void @ps_close(%struct.__sFILE* %19) #8
+  br label %65
+
+; <label>:65                                      ; preds = %._crit_edge, %8
   ret void
 }

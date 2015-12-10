@@ -1,0 +1,22 @@
+define %struct.PGExtras* @PUGH_SetupPGExtras(i32 %dim, i32* nocapture readonly %perme, i32 %stagger, i32* nocapture readonly %sh, i32* nocapture readonly %nghosts, i32 %total_procs, i32* %nprocs, i32 %this_proc) #1 {
+  %1 = tail call i8* @malloc(i64 296) #7
+  %2 = bitcast i8* %1 to %struct.PGExtras*
+  %3 = icmp eq i8* %1, null
+  br i1 %3, label %12, label %4
+
+; <label>:4                                       ; preds = %0
+  %5 = tail call i32 @PUGH_SetupPGExtrasMemory(i32 %dim, i32 %total_procs, i32* undef, %struct.PGExtras* %2) #8
+  %6 = icmp eq i32 %5, 0
+  br i1 %6, label %7, label %12
+
+; <label>:7                                       ; preds = %4
+  %8 = bitcast i8* %1 to i32*
+  store i32 %dim, i32* %8, align 4, !tbaa !2
+  %9 = tail call i32 @PUGH_SetupPGExtrasSizes(i32 %dim, i32* %perme, i32 %stagger, i32* %sh, i32* %nghosts, i32 %total_procs, i32* %nprocs, i32 %this_proc, %struct.PGExtras* %2) #8
+  %10 = tail call i32 @PUGH_SetupPGExtrasOwnership(i32 %dim, i32* %perme, i32 undef, i32* undef, i32* undef, i32 undef, i32* undef, i32 %this_proc, %struct.PGExtras* %2) #8
+  %11 = tail call i32 @PUGH_SetupPGExtrasStaggering(i32 %dim, i32* undef, i32 undef, i32* undef, i32* undef, i32 undef, i32* undef, i32 %this_proc, %struct.PGExtras* %2) #8
+  br label %12
+
+; <label>:12                                      ; preds = %4, %0, %7
+  ret %struct.PGExtras* %2
+}

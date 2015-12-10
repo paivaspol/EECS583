@@ -1,57 +1,56 @@
-define internal fastcc i32 @xtc_header(%struct.XDR* %xd, i32* %magic, i32* %natoms, i32* %step, float* %time, i32* nocapture %bOK) #0 {
-entry:
-  %call = tail call i32 @xdr_int(%struct.XDR* %xd, i32* %magic) #3
-  %cmp = icmp eq i32 %call, 0
-  br i1 %cmp, label %return, label %if.end
+define internal fastcc i32 @xtc_header(%struct.XDR* %xd, i32* %magic, i32* %natoms, i32* %step, float* %time, i32* nocapture %bOK) #4 {
+  %1 = tail call i32 @xdr_int(%struct.XDR* %xd, i32* %magic) #6
+  %2 = icmp eq i32 %1, 0
+  br i1 %2, label %27, label %3
 
-if.end:                                           ; preds = %entry
-  %call1 = tail call i32 @xdr_int(%struct.XDR* %xd, i32* %natoms) #3
-  %tobool.i = icmp eq i32 %call1, 0
-  br i1 %tobool.i, label %if.then.i, label %if.then3
+; <label>:3                                       ; preds = %0
+  %4 = tail call i32 @xdr_int(%struct.XDR* %xd, i32* %natoms) #6
+  %5 = icmp eq i32 %4, 0
+  br i1 %5, label %6, label %11
 
-if.then.i:                                        ; preds = %if.end
-  %0 = load %struct._IO_FILE** @debug, align 8, !tbaa !0
-  %tobool1.i = icmp eq %struct._IO_FILE* %0, null
-  br i1 %tobool1.i, label %if.end11, label %if.then2.i
+; <label>:6                                       ; preds = %3
+  %7 = load %struct.__sFILE** @debug, align 8, !tbaa !18
+  %8 = icmp eq %struct.__sFILE* %7, null
+  br i1 %8, label %xtc_check.exit4, label %9
 
-if.then2.i:                                       ; preds = %if.then.i
-  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str3, i64 0, i64 0), i32 88) #3
-  br label %if.end11
+; <label>:9                                       ; preds = %6
+  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 88) #6
+  br label %xtc_check.exit4
 
-if.then3:                                         ; preds = %if.end
-  %call4 = tail call i32 @xdr_int(%struct.XDR* %xd, i32* %step) #3
-  %tobool.i19 = icmp eq i32 %call4, 0
-  br i1 %tobool.i19, label %if.then.i21, label %if.then8
+; <label>:11                                      ; preds = %3
+  %12 = tail call i32 @xdr_int(%struct.XDR* %xd, i32* %step) #6
+  %13 = icmp eq i32 %12, 0
+  br i1 %13, label %14, label %19
 
-if.then.i21:                                      ; preds = %if.then3
-  %1 = load %struct._IO_FILE** @debug, align 8, !tbaa !0
-  %tobool1.i20 = icmp eq %struct._IO_FILE* %1, null
-  br i1 %tobool1.i20, label %if.end11, label %if.then2.i23
+; <label>:14                                      ; preds = %11
+  %15 = load %struct.__sFILE** @debug, align 8, !tbaa !18
+  %16 = icmp eq %struct.__sFILE* %15, null
+  br i1 %16, label %xtc_check.exit4, label %17
 
-if.then2.i23:                                     ; preds = %if.then.i21
-  %call.i22 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str3, i64 0, i64 0), i32 90) #3
-  br label %if.end11
+; <label>:17                                      ; preds = %14
+  %18 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %15, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 90) #6
+  br label %xtc_check.exit4
 
-if.then8:                                         ; preds = %if.then3
-  %call9 = tail call i32 @xdr_real(%struct.XDR* %xd, float* %time) #3
-  %tobool.i26 = icmp eq i32 %call9, 0
-  br i1 %tobool.i26, label %if.then.i28, label %if.end11
+; <label>:19                                      ; preds = %11
+  %20 = tail call i32 @xdr_real(%struct.XDR* %xd, float* %time) #6
+  %21 = icmp eq i32 %20, 0
+  br i1 %21, label %22, label %xtc_check.exit4
 
-if.then.i28:                                      ; preds = %if.then8
-  %2 = load %struct._IO_FILE** @debug, align 8, !tbaa !0
-  %tobool1.i27 = icmp eq %struct._IO_FILE* %2, null
-  br i1 %tobool1.i27, label %if.end11, label %if.then2.i30
+; <label>:22                                      ; preds = %19
+  %23 = load %struct.__sFILE** @debug, align 8, !tbaa !18
+  %24 = icmp eq %struct.__sFILE* %23, null
+  br i1 %24, label %xtc_check.exit4, label %25
 
-if.then2.i30:                                     ; preds = %if.then.i28
-  %call.i29 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str3, i64 0, i64 0), i32 92) #3
-  br label %if.end11
+; <label>:25                                      ; preds = %22
+  %26 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %23, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 92) #6
+  br label %xtc_check.exit4
 
-if.end11:                                         ; preds = %if.then2.i, %if.then.i, %if.then2.i23, %if.then.i21, %if.then2.i30, %if.then.i28, %if.then8
-  %result.1 = phi i32 [ 0, %if.then.i28 ], [ 0, %if.then2.i30 ], [ 1, %if.then8 ], [ 0, %if.then.i21 ], [ 0, %if.then2.i23 ], [ 0, %if.then.i ], [ 0, %if.then2.i ]
-  store i32 %result.1, i32* %bOK, align 4, !tbaa !3
-  br label %return
+xtc_check.exit4:                                  ; preds = %9, %6, %17, %14, %25, %22, %19
+  %result.1 = phi i32 [ 0, %22 ], [ 0, %25 ], [ 1, %19 ], [ 0, %14 ], [ 0, %17 ], [ 0, %6 ], [ 0, %9 ]
+  store i32 %result.1, i32* %bOK, align 4, !tbaa !19
+  br label %27
 
-return:                                           ; preds = %entry, %if.end11
-  %retval.0 = phi i32 [ %result.1, %if.end11 ], [ 0, %entry ]
-  ret i32 %retval.0
+; <label>:27                                      ; preds = %0, %xtc_check.exit4
+  %.0 = phi i32 [ %result.1, %xtc_check.exit4 ], [ 0, %0 ]
+  ret i32 %.0
 }

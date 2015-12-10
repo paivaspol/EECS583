@@ -1,0 +1,24 @@
+define i8* @CCTK_ActivatingThorn(i8* %name) #1 {
+  %1 = load %struct.T_SKTREE** @implist, align 8, !tbaa !7
+  %2 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %1, i8* %name) #7
+  %3 = icmp eq %struct.T_SKTREE* %2, null
+  br i1 %3, label %14, label %4
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %struct.T_SKTREE* %2, i64 0, i32 5
+  %6 = bitcast i8** %5 to %struct.IMPLEMENTATION**
+  %7 = load %struct.IMPLEMENTATION** %6, align 8, !tbaa !20
+  %8 = getelementptr inbounds %struct.IMPLEMENTATION* %7, i64 0, i32 0
+  %9 = load i32* %8, align 4, !tbaa !13
+  %10 = icmp eq i32 %9, 0
+  br i1 %10, label %14, label %11
+
+; <label>:11                                      ; preds = %4
+  %12 = getelementptr inbounds %struct.IMPLEMENTATION* %7, i64 0, i32 2
+  %13 = load i8** %12, align 8, !tbaa !22
+  br label %14
+
+; <label>:14                                      ; preds = %4, %0, %11
+  %retval.0 = phi i8* [ %13, %11 ], [ null, %4 ], [ null, %0 ]
+  ret i8* %retval.0
+}

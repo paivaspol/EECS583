@@ -1,53 +1,49 @@
-define void @CopyRight(%struct._IO_FILE* %out, i8* %szProgram) #0 {
-entry:
+define void @CopyRight(%struct.__sFILE* %out, i8* %szProgram) #3 {
   %buf = alloca [256 x i8], align 16
-  %0 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %0) #4
-  call void @set_program_name(i8* %szProgram) #6
-  %tobool = icmp eq %struct._IO_FILE* %out, null
-  br i1 %tobool, label %if.end, label %if.then
+  %1 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %1) #7
+  tail call void @set_program_name(i8* %szProgram) #8
+  %2 = icmp eq %struct.__sFILE* %out, null
+  br i1 %2, label %12, label %3
 
-if.then:                                          ; preds = %entry
-  call fastcc void @ster_print(%struct._IO_FILE* %out, i8* getelementptr inbounds ([20 x i8]* @.str10, i64 0, i64 0)) #7
-  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %out)
-  call fastcc void @sp_print(%struct._IO_FILE* %out, i8* getelementptr inbounds ([42 x i8]* @.str6, i64 0, i64 0)) #7
-  %fputc37 = call i32 @fputc(i32 10, %struct._IO_FILE* %out)
+; <label>:3                                       ; preds = %0
+  tail call fastcc void @ster_print(%struct.__sFILE* %out, i8* getelementptr inbounds ([20 x i8]* @.str10, i64 0, i64 0)) #9
+  %fputc = tail call i32 @fputc(i32 10, %struct.__sFILE* %out)
+  tail call fastcc void @sp_print(%struct.__sFILE* %out, i8* getelementptr inbounds ([42 x i8]* @.str6, i64 0, i64 0)) #9
+  %fputc3 = tail call i32 @fputc(i32 10, %struct.__sFILE* %out)
   %.b.i = load i1* @GromacsVersion.bFirst, align 1
-  br i1 %.b.i, label %for.body, label %if.then.i
+  br i1 %.b.i, label %.preheader, label %4
 
-if.then.i:                                        ; preds = %if.then
-  %call.i = call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([100 x i8]* @GromacsVersion.ver_string, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str89, i64 0, i64 0), i8* getelementptr inbounds ([16 x i8]* @.str90, i64 0, i64 0)) #6
+; <label>:4                                       ; preds = %3
+  %5 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* getelementptr inbounds ([100 x i8]* @GromacsVersion.ver_string, i64 0, i64 0), i32 0, i64 100, i8* getelementptr inbounds ([11 x i8]* @.str89, i64 0, i64 0), i8* getelementptr inbounds ([16 x i8]* @.str90, i64 0, i64 0)) #8
   store i1 true, i1* @GromacsVersion.bFirst, align 1
-  br label %for.body
+  br label %.preheader
 
-for.body:                                         ; preds = %if.then.i, %if.then
-  call fastcc void @ster_print(%struct._IO_FILE* %out, i8* getelementptr inbounds ([100 x i8]* @GromacsVersion.ver_string, i64 0, i64 0)) #7
-  %fputc40 = call i32 @fputc(i32 10, %struct._IO_FILE* %out)
-  %fputc43 = call i32 @fputc(i32 10, %struct._IO_FILE* %out)
-  call fastcc void @sp_print(%struct._IO_FILE* %out, i8* getelementptr inbounds ([66 x i8]* @.str95, i64 0, i64 0)) #7
-  br label %for.body8
+.preheader:                                       ; preds = %4, %3
+  tail call fastcc void @ster_print(%struct.__sFILE* %out, i8* getelementptr inbounds ([100 x i8]* @GromacsVersion.ver_string, i64 0, i64 0)) #9
+  %fputc6 = tail call i32 @fputc(i32 10, %struct.__sFILE* %out)
+  %fputc9 = tail call i32 @fputc(i32 10, %struct.__sFILE* %out)
+  tail call fastcc void @sp_print(%struct.__sFILE* %out, i8* getelementptr inbounds ([66 x i8]* @.str97, i64 0, i64 0)) #9
+  br label %6
 
-for.body8:                                        ; preds = %for.body, %for.body8
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body8 ], [ 0, %for.body ]
-  %arrayidx10 = getelementptr inbounds [4 x i8*]* @GPLText, i64 0, i64 %indvars.iv
-  %1 = load i8** %arrayidx10, align 8, !tbaa !2
-  call fastcc void @sp_print(%struct._IO_FILE* %out, i8* %1) #7
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 4
-  br i1 %exitcond, label %for.end13, label %for.body8
+; <label>:6                                       ; preds = %6, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %6 ]
+  %7 = getelementptr inbounds [4 x i8*]* @GPLText, i64 0, i64 %indvars.iv
+  %8 = load i8** %7, align 8, !tbaa !14
+  tail call fastcc void @sp_print(%struct.__sFILE* %out, i8* %8) #9
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 4
+  br i1 %exitcond, label %9, label %6
 
-for.end13:                                        ; preds = %for.body8
-  %fputc46 = call i32 @fputc(i32 10, %struct._IO_FILE* %out)
-  %call15 = call i8* @Program() #6
-  %strlen = call i64 @strlen(i8* %call15)
-  %leninc = add i64 %strlen, 1
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %call15, i64 %leninc, i32 1, i1 false)
-  call fastcc void @ster_print(%struct._IO_FILE* %out, i8* %0) #7
-  %fputc49 = call i32 @fputc(i32 10, %struct._IO_FILE* %out)
-  br label %if.end
+; <label>:9                                       ; preds = %6
+  %fputc12 = tail call i32 @fputc(i32 10, %struct.__sFILE* %out)
+  %10 = tail call i8* @Program() #8
+  %11 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 256, i8* getelementptr inbounds ([3 x i8]* @.str11, i64 0, i64 0), i8* %10) #8
+  call fastcc void @ster_print(%struct.__sFILE* %out, i8* %1) #9
+  %fputc15 = call i32 @fputc(i32 10, %struct.__sFILE* %out)
+  br label %12
 
-if.end:                                           ; preds = %entry, %for.end13
-  call void @llvm.lifetime.end(i64 256, i8* %0) #4
+; <label>:12                                      ; preds = %0, %9
+  call void @llvm.lifetime.end(i64 256, i8* %1) #7
   ret void
 }

@@ -1,0 +1,51 @@
+define noalias %struct.T_SCHED_MODIFIER* @CCTKi_ScheduleAddModifier(%struct.T_SCHED_MODIFIER* %orig, i8* nocapture readonly %modifier, i8* %argument) #1 {
+  %1 = tail call i8* @malloc(i64 24) #8
+  %2 = bitcast i8* %1 to %struct.T_SCHED_MODIFIER*
+  %3 = icmp eq i8* %1, null
+  br i1 %3, label %27, label %4
+
+; <label>:4                                       ; preds = %0
+  %5 = tail call i64 @strlen(i8* %argument) #8
+  %6 = add i64 %5, 1
+  %7 = tail call i8* @malloc(i64 %6) #8
+  %8 = getelementptr inbounds i8* %1, i64 16
+  %9 = bitcast i8* %8 to i8**
+  store i8* %7, i8** %9, align 8, !tbaa !2
+  %10 = icmp eq i8* %7, null
+  br i1 %10, label %26, label %11
+
+; <label>:11                                      ; preds = %4
+  %12 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %7, i1 false)
+  %13 = tail call i8* @__strcpy_chk(i8* %7, i8* %argument, i64 %12) #8
+  %14 = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0)) #8
+  %15 = icmp eq i32 %14, 0
+  br i1 %15, label %ScheduleTranslateModifierType.exit, label %16
+
+; <label>:16                                      ; preds = %11
+  %17 = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #8
+  %18 = icmp eq i32 %17, 0
+  br i1 %18, label %ScheduleTranslateModifierType.exit, label %19
+
+; <label>:19                                      ; preds = %16
+  %20 = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([6 x i8]* @.str4, i64 0, i64 0)) #8
+  %21 = icmp eq i32 %20, 0
+  %..i = select i1 %21, i32 3, i32 0
+  br label %ScheduleTranslateModifierType.exit
+
+ScheduleTranslateModifierType.exit:               ; preds = %11, %16, %19
+  %22 = phi i32 [ %..i, %19 ], [ 1, %11 ], [ 2, %16 ]
+  %23 = getelementptr inbounds i8* %1, i64 8
+  %24 = bitcast i8* %23 to i32*
+  store i32 %22, i32* %24, align 4, !tbaa !7
+  %25 = bitcast i8* %1 to %struct.T_SCHED_MODIFIER**
+  store %struct.T_SCHED_MODIFIER* %orig, %struct.T_SCHED_MODIFIER** %25, align 8, !tbaa !8
+  br label %27
+
+; <label>:26                                      ; preds = %4
+  tail call void @free(i8* %1) #9
+  br label %27
+
+; <label>:27                                      ; preds = %0, %ScheduleTranslateModifierType.exit, %26
+  %this.0 = phi %struct.T_SCHED_MODIFIER* [ %2, %ScheduleTranslateModifierType.exit ], [ null, %26 ], [ %2, %0 ]
+  ret %struct.T_SCHED_MODIFIER* %this.0
+}
