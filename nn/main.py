@@ -141,9 +141,10 @@ def run_epoch(session, m, data_size, data_iterator, eval_op, verbose=False, save
 
   all_logits = np.zeros([data_size, m.num_buckets])
 
-  for step, (x, y) in enumerate(data_iterator(m.batch_size)):
+  for step, (x, y) in enumerate(data_iterator(m.batch_size, m.num_buckets)):
+    # TODO: remove m.num_steps in x[], just for testing, actually I guess it doesn't matter.
     acc, dist, xent, logits, _ = session.run([m.accuracy, m.distance, m.cross_entropy, m.logits, eval_op],
-                                 {m.input_data: x,
+                                 {m.input_data: x[:, 0:m.num_steps],
                                   m.targets: y})
 
     logit_begin_index = step * m.batch_size
@@ -173,14 +174,14 @@ def run_epoch(session, m, data_size, data_iterator, eval_op, verbose=False, save
 def get_config():
   return TrainConfig()
 
-def create_random_data(size, vocab_size, num_steps, num_buckets):
-  input_data = np.random.randint(0, vocab_size, [size, num_steps])
-
-  data_sum = np.sum(input_data, 1)
-  mod = np.mod(data_sum, num_buckets)
-  labels = np.eye(num_buckets)[mod]
-
-  return (input_data, labels)
+# def create_random_data(size, vocab_size, num_steps, num_buckets):
+#   input_data = np.random.randint(0, vocab_size, [size, num_steps])
+#
+#   data_sum = np.sum(input_data, 1)
+#   mod = np.mod(data_sum, num_buckets)
+#   labels = np.eye(num_buckets)[mod]
+#
+#   return (input_data, labels)
 
 def main(unused_args):
   config = get_config()
@@ -191,8 +192,11 @@ def main(unused_args):
   d = dm.Data_Module()
   print "Done with initializing data module."
 
-  config.num_steps = d.get_function_length()
-  eval_config.num_steps = d.get_function_length()
+  # TODO: we need to somehow whittle this function length down to 100 or so...
+  # config.num_steps = d.get_function_length()
+  # eval_config.num_steps = d.get_function_length()
+  config.num_steps = 100
+  eval_config.num_steps = 100
 
   print "Initializing TensorFlow graph..."
   with tf.Graph().as_default(), tf.Session() as session:
