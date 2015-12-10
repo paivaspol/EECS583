@@ -6,21 +6,27 @@ import re
 path = "../extracted_llvm_ir_functions/"
 out_path = "../tokenized_sources"
 token_dict = {}
+counts = {}
 next_token = 1
+
 sep = ","
 
 def get_token(token):
     global next_token
     global token_dict
-    
+    global counts
+
     #I couldn't get the dump empty set thing to work below, so I fixed it here
     if token == "":
         return ""
 
     if token not in token_dict:
         token_dict[token] = next_token
+        counts[token_dict[token]] = 0
         next_token += 1
+        
 
+    counts[token_dict[token]] += 1
     return str(token_dict[token])
         
 def tokenize_funct(function): 
@@ -111,7 +117,6 @@ def tokenize_function():
                 os.makedirs(out_path + "/" + benchmark + "/" + cfiles)
 
             for function in os.listdir(path + "/" + benchmark + "/" + cfiles):
-#                print path + "/" + benchmark + "/" + cfiles + "/" + function
                 funct_tokens = tokenize_funct(path + "/" + benchmark + "/" + cfiles + "/" + function)
 
                 with open(out_path+"/"+benchmark+"/"+cfiles+"/"+function,"w+") as out_file:
@@ -124,4 +129,5 @@ tokenize_function()
 
 print len(token_dict)
 for item in token_dict:
-    print item, token_dict[item]
+    print item, counts[token_dict[item]]
+

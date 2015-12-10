@@ -2,7 +2,7 @@
 
 BENCHMARK_NAME=$1
 VALGRIND="/home/arquinn/valgrind/bin/valgrind"
-EXEC_PATH="/home/arquinn/Project1/SPEC/benchspec/CPU2006/$BENCHMARK_NAME/run/run_base_test_ia64-gcc42.0000"
+EXEC_PATH="/home/arquinn/Project1/SPEC/benchspec/CPU2006/$BENCHMARK_NAME/run/run_base_test_ia64-gcc42.0001"
 CURR_PATH=`pwd`
 
 cd $EXEC_PATH
